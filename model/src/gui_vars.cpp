@@ -60,6 +60,7 @@ bool g_CanvasHideNotificationIcon = false;
 bool g_disable_main_toolbar = false;
 bool g_FlushNavobjChanges = false;
 bool g_PrintingInProgress = false;
+bool g_bShowTimeline = true;
 
 double AnchorPointMinDist;
 double g_androidDPmm = 0.0;

@@ -54,6 +54,7 @@ extern bool g_b_overzoom_x;  ///< Allow high overzoom
 extern bool g_bPauseTest;
 extern bool g_bquiting;
 extern bool g_bSleep;
+extern bool g_bShowTimeline;
 extern bool g_bTempShowMenuBar;
 extern bool g_btenhertz;
 extern bool g_bTrackActive;

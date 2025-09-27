@@ -59,6 +59,7 @@
 #include "s57registrar_mgr.h"
 #include "SencManager.h"
 #include "toolbar.h"
+#include "timeline.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -243,6 +244,12 @@ public:
   void TogglebFollow(ChartCanvas* cc);
   void ToggleFullScreen();
   void ToggleChartBar(ChartCanvas* cc);
+  /**
+   * Toggles the visibility (show or hide) of the timeline widget.
+   */
+  void ToggleTimeline();
+  Timeline* GetTimeline() const { return m_pTimeline; }
+
   void SetbFollow(ChartCanvas* cc);
   void ClearbFollow(ChartCanvas* cc);
   void ToggleChartOutlines(ChartCanvas* cc);
@@ -310,6 +317,10 @@ public:
   void UpdateAISMOBRoute(const AisTargetData* ptarget);
 
   wxStatusBar* m_pStatusBar;
+  /**
+   * Timeline instance for managing time-based events and visualizations.
+   */
+  Timeline* m_pTimeline;
   wxMenuBar* m_pMenuBar;
   int nBlinkerTick;
   bool m_bTimeIsSet;
@@ -376,6 +387,13 @@ public:
   void ConfigureStatusBar();
   void FreezeCharts();
   void ThawCharts();
+  /**
+   * Configures timeline widget visibility and layout within the AUI framework.
+   *
+   * This function manages the creation, showing, and hiding of the timeline
+   * widget based on the global timeline visibility setting.
+   */
+  void ConfigureTimeline();
 
 private:
   void ProcessUnitTest();

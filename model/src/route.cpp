@@ -93,6 +93,12 @@ Route::Route() {
   m_HyperlinkList = new HyperlinkList;
 
   m_bsharedWPViz = false;
+
+  // Initialize position cache
+  m_cachedTimestamp = wxInvalidDateTime;
+  m_cachedLat = 0.0;
+  m_cachedLon = 0.0;
+  m_cacheValid = false;
 }
 
 Route::~Route() {
@@ -169,6 +175,10 @@ void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
     name.Printf(_T("%03d"), GetnPoints());
     pNewPoint->SetName(name);
   }
+
+  // Invalidate position cache since route structure changed
+  InvalidatePositionCache();
+
   return;
 }
 
@@ -219,6 +229,10 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
     m_lastMousePointIndex = GetnPoints();
     FinalizeForRendering();
     UpdateSegmentDistances();
+
+    // Invalidate position cache since route structure changed
+    InvalidatePositionCache();
+
     return;
   }
 }
@@ -289,6 +303,9 @@ RoutePoint *Route::InsertPointBefore(RoutePoint *pRP, double rlat, double rlon,
   FinalizeForRendering();
   UpdateSegmentDistances();
 
+  // Invalidate position cache since route structure changed
+  InvalidatePositionCache();
+
   return (newpoint);
 }
 
@@ -309,6 +326,9 @@ RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
 
   FinalizeForRendering();
   UpdateSegmentDistances();
+
+  // Invalidate position cache since route structure changed
+  InvalidatePositionCache();
 
   return (newpoint);
 }
@@ -353,6 +373,9 @@ void Route::DeletePoint(RoutePoint *rp, bool bRenamePoints) {
     FinalizeForRendering();
     UpdateSegmentDistances();
   }
+
+  // Invalidate position cache since route structure changed
+  InvalidatePositionCache();
 }
 
 void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
@@ -391,6 +414,9 @@ void Route::RemovePoint(RoutePoint *rp, bool bRenamePoints) {
     FinalizeForRendering();
     UpdateSegmentDistances();
   }
+
+  // Invalidate position cache since route structure changed
+  InvalidatePositionCache();
 }
 
 void Route::DeSelectRoute() {
@@ -543,6 +569,9 @@ void Route::UpdateSegmentDistances(double planspeed) {
       prp0 = prp;
     }
   }
+
+  // Invalidate position cache since timing changed
+  InvalidatePositionCache();
 }
 
 void Route::Reverse(bool bRenamePoints) {
@@ -573,6 +602,9 @@ void Route::Reverse(bool bRenamePoints) {
   wxString tmp = m_RouteStartString;
   m_RouteStartString = m_RouteEndString;
   m_RouteEndString = tmp;
+
+  // Invalidate position cache since route structure changed
+  InvalidatePositionCache();
 }
 
 void Route::SetVisible(bool visible, bool includeWpts) {
@@ -663,3 +695,259 @@ bool Route::IsEqualTo(Route *ptargetroute) {
 
   return true;  // success, they are the same
 }
+
+bool Route::GetPositionAtTime(const wxDateTime &timestamp, double &lat,
+                              double &lon) const {
+  // Check cache first
+  if (m_cacheValid && timestamp.IsValid() && m_cachedTimestamp.IsValid() &&
+      timestamp == m_cachedTimestamp) {
+    // This function is called during every chart canvas paint operation
+    // from the rendering pipeline to draw the vessel's interpolated position
+    // along the route at the current timeline timestamp.
+    lat = m_cachedLat;
+    lon = m_cachedLon;
+    return true;
+  }
+
+  // Validate inputs
+  if (!timestamp.IsValid() || !m_PlannedDeparture.IsValid()) {
+    return false;
+  }
+
+  // Check if timestamp is before route start
+  if (timestamp < m_PlannedDeparture) {
+    return false;
+  }
+
+  // Handle empty route
+  if (pRoutePointList->empty()) {
+    return false;
+  }
+
+  // Single waypoint case
+  if (pRoutePointList->size() == 1) {
+    RoutePoint *rp = pRoutePointList->front();
+    lat = rp->m_lat;
+    lon = rp->m_lon;
+
+    // Cache the result
+    m_cachedTimestamp = timestamp;
+    m_cachedLat = lat;
+    m_cachedLon = lon;
+    m_cacheValid = true;
+
+    return true;
+  }
+
+  // Find the appropriate segment
+  for (size_t i = 0; i < pRoutePointList->size() - 1; i++) {
+    RoutePoint *prevPoint = (*pRoutePointList)[i];
+    RoutePoint *currPoint = (*pRoutePointList)[i + 1];
+
+    // Check if timestamp falls within this segment
+    if (timestamp >= prevPoint->GetETD() && timestamp <= currPoint->GetETA()) {
+      // Calculate time elapsed in this segment
+      wxTimeSpan segmentDuration = currPoint->GetETA() - prevPoint->GetETD();
+      wxTimeSpan elapsedTime = timestamp - prevPoint->GetETD();
+
+      // Avoid division by zero
+      if (segmentDuration.GetSeconds() == 0) {
+        lat = currPoint->m_lat;
+        lon = currPoint->m_lon;
+
+        // Cache the result
+        m_cachedTimestamp = timestamp;
+        m_cachedLat = lat;
+        m_cachedLon = lon;
+        m_cacheValid = true;
+
+        return true;
+      }
+
+      // Calculate interpolation factor (0.0 = at prevPoint, 1.0 = at currPoint)
+      double factor = (double)elapsedTime.GetSeconds().ToDouble() /
+                      (double)segmentDuration.GetSeconds().ToDouble();
+
+      // Clamp factor to [0, 1]
+      factor = wxMax(0.0, wxMin(1.0, factor));
+
+      // Use rhumb line interpolation to match OpenCPN's navigation behavior
+      // Calculate bearing and distance from previous to current waypoint.
+      double bearing, totalDistance;
+      DistanceBearingMercator(currPoint->m_lat, currPoint->m_lon,
+                              prevPoint->m_lat, prevPoint->m_lon, &bearing,
+                              &totalDistance);
+
+      // Calculate distance along rhumb line based on time elapsed.
+      double distanceAlongSegment = factor * totalDistance;
+
+      // Calculate position along the rhumb line bearing.
+      PositionBearingDistanceLoxodrome(prevPoint->m_lat, prevPoint->m_lon,
+                                       bearing, distanceAlongSegment, &lat,
+                                       &lon);
+
+      // Cache the result
+      m_cachedTimestamp = timestamp;
+      m_cachedLat = lat;
+      m_cachedLon = lon;
+      m_cacheValid = true;
+
+      return true;
+    }
+
+    // Check if we're past the route end time
+    if (timestamp > currPoint->GetETA() && i == pRoutePointList->size() - 2) {
+      // Return the last waypoint position
+      lat = currPoint->m_lat;
+      lon = currPoint->m_lon;
+
+      // Cache the result
+      m_cachedTimestamp = timestamp;
+      m_cachedLat = lat;
+      m_cachedLon = lon;
+      m_cacheValid = true;
+
+      return true;
+    }
+  }
+
+  // If we get here, timestamp might be after the route ends
+  RoutePoint *lastPoint = pRoutePointList->back();
+  lat = lastPoint->m_lat;
+  lon = lastPoint->m_lon;
+
+  // Cache the result
+  m_cachedTimestamp = timestamp;
+  m_cachedLat = lat;
+  m_cachedLon = lon;
+  m_cacheValid = true;
+
+  return true;
+}
+wxDateTime Route::GetTimeAtPosition(double targetLat, double targetLon,
+                                    double *actualLat,
+                                    double *actualLon) const {
+  // Validate route has timing information
+  if (!m_PlannedDeparture.IsValid() || pRoutePointList->empty()) {
+    return wxInvalidDateTime;
+  }
+
+  // Single waypoint case
+  if (pRoutePointList->size() == 1) {
+    RoutePoint *rp = pRoutePointList->front();
+    if (actualLat) *actualLat = rp->m_lat;
+    if (actualLon) *actualLon = rp->m_lon;
+    return m_PlannedDeparture;
+  }
+
+  // Find the closest point on the route to the target position
+  double minDistance = 1e10;
+  RoutePoint *closestPrevPoint = nullptr;
+  RoutePoint *closestNextPoint = nullptr;
+  double closestPointLat = 0.0;
+  double closestPointLon = 0.0;
+
+  for (size_t i = 0; i < pRoutePointList->size() - 1; i++) {
+    RoutePoint *prevPoint = (*pRoutePointList)[i];
+    RoutePoint *currPoint = (*pRoutePointList)[i + 1];
+
+    // Find the closest point on this segment to the target position
+    double segLat, segLon;
+    double distToSegment = DistanceToSegment(
+        targetLat, targetLon, prevPoint->m_lat, prevPoint->m_lon,
+        currPoint->m_lat, currPoint->m_lon, &segLat, &segLon);
+
+    if (distToSegment < minDistance) {
+      minDistance = distToSegment;
+      closestPrevPoint = prevPoint;
+      closestNextPoint = currPoint;
+      closestPointLat = segLat;
+      closestPointLon = segLon;
+    }
+  }
+
+  // If no valid segment found, return invalid time
+  if (!closestPrevPoint || !closestNextPoint) {
+    return wxInvalidDateTime;
+  }
+
+  // Check if route points have valid timing information
+  wxDateTime prevETD = closestPrevPoint->GetETD();
+  wxDateTime nextETA = closestNextPoint->GetETA();
+
+  if (!prevETD.IsValid() || !nextETA.IsValid()) {
+    // If timing information is not available, we can't calculate the time
+    // The route should have UpdateSegmentDistances() called to set up timing
+    return wxInvalidDateTime;
+  }
+
+  // Calculate the ratio of how far along the segment the closest point is
+  double segmentBearing, segmentDistance;
+  DistanceBearingMercator(closestNextPoint->m_lat, closestNextPoint->m_lon,
+                          closestPrevPoint->m_lat, closestPrevPoint->m_lon,
+                          &segmentBearing, &segmentDistance);
+
+  double distanceFromStart, unused;
+  DistanceBearingMercator(closestPointLat, closestPointLon,
+                          closestPrevPoint->m_lat, closestPrevPoint->m_lon,
+                          &unused, &distanceFromStart);
+
+  // Calculate interpolation factor (0.0 = at prevPoint, 1.0 = at currPoint)
+  double factor = 0.0;
+  if (segmentDistance > 0.0) {
+    factor = distanceFromStart / segmentDistance;
+    factor = wxMax(0.0, wxMin(1.0, factor));
+  }
+
+  // Set the actual coordinates of the closest point on the route
+  if (actualLat) *actualLat = closestPointLat;
+  if (actualLon) *actualLon = closestPointLon;
+
+  // Interpolate the time
+  wxTimeSpan segmentDuration = nextETA - prevETD;
+  wxTimeSpan elapsedTime = wxTimeSpan::Seconds(
+      (long)(factor * segmentDuration.GetSeconds().ToDouble()));
+
+  wxDateTime result = prevETD + elapsedTime;
+  return result;
+}
+
+// Helper function to calculate distance from a point to a line segment
+double Route::DistanceToSegment(double pointLat, double pointLon,
+                                double segStartLat, double segStartLon,
+                                double segEndLat, double segEndLon,
+                                double *closestLat, double *closestLon) const {
+  // Calculate the deltas for the segment
+  double dLat = segEndLat - segStartLat;
+  double dLon = segEndLon - segStartLon;
+
+  if (dLat == 0.0 && dLon == 0.0) {
+    // Segment is actually a point
+    *closestLat = segStartLat;
+    *closestLon = segStartLon;
+    double dist;
+    DistanceBearingMercator(pointLat, pointLon, segStartLat, segStartLon,
+                            nullptr, &dist);
+    return dist;
+  }
+
+  // Calculate parameter t for the closest point on the line
+  double t =
+      ((pointLat - segStartLat) * dLat + (pointLon - segStartLon) * dLon) /
+      (dLat * dLat + dLon * dLon);
+
+  // Clamp t to the segment [0,1]
+  t = wxMax(0.0, wxMin(1.0, t));
+
+  // Calculate the closest point on the segment
+  *closestLat = segStartLat + t * dLat;
+  *closestLon = segStartLon + t * dLon;
+
+  // Return distance using Mercator calculation
+  double distance;
+  DistanceBearingMercator(pointLat, pointLon, *closestLat, *closestLon, nullptr,
+                          &distance);
+  return distance;
+}
+
+void Route::InvalidatePositionCache() const { m_cacheValid = false; }
