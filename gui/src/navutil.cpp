@@ -615,6 +615,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("WindSpeedFormat",
        &g_iWindSpeedFormat);  // 0 = "knots"), 1 = "m/s", 2 = "Mph", 3 = "km/h"
   Read("TemperatureFormat", &g_iTempFormat);  // 0 = C, 1 = F, 2 = K
+  Read("HeightFormat", &g_iHeightFormat);     // 0 = M, 1 = FT
 
   // LIVE ETA OPTION
   Read("LiveETA", &g_bShowLiveETA);
@@ -1991,6 +1992,7 @@ void MyConfig::UpdateSettings() {
     Write("WindSpeedFormat", g_iWindSpeedFormat);
     Write("ShowDepthUnits", g_bShowDepthUnits);
     Write("TemperatureFormat", g_iTempFormat);
+    Write("HeightFormat", g_iHeightFormat);
   }
   Write("GPSIdent", g_GPS_Ident);
   Write("ActiveRoute", g_active_route);
@@ -2799,7 +2801,7 @@ void SwitchInlandEcdisMode(bool Switch) {
   if (Switch) {
     wxLogMessage("Switch InlandEcdis mode On");
     LoadS57();
-    // Overule some sewttings to comply with InlandEcdis
+    // Overrule some settings to comply with InlandEcdis
     // g_toolbarConfig = ".....XXXX.X...XX.XXXXXXXXXXXX";
     g_iDistanceFormat = 2;  // 0 = "Nautical miles"), 1 = "Statute miles", 2 =
                             // "Kilometers", 3 = "Meters"
@@ -2816,6 +2818,7 @@ void SwitchInlandEcdisMode(bool Switch) {
       pConfig->Read("DistanceFormat", &g_iDistanceFormat);
       pConfig->Read("SpeedFormat", &g_iSpeedFormat);
       pConfig->Read("ShowDepthUnits", &g_bShowDepthUnits, 1);
+      pConfig->Read("HeightFormat", &g_iHeightFormat);
       int read_int;
       pConfig->Read("nDisplayCategory", &read_int, (enum _DisCat)STANDARD);
       if (ps52plib) ps52plib->SetDisplayCategory((enum _DisCat)read_int);
@@ -2941,31 +2944,6 @@ wxDateTime fromUsrDateTime(const wxDateTime ts, const int format,
   return dt;
 }
 
-/**************************************************************************/
-/*          Converts the distance from the units selected by user to NMi  */
-/**************************************************************************/
-double fromUsrDistance(double usr_distance, int unit) {
-  double ret = NAN;
-  if (unit == -1) unit = g_iDistanceFormat;
-  switch (unit) {
-    case DISTANCE_NMI:  // Nautical miles
-      ret = usr_distance;
-      break;
-    case DISTANCE_MI:  // Statute miles
-      ret = usr_distance / 1.15078;
-      break;
-    case DISTANCE_KM:
-      ret = usr_distance / 1.852;
-      break;
-    case DISTANCE_M:
-      ret = usr_distance / 1852;
-      break;
-    case DISTANCE_FT:
-      ret = usr_distance / 6076.12;
-      break;
-  }
-  return ret;
-}
 /**************************************************************************/
 /*          Converts the speed from the units selected by user to knots   */
 /**************************************************************************/

@@ -66,7 +66,6 @@ extern MyConfig *pConfig; /**< Global instance */
 class canvasConfig;  // circular
 
 bool LogMessageOnce(const wxString &msg);
-double fromUsrDistance(double usr_distance, int unit = -1);
 double fromUsrSpeed(double usr_speed, int unit = -1);
 double fromUsrWindSpeed(double usr_wspeed, int unit = -1);
 double fromUsrTemp(double usr_temp, int unit = -1);

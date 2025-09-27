@@ -315,7 +315,8 @@ s52plib::s52plib(const wxString &PLib, bool b_forceLegacy) {
   m_nSymbolStyle = PAPER_CHART;
   m_nBoundaryStyle = PLAIN_BOUNDARIES;
   m_nDisplayCategory = OTHER;
-  m_nDepthUnitDisplay = 1;  // metres
+  m_nDepthUnitDisplay = 1;  // meters
+  m_nHeightUnitDisplay = 0; // meters
 
   UpdateMarinerParams();
 
@@ -1519,21 +1520,19 @@ char *s52plib::_getParamVal(ObjRazRules *rzRules, char *str, char *buf, int bsz)
       return NULL;  // abort
     }
   } else {
-    //    Special case for conversion of some vertical (height) attributes to
-    //    feet
+    // Special case for conversion of vertical (height) attributes.
+    // Inputs are meters; convert to user's height unit (meters/feet) as selected in s52plib.
     if ((!strncmp(buf, "VERCLR", 6)) || (!strncmp(buf, "VERCCL", 6)) ||
-        (!strncmp(buf, "VERCOP", 6)) || (!strncmp(buf, "ELEVAT", 6)) ) {
-      switch (m_nDepthUnitDisplay) {
-        case 0:  // feet
-        case 2:  // fathoms
-          double ft_val;
-          value.ToDouble(&ft_val);
-          ft_val = ft_val * 3 * 39.37 / 36;  // feet
-          value.Printf(_T("%4.1f"), ft_val);
-          break;
-        default:
-          break;
-      }
+        (!strncmp(buf, "VERCOP", 6)) || (!strncmp(buf, "ELEVAT", 6)) ||
+        (!strncmp(buf, "HEIGHT", 6)) ) {
+        if(m_nHeightUnitDisplay == 1) { // feet
+            double h_val_m;
+            if(value.ToDouble(&h_val_m)){
+                double ft_val = h_val_m * 3.280839895013123; // meters to feet
+                value.Printf(_T("%4.1f"), ft_val);
+            }
+        }
+        // else meters: leave as-is
     }
 
     // special case when ENC returns an index for particular attribute types
@@ -10348,6 +10347,16 @@ void s52plib::PLIB_LoadS57GlobalConfig(wxFileConfig *pconfig)
     read_int = wxMax(read_int, 0);                      // qualify value
     read_int = wxMin(read_int, 2);
     m_nDepthUnitDisplay = read_int;
+
+  // Load height unit display (meters/feet) from core HeightFormat if available
+  // Default to meters (0). Values correspond to HEIGHT_* enum: 0=M, 1=FT
+  if(pconfig->Read( _T ( "HeightFormat" ), &read_int, 0 )){
+    read_int = wxMax(read_int, 0);
+    read_int = wxMin(read_int, 1);
+    m_nHeightUnitDisplay = read_int;
+  } else {
+    m_nHeightUnitDisplay = 0;
+  }
 
 }
 
