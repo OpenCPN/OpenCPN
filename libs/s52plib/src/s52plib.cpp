@@ -2785,6 +2785,8 @@ bool s52plib::RenderHPGL(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
 int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                          float rot_angle, double uScale) {
+  int rv = 0;
+#ifdef ocpnUSE_GL
   float fsf = 100 / canvas_pix_per_mm;
 
   float xscale = 1.0;
@@ -2920,7 +2922,9 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   // Save the texture details in the object's rule
   prule->parm2 = width_pot;
   prule->parm3 = height_pot;
-  return texobj;
+  rv = texobj;
+#endif
+  return rv;
 }
 
 #if 0
@@ -3589,7 +3593,7 @@ int s52plib::RenderSY(ObjRazRules *rzRules, Rules *rules) {
 
 bool s52plib::RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
                               float rot_angle, double uScale) {
-
+#ifdef ocpnUSE_GL
   // TODO
   //  temporarily exclude some symbols
   //  Only handle ATONs for now
@@ -3701,6 +3705,7 @@ bool s52plib::RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPo
     // Clean up the GL state
     pCtexture_2D_shader_program[0]->UnBind();
   }
+#endif
   return true;
 }
 
