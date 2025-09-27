@@ -45,6 +45,7 @@
 #include "ocpn_platform.h"
 #include "pluginmanager.h"
 #include "styles.h"
+#include "tooltip.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
@@ -798,7 +799,85 @@ bool MUIBar::MouseEvent(wxMouseEvent& event) {
   //    Check the regions
   wxRect r = wxRect(m_screenPos, m_size);
   if (r.Contains(x, y)) {
-    // Check buttons
+    // Check for tooltip display on hover/move events
+    if (event.Moving() || event.Entering()) {
+      bool tooltipShown = false;
+
+      // Check follow button tooltip
+      if (m_followButton) {
+        wxRect rfollow(m_followButton->m_position.x,
+                       m_followButton->m_position.y, m_followButton->m_size.x,
+                       m_followButton->m_size.y);
+        rfollow.Offset(m_screenPos);
+        if (rfollow.Contains(x, y)) {
+          wxPoint screenPos = wxGetMousePosition();
+          screenPos.x += 15;
+          screenPos.y += 15;
+          TooltipManager::Get().ShowTooltipAtPosition(
+              m_parentCanvas, _("Follow Ship"), screenPos);
+          tooltipShown = true;
+        }
+      }
+
+      // Check menu button tooltip
+      if (!tooltipShown) {
+        wxRect rmenu(m_menuButton->m_position.x, m_menuButton->m_position.y,
+                     m_menuButton->m_size.x, m_menuButton->m_size.y);
+        rmenu.Offset(m_screenPos);
+        if (rmenu.Contains(x, y)) {
+          wxPoint screenPos = wxGetMousePosition();
+          screenPos.x += 15;
+          screenPos.y += 15;
+          TooltipManager::Get().ShowTooltipAtPosition(
+              m_parentCanvas, _("Options Menu"), screenPos);
+          tooltipShown = true;
+        }
+      }
+
+      // Check zoom buttons tooltips if enabled
+      if (!tooltipShown && g_bShowMuiZoomButtons) {
+        wxRect rzin(m_zinButton->m_position.x, m_zinButton->m_position.y,
+                    m_zinButton->m_size.x, m_zinButton->m_size.y);
+        rzin.Offset(m_screenPos);
+        if (rzin.Contains(x, y)) {
+          wxPoint screenPos = wxGetMousePosition();
+          screenPos.x += 15;
+          screenPos.y += 15;
+          TooltipManager::Get().ShowTooltipAtPosition(m_parentCanvas,
+                                                      _("Zoom In"), screenPos);
+          tooltipShown = true;
+        } else {
+          wxRect rzout(m_zoutButton->m_position.x, m_zoutButton->m_position.y,
+                       m_zoutButton->m_size.x, m_zoutButton->m_size.y);
+          rzout.Offset(m_screenPos);
+          if (rzout.Contains(x, y)) {
+            wxPoint screenPos = wxGetMousePosition();
+            screenPos.x += 15;
+            screenPos.y += 15;
+            TooltipManager::Get().ShowTooltipAtPosition(
+                m_parentCanvas, _("Zoom Out"), screenPos);
+            tooltipShown = true;
+          }
+        }
+      }
+
+      // Check scale button tooltip
+      if (!tooltipShown && m_scaleButton) {
+        wxRect rscale(m_scaleButton->m_position.x, m_scaleButton->m_position.y,
+                      m_scaleButton->m_size.x, m_scaleButton->m_size.y);
+        rscale.Offset(m_screenPos);
+        if (rscale.Contains(x, y)) {
+          wxPoint screenPos = wxGetMousePosition();
+          screenPos.x += 15;
+          screenPos.y += 15;
+          TooltipManager::Get().ShowTooltipAtPosition(
+              m_parentCanvas, _("Chart Scale"), screenPos);
+          tooltipShown = true;
+        }
+      }
+    }
+
+    // Check buttons for clicks
     if (event.LeftDown()) {
       if (g_bShowMuiZoomButtons) {
         wxRect rzin(m_zinButton->m_position.x, m_zinButton->m_position.y,
@@ -851,6 +930,11 @@ bool MUIBar::MouseEvent(wxMouseEvent& event) {
       }
     }
     return true;
+  } else {
+    // Mouse is outside MUIBar - hide any tooltips
+    if (event.Moving() || event.Leaving()) {
+      TooltipManager::Get().HideTooltip();
+    }
   }
   return false;
 }
