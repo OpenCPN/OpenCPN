@@ -370,6 +370,17 @@ public:
   int m_VersionMinor;
 
   int m_nDepthUnitDisplay;
+  bool m_isSoundingFontSet;
+  int m_sounding_char_width;
+  int m_sounding_char_height;
+  int m_sounding_char_descent;
+#ifdef ocpnUSE_GL
+  GLint m_sounding_shader_uni_color;
+  GLint m_sounding_shader_uni_uTex;
+  GLint m_sounding_shader_attr_position;
+  GLint m_sounding_shader_attr_aUV;
+  GLint m_sounding_shader_uni_transform;
+#endif
 
   //    Library data
   wxArrayPtrVoid *pAlloc;
@@ -480,6 +491,11 @@ private:
                   float rot_angle = 0., double uScale = 1.0);
   bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                           float rot_angle = 0.);
+  bool RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
+                  float rot_angle, double uScale);
+  int BuildHPGLTexture(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
+                                float rot_angle, double uScale);
+
   void SetupSoundingFont();
   bool RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                             wxColor symColor,
@@ -615,6 +631,7 @@ private:
   wxString m_renderer_string;
 
   LLBBox reducedBBox;
+  std::unordered_map<std::string, int>vector_symbol_cache;
 
 };
 

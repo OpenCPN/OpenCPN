@@ -272,6 +272,13 @@ Quilt::~Quilt() {
   delete m_pBM;
 }
 
+void Quilt::SetReferenceChart(int dbIndex) {
+  m_refchart_dbIndex = dbIndex;
+  if (dbIndex >= 0) {
+    m_zout_family = -1;
+  }
+}
+
 bool Quilt::IsVPBlittable(ViewPort &VPoint, int dx, int dy,
                           bool b_allow_vector) {
   if (!m_vp_rendered.IsValid()) return false;
@@ -1710,7 +1717,6 @@ void Quilt::UnlockQuilt() {
 
 bool Quilt::Compose(const ViewPort &vp_in) {
   if (!ChartData) return false;
-
   if (ChartData
           ->IsBusy())  // This prevent recursion on chart loads that Yeild()
     return false;
@@ -2587,7 +2593,6 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   }
 
   m_xa_hash = xa_hash;
-
   m_bbusy = false;
   return true;
 }

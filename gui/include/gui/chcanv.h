@@ -257,8 +257,8 @@ public:
   bool SetVPScale(double sc, bool b_refresh = true);
   bool SetVPProjection(int projection);
   /**
-   * Set the viewport center point.
    * Centers the view on a specific lat/lon position.
+   *
    * @param lat Latitude in degrees
    * @param lon Longitude in degrees
    * @return true if view was changed successfully
@@ -520,6 +520,9 @@ public:
   bool PanCanvas(double dx, double dy);
   void StopAutoPan(void);
   bool IsOwnshipOnScreen();
+  void DisableQuiltAdjustOnZoom(bool disable) {
+    m_disable_adjust_on_zoom = disable;
+  }
 
   /**
    * Perform a smooth zoom operation on the chart canvas by the specified
@@ -865,6 +868,8 @@ public:
    * string and a wxJSONValue shared_ptr.
    */
   EventVar json_msg;
+
+  bool m_inPinch;
 
 private:
   /**
@@ -1234,6 +1239,11 @@ private:
 
   ocpnCompass *m_Compass;
   bool m_bShowGPS;
+  /**
+   * Track whether a previous wxMouseEvent was in the m_Compass area.
+   * This is used to determine whether to display tooltips for the compass.
+   */
+  bool m_mouseWasInCompass;
 
   wxRect m_mainlast_tb_rect;
   int m_restore_dbindex;
@@ -1323,6 +1333,7 @@ private:
   bool m_animationActive;
   void OnJumpEaseTimer(wxTimerEvent &event);
   bool StartSmoothJump(double lat, double lon, double scale_ppm);
+  bool m_disable_adjust_on_zoom;
 
   NotificationButton *m_notification_button;
   NotificationsList *m_NotificationsList;

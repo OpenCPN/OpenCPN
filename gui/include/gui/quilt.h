@@ -153,12 +153,7 @@ public:
   }
   void ClearHiliteIndexArray() { m_HiLiteIndexArray.clear(); }
 
-  void SetReferenceChart(int dbIndex) {
-    m_refchart_dbIndex = dbIndex;
-    if (dbIndex >= 0) {
-      m_zout_family = -1;
-    }
-  }
+  void SetReferenceChart(int dbIndex);
   int GetRefChartdbIndex(void) { return m_refchart_dbIndex; }
 
   ChartBase *GetRefChart();
