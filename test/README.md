@@ -15,6 +15,19 @@ successful build, tests are run using
 
 On non-windows platforms, `make run-tests `can be used instead.
 
+Test Files
+----------
+
+- `datetime_tests.cpp` - Tests for date/time formatting functionality
+- `route_tests.cpp` - Tests for navigation routes
+- `tests.cpp` - Main test suite with various unit tests
+- `filter_tests.cpp` - Tests for filter functionality
+- `buffer_tests.cpp` - Tests for buffer operations
+- `n2k_tests.cpp` - NMEA 2000 tests (Linux only)
+- `rest-tests.cpp` - REST API tests (if curl available)
+- `dbus_tests.cpp` - D-Bus tests (Linux only)
+- `ipc-srv-tests.cpp` - IPC server tests (Unix only)
+
 Running tests on Windows
 -------------------------
 

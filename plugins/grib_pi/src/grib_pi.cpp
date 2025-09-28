@@ -70,7 +70,7 @@ bool g_bpause;
 //
 //---------------------------------------------------------------------------------------------------------
 
-grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
+grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_121(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 
@@ -172,9 +172,6 @@ int grib_pi::Init(void) {
 }
 
 bool grib_pi::DeInit(void) {
-  // Reset timeline to system time before shutting down
-  SendTimelineMessage(wxInvalidDateTime);
-
   if (m_pGribCtrlBar) {
     m_pGribCtrlBar->Close();
     delete m_pGribCtrlBar;
@@ -330,14 +327,12 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
         // with current index
         m_pGribCtrlBar->CreateActiveFileFromNames(
             m_pGribCtrlBar->m_bGRIBActiveFile->GetFileNames());
-        m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
       case 2:
         // only rebuild  data list with current index and new timezone
         // This no longer applicable because the timezone is set in the
         // OpenCPN core global settings (Options -> Display -> General)
-        m_pGribCtrlBar->PopulateComboDataList();
         m_pGribCtrlBar->TimelineChanged();
         break;
       case 1:
@@ -504,9 +499,6 @@ void grib_pi::OnToolbarToolCallback(int id) {
         if (rsa->GetCount() > 1) {
           SetCanvasContextMenuItemViz(m_MenuItem, true);
         }
-        if (rsa->GetCount() >= 1) {  // XXX Should be only on Show
-          SendTimelineMessage(m_pGribCtrlBar->TimelineTime());
-        }
       }
     }
     // Toggle is handled by the CtrlBar but we must keep plugin manager b_toggle
@@ -605,12 +597,19 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
 }
 
 bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
-                                         PlugIn_ViewPort *vp, int canvasIndex) {
+                                         PlugIn_ViewPort *vp, int canvasIndex,
+                                         int priority) {
+  // Only render GRIB data at the legacy overlay priority to avoid drawing over
+  // UI elements
+  if (priority != OVERLAY_LEGACY) return false;
   return DoRenderGLOverlay(pcontext, vp, canvasIndex);
 }
 
 bool grib_pi::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
-                                       int canvasIndex) {
+                                       int canvasIndex, int priority) {
+  // Only render GRIB data at the legacy overlay priority to avoid drawing over
+  // UI elements
+  if (priority != OVERLAY_LEGACY) return false;
   return DoRenderOverlay(dc, vp, canvasIndex);
 }
 
@@ -718,10 +717,6 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
     wxString out;
     w.Write(v, out);
     SendPluginMessage(wxString(_T("GRIB_VERSION")), out);
-  } else if (message_id == _T("GRIB_TIMELINE_REQUEST")) {
-    // local time
-    SendTimelineMessage(m_pGribCtrlBar ? m_pGribCtrlBar->TimelineTime()
-                                       : wxDateTime::Now());
   } else if (message_id == _T("GRIB_TIMELINE_RECORD_REQUEST")) {
     wxJSONReader r;
     wxJSONValue v;
@@ -837,31 +832,6 @@ void grib_pi::SetColorScheme(PI_ColorScheme cs) {
   }
 }
 
-void grib_pi::SendTimelineMessage(wxDateTime time) {
-  if (!m_pGribCtrlBar) return;
-
-  wxJSONValue v;
-  if (time.IsValid()) {
-    v[_T("Day")] = time.GetDay();
-    v[_T("Month")] = time.GetMonth();
-    v[_T("Year")] = time.GetYear();
-    v[_T("Hour")] = time.GetHour();
-    v[_T("Minute")] = time.GetMinute();
-    v[_T("Second")] = time.GetSecond();
-  } else {
-    v[_T("Day")] = -1;
-    v[_T("Month")] = -1;
-    v[_T("Year")] = -1;
-    v[_T("Hour")] = -1;
-    v[_T("Minute")] = -1;
-    v[_T("Second")] = -1;
-  }
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
-}
-
 void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   m_boat_cog = pfix.Cog;
   m_boat_sog = pfix.Sog;
@@ -872,6 +842,45 @@ void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   } else {
     m_boat_time = wxDateTime::Now().GetTicks();
   }
+}
+
+void grib_pi::OnTimelineSelectedTimeChanged(const wxDateTime &selectedTime,
+                                            const wxDateTime &startTime,
+                                            const wxDateTime &endTime) {
+  // Handle global timeline time change from OpenCPN
+  if (!m_pGribCtrlBar) return;
+
+  if (selectedTime.IsValid()) {
+    // Update the GRIB display for the new timeline time
+    wxDateTime time = selectedTime;
+    if (m_pGribCtrlBar->m_bGRIBActiveFile &&
+        m_pGribCtrlBar->m_bGRIBActiveFile->IsOK()) {
+      GribTimelineRecordSet *timelineSet =
+          m_pGribCtrlBar->GetTimeLineRecordSet(time);
+      m_pGribCtrlBar->SetGribTimelineRecordSet(timelineSet);
+      m_pGribCtrlBar->UpdateTrackingControl();
+      RequestRefresh(m_parent_window);
+    }
+  } else {
+    // Invalid time - clear the timeline set
+    m_pGribCtrlBar->SetGribTimelineRecordSet(nullptr);
+    if (m_parent_window) {
+      RequestRefresh(m_parent_window);
+    }
+  }
+}
+
+bool grib_pi::IsTimeInGribRange(const wxDateTime &time) {
+  if (!m_pGribCtrlBar || !m_pGribCtrlBar->m_bGRIBActiveFile) return false;
+
+  ArrayOfGribRecordSets *rsa =
+      m_pGribCtrlBar->m_bGRIBActiveFile->GetRecordSetArrayPtr();
+  if (rsa->GetCount() == 0) return false;
+
+  wxDateTime start = wxDateTime(rsa->Item(0).m_Reference_Time);
+  wxDateTime end = wxDateTime(rsa->Item(rsa->GetCount() - 1).m_Reference_Time);
+
+  return (time >= start && time <= end);
 }
 
 //----------------------------------------------------------------------------------------------------------

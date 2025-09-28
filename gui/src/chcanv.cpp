@@ -57,6 +57,7 @@
 #include "model/select.h"
 #include "model/select_item.h"
 #include "model/track.h"
+#include "model/datetime.h"
 
 #include "ais.h"
 #include "ais_target_alert_dlg.h"
@@ -97,6 +98,7 @@
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
 #include "RoutePropDlgImpl.h"
+#include "route_timeline_manager.h"
 #include "s52plib.h"
 #include "s52utils.h"
 #include "S57QueryDialog.h"
@@ -109,6 +111,7 @@
 #include "thumbwin.h"
 #include "tide_time.h"
 #include "timers.h"
+#include "timeline.h"
 #include "toolbar.h"
 #include "track_gui.h"
 #include "TrackPropDlg.h"
@@ -170,6 +173,9 @@ extern wxColor GetDimColor(wxColor c);   // library dependence
 
 static bool g_bSmoothRecenter = true;
 static bool bDrawCurrentValues;
+// Timeline access function
+extern Timeline *GetCanvasTimeline();
+
 /**
  * The current mouse X position in physical pixels relative to the active
  * canvas.
@@ -649,6 +655,13 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
     Bind(wxEVT_MOUSEWHEEL, &ChartCanvas::OnWheel, this);
     Bind(wxEVT_MOTION, &ChartCanvas::OnMotion, this);
   }
+#else
+  // When gesture events are not available, we still need motion events for
+  // timeline auto-show
+  Bind(wxEVT_MOTION, [this](wxMouseEvent &event) {
+    // Basic motion handling: check timeline proximity and forward to MouseEvent
+    MouseEvent(event);
+  });
 #endif
 
   // Listen for notification events
@@ -3841,110 +3854,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
         }
 
         if (!m_pRouteRolloverWin->IsActive()) {
-          wxString s;
-          RoutePoint *segShow_point_a =
-              (RoutePoint *)m_pRolloverRouteSeg->m_pData1;
-          RoutePoint *segShow_point_b =
-              (RoutePoint *)m_pRolloverRouteSeg->m_pData2;
-
-          double brg, dist;
-          DistanceBearingMercator(
-              segShow_point_b->m_lat, segShow_point_b->m_lon,
-              segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist);
-
-          if (!pr->m_bIsInLayer)
-            s.Append(_("Route") + ": ");
-          else
-            s.Append(_("Layer Route: "));
-
-          if (pr->m_RouteNameString.IsEmpty())
-            s.Append(_("(unnamed)"));
-          else
-            s.Append(pr->m_RouteNameString);
-
-          s << "\n"
-            << _("Total Length: ") << FormatDistanceAdaptive(pr->m_route_length)
-            << "\n"
-            << _("Leg: from ") << segShow_point_a->GetName() << _(" to ")
-            << segShow_point_b->GetName() << "\n";
-
-          if (g_bShowTrue)
-            s << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8),
-                                  (int)floor(brg + 0.5), 0x00B0);
-          if (g_bShowMag) {
-            double latAverage =
-                (segShow_point_b->m_lat + segShow_point_a->m_lat) / 2;
-            double lonAverage =
-                (segShow_point_b->m_lon + segShow_point_a->m_lon) / 2;
-            double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
-
-            s << wxString::Format(wxString("%03d%c(M) ", wxConvUTF8),
-                                  (int)floor(varBrg + 0.5), 0x00B0);
-          }
-
-          s << FormatDistanceAdaptive(dist);
-
-          // Compute and display cumulative distance from route start point to
-          // current leg end point and RNG,TTG,ETA from ship to current leg end
-          // point for active route
-          double shiptoEndLeg = 0.;
-          bool validActive = false;
-          if (pr->IsActive() && (*pr->pRoutePointList->begin())->m_bIsActive)
-            validActive = true;
-
-          if (segShow_point_a != *pr->pRoutePointList->begin()) {
-            auto node = pr->pRoutePointList->begin();
-            ++node;
-            RoutePoint *prp;
-            float dist_to_endleg = 0;
-            wxString t;
-
-            while (node != pr->pRoutePointList->end()) {
-              prp = *node;
-              if (validActive)
-                shiptoEndLeg += prp->m_seg_len;
-              else if (prp->m_bIsActive)
-                validActive = true;
-              dist_to_endleg += prp->m_seg_len;
-              if (prp->IsSame(segShow_point_a)) break;
-              ++node;
-            }
-            s << " (+" << FormatDistanceAdaptive(dist_to_endleg) << ")";
-          }
-          // write from ship to end selected leg point data if the route is
-          // active
-          if (validActive) {
-            s << "\n"
-              << _("From Ship To") << " " << segShow_point_b->GetName() << "\n";
-            shiptoEndLeg +=
-                g_pRouteMan
-                    ->GetCurrentRngToActivePoint();  // add distance from ship
-                                                     // to active point
-            shiptoEndLeg +=
-                segShow_point_b
-                    ->m_seg_len;  // add the lenght of the selected leg
-            s << FormatDistanceAdaptive(shiptoEndLeg);
-            // ensure sog/cog are valid and vmg is positive to keep data
-            // coherent
-            double vmg = 0.;
-            if (!std::isnan(gCog) && !std::isnan(gSog))
-              vmg = gSog *
-                    cos((g_pRouteMan->GetCurrentBrgToActivePoint() - gCog) *
-                        PI / 180.);
-            if (vmg > 0.) {
-              float ttg_sec = (shiptoEndLeg / gSog) * 3600.;
-              wxTimeSpan ttg_span = wxTimeSpan::Seconds((long)ttg_sec);
-              s << " - "
-                << wxString(ttg_sec > SECONDS_PER_DAY
-                                ? ttg_span.Format(_("%Dd %H:%M"))
-                                : ttg_span.Format(_("%H:%M")));
-              wxDateTime dtnow, eta;
-              eta = dtnow.SetToCurrent().Add(ttg_span);
-              s << " - " << eta.Format("%b").Mid(0, 4)
-                << eta.Format(" %d %H:%M");
-            } else
-              s << "   ----   ----";
-          }
+          wxString s = GenerateRouteRolloverText(pr, m_pRolloverRouteSeg);
           m_pRouteRolloverWin->SetString(s);
 
           m_pRouteRolloverWin->SetBestPosition(mouse_x, mouse_y, 16, 16,
@@ -4131,7 +4041,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
   if (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive())
     showTrackRollover = false;
 
-  // TODO  We onlt show tracks on primary canvas....
+  // TODO  We only show tracks on primary canvas....
   // if(!IsPrimaryCanvas())
   //    showTrackRollover = false;
 
@@ -4659,6 +4569,33 @@ void ChartCanvas::DoZoomCanvas(double factor, bool can_zoom_to_cursor) {
   }
 
   m_bzooming = false;
+}
+
+void ChartCanvas::CheckTimelineProximity(wxMouseEvent &event) {
+  // Only work when timeline is enabled via menu
+  if (!g_bShowTimeline) return;
+
+  // Get the timeline instance
+  Timeline *timeline = GetCanvasTimeline();
+  if (!timeline) return;
+
+  // Only check proximity if auto-hide is enabled and timeline is currently
+  // hidden
+  if (!timeline->IsTimelineVisible()) {
+    // Get mouse position
+    wxPoint mousePos = event.GetPosition();
+    wxSize canvasSize = GetSize();
+
+    // Define proximity zone - small area at very bottom edge to avoid
+    // interfering with MUI bar, piano bar, or other bottom UI elements
+    int proximityHeight = 5;
+    int triggerZone = canvasSize.GetHeight() - proximityHeight;
+
+    // Check if mouse is in the bottom proximity zone
+    if (mousePos.y >= triggerZone) {
+      timeline->ShowTimeline(true);
+    }
+  }
 }
 
 void ChartCanvas::SetAbsoluteMinScale(double min_scale) {
@@ -7420,7 +7357,8 @@ std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
       seltype |= SELTYPE_MARKPOINT;
     }
 
-    // Highlight the selected point, to verify the proper right click selection
+    // Highlight the selected point, to verify the proper right click
+    // selection.
 #if 0
     if (m_pFoundRoutePoint) {
       m_pFoundRoutePoint->m_bPtIsSelected = true;
@@ -8042,7 +7980,8 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
       seltype |= SELTYPE_MARKPOINT;
     }
 
-    // Highlight the selected point, to verify the proper right click selection
+    // Highlight the selected point, to verify the proper right click
+    // selection.
     if (m_pFoundRoutePoint) {
       m_pFoundRoutePoint->m_bPtIsSelected = true;
       wxRect wp_rect;
@@ -10200,6 +10139,11 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
 }
 
 void ChartCanvas::MouseEvent(wxMouseEvent &event) {
+  // Check for timeline auto-show proximity on motion events
+  if (event.GetEventType() == wxEVT_MOTION) {
+    CheckTimelineProximity(event);
+  }
+
   if (MouseEventOverlayWindows(event)) return;
 
   if (MouseEventSetup(event)) return;  // handled, no further action required
@@ -12881,12 +12825,188 @@ void ChartCanvas::DrawAllRoutesInBBox(ocpnDC &dc, LLBBox &BltBBox) {
     }
 
     //        if(m_canvasIndex == 1)
-    RouteGui(*pRouteDraw).Draw(dc, this, BltBBox);
+    RouteGui routeGui(*pRouteDraw);
+    routeGui.Draw(dc, this, BltBBox);
+
+    // Draw timeline position if timeline rendering is enabled
+    if (RouteTimelineManager::GetInstance().IsTimelineRenderingEnabled()) {
+      wxDateTime selectedTime = GetTimelineSelectedTime();
+      if (selectedTime.IsValid()) {
+        routeGui.DrawPositionAtTime(dc, this, selectedTime);
+      }
+    }
   }
 
-  //  Draw any active or selected route (or track) last, so that is is always on
-  //  top
-  if (active_route) RouteGui(*active_route).Draw(dc, this, BltBBox);
+  // Draw any active or selected route (or track) last, so that is is always on
+  // top
+  if (active_route) {
+    RouteGui routeGui(*active_route);
+    routeGui.Draw(dc, this, BltBBox);
+
+    // Draw timeline position for active route if timeline rendering is enabled
+    if (RouteTimelineManager::GetInstance().IsTimelineRenderingEnabled()) {
+      wxDateTime selectedTime = GetTimelineSelectedTime();
+      if (selectedTime.IsValid()) {
+        routeGui.DrawPositionAtTime(dc, this, selectedTime);
+      }
+    }
+  }
+
+  // Draw cursor position crosshairs when route rollover is active
+  DrawRouteCursorCrosshairs(dc);
+}
+
+void ChartCanvas::DrawRouteCursorCrosshairs(ocpnDC &dc) {
+  // Draw cursor position crosshairs when route rollover is active
+  if (m_pRolloverRouteSeg && m_pRouteRolloverWin &&
+      m_pRouteRolloverWin->IsActive()) {
+    Route *rolloverRoute = (Route *)m_pRolloverRouteSeg->m_pData3;
+    if (rolloverRoute && rolloverRoute->m_PlannedDeparture.IsValid()) {
+      // Get the coordinates where the crosshairs should be drawn
+      // by snapping to the route.
+      double actualLat, actualLon;
+      wxDateTime arrivalTime = rolloverRoute->GetTimeAtPosition(
+          m_cursor_lat, m_cursor_lon, &actualLat, &actualLon);
+      if (arrivalTime.IsValid()) {
+        // Update rollover window text since cursor position has changed
+        // and arrival time may be different.
+        wxString s =
+            GenerateRouteRolloverText(rolloverRoute, m_pRolloverRouteSeg);
+        m_pRouteRolloverWin->SetString(s);
+        // Regenerate the bitmap to reflect the updated text
+        m_pRouteRolloverWin->SetBitmap(LEG_ROLLOVER);
+
+        // Draw cursor position marker (crosshairs only) at the exact position
+        // where "arrival at cursor" is calculated.
+        RouteGui routeGui(*rolloverRoute);
+        wxColour cursorColor(255, 255, 0, 180);  // Semi-transparent yellow
+        routeGui.DrawCursorPositionMarker(dc, this, actualLat, actualLon,
+                                          cursorColor);
+      }
+    }
+  }
+}
+
+wxString ChartCanvas::GenerateRouteRolloverText(Route *pr, SelectItem *pSel) {
+  wxString s;
+
+  RoutePoint *segShow_point_a = (RoutePoint *)pSel->m_pData1;
+  RoutePoint *segShow_point_b = (RoutePoint *)pSel->m_pData2;
+
+  double brg, dist;
+  DistanceBearingMercator(segShow_point_b->m_lat, segShow_point_b->m_lon,
+                          segShow_point_a->m_lat, segShow_point_a->m_lon, &brg,
+                          &dist);
+
+  if (!pr->m_bIsInLayer)
+    s.Append(_("Route") + ": ");
+  else
+    s.Append(_("Layer Route: "));
+
+  if (pr->m_RouteNameString.IsEmpty())
+    s.Append(_("(unnamed)"));
+  else
+    s.Append(pr->m_RouteNameString);
+
+  s << "\n"
+    << _("Total Length: ") << FormatDistanceAdaptive(pr->m_route_length) << "\n"
+    << _("Leg: from ") << segShow_point_a->GetName() << _(" to ")
+    << segShow_point_b->GetName() << "\n";
+
+  if (g_bShowTrue)
+    s << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8),
+                          (int)floor(brg + 0.5), 0x00B0);
+  if (g_bShowMag) {
+    double latAverage = (segShow_point_b->m_lat + segShow_point_a->m_lat) / 2;
+    double lonAverage = (segShow_point_b->m_lon + segShow_point_a->m_lon) / 2;
+    double varBrg = gFrame->GetMag(brg, latAverage, lonAverage);
+
+    s << wxString::Format(wxString("%03d%c(M) ", wxConvUTF8),
+                          (int)floor(varBrg + 0.5), 0x00B0);
+  }
+
+  s << FormatDistanceAdaptive(dist);
+
+  // Compute and display cumulative distance from route start point to
+  // current leg end point and RNG,TTG,ETA from ship to current leg end
+  // point for active route
+  double shiptoEndLeg = 0.;
+  bool validActive = false;
+  if (pr->IsActive() && !pr->pRoutePointList->empty() &&
+      (*pr->pRoutePointList)[0]->m_bIsActive)
+    validActive = true;
+
+  if (!pr->pRoutePointList->empty() &&
+      segShow_point_a != (*pr->pRoutePointList)[0]) {
+    float dist_to_endleg = 0;
+    wxString t;
+
+    // Start from the second route point (index 1)
+    for (size_t i = 1; i < pr->pRoutePointList->size(); ++i) {
+      RoutePoint *prp = (*pr->pRoutePointList)[i];
+      if (validActive)
+        shiptoEndLeg += prp->m_seg_len;
+      else if (prp->m_bIsActive)
+        validActive = true;
+      dist_to_endleg += prp->m_seg_len;
+      if (prp->IsSame(segShow_point_a)) break;
+    }
+    s << " (+" << FormatDistanceAdaptive(dist_to_endleg) << ")";
+  }
+  // write from ship to end selected leg point data if the route is
+  // active
+  if (validActive) {
+    s << "\n" << _("From Ship To") << " " << segShow_point_b->GetName() << "\n";
+    shiptoEndLeg +=
+        g_pRouteMan->GetCurrentRngToActivePoint();  // add distance from ship
+                                                    // to active point
+    shiptoEndLeg +=
+        segShow_point_b->m_seg_len;  // add the lenght of the selected leg
+    s << FormatDistanceAdaptive(shiptoEndLeg);
+    // ensure sog/cog are valid and vmg is positive to keep data
+    // coherent
+    double vmg = 0.;
+    if (!std::isnan(gCog) && !std::isnan(gSog))
+      vmg = gSog *
+            cos((g_pRouteMan->GetCurrentBrgToActivePoint() - gCog) * PI / 180.);
+    if (vmg > 0.) {
+      float ttg_sec = (shiptoEndLeg / gSog) * 3600.;
+      wxTimeSpan ttg_span = wxTimeSpan::Seconds((long)ttg_sec);
+      s << " - "
+        << wxString(ttg_sec > SECONDS_PER_DAY ? ttg_span.Format(_("%Dd %H:%M"))
+                                              : ttg_span.Format(_("%H:%M")));
+      wxDateTime dtnow, eta;
+      eta = dtnow.SetToCurrent().Add(ttg_span);
+      s << " - " << eta.Format("%b").Mid(0, 4) << eta.Format(" %d %H:%M");
+    } else
+      s << "   ----   ----";
+  }
+
+  // Add arrival time at cursor position if route has timing information
+  if (pr->m_PlannedDeparture.IsValid()) {
+    // Ensure route timing information is calculated
+    // This is needed for routes that may have been loaded but not had
+    // their timing updated
+    if (pr->GetnPoints() > 1) {
+      RoutePoint *firstPoint = pr->GetPoint(1);
+      RoutePoint *secondPoint = pr->GetPoint(2);
+      if (firstPoint && secondPoint &&
+          (!firstPoint->GetETD().IsValid() ||
+           !secondPoint->GetETA().IsValid())) {
+        // Route timing not calculated yet, update it
+        pr->UpdateSegmentDistances(pr->m_PlannedSpeed);
+      }
+    }
+
+    wxDateTime arrivalTime = pr->GetTimeAtPosition(m_cursor_lat, m_cursor_lon);
+    if (arrivalTime.IsValid()) {
+      // Format arrival time using OCPN global settings for consistency
+      DateTimeFormatOptions opts = DateTimeFormatOptions();
+      s << _("\nArrival at cursor: ")
+        << ocpn::toUsrDateTimeFormat(arrivalTime, opts);
+    }
+  }
+  return s;
 }
 
 void ChartCanvas::DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox) {

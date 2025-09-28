@@ -27,6 +27,7 @@
 #include <string>
 
 #include <wx/colour.h>
+#include <wx/datetime.h>
 #include <wx/gdicmn.h>
 #include <wx/pen.h>
 #include <wx/string.h>
@@ -638,6 +639,86 @@ int RouteGui::SendToGPS(const wxString &com_name, bool bsend_waypoints,
   OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
   return (result == 0);
+}
+
+bool RouteGui::DrawPositionAtTime(ocpnDC &dc, ChartCanvas *canvas,
+                                  const wxDateTime &timestamp,
+                                  const wxColour &positionColor) {
+  if (m_route.pRoutePointList->empty()) return false;
+
+  // Get boat position at the selected time
+  double lat, lon;
+  if (!m_route.GetPositionAtTime(timestamp, lat, lon)) {
+    return false;  // No valid position at this time
+  }
+
+  // Early bounds check using the route's bounding box intersection with
+  // viewport
+  ViewPort vp = canvas->GetVP();
+  if (!vp.GetBBox().Contains(lat, lon)) {
+    return false;  // Position is outside the visible area
+  }
+
+  // Draw the boat position marker
+  DrawBoatPositionMarker(dc, canvas, lat, lon, positionColor, true, true, 0);
+  return true;
+}
+
+void RouteGui::DrawBoatPositionMarker(ocpnDC &dc, ChartCanvas *canvas,
+                                      double lat, double lon,
+                                      const wxColour &color, bool showCircle,
+                                      bool showCrosshairs, int markerStyle) {
+  // Check if the position is within the viewport bounds
+  ViewPort vp = canvas->GetVP();
+  if (!vp.GetBBox().Contains(lat, lon)) {
+    return;  // Position is outside the visible area, skip drawing
+  }
+
+  // Convert position to screen coordinates
+  wxPoint point;
+  canvas->GetCanvasPointPix(lat, lon, &point);
+
+  // Get display scaling factor for pixel density awareness
+  double displayScale = canvas->GetDisplayScale();
+
+  // Scale dimensions based on display density
+  int baseRadius = 8;  // Base size in logical pixels
+  int scaledRadius = wxRound(baseRadius * displayScale);
+  scaledRadius = wxMax(6, wxMin(scaledRadius, 30));  // Ensure reasonable bounds
+
+  int baseCrosshairSize = 6;  // Base crosshair size
+  int scaledCrosshairSize = wxRound(baseCrosshairSize * displayScale);
+  scaledCrosshairSize = wxMax(4, wxMin(scaledCrosshairSize, 20));
+
+  int basePenWidth = 2;  // Base pen width
+  int scaledPenWidth = wxRound(basePenWidth * displayScale);
+  scaledPenWidth = wxMax(1, wxMin(scaledPenWidth, 4));
+
+  // Set up drawing attributes with scaled pen width
+  wxPen pen(color, scaledPenWidth, wxPENSTYLE_SOLID);
+  wxBrush brush(color, wxBRUSHSTYLE_TRANSPARENT);
+  dc.SetPen(pen);
+  dc.SetBrush(brush);
+
+  // Draw circle if requested (timeline markers)
+  if (showCircle && (markerStyle == 0 || markerStyle == 1)) {
+    dc.DrawCircle(point.x, point.y, scaledRadius);
+  }
+
+  // Draw crosshairs if requested (both timeline and cursor markers)
+  if (showCrosshairs && (markerStyle == 0 || markerStyle == 2)) {
+    dc.DrawLine(point.x - scaledCrosshairSize, point.y,
+                point.x + scaledCrosshairSize, point.y);
+    dc.DrawLine(point.x, point.y - scaledCrosshairSize, point.x,
+                point.y + scaledCrosshairSize);
+  }
+}
+
+void RouteGui::DrawCursorPositionMarker(ocpnDC &dc, ChartCanvas *canvas,
+                                        double lat, double lon,
+                                        const wxColour &color) {
+  // Draw only crosshairs for cursor position - no circle
+  DrawBoatPositionMarker(dc, canvas, lat, lon, color, false, true, 2);
 }
 
 // Delete the route.
