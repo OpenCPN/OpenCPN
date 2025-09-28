@@ -3855,6 +3855,190 @@ void s52plib::SetupSoundingFont() {
   m_isSoundingFontSet = true;
 }
 
+void s52plib::RenderMPSArray(ObjRazRules *rzRules, std::vector<SoundingSym> array){
+  if(!array.size())
+    return;
+
+  // Get some metrics
+  int charWidth = m_sounding_char_width;
+  int charHeight = m_sounding_char_height;
+  int charDescent = m_sounding_char_descent;
+
+  int pivot_x;
+  int pivot_y;
+  unsigned int texture = 0;
+  wxUint32 last_color_RGB = 0;
+
+#ifdef ocpnUSE_GL
+  if (!m_pdc) { // preconfigure the shader
+    texture = m_texSoundings.GetTexture();
+
+    glEnable(GL_BLEND);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    pCtexture_2D_Color_shader_program[0]->Bind();
+    // Select the active texture unit.
+    glActiveTexture(GL_TEXTURE0);
+    glUniform1i( m_sounding_shader_uni_uTex, 0);
+
+    // Disable VBO's (vertex buffer objects) for attributes.
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
+#endif
+
+  for (auto sym : array){
+    // Parse the symbol name
+    //  The digit
+    char symDigit = sym.prule->name.SYNM[7];
+    int symIndex = symDigit - 0x30;
+
+    //  The pivot point offset group
+    char symCPivot = sym.prule->name.SYNM[6];
+    int symPivot = symCPivot - 0x30;
+
+    int pivotWidth, pivotHeight;
+    // For opengl, the symbols are loaded in a texture
+    wxRect texrect;
+    if (!m_pdc) {  // GL
+      m_texSoundings.GetGLTextureRect(texrect, symIndex);
+
+      if (texture) {
+        sym.prule->parm2 = texrect.width;
+        sym.prule->parm3 = texrect.height;
+      }
+
+      pivotWidth = texrect.width;
+      pivotHeight = texrect.height;
+
+    } else {
+      pivotWidth = charWidth;
+      pivotHeight = charHeight - charDescent;
+    }
+
+    if (symPivot < 4) {
+      pivot_x = (pivotWidth * symPivot); // - (pivotWidth / 4);
+      pivot_y = pivotHeight / 2;
+    } else if (symPivot == 4){
+      pivot_x = -pivotWidth; // - (pivotWidth / 4);
+      pivot_y = pivotHeight / 2;
+    } else {
+      pivot_x = 0; //-(pivotWidth / 4);
+      pivot_y = pivotHeight / 5;
+    }
+    pivot_x *= m_dipfactor;
+    pivot_y *= m_dipfactor;
+
+    //      Now render the symbol
+    if (!m_pdc)  // opengl
+    {
+#ifdef ocpnUSE_GL
+      {
+        int w = texrect.width, h = texrect.height;
+
+        float tx1 = texrect.x, ty1 = texrect.y;
+        float tx2 = tx1 + w, ty2 = ty1 + h;
+
+        if (m_TextureFormat == GL_TEXTURE_2D) {
+          // Normalize the sybmol texture coordinates against the next higher POT
+          // size
+          wxSize size = m_texSoundings.GLTextureSize();
+          int rb_x = size.x;
+          int rb_y = size.y;
+
+          tx1 /= rb_x, tx2 /= rb_x;
+          ty1 /= rb_y, ty2 /= rb_y;
+        }
+
+        float uv[8];
+        float coords[8];
+
+        // Note swizzle of points to allow TRIANGLE_STRIP drawing
+        // normal uv
+        uv[0] = tx1;
+        uv[1] = ty1;
+        uv[2] = tx2;
+        uv[3] = ty1;
+        uv[6] = tx2;
+        uv[7] = ty2;
+        uv[4] = tx1;
+        uv[5] = ty2;
+
+        // pixels
+        coords[0] = 0;
+        coords[1] = 0;
+        coords[2] = w;
+        coords[3] = 0;
+        coords[6] = w;
+        coords[7] = h;
+        coords[4] = 0;
+        coords[5] = h;
+
+        if (sym.color_RGB != last_color_RGB ) {
+          wxColor c;
+          c.SetRGB(sym.color_RGB);
+          float colorv[4];
+          colorv[0] = c.Red() / float(256);
+          colorv[1] = c.Green() / float(256);
+          colorv[2] = c.Blue() / float(256);
+          colorv[3] = 1.0;
+
+          glUniform4fv(m_sounding_shader_uni_color, 1, colorv);
+          last_color_RGB = sym.color_RGB;
+        }
+
+        glVertexAttribPointer(m_sounding_shader_attr_position, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), coords);
+        glEnableVertexAttribArray(m_sounding_shader_attr_position);
+
+        glVertexAttribPointer(m_sounding_shader_attr_aUV, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), uv);
+        glEnableVertexAttribArray(m_sounding_shader_attr_aUV);
+
+        // Rotate
+        mat4x4 I, Q;
+        mat4x4_identity(I);
+        mat4x4_identity(Q);
+
+        mat4x4_translate_in_place(I, sym.r.x, sym.r.y, 0);
+        mat4x4_rotate_Z(Q, I, -vp_plib.rotation);
+        mat4x4_translate_in_place(Q, -pivot_x, -pivot_y, 0);
+
+        glUniformMatrix4fv(m_sounding_shader_uni_transform, 1, GL_FALSE, (GLfloat *)Q);
+
+        // Perform the actual drawing.
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      }
+#endif
+    } else {
+      wxString text;
+      text.Printf(_T("%d"), symIndex);
+      wxColor c;
+      c.SetRGB(sym.color_RGB);
+      m_pdc->SetTextForeground(c);
+
+      m_pdc->DrawText(text, sym.r.x - pivot_x, sym.r.y - pivot_y);
+    }
+
+  }
+
+#ifdef ocpnUSE_GL
+  if (!m_pdc) { // OpenGL
+    // Restore the per-object transform to Identity Matrix
+    mat4x4 IM;
+    mat4x4_identity(IM);
+    glUniformMatrix4fv(m_sounding_shader_uni_transform, 1, GL_FALSE, (GLfloat *)IM);
+
+    pCtexture_2D_Color_shader_program[0]->UnBind();
+    glDisable(m_TextureFormat);
+    glDisable(GL_BLEND);
+  }
+#endif
+}
+
+
+
+
 
 bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
                                    wxPoint &r, wxColor symColor,
@@ -3869,7 +4053,6 @@ bool s52plib::RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule,
   int pivot_y;
 
   // Parse the symbol name
-
   //  The digit
   char symDigit = prule->name.SYNM[7];
   int symIndex = symDigit - 0x30;
@@ -6101,6 +6284,8 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
                               fabs(GetBBox().GetMaxLat() - GetBBox().GetMinLat()));
   LLBBox screen_box = GetBBox();
 
+  std::vector<SoundingSym> sym_array;
+
   for (int ip = 0; ip < npt; ip++) {
     double lon = *pdl++;
     double lat = *pdl++;
@@ -6154,8 +6339,14 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
 
         if (!strncmp(rules->razRule->name.SYNM, "SOUNDGC2", 8))
           RenderRasterSymbol(rzRules, rules->razRule, r, angle);
-        else
-          RenderSoundingSymbol(rzRules, rules->razRule, r, symColor, angle);
+        else {
+          // Add this sounding to the array, for later bulk rendering
+          SoundingSym sym;
+          sym.prule = rules->razRule;
+          sym.r = r;
+          sym.color_RGB = symColor.GetRGB();
+          sym_array.push_back(sym);
+        }
       }
 
       // Debug
@@ -6168,6 +6359,10 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
       rules = rules->next;
     }
   }
+
+  //  Render the "normal" soundings in bulk, to optimize GL shader performance
+  if(sym_array.size()) RenderMPSArray(rzRules, sym_array);
+
   return 1;
 }
 

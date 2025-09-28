@@ -121,6 +121,12 @@ struct CARC_Buffer {
 WX_DECLARE_STRING_HASH_MAP(CARC_Buffer, CARC_Hash);
 WX_DECLARE_STRING_HASH_MAP(int, CARC_DL_Hash);
 
+struct SoundingSym {
+  Rule *prule;
+  wxPoint r;
+  wxUint32 color_RGB;
+};
+
 class PixelCache;
 
 class RenderFromHPGL;
@@ -453,6 +459,7 @@ private:
   int RenderLS(ObjRazRules *rzRules, Rules *rules);
   int RenderLC(ObjRazRules *rzRules, Rules *rules);
   int RenderMPS(ObjRazRules *rzRules, Rules *rules);
+  void RenderMPSArray(ObjRazRules *rzRules, std::vector<SoundingSym> array);
   int RenderCARC(ObjRazRules *rzRules, Rules *rules);
   char *RenderCS(ObjRazRules *rzRules, Rules *rules);
   int RenderGLLS(ObjRazRules *rzRules, Rules *rules);
