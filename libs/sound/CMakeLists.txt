@@ -33,7 +33,7 @@ if ("${SOUND_WX_INCLUDE_DIR}" STREQUAL "")
 endif ()
 
 set(PORTAUDIO_MSG "Use portaudio(3) to play sounds if available")
-if (WIN32 OR APPLE OR QT_ANDROID)
+if (APPLE OR QT_ANDROID)
   option(OCPN_ENABLE_PORTAUDIO ${PORTAUDIO_MSG} OFF)
 else ()
   option(OCPN_ENABLE_PORTAUDIO ${PORTAUDIO_MSG} ON)
