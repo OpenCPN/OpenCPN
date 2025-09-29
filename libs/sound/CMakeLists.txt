@@ -77,7 +77,11 @@ if (QT_ANDROID)
 endif ()
 
 if (PORTAUDIO_FOUND)
-  list(APPEND SRC include/PortAudioSound.h src/PortAudioSound.cpp)
+  if (WIN32)
+    list(APPEND SRC include/PortAudioSound.h src/WinPortAudioSound.cpp)
+  else ()  
+    list(APPEND SRC include/PortAudioSound.h src/PortAudioSound.cpp)
+  endif ()
 endif ()
 
 if (LIBSNDFILE_FOUND)

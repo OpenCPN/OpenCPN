@@ -41,6 +41,7 @@
  *
  */
 
+extern int g_iSoundDeviceIndex;
 static const int BUFSIZE = 1024;  // Frames per buffer.
 static const int LOCK_SLEEP_MS = 2;
 static const int LOCK_MAX_TRIES = 100;
@@ -119,7 +120,11 @@ static bool writeSynchronous(int deviceIx,
   if (!startStream(stream)) {
     return false;
   }
-  unsigned buff[BUFSIZE * soundLoader->GetBytesPerSample()];
+  unsigned* buff = (unsigned*) malloc(BUFSIZE * soundLoader->GetBytesPerSample());
+  if (!buff) {
+	Pa_CloseStream(stream);
+	return false;
+  }
   PaError pe = paNoError;
   int len = soundLoader->Get(buff, sizeof(buff));
   for (; len > 0; len = soundLoader->Get(buff, sizeof(buff))) {
@@ -131,29 +136,29 @@ static bool writeSynchronous(int deviceIx,
     }
   }
   Pa_CloseStream(stream);
+  free(buff);
   return pe == paNoError;
 }
 
 PortAudioSound::PortAudioSound()
-    : m_soundLoader(SoundLoaderFactory()), m_lock(ATOMIC_FLAG_INIT) {
-  if (!getenv("OCPN_DEBUG_ALSA"))
-    IgnoreRetval(freopen("/dev/null", "w", stderr));
+    : m_soundLoader(SoundLoaderFactory()), m_lock() {  // using m_lock(ATOMIC_FLAG_INIT) makes compiler error
   m_stream = NULL;
   m_isAsynch = false;
   m_isPaInitialized = false;
   PaError err = Pa_Initialize();
-  if (err != paNoError) {
-    IgnoreRetval(freopen("/dev/tty", "w", stderr));
+  if (err != paNoError) {    
     wxLogError("PortAudio; cannot initialize: %s", Pa_GetErrorText(err));
     return;
   }
   m_isPaInitialized = true;
-  SetDeviceIndex(-1);
+  if(g_iSoundDeviceIndex == 0)
+    SetDeviceIndex(-1);
+  else
+    SetDeviceIndex(g_iSoundDeviceIndex);
   for (int i = 0; i < DeviceCount(); i += 1) {
     const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
     wxLogDebug("Device: %d: %s", i, info->name);
   }
-  IgnoreRetval(freopen("/dev/tty", "w", stderr));
 }
 
 PortAudioSound::~PortAudioSound() {
@@ -201,6 +206,12 @@ bool PortAudioSound::Load(const char* path, int deviceIndex) {
     unlock();
     return false;
   }
+  if (!IsOutputDevice(g_iSoundDeviceIndex)) g_iSoundDeviceIndex = -1; // Not defined in Options yet.
+  if (!SetDeviceIndex(g_iSoundDeviceIndex)) {
+    wxLogWarning("Cannot set device Index %i", g_iSoundDeviceIndex);
+    unlock();
+    return false;
+  }
   m_OK = true;
   unlock();
   return true;
@@ -220,6 +231,7 @@ bool PortAudioSound::SetDeviceIndex(int deviceIndex) {
     m_deviceIx = -1;
   }
   m_deviceIx = deviceIndex == -1 ? Pa_GetDefaultOutputDevice() : deviceIndex;
+  g_iSoundDeviceIndex = m_deviceIx;
   return true;
 }
 
