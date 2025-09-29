@@ -5276,10 +5276,12 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
 
   wxPoint r;
 
-  int isym_len = rules->razRule->pos.line.bnbox_w.SYHL +
-                 (rules->razRule->pos.line.bnbox_x.LBXC -
-                  rules->razRule->pos.line.pivot_x.LICL);
+  int isym_len = rules->razRule->pos.line.bnbox_w.SYHL;
   float sym_len = isym_len * canvas_pix_per_mm / 100;
+
+  int isym_height = rules->razRule->pos.line.bnbox_h.SYVL;
+  float sym_height = isym_height * canvas_pix_per_mm / 100;
+
   float sym_factor = 1.0;  /// 1.50;    // gives nicer effect
 
   //      Create a color for drawing adjustments outside of HPGL renderer
@@ -5429,7 +5431,7 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
             free(pReduced);
 
             draw_lc_poly(m_pdc, color, w, ptestp, pMaskOut, nPointReduced,
-                         sym_len, sym_factor, rules->razRule);
+                         sym_len, sym_height, sym_factor, rules->razRule);
             free(ptestp);
             free(pMaskOut);
 
@@ -5455,7 +5457,7 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
           free(pReduced);
 
           draw_lc_poly(m_pdc, color, w, ptestp, pMaskOut, nPointReduced,
-                       sym_len, sym_factor, rules->razRule);
+                       sym_len, sym_height, sym_factor, rules->razRule);
           free(ptestp);
           free(pMaskOut);
         }
@@ -5648,10 +5650,10 @@ int s52plib::RenderLCLegacy(ObjRazRules *rzRules, Rules *rules) {
       }
 
       if ((inode) && (jnode)) {
-        draw_lc_poly(m_pdc, color, w, ptp, NULL, nls + 2, sym_len, sym_factor,
+        draw_lc_poly(m_pdc, color, w, ptp, NULL, nls + 2, sym_len, 0, sym_factor,
                      rules->razRule);
       } else if (nls) {
-        draw_lc_poly(m_pdc, color, w, &ptp[1], NULL, nls, sym_len, sym_factor,
+        draw_lc_poly(m_pdc, color, w, &ptp[1], NULL, nls, sym_len, 0, sym_factor,
                      rules->razRule);
       }
     }
@@ -5682,7 +5684,7 @@ int s52plib::RenderLCLegacy(ObjRazRules *rzRules, Rules *rules) {
         float plat = ppolygeo[ctr_offset + 1];
         GetPointPixSingle(rzRules, plat, plon, pr);
 
-        draw_lc_poly(m_pdc, color, w, ptp, NULL, npt + 1, sym_len, sym_factor,
+        draw_lc_poly(m_pdc, color, w, ptp, NULL, npt + 1, sym_len, 0, sym_factor,
                      rules->razRule);
 
         free(ptp);
@@ -5856,7 +5858,7 @@ int s52plib::RenderLCPlugIn(ObjRazRules *rzRules, Rules *rules) {
             GetPointPixArray(rzRules, pReduced, ptestp, nPointReduced);
             free(pReduced);
 
-            draw_lc_poly(m_pdc, color, w, ptestp, NULL, nPointReduced, sym_len,
+            draw_lc_poly(m_pdc, color, w, ptestp, NULL, nPointReduced, sym_len, 0,
                          sym_factor, rules->razRule);
             free(ptestp);
           }
@@ -5878,7 +5880,7 @@ int s52plib::RenderLCPlugIn(ObjRazRules *rzRules, Rules *rules) {
           GetPointPixArray(rzRules, pReduced, ptestp, nPointReduced);
           free(pReduced);
 
-          draw_lc_poly(m_pdc, color, w, ptestp, NULL, nPointReduced, sym_len,
+          draw_lc_poly(m_pdc, color, w, ptestp, NULL, nPointReduced, sym_len, 0,
                        sym_factor, rules->razRule);
           free(ptestp);
         }
@@ -5893,10 +5895,247 @@ int s52plib::RenderLCPlugIn(ObjRazRules *rzRules, Rules *rules) {
   return 1;
 }
 
+int s52plib::BuildLCSymbolTexture(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
+                                   float scale, float sym_len, float sym_height) {
+  GLint texture = 0;
+
+    double xscale = 1.0;
+
+    int width = sym_len;
+    width *= 2 * xscale;  // Grow the drawing bitmap to allow for rotation
+                          // of symbols with highly offset pivot points
+    // width = (int)(width / fsf);
+
+    int height = sym_height;
+    height *= 2 * xscale;
+    // height = (int)(height / fsf);
+
+    // width /= fsf;
+    // height /= fsf;
+
+    // Expand width and height to next larger POT
+    int xp = width, yp = height;
+    int width_pot, height_pot;
+    if (((xp != 0) && !(xp & (xp - 1))))  // detect POT
+      width_pot = xp;
+    else {
+      int a = 0;
+      while (xp) {
+        xp = xp >> 1;
+        a++;
+      }
+      width_pot = 1 << a;
+    }
+
+    if (((yp != 0) && !(yp & (yp - 1))))  // detect POT
+      height_pot = yp;
+    else {
+      int a = 0;
+      while (yp) {
+        yp = yp >> 1;
+        a++;
+      }
+      height_pot = 1 << a;
+    }
+
+    // Render the symbol on wxMemoryDC
+    HPGL->SetVP(&vp_plib);
+    wxMemoryDC mdc;
+    wxBitmap bmp(width, height, 32);
+    mdc.SelectObject(bmp);
+    HPGL->SetTargetDC(&mdc);
+#ifdef __WXMSW__
+    mdc.SetBackground(wxBrush(m_unused_wxColor));
+    mdc.Clear();
+#endif
+
+    wxPoint rt(0, 0);
+    // HPGL->Render(str, col, rt, pivot, origin, xscale, render_angle, true);
+    HPGL->Render(str, col, rt, origin, pivot, 1.0, 0, false);
+    mdc.SelectObject(wxNullBitmap);
+
+    wxImage image = bmp.ConvertToImage();
+    int ws = image.GetWidth(), hs = image.GetHeight();
+
+    unsigned char *source = image.GetData();
+    unsigned char *alpha = image.GetAlpha();
+
+    unsigned char mr, mg, mb;
+    if (!alpha) {
+      image.SetMaskColour(m_unused_wxColor.Red(), m_unused_wxColor.Green(),
+                          m_unused_wxColor.Blue());
+      if (!alpha && !image.GetOrFindMaskColour(&mr, &mg, &mb))
+        printf("trying to use mask to draw a bitmap without alpha or mask\n");
+    }
+
+    unsigned char *pRGBA =
+        (unsigned char *)calloc(1, 4 * width_pot * height_pot);
+    unsigned char *dest = pRGBA;
+
+    if (source) {
+      for (int y = 0; y < hs; y++) {
+        for (int x = 0; x < ws; x++) {
+          int offs = (y * ws + x);
+          int offd = (y * width_pot + x);
+
+          unsigned int r = source[offs * 3 + 0];
+          unsigned int g = source[offs * 3 + 1];
+          unsigned int b = source[offs * 3 + 2];
+
+          dest[offd * 4 + 0] = source[offs * 3 + 0];
+          dest[offd * 4 + 1] = source[offs * 3 + 1];
+          dest[offd * 4 + 2] = source[offs * 3 + 2];
+          unsigned char a =
+              alpha ? alpha[offs]
+                    : ((r == mr) && (g == mg) && (b == mb) ? 0 : 255);
+          dest[offd * 4 + 3] = a;
+        }
+      }
+    }
+
+    glEnable(GL_TEXTURE_2D);
+    GLuint texobj;
+    glGenTextures(1, &texobj);
+    glBindTexture(GL_TEXTURE_2D, texobj);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                    GL_NEAREST /*GL_LINEAR*/);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_pot, height_pot, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, pRGBA);
+
+    free(pRGBA);
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    texture = texobj;
+
+
+  return texture;
+}
+
 //      Render Line Complex Polyline
+void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
+            float scale, double rot_angle, float sym_len, float sym_height ) {
+
+#ifdef ocpnUSE_GL
+  int symbol_texture = 0;
+  // Build the hash key
+  std::string key;
+  key += str;   // HPGL Render string
+  key += col;   // color
+
+  // Check to see it the requested symbol texture is in the cache
+  if (auto search = lc_vector_symbol_cache.find(key);
+      search != vector_symbol_cache.end())
+    symbol_texture = search->second;
+  else {
+    symbol_texture = BuildLCSymbolTexture(str, col, r, pivot, origin, scale, sym_len, sym_height);
+    lc_vector_symbol_cache[key] = symbol_texture;
+  }
+
+  // Render the texture
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, symbol_texture);
+
+  //int w = rule_in->parm2;
+  //int h = rule_in->parm3;
+  int w = sym_len;
+  int h =  sym_height;
+
+  //if ((w == 0) || (h == 0))
+  {
+    // Get the texture dimensions a slower way, first time only
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+    //rule_in->parm2 = w;
+    //rule_in->parm3 = h;
+  }
+
+  float tx1 = 0, ty1 = 0;
+  float tx2 = tx1 + w, ty2 = ty1 + h;
+
+  if (m_TextureFormat == GL_TEXTURE_2D) {
+    // Normalize the sybmol texture coordinates against the next higher POT
+    // size
+    int rb_x = w;
+    int rb_y = h;
+    tx1 /= rb_x, tx2 /= rb_x;
+    ty1 /= rb_y, ty2 /= rb_y;
+  }
+
+  float uv[8];
+  float coords[8];
+
+  // Note swizzle of points to allow TRIANGLE_STRIP drawing
+  // normal uv
+  uv[0] = tx1;
+  uv[1] = ty1;
+  uv[2] = tx2;
+  uv[3] = ty1;
+  uv[6] = tx2;
+  uv[7] = ty2;
+  uv[4] = tx1;
+  uv[5] = ty2;
+
+  // pixels
+  coords[0] = 0;
+  coords[1] = 0;
+  coords[2] = w;
+  coords[3] = 0;
+  coords[6] = w;
+  coords[7] = h;
+  coords[4] = 0;
+  coords[5] = h;
+
+  if (pCtexture_2D_shader_program[0]){
+    pCtexture_2D_shader_program[0]->Bind();
+    glEnable(GL_BLEND);
+
+    // Select the active texture unit.
+    glActiveTexture(GL_TEXTURE0);
+
+    pCtexture_2D_shader_program[0]->SetUniform1i( "uTex", 0);
+
+    // Disable VBO's (vertex buffer objects) for attributes.
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    pCtexture_2D_shader_program[0]->SetAttributePointerf( "position", coords);
+    pCtexture_2D_shader_program[0]->SetAttributePointerf( "aUV", uv);
+
+    // Rotate
+    mat4x4 I, Q;
+    mat4x4_identity(I);
+
+    double yadj = (pivot.y - origin.y) * canvas_pix_per_mm / 100;
+    double xadj = (pivot.x - origin.x) * canvas_pix_per_mm / 100;
+
+    mat4x4_translate_in_place(I, r.x, r.y, 0);
+//    mat4x4_translate_in_place(I, -xadj, -yadj, 0);
+//    mat4x4_translate_in_place(I, xadj, yadj, 0);
+    mat4x4_rotate_Z(Q, I, rot_angle * PI / 180.);
+    mat4x4_translate_in_place(Q, -xadj, -yadj, 0);
+
+    pCtexture_2D_shader_program[0]->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)Q);
+
+    // Perform the actual drawing.
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    // Restore the per-object transform to Identity Matrix
+    mat4x4 IM;
+    mat4x4_identity(IM);
+    pCtexture_2D_shader_program[0]->SetUniformMatrix4fv( "TransformMatrix", (GLfloat *)IM);
+
+    // Clean up the GL state
+    pCtexture_2D_shader_program[0]->UnBind();
+  }
+#endif
+}
 
 void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
-                           int *mask, int npt, float sym_len, float sym_factor,
+                           int *mask, int npt, float sym_len, float sym_height, float sym_factor,
                            Rule *draw_rule) {
   if (npt < 2) return;
 
@@ -6059,6 +6298,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 
       if (seg_len >= 1.0) {
         if (seg_len <= sym_len * sym_factor) {
+          //  Fill shorter segments with solid line of the correct color
           int xst1 = ptp[iseg].x;
           int yst1 = ptp[iseg].y;
           float xst2, yst2;
@@ -6116,6 +6356,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
           glDisable(GL_BLEND);
 #endif
         } else {
+          // Render a symbol
           float s = 0;
           float xs = ptp[iseg].x;
           float ys = ptp[iseg].y;
@@ -6127,12 +6368,12 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
             char *col = draw_rule->colRef.LCRF;
             wxPoint pivot(draw_rule->pos.line.pivot_x.LICL,
                           draw_rule->pos.line.pivot_y.LIRW);
+            wxPoint origin(draw_rule->pos.line.bnbox_x.LBXC,
+                          draw_rule->pos.line.bnbox_y.LBXR);
 
-            HPGL->SetTargetOpenGl();
             HPGL->SetVP(&vp_plib);
             theta = atan2f(dy, dx);
-            HPGL->Render(str, col, r, pivot, pivot, 1.0, theta * 180. / PI,
-                         false);
+            RenderTex(str, col, r, pivot, origin, 1.0, theta * 180. / PI, sym_len, sym_height);
 
             xs += sym_len * dx / seg_len * sym_factor;
             ys += sym_len * dy / seg_len * sym_factor;
@@ -6146,7 +6387,6 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
             glEnable(GL_LINE_SMOOTH);
             glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
           }
-
 #endif
 
 #ifdef ocpnUSE_GL
