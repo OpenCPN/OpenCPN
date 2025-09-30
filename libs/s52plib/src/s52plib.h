@@ -121,6 +121,12 @@ struct CARC_Buffer {
 WX_DECLARE_STRING_HASH_MAP(CARC_Buffer, CARC_Hash);
 WX_DECLARE_STRING_HASH_MAP(int, CARC_DL_Hash);
 
+struct SoundingSym {
+  Rule *prule;
+  wxPoint r;
+  wxUint32 color_RGB;
+};
+
 class PixelCache;
 
 class RenderFromHPGL;
@@ -146,6 +152,9 @@ WX_DECLARE_STRING_HASH_MAP(LUPHashIndex *, LUPArrayIndexHash);
 
 class s52plib;   // Forward
 extern s52plib *ps52plib;  ///< Global instance
+
+/** in s52cnsy */
+extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
 
 class LUPArrayContainer {
 public:
@@ -453,6 +462,7 @@ private:
   int RenderLS(ObjRazRules *rzRules, Rules *rules);
   int RenderLC(ObjRazRules *rzRules, Rules *rules);
   int RenderMPS(ObjRazRules *rzRules, Rules *rules);
+  void RenderMPSArray(ObjRazRules *rzRules, std::vector<SoundingSym> array);
   int RenderCARC(ObjRazRules *rzRules, Rules *rules);
   char *RenderCS(ObjRazRules *rzRules, Rules *rules);
   int RenderGLLS(ObjRazRules *rzRules, Rules *rules);

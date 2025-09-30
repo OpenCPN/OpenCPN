@@ -36,6 +36,7 @@
  #include <qopengl.h>
  #include <GL/gl_private.h>  // this is a cut-down version of gl.h
  #include <GLES2/gl2.h>
+ #define GLU_TESS_MAX_COORD 1.0e150
 #elif defined(__MSVC__)
  #include "glew.h"
 #elif defined(__WXOSX__)

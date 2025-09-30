@@ -111,6 +111,16 @@ extern wxString gDefaultWorldMapLocation;
 extern wxString g_SENCPrefix;
 extern wxString* pInit_Chart_Dir;
 
+extern const wxString kUtfCheckMark;
+extern const wxString kUtfCircledDivisionSlash;
+extern const wxString kUtfFallingDiagonal;
+extern const wxString kUtfIdenticalTo;
+extern const wxString kUtfLeftArrow;
+extern const wxString kUtfLeftRightArrow;
+extern const wxString kUtfLeftwardsArrowToBar;
+extern const wxString kUtfMultiplicationX;
+extern const wxString kUtfRightArrow;
+
 /**
  * \var b_inCompressAllCharts
  *

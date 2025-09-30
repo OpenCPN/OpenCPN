@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Toolbar
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,58 +12,51 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#include <wx/wxprec.h>
+/**
+ * \file
+ *
+ * Implement toolbar.h -- OpenCPN Toolbar
+ */
 
+#include <vector>
+
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
 
-#include <vector>
-
 #include "config.h"
-#include "model/ais_state_vars.h"
-#include "model/ocpn_types.h"
-#include "navutil.h"
-#include "styles.h"
 #include "toolbar.h"
-#include "pluginmanager.h"
-#include "font_mgr.h"
-#include "ocpn_platform.h"
-#include "chcanv.h"
-#include "gui_lib.h"
-#include "model/svg_utils.h"
-#include "model/idents.h"
-#include "ocpn_frame.h"
 
-#ifdef __OCPN__ANDROID__
+#include "model/ais_state_vars.h"
+#include "model/config_vars.h"
+#include "model/gui_vars.h"
+#include "model/idents.h"
+#include "model/ocpn_types.h"
+#include "model/svg_utils.h"
+
+#include "chartdb.h"
+#include "chcanv.h"
+#include "compass.h"
+#include "font_mgr.h"
+#include "gui_lib.h"
+#include "navutil.h"
+#include "ocpn_frame.h"
+#include "ocpn_platform.h"
+#include "pluginmanager.h"
+#include "s52plib.h"
+#include "styles.h"
+
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
 #endif
-
-extern bool g_bTransparentToolbar;
-extern bool g_bTransparentToolbarInOpenGLOK;
-extern bool g_bopengl;
-extern ocpnStyle::StyleManager *g_StyleManager;
-extern MyFrame *gFrame;
-extern PlugInManager *g_pi_manager;
-extern bool g_bPermanentMOBIcon;
-extern bool g_bsmoothpanzoom;
-extern OCPNPlatform *g_Platform;
-extern bool g_bmasterToolbarFull;
-extern bool g_useMUI;
-extern wxString g_toolbarConfig;
-extern double g_plus_minus_zoom_factor;
-extern int g_maintoolbar_x;
-extern int g_maintoolbar_y;
-extern bool g_disable_main_toolbar;
 
 #ifdef ocpnUSE_GL
 extern GLenum g_texture_rectangle_format;
@@ -350,7 +337,7 @@ bool ocpnFloatingToolbarDialog::_toolbarConfigMenuUtil(
                                                             tic->m_tipString);
     size_t n = m_FloatingToolbarConfigMenu->GetMenuItemCount();
     menuitem->Check(m_configString.Len() >= n
-                        ? m_configString.GetChar(n - 1) == _T('X')
+                        ? m_configString.GetChar(n - 1) == 'X'
                         : true);
     return menuitem->IsChecked();
   } else
@@ -484,13 +471,13 @@ void ocpnFloatingToolbarDialog::Submerge() {
 }
 
 void ocpnFloatingToolbarDialog::HideTooltip() {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (m_ptoolbar) m_ptoolbar->HideTooltip();
 #endif
 }
 
 void ocpnFloatingToolbarDialog::ShowTooltips() {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (m_ptoolbar) m_ptoolbar->EnableTooltips();
 #endif
 }
@@ -734,13 +721,6 @@ void ocpnFloatingToolbarDialog::DestroyToolBar() {
   m_Items.clear();
 }
 
-#include "s52plib.h"
-#include "compass.h"
-#include "chartdb.h"
-
-// extern bool g_bTrackActive;
-extern s52plib *ps52plib;
-
 bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool(ocpnToolBarSimple *tb) {
   if (!g_pi_manager) return false;
 
@@ -866,7 +846,7 @@ void ocpnToolBarSimple::Init() {
   m_leftDown = false;
   m_nShowTools = 0;
   m_btooltip_show = false;
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   EnableTooltips();
 #endif
   m_tbenableRolloverBitmaps = false;
@@ -1025,13 +1005,13 @@ bool ocpnToolBarSimple::Create(ocpnFloatingToolbarDialog *parent, wxWindowID id,
 ocpnToolBarSimple::~ocpnToolBarSimple() {}
 
 void ocpnToolBarSimple::EnableTooltips() {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   m_btooltip_show = true;
 #endif
 }
 
 void ocpnToolBarSimple::DisableTooltips() {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   ocpnToolBarSimple::m_btooltip_show = false;
 #endif
 }
@@ -1047,13 +1027,13 @@ void ocpnToolBarSimple::KillTooltip() {
 }
 
 void ocpnToolBarSimple::HideTooltip() {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   TooltipManager::Get().HideTooltip();
 #endif
 }
 
 void ocpnToolBarSimple::SetColorScheme(ColorScheme cs) {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   TooltipManager::Get().SetColorScheme(cs);
 #endif
   m_toolOutlineColour = GetGlobalColor("UIBDR");
@@ -1250,7 +1230,7 @@ void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent &event) {
         gFrame->Raise();
 #endif
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
         if (g_btouch) m_tooltipoff_timer.Start(m_tooltip_off, wxTIMER_ONE_SHOT);
 #endif
       }
@@ -1290,7 +1270,7 @@ bool ocpnToolBarSimple::OnMouseEvent(wxMouseEvent &event, wxPoint &position) {
         TooltipManager::Get().HideTooltip();
       }
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
       if (!TooltipManager::Get().IsShown()) {
         if (!m_tooltip_timer.IsRunning()) {
           m_tooltip_timer.Start(m_one_shot, wxTIMER_ONE_SHOT);
@@ -1716,14 +1696,14 @@ void ocpnToolBarSimple::DoToggleTool(wxToolBarToolBase *tool,
 
 wxString ocpnToolBarSimple::GetToolShortHelp(int id) const {
   wxToolBarToolBase *tool = FindById(id);
-  wxCHECK_MSG(tool, wxEmptyString, "no such tool");
+  wxCHECK_MSG(tool, "", "no such tool");
 
   return tool->GetShortHelp();
 }
 
 wxString ocpnToolBarSimple::GetToolLongHelp(int id) const {
   wxToolBarToolBase *tool = FindById(id);
-  wxCHECK_MSG(tool, wxEmptyString, "no such tool");
+  wxCHECK_MSG(tool, "", "no such tool");
 
   return tool->GetLongHelp();
 }
@@ -1873,9 +1853,9 @@ wxToolBarToolBase *ocpnToolBarSimple::InsertSeparator(size_t pos) {
   wxCHECK_MSG(pos <= GetToolsCount(), (wxToolBarToolBase *)NULL,
               "invalid position in wxToolBar::InsertSeparator()");
 
-  wxToolBarToolBase *tool = CreateTool(
-      wxID_SEPARATOR, wxEmptyString, wxNullBitmap, wxNullBitmap,
-      wxITEM_SEPARATOR, (wxObject *)NULL, wxEmptyString, wxEmptyString);
+  wxToolBarToolBase *tool =
+      CreateTool(wxID_SEPARATOR, "", wxNullBitmap, wxNullBitmap,
+                 wxITEM_SEPARATOR, (wxObject *)NULL, "", "");
 
   if (!tool || !DoInsertTool(pos, tool)) {
     delete tool;
@@ -2183,7 +2163,7 @@ void ToolbarChoicesDialog::CreateControls() {
       this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxHSCROLL | wxVSCROLL);
   itemDialog1->SetScrollRate(2, 2);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
   //  Set Dialog Font by custom crafted Qt Stylesheet.
   wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
@@ -2303,9 +2283,9 @@ void ToolbarChoicesDialog::OnOkClick(wxCommandEvent &event) {
     if (m_configMenu) {
       wxMenuItem *item = m_configMenu->FindItemByPosition(i);
       if (new_toolbarConfig.Len() > i) {
-        new_toolbarConfig.SetChar(i, cb->IsChecked() ? _T('X') : _T('.'));
+        new_toolbarConfig.SetChar(i, cb->IsChecked() ? 'X' : '.');
       } else {
-        new_toolbarConfig.Append(cb->IsChecked() ? _T('X') : _T('.'));
+        new_toolbarConfig.Append(cb->IsChecked() ? 'X' : '.');
       }
       item->Check(cb->IsChecked());
       if (cb->IsChecked()) ncheck++;
@@ -2315,7 +2295,7 @@ void ToolbarChoicesDialog::OnOkClick(wxCommandEvent &event) {
 #if 0
      //  We always must have one Tool enabled.  Make it the Options tool....
      if( 0 == ncheck){
-         new_toolbarConfig.SetChar( ID_SETTINGS -ID_ZOOMIN , _T('X') );
+         new_toolbarConfig.SetChar( ID_SETTINGS -ID_ZOOMIN , 'X' );
 
          int idOffset = ID_PLUGIN_BASE - ID_ZOOMIN + 100;
 
@@ -2347,7 +2327,7 @@ void ToolbarChoicesDialog::RecalculateSize() {
     fsize.x = wxMin(esize.x, fsize.x - (2 * GetCharHeight()));
     SetSize(fsize);
     CentreOnScreen();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     Move(GetPosition().x, 10);
 #endif
   }

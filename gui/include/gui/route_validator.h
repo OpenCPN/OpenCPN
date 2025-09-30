@@ -12,24 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
 /**
  * \file
- * Route validators for dialog validation.
+ *
+ * Route dialog validation checks.
  */
+
 #ifndef ROUTE_VALIDATOR_H
 #define ROUTE_VALIDATOR_H
 
-#include "field_text.h"
+#include <wx/validate.h>
+#include <wx/string.h>
+
 #include "model/route_point.h"
 
+#include "field_text.h"
+
 /**
- * Route point name validator to validate the name.
+ * Route point name validator.
  */
 class RoutePointNameValidator : public TextValidator {
 public:
