@@ -96,22 +96,22 @@
 #include "route_gui.h"
 #include "routemanagerdialog.h"
 #include "route_point_gui.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "S57QueryDialog.h"
+#include "s57_query_dlg.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "shapefile_basemap.h"
 #include "styles.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "thumbwin.h"
 #include "tide_time.h"
 #include "timers.h"
 #include "toolbar.h"
 #include "track_gui.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "undo.h"
 
 #include "s57_ocpn_utils.h"
@@ -296,6 +296,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_bShowAISScaled = false;
   m_timed_move_vp_active = false;
   m_inPinch = false;
+  m_disable_adjust_on_zoom = false;
 
   m_vLat = 0.;
   m_vLon = 0.;
@@ -7593,13 +7594,15 @@ bool ChartCanvas::MouseEventOverlayWindows(wxMouseEvent &event) {
     if (m_Compass && m_Compass->IsShown()) {
       wxRect logicalRect = m_Compass->GetLogicalRect();
       bool isInCompass = logicalRect.Contains(event.GetPosition());
-      if (isInCompass) {
+      if (isInCompass || m_mouseWasInCompass) {
         if (m_Compass->MouseEvent(event)) {
           cursor_region = CENTER;
           if (!g_btouch) SetCanvasCursor(event);
+          m_mouseWasInCompass = isInCompass;
           return true;
         }
       }
+      m_mouseWasInCompass = isInCompass;
     }
 
     if (m_notification_button && m_notification_button->IsShown()) {

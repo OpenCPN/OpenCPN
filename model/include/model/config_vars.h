@@ -123,7 +123,6 @@ extern bool s_bSetSystemTime;
 
 extern double g_COGAvg;  ///< Debug only usage
 extern double g_defaultBoatSpeed;
-extern double g_display_size_mm;
 extern double g_display_size_mm;  ///< Physical display width (mm)
 extern double g_mouse_zoom_sensitivity;
 extern double g_n_arrival_circle_radius;
@@ -168,13 +167,33 @@ extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_GUIScaleFactor;
 extern int g_ais_color_set;
+/**
+ * User-selected distance (horizontal) unit format for display and input.
+ * Values correspond to DISTANCE_* enum (e.g., NMi, mi, km, m, ft, yd, etc.).
+ */
 extern int g_iDistanceFormat;
 extern int g_iENCToolbarPosX;
 extern int g_iENCToolbarPosY;
+/**
+ * User-selected height (vertical, above reference datum) unit format for
+ * display and input. Values correspond to HEIGHT_* enum (e.g., meters, feet).
+ * Used for tide levels, bridge clearances, and other height displays.
+ */
+extern int g_iHeightFormat;
 extern int g_iNavAidRadarRingsNumberVisible;
 extern int g_iSDMMFormat;
 extern int g_iSoundDeviceIndex;
+/**
+ * User-selected speed unit format for display and input.
+ * Values correspond to SPEED_* enum (e.g., knots, mph, km/h, m/s).
+ * Used for ownship speed, route planning, and other speed displays.
+ */
 extern int g_iSpeedFormat;
+/**
+ * User-selected temperature unit format for display and input.
+ * Values correspond to TEMPERATURE_* enum (e.g., Celsius, Fahrenheit, Kelvin).
+ * Used for weather overlays, tide info, and other temperature displays.
+ */
 extern int g_iTempFormat;
 extern int g_iWaypointRangeRingsNumber;
 extern int g_iWaypointRangeRingsStepUnits;
@@ -200,6 +219,11 @@ extern int g_nbrightness;
 extern int g_nCacheLimit;
 extern int g_nCOMPortCheck;
 extern int g_nCPUCount;
+/**
+ * User-selected depth (below surface) unit format for display and input.
+ * Values correspond to DEPTH_* enum (e.g., meters, feet, fathoms).
+ * Used for chart soundings, depth contours, and other depth displays.
+ */
 extern int g_nDepthUnitDisplay;
 extern int g_netmask_bits;
 extern int g_nframewin_posx;
@@ -208,6 +232,7 @@ extern int g_nframewin_x;
 extern int g_nframewin_y;
 extern int g_NMEAAPBPrecision;
 extern int g_nNMEADebug;
+extern int n_NavMessageShown;
 extern int g_n_ownship_min_mm;
 extern int g_nTrackPrecision;
 extern int g_ownship_HDTpredictor_endmarker;
@@ -277,6 +302,9 @@ extern wxString g_default_routepoint_icon;
 extern wxString g_default_wp_icon;
 extern wxString g_gpx_path;
 extern wxString g_hostname;
+extern wxString g_InvisibleLayer;
+extern wxString g_InvisibleLayers;
+extern wxString g_InVisiNameinLayers;
 extern wxString g_lastAppliedTemplateGUID;
 extern wxString g_locale;
 extern wxString g_localeOverride;
@@ -284,6 +312,9 @@ extern wxString g_ownship_HDTpredictor_color;
 extern wxString g_toolbarConfig;
 extern wxString g_uiStyle;  // Not used
 extern wxString g_uploadConnection;
+extern wxString g_UserPresLibData;
+extern wxString g_VisibleLayers;
+extern wxString g_VisiNameinLayers;
 extern wxString g_winPluginDir;  // Base plugin directory on Windows.
 extern wxString g_winPluginDir;  ///< Base plugin directory on Windows.
 

@@ -102,7 +102,7 @@
 #include "chart_ctx_factory.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "cm93.h"
 #include "color_handler.h"
 #include "compass.h"
@@ -136,16 +136,16 @@
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s57chart.h"
-#include "S57QueryDialog.h"
+#include "s57_query_dlg.h"
 #include "SoundFactory.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
 #include "timers.h"
 #include "toolbar.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "waypointman_gui.h"
 #include "canvas_options.h"
 #include "udev_rule_mgr.h"
@@ -5780,8 +5780,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
                 cc->DoCanvasUpdate();
                 if (bnew_view)
                   cc->Refresh(false);  // honor ownship state update
-              }  // else
-                 // cc->Refresh(false);
+              } else
+                cc->Refresh(false);
             } else {
               // Pick up SOG=0, COG=NAN report at 10Hz.
               if (std::isnan(gCog)) cc->Refresh(false);
@@ -7112,52 +7112,106 @@ bool MyFrame::AddDefaultPositionPlugInTools() {
 wxColour GetGlobalColor(wxString colorName);  // -> color_handler
 
 static const char *usercolors[] = {
-    "Table:DAY", "GREEN1;120;255;120;", "GREEN2; 45;150; 45;",
-    "GREEN3;200;220;200;", "GREEN4;  0;255;  0;", "BLUE1; 170;170;255;",
+    //======================================================================
+    // Table:DAY - Bright daylight color scheme (full visibility mode)
+    //======================================================================
+    "Table:DAY",
+
+    // Standard palette colors - general purpose UI elements
+    "GREEN1;120;255;120;", "GREEN2; 45;150; 45;", "GREEN3;200;220;200;",
+    "GREEN4;  0;255;  0;", "GREEN5;170;254;  0;", "BLUE1; 170;170;255;",
     "BLUE2;  45; 45;170;", "BLUE3;   0;  0;255;", "GREY1; 200;200;200;",
-    "GREY2; 230;230;230;", "RED1;  220;200;200;", "UBLCK;   0;  0;  0;",
-    "UWHIT; 255;255;255;", "URED;  255;  0;  0;", "UGREN;   0;255;  0;",
-    "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;",
-    "GREEN5;170;254;  0;", "COMPT; 245;247;244",
+    "GREY2; 230;230;230;", "RED1;  220;200;200;", "YELO1; 243;229; 47;",
+    "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;",
+
+    // Basic UI colors
+    "UBLCK;   0;  0;  0;",  // Universal black for text/lines
+    "UWHIT; 255;255;255;",  // Universal white for backgrounds
+    "URED;  255;  0;  0;",  // Own vessel color, AIS targets, predictor lines
+    "UGREN;   0;255;  0;",  // Universal green for general purpose green
+    "COMPT; 245;247;244",   // Compass rose background/details
+
+// Dialog system colors
 #ifdef __WXOSX__
-    "DILG0; 255;255;255;",  // Dialog Background white
+    "DILG0; 255;255;255;",  // Dialog window background (macOS)
 #else
-    "DILG0; 238;239;242;",  // Dialog Background white
+    "DILG0; 238;239;242;",  // Dialog window background (other platforms)
 #endif
-    "DILG1; 212;208;200;",  // Dialog Background
-    "DILG2; 255;255;255;",  // Control Background
-    "DILG3;   0;  0;  0;",  // Text
-    "UITX1;   0;  0;  0;",  // Menu Text, derived from UINFF
+    "DILG1; 212;208;200;",  // Background color for selected items
+    "DILG2; 255;255;255;",  // Control backgrounds for text boxes and input
+                            // fields
+    "DILG3;   0;  0;  0;",  // Dialog text color in dialogs and controls
+    /**
+     * Text color optimized for progressively darker backgrounds (pairs with
+     * DILG0). Gets progressively lighter as background darkens to maintain
+     * contrast. Ideal for tooltips, overlays, and any text over DILG0
+     * background. */
+    "DILG4;   0;  0;  0;",
+    "UITX1;   0;  0;  0;",  // Menu text color
 
-    "CHGRF; 163; 180; 183;", "UINFM; 197;  69; 195;", "UINFG; 104; 228;  86;",
-    "UINFF; 125; 137; 140;", "UINFR; 241;  84; 105;", "SHIPS;   7;   7;   7;",
-    "CHYLW; 244; 218;  72;", "CHWHT; 212; 234; 238;",
+    // Chart and information display colors
+    "CHGRF; 163; 180; 183;",  // Chart gray foreground (grid lines, secondary
+                              // text)
+    "CHYLW; 244; 218;  72;",  // Chart yellow (AIS name invalid, warnings)
+    "CHWHT; 212; 234; 238;",  // Chart white (AIS outlines, contrast elements)
 
-    "UDKRD; 124; 16;  0;",
-    "UARTE; 200;  0;  0;",  // Active Route, Grey on Dusk/Night
+    // Information status colors
+    "UINFM; 197;  69; 195;",  // Magenta - special indicators, chart magenta
+                              // features
+    "UINFG; 104; 228;  86;",  // Green - status indicators, tide/current
+                              // graphics
+    "UINFR; 241;  84; 105;",  // Red - alerts, errors, danger markers
+    "UINFF; 125; 137; 140;",  // Default foreground - general UI elements
+    "SHIPS;   7;   7;   7;",  // Other vessels/AIS target fills
 
-    "NODTA; 163; 180; 183;", "CHBLK;   7;   7;   7;", "SNDG1; 125; 137; 140;",
-    "SNDG2;   7;   7;   7;", "SCLBR; 235; 125;  54;", "UIBDR; 125; 137; 140;",
-    "UINFB;  58; 120; 240;", "UINFD;   7;   7;   7;", "UINFO; 235; 125;  54;",
-    "PLRTE; 220;  64;  37;", "CHMGD; 197; 69; 195;", "UIBCK; 212; 234; 238;",
+    // Route and navigation colors
+    "UDKRD; 124; 16;  0;",  // Dark red variant - reduced visibility alternative
+                            // to URED
+    "UARTE; 200;  0;  0;",  // Active route color (bright red in day mode)
 
-    "DASHB; 255;255;255;",  // Dashboard Instr background
-    "DASHL; 175;175;175;",  // Dashboard Instr Label
-    "DASHF;  50; 50; 50;",  // Dashboard Foreground
-    "DASHR; 200;  0;  0;",  // Dashboard Red
-    "DASHG;   0;200;  0;",  // Dashboard Green
-    "DASHN; 200;120;  0;",  // Dashboard Needle
-    "DASH1; 204;204;255;",  // Dashboard Illustrations
-    "DASH2; 122;131;172;",  // Dashboard Illustrations
-    "COMP1; 211;211;211;",  // Compass Window Background
+    // Chart data and measurement colors
+    "NODTA; 163; 180; 183;",  // No data available areas
+    "CHBLK;   7;   7;   7;",  // Chart black - text, lines, piano keys
+    "SNDG1; 125; 137; 140;",  // Sounding text (depth numbers) - primary
+    "SNDG2;   7;   7;   7;",  // Sounding text (depth numbers) - secondary
+    "SCLBR; 235; 125;  54;",  // Scale bar markings and text
 
-    "GREY3;  40; 40; 40;",  // MUIBar/TB background
-    "BLUE4; 100;100;200;",  // Canvas Focus Bar
-    "VIO01; 171; 33;141;", "VIO02; 209;115;213;",
-    "BLUEBACK; 212;234;238;",  // DEPDW, looks like deep ocean
-    "LANDBACK; 201;185;122;",
-    //<color name="LANDA" r="201" g="185" b="122"/>
+    // UI framework colors
+    "UIBDR; 125; 137; 140;",  // UI borders, status bar background
+    "UIBCK; 212; 234; 238;",  // Highlight backgrounds, info windows
+    "UINFB;  58; 120; 240;",  // Information blue - active/selected states, tide
+                              // markers
+    "UINFD;   7;   7;   7;",  // Information dark - borders, inactive elements
+    "UINFO; 235; 125;  54;",  // Information orange - warnings, highlights
 
+    // Route planning colors
+    "PLRTE; 220;  64;  37;",  // Planned route color (not yet active)
+    "CHMGD; 197; 69; 195;",  // Chart magenta - special chart features, AIS MMSI
+                             // text
+
+    // Dashboard instrument colors
+    "DASHB; 255;255;255;",  // Dashboard instrument background
+    "DASHL; 175;175;175;",  // Dashboard instrument labels and graduations
+    "DASHF;  50; 50; 50;",  // Dashboard foreground text and indicators
+    "DASHR; 200;  0;  0;",  // Dashboard red indicators (alarms, danger zones)
+    "DASHG;   0;200;  0;",  // Dashboard green indicators (normal status)
+    "DASHN; 200;120;  0;",  // Dashboard needle/pointer color
+    "DASH1; 204;204;255;",  // Dashboard graphic elements - primary
+    "DASH2; 122;131;172;",  // Dashboard graphic elements - secondary
+    "COMP1; 211;211;211;",  // Compass window background
+
+    // Window and canvas elements
+    "GREY3;  40; 40; 40;",     // MUI toolbar background
+    "BLUE4; 100;100;200;",     // Canvas focus indicator bar
+    "VIO01; 171; 33;141;",     // Violet - vector chart special elements
+    "VIO02; 209;115;213;",     // Violet variant - vector chart features
+    "BLUEBACK; 212;234;238;",  // Deep water background color for basemap
+    "LANDBACK; 201;185;122;",  // Land mass background color for basemap
+
+    //======================================================================
+    // Table:DUSK - Reduced brightness for twilight conditions
+    // Colors defined above are automatically dimmed for dusk visibility
+    //======================================================================
     "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;",
     "GREEN3; 80;100; 80;", "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;",
     "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;", "GREY1; 100;100;100;",
@@ -7174,9 +7228,11 @@ static const char *usercolors[] = {
     "DILG1; 110;110;110;",  // Dialog Background
     "DILG2;   0;  0;  0;",  // Control Background
     "DILG3; 130;130;130;",  // Text
-    "UITX1;  41; 46; 46;",  // Menu Text, derived from UINFF
-    "UDKRD;  80;  0;  0;",
-    "UARTE;  64; 64; 64;",  // Active Route, Grey on Dusk/Night
+    "DILG4;   0;  0;  0;",
+    "UITX1;  41; 46; 46;",  // Menu text color
+    "UDKRD;  80;  0;  0;",  // Dark red variant - reduced visibility alternative
+                            // to URED
+    "UARTE;  64; 64; 64;",  // Active route color (grey for dusk/night modes)
 
     "NODTA;  41;  46;  46;", "CHBLK;  54;  60;  61;", "SNDG1;  41;  46;  46;",
     "SNDG2;  71;  78;  79;", "SCLBR;  75;  38;  19;", "UIBDR;  54;  60;  61;",
@@ -7198,6 +7254,10 @@ static const char *usercolors[] = {
     "VIO01; 128; 25;108;", "VIO02; 171; 33;141;", "BLUEBACK; 186;213;235;",
     "LANDBACK; 201;185;122;",
 
+    //======================================================================
+    // Table:NIGHT - Dark adapted colors preserving night vision
+    // Colors are further dimmed and shifted toward red spectrum
+    //======================================================================
     "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;",
     "GREEN3; 12; 23;  9;", "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;",
     "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;", "GREY1;  48; 48; 48;",
@@ -7209,9 +7269,11 @@ static const char *usercolors[] = {
     "DILG1;  80; 80; 80;",  // Dialog Background
     "DILG2;   0;  0;  0;",  // Control Background
     "DILG3;  65; 65; 65;",  // Text
-    "UITX1;  31; 34; 35;",  // Menu Text, derived from UINFF
-    "UDKRD;  50;  0;  0;",
-    "UARTE;  64; 64; 64;",  // Active Route, Grey on Dusk/Night
+    "DILG4; 220;220;220;",
+    "UITX1;  31; 34; 35;",  // Menu text color
+    "UDKRD;  50;  0;  0;",  // Dark red variant - reduced visibility alternative
+                            // to URED
+    "UARTE;  64; 64; 64;",  // Active route color (grey for dusk/night modes)
 
     "CHGRF;  16; 18; 18;", "UINFM;  52; 18; 52;", "UINFG;  22; 24;  7;",
     "UINFF;  31; 34; 35;", "UINFR;  59; 17; 10;", "SHIPS;  37; 41; 41;",

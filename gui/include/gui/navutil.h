@@ -66,7 +66,6 @@ extern MyConfig *pConfig; /**< Global instance */
 class canvasConfig;  // circular
 
 bool LogMessageOnce(const wxString &msg);
-double fromUsrDistance(double usr_distance, int unit = -1);
 double fromUsrSpeed(double usr_speed, int unit = -1);
 double fromUsrWindSpeed(double usr_wspeed, int unit = -1);
 double fromUsrTemp(double usr_temp, int unit = -1);
@@ -127,7 +126,6 @@ void DimeControl(wxWindow *ctrl);
 void DimeControl(wxWindow *ctrl, wxColour col, wxColour col1,
                  wxColour back_color, wxColour text_color, wxColour uitext,
                  wxColour udkrd, wxColour gridline);
-wxColor GetDimedColor(const wxColor &c);
 
 bool WptIsInRouteList(RoutePoint *pr);
 RoutePoint *WaypointExists(const wxString &name, double lat, double lon);

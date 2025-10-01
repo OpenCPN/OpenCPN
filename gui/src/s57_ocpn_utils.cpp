@@ -13,12 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/** \file s57_ocpn_util.cpp Implement s57_ocpn_util.h */
+/**
+ *  \file
+ *
+ *  Implement s57_ocpn_utils.h -- S57 utilities with core opencpn dependencies.
+ */
 
 #include "s57_ocpn_utils.h"
 
@@ -28,9 +30,6 @@
 #include "pluginmanager.h"
 #include "quilt.h"
 #include "s52plib.h"
-
-extern PlugInManager *g_pi_manager;  // FIXME: MOve to header
-extern s52plib *ps52plib;            // FIXME: MOve to header
 
 bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
                                 ViewPort &viewport,
