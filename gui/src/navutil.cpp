@@ -54,6 +54,8 @@
 #include <wx/timectrl.h>
 #include <wx/tokenzr.h>
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/cmdline.h"
@@ -93,7 +95,6 @@
 #include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 #include "ocpn_platform.h"
-#include "OCPN_Sound.h"
 #include "s52plib.h"
 #include "s52utils.h"
 #include "snd_config.h"

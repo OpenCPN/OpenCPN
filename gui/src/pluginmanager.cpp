@@ -89,6 +89,9 @@
 #include "config.h"
 #include "pluginmanager.h"
 
+#include "o_sound/o_sound.h"
+
+#include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
 #include "model/catalog_handler.h"
 #include "model/comm_drv_n0183_net.h"
@@ -132,7 +135,6 @@
 #include "dychart.h"
 #include "font_mgr.h"
 #include "gshhs.h"
-#include "model/ais_decoder.h"
 #include "mygeom.h"
 #include "navutil.h"
 #include "observable_confvar.h"
@@ -150,10 +152,8 @@
 #include "routeman_gui.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "SoundFactory.h"
 #include "styles.h"
 #include "model/svg_utils.h"
-#include "SystemCmdSound.h"
 #include "toolbar.h"
 #include "update_mgr.h"
 #include "waypointman_gui.h"

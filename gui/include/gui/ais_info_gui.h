@@ -23,9 +23,9 @@
 #ifndef _AIS_INFO_GUI_H
 #define _AIS_INFO_GUI_H
 
+#include "o_sound/o_sound.h"
 #include "model/ais_target_data.h"
 #include "observable.h"
-#include "OCPN_Sound.h"
 
 class AisInfoGui;             // forward
 extern AisInfoGui* g_pAISGUI; /**< Global instance */
@@ -45,7 +45,7 @@ public:
 
   bool m_bAIS_Audio_Alert_On;
   bool m_bAIS_AlertPlaying;
-  OcpnSound* m_AIS_Sound;
+  o_sound::Sound* m_AIS_Sound;
   ObservableListener ais_info_listener;
   ObservableListener ais_touch_listener;
   ObservableListener ais_wp_listener;

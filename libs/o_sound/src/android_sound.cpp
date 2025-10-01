@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement android_sound.h --  Android sound backend.
  */
 
 #ifndef OCPN_ANDROID_SOUND
@@ -30,10 +29,11 @@
 
 #include <wx/log.h>
 
-#include "OCPN_Sound.h"
+#include "o_sound/android_sound.h"
 
-#include "AndroidSound.h"
 #include "android_jvm.h"
+
+using namespace o_sound_private;
 
 static bool androidPlaySound(const wxString soundfile, AndroidSound* sound) {
   std::ostringstream oss;
@@ -47,44 +47,44 @@ static bool androidPlaySound(const wxString soundfile, AndroidSound* sound) {
 AndroidSound::~AndroidSound() {}
 
 void AndroidSound::SetFinishedCallback(AudioDoneCallback cb, void* userData) {
-  m_onFinished = cb;
-  m_callbackData = userData;
+  m_on_finished = cb;
+  m_callback_data = userData;
 }
 
 bool AndroidSound::Load(const char* path, int deviceIndex) {
   m_soundfile = path;
-  m_OK = true;
+  m_ok = true;
   if (deviceIndex != -1) {
     wxLogWarning("Android backend does not support audio device setup.");
   }
   return true;
 }
 
-bool AndroidSound::canPlay(void) {
-  if (m_isPlaying) wxLogWarning("SystemCmdSound: cannot play: already playing");
-  return m_OK && !m_isPlaying;
+bool AndroidSound::CanPlay() {
+  if (m_is_playing) wxLogWarning("SystemCmdSound: cannot play: already playing");
+  return m_ok && !m_is_playing;
 }
 
-bool AndroidSound::Stop(void) { return false; }
+bool AndroidSound::Stop() { return false; }
 
 void AndroidSound::OnSoundDone() {
   std::unique_lock<std::mutex> lock(mtx);
-  if (m_onFinished) m_onFinished(m_callbackData);
-  m_onFinished = 0;
-  m_isPlaying = false;
+  if (m_on_finished) m_on_finished(m_callback_data);
+  m_on_finished = 0;
+  m_is_playing = false;
   done.notify_one();
 }
 
 bool AndroidSound::Play() {
   std::unique_lock<std::mutex> lock(mtx);
   wxLogDebug("AndroidSound::Play()");
-  if (m_isPlaying) {
+  if (m_is_playing) {
     wxLogWarning("AndroidSound: cannot play: already playing");
     return false;
   }
-  m_isPlaying = true;
+  m_is_playing = true;
   bool ok = androidPlaySound(m_soundfile, this);
-  if (!m_onFinished) {
+  if (!m_on_finished) {
     wxLogDebug("AndroidSound: waiting for completion");
     done.wait(lock);
     return ok;
