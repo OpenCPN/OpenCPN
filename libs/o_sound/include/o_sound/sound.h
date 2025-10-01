@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,23 +12,28 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Top level sound interface
  */
 
-#ifndef OCPN_SOUND_H__
-#define OCPN_SOUND_H__
+#ifndef OCPN_SOUND_H_
+#define OCPN_SOUND_H_
 
 #include <functional>
-#include <memory>
 #include <string>
 
 typedef std::function<void(void* userPtr)> AudioDoneCallback;
 
-class OcpnSound;  // forward
-extern OcpnSound *g_anchorwatch_sound;   ///< Global instance
+namespace o_sound {
+
+class Sound;  // forward
+extern Sound *g_anchorwatch_sound;   ///< Global instance
+
 
 /**
  * Sound  class supports playing a sound using synchronous or asynchronous
@@ -41,21 +42,20 @@ extern OcpnSound *g_anchorwatch_sound;   ///< Global instance
  *
  * Instances should normally be obtained using SoundFactory();
  */
-
-class OcpnSound {
-  friend OcpnSound* SoundFactory(const char* system_command);
+class Sound {
+  friend Sound* Factory(const char* system_command);
 
 public:
-  virtual ~OcpnSound();
+  virtual ~Sound();
 
   /** Return number of available devices. */
-  virtual int DeviceCount() const { return 1; }
+  [[nodiscard]] virtual int DeviceCount() const { return 1; }
 
   /** Return free-format info on device or "" if not available. */
   virtual std::string GetDeviceInfo(int deviceIndex) { return ""; }
 
   /** Return true if given device is an output device. */
-  virtual bool IsOutputDevice(int deviceIndex) const { return true; }
+  [[nodiscard]] virtual bool IsOutputDevice(int deviceIndex) const { return true; }
 
   /**
    * Callback invoked as cb(userData) when audio stream is done and
@@ -64,24 +64,32 @@ public:
    * Setting a non-null callback forces use of asynchronous mode.
    * Using a default, 0 argument restores to synchronous mode.
    *
-   * Deleting a pointer owning the OcpnSound object in the callback is
+   * Deleting a pointer owning the Sound object in the callback is
    * not supported.
    *
    * NOTE: Callback might be invoked in an interrupt or thread context,
    * avoid anything which might block (I/O, memory allocation etc.).
    */
-  virtual void SetFinishedCallback(AudioDoneCallback cb = 0,
-                                   void* userData = 0);
+  virtual void SetFinishedCallback(AudioDoneCallback cb, void* user_data);
+
+  virtual void SetFinishedCallback(AudioDoneCallback cb) {
+    return SetFinishedCallback(std::move(cb), nullptr);
+  }
+
+  virtual void SetFinishedCallback() {
+    return SetFinishedCallback(nullptr, nullptr);
+  }
 
   /**
    * Initiate the class, loading data from given path and using the
    * given device as output. DeviceIx == -1 implies default device.
    */
-  virtual bool Load(const char* path, int deviceIx = -1) = 0;
+  virtual bool Load(const char* path, int deviceIx) = 0;
+  virtual bool Load(const char* path) { return Load(path, -1); }
 
   /**
    * De-Initiate the class, closing any open sound file,
-   * preparing for a new Load() using the same OcpnSound instance
+   * preparing for a new Load() using the same Sound instance
    */
   virtual void UnLoad() = 0;
 
@@ -94,10 +102,10 @@ public:
    * is currently played the request is dropped and logged returning
    * false.
    *
-   * Otherwise in synchronous mode returns success/failure from
+   * Otherwise, in synchronous mode returns success/failure from
    * backend. Asynchronous mode returns true.
    */
-  virtual bool Play(void) = 0;
+  virtual bool Play() = 0;
 
   /**
    * Stop possible playback and unload buffers, allowed even if
@@ -106,17 +114,22 @@ public:
   virtual bool Stop() = 0;
 
   /** Reflects loading errors. */
-  virtual bool IsOk() const { return m_OK; }
+  [[ nodiscard]] virtual bool IsOk() const { return m_ok; }
+
+  /** Hook to use as end of playing in synchronous mode, */
+  virtual void OnSoundDone() {}
 
 protected:
   /** Default ctor. Load() must be called before actual usage. */
-  OcpnSound();
+  Sound();
 
-  bool m_OK;
-  int m_deviceIx;
+  bool m_ok;
+  int m_device_ix;
   std::string m_soundfile;
-  AudioDoneCallback m_onFinished;
-  void* m_callbackData;
+  AudioDoneCallback m_on_finished;
+  void* m_callback_data;
 };
 
-#endif  // OCPN_SOUND_H__
+} // namespace o_sound
+
+#endif  // OCPN_SOUND_H_

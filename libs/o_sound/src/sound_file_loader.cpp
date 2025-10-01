@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,13 +12,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement sound_file_loader.h -- Sound file loader
  */
 
-#include "OCPN_Sound.h"
+
 #include <wx/defs.h>
 #include <wx/dialog.h>
 #include <wx/file.h>
@@ -30,9 +29,12 @@
 #include <wx/string.h>
 #include <wx/wxchar.h>
 
-#include "SoundFileLoader.h"
+#include "sound.h"
+#include "sound_file_loader.h"
 
-SoundFileLoader::~SoundFileLoader() {}
+using namespace o_sound_private;
+
+SoundFileLoader::~SoundFileLoader() = default;
 
 bool SoundFileLoader::Load(const char* path) {
   wxFile fileWave;
@@ -46,7 +48,7 @@ bool SoundFileLoader::Load(const char* path) {
     return false;
   }
   size_t len = wx_truncate_cast(size_t, lenOrig);
-  wxUint8* data = new wxUint8[len];
+  auto* data = new wxUint8[len];
   if (fileWave.Read(data, len) != lenOrig) {
     delete[] data;
     wxLogError(_("Couldn't load sound data from '%s'."), path);
@@ -88,7 +90,7 @@ bool SoundFileLoader::LoadWAV(const uint8_t* data, size_t length) {
   //      16  chunk size                  |
   //      20  format tag                  |
   //      22  number of channels          |
-  //      24  sample rate                 | WAVEFORMAT
+  //      24  sample rate                 | WAVE FORMAT
   //      28  average bytes per second    |
   //      32  bytes per frame             |
   //      34  bits per sample             |
@@ -100,16 +102,16 @@ bool SoundFileLoader::LoadWAV(const uint8_t* data, size_t length) {
   // so check that we have at least as much
   if (length < 44) return false;
 
-  WaveFormat waveformat;
-  memcpy(&waveformat, &data[FMT_INDEX + 4], sizeof(WaveFormat));
-  waveformat.uiSize = wxUINT32_SWAP_ON_BE(waveformat.uiSize);
-  waveformat.uiFormatTag = wxUINT16_SWAP_ON_BE(waveformat.uiFormatTag);
-  waveformat.uiChannels = wxUINT16_SWAP_ON_BE(waveformat.uiChannels);
-  waveformat.ulSamplesPerSec = wxUINT32_SWAP_ON_BE(waveformat.ulSamplesPerSec);
-  waveformat.ulAvgBytesPerSec =
-      wxUINT32_SWAP_ON_BE(waveformat.ulAvgBytesPerSec);
-  waveformat.uiBlockAlign = wxUINT16_SWAP_ON_BE(waveformat.uiBlockAlign);
-  waveformat.uiBitsPerSample = wxUINT16_SWAP_ON_BE(waveformat.uiBitsPerSample);
+  WaveFormat wave_format;
+  memcpy(&wave_format, &data[FMT_INDEX + 4], sizeof(WaveFormat));
+  wave_format.uiSize = wxUINT32_SWAP_ON_BE(wave_format.uiSize);
+  wave_format.uiFormatTag = wxUINT16_SWAP_ON_BE(wave_format.uiFormatTag);
+  wave_format.uiChannels = wxUINT16_SWAP_ON_BE(wave_format.uiChannels);
+  wave_format.ulSamplesPerSec = wxUINT32_SWAP_ON_BE(wave_format.ulSamplesPerSec);
+  wave_format.ulAvgBytesPerSec =
+      wxUINT32_SWAP_ON_BE(wave_format.ulAvgBytesPerSec);
+  wave_format.uiBlockAlign = wxUINT16_SWAP_ON_BE(wave_format.uiBlockAlign);
+  wave_format.uiBitsPerSample = wxUINT16_SWAP_ON_BE(wave_format.uiBitsPerSample);
 
   //  Sanity checks
   if (memcmp(data, "RIFF", 4) != 0) {
@@ -124,37 +126,37 @@ bool SoundFileLoader::LoadWAV(const uint8_t* data, size_t length) {
   // get the sound data size
   wxUint32 ul = 0;
   //  Get the "data" chunk length
-  if (memcmp(&data[FMT_INDEX + waveformat.uiSize + 8], "data", 4) == 0) {
-    memcpy(&ul, &data[FMT_INDEX + waveformat.uiSize + 12], 4);
+  if (memcmp(&data[FMT_INDEX + wave_format.uiSize + 8], "data", 4) == 0) {
+    memcpy(&ul, &data[FMT_INDEX + wave_format.uiSize + 12], 4);
     ul = wxUINT32_SWAP_ON_BE(ul);
   }
 
   //  There may be a "fact" chunk in the header, which will displace the first
   //  "data" chunk If so, find the "data" chunk 12 bytes further along
-  else if (memcmp(&data[FMT_INDEX + waveformat.uiSize + 8], "fact", 4) == 0) {
-    if (memcmp(&data[FMT_INDEX + waveformat.uiSize + 8 + 12], "data", 4) == 0) {
-      memcpy(&ul, &data[FMT_INDEX + waveformat.uiSize + 12 + 12], 4);
+  else if (memcmp(&data[FMT_INDEX + wave_format.uiSize + 8], "fact", 4) == 0) {
+    if (memcmp(&data[FMT_INDEX + wave_format.uiSize + 8 + 12], "data", 4) == 0) {
+      memcpy(&ul, &data[FMT_INDEX + wave_format.uiSize + 12 + 12], 4);
       ul = wxUINT32_SWAP_ON_BE(ul);
     }
   }
-  if (length < ul + FMT_INDEX + waveformat.uiSize + 16) {
+  if (length < ul + FMT_INDEX + wave_format.uiSize + 16) {
     return false;
   }
-  if (waveformat.uiFormatTag != WAVE_FORMAT_PCM) {
+  if (wave_format.uiFormatTag != WAVE_FORMAT_PCM) {
     return false;
   }
-  if (waveformat.ulSamplesPerSec !=
-      waveformat.ulAvgBytesPerSec / waveformat.uiBlockAlign) {
+  if (wave_format.ulSamplesPerSec !=
+      wave_format.ulAvgBytesPerSec / wave_format.uiBlockAlign) {
     return false;
   }
-  m_osdata = std::unique_ptr<SoundData>(new SoundData);
-  m_osdata->m_channels = waveformat.uiChannels;
-  m_osdata->m_samplingRate = waveformat.ulSamplesPerSec;
-  m_osdata->m_bitsPerSample = waveformat.uiBitsPerSample;
+  m_osdata = std::make_unique<SoundData>();
+  m_osdata->m_channels = wave_format.uiChannels;
+  m_osdata->m_samplingRate = wave_format.ulSamplesPerSec;
+  m_osdata->m_bitsPerSample = wave_format.uiBitsPerSample;
   m_osdata->m_samples =
       ul / (m_osdata->m_channels * m_osdata->m_bitsPerSample / 8);
   m_osdata->m_dataBytes = ul;
-  unsigned samplesPos = FMT_INDEX + waveformat.uiSize + 8;
+  unsigned samplesPos = FMT_INDEX + wave_format.uiSize + 8;
   m_osdata->m_data.bytes = new wxUint8[length];
   memcpy(const_cast<uint8_t*>(m_osdata->m_data.bytes), data + samplesPos,
          length - samplesPos);
@@ -173,7 +175,7 @@ bool SoundFileLoader::Reset() {
 size_t SoundFileLoader::Get(void* buff, size_t length) {
   size_t len = std::min(length, m_osdata->m_dataBytes - m_next);
   memcpy(buff, m_osdata->m_data.bytes + m_next, len);
-  m_next += len;
+  m_next += static_cast<int>(len);
   return len;
 }
 

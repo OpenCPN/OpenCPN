@@ -54,6 +54,8 @@
 #include <wx/display.h>
 #include <wx/jsonreader.h>
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
@@ -127,7 +129,6 @@
 #include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
-#include "OCPN_Sound.h"
 #include "o_senc.h"
 #include "options.h"
 #include "pluginmanager.h"
@@ -140,8 +141,6 @@
 #include "s52plib.h"
 #include "s57chart.h"
 #include "s57_query_dlg.h"
-#include "SoundFactory.h"
-#include "SystemCmdSound.h"
 #include "tcmgr.h"
 #include "timers.h"
 #include "toolbar.h"
@@ -191,8 +190,10 @@ static wxPoint options_lastWindowPos(0, 0);
 static double gQueryVar = 361.0;
 
 static char bells_sound_file_name[2][12] = {"1bells.wav", "2bells.wav"};
-static OcpnSound *_bells_sounds[] = {SoundFactory(), SoundFactory()};
-static std::vector<OcpnSound *> bells_sound(_bells_sounds, _bells_sounds + 2);
+static o_sound::Sound *_bells_sounds[] = {o_sound::Factory(),
+                                          o_sound::Factory()};
+static std::vector<o_sound::Sound *> bells_sound(_bells_sounds,
+                                                 _bells_sounds + 2);
 
 static wxArrayPtrVoid *UserColourHashTableArray;
 
@@ -876,9 +877,9 @@ void MyFrame::OnBellsFinished(wxCommandEvent &event) {
   soundfile.Prepend(g_Platform->GetSharedDataDir());
   wxLogMessage("Using bells sound file: " + soundfile);
 
-  OcpnSound *sound = bells_sound[bells - 1];
+  o_sound::Sound *sound = bells_sound[bells - 1];
   sound->SetFinishedCallback(onBellsFinishedCB, this);
-  auto cmd_sound = dynamic_cast<SystemCmdSound *>(sound);
+  auto cmd_sound = dynamic_cast<o_sound::SystemCmdSound *>(sound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
   sound->Load(soundfile);
   if (!sound->IsOk()) {
