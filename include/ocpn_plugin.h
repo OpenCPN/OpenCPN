@@ -7274,4 +7274,13 @@ extern DECL_EXP void AisTargetCreateWpt(wxString ais_mmsi);
 extern DECL_EXP void AisShowAllTracks(bool show);
 extern DECL_EXP void AisToggleTrack(wxString ais_mmsi);
 
+//  Context menu enable/disable, by object type
+#define CONTEXT_MENU_DISABLE_WAYPOINT 1
+#define CONTEXT_MENU_DISABLE_ROUTE 2
+#define CONTEXT_MENU_DISABLE_TRACK 4
+#define CONTEXT_MENU_DISABLE_AISTARGET 8
+
+extern DECL_EXP int GetContextMenuMask();
+extern DECL_EXP void SetContextMenuMask(int mask);
+
 #endif  //_PLUGIN_H_
