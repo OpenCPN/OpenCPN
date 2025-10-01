@@ -19,12 +19,16 @@
     Copyright (c) 2025 NoCodeHummel
  */
 
-#include "config.h"
+/**
+ * \file
+ *
+ * Implement routemanagerdialog.h -- Manage routes dialog
+ */
 
 #include <algorithm>
-
-#include "routemanagerdialog.h"
-#include "route_gui.h"
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -39,9 +43,8 @@
 #include <wx/clipbrd.h>
 #include <wx/statline.h>
 
-#include <iostream>
-#include <vector>
-#include <algorithm>
+#include "config.h"
+#include "routemanagerdialog.h"
 
 #include "model/ais_decoder.h"
 #include "model/config_vars.h"
@@ -65,13 +68,14 @@
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "routeman_gui.h"
+#include "route_gui.h"
 #include "route_point_gui.h"
-#include "RoutePropDlgImpl.h"
-#include "SendToGpsDlg.h"
-#include "SendToPeerDlg.h"
+#include "route_prop_dlg_impl.h"
+#include "send_to_gps_dlg.h"
+#include "send_to_peer_dlg.h"
 #include "styles.h"
 #include "model/svg_utils.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -79,28 +83,12 @@
 
 #define DIALOG_MARGIN 10
 
-RouteManagerDialog *pRouteManagerDialog;
-
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };  // RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH, colTRKDATE };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS, colLAYPERSIST };
 enum { colWPTICON = 0, colWPTSCALE, colWPTNAME, colWPTDIST };
 
-// GLOBALS :0
-extern RouteList *pRouteList;
-extern std::vector<Track *> g_TrackList;
-extern LayerList *pLayerList;
-extern wxString GetLayerName(int id);
-extern RoutePropDlgImpl *pRoutePropDialog;
-extern TrackPropDlg *pTrackPropDialog;
-extern Routeman *g_pRouteMan;
-extern MyConfig *pConfig;
-extern ActiveTrack *g_pActiveTrack;
-extern MarkInfoDlg *g_pMarkInfoDialog;
-extern MyFrame *gFrame;
-extern bool g_bShowLayers;
-extern wxString g_default_wp_icon;
-extern OCPNPlatform *g_Platform;
+RouteManagerDialog *pRouteManagerDialog;
 
 // Helper for conditional file name separator
 void appendOSDirSlash(wxString *pString);
@@ -386,8 +374,8 @@ void RouteManagerDialog::Create() {
   m_stFilterRte->Wrap(-1);
   fgSizerFilterRte->Add(m_stFilterRte, 0, wxALL, 5);
 
-  m_tFilterRte = new wxTextCtrl(m_pPanelRte, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition, wxDefaultSize, 0);
+  m_tFilterRte = new wxTextCtrl(m_pPanelRte, wxID_ANY, "", wxDefaultPosition,
+                                wxDefaultSize, 0);
   fgSizerFilterRte->Add(m_tFilterRte, 1, wxALL | wxEXPAND, 5);
 
   bSizerRteContents->Add(fgSizerFilterRte, 0, wxEXPAND, 5);
@@ -563,8 +551,8 @@ void RouteManagerDialog::Create() {
   m_stFilterTrk->Wrap(-1);
   fgSizerFilterTrk->Add(m_stFilterTrk, 0, wxALL, 5);
 
-  m_tFilterTrk = new wxTextCtrl(m_pPanelTrk, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition, wxDefaultSize, 0);
+  m_tFilterTrk = new wxTextCtrl(m_pPanelTrk, wxID_ANY, "", wxDefaultPosition,
+                                wxDefaultSize, 0);
   fgSizerFilterTrk->Add(m_tFilterTrk, 1, wxALL | wxEXPAND, 5);
 
   bSizerTrkContents->Add(fgSizerFilterTrk, 0, wxEXPAND, 5);
@@ -706,8 +694,8 @@ void RouteManagerDialog::Create() {
   m_stFilterWpt->Wrap(-1);
   fgSizerFilterWpt->Add(m_stFilterWpt, 0, wxALL, 5);
 
-  m_tFilterWpt = new wxTextCtrl(m_pPanelWpt, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition, wxDefaultSize, 0);
+  m_tFilterWpt = new wxTextCtrl(m_pPanelWpt, wxID_ANY, "", wxDefaultPosition,
+                                wxDefaultSize, 0);
   fgSizerFilterWpt->Add(m_tFilterWpt, 1, wxALL | wxEXPAND, 5);
 
   bSizerWptContents->Add(fgSizerFilterWpt, 0, wxEXPAND, 5);
@@ -902,8 +890,8 @@ void RouteManagerDialog::Create() {
   m_stFilterLay->Wrap(-1);
   fgSizerFilterLay->Add(m_stFilterLay, 0, wxALL, 5);
 
-  m_tFilterLay = new wxTextCtrl(m_pPanelLay, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition, wxDefaultSize, 0);
+  m_tFilterLay = new wxTextCtrl(m_pPanelLay, wxID_ANY, "", wxDefaultPosition,
+                                wxDefaultSize, 0);
   fgSizerFilterLay->Add(m_tFilterLay, 1, wxALL | wxEXPAND, 5);
 
   bSizerLayContents->Add(fgSizerFilterLay, 0, wxEXPAND, 5);
@@ -1580,7 +1568,7 @@ void RouteManagerDialog::OnRteExportClick(wxCommandEvent &event) {
 
     if (proute_to_export) {
       list.push_back(proute_to_export);
-      if (proute_to_export->m_RouteNameString != wxEmptyString)
+      if (proute_to_export->m_RouteNameString != "")
         suggested_name = proute_to_export->m_RouteNameString;
     }
   }
@@ -1628,7 +1616,7 @@ void RouteManagerDialog::OnRteSendToPeerClick(wxCommandEvent &event) {
     if (MdnsCache::GetInstance().GetCache().empty()) dlg.SetScanOnCreate(true);
 
     dlg.SetScanTime(5);  // seconds
-    dlg.Create(NULL, -1, _("Send Route(s) to OpenCPN Peer") + _T( "..." ), "");
+    dlg.Create(NULL, -1, _("Send Route(s) to OpenCPN Peer") + "...", "");
     dlg.ShowModal();
   }
 }
@@ -1660,8 +1648,7 @@ void RouteManagerDialog::OnWptSendToPeerClick(wxCommandEvent &event) {
     if (MdnsCache::GetInstance().GetCache().empty()) dlg.SetScanOnCreate(true);
 
     dlg.SetScanTime(5);  // seconds
-    dlg.Create(NULL, -1, _("Send Waypoint(s) to OpenCPN Peer") + _T( "..." ),
-               "");
+    dlg.Create(NULL, -1, _("Send Waypoint(s) to OpenCPN Peer") + "...", "");
     dlg.ShowModal();
   }
 }
@@ -1693,7 +1680,7 @@ void RouteManagerDialog::OnTrkSendToPeerClick(wxCommandEvent &event) {
     if (MdnsCache::GetInstance().GetCache().empty()) dlg.SetScanOnCreate(true);
 
     dlg.SetScanTime(5);  // seconds
-    dlg.Create(NULL, -1, _("Send Track(s) to OpenCPN Peer") + _T( "..." ), "");
+    dlg.Create(NULL, -1, _("Send Track(s) to OpenCPN Peer") + "...", "");
     dlg.ShowModal();
   }
 }
@@ -1833,7 +1820,7 @@ void RouteManagerDialog::OnRteSendToGPSClick(wxCommandEvent &event) {
   pdlg->SetFont(fo);
 
   wxString source;
-  pdlg->Create(NULL, -1, _("Send to GPS") + _T( "..." ), source);
+  pdlg->Create(NULL, -1, _("Send to GPS") + "...", source);
 
 #ifdef __WXOSX__
   HideWithEffect(wxSHOW_EFFECT_BLEND);
@@ -2304,7 +2291,7 @@ void RouteManagerDialog::OnTrkExportClick(wxCommandEvent &event) {
 
     if (ptrack_to_export) {
       list.push_back(ptrack_to_export);
-      if (ptrack_to_export->GetName() != wxEmptyString)
+      if (ptrack_to_export->GetName() != "")
         suggested_name = ptrack_to_export->GetName();
     }
   }
@@ -2628,8 +2615,7 @@ void RouteManagerDialog::OnWptToggleVisibility(wxMouseEvent &event) {
 }
 
 void RouteManagerDialog::OnWptNewClick(wxCommandEvent &event) {
-  RoutePoint *pWP = new RoutePoint(gLat, gLon, g_default_wp_icon, wxEmptyString,
-                                   wxEmptyString);
+  RoutePoint *pWP = new RoutePoint(gLat, gLon, g_default_wp_icon, "", "");
   pWP->m_bIsolatedMark = true;  // This is an isolated mark
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP);
   NavObj_dB::GetInstance().InsertRoutePoint(pWP);
@@ -2774,8 +2760,7 @@ void RouteManagerDialog::OnWptGoToClick(wxCommandEvent &event) {
 
   if (!wp) return;
 
-  RoutePoint *pWP_src = new RoutePoint(gLat, gLon, g_default_wp_icon,
-                                       wxEmptyString, wxEmptyString);
+  RoutePoint *pWP_src = new RoutePoint(gLat, gLon, g_default_wp_icon, "", "");
   pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
 
   Route *temp_route = new Route();
@@ -2819,7 +2804,7 @@ void RouteManagerDialog::OnWptExportClick(wxCommandEvent &event) {
 
     if (wp && !wp->m_bIsInLayer) {
       list.push_back(wp);
-      if (wp->GetName() != wxEmptyString) suggested_name = wp->GetName();
+      if (wp->GetName() != "") suggested_name = wp->GetName();
     }
   }
 
@@ -2840,7 +2825,7 @@ void RouteManagerDialog::OnWptSendToGPSClick(wxCommandEvent &event) {
   pdlg->SetWaypoint(wp);
 
   wxString source;
-  pdlg->Create(NULL, -1, _("Send to GPS") + _T( "..." ), source);
+  pdlg->Create(NULL, -1, _("Send to GPS") + "...", source);
 
 #ifdef __WXOSX__
   HideWithEffect(wxSHOW_EFFECT_BLEND);
@@ -3030,7 +3015,7 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
     prompt.Append("\n");
     prompt.Append(
         _("The file will also be deleted from OpenCPN's layer directory."));
-    prompt.Append("\n (" + destf + _T(")" ));
+    prompt.Append("\n (" + destf + ")");
     ispers = true;
   }
   int answer =

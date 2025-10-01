@@ -12,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Scrolled tty like window for logging.
  */
 
-#ifndef __TTYSCROLL_H__
-#define __TTYSCROLL_H__
+#ifndef TTYSCROLL_H_
+#define TTYSCROLL_H_
 
 #include <deque>
 #include <memory>
@@ -27,6 +30,7 @@
 #include <wx/scrolwin.h>
 #include <wx/textctrl.h>
 
+#include "model/gui_vars.h"
 #include "model/nmea_log.h"
 #include "model/navmsg_filter.h"
 
@@ -34,16 +38,6 @@
  * \file
  * Scrolled TTY-like window for logging, related utilities
  */
-
-extern const wxString kUtfCheckMark;
-extern const wxString kUtfCircledDivisionSlash;
-extern const wxString kUtfFallingDiagonal;
-extern const wxString kUtfIdenticalTo;
-extern const wxString kUtfLeftArrow;
-extern const wxString kUtfLeftRightArrow;
-extern const wxString kUtfLeftwardsArrowToBar;
-extern const wxString kUtfMultiplicationX;
-extern const wxString kUtfRightArrow;
 
 /** Functor returning log foreground color for given state. */
 class ColorByState {
@@ -124,4 +118,4 @@ protected:
   void OnSize(wxSizeEvent& event);
 };
 
-#endif
+#endif  // TTYSCROLL_H_

@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Time textbox to replace broken wxTimePickerCtrl on wxGTK
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2019 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,23 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Time textbox to replace broken wxTimePickerCtrl on wxGTK
+ */
 
 #ifndef time_textbox_h
 #define time_textbox_h
 
 #pragma once
 
-#include <wx/datetime.h>
-#include <wx/textctrl.h>
-#include <wx/msgdlg.h>
 #include <wx/dateevt.h>
+#include <wx/datetime.h>
+#include <wx/msgdlg.h>
+#include <wx/textctrl.h>
 
-#define NO_TIME _T("00:00")
-#define TIME_FORMAT _T("%H:%M")
+#define NO_TIME "00:00"
+#define TIME_FORMAT "%H:%M"
 
 class TimeCtrl : public wxTextCtrl {
 public:

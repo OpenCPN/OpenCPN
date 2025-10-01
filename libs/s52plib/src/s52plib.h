@@ -153,6 +153,9 @@ WX_DECLARE_STRING_HASH_MAP(LUPHashIndex *, LUPArrayIndexHash);
 class s52plib;   // Forward
 extern s52plib *ps52plib;  ///< Global instance
 
+/** in s52cnsy */
+extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
+
 class LUPArrayContainer {
 public:
   LUPArrayContainer();

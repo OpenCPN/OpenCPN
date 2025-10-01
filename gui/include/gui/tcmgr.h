@@ -1,11 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Tide and Current Manager
- * Author:   David Register
- * Todo add original author
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Tide and Current Manager
+ * @TODO  Add original author copyright
+ */
 
 #ifndef __TCMGR_H__
 #define __TCMGR_H__
@@ -32,10 +30,10 @@
 
 #include <wx/datetime.h>
 
-#include "Station_Data.h"
+#include "station_data.h"
 #include "idx_entry.h"
-#include "TC_Error_Code.h"
-#include "TCDataSource.h"
+#include "tc_error_code.h"
+#include "tc_data_source.h"
 
 // ----------------------------------------------------------------------------
 // external C linkages
@@ -94,9 +92,9 @@ public:
   ~TCMgr();
 
   TC_Error_Code LoadDataSources(std::vector<std::string> &sources);
-  std::vector<std::string> GetDataSet(void) { return m_sourcefile_array; }
+  std::vector<std::string> GetDataSet() { return m_sourcefile_array; }
 
-  bool IsReady(void) { return bTCMReady; }
+  bool IsReady() { return bTCMReady; }
 
   bool GetTideOrCurrent(time_t t, int idx, float &value, float &dir);
   bool GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float &dir,
@@ -130,10 +128,10 @@ public:
 private:
   void PurgeData();
 
-  void LoadMRU(void);
-  void SaveMRU(void);
+  void LoadMRU();
+  void SaveMRU();
   void AddMRU(Station_Data *psd);
-  void FreeMRU(void);
+  void FreeMRU();
 
   bool bTCMReady;
   wxString pmru_file_name;

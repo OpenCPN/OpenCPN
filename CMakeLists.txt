@@ -844,7 +844,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/priority_gui.h
     ${GUI_HDR_DIR}/quilt.h
     ${GUI_HDR_DIR}/rest_server_gui.h
-    ${GUI_HDR_DIR}/RolloverWin.h
+    ${GUI_HDR_DIR}/rollover_win.h
     ${GUI_HDR_DIR}/route_ctx_factory.h
     ${GUI_HDR_DIR}/route_gui.h
     ${GUI_HDR_DIR}/routemanagerdialog.h
@@ -852,26 +852,26 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/route_point_gui.h
     ${GUI_HDR_DIR}/route_printout.h
     ${GUI_HDR_DIR}/route_validator.h
-    ${GUI_HDR_DIR}/RoutePropDlg.h
-    ${GUI_HDR_DIR}/RoutePropDlgImpl.h
+    ${GUI_HDR_DIR}/route_prop_dlg.h
+    ${GUI_HDR_DIR}/route_prop_dlg_impl.h
     ${GUI_HDR_DIR}/s57chart.h
-    ${GUI_HDR_DIR}/S57Light.h
-    ${GUI_HDR_DIR}/S57ObjectDesc.h
+    ${GUI_HDR_DIR}/s57_light.h
+    ${GUI_HDR_DIR}/s57_object_desc.h
     ${GUI_HDR_DIR}/s57_ocpn_utils.h
-    ${GUI_HDR_DIR}/S57QueryDialog.h
-    ${GUI_HDR_DIR}/S57Sector.h
+    ${GUI_HDR_DIR}/s57_query_dlg.h
+    ${GUI_HDR_DIR}/s57_sector.h
     ${GUI_HDR_DIR}/safe_mode_gui.h
-    ${GUI_HDR_DIR}/SendToGpsDlg.h
-    ${GUI_HDR_DIR}/SendToPeerDlg.h
-    ${GUI_HDR_DIR}/Station_Data.h
+    ${GUI_HDR_DIR}/send_to_gps_dlg.h
+    ${GUI_HDR_DIR}/send_to_peer_dlg.h
+    ${GUI_HDR_DIR}/station_data.h
     ${GUI_HDR_DIR}/styles.h
-    ${GUI_HDR_DIR}/TCDataFactory.h
-    ${GUI_HDR_DIR}/TCDataSource.h
-    ${GUI_HDR_DIR}/TCDS_Ascii_Harmonic.h
-    ${GUI_HDR_DIR}/TCDS_Binary_Harmonic.h
-    ${GUI_HDR_DIR}/TC_Error_Code.h
+    ${GUI_HDR_DIR}/tc_data_factory.h
+    ${GUI_HDR_DIR}/tc_data_source.h
+    ${GUI_HDR_DIR}/tcds_ascii_harmonic.h
+    ${GUI_HDR_DIR}/tcds_binary_harmonic.h
+    ${GUI_HDR_DIR}/tc_error_code.h
     ${GUI_HDR_DIR}/tcmgr.h
-    ${GUI_HDR_DIR}/TCWin.h
+    ${GUI_HDR_DIR}/tc_win.h
     ${GUI_HDR_DIR}/thumbwin.h
     ${GUI_HDR_DIR}/tide_time.h
     ${GUI_HDR_DIR}/timers.h
@@ -879,7 +879,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/toolbar.h
     ${GUI_HDR_DIR}/track_gui.h
     ${GUI_HDR_DIR}/track_printout.h
-    ${GUI_HDR_DIR}/TrackPropDlg.h
+    ${GUI_HDR_DIR}/track_prop_dlg.h
     ${GUI_HDR_DIR}/tty_scroll.h
     ${GUI_HDR_DIR}/udev_rule_mgr.h
     ${GUI_HDR_DIR}/undo.h
@@ -888,8 +888,6 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/usb_devices.h
     ${GUI_HDR_DIR}/viewport.h
     ${GUI_HDR_DIR}/waypointman_gui.h
-    ${GUI_HDR_DIR}/WindowDestroyListener.h
-    ${GUI_HDR_DIR}/WindowDestroyListener.h
 )
 
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
@@ -972,37 +970,37 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/priority_gui.cpp
     ${GUI_SRC_DIR}/quilt.cpp
     ${GUI_SRC_DIR}/rest_server_gui.cpp
-    ${GUI_SRC_DIR}/RolloverWin.cpp
+    ${GUI_SRC_DIR}/rollover_win.cpp
     ${GUI_SRC_DIR}/route_gui.cpp
     ${GUI_SRC_DIR}/routemanagerdialog.cpp
     ${GUI_SRC_DIR}/routeman_gui.cpp
     ${GUI_SRC_DIR}/route_point_gui.cpp
     ${GUI_SRC_DIR}/route_printout.cpp
     ${GUI_SRC_DIR}/route_validator.cpp
-    ${GUI_SRC_DIR}/RoutePropDlg.cpp
-    ${GUI_SRC_DIR}/RoutePropDlgImpl.cpp
+    ${GUI_SRC_DIR}/route_prop_dlg.cpp
+    ${GUI_SRC_DIR}/route_prop_dlg_impl.cpp
     ${GUI_SRC_DIR}/s57obj.cpp
     ${GUI_SRC_DIR}/s57chart.cpp
-    ${GUI_SRC_DIR}/S57QueryDialog.cpp
+    ${GUI_SRC_DIR}/s57_query_dlg.cpp
     ${GUI_SRC_DIR}/safe_mode_gui.cpp
-    ${GUI_SRC_DIR}/SencManager.cpp
-    ${GUI_SRC_DIR}/SendToGpsDlg.cpp
-    ${GUI_SRC_DIR}/SendToPeerDlg.cpp
+    ${GUI_SRC_DIR}/senc_manager.cpp
+    ${GUI_SRC_DIR}/send_to_gps_dlg.cpp
+    ${GUI_SRC_DIR}/send_to_peer_dlg.cpp
     ${GUI_SRC_DIR}/shapefile_basemap.cpp
-    ${GUI_SRC_DIR}/Station_Data.cpp
+    ${GUI_SRC_DIR}/station_data.cpp
     ${GUI_SRC_DIR}/styles.cpp
     ${GUI_SRC_DIR}/svg_icons.cpp
-    ${GUI_SRC_DIR}/TCDataFactory.cpp
-    ${GUI_SRC_DIR}/TCDataSource.cpp
-    ${GUI_SRC_DIR}/TCDS_Ascii_Harmonic.cpp
-    ${GUI_SRC_DIR}/TCDS_Binary_Harmonic.cpp
+    ${GUI_SRC_DIR}/tc_data_factory.cpp
+    ${GUI_SRC_DIR}/tc_data_source.cpp
+    ${GUI_SRC_DIR}/tcds_ascii_harmonic.cpp
+    ${GUI_SRC_DIR}/tcds_binary_harmonic.cpp
     ${GUI_SRC_DIR}/tcmgr.cpp
-    ${GUI_SRC_DIR}/TCWin.cpp
+    ${GUI_SRC_DIR}/tc_win.cpp
     ${GUI_SRC_DIR}/thumbwin.cpp
     ${GUI_SRC_DIR}/toolbar.cpp
     ${GUI_SRC_DIR}/track_gui.cpp
     ${GUI_SRC_DIR}/track_printout.cpp
-    ${GUI_SRC_DIR}/TrackPropDlg.cpp
+    ${GUI_SRC_DIR}/track_prop_dlg.cpp
     ${GUI_SRC_DIR}/tty_scroll.cpp
     ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
