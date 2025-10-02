@@ -45,14 +45,14 @@
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
 #include <wx/filename.h>
-#include <wx/arrimpl.cpp>  // Implement an array of S57 Objects
+
 #include <wx/listimpl.cpp>
 
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
 #endif
 
-#include "gdal/cpl_csv.h"
+#include "s57chart.h"
 
 #include "model/chartdata_input_stream.h"
 #include "model/cutil.h"
@@ -60,6 +60,9 @@
 #include "model/logger.h"
 #include "model/navutil_base.h"
 #include "model/plugin_comm.h"
+
+#include "gdal/cpl_csv.h"
+#include "ssl/sha1.h"
 
 #include "chart_ctx_factory.h"
 #include "chcanv.h"
@@ -78,11 +81,9 @@
 #include "s52plib.h"
 #include "s52s57.h"
 #include "s52utils.h"
-#include "s57chart.h"
 #include "s57class_registrar.h"
 #include "senc_manager.h"
 #include "setjmp.h"
-#include "ssl/sha1.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"

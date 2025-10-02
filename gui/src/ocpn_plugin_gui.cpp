@@ -83,6 +83,8 @@ extern options* g_pOptions;  // FIXME (leamas) merge to g_options
 
 extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
 
+int g_canvas_context_Menu_Disable_Mask;
+
 void NotifySetupOptionsPlugin(const PlugInData* pic);
 
 //---------------------------------------------------------------------------
@@ -3553,3 +3555,7 @@ void AisToggleTrack(wxString ais_mmsi) {
     }
   }
 }
+
+//  Context menu enable/disable, by object type
+int GetContextMenuMask() { return g_canvas_context_Menu_Disable_Mask; }
+void SetContextMenuMask(int mask) { g_canvas_context_Menu_Disable_Mask = mask; }

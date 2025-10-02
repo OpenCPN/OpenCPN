@@ -296,6 +296,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_bShowAISScaled = false;
   m_timed_move_vp_active = false;
   m_inPinch = false;
+  m_disable_adjust_on_zoom = false;
 
   m_vLat = 0.;
   m_vLon = 0.;

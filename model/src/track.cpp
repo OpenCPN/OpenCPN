@@ -1,14 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Navigation Utility Functions
- * Authors:   David Register
- *            Sean D'Epagnier
- * Project:  OpenCPN
- * Purpose:  Navigation Utility Functions
- * Author:   David Register
- *
- ***************************************************************************
+ *   Copyright (C) 2016 Sean D'Epagnier                                    *
  *   Copyright (C) 2016 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/   *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement track.h -- recorded track abstraction.
+ */
 
 /* Tracks are broken into SubTracks to allow for efficient rendering and
    selection on tracks with thousands or millions of track points
@@ -103,8 +98,8 @@ std::vector<Track *> g_TrackList;
 class ActiveTrack;  // forward
 ActiveTrack *g_pActiveTrack;
 
-#if defined(__UNIX__) && \
-    !defined(__WXOSX__)  // high resolution stopwatch for profiling
+// High resolution stopwatch for profiling
+#if defined(__UNIX__) && !defined(__WXOSX__)
 class OCPNStopWatch {
 public:
   OCPNStopWatch() { Reset(); }
@@ -149,10 +144,7 @@ wxDateTime TrackPoint::GetCreateTime() {
 void TrackPoint::SetCreateTime(wxDateTime dt) {
   wxString ts;
   if (dt.IsValid())
-    ts = dt.FormatISODate()
-             .Append(_T("T"))
-             .Append(dt.FormatISOTime())
-             .Append(_T("Z"));
+    ts = dt.FormatISODate().Append("T").Append(dt.FormatISOTime()).Append("Z");
 
   SetCreateTime(ts);
 }
@@ -188,7 +180,7 @@ Track::Track() {
   m_HighlightedTrackPoint = -1;
 }
 
-Track::~Track(void) {
+Track::~Track() {
   for (size_t i = 0; i < TrackPoints.size(); i++) delete TrackPoints[i];
 
   delete m_TrackHyperlinkList;
@@ -250,7 +242,7 @@ void ActiveTrack::SetPrecision(int prec) {
   }
 }
 
-void ActiveTrack::Start(void) {
+void ActiveTrack::Start() {
   if (!m_bRunning) {
     AddPointNow(true);  // Add initial point
     m_TimerTrack.Start(1000, wxTIMER_CONTINUOUS);
@@ -306,7 +298,7 @@ Track *ActiveTrack::DoExtendDaily() {
     int begin = 1;
     if (pLastPoint->GetCreateTime() == pExtendPoint->GetCreateTime()) begin = 2;
     pSelect->DeleteAllSelectableTrackSegments(pExtendTrack);
-    wxString suffix = _T("");
+    wxString suffix = "";
     if (GetName().IsNull()) {
       suffix = pExtendTrack->GetName();
       if (suffix.IsNull()) suffix = wxDateTime::Today().FormatISODate();
@@ -790,8 +782,8 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
   TrackPoint *prp_OK =
       NULL;  // last routepoint known not to exceed xte limit, if not yet added
 
-  wxString icon = _T("xmblue");
-  if (g_TrackDeltaDistance >= 0.1) icon = _T("diamond");
+  wxString icon = "xmblue";
+  if (g_TrackDeltaDistance >= 0.1) icon = "diamond";
 
   int next_ic = 0;
   int back_ic = 0;
@@ -805,8 +797,7 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
 
   // add first point
 
-  pWP_dst = new RoutePoint(pWP_src->m_lat, pWP_src->m_lon, icon, _T ( "" ),
-                           wxEmptyString);
+  pWP_dst = new RoutePoint(pWP_src->m_lat, pWP_src->m_lon, icon, "", "");
   route->AddPoint(pWP_dst);
 
   pWP_dst->m_bShowName = false;
@@ -838,7 +829,7 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
       while (delta_inserts--) {
         ll_gc_ll(pWP_prev->m_lat, pWP_prev->m_lon, delta_hdg, delta_dist, &tlat,
                  &tlon);
-        pWP_dst = new RoutePoint(tlat, tlon, icon, _T ( "" ), wxEmptyString);
+        pWP_dst = new RoutePoint(tlat, tlon, icon, "", "");
         route->AddPoint(pWP_dst);
         pWP_dst->m_bShowName = false;
         pSelect->AddSelectableRoutePoint(pWP_dst->m_lat, pWP_dst->m_lon,
@@ -867,8 +858,7 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
       //            TrackPoint src(pWP_prev->m_lat, pWP_prev->m_lon);
       xte = GetXTE(pWP_src, prpX, prp);
       if (isProminent || (xte > g_TrackDeltaDistance)) {
-        pWP_dst = new RoutePoint(prp_OK->m_lat, prp_OK->m_lon, icon, _T ( "" ),
-                                 wxEmptyString);
+        pWP_dst = new RoutePoint(prp_OK->m_lat, prp_OK->m_lon, icon, "", "");
 
         route->AddPoint(pWP_dst);
         pWP_dst->m_bShowName = false;
@@ -912,9 +902,8 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
 
   // add last point, if needed
   if (delta_dist >= g_TrackDeltaDistance) {
-    pWP_dst =
-        new RoutePoint(TrackPoints.back()->m_lat, TrackPoints.back()->m_lon,
-                       icon, _T ( "" ), wxEmptyString);
+    pWP_dst = new RoutePoint(TrackPoints.back()->m_lat,
+                             TrackPoints.back()->m_lon, icon, "", "");
     route->AddPoint(pWP_dst);
 
     pWP_dst->m_bShowName = false;

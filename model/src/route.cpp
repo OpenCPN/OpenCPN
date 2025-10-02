@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,21 +12,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
+/**
+ * \file
+ *
+ * Implement route.h -- Route abstraction
+ */
 
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#endif
 
 #include <wx/arrstr.h>
 #include <wx/datetime.h>
@@ -79,7 +73,7 @@ Route::Route() {
   m_LayerID = 0;
   m_bIsInLayer = false;
 
-  m_Colour = wxEmptyString;
+  m_Colour = "";
 
   m_lastMousePointIndex = 0;
   m_NextLegGreatCircle = false;
@@ -119,7 +113,7 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
       RoutePoint *psourcepoint = psourceroute->GetPoint(i);
       RoutePoint *ptargetpoint = new RoutePoint(
           psourcepoint->m_lat, psourcepoint->m_lon, psourcepoint->GetIconName(),
-          psourcepoint->GetName(), wxEmptyString, true);
+          psourcepoint->GetName(), "", true);
       ptargetpoint->m_bShowName =
           psourcepoint->m_bShowName;  // do not change new wpt's name visibility
       AddPoint(ptargetpoint, false);
@@ -145,7 +139,7 @@ wxString Route::IsPointNameValid(RoutePoint *pPoint,
       ++it;
     }
   }
-  return wxEmptyString;
+  return "";
 }
 
 void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
@@ -166,7 +160,7 @@ void Route::AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence,
   if (b_rename_in_sequence && pNewPoint->GetName().IsEmpty() &&
       !pNewPoint->IsShared()) {
     wxString name;
-    name.Printf(_T("%03d"), GetnPoints());
+    name.Printf("%03d", GetnPoints());
     pNewPoint->SetName(name);
   }
   return;
@@ -179,7 +173,7 @@ void Route::AddPointAndSegment(RoutePoint *pNewPoint, bool b_rename_in_sequence,
   if (newpoint->m_bIsInLayer) {
     newpoint = new RoutePoint(pNewPoint->m_lat, pNewPoint->m_lon,
                               pNewPoint->GetIconName(), pNewPoint->GetName(),
-                              wxEmptyString, false);
+                              "", false);
     newpoint->m_bShowName =
         pNewPoint->m_bShowName;  // do not change new wpt's name visibility
   }
@@ -207,7 +201,7 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
     pNewPoint->m_bIsInRoute = true;
 
     if (insert_after >= GetnPoints() - 1) {
-      wxLogMessage(wxT("Error insert after last point"));
+      wxLogMessage("Error insert after last point");
       return;
     }
 
@@ -276,7 +270,7 @@ void Route::ClearHighlights() {
 RoutePoint *Route::InsertPointBefore(RoutePoint *pRP, double rlat, double rlon,
                                      bool bRenamePoints) {
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
-                                        GetNewMarkSequenced(), wxEmptyString);
+                                        GetNewMarkSequenced(), "");
   newpoint->m_bIsInRoute = true;
   newpoint->SetNameShown(false);
 
@@ -299,7 +293,7 @@ RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
   ++pos;
 
   RoutePoint *newpoint = new RoutePoint(rlat, rlon, g_default_routepoint_icon,
-                                        GetNewMarkSequenced(), wxEmptyString);
+                                        GetNewMarkSequenced(), "");
   newpoint->m_bIsInRoute = true;
   newpoint->SetNameShown(false);
 
@@ -313,9 +307,9 @@ RoutePoint *Route::InsertPointAfter(RoutePoint *pRP, double rlat, double rlon,
   return (newpoint);
 }
 
-wxString Route::GetNewMarkSequenced(void) {
+wxString Route::GetNewMarkSequenced() {
   wxString ret;
-  ret.Printf(_T ( "NM%03d" ), m_nm_sequence);
+  ret.Printf("NM%03d", m_nm_sequence);
   m_nm_sequence++;
 
   return ret;
@@ -407,7 +401,7 @@ void Route::ReloadRoutePointIcons() {
 
 void Route::FinalizeForRendering() { RBBox.Invalidate(); }
 
-LLBBox &Route::GetBBox(void) {
+LLBBox &Route::GetBBox() {
   if (RBBox.GetValid()) return RBBox;
 
   double bbox_lonmin, bbox_lonmax, bbox_latmin, bbox_latmax;
@@ -592,7 +586,7 @@ void Route::SetVisible(bool visible, bool includeWpts) {
 
 void Route::SetListed(bool visible) { m_bListed = visible; }
 
-void Route::AssembleRoute(void) {}
+void Route::AssembleRoute() {}
 
 void Route::ShowWaypointNames(bool bshow) {
   for (RoutePoint *prp : *pRoutePointList) {
@@ -608,7 +602,7 @@ bool Route::AreWaypointNamesVisible() {
   return bvis;
 }
 
-void Route::RenameRoutePoints(void) {
+void Route::RenameRoutePoints() {
   //    iterate on the route points.
   //    If dynamically named, rename according to current list position
 
@@ -617,14 +611,14 @@ void Route::RenameRoutePoints(void) {
     if (prp->IsNameDynamic()) {
       wxString name = prp->GetName();
       if (name.Len() == 3) {
-        name.Printf(_T ( "%03d" ), i);
+        name.Printf("%03d", i);
       } else if (name.Left(2) == "NM") {
-        name.Printf(_T ( "%03d" ), i);
+        name.Printf("%03d", i);
         if (prp->GetName().Len() >= 5) {
           name.Append(prp->GetName().Mid(5));
         }
       } else {
-        name.Printf(_T ( "%03d" ), i);
+        name.Printf("%03d", i);
         name.Append(prp->GetName().Mid(3));
       }
       prp->SetName(name);

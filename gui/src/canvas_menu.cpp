@@ -600,7 +600,9 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   wxString name;
   if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
     if (g_pAIS) {
-      if (parent->GetShowAIS() && (seltype & SELTYPE_AISTARGET)) {
+      if (parent->GetShowAIS() &&
+          (seltype & SELTYPE_AISTARGET &&
+           !(GetContextMenuMask() & CONTEXT_MENU_DISABLE_AISTARGET))) {
         auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
         if (!g_bBasicMenus && myptarget) {
           name = myptarget->GetFullName();
@@ -679,7 +681,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     SetMenuItemFont1(subItemDebug);
   }
 
-  if (seltype & SELTYPE_ROUTESEGMENT) {
+  if (seltype & SELTYPE_ROUTESEGMENT &&
+      !(GetContextMenuMask() & CONTEXT_MENU_DISABLE_ROUTE)) {
     if (!g_bBasicMenus && m_pSelectedRoute) {
       name = m_pSelectedRoute->m_RouteNameString;
       if (name.IsEmpty()) name = _("Unnamed Route");
@@ -768,7 +771,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     if (menuFocus != menuAIS) menuFocus = menuRoute;
   }
 
-  if (seltype & SELTYPE_TRACKSEGMENT) {
+  if (seltype & SELTYPE_TRACKSEGMENT &&
+      !(GetContextMenuMask() & CONTEXT_MENU_DISABLE_TRACK)) {
     name = wxEmptyString;
     if (!g_bBasicMenus && m_pSelectedTrack)
       name = " ( " + m_pSelectedTrack->GetName(true) + " )";
@@ -794,7 +798,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     if (menuFocus != menuAIS) menuFocus = menuTrack;
   }
 
-  if (seltype & SELTYPE_ROUTEPOINT) {
+  if (seltype & SELTYPE_ROUTEPOINT &&
+      !(GetContextMenuMask() & CONTEXT_MENU_DISABLE_WAYPOINT)) {
     if (!g_bBasicMenus && m_pFoundRoutePoint) {
       name = m_pFoundRoutePoint->GetName();
       if (name.IsEmpty()) name = _("Unnamed Waypoint");
@@ -865,7 +870,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     if (menuFocus != menuAIS) menuFocus = menuWaypoint;
   }
 
-  if (seltype & SELTYPE_MARKPOINT) {
+  if (seltype & SELTYPE_MARKPOINT &&
+      !(GetContextMenuMask() & CONTEXT_MENU_DISABLE_WAYPOINT)) {
     if (!g_bBasicMenus && m_pFoundRoutePoint) {
       name = m_pFoundRoutePoint->GetName();
       if (name.IsEmpty()) name = _("Unnamed Mark");

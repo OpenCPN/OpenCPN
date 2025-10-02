@@ -136,8 +136,6 @@ set(
   ${MODEL_HDR_DIR}/thread_ctrl.h
   ${MODEL_HDR_DIR}/track.h
   ${MODEL_HDR_DIR}/usb_watch_daemon.h
-  ${MODEL_HDR_DIR}/wait_continue.h
-  ${MODEL_HDR_DIR}/wx28compat.h
   ${MODEL_HDR_DIR}/wx_instance_chk.h
 )
 
@@ -198,7 +196,6 @@ set(SRC
   ${MODEL_SRC_DIR}/gpx_document.cpp
   ${MODEL_SRC_DIR}/gui_vars.cpp
   ${MODEL_SRC_DIR}/hyperlink.cpp
-  ${MODEL_SRC_DIR}/instance_handler.cpp
   ${MODEL_SRC_DIR}/ipc_api.cpp
   ${MODEL_SRC_DIR}/ipc_factories.cpp
   ${MODEL_SRC_DIR}/local_api.cpp

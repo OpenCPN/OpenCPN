@@ -13,14 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
- *  Implement various ocpn_plugin.h methods.
+ *
+ *  Implement various non-gui ocpn_plugin.h methods.
  */
 
 #include <memory>
@@ -46,6 +45,7 @@
 #include "model/comm_drv_factory.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/comm_drv_n2k_serial.h"
+
 using namespace std;
 
 vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
@@ -284,7 +284,7 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
   return RESULT_COMM_NO_ERROR;
 }
 
-wxString* GetpPrivateApplicationDataLocation(void) {
+wxString* GetpPrivateApplicationDataLocation() {
   return g_BasePlatform->GetPrivateDataDirPtr();
 }
 
@@ -297,12 +297,12 @@ void ReloadConfigConnections() {
   wxFileConfig* pConf = GetOCPNConfigObject();
   if (pConf) {
     TheConnectionParams().clear();
-    pConf->SetPath(_T ( "/Settings/NMEADataSource" ));
+    pConf->SetPath("/Settings/NMEADataSource");
 
     wxString connectionconfigs;
-    pConf->Read(_T( "DataConnections" ), &connectionconfigs);
+    pConf->Read("DataConnections", &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
-      wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+      wxArrayString confs = wxStringTokenize(connectionconfigs, "|");
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams* prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) continue;

@@ -13,15 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
+ *
  *  Global state for AIS decoder
  */
+
+#ifndef AIS_STATE_VARS_H_
+#define AIS_STATE_VARS_H_
 
 extern bool g_bAIS_ACK_Timeout;
 extern bool g_bAIS_CPA_Alert;
@@ -88,3 +90,5 @@ extern wxString g_AisTargetList_perspective;
 extern wxString g_anchorwatch_sound_file;
 extern wxString g_DSC_sound_file;
 extern wxString g_sAIS_Alert_Sound_File;
+
+#endif

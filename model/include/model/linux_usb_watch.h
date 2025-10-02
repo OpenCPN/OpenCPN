@@ -12,13 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
+ *
  *  Linux specific hardware events DBus interface
  */
 
@@ -26,9 +25,9 @@
 #error "This file can only be compiled on linux. "
 #endif
 
-#include "model/usb_watch_daemon.h"
-
 #include <gio/gio.h>
+
+#include "model/usb_watch_daemon.h"
 
 /**
  * Listen to DBus system bus signals reflecting for example suspend/resume,

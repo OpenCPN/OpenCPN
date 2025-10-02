@@ -12,23 +12,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
  *
- *  Implement multiplexer.h
+ *  Implement multiplexer.h -- Input multiplexer class and helpers
  */
 
 #ifdef __MSVC__
 #include "winsock2.h"
 #include <wx/msw/winundef.h>
 #endif
-
-#include "config.h"
 
 #ifdef HAVE_LIBGEN_H
 #include <libgen.h>
@@ -37,6 +33,8 @@
 #if defined(HAVE_READLINK) && !defined(HAVE_LIBGEN_H)
 #error Using readlink(3) requires libgen.h which cannot be found.
 #endif
+
+#include "config.h"
 
 #include <wx/wx.h>
 

@@ -1,4 +1,4 @@
-/**************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,7 +18,7 @@
 /**
  * \file
  *
- * Purpose:  S57 Chart Object
+ * S57 Chart Object
  */
 
 #ifndef SENCMGR_H_

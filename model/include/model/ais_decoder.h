@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
@@ -56,11 +54,12 @@ class ArrayOfMmsiProperties;  // forward
 // AISTargetAlertDialog in gui layer
 extern wxEvtHandler *g_pais_alert_dialog_active;
 
-extern Select *pSelectAIS;
-extern wxString AISTargetNameFileName;
-extern AisDecoder *g_pAIS;
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern unsigned g_OwnShipmmsi;
+extern Select *pSelectAIS;                       /**< Global instance. */
+extern wxString AISTargetNameFileName;           /**< Global instance */
+extern AisDecoder *g_pAIS;                       /**< Global instance */
+extern ArrayOfMmsiProperties g_MMSI_Props_Array; /**< Global instance */
+
+extern unsigned g_OwnShipmmsi; /**< Global instance */
 
 enum AISAudioSoundType {
   AISAUDIO_NONE,

@@ -12,10 +12,21 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/   *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement wx_instance_chk.h -- single instance check based on wxWidgets
+ * functions.
+ */
+
+#ifdef _MSC_VER
+#include <process.h>
+#else
+#include <signal.h>
+#endif
 
 #include <wx/filename.h>
 #include <wx/string.h>
@@ -23,12 +34,6 @@
 #include "model/base_platform.h"
 #include "model/logger.h"
 #include "model/wx_instance_chk.h"
-
-#ifdef _MSC_VER
-#include <process.h>
-#else
-#include <signal.h>
-#endif
 
 static const char* const kName = "_OpenCPN_SILock";
 
