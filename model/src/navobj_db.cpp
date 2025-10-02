@@ -1729,12 +1729,23 @@ bool NavObj_dB::LoadAllRoutes() {
           reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
 
       RoutePoint* point;
-      // RoutePoint exists already, in another route?
+      // RoutePoint exists already, in another route or isolated??
+      RoutePoint* existing_point = NULL;
       auto containing_route =
           g_pRouteMan->FindRouteContainingWaypoint(point_guid);
 
-      if (containing_route) {
-        point = containing_route->GetPoint(point_guid);
+      if (containing_route) {  // In a route already?
+        existing_point = containing_route->GetPoint(point_guid);
+      }
+      // Or isolated?
+      if (!existing_point) {
+        existing_point = pWayPointMan->FindRoutePointByGUID(point_guid.c_str());
+      }
+
+      if (existing_point) {
+        point = existing_point;
+        point->SetShared(true);  // by definition
+        point->m_bIsolatedMark = false;
       } else {
         point =
             new RoutePoint(latitude, longitude, symbol, name, point_guid, true);
