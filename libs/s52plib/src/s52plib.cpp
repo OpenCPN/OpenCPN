@@ -6028,7 +6028,7 @@ void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoin
 
   // Check to see it the requested symbol texture is in the cache
   if (auto search = lc_vector_symbol_cache.find(key);
-      search != vector_symbol_cache.end())
+      search != lc_vector_symbol_cache.end())
     symbol_texture = search->second;
   else {
     symbol_texture = BuildLCSymbolTexture(str, col, r, pivot, origin, scale, sym_len, sym_height);
