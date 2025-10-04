@@ -339,8 +339,17 @@ void LLRegion::Subtract(const LLRegion &region) {
   Put(region, GLU_TESS_WINDING_POSITIVE, true);
 }
 
-// C++
-void LLRegion::Reduce(double factor) {
+/**
+ * Simplifies the contours of the region by removing points that are closer
+ * together than the specified distance (factor). Contours with fewer than 3
+ * points after reduction are removed, as they are not valid. This helps to
+ * reduce the complexity of the region.
+ *
+ * @param factor The minimum allowed distance between consecutive points in a
+ * contour.
+ */
+
+  void LLRegion::Reduce(double factor) {
   const double factor2 = factor * factor;
 
   auto i = contours.begin();
@@ -485,7 +494,7 @@ void LLRegion::InitPoints(size_t n, const double *points) {
     }
   }
 
-  contours.push_back(poly_contour(pts.begin(), pts.end()));
+  contours.push_back(poly_contour(std::move(pts)));
 
   if (adjust) AdjustLongitude();
   Optimize();
