@@ -3605,9 +3605,8 @@ bool s52plib::RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPo
   key += rule_in->colRef.LCRF;    // color
 
   // Check to see it the requested symbol texture is in the cache
-  if (auto search = vector_symbol_cache.find(key);
-      search != vector_symbol_cache.end())
-    symbol_texture = search->second;
+  auto search =  vector_symbol_cache.find(key);
+  if (search != vector_symbol_cache.end()) symbol_texture = search->second;
   else {
     symbol_texture = BuildHPGLTexture(rzRules, rule_in, r, rot_angle, uScale);
     vector_symbol_cache[key] = symbol_texture;
@@ -6027,9 +6026,8 @@ void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoin
   key += col;   // color
 
   // Check to see it the requested symbol texture is in the cache
-  if (auto search = lc_vector_symbol_cache.find(key);
-      search != vector_symbol_cache.end())
-    symbol_texture = search->second;
+  auto search =  lc_vector_symbol_cache.find(key);
+  if (search != lc_vector_symbol_cache.end()) symbol_texture = search->second;
   else {
     symbol_texture = BuildLCSymbolTexture(str, col, r, pivot, origin, scale, sym_len, sym_height);
     lc_vector_symbol_cache[key] = symbol_texture;

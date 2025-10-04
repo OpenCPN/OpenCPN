@@ -46,10 +46,10 @@ static const char* const kWikiRoot =
 static const std::unordered_map<std::string, std::string> kOnlineEntries = {
   {"Toc", "@ONLINE_ROOT@/index.html"},
   {"Chartdldr",
-     "@ONLINE_PLUGROOT@/chart_downloader_tab/chart_downloader_tab.html"},
-  {"Wmm",  "@ONLINE_PLUGROOT@/wmm/wmm.html"},
-  {"Dashboard", "@ONLINE_PLUGROOT@/dashboard/dashboard.html"},
-  {"Grib", "@ONLINE_PLUGROOT@/grib_weather/grib_weather.html"},
+     "@ONLINE_ROOT@/chartdldr/index.html"},
+  {"Wmm",  "@ONLINE_PLUG@/wmm/index.html"},
+  {"Dashboard", "@ONLINE_ROOT@/dashboard/index.html"},
+  {"Grib", "@ONLINE_ROOT@/grib/index.html"},
   {"Hotkeys",
     "@WIKI_ROOT@?id=opencpn:manual_basic:ui_user_interface:keyboard_shortcuts" }
 };

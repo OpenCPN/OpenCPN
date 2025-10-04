@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_n2k_net.h -- network nmea2K driver
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2023 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register                                  *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,13 +13,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_drv_n2k_net.h -- IP network nmea2K driver
+ */
 
 #include <iomanip>
 #include <sstream>
+#include <vector>
+
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
@@ -33,32 +37,24 @@
 #endif
 
 #ifdef __MSVC__
-#include "winsock2.h"
+#include <winsock2.h>
 #include <wx/msw/winundef.h>
 #include <ws2tcpip.h>
 #endif
 
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-
-#include <wx/tokenzr.h>
-#include <wx/datetime.h>
-
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
-
-#include "model/sys_events.h"
-
-#ifndef __WXMSW__
+#ifndef _WIN32
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 #endif
 
-#include <vector>
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include <wx/tokenzr.h>
+#include <wx/datetime.h>
+
 #include <wx/socket.h>
 #include <wx/log.h>
 #include <wx/memory.h>
@@ -70,6 +66,7 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/idents.h"
 #include "model/comm_drv_registry.h"
+#include "model/sys_events.h"
 
 #define N_DOG_TIMEOUT 8
 
@@ -331,7 +328,7 @@ void CommDriverN2KNet::handle_N2K_MSG(CommDriverN2KNetEvent& event) {
   m_listener.Notify(std::move(msg));
 }
 
-void CommDriverN2KNet::Open(void) {
+void CommDriverN2KNet::Open() {
 #ifdef __UNIX__
 #if wxCHECK_VERSION(3, 0, 0)
   in_addr_t addr =
@@ -398,7 +395,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
     // but for consistency with broadcast behaviour, we will
     // instead rely on setting priority levels to ignore
     // sentences read back that have just been transmitted
-    if ((!GetMulticast()) && (GetAddr().IPAddress().EndsWith(_T("255")))) {
+    if ((!GetMulticast()) && (GetAddr().IPAddress().EndsWith("255"))) {
       int broadcastEnable = 1;
       bool bam = GetTSock()->SetOption(
           SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
@@ -412,7 +409,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
 
 void CommDriverN2KNet::OpenNetworkTCP(unsigned int addr) {
   int isServer = ((addr == INADDR_ANY) ? 1 : 0);
-  wxLogMessage(wxString::Format(_T("Opening TCP Server %d"), isServer));
+  wxLogMessage(wxString::Format("Opening TCP Server %d", isServer));
 
   if (isServer) {
     SetSockServer(new wxSocketServer(GetAddr(), wxSOCKET_REUSEADDR));
@@ -1348,8 +1345,8 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
       m_driver_stats.available = false;
       if (GetProtocol() == TCP || GetProtocol() == GPSD) {
         if (GetBrxConnectEvent())
-          wxLogMessage(wxString::Format(
-              _T("NetworkDataStream connection lost: %s"), GetPort().c_str()));
+          wxLogMessage(wxString::Format("NetworkDataStream connection lost: %s",
+                                        GetPort().c_str()));
         if (GetSockServer()) {
           GetSock()->Destroy();
           SetSock(NULL);
@@ -1385,9 +1382,9 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
         char cmd[] = "?WATCH={\"class\":\"WATCH\", \"nmea\":true}";
         GetSock()->Write(cmd, strlen(cmd));
       } else if (GetProtocol() == TCP) {
-        wxLogMessage(wxString::Format(
-            _T("TCP NetworkDataStream connection established: %s"),
-            GetPort().c_str()));
+        wxLogMessage(
+            wxString::Format("TCP NetworkDataStream connection established: %s",
+                             GetPort().c_str()));
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
         if (GetPortType() != DS_TYPE_OUTPUT) {
           /// start the DATA watchdog only if NODATA Reconnect is desired
@@ -1994,7 +1991,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
 }
 
 void CommDriverN2KNet::Close() {
-  wxLogMessage(wxString::Format(_T("Closing NMEA NetworkDataStream %s"),
+  wxLogMessage(wxString::Format("Closing NMEA NetworkDataStream %s",
                                 GetNetPort().c_str()));
   m_stats_timer.Stop();
   //    Kill off the TCP Socket if alive

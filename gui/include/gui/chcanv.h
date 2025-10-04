@@ -64,10 +64,12 @@
 #include "tc_win.h"
 #include "undo.h"
 
+class canvasConfig;        // circular
 class CanvasMenuHandler;   // circular
 class MyFrame;             // circular
 class NotificationsList;   // circular
 class NotificationButton;  // circular
+class Quilt;               // circular
 class TCWin;               // circular
 class Undo;                // circular
 
@@ -128,14 +130,11 @@ enum {
 
 enum { NORTH_UP_MODE, COURSE_UP_MODE, HEAD_UP_MODE };
 
-extern void pupHandler_PasteRoute();
+extern void pupHandler_PasteRoute();  // forward
 
-extern void pupHandler_PasteWaypoint();
+extern void pupHandler_PasteWaypoint();  // forward
 
-extern void pupHandler_PasteTrack();
-
-class canvasConfig;  // circular
-class Quilt;         // circular
+extern void pupHandler_PasteTrack();  // forward
 
 /**
  * ChartCanvas - Main chart display and interaction component

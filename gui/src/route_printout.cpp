@@ -59,9 +59,6 @@
 #include "model/navutil_base.h"
 #include "model/route.h"
 #include "model/track.h"
-
-#include "dychart.h"
-#include "gui_lib.h"
 #include "navutil.h"
 #include "print_dialog.h"
 #include "printtable.h"

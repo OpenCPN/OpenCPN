@@ -21,8 +21,8 @@
  * User  notification container
  */
 
-#ifndef _NOTIFICATION_H__
-#define _NOTIFICATION_H__
+#ifndef NOTIFICATION_H_
+#define NOTIFICATION_H_
 
 #include <string>
 

@@ -40,7 +40,6 @@
 #include <wx/dcmemory.h>
 
 #include "styles.h"
-
 #include "model/svg_utils.h"
 #include "color_handler.h"
 #include "ocpn_platform.h"

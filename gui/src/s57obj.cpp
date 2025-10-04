@@ -21,7 +21,49 @@
  *  S57 Chart Object
  */
 
-#include <setjmp.h>
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif  // precompiled headers
+
+#include "wx/image.h"  // for some reason, needed for msvc???
+#include "wx/tokenzr.h"
+#include <wx/textfile.h>
+
+#include "dychart.h"
+#include "ocpn_platform.h"
+
+#include "s52s57.h"
+#include "s52plib.h"
+
+#include "s57chart.h"
+
+#include "mygeom.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "navutil.h"  // for LogMessageOnce
+#include "ocpn_pixel.h"
+#include "ocpndc.h"
+#include "s52utils.h"
+
+#include "gdal/cpl_csv.h"
+#include "setjmp.h"
+
+#include "ogr_s57.h"
+
+#include "pluginmanager.h"  // for S57 lights overlay
+
+#include "o_senc.h"
+
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
+#endif
+
+#ifdef ocpnUSE_GL
+#include "gl_chart_canvas.h"
+#endif
+
+#include <algorithm>  // for std::sort
+#include <map>
 
 #ifdef __MSVC__
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)

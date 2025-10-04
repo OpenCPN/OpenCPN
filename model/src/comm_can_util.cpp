@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Low-level utility functions for socketcan support.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2024 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2024 by David Register                                  *
+ *   Copyright (C) 2024 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_can_util.h -- low-level socketcan utility functions.
+ */
 
 #include <algorithm>
 #include <vector>
@@ -132,12 +131,12 @@ int FastMessageMap::FindMatchingEntry(const CanHeader header,
   return kNotFound;
 }
 
-int FastMessageMap::AddNewEntry(void) {
+int FastMessageMap::AddNewEntry() {
   entries.push_back(Entry());
   return entries.size() - 1;
 }
 
-int FastMessageMap::GarbageCollector(void) {
+int FastMessageMap::GarbageCollector() {
   std::vector<unsigned> stale_entries;
   bool bremoved;
   int nremoved = 0;
@@ -229,7 +228,7 @@ bool FastMessageMap::AppendEntry(const CanHeader header,
     //     if ((dropped_frames > CONST_DROPPEDFRAME_THRESHOLD) &&
     //     (wxDateTime::Now() < (dropped_frame_time +
     //     wxTimeSpan::Seconds(CONST_DROPPEDFRAME_PERIOD) ) ) ) {
-    //       wxLogError(_T("TwoCan Device, Dropped Frames rate exceeded"));
+    //       wxLogError("TwoCan Device, Dropped Frames rate exceeded");
     //       wxLogError(wxString::Format(_T("Frame: Source: %d Destination: %d
     //       Priority: %d PGN: %d"),header.source, header.destination,
     //       header.priority, header.pgn)); dropped_frames = 0;

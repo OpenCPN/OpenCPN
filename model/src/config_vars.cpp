@@ -18,7 +18,8 @@
 /**
  * \file
  *
- * implement config_vars.h -- Global variables stored in configuration file.
+ * Implement config_vars.h -- Global variables persisted  in configuration
+ * file.
  */
 
 #include <vector>
