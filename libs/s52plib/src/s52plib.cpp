@@ -6025,9 +6025,10 @@ void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoin
   key += str;   // HPGL Render string
   key += col;   // color
 
-  // Check to see it the requested symbol texture is in the cache
-  auto search =  lc_vector_symbol_cache.find(key);
-  if (search != lc_vector_symbol_cache.end()) symbol_texture = search->second;
+  // Check to see if the requested symbol texture is in the cache
+  auto search = lc_vector_symbol_cache.find(key);
+  if (search != lc_vector_symbol_cache.end())
+    symbol_texture = search->second;
   else {
     symbol_texture = BuildLCSymbolTexture(str, col, r, pivot, origin, scale, sym_len, sym_height);
     lc_vector_symbol_cache[key] = symbol_texture;
