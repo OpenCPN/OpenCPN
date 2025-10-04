@@ -540,7 +540,8 @@ void LLRegion::InitPoints(size_t n, const double *points) {
     return;
   }
 
-  std::list<contour_pt> pts;
+  std::vector<contour_pt> pts;
+  pts.reserve(n);
   bool adjust = false;
 
   bool ccw = PointsCCW(n, points);
@@ -549,10 +550,18 @@ void LLRegion::InitPoints(size_t n, const double *points) {
     p.y = points[i + 0];
     p.x = points[i + 1];
     if (p.x < -180 || p.x > 180) adjust = true;
-    if (ccw)
-      pts.push_back(p);
-    else
-      pts.push_front(p);
+    pts.push_back(p);
+  }
+
+  if (!ccw) {
+    // reverse in-place without <algorithm> to avoid adding includes
+    size_t a = 0, b = pts.size() - 1;
+    while (a < b) {
+      contour_pt t = pts[a];
+      pts[a] = pts[b];
+      pts[b] = t;
+      ++a; --b;
+    }
   }
 
   contours.push_back(poly_contour(pts.begin(), pts.end()));
