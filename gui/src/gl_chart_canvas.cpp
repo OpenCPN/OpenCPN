@@ -5461,10 +5461,9 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
     }
 
     if (event.IsGestureEnd()) {
-      printf("End--------------\n");
-
       // Some platforms generate spurious gestureEnd events. Guard for this.
       if (!m_binGesture) return;
+      printf("EndZoom--------------\n");
 
       Refresh();
 

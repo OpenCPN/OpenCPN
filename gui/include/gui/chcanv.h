@@ -894,6 +894,10 @@ private:
   void CallPopupMenu(int x, int y);
   bool IsTempMenuBarEnabled();
   bool InvokeCanvasMenu(int x, int y, int seltype);
+  void OnMenuTimer(wxTimerEvent &event);
+  wxTimer m_menuTimer;
+  wxPoint m_menuPos;
+  bool m_inLongPress;
 
   ViewPort VPoint;
   void PositionConsole(void);
