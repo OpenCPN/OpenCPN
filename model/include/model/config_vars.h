@@ -166,6 +166,7 @@ extern int g_detailslider_dialog_y;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_GUIScaleFactor;
+extern int g_ais_color_set;
 /**
  * User-selected distance (horizontal) unit format for display and input.
  * Values correspond to DISTANCE_* enum (e.g., NMi, mi, km, m, ft, yd, etc.).

@@ -63,6 +63,7 @@
 
 extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
+extern ColorScheme global_color_scheme;
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 
@@ -219,6 +220,47 @@ wxString ais8_001_22_notice_names[] = {
       "ID"),                  // 126
     _("Undefined (default)")  //, // 127
 };
+
+/**
+ * Colors used to render a blinking AIS target under alert
+ */
+wxColour g_ais_alert_color[2] = {wxColor(0xff, 0x00, 0x00),
+                                 wxColor(0xff, 0xff, 0x00)};
+
+/**
+ * Marine Traffic AIS colorset
+ */
+wxColour g_ais_marine_traffic_colorset[10] = {
+    wxColour(0xd2, 0xd5, 0xda),  // Unspecified / military
+    wxColour(0x6f, 0x6f, 0x6f),  // Unknown
+    wxColour(0xf7, 0x99, 0x7c),  // Fishing
+    wxColour(0x19, 0x7a, 0xff),  // Passenger
+    wxColour(0x26, 0xf5, 0xf5),  // Diving
+    wxColour(0xe3, 0x3a, 0xff),  // Pleasure / Sailing
+    wxColour(0x90, 0xee, 0x90),  // Cargo
+    wxColour(0xff, 0x31, 0x25),  // Tanker
+    wxColour(0xff, 0xce, 0x1f),  // High Speed
+    wxColour(0x26, 0xf5, 0xf5)   // Special
+};
+
+/**
+ * Vessel Finder AIS colorset
+ */
+wxColour g_ais_vessel_finder_colorset[10] = {
+    wxColour(0xff, 0x2e, 0x2e),  // Unspecified / military
+    wxColour(0x6f, 0x6f, 0x6f),  // Unknown
+    wxColour(0x7d, 0xcc, 0xff),  // Fishing
+    wxColour(0x2b, 0xff, 0x0e),  // Passenger
+    wxColour(0x66, 0x98, 0xdc),  // Diving
+    wxColour(0xfa, 0x40, 0xf6),  // Pleasure / Sailing
+    wxColour(0xff, 0xff, 0x0f),  // Cargo
+    wxColour(0xff, 0xa9, 0x2f),  // Tanker
+    wxColour(0x66, 0x98, 0xdc),  // High Speed
+    wxColour(0x66, 0x98, 0xdc)   // Special
+};
+
+static wxColour AisGetOpenCpnColor(AisTargetData *td);
+static wxColour AisGetColorByType(AisTargetData *td, wxColour colorset[]);
 
 static bool GetCanvasPointPix(ViewPort &vp, ChartCanvas *cp, double rlat,
                               double rlon, wxPoint *r) {
@@ -1035,36 +1077,24 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   dc.SetPen(wxPen(UBLCK));
 
   // Default color is green
-  wxColour UINFG = GetGlobalColor("UINFG");
-  wxBrush target_brush = wxBrush(UINFG);
+  wxBrush target_brush;
 
-  // Euro Inland targets render slightly differently, unless in InlandENC mode
-  if (td->b_isEuroInland && !g_bInlandEcdis)
-    target_brush = wxBrush(GetGlobalColor("TEAL1"));
-
-  // Target name comes from cache
-  if (td->b_nameFromCache) target_brush = wxBrush(GetGlobalColor("GREEN5"));
-
-  // and....
-  wxColour URED = GetGlobalColor("URED");
-  if (!td->b_nameValid) target_brush = wxBrush(GetGlobalColor("CHYLW"));
-
-  if ((td->Class == AIS_DSC) &&
-      ((td->ShipType == 12) || (td->ShipType == 16)))  // distress(relayed)
-    target_brush = wxBrush(URED);
-
-  if (td->b_SarAircraftPosnReport) target_brush = wxBrush(UINFG);
-
-  if ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid))
-    target_brush = wxBrush(URED);
-
-  if ((td->n_alert_state == AIS_ALERT_NO_DIALOG_SET) && (td->bCPA_Valid) &&
-      (!td->b_isFollower))
-    target_brush = wxBrush(URED);
-
-  if (td->b_positionDoubtful) target_brush = wxBrush(GetGlobalColor("UINFF"));
+  switch (g_ais_color_set) {
+    case 1:  // Marine Traffic colorset
+      target_brush =
+          wxBrush(AisGetColorByType(td, g_ais_marine_traffic_colorset));
+      break;
+    case 2:  // Vessel finder colorset
+      target_brush =
+          wxBrush(AisGetColorByType(td, g_ais_vessel_finder_colorset));
+      break;
+    default:  // OpenCPN S52
+      target_brush = wxBrush(AisGetOpenCpnColor(td));
+      break;
+  }
 
   wxPen target_outline_pen(UBLCK, AIS_width_target_outline);
+  wxColour URED = GetGlobalColor(_T ( "URED" ));
 
   //    Check for alarms here, maintained by AIS class timer tick
   if (((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) ||
@@ -1971,4 +2001,133 @@ bool AnyAISTargetsOnscreen(ChartCanvas *cc, ViewPort &vp) {
   }
 
   return false;
+}
+
+static wxColour AisGetOpenCpnColor(AisTargetData *td) {
+  wxColour target_color = GetGlobalColor(_T ( "UINFG" ));
+
+  // Euro Inland targets render slightly differently, unless in InlandENC mode
+  if (td->b_isEuroInland && !g_bInlandEcdis)
+    target_color = GetGlobalColor(_T ( "TEAL1" ));
+
+  // Target name comes from cache
+  if (td->b_nameFromCache) target_color = GetGlobalColor(_T ( "GREEN5" ));
+
+  // and....
+  wxColour URED = GetGlobalColor(_T ( "URED" ));
+  wxColour UINFG = GetGlobalColor(_T ( "UINFG" ));
+  if (!td->b_nameValid) target_color = GetGlobalColor(_T ( "CHYLW" ));
+
+  if ((td->Class == AIS_DSC) &&
+      ((td->ShipType == 12) || (td->ShipType == 16)))  // distress(relayed)
+    target_color = URED;
+
+  if (td->b_SarAircraftPosnReport) target_color = UINFG;
+
+  if ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid))
+    target_color = URED;
+
+  if ((td->n_alert_state == AIS_ALERT_NO_DIALOG_SET) && (td->bCPA_Valid) &&
+      (!td->b_isFollower))
+    target_color = URED;
+
+  if (td->b_positionDoubtful) target_color = GetGlobalColor(_T ( "UINFF" ));
+
+  return target_color;
+}
+
+/**
+ * Get rendering color of the AIS target matching its type and the privded
+ * colorset. Color is adapted to match chart's rendering scheme
+ * (day/dusk/night).
+ * @param td Pointer to the AIS target definition
+ * @param colorset Array of colors for each vessel type
+ * @return Color to use for rendering
+ */
+static wxColour AisGetColorByType(AisTargetData *td, wxColour colorset[]) {
+  wxColor target_color;
+  // Compute blink boolean for alert rendering
+  bool blink = wxGetCurrentTime() & 0x01;
+  // Get vessel type digits
+  int vessel_type = td->ShipType;
+  int vessel_type10 = vessel_type / 10;
+
+  // Compute integer dim factor for day/dusk/night rendering
+  int dim_factor = 256;
+  switch (global_color_scheme) {
+    case GLOBAL_COLOR_SCHEME_DUSK:
+      dim_factor = (int)(0.8 * 256);
+      break;
+    case GLOBAL_COLOR_SCHEME_NIGHT:
+      dim_factor = (int)(0.3 * 256);
+      break;
+    default:
+      break;
+  }
+
+  // Select color by ship type & status
+  if (vessel_type <= 19) {
+    // Unknown vessel type
+    if (td->NavStatus == 7) {
+      // Fishing vessel
+      target_color = colorset[2];
+    } else if (td->NavStatus == 8) {
+      // High speed vessel
+      target_color = colorset[5];
+    } else if (td->Class == AIS_CLASS_B) {
+      // By default, we consider B-CLASS vessel as pleasure craft if navigation
+      // status is not giving us more clue on their nature
+      target_color = colorset[5];
+    } else {
+      // Unknown type
+      target_color = colorset[1];
+    }
+  } else if (vessel_type == 30) {
+    // Fishing vessel
+    target_color = colorset[2];
+  } else if (vessel_type == 34) {
+    // Vessel with divers
+    target_color = colorset[4];
+  } else if ((vessel_type == 36) || (vessel_type == 37)) {
+    // Pleasure craft or sailing vessel
+    target_color = colorset[5];
+  } else if (vessel_type10 == 4) {
+    // High speed vessel
+    target_color = colorset[8];
+  } else if ((vessel_type10 == 5) || (vessel_type10 == 9) ||
+             (vessel_type == 31) || (vessel_type == 32) ||
+             (vessel_type == 33)) {
+    // Special vessel
+    target_color = colorset[9];
+  } else if (vessel_type10 == 6) {
+    // Passenger vessel
+    target_color = colorset[3];
+  } else if (vessel_type10 == 7) {
+    // Cargo ship
+    target_color = colorset[6];
+  } else if (vessel_type10 == 8) {
+    // Tanker ship
+    target_color = colorset[7];
+  } else {
+    // Unspecified or military target
+    target_color = colorset[0];
+  }
+
+  // Check if the target is under alert or distress status
+  if ((td->n_alert_state != AIS_NO_ALERT) ||
+      ((td->Class == AIS_DSC) &&
+       ((vessel_type == 12) || (vessel_type == 16)))) {  // distress(relayed)
+    if (blink) {
+      target_color = g_ais_alert_color[0];
+    } else {
+      target_color = g_ais_alert_color[1];
+    }
+  }
+
+  // Apply dim factor on color
+  target_color.Set((target_color.Red() * dim_factor) >> 8,
+                   (target_color.Green() * dim_factor) >> 8,
+                   (target_color.Blue() * dim_factor) >> 8);
+
+  return target_color;
 }
