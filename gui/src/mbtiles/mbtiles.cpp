@@ -510,12 +510,12 @@ InitReturn ChartMbTiles::Init(const wxString& name, ChartInitFlag init_flags) {
     m_nCOVREntries = covr_region.contours.size();
     m_pCOVRTablePoints = (int*)malloc(m_nCOVREntries * sizeof(int));
     m_pCOVRTable = (float**)malloc(m_nCOVREntries * sizeof(float*));
-    std::list<poly_contour>::iterator it = covr_region.contours.begin();
+    auto it = covr_region.contours.begin();
     for (int i = 0; i < m_nCOVREntries; i++) {
       m_pCOVRTablePoints[i] = it->size();
       m_pCOVRTable[i] =
           (float*)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
-      std::list<contour_pt>::iterator jt = it->begin();
+      auto jt = it->begin();
       for (int j = 0; j < m_pCOVRTablePoints[i]; j++) {
         m_pCOVRTable[i][2 * j + 0] = jt->y;
         m_pCOVRTable[i][2 * j + 1] = jt->x;

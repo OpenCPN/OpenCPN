@@ -413,12 +413,10 @@ OCPNRegion ViewPort::GetVPRegionIntersect(const OCPNRegion &region,
   rotation = 0;
 
   std::list<ContourRegion> cregions;
-  for (std::list<poly_contour>::const_iterator i = llregion.contours.begin();
-       i != llregion.contours.end(); i++) {
+  for (auto i = llregion.contours.begin(); i != llregion.contours.end(); i++) {
     float *contour_points = new float[2 * i->size()];
     int idx = 0;
-    std::list<contour_pt>::const_iterator j;
-    for (j = i->begin(); j != i->end(); j++) {
+    for (auto j = i->begin(); j != i->end(); j++) {
       contour_points[idx++] = j->y;
       contour_points[idx++] = j->x;
     }
