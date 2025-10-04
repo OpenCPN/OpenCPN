@@ -2856,8 +2856,7 @@ void glChartCanvas::DrawRegion(ViewPort &vp, const LLRegion &region) {
   gluTessNormal(tobj, 0, 0, 1);
 
   gluTessBeginPolygon(tobj, NULL);
-  for (std::list<poly_contour>::const_iterator i = region.contours.begin();
-       i != region.contours.end(); i++) {
+  for (auto i = region.contours.begin(); i != region.contours.end(); i++) {
     gluTessBeginContour(tobj);
     contour_pt l = *i->rbegin();
     double sml[2];
