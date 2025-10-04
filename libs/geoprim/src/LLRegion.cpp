@@ -255,8 +255,8 @@ struct work {
 
   ~work() {
     gluDeleteTess(tobj);
-    for (std::list<double *>::iterator i = data.begin(); i != data.end(); i++)
-      delete[] * i;
+    for (auto p : data)
+      delete[] p;
     data.clear();
   }
 
@@ -272,7 +272,8 @@ struct work {
     gluTessVertex(tobj, p, p);
   }
 
-  std::list<double *> data;
+  // Use vector to store stable heap-allocated vertex arrays
+  std::vector<double *> data;
   poly_contour contour;
   GLUtesselator *tobj;
   LLRegion &region;
