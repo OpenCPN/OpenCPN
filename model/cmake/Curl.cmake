@@ -40,7 +40,9 @@ if (CMAKE_HOST_WIN32)
       "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
       "${CMAKE_SOURCE_DIR}/cache/buildwin/libeay32.dll"
       "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll"
-	    "${CMAKE_SOURCE_DIR}/cache/buildwin/libcurl.dll"
+	  "${CMAKE_SOURCE_DIR}/cache/buildwin/libcurl.dll"
+	  "${CMAKE_SOURCE_DIR}/cache/buildwin/portaudio_x86.dll"
+	  "${CMAKE_SOURCE_DIR}/cache/buildwin/libsndfile-1.dll"
     DESTINATION "."
   )
 

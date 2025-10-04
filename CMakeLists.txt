@@ -147,7 +147,7 @@ else ()
   set(OCPN_USE_CRASHREPORT FALSE)
 endif ()
 
-if (WIN32 OR APPLE OR QT_ANDROID)
+if (APPLE OR QT_ANDROID)
   set(PA_DEFAULT "OFF")
 else ()
   set(PA_DEFAULT "ON")
