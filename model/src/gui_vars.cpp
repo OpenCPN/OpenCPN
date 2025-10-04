@@ -12,18 +12,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement gui_vars.h
+ *
+ * Implement gui_vars.h -- global variables mostly used by the gui, not
+ * persisted in configuration file.
  */
 
 #include <wx/colour.h>
 #include <wx/datetime.h>
+#include <wx/string.h>
 
 #include "model/gui_vars.h"
 
@@ -109,3 +110,13 @@ wxString g_SENCPrefix;
 wxString g_csv_locn;
 
 wxString* pInit_Chart_Dir;
+
+const wxString kUtfCheckMark = wxString::FromUTF8(u8"\u2713");
+const wxString kUtfCircledDivisionSlash = wxString::FromUTF8(u8"\u2298");
+const wxString kUtfFallingDiagonal = wxString::FromUTF8(u8"\u269F");
+const wxString kUtfIdenticalTo = wxString::FromUTF8(u8"\u2261");
+const wxString kUtfLeftArrow = wxString::FromUTF8(u8"\u2190");
+const wxString kUtfLeftRightArrow = wxString::FromUTF8(u8"\u2194");
+const wxString kUtfLeftwardsArrowToBar = wxString::FromUTF8(u8"\u21E4");
+const wxString kUtfMultiplicationX = wxString::FromUTF8(u8"\u2716");
+const wxString kUtfRightArrow = wxString::FromUTF8(u8"\u2192");

@@ -18,37 +18,42 @@
     Copyright (C) 2010, Anders Lund <anders@alweb.dk>
  */
 
+/**
+ * \file
+ *
+ * Manage routes dialog
+ */
+
 #ifndef _RouteManagerDialog_h_
 #define _RouteManagerDialog_h_
 
+#include <wx/button.h>
+#include <wx/checkbox.h>
 #include <wx/frame.h>
-#include <wx/timer.h>
-#include <wx/notebook.h>
-#include <wx/panel.h>
+#include <wx/list.h>
 #include <wx/listctrl.h>
 #include <wx/notebook.h>
+#include <wx/panel.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/checkbox.h>
+#include <wx/timer.h>
+
+#include "model/route.h"
+#include "model/route_point.h"
+#include "model/track.h"
 
 #include "observable.h"
+#include "layer.h"
 
 #define NAME_COLUMN 2
 #define DISTANCE_COLUMN 3
-
-/** Global instance. */
-class RouteManagerDialog;                       // forward
-extern RouteManagerDialog *pRouteManagerDialog; /**< Global instance */
 
 enum { SORT_ON_DISTANCE = 1, SORT_ON_NAME, SORT_ON_DATE };
 
 enum TrackContextMenu { TRACK_MERGE = 1, TRACK_COPY_TEXT, TRACK_CLEAN };
 
-class wxButton;
-class Route;
-class Track;
-class Layer;
-class RoutePoint;
+class RouteManagerDialog;                       // forward
+extern RouteManagerDialog *pRouteManagerDialog; /**< Global instance */
 
 class RouteManagerDialog : public wxFrame {
   DECLARE_EVENT_TABLE()
@@ -236,4 +241,3 @@ private:
 };
 
 #endif  // _RouteManagerDialog_h_
-// kate: indent-width 6; indent-mode cstyle; space-indent on;

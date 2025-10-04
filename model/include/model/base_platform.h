@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Basic platform specific support utilities without GUI deps.
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,16 +12,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Basic platform specific support utilities without GUI deps.
+ */
 
 #ifndef BASEPLATFORM_H
 #define BASEPLATFORM_H
 
 #include <stdio.h>
 #include <vector>
+
+#ifdef _WIN32
+#define NOMINMAX  // Required to not interfere with std::max et. al. Sigh.
+#include <winsock2.h>
+#include <windows.h>
+#endif
 
 #include <wx/wxprec.h>
 

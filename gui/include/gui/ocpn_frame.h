@@ -57,7 +57,7 @@
 #include "pluginmanager.h"
 #include "s52s57.h"
 #include "s57registrar_mgr.h"
-#include "SencManager.h"
+#include "senc_manager.h"
 #include "toolbar.h"
 
 //----------------------------------------------------------------------------

@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Autopilot output support
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_n183_output.h -- autopilot output support
+ */
+
 #include <cmath>
 #include <memory>
 #include <vector>
@@ -81,9 +80,9 @@ static void SendRmc(NMEA0183 &nmea0183, Routeman &routeman) {
   } else {
     wxDateTime now = wxDateTime::Now();
     wxDateTime utc = now.ToUTC();
-    wxString time = utc.Format(_T("%H%M%S"));
+    wxString time = utc.Format("%H%M%S");
     nmea0183.Rmc.UTCTime = time;
-    wxString date = utc.Format(_T("%d%m%y"));
+    wxString date = utc.Format("%d%m%y");
     nmea0183.Rmc.Date = date;
   }
 
@@ -195,7 +194,7 @@ bool UpdateAutopilotN0183(Routeman &routeman) {
     else
       nmea0183.Apb.DirectionToSteer = Right;
 
-    nmea0183.Apb.CrossTrackUnits = _T("N");
+    nmea0183.Apb.CrossTrackUnits = "N";
 
     if (routeman.GetArrival())
       nmea0183.Apb.IsArrivalCircleEntered = NTrue;
@@ -222,23 +221,23 @@ bool UpdateAutopilotN0183(Routeman &routeman) {
                         : (routeman.GetCurrentBrgToActivePoint() - gVar + 360.);
 
       nmea0183.Apb.BearingOriginToDestination = brg1m;
-      nmea0183.Apb.BearingOriginToDestinationUnits = _T("M");
+      nmea0183.Apb.BearingOriginToDestinationUnits = "M";
 
       nmea0183.Apb.BearingPresentPositionToDestination = bapm;
-      nmea0183.Apb.BearingPresentPositionToDestinationUnits = _T("M");
+      nmea0183.Apb.BearingPresentPositionToDestinationUnits = "M";
 
       nmea0183.Apb.HeadingToSteer = bapm;
-      nmea0183.Apb.HeadingToSteerUnits = _T("M");
+      nmea0183.Apb.HeadingToSteerUnits = "M";
     } else {
       nmea0183.Apb.BearingOriginToDestination = brg1;
-      nmea0183.Apb.BearingOriginToDestinationUnits = _T("T");
+      nmea0183.Apb.BearingOriginToDestinationUnits = "T";
 
       nmea0183.Apb.BearingPresentPositionToDestination =
           routeman.GetCurrentBrgToActivePoint();
-      nmea0183.Apb.BearingPresentPositionToDestinationUnits = _T("T");
+      nmea0183.Apb.BearingPresentPositionToDestinationUnits = "T";
 
       nmea0183.Apb.HeadingToSteer = routeman.GetCurrentBrgToActivePoint();
-      nmea0183.Apb.HeadingToSteerUnits = _T("T");
+      nmea0183.Apb.HeadingToSteerUnits = "T";
     }
 
     nmea0183.Apb.Write(snt);
@@ -265,7 +264,7 @@ bool UpdateAutopilotN0183(Routeman &routeman) {
     else
       nmea0183.Xte.DirectionToSteer = Right;
 
-    nmea0183.Xte.CrossTrackUnits = _T("N");
+    nmea0183.Xte.CrossTrackUnits = "N";
 
     nmea0183.Xte.Write(snt);
     BroadcastNMEA0183Message(snt.Sentence, GetNmeaLog(),

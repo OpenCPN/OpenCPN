@@ -31,7 +31,7 @@
 #include <wx/string.h>
 
 #include "gui_lib.h"
-#include "SendToGpsDlg.h"
+#include "send_to_gps_dlg.h"
 #include "model/comm_n0183_output.h"
 
 static bool ConfirmOverwrite() {

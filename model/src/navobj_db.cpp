@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  NavObj_dB
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,30 +12,33 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement navobj_db.h -- MySQL based storage for routes, tracks, etc.
+ */
+
 #include <cmath>
-#include <memory>
-#include <vector>
-#include <string>
 #include <iomanip>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <wx/dir.h>
+#include <wx/filename.h>
 
 #include "model/base_platform.h"
+#include "model/comm_appmsg_bus.h"
 #include "model/navobj_db.h"
 #include "model/navutil_base.h"
 #include "model/notification.h"
 #include "model/notification_manager.h"
-#include "wx/filename.h"
-#include "model/comm_appmsg_bus.h"
+#include "model/routeman.h"
 
-extern BasePlatform* g_BasePlatform;
-extern std::shared_ptr<ObservableListener> ack_listener;
-extern RouteList* pRouteList;
-
-void ReportError(const std::string zmsg);
+static void ReportError(const std::string zmsg);  // forward
 
 static bool executeSQL(sqlite3* db, const char* sql) {
   char* errMsg = nullptr;
@@ -530,7 +527,7 @@ void errorLogCallback(void* pArg, int iErrCode, const char* zMsg) {
   noteman.AddNotification(NotificationSeverity::kWarning, msg.ToStdString());
 }
 
-void ReportError(const std::string zmsg) {
+static void ReportError(const std::string zmsg) {
   wxString msg =
       wxString::Format(_("navobj database error.") + " %s", zmsg.c_str());
   wxLogMessage(msg);
@@ -1729,12 +1726,23 @@ bool NavObj_dB::LoadAllRoutes() {
           reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
 
       RoutePoint* point;
-      // RoutePoint exists already, in another route?
+      // RoutePoint exists already, in another route or isolated??
+      RoutePoint* existing_point = NULL;
       auto containing_route =
           g_pRouteMan->FindRouteContainingWaypoint(point_guid);
 
-      if (containing_route) {
-        point = containing_route->GetPoint(point_guid);
+      if (containing_route) {  // In a route already?
+        existing_point = containing_route->GetPoint(point_guid);
+      }
+      // Or isolated?
+      if (!existing_point) {
+        existing_point = pWayPointMan->FindRoutePointByGUID(point_guid.c_str());
+      }
+
+      if (existing_point) {
+        point = existing_point;
+        point->SetShared(true);  // by definition
+        point->m_bIsolatedMark = false;
       } else {
         point =
             new RoutePoint(latitude, longitude, symbol, name, point_guid, true);

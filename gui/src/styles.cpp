@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Chart Symbols
- * Author:   Jesper Weissglas
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010 Jesper Weissglas                                   *
+ *   Copyright (C) 2010 by David S. Register  bdbcat@yahoo.com             *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement styles.h -- Chart Symbols
+ */
+
+#include <stdlib.h>
+
 #include "config.h"
 
 #include <wx/wxprec.h>
@@ -30,28 +32,29 @@
 #include <wx/wx.h>
 #endif
 
+#include <wx/brush.h>
 #include <wx/filename.h>
 #include <wx/dir.h>
-#include <stdlib.h>
-#include "ocpn_platform.h"
+#include <wx/image.h>
+#include <wx/log.h>
+#include <wx/dcmemory.h>
 
 #include "styles.h"
-#include "model/wx28compat.h"
 #include "model/svg_utils.h"
 #include "color_handler.h"
+#include "ocpn_platform.h"
 #include "tinyxml.h"
-#ifdef __OCPN__ANDROID__
+
+#ifdef __ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
-
-extern OCPNPlatform* g_Platform;
 
 ocpnStyle::StyleManager* g_StyleManager;
 
 using namespace ocpnStyle;
 
-void bmdump(wxBitmap bm, wxString name) {
+static void bmdump(wxBitmap bm, wxString name) {
   wxImage img = bm.ConvertToImage();
   img.SaveFile(name << ".png", wxBITMAP_TYPE_PNG);
 }
@@ -728,7 +731,7 @@ Style::Style() {
   chartStatusIconWidth = 0;
   chartStatusWindowTransparent = false;
   embossHeight = 40;
-  embossFont = wxEmptyString;
+  embossFont = "";
 
   //  Set compass window style defauilts
   compassMarginTop = 4;
@@ -843,7 +846,7 @@ void StyleManager::Init(const wxString& fromPath) {
     TiXmlHandle hRoot(doc.RootElement());
 
     wxString root = wxString(doc.RootElement()->Value(), wxConvUTF8);
-    if (root != _T("styles" )) {
+    if (root != "styles") {
       wxLogMessage("    StyleManager: Expected XML Root <styles> not found.");
       continue;
     }

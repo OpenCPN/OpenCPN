@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  S57 Chart Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement s57chart.h -- S57 Chart Object
+ */
+
+#include <algorithm>  // for std::sort
+#include <list>
+#include <map>
+#include <vector>
+
+#ifdef __ANDROID__
+#include "crashlytics.h"
+#endif
+
+#ifdef __MSVC__
+#define strncasecmp(x, y, z) _strnicmp(x, y, z)
+#endif
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -30,108 +41,77 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "wx/image.h"  // for some reason, needed for msvc???
-#include "wx/tokenzr.h"
+#include <wx/image.h>  // for some reason, needed for msvc???
+#include <wx/tokenzr.h>
 #include <wx/textfile.h>
 #include <wx/filename.h>
 
-#include "dychart.h"
-#include "ocpn_platform.h"
-
-#include "s52s57.h"
-#include "s52plib.h"
-
-#include "s57chart.h"
-
-#include "mygeom.h"
-#include "model/cutil.h"
-#include "model/georef.h"
-#include "navutil.h"  // for LogMessageOnce
-#include "model/navutil_base.h"
-#include "model/plugin_comm.h"
-#include "ocpn_pixel.h"
-#include "ocpndc.h"
-#include "s52utils.h"
-#include "model/wx28compat.h"
-#include "model/chartdata_input_stream.h"
-
-#include "gdal/cpl_csv.h"
-#include "setjmp.h"
-
-#include "ogr_s57.h"
-
-#include "pluginmanager.h"  // for S57 lights overlay
-
-#include "o_senc.h"
-#include "chcanv.h"
-#include "SencManager.h"
-#include "gui_lib.h"
-#include "model/logger.h"
-#include "quilt.h"
-#include "ocpn_frame.h"
+#include <wx/listimpl.cpp>
 
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
 #endif
+
+#include "s57chart.h"
+
+#include "model/chartdata_input_stream.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "model/logger.h"
+#include "model/navutil_base.h"
+#include "model/plugin_comm.h"
+
+#include "gdal/cpl_csv.h"
+#include "ssl/sha1.h"
+
+#include "chart_ctx_factory.h"
+#include "chcanv.h"
+#include "dychart.h"
+#include "gui_lib.h"
+#include "mygeom.h"
+#include "navutil.h"  // for LogMessageOnce
+#include "ocpndc.h"
+#include "ocpn_frame.h"
+#include "ocpn_pixel.h"
+#include "ocpn_platform.h"
+#include "ogr_s57.h"
+#include "o_senc.h"
+#include "pluginmanager.h"  // for S57 lights overlay
+#include "quilt.h"
+#include "s52plib.h"
+#include "s52s57.h"
+#include "s52utils.h"
+#include "s57class_registrar.h"
+#include "senc_manager.h"
+#include "setjmp.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
 #include "linmath.h"
 #endif
 
-#include <algorithm>  // for std::sort
-#include <map>
-
-#include "ssl/sha1.h"
 #ifdef ocpnUSE_GL
 #include "shaders.h"
 #endif
-#include "chart_ctx_factory.h"
 
-#ifdef __MSVC__
-#define strncasecmp(x, y, z) _strnicmp(x, y, z)
-#endif
+#define S57_THUMB_SIZE 200
 
-#ifdef __ANDROID__
-#include "crashlytics.h"
-#endif
-
-extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName,
-                          double &val);  // found in s52cnsy
-
-void OpenCPN_OGRErrorHandler(
-    CPLErr eErrClass, int nError,
-    const char *pszErrorMsg);  // installed GDAL OGR library error handler
-
-extern s52plib *ps52plib;
-extern S57ClassRegistrar *g_poRegistrar;
-extern wxString g_csv_locn;
-extern wxString g_SENCPrefix;
-extern bool g_bGDAL_Debug;
-extern bool g_bDebugS57;
-extern MyFrame *gFrame;
-extern PlugInManager *g_pi_manager;
-extern bool g_b_overzoom_x;
-extern bool g_b_EnableVBO;
-extern OCPNPlatform *g_Platform;
-extern SENCThreadManager *g_SencThreadManager;
-
-static jmp_buf env_ogrf;  // the context saved by setjmp();
-
-#include <wx/arrimpl.cpp>  // Implement an array of S57 Objects
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
-#include <wx/listimpl.cpp>
 WX_DEFINE_LIST(ListOfPI_S57Obj);
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
 
-#define S57_THUMB_SIZE 200
-
 static int s_bInS57;  // Exclusion flag to prvent recursion in this class init
                       // call. Init() is not reentrant due to static
                       // wxProgressDialog callback....
-int s_cnt;
+static int s_cnt;
+
+static jmp_buf env_ogrf;  // the context saved by setjmp();
+
+static void OpenCPN_OGRErrorHandler(
+    CPLErr eErrClass, int nError,
+    const char *pszErrorMsg);  // installed GDAL OGR library error handler
 
 static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed) {
   const uint64_t m = 0x880355f21e6d1965ULL;
@@ -2009,7 +1989,7 @@ bool s57chart::DoRenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
 
     //    Create a mask
     if (b_overlay) {
-      wxColour nodat = GetGlobalColor(_T ( "NODTA" ));
+      wxColour nodat = GetGlobalColor("NODTA");
       wxColour nodat_sub = nodat;
 
 #ifdef ocpnUSE_ocpnBitmap
@@ -2286,7 +2266,7 @@ int s57chart::DCRenderRect(wxMemoryDC &dcinput, const ViewPort &vp,
 
   //    This does not work due to some issue with ref data of allocated
   //    buffer..... render_canvas_parms pb_spec( rect->x, rect->y, rect->width,
-  //    rect->height,  GetGlobalColor ( _T ( "NODTA" ) ));
+  //    rect->height,  GetGlobalColor ( "NODTA" ));
 
   render_canvas_parms pb_spec;
 
@@ -2307,7 +2287,7 @@ int s57chart::DCRenderRect(wxMemoryDC &dcinput, const ViewPort &vp,
 #endif
 
   // Preset background
-  wxColour color = GetGlobalColor(_T ( "NODTA" ));
+  wxColour color = GetGlobalColor("NODTA");
   unsigned char r, g, b;
   if (color.IsOk()) {
     r = color.Red();
@@ -3678,7 +3658,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
     dummy_array = UpFiles;
 
   wxArrayString possibleFiles;
-  wxDir::GetAllFiles(DirName000, &possibleFiles, wxEmptyString, flags);
+  wxDir::GetAllFiles(DirName000, &possibleFiles, "", flags);
 
   for (unsigned int i = 0; i < possibleFiles.GetCount(); i++) {
     wxString filename(possibleFiles[i]);
@@ -5330,37 +5310,44 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
     case OGR_REAL: {
       double dval = *((double *)pval->value);
       wxString val_suffix = " m";
+      bool has_preformatted = false;
+      wxString preformatted;
 
-      //    As a special case, convert some attribute values to feet.....
+      // Unit customizations for height attributes:
+      // - VERCOP: Vertical clearance when bridge/obstruction is in open
+      // position
+      // - VERCLR: Vertical clearance under fixed bridge/cable/pipeline
+      // - VERCCL: Vertical clearance when bridge/obstruction is in closed
+      // position
+      // - HEIGHT: Height of structure/object above chart datum or terrain
+      // - ELEVAT: Elevation of terrain/landmark above chart datum
+      // - VERCSA: Safe vertical clearance for navigation
       if ((curAttrName == "VERCLR") || (curAttrName == "VERCCL") ||
           (curAttrName == "VERCOP") || (curAttrName == "HEIGHT") ||
-          (curAttrName == "HORCLR") || (curAttrName == "ELEVAT")) {
-        switch (ps52plib->m_nDepthUnitDisplay) {
-          case 0:                          // feet
-          case 2:                          // fathoms
-            dval = dval * 3 * 39.37 / 36;  // feet
-            val_suffix = " ft";
-            break;
-          default:
-            break;
-        }
+          (curAttrName == "ELEVAT") || (curAttrName == "VERCSA")) {
+        // Vertical attributes: use Height units (meters/feet)
+        double usr = toUsrHeight(dval, -1);  // input meters
+        dval = usr;
+        wxString unit = getUsrHeightUnit(-1);
+        val_suffix = wxString::Format(" %s", unit.c_str());
+      } else if (curAttrName == "HORCLR") {
+        // Horizontal clearance: format adaptively using distance settings
+        // Input ENC value is meters; convert to nautical miles first
+        double nm = dval / 1852.0;  // meters -> nautical miles
+        preformatted = FormatDistanceAdaptive(nm);
+        has_preformatted = true;
       }
 
       else if ((curAttrName == "VALSOU") || (curAttrName == "DRVAL1") ||
                (curAttrName == "DRVAL2") || (curAttrName == "VALDCO")) {
-        switch (ps52plib->m_nDepthUnitDisplay) {
-          case 0:                          // feet
-            dval = dval * 3 * 39.37 / 36;  // feet
-            val_suffix = " ft";
-            break;
-          case 2:                          // fathoms
-            dval = dval * 3 * 39.37 / 36;  // fathoms
-            dval /= 6.0;
-            val_suffix = " fathoms";
-            break;
-          default:
-            break;
-        }
+        // VALSOU: Value of sounding - water depth at specific location
+        // DRVAL1: Depth range value 1 - minimum depth in depth area
+        // DRVAL2: Depth range value 2 - maximum depth in depth area
+        // VALDCO: Value of depth contour - depth value of contour line
+        double usr = toUsrDepth(dval, -1);  // input meters
+        dval = usr;
+        wxString unit = getUsrDepthUnit(-1);
+        val_suffix = wxString::Format(" %s", unit.c_str());
       }
 
       else if (curAttrName == "SECTR1")
@@ -5380,12 +5367,15 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
       else if (curAttrName == "CURVEL")
         val_suffix = " kt";
 
-      if (dval - floor(dval) < 0.01)
-        value.Printf("%2.0f", dval);
-      else
-        value.Printf("%4.1f", dval);
-
-      value << val_suffix;
+      if (has_preformatted) {
+        value = preformatted;
+      } else {
+        if (dval - floor(dval) < 0.01)
+          value.Printf("%2.0f", dval);
+        else
+          value.Printf("%4.1f", dval);
+        value << val_suffix;
+      }
 
       break;
     }
@@ -5474,37 +5464,31 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
     case OGR_REAL: {
       double dval = *((double *)pAttrVal->value);
       wxString val_suffix = " m";
+      bool has_preformatted = false;
+      wxString preformatted;
 
-      //    As a special case, convert some attribute values to feet.....
+      // Use unit customizations for special attributes
       if ((AttrName == "VERCLR") || (AttrName == "VERCCL") ||
           (AttrName == "VERCOP") || (AttrName == "HEIGHT") ||
-          (AttrName == "HORCLR") || (AttrName == "ELEVAT")) {
-        switch (ps52plib->m_nDepthUnitDisplay) {
-          case 0:                          // feet
-          case 2:                          // fathoms
-            dval = dval * 3 * 39.37 / 36;  // feet
-            val_suffix = " ft";
-            break;
-          default:
-            break;
-        }
+          (AttrName == "ELEVAT")) {
+        // Vertical attributes: use Height units
+        double usr = toUsrHeight(dval, -1);  // input meters
+        dval = usr;
+        wxString unit = getUsrHeightUnit(-1);
+        val_suffix = wxString::Format(" %s", unit.c_str());
+      } else if (AttrName == "HORCLR") {
+        // Horizontal clearance: format adaptively using distance settings
+        double nm = dval / 1852.0;  // meters -> nautical miles
+        preformatted = FormatDistanceAdaptive(nm);
+        has_preformatted = true;
       }
 
       else if ((AttrName == "VALSOU") || (AttrName == "DRVAL1") ||
                (AttrName == "DRVAL2")) {
-        switch (ps52plib->m_nDepthUnitDisplay) {
-          case 0:                          // feet
-            dval = dval * 3 * 39.37 / 36;  // feet
-            val_suffix = " ft";
-            break;
-          case 2:                          // fathoms
-            dval = dval * 3 * 39.37 / 36;  // fathoms
-            dval /= 6.0;
-            val_suffix = " fathoms";
-            break;
-          default:
-            break;
-        }
+        double usr = toUsrDepth(dval, -1);  // input meters
+        dval = usr;
+        wxString unit = getUsrDepthUnit(-1);
+        val_suffix = wxString::Format(" %s", unit.c_str());
       }
 
       else if (AttrName == "SECTR1")
@@ -5524,12 +5508,15 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
       else if (AttrName == "CURVEL")
         val_suffix = " kt";
 
-      if (dval - floor(dval) < 0.01)
-        value.Printf("%2.0f", dval);
-      else
-        value.Printf("%4.1f", dval);
-
-      value << val_suffix;
+      if (has_preformatted) {
+        value = preformatted;
+      } else {
+        if (dval - floor(dval) < 0.01)
+          value.Printf("%2.0f", dval);
+        else
+          value.Printf("%4.1f", dval);
+        value << val_suffix;
+      }
 
       break;
     }
@@ -6189,8 +6176,8 @@ int s57chart::GetENCScale() {
 /*                       Use Global wxLog Class                         */
 /************************************************************************/
 
-void OpenCPN_OGRErrorHandler(CPLErr eErrClass, int nError,
-                             const char *pszErrorMsg) {
+static void OpenCPN_OGRErrorHandler(CPLErr eErrClass, int nError,
+                                    const char *pszErrorMsg) {
 #define ERR_BUF_LEN 2000
 
   char buf[ERR_BUF_LEN + 1];
@@ -6260,7 +6247,7 @@ const char *MyCSVGetField(const char *pszFilename, const char *pszKeyFieldName,
 // Get Chart Extents
 //----------------------------------------------------------------------------------
 
-bool s57_GetChartExtent(const wxString &FullPath, Extent *pext) {
+static bool s57_GetChartExtent(const wxString &FullPath, Extent *pext) {
   //   Fix this  find extents of which?? layer??
   /*
    OGRS57DataSource *poDS = new OGRS57DataSource;

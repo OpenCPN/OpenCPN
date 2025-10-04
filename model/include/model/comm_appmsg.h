@@ -1,12 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Decoded messages definitions. These messages are handled by the
- *           ApgMsgBus defined in comm_appmsg_bus.h.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,10 +13,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Decoded messages definitions. These messages are handled by the
+ * ApgMsgBus defined in comm_appmsg_bus.h.
+ */
 
 #ifndef _APP_MSG_H
 #define _APP_MSG_H

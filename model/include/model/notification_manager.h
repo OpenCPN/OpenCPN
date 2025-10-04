@@ -21,8 +21,8 @@
  * User notifications manager
  */
 
-#ifndef _NOTIFICATION_MANAGER_H__
-#define _NOTIFICATION_MANAGER_H__
+#ifndef NOTIFICATION_MANAGER_H_
+#define NOTIFICATION_MANAGER_H_
 
 #include <wx/timer.h>
 

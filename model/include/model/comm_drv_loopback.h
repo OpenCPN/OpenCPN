@@ -15,6 +15,12 @@
  *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
+/**
+ * \file
+ *
+ * Loopback driver, treat sent messages as received.
+ */
+
 #ifndef _COMM_DRV_LOOPBACK_H
 #define _COMM_DRV_LOOPBACK_H
 

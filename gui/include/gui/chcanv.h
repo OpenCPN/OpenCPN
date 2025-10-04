@@ -59,15 +59,19 @@
 #include "ocpn_plugin.h"
 #include "piano.h"
 #include "quilt.h"
-#include "RolloverWin.h"
-#include "S57Sector.h"
-#include "TCWin.h"
+#include "rollover_win.h"
+#include "s57_sector.h"
+#include "tc_win.h"
 #include "undo.h"
 
+class canvasConfig;        // circular
 class CanvasMenuHandler;   // circular
 class MyFrame;             // circular
 class NotificationsList;   // circular
 class NotificationButton;  // circular
+class Quilt;               // circular
+class TCWin;               // circular
+class Undo;                // circular
 
 class ChartCanvas;                    // forward
 extern ChartCanvas *g_overlayCanvas;  ///< Global instance
@@ -126,14 +130,11 @@ enum {
 
 enum { NORTH_UP_MODE, COURSE_UP_MODE, HEAD_UP_MODE };
 
-extern void pupHandler_PasteRoute();
+extern void pupHandler_PasteRoute();  // forward
 
-extern void pupHandler_PasteWaypoint();
+extern void pupHandler_PasteWaypoint();  // forward
 
-extern void pupHandler_PasteTrack();
-
-class canvasConfig;  // circular
-class Quilt;         // circular
+extern void pupHandler_PasteTrack();  // forward
 
 /**
  * ChartCanvas - Main chart display and interaction component
@@ -475,9 +476,10 @@ public:
   /**
    * Return the number of logical pixels per meter for the screen.
    *
-   * @todo The name of this function is misleading. It should be renamed to
-   * GetCanvasLogicalPixelsPerMeter() or similar. It looks like some callers
-   * are expecting the physical pixels per meter, which is incorrect.
+   * @todo The name of this function is misleading. It should be renamed
+   * tgui/include/gui/quilt.ho GetCanvasLogicalPixelsPerMeter() or similar. It
+   * looks like some callers are expecting the physical pixels per meter, which
+   * is incorrect.
    */
   double GetCanvasScaleFactor() { return m_canvas_scale_factor; }
   /*chcanv*

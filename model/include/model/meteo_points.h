@@ -1,6 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2023 Håkan Svensson
- *   Copyright (C) 2023 Alec Leamas
+/***************************************************************************
+ *   Copyright (C) 2023 Håkan Svensson                                     *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -13,18 +13,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Meteo points are Meteorological and Hydrographic data received
+ * by NMEA0183 (AIS) VDM message 8 dac:001 fi: 31 or Ais8_367_33.
+ * Structure and content as described in IMO SN.1/Circ.289 or
+ * DAC367_FI33_em_version_release_3-23mar15_0
+ */
 
 #ifndef _METEO_POINTS_H__
 #define _METEO_POINTS_H__
-
-/** Meteo points are Meteorological and Hydrographic data received
- ** by NMEA0183 (AIS) VDM message 8 dac:001 fi: 31 or Ais8_367_33.
- ** Structure and content as described in IMO SN.1/Circ.289 or
- ** DAC367_FI33_em_version_release_3-23mar15_0**/
 
 struct AisMeteoData {
   // Ais8_001_31, Ais8_367_33 Meteo data

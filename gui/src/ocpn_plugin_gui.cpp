@@ -83,6 +83,8 @@ extern options* g_pOptions;  // FIXME (leamas) merge to g_options
 
 extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
 
+int g_canvas_context_Menu_Disable_Mask;
+
 void NotifySetupOptionsPlugin(const PlugInData* pic);
 
 //---------------------------------------------------------------------------
@@ -717,6 +719,19 @@ double fromUsrDepth_Plugin(double usr_depth, int unit) {
 }
 
 wxString getUsrDepthUnit_Plugin(int unit) { return getUsrDepthUnit(unit); }
+
+/**
+ * Height Conversion Functions
+ */
+double toUsrHeight_Plugin(double m_height, int unit) {
+  return toUsrHeight(m_height, unit);
+}
+
+double fromUsrHeight_Plugin(double usr_height, int unit) {
+  return fromUsrHeight(usr_height, unit);
+}
+
+wxString getUsrHeightUnit_Plugin(int unit) { return getUsrHeightUnit(unit); }
 
 double fromDMM_PlugIn(wxString sdms) { return fromDMM(sdms); }
 
@@ -3540,3 +3555,7 @@ void AisToggleTrack(wxString ais_mmsi) {
     }
   }
 }
+
+//  Context menu enable/disable, by object type
+int GetContextMenuMask() { return g_canvas_context_Menu_Disable_Mask; }
+void SetContextMenuMask(int mask) { g_canvas_context_Menu_Disable_Mask = mask; }

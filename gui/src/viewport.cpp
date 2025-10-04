@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  ViewPort
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,102 +12,94 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
+/**
+ * \file
+ *
+ * Implement viewport.h -- geographic projection and coordinate transformations
+ */
 
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-#include <wx/image.h>
-#include <wx/graphics.h>
-#include <wx/listbook.h>
-#include <wx/clipbrd.h>
-#include <wx/aui/aui.h>
+#include <vector>
 
-#if defined(__OCPN__ANDROID__)
+#ifndef __WXMSW__
+#include <signal.h>
+#include <setjmp.h>
+#endif
+
+#if defined(__ANDROID__)
 #include <GLES2/gl2.h>
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glew.h>
 #endif
 
-#include "config.h"
-
-#include "dychart.h"
-
-#include <wx/listimpl.cpp>
-
-#include "chcanv.h"
-#include "TCWin.h"
-#include "model/geodesic.h"
-#include "styles.h"
-#include "model/routeman.h"
-#include "navutil.h"
-#include "kml.h"
-#include "concanv.h"
-#include "thumbwin.h"
-#include "chartdb.h"
-#include "chartimg.h"
-#include "model/cutil.h"
-#include "TrackPropDlg.h"
-#include "tcmgr.h"
-#include "routemanagerdialog.h"
-#include "pluginmanager.h"
-#include "ocpn_pixel.h"
-#include "ocpndc.h"
-#include "undo.h"
-#include "model/multiplexer.h"
-#include "timers.h"
-#include "tide_time.h"
-#include "gl_texture_descr.h"
-#include "ch_info_win.h"
-#include "quilt.h"
-#include "model/select_item.h"
-#include "model/select.h"
-#include "font_mgr.h"
-#include "model/ais_decoder.h"
-#include "model/ais_target_data.h"
-#include "ais_target_alert_dlg.h"
-#include "SendToGpsDlg.h"
-#include "ocpn_region.h"
-#include "gshhs.h"
-
-#ifdef ocpnUSE_GL
-#include "gl_chart_canvas.h"
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
 #endif
 
-#include "cm93.h"      // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
-
-#include "ais.h"
+#include <wx/aui/aui.h>
+#include <wx/clipbrd.h>
+#include <wx/graphics.h>
+#include <wx/image.h>
+#include <wx/listbook.h>
+#include <wx/listimpl.cpp>
 
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
 #endif
 
-#ifndef __WXMSW__
-#include <signal.h>
-#include <setjmp.h>
+#include "model/ais_decoder.h"
+#include "model/ais_target_data.h"
+#include "model/cutil.h"
+#include "model/geodesic.h"
+#include "model/multiplexer.h"
+#include "model/routeman.h"
+#include "model/select.h"
+#include "model/select_item.h"
 
-extern struct sigaction sa_all_old;
+#include "ais.h"
+#include "ais_target_alert_dlg.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "ch_info_win.h"
+#include "cm93.h"  // for chart outline draw
+#include "concanv.h"
+#include "config.h"
+#include "dychart.h"
+#include "font_mgr.h"
+#include "gl_texture_descr.h"
+#include "gshhs.h"
+#include "kml.h"
+#include "navutil.h"
+#include "ocpndc.h"
+#include "ocpn_pixel.h"
+#include "ocpn_platform.h"
+#include "ocpn_region.h"
+#include "pluginmanager.h"
+#include "quilt.h"
+#include "routemanagerdialog.h"
+#include "s52plib.h"
+#include "s57chart.h"  // for ArrayOfS57Obj
+#include "send_to_gps_dlg.h"
+#include "styles.h"
+#include "tcmgr.h"
+#include "tc_win.h"
+#include "thumbwin.h"
+#include "tide_time.h"
+#include "timers.h"
+#include "track_prop_dlg.h"
+#include "undo.h"
 
-extern sigjmp_buf env;  // the context saved by sigsetjmp();
+#ifdef ocpnUSE_GL
+#include "gl_chart_canvas.h"
 #endif
 
-#include <vector>
-
+// FIXME (leamas) find new home
 ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
-
-// ----------------------------------------------------------------------------
-// Useful Prototypes
-// ----------------------------------------------------------------------------
-
-extern void catch_signals(int signo);
 
 //------------------------------------------------------------------------------
 //    ViewPort Implementation

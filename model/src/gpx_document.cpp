@@ -12,14 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement gpx_document.h
+ *
+ * Implement gpx_document.h -- GPX files UUID support
  */
 
 #include <wx/datetime.h>
@@ -28,7 +27,7 @@
 #include "model/gpx_document.h"
 
 // RFC4122 version 4 compliant random UUIDs generator.
-wxString GpxDocument::GetUUID(void) {
+wxString GpxDocument::GetUUID() {
   wxString str;
   struct {
     int time_low;
@@ -58,8 +57,8 @@ wxString GpxDocument::GetUUID(void) {
    * time_hi_and_version field to 4 */
   uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
 
-  str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
-             uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
+  str.Printf("%08x-%04x-%04x-%02x%02x-%04x%08x", uuid.time_low, uuid.time_mid,
+             uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
              uuid.clock_seq_low, uuid.node_hi, uuid.node_low);
 
   return str;

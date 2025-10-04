@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Navigation Utility Functions without GUI deps
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,16 +10,16 @@
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
  *   GNU General Public License for more details.                          *
- *                                                                         *
+ *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/**************************************************************************/
-/*          Formats the coordinates to string                             */
-/**************************************************************************/
+/**
+ * \file
+ *
+ * Implement navutil_base.h -- navigation Utility Functions without GUI deps
+ */
 
 #include <iomanip>
 #include <sstream>
@@ -90,33 +84,31 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
         if (hi_precision)
-          s.Printf(_T ( "%d%c %02ld.%04ld'" ), d, 0x00B0, m / 10000, m % 10000);
+          s.Printf("%d%c %02ld.%04ld'", d, 0x00B0, m / 10000, m % 10000);
         else
-          s.Printf(_T ( "%d%c %02ld.%01ld'" ), d, 0x00B0, m / 10, m % 10);
+          s.Printf("%d%c %02ld.%01ld'", d, 0x00B0, m / 10, m % 10);
       } else {
         if (hi_precision)
           if (NEflag == 1)
-            s.Printf(_T ( "%02d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
+            s.Printf("%02d%c %02ld.%04ld' %c", d, 0x00B0, m / 10000,
                      (m % 10000), c);
           else
-            s.Printf(_T ( "%03d%c %02ld.%04ld' %c" ), d, 0x00B0, m / 10000,
+            s.Printf("%03d%c %02ld.%04ld' %c", d, 0x00B0, m / 10000,
                      (m % 10000), c);
         else if (NEflag == 1)
-          s.Printf(_T ( "%02d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10),
-                   c);
+          s.Printf("%02d%c %02ld.%01ld' %c", d, 0x00B0, m / 10, (m % 10), c);
         else
-          s.Printf(_T ( "%03d%c %02ld.%01ld' %c" ), d, 0x00B0, m / 10, (m % 10),
-                   c);
+          s.Printf("%03d%c %02ld.%01ld' %c", d, 0x00B0, m / 10, (m % 10), c);
       }
       break;
     case 1:
       if (hi_precision)
-        s.Printf(_T ( "%03.6f" ),
+        s.Printf("%03.6f",
                  ang);  // cca 11 cm - the GPX precision is higher, but as we
                         // use hi_precision almost everywhere it would be a
                         // little too much....
       else
-        s.Printf(_T ( "%03.4f" ), ang);  // cca 11m
+        s.Printf("%03.4f", ang);  // cca 11m
       break;
     case 2:
       m = (long)((a - (double)d) * 60);
@@ -127,25 +119,23 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
         if (hi_precision)
-          s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 1000,
-                   sec % 1000);
+          s.Printf("%d%c %ld'%ld.%ld\"", d, 0x00B0, m, sec / 1000, sec % 1000);
         else
-          s.Printf(_T ( "%d%c %ld'%ld.%ld\"" ), d, 0x00B0, m, sec / 10,
-                   sec % 10);
+          s.Printf("%d%c %ld'%ld.%ld\"", d, 0x00B0, m, sec / 10, sec % 10);
       } else {
         if (hi_precision)
           if (NEflag == 1)
-            s.Printf(_T ( "%02d%c %02ld' %02ld.%03ld\" %c" ), d, 0x00B0, m,
-                     sec / 1000, sec % 1000, c);
+            s.Printf("%02d%c %02ld' %02ld.%03ld\" %c", d, 0x00B0, m, sec / 1000,
+                     sec % 1000, c);
           else
-            s.Printf(_T ( "%03d%c %02ld' %02ld.%03ld\" %c" ), d, 0x00B0, m,
-                     sec / 1000, sec % 1000, c);
+            s.Printf("%03d%c %02ld' %02ld.%03ld\" %c", d, 0x00B0, m, sec / 1000,
+                     sec % 1000, c);
         else if (NEflag == 1)
-          s.Printf(_T ( "%02d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m,
-                   sec / 10, sec % 10, c);
+          s.Printf("%02d%c %02ld' %02ld.%ld\" %c", d, 0x00B0, m, sec / 10,
+                   sec % 10, c);
         else
-          s.Printf(_T ( "%03d%c %02ld' %02ld.%ld\" %c" ), d, 0x00B0, m,
-                   sec / 10, sec % 10, c);
+          s.Printf("%03d%c %02ld' %02ld.%ld\" %c", d, 0x00B0, m, sec / 10,
+                   sec % 10, c);
       }
       break;
   }
@@ -198,9 +188,6 @@ double toUsrWindSpeed(double kts_wspeed, int unit) {
   return ret;
 }
 
-/**************************************************************************/
-/*          Converts the distance to the units selected by user           */
-/**************************************************************************/
 double toUsrDistance(double nm_distance, int unit) {
   double ret = NAN;
   if (unit == -1) unit = g_iDistanceFormat;
@@ -365,13 +352,13 @@ wxString FormatDistanceAdaptive(double distance) {
   }
   wxString format;
   if (usrDistance < 5.0) {
-    format = _T("%1.2f ");
+    format = "%1.2f ";
   } else if (usrDistance < 100.0) {
-    format = _T("%2.1f ");
+    format = "%2.1f ";
   } else if (usrDistance < 1000.0) {
-    format = _T("%3.0f ");
+    format = "%3.0f ";
   } else {
-    format = _T("%4.0f ");
+    format = "%4.0f ";
   }
   result << wxString::Format(format, usrDistance) << getUsrDistanceUnit(unit);
   return result;
@@ -406,7 +393,10 @@ double fromUsrSpeed(double usr_speed, int unit, int default_val) {
 /**************************************************************************/
 double fromUsrDistance(double usr_distance, int unit, int default_val) {
   double ret = NAN;
-  if (unit == -1) unit = default_val;
+  if (unit == -1) {
+    // Use g_iDistanceFormat as default when default_val is -1
+    unit = (default_val == -1) ? g_iDistanceFormat : default_val;
+  }
   switch (unit) {
     case DISTANCE_NMI:  // Nautical miles
       ret = usr_distance;
@@ -423,25 +413,31 @@ double fromUsrDistance(double usr_distance, int unit, int default_val) {
     case DISTANCE_FT:
       ret = usr_distance / 6076.12;
       break;
+    case DISTANCE_FA:
+      ret = usr_distance / 1012.68591;
+      break;
+    case DISTANCE_IN:
+      ret = usr_distance / 72913.4;
+      break;
+    case DISTANCE_CM:
+      ret = usr_distance / 185200;
+      break;
   }
   return ret;
 }
 
-/**************************************************************************/
-/*    Converts the depth in meters to the units selected by user          */
-/**************************************************************************/
-double toUsrDepth(double cel_depth, int unit) {
+double toUsrDepth(double m_depth, int unit) {
   double ret = NAN;
   if (unit == -1) unit = g_nDepthUnitDisplay;
   switch (unit) {
     case DEPTH_FT:  // Feet
-      ret = cel_depth / 0.3048;
+      ret = m_depth / 0.3048;
       break;
     case DEPTH_M:  // Meters
-      ret = cel_depth;
+      ret = m_depth;
       break;
     case DEPTH_FA:
-      ret = cel_depth / 0.3048 / 6;
+      ret = m_depth / 0.3048 / 6;
       break;
   }
   return ret;
@@ -482,6 +478,48 @@ wxString getUsrDepthUnit(int unit) {
       break;
     case DEPTH_FA:  // Fathoms
       ret = _("fa");
+      break;
+  }
+  return ret;
+}
+
+double toUsrHeight(double m_height, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = m_height;
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = m_height / 0.3048;
+      break;
+  }
+  return ret;
+}
+
+double fromUsrHeight(double usr_height, int unit) {
+  double ret = NAN;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = usr_height;
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = usr_height * 0.3048;
+      break;
+  }
+  return ret;
+}
+
+wxString getUsrHeightUnit(int unit) {
+  wxString ret;
+  if (unit == -1) unit = g_iHeightFormat;
+  switch (unit) {
+    case HEIGHT_M:  // Meters
+      ret = _("m");
+      break;
+    case HEIGHT_FT:  // Feet
+      ret = _("ft");
       break;
   }
   return ret;
@@ -570,10 +608,10 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime) {
   while (isspace(*datetime)) datetime++;
 
   // Skip (and ignore) leading hyphen
-  if (*datetime == wxT('-')) datetime++;
+  if (*datetime == '-') datetime++;
 
   // Parse and validate ISO 8601 date/time string
-  if ((end = dt.ParseFormat(datetime, wxT("%Y-%m-%dT%T"))) != NULL) {
+  if ((end = dt.ParseFormat(datetime, "%Y-%m-%dT%T")) != NULL) {
     // Invalid date/time
     if (*end == 0) return NULL;
 
@@ -581,22 +619,22 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime) {
     // wxDateTime class instance has not been initialized.
 
     // Date/time followed by UTC time zone flag, so we are done
-    else if (*end == wxT('Z')) {
+    else if (*end == 'Z') {
       end++;
       return end;
     }
 
     // Date/time followed by given number of hrs/mins west of UTC
-    else if (*end == wxT('+') || *end == wxT('-')) {
+    else if (*end == '+' || *end == '-') {
       // Save direction from UTC
-      if (*end == wxT('+'))
+      if (*end == '+')
         sign = 1;
       else
         sign = -1;
       end++;
 
       // Parse hrs west of UTC
-      if (isdigit(*end) && isdigit(*(end + 1)) && *(end + 2) == wxT(':')) {
+      if (isdigit(*end) && isdigit(*(end + 1)) && *(end + 2) == ':') {
         // Extract and validate hrs west of UTC
         wxString(end).ToLong(&hrs_west);
         if (hrs_west > 12) return NULL;
@@ -697,28 +735,28 @@ double fromDMM(wxString sdms) {
   // formats
   wxString replhelper;
   replhelper = wxString::FromUTF8("´·");  // UKHO PDFs
-  sdms.Replace(replhelper, _T("."));
+  sdms.Replace(replhelper, ".");
   replhelper =
       wxString::FromUTF8("\"·");  // Don't know if used, but to make sure
-  sdms.Replace(replhelper, _T("."));
+  sdms.Replace(replhelper, ".");
   replhelper = wxString::FromUTF8("·");
-  sdms.Replace(replhelper, _T("."));
+  sdms.Replace(replhelper, ".");
 
   replhelper =
       wxString::FromUTF8("s. š.");  // Another example: cs.wikipedia.org
                                     // (someone was too active translating...)
-  sdms.Replace(replhelper, _T("N"));
+  sdms.Replace(replhelper, "N");
   replhelper = wxString::FromUTF8("j. š.");
-  sdms.Replace(replhelper, _T("S"));
-  sdms.Replace(_T("v. d."), _T("E"));
-  sdms.Replace(_T("z. d."), _T("W"));
+  sdms.Replace(replhelper, "S");
+  sdms.Replace("v. d.", "E");
+  sdms.Replace("z. d.", "W");
 
   // If the string contains hemisphere specified by a letter, then '-' is for
   // sure a separator...
   sdms.UpperCase();
-  if (sdms.Contains(_T("N")) || sdms.Contains(_T("S")) ||
-      sdms.Contains(_T("E")) || sdms.Contains(_T("W")))
-    sdms.Replace(_T("-"), _T(" "));
+  if (sdms.Contains("N") || sdms.Contains("S") || sdms.Contains("E") ||
+      sdms.Contains("W"))
+    sdms.Replace("-", " ");
 
   wcsncpy(buf, sdms.wc_str(wxConvUTF8), 63);
   buf[63] = 0;
@@ -780,11 +818,11 @@ double toMagnetic(double deg_true, double variation) {
 // Function to remove invalid Windows filename characters from a wxString
 wxString SanitizeFileName(const wxString &input) {
   // List of invalid characters for Windows filenames
-  static const wxString invalidChars = wxT("<>:\"/\\|?*");
+  static const wxString invalidChars = "<>:\"/\\|?*";
   wxString result;
   for (wxUniChar ch : input) {
     if (invalidChars.Contains(ch))
-      result += wxT('_');
+      result += '_';
     else
       result += ch;
   }

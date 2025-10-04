@@ -102,7 +102,7 @@
 #include "chart_ctx_factory.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "TCWin.h"
+#include "tc_win.h"
 #include "cm93.h"
 #include "color_handler.h"
 #include "compass.h"
@@ -136,16 +136,16 @@
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "route_point_gui.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s57chart.h"
-#include "S57QueryDialog.h"
+#include "s57_query_dlg.h"
 #include "SoundFactory.h"
 #include "SystemCmdSound.h"
 #include "tcmgr.h"
 #include "timers.h"
 #include "toolbar.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #include "waypointman_gui.h"
 #include "canvas_options.h"
 #include "udev_rule_mgr.h"
@@ -5780,8 +5780,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
                 cc->DoCanvasUpdate();
                 if (bnew_view)
                   cc->Refresh(false);  // honor ownship state update
-              }  // else
-                 // cc->Refresh(false);
+              } else
+                cc->Refresh(false);
             } else {
               // Pick up SOG=0, COG=NAN report at 10Hz.
               if (std::isnan(gCog)) cc->Refresh(false);

@@ -18,7 +18,8 @@
 /**
  * \file
  *
- * implement config_vars.h -- Global variables stored in configuration file.
+ * Implement config_vars.h -- Global variables persisted  in configuration
+ * file.
  */
 
 #include <vector>
@@ -100,8 +101,8 @@ bool g_bTransparentToolbar = false;
 bool g_bUIexpert = false;
 bool g_bUseGLL = true;
 bool g_bUseGreenShip = false;
-bool g_bUseOnlyConfirmedAISName = false;
 bool g_bUserIconsFirst = true;
+bool g_bUseOnlyConfirmedAISName = false;
 bool g_bUseWptScaMin = false;
 bool g_bWayPointPreventDragging = false;
 bool g_bWplUsePosition = false;
@@ -144,7 +145,6 @@ float g_ShipScaleFactorExp = 0.0;
 int g_ais_cog_predictor_width = 0;
 int g_AndroidVersionCode = 0;
 int g_BSBImgDebug = 0;
-
 int g_ChartScaleFactor = 0;
 int g_chart_zoom_modifier_raster = 0;
 int g_chart_zoom_modifier_vector = 0;
@@ -163,6 +163,7 @@ int g_GUIScaleFactor = 0;
 int g_iDistanceFormat = 0;
 int g_iENCToolbarPosX = 0;
 int g_iENCToolbarPosY = 0;
+int g_iHeightFormat = 0;
 int g_iNavAidRadarRingsNumberVisible = 0;
 int g_iSDMMFormat = 0;
 int g_iSoundDeviceIndex = 0;

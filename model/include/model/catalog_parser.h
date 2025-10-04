@@ -12,21 +12,21 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
-#ifndef CATALOG_PARSER_H__
-#define CATALOG_PARSER_H__
-
-#include <string>
-#include <vector>
 
 /**
  * \file
+ *
  * Datatypes and  methods to parse ocpn-plugins.xml XML data, either complete
  * catalog or a single plugin.
  */
+
+#ifndef CATALOG_PARSER_H_
+#define CATALOG_PARSER_H_
+
+#include <string>
+#include <vector>
 
 /** Overall metadata for the set of plugins used. */
 struct CatalogData {
@@ -104,4 +104,4 @@ bool ParseCatalog(const std::string xml, CatalogCtx* ctx);
 
 bool ParsePlugin(const std::string& xml, PluginMetadata& metadata);
 
-#endif  // CATALOG_PARSER_H__
+#endif  // CATALOG_PARSER_H_

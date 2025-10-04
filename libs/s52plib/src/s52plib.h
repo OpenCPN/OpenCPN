@@ -121,6 +121,12 @@ struct CARC_Buffer {
 WX_DECLARE_STRING_HASH_MAP(CARC_Buffer, CARC_Hash);
 WX_DECLARE_STRING_HASH_MAP(int, CARC_DL_Hash);
 
+struct SoundingSym {
+  Rule *prule;
+  wxPoint r;
+  wxUint32 color_RGB;
+};
+
 class PixelCache;
 
 class RenderFromHPGL;
@@ -146,6 +152,9 @@ WX_DECLARE_STRING_HASH_MAP(LUPHashIndex *, LUPArrayIndexHash);
 
 class s52plib;   // Forward
 extern s52plib *ps52plib;  ///< Global instance
+
+/** in s52cnsy */
+extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
 
 class LUPArrayContainer {
 public:
@@ -381,6 +390,9 @@ public:
   GLint m_sounding_shader_attr_aUV;
   GLint m_sounding_shader_uni_transform;
 #endif
+  // Preferred display unit for vertical heights (meters/feet).
+  // 0 = meters, 1 = feet
+  int m_nHeightUnitDisplay;
 
   //    Library data
   wxArrayPtrVoid *pAlloc;
@@ -419,6 +431,11 @@ public:
   void PLIB_LoadS57ObjectConfig(wxFileConfig *pconfig);
   void SetReducedBBox(LLBBox box){ reducedBBox = box;}
 
+  void RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
+                          float scale, double rot_angle, float sym_len, float sym_height);
+  int BuildLCSymbolTexture(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
+                                     float scale, float sym_len, float sym_height);
+
 private:
   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
   bool S52_flush_Plib();
@@ -450,6 +467,7 @@ private:
   int RenderLS(ObjRazRules *rzRules, Rules *rules);
   int RenderLC(ObjRazRules *rzRules, Rules *rules);
   int RenderMPS(ObjRazRules *rzRules, Rules *rules);
+  void RenderMPSArray(ObjRazRules *rzRules, std::vector<SoundingSym> array);
   int RenderCARC(ObjRazRules *rzRules, Rules *rules);
   char *RenderCS(ObjRazRules *rzRules, Rules *rules);
   int RenderGLLS(ObjRazRules *rzRules, Rules *rules);
@@ -484,7 +502,7 @@ private:
                                    render_canvas_parms *patt_spec);
 
   void draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
-                    int *mask, int npt, float sym_len, float sym_factor,
+                    int *mask, int npt, float sym_len, float sym_height, float sym_factor,
                     Rule *draw_rule);
 
   bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
@@ -632,6 +650,7 @@ private:
 
   LLBBox reducedBBox;
   std::unordered_map<std::string, int>vector_symbol_cache;
+  std::unordered_map<std::string, int>lc_vector_symbol_cache;
 
 };
 

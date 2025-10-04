@@ -88,7 +88,7 @@
 #include "piano.h"
 #include "pluginmanager.h"
 #include "quilt.h"
-#include "RolloverWin.h"
+#include "rollover_win.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
 #include "s52plib.h"
@@ -5453,15 +5453,9 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
       m_final_zoom_val = 1.0;
       m_step_zoom_val = 1.0;
 
-      // m_pParentCanvas->GetCanvasPixPoint(
-      //     event.GetPosition().x, event.GetPosition().y, m_pinchlat,
-      //     m_pinchlon);
-      //             qDebug() << "center" << event.GetCenterPoint().x <<
-      //             event.GetCenterPoint().y;
-
-      // m_cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
-      // m_cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
-
+      // Capture the lat/lon of the "pinch-point"
+      m_pParentCanvas->GetCanvasPixPoint(
+          event.GetPosition().x, event.GetPosition().y, m_pinchlat, m_pinchlon);
       m_zoom_inc = 1.0;
     }
 
@@ -5471,37 +5465,7 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
       // Some platforms generate spurious gestureEnd events. Guard for this.
       if (!m_binGesture) return;
 
-      float cc_x = m_fbo_offsetx + (m_fbo_swidth / 2);
-      float cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
-      float dy = 0;
-      float dx = 0;
-
-      float tzoom = m_final_zoom_val;
-
-      dx = (cc_x - m_cc_x) * tzoom;
-      dy = -(cc_y - m_cc_y) * tzoom;
-
-      if (zoomTimer.IsRunning()) {
-        //                qDebug() << "Final zoom";
-        m_zoomFinal = true;
-        m_zoomFinalZoom = tzoom;
-        m_zoomFinaldx = dx;
-        m_zoomFinaldy = dy;
-      }
-
-      else {
-        {
-          // qDebug() << "zoomit";
-          // m_pParentCanvas->ZoomCanvas(tzoom, false);
-          // m_pParentCanvas->ZoomCanvasSimple(1.);
-          // m_pParentCanvas->PanCanvas(dx, dy);
-          // m_pParentCanvas->m_OSoffsetx = 0;
-          // m_pParentCanvas->m_OSoffsety = 0;
-          // m_pParentCanvas->SetViewPoint(vp_save.clat, vp_save.clon);
-          // m_pParentCanvas->pPanTimer->Stop();
-          Refresh();
-        }
-      }
+      Refresh();
 
       // Let the gesture finish timer (500 msec) signal the pinch is done.
       // this will allow any lingering drag operation to avoid starting the
@@ -5536,6 +5500,24 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
             m_step_zoom_val = m_total_zoom_val;
             printf("   Zoom: %6g\n", inc_zoom_val);
             m_pParentCanvas->ZoomCanvasSimple(inc_zoom_val);
+
+            // Consider "zoom to pinch-point"
+            // Disable ZTC if lookahead is ON, and currently b_follow is active
+            bool b_allow_ztp = true;
+            if (m_pParentCanvas->m_bFollow && m_pParentCanvas->m_bLookAhead)
+              b_allow_ztp = false;
+
+            if (g_bEnableZoomToCursor && b_allow_ztp) {
+              // get the new (after zoom) pixel position of the original
+              // pinch-point
+              wxPoint r;
+              m_pParentCanvas->GetCanvasPointPix(m_pinchlat, m_pinchlon, &r);
+              // Shift the canvas to follow the pinch-lat/lon
+              int dx = r.x - event.GetPosition().x;
+              int dy = r.y - event.GetPosition().y;
+              m_pParentCanvas->PanCanvas(dx, dy);
+            }
+
             SetCurrent(*m_pcontext);
             Render();
           }

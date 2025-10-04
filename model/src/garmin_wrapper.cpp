@@ -14,9 +14,14 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA
+    along with this program; if not, see <https://www.gnu.org/licenses/>.
+ */
 
+/**
+ * \file
+ *
+ * Implement garmin_wrapper.h -- OpenCPN Interface Wrapper for garmin
+ * library.
  */
 
 #include "config.h"
@@ -31,7 +36,7 @@
 
 static gpsdevh *my_gps_devh;
 
-wxString GetLastGarminError(void) {
+wxString GetLastGarminError() {
   return wxString(GetDeviceLastError(), wxConvUTF8);
 }
 
@@ -75,7 +80,7 @@ int Garmin_GPS_GetPVT(void *pvt) {
   return GPS_Serial_Command_Pvt_Get((GPS_PPvt_Data *)pvt);
 }
 
-void Garmin_GPS_ClosePortVerify(void) { VerifyPortClosed(); }
+void Garmin_GPS_ClosePortVerify() { VerifyPortClosed(); }
 
 wxString Garmin_GPS_GetSaveString() {
   return wxString(gps_save_string, wxConvUTF8);
@@ -311,14 +316,14 @@ int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
 }
 
 /*
-int Garmin_USB_On(void)
+int Garmin_USB_On()
 {
       int ret_val = GPS_Device_On("usb:", &my_gps_devh);
 
       return ret_val;
 }
 
-int Garmin_USB_Off(void)
+int Garmin_USB_Off()
 {
       int ret_val = GPS_Device_Off(my_gps_devh);
 

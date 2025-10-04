@@ -57,7 +57,10 @@ Tooltip::Tooltip(wxWindow *parent)
   Hide();
 }
 
-Tooltip::~Tooltip() { delete m_pbm; }
+Tooltip::~Tooltip() {
+  m_showTimer.Stop();
+  delete m_pbm;
+}
 
 void Tooltip::SetString(const wxString &text) { m_string = text; }
 
@@ -268,11 +271,14 @@ void Tooltip::OnPaint(wxPaintEvent &event) {
 void Tooltip::OnTimer(wxTimerEvent &event) {
   if (event.GetId() == TOOLTIP_TIMER_ID && m_showPending) {
     m_showPending = false;
-    SetBitmap();
-    Show();
+    // Ensure we're still in a valid state before proceeding
+    if (!IsBeingDeleted()) {
+      SetBitmap();
+      Show();
 #ifndef __WXOSX__
-    if (gFrame) gFrame->Raise();
+      if (gFrame) gFrame->Raise();
 #endif
+    }
   }
 }
 
@@ -390,6 +396,7 @@ Tooltip *TooltipManager::GetOrCreateTooltip(wxWindow *parent) {
 
 void TooltipManager::CleanupTooltip() {
   if (m_currentTooltip) {
+    m_currentTooltip->HideTooltip();
     m_currentTooltip->Destroy();
     m_currentTooltip = nullptr;
     m_currentParent = nullptr;

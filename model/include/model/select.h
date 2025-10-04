@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,13 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _SELECT_H__
-#define _SELECT_H__
+/**
+ * \file
+ *
+ * Selected route, segment, waypoint, etc. abstraction.
+ */
+
+#ifndef SELECT_H_
+#define SELECT_H_
 
 #include "select_item.h"
 
@@ -115,4 +115,4 @@ private:
   float selectRadius;
 };
 
-#endif  // _SELECT_H__
+#endif  // SELECT_H_
