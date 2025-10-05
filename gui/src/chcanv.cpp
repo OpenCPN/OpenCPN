@@ -237,6 +237,7 @@ EVT_TIMER(DEFERRED_FOCUS_TIMER, ChartCanvas::OnDeferredFocusTimerEvent)
 EVT_TIMER(MOVEMENT_VP_TIMER, ChartCanvas::MovementVPTimerEvent)
 EVT_TIMER(DRAG_INERTIA_TIMER, ChartCanvas::OnChartDragInertiaTimer)
 EVT_TIMER(JUMP_EASE_TIMER, ChartCanvas::OnJumpEaseTimer)
+EVT_TIMER(MENU_TIMER, ChartCanvas::OnMenuTimer)
 
 END_EVENT_TABLE()
 
@@ -385,7 +386,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_popupWanted = false;
   m_leftdown = false;
 #endif /* HAVE_WX_GESTURE_EVENTS */
-
+  m_inLongPress = false;
   SetupGlCanvas();
 
   singleClickEventIsValid = false;
@@ -425,6 +426,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
 
   m_easeTimer.SetOwner(this, JUMP_EASE_TIMER);
   m_animationActive = false;
+  m_menuTimer.SetOwner(this, MENU_TIMER);
 
   m_panx = m_pany = 0;
   m_panspeed = 0;
@@ -946,12 +948,24 @@ void ChartCanvas::OnRouteFinishTimerEvent(wxTimerEvent &event) {
 
 #ifdef HAVE_WX_GESTURE_EVENTS
 void ChartCanvas::OnLongPress(wxLongPressEvent &event) {
+#ifdef __ANDROID__
   /* we defer the popup menu call upon the leftup event
   else the menu disappears immediately,
   (see
   http://wxwidgets.10942.n7.nabble.com/Popupmenu-disappears-immediately-if-called-from-QueueEvent-td92572.html)
   */
   m_popupWanted = true;
+#else
+  m_inLongPress = true;
+  // Send a synthetic mouse left-up event to sync the mouse pan logic.
+  m_menuPos = event.GetPosition();
+  wxMouseEvent ev(wxEVT_LEFT_UP);
+  ev.m_x = m_menuPos.x;
+  ev.m_y = m_menuPos.y;
+  wxPostEvent(this, ev);
+
+  m_menuTimer.StartOnce(20);  // Delay of 20 millisecond
+#endif
 }
 
 void ChartCanvas::OnPressAndTap(wxPressAndTapEvent &event) {
@@ -1031,6 +1045,11 @@ void ChartCanvas::OnDoubleLeftClick(wxMouseEvent &event) {
   DoRotateCanvas(0.0);
 }
 #endif /* HAVE_WX_GESTURE_EVENTS */
+void ChartCanvas::OnMenuTimer(wxTimerEvent &event) {
+  m_FinishRouteOnKillFocus = false;
+  CallPopupMenu(m_menuPos.x, m_menuPos.y);
+  m_FinishRouteOnKillFocus = true;
+}
 
 void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
   SetViewPoint(pcc->iLat, pcc->iLon, pcc->iScale, 0., pcc->iRotation);
@@ -10890,6 +10909,16 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
   Connect(
       wxEVT_COMMAND_MENU_SELECTED,
       (wxObjectEventFunction)(wxEventFunction)&ChartCanvas::PopupMenuHandler);
+
+#ifdef __WXGTK__
+  // Funny requirement here for gtk, to clear the menu trigger event
+  // TODO
+  //  Causes a slight "flasH" of the menu,
+  if (m_inLongPress) {
+    m_canvasMenu->CanvasPopupMenu(x, y, seltype);
+    m_inLongPress = false;
+  }
+#endif
 
   m_canvasMenu->CanvasPopupMenu(x, y, seltype);
 
