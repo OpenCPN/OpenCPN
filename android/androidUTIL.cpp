@@ -38,6 +38,7 @@
 #include <wx/zipstrm.h>
 #include <wx/textwrapper.h>
 #include <wx/matrix.h>
+#include <wx/choicebk.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
@@ -497,6 +498,7 @@ void androidUtilHandler::LoadAuxClasses() {
   wxZipEntry *entry = new wxZipEntry();
 
   wxSplitterWindow *swin = new wxSplitterWindow();
+  wxChoicebook *chocebook = new wxChoicebook();
 }
 
 void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
