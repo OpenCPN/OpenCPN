@@ -20,12 +20,15 @@
 #ifndef _TOOLTIP_H__
 #define _TOOLTIP_H__
 
+#include <functional>
+
 #include <wx/frame.h>
 #include <wx/timer.h>
 #include <wx/bitmap.h>
 #include "color_types.h"
 
-class ChartCanvas;
+class Tooltip;  // forward
+using TooltipCallback = std::function<void(const Tooltip *)>;
 
 /**
  * Tooltip with color scheme support and high-visibility mode.
@@ -35,7 +38,7 @@ class ChartCanvas;
  */
 class Tooltip : public wxFrame {
 public:
-  Tooltip(wxWindow *parent);
+  Tooltip(wxWindow *parent, TooltipCallback on_destroy);
   ~Tooltip();
 
   /** Set the tooltip text to display */
@@ -85,6 +88,8 @@ public:
   /** Hide the tooltip immediately */
   void HideTooltip();
 
+  bool Destroy() override;
+
   // Event handlers
   void OnPaint(wxPaintEvent &event);
   void OnTimer(wxTimerEvent &event);
@@ -109,6 +114,7 @@ private:
 
   wxTimer m_showTimer;
   bool m_showPending;
+  TooltipCallback m_on_destroy;
 
   DECLARE_EVENT_TABLE()
 };

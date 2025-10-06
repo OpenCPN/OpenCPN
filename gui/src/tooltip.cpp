@@ -41,10 +41,11 @@ EVT_PAINT(Tooltip::OnPaint)
 EVT_TIMER(TOOLTIP_TIMER_ID, Tooltip::OnTimer)
 END_EVENT_TABLE()
 
-Tooltip::Tooltip(wxWindow *parent)
+Tooltip::Tooltip(wxWindow *parent, TooltipCallback on_destroy)
     : wxFrame(parent, wxID_ANY, "", wxPoint(0, 0), wxSize(1, 1),
               wxNO_BORDER | wxFRAME_FLOAT_ON_PARENT | wxFRAME_NO_TASKBAR),
-      m_showTimer(this, TOOLTIP_TIMER_ID) {
+      m_showTimer(this, TOOLTIP_TIMER_ID),
+      m_on_destroy(std::move(on_destroy)) {
   m_pbm = nullptr;
   m_hiviz = false;
   m_showPending = false;
@@ -58,8 +59,14 @@ Tooltip::Tooltip(wxWindow *parent)
 }
 
 Tooltip::~Tooltip() {
+  m_on_destroy(this);
   m_showTimer.Stop();
   delete m_pbm;
+}
+
+bool Tooltip::Destroy() {
+  m_on_destroy(this);
+  return wxFrame::Destroy();
 }
 
 void Tooltip::SetString(const wxString &text) { m_string = text; }
@@ -388,12 +395,13 @@ Tooltip *TooltipManager::GetOrCreateTooltip(wxWindow *parent) {
 
   CleanupTooltip();
 
-  m_currentTooltip = new Tooltip(parent);
+  m_currentTooltip = new Tooltip(parent, [&](const Tooltip *t) {
+    if (t == m_currentTooltip) m_currentTooltip = nullptr;
+  });
   m_currentParent = parent;
 
   return m_currentTooltip;
 }
-
 void TooltipManager::CleanupTooltip() {
   if (m_currentTooltip) {
     m_currentTooltip->HideTooltip();
