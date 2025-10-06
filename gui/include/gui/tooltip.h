@@ -27,9 +27,6 @@
 #include <wx/bitmap.h>
 #include "color_types.h"
 
-class Tooltip;  // forward
-using TooltipCallback = std::function<void(const Tooltip *)>;
-
 /**
  * Tooltip with color scheme support and high-visibility mode.
  *
@@ -38,7 +35,7 @@ using TooltipCallback = std::function<void(const Tooltip *)>;
  */
 class Tooltip : public wxFrame {
 public:
-  Tooltip(wxWindow *parent, TooltipCallback on_destroy);
+  Tooltip(wxWindow *parent, std::function<void()> on_destroy);
   ~Tooltip();
 
   /** Set the tooltip text to display */
@@ -114,7 +111,7 @@ private:
 
   wxTimer m_showTimer;
   bool m_showPending;
-  TooltipCallback m_on_destroy;
+  std::function<void()> m_on_destroy;
 
   DECLARE_EVENT_TABLE()
 };
