@@ -502,6 +502,7 @@ void s52plib::SetDIPFactor( double factor) {
 
 void s52plib::SetContentScaleFactor( double factor) {
   m_ContentScaleFactor = factor;
+  if(HPGL) HPGL->SetContentScaleFactor(factor);
 }
 
 void s52plib::SetPPMM(float ppmm) {
@@ -2854,7 +2855,7 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   wxBitmap bmp(width, height, 32);
   mdc.SelectObject(bmp);
   HPGL->SetTargetDC(&mdc);
-#ifdef __WXMSW__
+#if (defined(__WXMSW__) || defined(__WXMAC__))
   mdc.SetBackground(wxBrush(m_unused_wxColor));
   mdc.Clear();
 #endif
@@ -5943,7 +5944,7 @@ int s52plib::BuildLCSymbolTexture(char *str, char *col, wxPoint &r, wxPoint &piv
     wxBitmap bmp(width, height, 32);
     mdc.SelectObject(bmp);
     HPGL->SetTargetDC(&mdc);
-#ifdef __WXMSW__
+#if (defined(__WXMSW__) || defined(__WXMAC__))
     mdc.SetBackground(wxBrush(m_unused_wxColor));
     mdc.Clear();
 #endif
@@ -11365,6 +11366,7 @@ RenderFromHPGL::RenderFromHPGL(s52plib *plibarg) {
   s_odc_tess_buf_len = 0;
 
   transparency = 255;
+  m_content_scale_factor = 1.0;
 }
 
 RenderFromHPGL::~RenderFromHPGL() {
@@ -11421,6 +11423,9 @@ void RenderFromHPGL::SetPen() {
   float nominal_line_width_pix =
       wxMax(1.0, floor(plib->GetPPMM() /
                        5.0));  // 0.2 mm nominal, but not less than 1 pixel
+
+  nominal_line_width_pix *= m_content_scale_factor; // esp for Mac Retina
+
   int pen_width_mod = floor(penWidth * nominal_line_width_pix);
 
   pen =

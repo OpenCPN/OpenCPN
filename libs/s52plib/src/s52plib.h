@@ -667,6 +667,7 @@ public:
   void SetTargetGCDC(wxGCDC *gdc);
 #endif
   void SetVP(VPointCompat *pVP) { m_vp = pVP; }
+  void SetContentScaleFactor(double factor){ m_content_scale_factor = factor; }
   bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
               float scale, double rot_angle, bool bSymbol);
   wxBrush *getBrush() { return brush; }
@@ -707,6 +708,7 @@ private:
   wxBrush *brush;
   long penWidth;
   int transparency;
+  double m_content_scale_factor;
 
   int noPoints;
   wxPoint polygon[100];
