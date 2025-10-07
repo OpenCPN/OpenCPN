@@ -956,15 +956,21 @@ void ChartCanvas::OnLongPress(wxLongPressEvent &event) {
   */
   m_popupWanted = true;
 #else
-  m_inLongPress = true;
-  // Send a synthetic mouse left-up event to sync the mouse pan logic.
+  // m_inLongPress = true;
+  //  Send a synthetic mouse left-up event to sync the mouse pan logic.
   m_menuPos = event.GetPosition();
   wxMouseEvent ev(wxEVT_LEFT_UP);
   ev.m_x = m_menuPos.x;
   ev.m_y = m_menuPos.y;
   wxPostEvent(this, ev);
 
-  m_menuTimer.StartOnce(20);  // Delay of 20 millisecond
+  // Send a "RIGHT CLICK" event, for plugins
+  wxMouseEvent ev_right_click(wxEVT_RIGHT_DOWN);
+  ev_right_click.m_x = m_menuPos.x;
+  ev_right_click.m_y = m_menuPos.y;
+  MouseEvent(ev_right_click);
+
+  // m_menuTimer.StartOnce(20);  // Delay of 20 millisecond
 #endif
 }
 
