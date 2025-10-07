@@ -5266,7 +5266,7 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 #endif
 
 // Line Complex
-int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
+int s52plib::RenderLCTexture(ObjRazRules *rzRules, Rules *rules) {
   //if(rzRules->obj->Index != 1779)
     //return 0;
 
@@ -5430,7 +5430,7 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
             GetPointPixArray(rzRules, pReduced, ptestp, nPointReduced);
             free(pReduced);
 
-            draw_lc_poly(m_pdc, color, w, ptestp, pMaskOut, nPointReduced,
+            draw_lc_poly_texture(m_pdc, color, w, ptestp, pMaskOut, nPointReduced,
                          sym_len, sym_height, sym_factor, rules->razRule);
             free(ptestp);
             free(pMaskOut);
@@ -5456,8 +5456,215 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
           GetPointPixArray(rzRules, pReduced, ptestp, nPointReduced);
           free(pReduced);
 
-          draw_lc_poly(m_pdc, color, w, ptestp, pMaskOut, nPointReduced,
+          draw_lc_poly_texture(m_pdc, color, w, ptestp, pMaskOut, nPointReduced,
                        sym_len, sym_height, sym_factor, rules->razRule);
+          free(ptestp);
+          free(pMaskOut);
+        }
+      }
+
+      ls = ls->next;
+    }
+
+    free(ptp);
+    free(pdp);
+    free(mask);
+  }
+
+  return 1;
+}
+
+int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
+#if (not defined(__WXMAC__))
+  return RenderLCTexture(rzRules, rules);
+#endif
+
+  // catch cm93 and legacy PlugIns (e.g.s63_pi)
+  if (rzRules->obj->m_n_lsindex && !rzRules->obj->m_ls_list)
+    return RenderLCLegacy(rzRules, rules);
+
+  wxPoint r;
+
+  int isym_len = rules->razRule->pos.line.bnbox_w.SYHL +
+                 (rules->razRule->pos.line.bnbox_x.LBXC -
+                  rules->razRule->pos.line.pivot_x.LICL);
+  float sym_len = isym_len * canvas_pix_per_mm / 100;
+  float sym_factor = 1.0;  /// 1.50;    // gives nicer effect
+
+  //      Create a color for drawing adjustments outside of HPGL renderer
+  char *tcolptr = rules->razRule->colRef.LCRF;
+  S52color *c = getColor(tcolptr + 1);  // +1 skips "n" in HPGL SPn format
+  int w = 1;                            // arbitrary width
+  wxColour color(c->R, c->G, c->B);
+
+  double meters_per_senc_unit = rzRules->obj->x_rate;     // meters per senc-unit
+  double lod_2pixel_meters = 2 / vp_plib.view_scale_ppm;    // LOD set to 2 pixels, nominal mercator projected
+  double LOD = lod_2pixel_meters / meters_per_senc_unit;
+
+  //  Get the current display priority
+  //  Default comes from the LUP, unless overridden
+  int priority_current = rzRules->LUP->DPRI - '0';
+  if (rzRules->obj->m_DPRI >= 0) priority_current = rzRules->obj->m_DPRI;
+
+  if (rzRules->obj->m_n_lsindex) {
+    // Calculate the size of a work buffer
+    int max_points = 0;
+    if (rzRules->obj->m_n_edge_max_points > 0)
+      max_points = rzRules->obj->m_n_edge_max_points;
+    else {
+      line_segment_element *lsa = rzRules->obj->m_ls_list;
+
+      while (lsa) {
+        if ((lsa->ls_type == TYPE_EE) || (lsa->ls_type == TYPE_EE_REV))
+          max_points += lsa->pedge->nCount;
+        else
+          max_points += 2;
+
+        lsa = lsa->next;
+      }
+    }
+
+    float *ppt;
+    unsigned char *vbo_point =
+        (unsigned char *)rzRules->obj->m_chart_context
+            ->vertex_buffer;  // chart->GetLineVertexBuffer();
+
+    //  Allocate some storage for converted points
+    wxPoint *ptp = (wxPoint *)malloc((max_points) * sizeof(wxPoint));
+    double *pdp = (double *)malloc(2 * (max_points) * sizeof(double));
+    int *mask = (int *)malloc((max_points) * sizeof(int));
+
+    line_segment_element *ls = rzRules->obj->m_ls_list;
+
+    unsigned int index = 0;
+    unsigned int idouble = 0;
+    int nls = 0;
+    wxPoint lp;
+
+    int ndraw = 0;
+    while (ls) {
+      if ( ls->priority == priority_current) {
+        // transcribe the segment in the proper order into the output buffer
+        int nPoints;
+        int idir = 1;
+        bool bcon = false;
+        // fetch the first point
+        if ((ls->ls_type == TYPE_EE) || (ls->ls_type == TYPE_EE_REV)) {
+          ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
+          nPoints = ls->pedge->nCount;
+          if (ls->ls_type == TYPE_EE_REV) idir = -1;
+
+        } else {
+          ppt = (float *)(vbo_point + ls->pcs->vbo_offset);
+          nPoints = 2;
+          bcon = true;
+        }
+
+        int vbo_index = 0;
+        int vbo_inc = 2;
+        if ((idir == -1) && !bcon) {
+          vbo_index = (nPoints - 1) * 2;
+          vbo_inc = -2;
+        }
+
+        double offset = 0;
+        for (int ip = 0; ip < nPoints; ip++) {
+          wxPoint r;
+          GetPointPixSingle(rzRules, ppt[vbo_index + 1], ppt[vbo_index], &r);
+          if ((r.x != lp.x) || (r.y != lp.y)) {
+            mask[index] = (ls->priority == priority_current) ? 1 : 0;
+            ptp[index++] = r;
+            pdp[idouble++] = ppt[vbo_index];
+            pdp[idouble++] = ppt[vbo_index + 1];
+
+            nls++;
+          } else {  // sKipping point
+          }
+
+          lp = r;
+          vbo_index += vbo_inc;
+        }
+
+      }  // priority
+
+      // inspect the next segment to see if it can be connected, or if the chain
+      // breaks
+      int idir = 1;
+      bool bcon = false;
+      if (ls->next) {
+        int nPoints_next;
+        line_segment_element *lsn = ls->next;
+        // fetch the first point
+        if ((lsn->ls_type == TYPE_EE) || (lsn->ls_type == TYPE_EE_REV)) {
+          ppt = (float *)(vbo_point + lsn->pedge->vbo_offset);
+          nPoints_next = lsn->pedge->nCount;
+          if (lsn->ls_type == TYPE_EE_REV) idir = -1;
+
+        } else {
+          ppt = (float *)(vbo_point + lsn->pcs->vbo_offset);
+          nPoints_next = 2;
+          bcon = true;
+        }
+
+        wxPoint ptest;
+        if (bcon)
+          GetPointPixSingle(rzRules, ppt[1], ppt[0], &ptest);
+
+        else {
+          if (idir == 1)
+            GetPointPixSingle(rzRules, ppt[1], ppt[0], &ptest);
+
+          else {
+            // fetch the last point
+            int index_last_next = (nPoints_next - 1) * 2;
+            GetPointPixSingle(rzRules, ppt[index_last_next + 1],
+                              ppt[index_last_next], &ptest);
+          }
+        }
+
+        // try to match the correct point in this segment with the last point in
+        // the previous segment
+
+        if (lp != ptest)  // not connectable?
+        {
+          if (nls) {
+            wxPoint2DDouble *pReduced = 0;
+            int *pMaskOut = 0;
+            int nPointReduced =
+                reduceLOD(LOD, nls, pdp, &pReduced, mask, &pMaskOut);
+
+            wxPoint *ptestp = (wxPoint *)malloc((max_points) * sizeof(wxPoint));
+            GetPointPixArray(rzRules, pReduced, ptestp, nPointReduced);
+            free(pReduced);
+
+            draw_lc_poly(m_pdc, color, w, ptestp, pMaskOut, nPointReduced,
+                         sym_len, 0, sym_factor, rules->razRule);
+            free(ptestp);
+            free(pMaskOut);
+
+            ndraw++;
+          }
+
+          nls = 0;
+          index = 0;
+          idouble = 0;
+          lp = wxPoint(0, 0);
+        }
+
+      } else {
+        // no more segments, so render what is available
+        if (nls) {
+          wxPoint2DDouble *pReduced = 0;
+          int *pMaskOut = 0;
+          int nPointReduced =
+              reduceLOD(LOD, nls, pdp, &pReduced, mask, &pMaskOut);
+
+          wxPoint *ptestp = (wxPoint *)malloc((max_points) * sizeof(wxPoint));
+          GetPointPixArray(rzRules, pReduced, ptestp, nPointReduced);
+          free(pReduced);
+
+          draw_lc_poly(m_pdc, color, w, ptestp, pMaskOut, nPointReduced,
+                       sym_len, 0, sym_factor, rules->razRule);
           free(ptestp);
           free(pMaskOut);
         }
@@ -6133,7 +6340,307 @@ void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoin
 #endif
 }
 
+//      Render Line Complex Polyline
+
 void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+                           int *mask, int npt, float sym_len, float sym_height, float sym_factor,
+                           Rule *draw_rule) {
+  if (npt < 2) return;
+
+  wxPoint r;
+
+  //  We calculate the winding direction of the poly
+  //  in order to know which side to draw symbol on
+  double dfSum = 0.0;
+
+  for (int iseg = 0; iseg < npt - 1; iseg++) {
+    dfSum += ptp[iseg].x * ptp[iseg + 1].y - ptp[iseg].y * ptp[iseg + 1].x;
+  }
+  dfSum += ptp[npt - 1].x * ptp[0].y - ptp[npt - 1].y * ptp[0].x;
+
+  bool cw = dfSum < 0.;
+
+  //    Get a true pixel clipping/bounding box from the vp
+  wxPoint pbb = GetPixFromLL(vp_plib.clat, vp_plib.clon);
+  int xmin_ = pbb.x - vp_plib.rv_rect.width / 2;
+  int xmax_ = xmin_ + vp_plib.rv_rect.width;
+  int ymin_ = pbb.y - vp_plib.rv_rect.height / 2;
+  int ymax_ = ymin_ + vp_plib.rv_rect.height;
+
+  int x0, y0, x1, y1;
+
+  if (pdc) {
+    wxPen *pthispen =
+        wxThePenList->FindOrCreatePen(color, width, wxPENSTYLE_SOLID);
+    m_pdc->SetPen(*pthispen);
+
+    int start_seg = 0;
+    int end_seg = npt - 1;
+    int inc = 1;
+
+    if (cw) {
+        start_seg = npt - 1;
+        end_seg = 0;
+        inc = -1;
+    }
+
+    float dx, dy, seg_len, theta;
+
+    bool done = false;
+    ClipResult res;
+    int iseg = start_seg;
+    while (!done) {
+        // Do not bother with segments that are invisible
+
+        x0 = ptp[iseg].x;
+        y0 = ptp[iseg].y;
+        x1 = ptp[iseg + inc].x;
+        y1 = ptp[iseg + inc].y;
+
+        //  Also, segments marked (by mask) as invisible
+        if (mask && !mask[iseg]) goto next_seg_dc;
+
+        res = cohen_sutherland_line_clip_i(&x0, &y0, &x1, &y1, xmin_, xmax_,
+                                           ymin_, ymax_);
+
+        if (res == Invisible) goto next_seg_dc;
+
+        dx = ptp[iseg + inc].x - ptp[iseg].x;
+        dy = ptp[iseg + inc].y - ptp[iseg].y;
+        seg_len = sqrt(dx * dx + dy * dy);
+        theta = atan2f(dy, dx);
+
+        if (seg_len >= 1.0) {
+          if (seg_len <= sym_len * sym_factor) {
+          int xst1 = ptp[iseg].x;
+          int yst1 = ptp[iseg].y;
+          float xst2, yst2;
+          if (seg_len >= sym_len) {
+            xst2 = xst1 + (sym_len * dx / seg_len);
+            yst2 = yst1 + (sym_len * dy / seg_len);
+          } else {
+            xst2 = ptp[iseg + inc].x;
+            yst2 = ptp[iseg + inc].y;
+          }
+
+          pdc->DrawLine(xst1, yst1, (wxCoord)floor(xst2), (wxCoord)floor(yst2));
+          }
+
+          else {
+          float s = 0;
+          float xs = ptp[iseg].x;
+          float ys = ptp[iseg].y;
+
+          while (s + (sym_len * sym_factor) < seg_len) {
+            r.x = (int)xs;
+            r.y = (int)ys;
+            char *str = draw_rule->vector.LVCT;
+            char *col = draw_rule->colRef.LCRF;
+            wxPoint pivot(draw_rule->pos.line.pivot_x.LICL,
+                          draw_rule->pos.line.pivot_y.LIRW);
+
+            HPGL->SetTargetDC(pdc);
+            HPGL->SetVP(&vp_plib);
+            HPGL->Render(str, col, r, pivot, pivot, 1.0, theta * 180. / PI,
+                         false);
+
+            xs += sym_len * dx / seg_len * sym_factor;
+            ys += sym_len * dy / seg_len * sym_factor;
+            s += sym_len * sym_factor;
+          }
+
+          pdc->DrawLine((int)xs, (int)ys, ptp[iseg + inc].x, ptp[iseg + inc].y);
+          }
+        }
+    next_seg_dc:
+        iseg += inc;
+        if (iseg == end_seg) done = true;
+
+    }  // while
+  }    // if pdc
+  else  // opengl
+  {
+    //    Set up the color
+#ifdef ocpnUSE_GL
+    // Adjust line width up a bit, to improve render quality for
+    // GL_BLEND/GL_LINE_SMOOTH
+    float awidth = wxMax(m_GLMinCartographicLineWidth, (float)width * 0.7);
+    awidth = wxMax(awidth, 1.5);
+    glLineWidth(awidth);
+#endif
+
+    int start_seg = 0;
+    int end_seg = npt - 1;
+    int inc = 1;
+
+    if (cw) {
+        start_seg = npt - 1;
+        end_seg = 0;
+        inc = -1;
+    }
+
+    float dx, dy, seg_len, theta;
+    ClipResult res;
+
+    bool done = false;
+    int iseg = start_seg;
+    while (!done) {
+        // Do not bother with segments that are invisible
+
+        x0 = ptp[iseg].x;
+        y0 = ptp[iseg].y;
+        x1 = ptp[iseg + inc].x;
+        y1 = ptp[iseg + inc].y;
+
+        //  Also, segments marked (by mask) as invisible
+        if (mask && !mask[iseg]) goto next_seg;
+
+        res = cohen_sutherland_line_clip_i(&x0, &y0, &x1, &y1, xmin_, xmax_,
+                                           ymin_, ymax_);
+
+        if (res == Invisible) goto next_seg;
+
+        dx = ptp[iseg + inc].x - ptp[iseg].x;
+        dy = ptp[iseg + inc].y - ptp[iseg].y;
+        seg_len = sqrt(dx * dx + dy * dy);
+
+        if (seg_len >= 1.0) {
+          if (seg_len <= sym_len * sym_factor) {
+          int xst1 = ptp[iseg].x;
+          int yst1 = ptp[iseg].y;
+          float xst2, yst2;
+
+          if (seg_len >= sym_len) {
+            xst2 = xst1 + (sym_len * dx / seg_len);
+            yst2 = yst1 + (sym_len * dy / seg_len);
+          } else {
+            xst2 = ptp[iseg + inc].x;
+            yst2 = ptp[iseg + inc].y;
+          }
+
+          //      Enable anti-aliased lines, at best quality
+#ifndef __OCPN__ANDROID__
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          glEnable(GL_BLEND);
+
+          if (m_GLLineSmoothing) {
+            glEnable(GL_LINE_SMOOTH);
+            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+          }
+#endif
+
+#ifdef ocpnUSE_GL
+          CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+          shader->Bind();
+
+          glBindBuffer(GL_ARRAY_BUFFER, 0);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+          float colorv[4];
+          colorv[0] = color.Red() / float(256);
+          colorv[1] = color.Green() / float(256);
+          colorv[2] = color.Blue() / float(256);
+          colorv[3] = 1.0;  // transparency;
+
+          shader->SetUniform4fv("color", colorv);
+
+          float pts[4];
+          pts[0] = xst1;
+          pts[1] = yst1;
+          pts[2] = xst2;
+          pts[3] = yst2;
+
+          GLint pos = shader->getAttributeLocation("position");
+          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
+                                pts);
+          glEnableVertexAttribArray(pos);
+
+          glDrawArrays(GL_LINES, 0, 2);
+
+          shader->UnBind();
+
+          glDisable(GL_LINE_SMOOTH);
+          glDisable(GL_BLEND);
+#endif
+          } else {
+          float s = 0;
+          float xs = ptp[iseg].x;
+          float ys = ptp[iseg].y;
+
+          while (s + (sym_len * sym_factor) < seg_len) {
+            r.x = (int)xs;
+            r.y = (int)ys;
+            char *str = draw_rule->vector.LVCT;
+            char *col = draw_rule->colRef.LCRF;
+            wxPoint pivot(draw_rule->pos.line.pivot_x.LICL,
+                          draw_rule->pos.line.pivot_y.LIRW);
+
+            HPGL->SetTargetOpenGl();
+            HPGL->SetVP(&vp_plib);
+            theta = atan2f(dy, dx);
+            HPGL->Render(str, col, r, pivot, pivot, 1.0, theta * 180. / PI,
+                         false);
+
+            xs += sym_len * dx / seg_len * sym_factor;
+            ys += sym_len * dy / seg_len * sym_factor;
+            s += sym_len * sym_factor;
+          }
+#ifndef __OCPN__ANDROID__
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          glEnable(GL_BLEND);
+
+          if (m_GLLineSmoothing) {
+            glEnable(GL_LINE_SMOOTH);
+            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+          }
+
+#endif
+
+#ifdef ocpnUSE_GL
+          CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
+          shader->Bind();
+
+          glBindBuffer(GL_ARRAY_BUFFER, 0);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+          float colorv[4];
+          colorv[0] = color.Red() / float(256);
+          colorv[1] = color.Green() / float(256);
+          colorv[2] = color.Blue() / float(256);
+          colorv[3] = 1.0;  // transparency;
+
+          shader->SetUniform4fv("color", colorv);
+
+          float pts[4];
+          pts[0] = xs;
+          pts[1] = ys;
+          pts[2] = ptp[iseg + inc].x;
+          pts[3] = ptp[iseg + inc].y;
+
+          GLint pos = shader->getAttributeLocation("position");
+          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
+                                pts);
+          glEnableVertexAttribArray(pos);
+
+          glDrawArrays(GL_LINES, 0, 2);
+          glDisableVertexAttribArray(pos);
+          shader->UnBind();
+
+          glDisable(GL_LINE_SMOOTH);
+          glDisable(GL_BLEND);
+#endif
+          }
+        }
+    next_seg:
+        iseg += inc;
+        if (iseg == end_seg) done = true;
+    }  // while
+
+  }  // opengl
+}
+
+
+void s52plib::draw_lc_poly_texture(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
                            int *mask, int npt, float sym_len, float sym_height, float sym_factor,
                            Rule *draw_rule) {
   if (npt < 2) return;

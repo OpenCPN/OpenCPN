@@ -487,6 +487,7 @@ private:
   int RenderGLLCLegacy(ObjRazRules *rzRules, Rules *rules);
   int RenderLSPlugIn(ObjRazRules *rzRules, Rules *rules);
   int RenderLCPlugIn(ObjRazRules *rzRules, Rules *rules);
+  int RenderLCTexture(ObjRazRules *rzRules, Rules *rules);
 
   int RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules);
 
@@ -501,9 +502,13 @@ private:
                                    S52color *c, render_canvas_parms *pb_spec,
                                    render_canvas_parms *patt_spec);
 
-  void draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+  void draw_lc_poly_texture(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
                     int *mask, int npt, float sym_len, float sym_height, float sym_factor,
                     Rule *draw_rule);
+  void draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+                             int *mask, int npt, float sym_len, float sym_height,
+                                                       float sym_factor,
+                             Rule *draw_rule);
 
   bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
                   float rot_angle = 0., double uScale = 1.0);
