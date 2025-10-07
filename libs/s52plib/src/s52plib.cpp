@@ -5475,7 +5475,7 @@ int s52plib::RenderLCTexture(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
-#if (not defined(__WXMAC__))
+#if !defined(__WXMAC__)
   return RenderLCTexture(rzRules, rules);
 #endif
 
