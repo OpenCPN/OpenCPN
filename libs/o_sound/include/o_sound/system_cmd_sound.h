@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,32 +12,37 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
-
-#ifndef SYSTEM_CMD_SOUND_H__
-#define SYSTEM_CMD_SOUND_H__
-
-#include "OCPN_Sound.h"
-#include "snd_config.h"
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
 /**
- * Sound backend based on running a external CLI tool using system(3).
+ * \file
+ *
+ * Sound backend based on CLI tools lika aplay(1), etc.
+ */
+
+#ifndef SYSTEM_CMD_SOUND_H_
+#define SYSTEM_CMD_SOUND_H_
+
+#include "sound.h"
+#include "snd_config.h"
+
+namespace o_sound {
+
+/**
+ * Sound backend based on running an external CLI tool using system(3).
  * Supports synchronous and asynchronous mode. The command line tools
  * also typically supports a wide range of audio formats; the exact
  * list is platform dependent.
  */
-
-class SystemCmdSound : public OcpnSound {
+class SystemCmdSound : public Sound {
 public:
-  SystemCmdSound(const char* cmd = OCPN_SOUND_CMD)
-      : m_isPlaying(false), m_cmd(cmd), m_path("") {};
-  ~SystemCmdSound() {};
+  explicit SystemCmdSound(const char* cmd = OCPN_SOUND_CMD)
+       : m_is_playing(false), m_cmd(cmd) {};
+  ~SystemCmdSound() override  = default;
 
-  bool Load(const char* path, int deviceIndex = -1) override;
+  bool Load(const char* path, int deviceIndex) override;
+  bool Load(const char* path) override  { return  Load(path, -1); }
   void UnLoad() override {};
   bool Play() override;
   bool Stop() override;
@@ -52,13 +53,15 @@ public:
   void SetCmd(const char* cmd) { m_cmd = cmd; };
 
 private:
-  void worker();
-  bool canPlay();
-  bool m_isPlaying;
+  void Worker();
+  bool CanPlay();
+  bool m_is_playing;
   std::string m_cmd;
   std::string m_path;
 };
 
-const unsigned maxPlayTime = 200;  // maximum stall time time is 200mS
+constexpr unsigned maxPlayTime = 200;  // maximum stall time is 200mS
 
-#endif  // SYSTEM_CMD_SOUND_H__
+}  // namespace o_sound
+
+#endif  // SYSTEM_CMD_SOUND_H_

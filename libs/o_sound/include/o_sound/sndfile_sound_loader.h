@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Sound file loader on top of libsndfile
  */
 
 #ifndef SNDFILE_SOUND_LOADER_H
@@ -27,34 +26,39 @@
 
 #include <sndfile.h>
 
-#include "SoundFileLoader.h"
+#include "sound_file_loader.h"
+
+namespace o_sound_private {
 
 /**
  * The original sound file loader supports WAV files only, the same format
- * as supported by the wxSound widget.
+ * as supported by the wxSound widget. libsndfile supports a wide range of
+ * formats; the exact list is platform dependent.
  */
 class SndfileSoundLoader : public AbstractSoundLoader {
 public:
-  SndfileSoundLoader() {};
+  SndfileSoundLoader() :m_sndfile(nullptr), m_sfinfo() {};
 
-  virtual ~SndfileSoundLoader();
+  ~SndfileSoundLoader() override;
 
-  virtual bool Load(const char* path);
-  virtual void UnLoad();
+  bool Load(const char* path) override;
+  void UnLoad() override;
 
-  virtual bool Reset();
+  bool Reset() override;
 
-  virtual size_t Get(void* samples, size_t length);
+  size_t Get(void* samples, size_t length) override;
 
-  unsigned GetBytesPerSample() const { return 2 * m_sfinfo.channels; };
+  [[nodiscard]] unsigned GetBytesPerSample() const override { return 2 * m_sfinfo.channels; }
 
-  unsigned GetChannelCount() const;
+ [[nodiscard]]  unsigned GetChannelCount() const override;
 
-  unsigned GetSamplingRate() const;
+  [[nodiscard]] unsigned GetSamplingRate() const override;
 
 protected:
   SNDFILE* m_sndfile;
   SF_INFO m_sfinfo;
 };
+
+}  // namespace o_sound_private
 
 #endif  // SNDFILE_SOUND_LOADER_H

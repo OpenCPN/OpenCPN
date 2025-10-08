@@ -37,6 +37,8 @@
 #include <wx/event.h>
 #include <wx/string.h>
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
@@ -49,7 +51,6 @@
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
-#include "SoundFactory.h"
 #include "undo.h"
 #include "model/navobj_db.h"
 
@@ -292,7 +293,7 @@ void AisInfoGui::ShowAisInfo(
 
   if (m_bAIS_Audio_Alert_On) {
     if (!m_AIS_Sound) {
-      m_AIS_Sound = SoundFactory(/*g_CmdSoundString.mb_str(wxConvUTF8)*/);
+      m_AIS_Sound = o_sound::Factory();
     }
     if (!AIS_AlertPlaying()) {
       m_bAIS_AlertPlaying = true;

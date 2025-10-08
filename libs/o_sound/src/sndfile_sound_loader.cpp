@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,15 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement sndfile_sound_loader.h -- Sound loader based on libsndfile
  */
 
 #include <wx/log.h>
 
-#include "SndfileSoundLoader.h"
+#include "sndfile_sound_loader.h"
+
+using namespace o_sound_private;
 
 bool SndfileSoundLoader::Load(const char* path) {
   memset(&m_sfinfo, 0, sizeof(m_sfinfo));

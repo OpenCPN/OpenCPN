@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,18 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement system_cmd_sound.h -- Sound backend based on CLI tools.
  */
-#include <stdlib.h>
+
+
+#include <cstdlib>
 #include <thread>
 
 #include <wx/file.h>
 #include <wx/log.h>
 
-#include "SystemCmdSound.h"
+#include "system_cmd_sound.h"
+
+#include "ocpn_wx_sound.h"
+
+namespace  o_sound {
 
 #ifdef _WIN32
 #include <windows.h>
@@ -73,37 +78,38 @@ bool SystemCmdSound::Load(const char* path, int deviceIndex) {
   if (deviceIndex != -1) {
     wxLogMessage("Selecting device is not supported by SystemCmdSound");
   }
-  m_OK = wxFileExists(m_path);
-  return m_OK;
+  m_ok = wxFileExists(m_path);
+  return m_ok;
 }
 
-bool SystemCmdSound::Stop(void) { return false; }
+bool SystemCmdSound::Stop() { return false; }
 
-bool SystemCmdSound::canPlay(void) {
-  if (m_isPlaying) wxLogWarning("SystemCmdSound: cannot play: already playing");
-  return m_OK && !m_isPlaying;
+bool SystemCmdSound::CanPlay() {
+  if (m_is_playing) wxLogWarning("SystemCmdSound: cannot play: already playing");
+  return m_ok && !m_is_playing;
 }
 
-void SystemCmdSound::worker(void) {
+void SystemCmdSound::Worker() {
   wxLogDebug("SystemCmdSound::worker()");
-  m_isPlaying = true;
+  m_is_playing = true;
   do_play(m_cmd.c_str(), m_path.c_str());
-  m_onFinished(m_callbackData);
-  m_onFinished = 0;
-  m_isPlaying = false;
+  m_on_finished(m_callback_data);
+  m_on_finished = nullptr;
+  m_is_playing = false;
 }
 
 bool SystemCmdSound::Play() {
   wxLogDebug("SystemCmdSound::Play()");
-  if (m_isPlaying) {
+  if (m_is_playing) {
     wxLogWarning("SystemCmdSound: cannot play: already playing");
     return false;
   }
-  if (m_onFinished) {
-    std::thread t([this]() { worker(); });
+  if (m_on_finished) {
+    std::thread t([this]() { Worker(); });
     t.detach();
     return true;
   }
   int r = do_play(m_cmd.c_str(), m_path.c_str());
   return r == 0;
 }
+}  // namespace o_sound

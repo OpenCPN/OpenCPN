@@ -95,6 +95,8 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/certificates.h"
@@ -159,7 +161,6 @@
 #include "s57chart.h"
 #include "s57_query_dlg.h"
 #include "safe_mode_gui.h"
-#include "SoundFactory.h"
 #include "std_filesystem.h"
 #include "styles.h"
 #include "tcmgr.h"

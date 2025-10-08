@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,34 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
-
-#ifndef __MSW_SOUND_H__
-#define __MSW_SOUND_H__
-
-#include "OCPN_Sound.h"
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
 /**
- * Sound backend on the windows PlaySound() API.
+ * \file
+ *
+ * o_sound public header
  */
 
-class MswSound : public OcpnSound {
-public:
-  MswSound() {};
-  ~MswSound() { Stop(); };
+#ifndef O_SOUND_H
+#define O_SOUND_H
 
-  bool Load(const char* path, int deviceIndex = -1) override;
-  bool Play() override;
-  bool Stop() override;
+#include "sound.h"
+#include "factory.h"
+#include "system_cmd_sound.h"
 
-private:
-  void worker();
-  std::wstring m_path;
-  bool m_isPlaying;
-};
-
-#endif  // __MSW_SOUND_H__
+#endif  // O_SOUND_H

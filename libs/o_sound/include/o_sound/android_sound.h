@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,44 +12,45 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
-#ifndef ANDROID_SOUND_H__
-#define ANDROID_SOUND_H__
+#ifndef ANDROID_SOUND_H_
+#define ANDROID_SOUND_H_
 
 #include <mutex>
 #include <condition_variable>
 
-#include "OCPN_Sound.h"
+#include "o_sound/sound.h"
+
+namespace o_sound_private {
 
 /**
  * Sound backend supports synchronous mode on Android devices.
  */
-
-class AndroidSound : public OcpnSound {
+class AndroidSound : public o_sound::Sound {
 public:
-  ~AndroidSound();
+  AndroidSound() : m_is_playing(false) {};
+  ~AndroidSound() override;
 
   bool Load(const char*, int deviceIndex = -1) override;
   void UnLoad() override {};
-  bool Reset() /*override*/ { return true; };
+  bool Reset() { return true; };
   bool Play() override;
   bool Stop() override;
-  void SetFinishedCallback(AudioDoneCallback cb, void* userData);
-  void OnSoundDone();
+  void SetFinishedCallback(AudioDoneCallback cb, void* userData) override;
+  void OnSoundDone() override;
 
 protected:
-  bool canPlay();
+  bool CanPlay();
   std::string m_soundfile;
-  bool m_isPlaying;
+  bool m_is_playing;
 
 private:
   std::mutex mtx;
   std::condition_variable done;
 };
 
-#endif  // ANDROID_SOUND_H__
+}  //namespace o_sound_private
+
+#endif  // ANDROID_SOUND_H_

@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,18 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
-#ifndef __WX_SOUND_H__
-#define __WX_SOUND_H__
+#ifndef WX_SOUND_H_
+#define WX_SOUND_H_
 
 #include <wx/sound.h>
 
-#include "OCPN_Sound.h"
+#include "sound.h"
+
+namespace o_sound_private {
 
 /**
  * Sound backend based on wxWidget's wxSound class. On Linux, this seems
@@ -35,27 +30,27 @@
  * pulseaudio platforms means to have the osspd service running. Even so,
  * there seems to be many quirks here.
  *
- * However, the backend might possibly work on MacOS and/or Windows.
+ * However, the backend might,  possibly work on macOS and/or Windows.
  * Supports synchronous and asynchronous mode.
- *
  */
-
-class OcpnWxSound : public OcpnSound {
+class OcpnWxSound : public o_sound::Sound {
 public:
-  OcpnWxSound() {};
-  ~OcpnWxSound() { Stop(); };
+  OcpnWxSound() : m_is_playing(false) {};
+  ~OcpnWxSound() override { OcpnWxSound::Stop(); };
 
-  bool Load(const char* path, int deviceIndex = -1) override;
+  bool Load(const char* path, int deviceIndex) override;
+  bool Load(const char* path) override { return Load(path, -1); }
   void UnLoad() override {};
   bool Play() override;
   bool Stop() override;
   std::string GetDeviceInfo(int deviceIndex) override;
 
 private:
-  void worker();
+  void Worker();
   std::string m_path;
-  bool m_isPlaying;
+  bool m_is_playing;
   wxSound m_sound;
 };
 
-#endif  // __WX_SOUND_H__
+}  // namespace o_sound_private
+#endif  // WX_SOUND_H_

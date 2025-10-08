@@ -40,6 +40,7 @@
 #include <wx/matrix.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
+#include "o_sound/o_sound.h"
 
 #include "model/ais_state_vars.h"
 #include "model/cmdline.h"
@@ -63,7 +64,6 @@
 #include "ais_target_alert_dlg.h"
 #include "ais_target_list_dlg.h"
 #include "ais_target_query_dlg.h"
-#include "AndroidSound.h"
 #include "androidUTIL.h"
 #include "canvas_options.h"
 #include "chartdb.h"
@@ -204,8 +204,6 @@ extern bool g_bConfirmObjectDelete;
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale *plocale_def_lang;
 #endif
-
-// extern OCPN_Sound        g_anchorwatch_sound;
 
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -1106,7 +1104,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env,
 extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onSoundDone(
     JNIEnv *env, jobject obj, long soundPtr) {
-  auto sound = reinterpret_cast<AndroidSound *>(soundPtr);
+  auto sound = reinterpret_cast<o_sound::Sound *>(soundPtr);
   DEBUG_LOG << "on SoundDone, ptr: " << soundPtr;
   sound->OnSoundDone();
   return 57;
@@ -3858,7 +3856,7 @@ wxString getFontQtStylesheet(wxFont *font) {
   return qstyle;
 }
 
-bool androidPlaySound(const wxString soundfile, AndroidSound *sound) {
+bool androidPlaySound(const wxString soundfile, o_sound::Sound *sound) {
   DEBUG_LOG << "androidPlaySound";
   std::ostringstream oss;
   oss << sound;

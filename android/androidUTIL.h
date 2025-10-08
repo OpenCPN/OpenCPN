@@ -35,7 +35,7 @@
 #include <QString>
 #include <string>
 
-#include "OCPN_Sound.h"
+#include "o_sound/o_sound.h"
 #include "android_jvm.h"
 #include "model/datetime.h"
 #include "model/base_platform.h"
@@ -154,8 +154,7 @@ void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
 void AndroidRemoveSystemFile(wxString file);
 
-class AndroidSound;
-bool androidPlaySound(const wxString soundfile, AndroidSound *sound);
+bool androidPlaySound(const wxString soundfile, o_sound::Sound *sound);
 
 bool androidGetFullscreen();
 bool androidSetFullscreen(bool bFull);

@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,21 +12,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * PortAudio  sound backend.
  */
 
-#ifndef PORTAUDIO_SOUND_H
-#define PORTAUDIO_SOUND_H
+#ifndef PORTAUDIO_SOUND_H_
+#define PORTAUDIO_SOUND_H_
 
 #include <atomic>
 
 #include <portaudio.h>
 
-#include "OCPN_Sound.h"
-#include "SoundLoaderFactory.h"
+#include "sound.h"
+#include "sound_loader_factory.h"
+
+namespace o_sound_private {
 
 /**
  * Backend based on the portaudio library and API. Supports asynchronous
@@ -41,10 +42,10 @@
  * is supported. Otherwise, using the standard loader only .wav files
  * could be used.
  */
-class PortAudioSound : public OcpnSound {
+class PortAudioSound : public o_sound::Sound {
 public:
   PortAudioSound();
-  ~PortAudioSound();
+  ~PortAudioSound() override;
 
   int DeviceCount() const override;
   std::string GetDeviceInfo(int deviceIndex) override;
@@ -53,7 +54,8 @@ public:
   void UnLoad() override;
   bool Play() override;
   bool Stop() override;
-  void SetFinishedCallback(AudioDoneCallback cb, void* userData = 0);
+  void SetFinishedCallback(AudioDoneCallback cb,
+                           void* userData = nullptr) override;
 
   /**
    * Invoked from PortAudio when new data is requested.
@@ -65,7 +67,7 @@ public:
                     PaStreamCallbackFlags statusFlags);
 
   /** Invoked when playback done and drained. */
-  void DoneCallback(void);
+  void DoneCallback();
 
 protected:
   bool SetDeviceIndex(int deviceIndex = -1);
@@ -73,10 +75,12 @@ protected:
   void unlock();
 
   PaStream* m_stream;
-  std::unique_ptr<AbstractSoundLoader> m_soundLoader;
-  bool m_isPaInitialized;
-  bool m_isAsynch;
+  std::unique_ptr<AbstractSoundLoader> m_sound_loader;
+  bool m_is_pa_initialized;
+  bool m_is_asynch;
   std::atomic_flag m_lock;
 };
 
-#endif  // PORTAUDIO_SOUND_H
+}  // namespace o_sound_private
+
+#endif  // PORTAUDIO_SOUND_H_

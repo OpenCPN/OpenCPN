@@ -35,6 +35,8 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/gui_vars.h"
@@ -68,8 +70,6 @@
 #include "routeman_gui.h"
 #include "s52plib.h"
 #include "shapefile_basemap.h"
-#include "SoundFactory.h"
-#include "SystemCmdSound.h"
 #include "toolbar.h"
 #include "waypointman_gui.h"
 
@@ -1359,7 +1359,7 @@ void SetCanvasProjection(int projection) {
   gFrame->GetPrimaryCanvas()->SetVPProjection(projection);
 }
 
-OcpnSound* g_PluginSound = SoundFactory();
+o_sound::Sound* g_PluginSound = o_sound::Factory();
 static void onPlugInPlaySoundExFinished(void* ptr) {}
 
 // Start playing a sound to a given device and return status to plugin
@@ -1369,7 +1369,7 @@ bool PlugInPlaySoundEx(wxString& sound_file, int deviceIndex) {
     wxLogWarning("Cannot load sound file: %s", sound_file);
     return false;
   }
-  auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_PluginSound);
+  auto cmd_sound = dynamic_cast<o_sound::SystemCmdSound*>(g_PluginSound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
 
   g_PluginSound->SetFinishedCallback(onPlugInPlaySoundExFinished, NULL);

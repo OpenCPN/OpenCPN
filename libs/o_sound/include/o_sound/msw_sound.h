@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,22 +12,40 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
-
-#ifndef SOUND_FACTORY_H
-#define SOUND_FACTORY_H
-
-#include "OCPN_Sound.h"
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
 /**
- * Creates a OcpnSound instance based on configuration done by cmake
- * enshrined in config.h.
+ * \file
+ *
+ * Windows sound backend
  */
 
-OcpnSound* SoundFactory(const char* system_command = 0);
+#ifndef MSW_SOUND_H_
+#define MSW_SOUND_H_
 
-#endif  // SOUND_FACTORY_H
+#include "sound.h"
+
+namespace o_sound_private {
+
+/**
+ * Sound backend on the windows PlaySound() API.
+ */
+class MswSound : public o_sound::Sound {
+public:
+  MswSound() : m_is_playing(false) {};
+  ~MswSound() override {MswSound::Stop(); };
+
+  bool Load(const char* path, int deviceIndex = -1) override;
+  bool Play() override;
+  bool Stop() override;
+  void UnLoad() override;
+
+private:
+  void Worker();
+  std::wstring m_path;
+  bool m_is_playing;
+};
+
+}  // namespace o_sound_private
+#endif  // MSW_SOUND_H_

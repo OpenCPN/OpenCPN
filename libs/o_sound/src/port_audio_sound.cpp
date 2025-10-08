@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement port_audio_sound.h -- Sound backend based on PortAudio
  */
+
 #include <algorithm>
 #include <atomic>
 #include <memory>
@@ -29,7 +29,9 @@
 #include <wx/log.h>
 
 #include "snd_config.h"
-#include "PortAudioSound.h"
+#include "o_sound/port_audio_sound.h"
+
+using namespace o_sound_private;
 
 /**
  * The module contains a critical region, where notably isAsynch
@@ -41,14 +43,14 @@
  *
  */
 
-static const int BUFSIZE = 1024;  // Frames per buffer.
-static const int LOCK_SLEEP_MS = 2;
-static const int LOCK_MAX_TRIES = 100;
+static constexpr int BUFSIZE = 1024;  // Frames per buffer.
+static constexpr int LOCK_SLEEP_MS = 2;
+static constexpr int LOCK_MAX_TRIES = 100;
 
-static inline void IgnoreRetval(FILE* f) { (void)f; }
+static inline void IgnoreRetval(const FILE* f) { (void)f; }
 
 /*
- * Called by the PortAudio engine when audio is needed. It may called at
+ * Called by the PortAudio engine when audio is needed. It may be called at
  * interrupt level on some platforms so calls which might block such as
  * malloc()/free() or IO should be avoided.
  */
@@ -86,20 +88,20 @@ static bool startStream(PaStream* stream) {
 
 /** Do the Pa_OpenStream dirty work. */
 static bool openStream(PaStream** stream, int deviceIx,
-                       std::unique_ptr<AbstractSoundLoader>& soundLoader,
+                       std::unique_ptr<AbstractSoundLoader>& sound_loader,
                        PaStreamCallback callback,
                        PortAudioSound* portAudioSound)
 
 {
   PaStreamParameters outputParameters;
   outputParameters.device = deviceIx;
-  outputParameters.channelCount = soundLoader->GetChannelCount();
+  outputParameters.channelCount = sound_loader->GetChannelCount();
   outputParameters.sampleFormat = paInt16;
   outputParameters.suggestedLatency =
       Pa_GetDeviceInfo(outputParameters.device)->defaultHighOutputLatency;
   outputParameters.hostApiSpecificStreamInfo = NULL;
   PaError err = Pa_OpenStream(stream, NULL, /* no input channels */
-                              &outputParameters, soundLoader->GetSamplingRate(),
+                              &outputParameters, sound_loader->GetSamplingRate(),
                               BUFSIZE, paNoFlag, callback, portAudioSound);
   if (err != paNoError) {
     wxLogWarning("PortAudio Create() error: %s", Pa_GetErrorText(err));
@@ -135,21 +137,21 @@ static bool writeSynchronous(int deviceIx,
 }
 
 PortAudioSound::PortAudioSound()
-    : m_soundLoader(SoundLoaderFactory()), m_lock(ATOMIC_FLAG_INIT) {
+    : m_sound_loader(SoundLoaderFactory()), m_lock(ATOMIC_FLAG_INIT) {
   if (!getenv("OCPN_DEBUG_ALSA"))
     IgnoreRetval(freopen("/dev/null", "w", stderr));
   m_stream = NULL;
-  m_isAsynch = false;
-  m_isPaInitialized = false;
+  m_is_asynch = false;
+  m_is_pa_initialized = false;
   PaError err = Pa_Initialize();
   if (err != paNoError) {
     IgnoreRetval(freopen("/dev/tty", "w", stderr));
     wxLogError("PortAudio; cannot initialize: %s", Pa_GetErrorText(err));
     return;
   }
-  m_isPaInitialized = true;
-  SetDeviceIndex(-1);
-  for (int i = 0; i < DeviceCount(); i += 1) {
+  m_is_pa_initialized = true;
+  PortAudioSound::SetDeviceIndex(-1);
+  for (int i = 0; i < PortAudioSound::DeviceCount(); i += 1) {
     const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
     wxLogDebug("Device: %d: %s", i, info->name);
   }
@@ -157,7 +159,7 @@ PortAudioSound::PortAudioSound()
 }
 
 PortAudioSound::~PortAudioSound() {
-  if (m_isPaInitialized) {
+  if (m_is_pa_initialized) {
     PaError pe = Pa_Terminate();
     if (pe != paNoError) {
       wxLogWarning("PortAudio: Terminate error: %s", Pa_GetErrorText(pe));
@@ -183,9 +185,9 @@ void PortAudioSound::unlock() { m_lock.clear(std::memory_order_release); }
 
 void PortAudioSound::SetFinishedCallback(AudioDoneCallback cb, void* userData) {
   lock();
-  m_onFinished = cb;
-  m_callbackData = userData;
-  m_isAsynch = (bool)cb;
+  m_on_finished = cb;
+  m_callback_data = userData;
+  m_is_asynch = (bool)cb;
   unlock();
 }
 
@@ -195,31 +197,31 @@ std::string PortAudioSound::GetDeviceInfo(int deviceIndex) {
 
 bool PortAudioSound::Load(const char* path, int deviceIndex) {
   lock();
-  m_OK = false;
-  if (!m_soundLoader->Load(path)) {
+  m_ok = false;
+  if (!m_sound_loader->Load(path)) {
     wxLogWarning("Cannot load sound file %s", path);
     unlock();
     return false;
   }
-  m_OK = true;
+  m_ok = true;
   unlock();
   return true;
 }
 
 void PortAudioSound::UnLoad() {
   lock();
-  m_soundLoader->UnLoad();
-  m_OK = false;
+  m_sound_loader->UnLoad();
+  m_ok = false;
   unlock();
 }
 
-bool PortAudioSound::SetDeviceIndex(int deviceIndex) {
-  if (deviceIndex < -1 || deviceIndex >= DeviceCount()) {
+bool PortAudioSound::SetDeviceIndex(int device_index) {
+  if (device_index < -1 || device_index >= DeviceCount()) {
     wxLogWarning("SetDeviceIndex: Illegal index: %d, using default",
-                 deviceIndex);
-    m_deviceIx = -1;
+                 device_index);
+    m_device_ix = -1;
   }
-  m_deviceIx = deviceIndex == -1 ? Pa_GetDefaultOutputDevice() : deviceIndex;
+  m_device_ix = device_index == -1 ? Pa_GetDefaultOutputDevice() : device_index;
   return true;
 }
 
@@ -234,18 +236,18 @@ bool PortAudioSound::IsOutputDevice(int deviceIndex) const {
 int PortAudioSound::DeviceCount() const { return Pa_GetDeviceCount(); }
 
 bool PortAudioSound::Play() {
-  if (!m_OK) {
+  if (!m_ok) {
     wxLogWarning("PortAudioSound: cannot play (not loaded)");
     return false;
   }
   lock();
-  if (!m_isAsynch) {
-    bool ok = writeSynchronous(m_deviceIx, m_soundLoader, this);
+  if (!m_is_asynch) {
+    bool ok = writeSynchronous(m_device_ix, m_sound_loader, this);
     unlock();
     return ok;
   }
   if (!m_stream) {
-    if (!openStream(&m_stream, m_deviceIx, m_soundLoader,
+    if (!openStream(&m_stream, m_device_ix, m_sound_loader,
                     PortAudioSoundCallback, this)) {
       unlock();
       return false;
@@ -270,16 +272,16 @@ int PortAudioSound::SoundCallback(void* outputBuffer,
                                   const PaStreamCallbackTimeInfo* timeInfo,
                                   PaStreamCallbackFlags statusFlags) {
   int16_t* dest = static_cast<int16_t*>(outputBuffer);
-  int bufferlen = framesPerBuffer * m_soundLoader->GetBytesPerSample();
-  int len = m_soundLoader->Get(dest, bufferlen);
+  int bufferlen = framesPerBuffer * m_sound_loader->GetBytesPerSample();
+  int len = m_sound_loader->Get(dest, bufferlen);
   return len == bufferlen ? paContinue : paComplete;
 }
 
 void PortAudioSound::DoneCallback() {
   lock();
-  if (m_onFinished) {
-    m_onFinished(m_callbackData);
+  if (m_on_finished) {
+    m_on_finished(m_callback_data);
   }
-  m_onFinished = 0;
+  m_on_finished = nullptr;
   unlock();
 }
