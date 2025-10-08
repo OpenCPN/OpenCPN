@@ -35,7 +35,7 @@
  */
 class SndfileSoundLoader : public AbstractSoundLoader {
 public:
-  SndfileSoundLoader() {};
+  SndfileSoundLoader() { m_sndfile = NULL; };
 
   virtual ~SndfileSoundLoader();
 
