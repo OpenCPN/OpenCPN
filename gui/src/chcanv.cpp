@@ -3330,6 +3330,9 @@ void ChartCanvas::StartChartDragInertia() {
     yacc += m_drag_vec_y.at(length - 1 - i);
     tacc += m_drag_vec_t.at(length - 1 - i);
   }
+
+  if (tacc == 0) return;
+
   m_chart_drag_velocity_x = xacc / tacc;
   m_chart_drag_velocity_y = yacc / tacc;
 
