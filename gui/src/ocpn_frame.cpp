@@ -1791,10 +1791,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   }
 
   if (pLayerList) {
-    for (auto it = pLayerList->begin(); it != pLayerList->end(); ++it) {
-      delete *it;
-      // automatically removes the layer from list, see Layer dtor
-    }
+    while (pLayerList->size()) delete *pLayerList->begin();
+    // automatically removes the layer from list, see Layer dtor
   }
 
   ReleaseApiListeners();
