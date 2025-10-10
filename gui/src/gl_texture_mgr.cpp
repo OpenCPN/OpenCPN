@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <list>
+#include <vector>
 
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
@@ -1096,27 +1097,15 @@ bool glTextureManager::AsJob(wxString const &chart_path) const {
 void glTextureManager::PurgeJobList(wxString chart_path) {
   if (chart_path.Len()) {
     //  Remove all pending jobs relating to the passed chart path
-    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
-      JobTicket *ticket = *node;
-      if (ticket->m_ChartPath.IsSameAs(chart_path)) {
-        if (bthread_debug)
-          printf("Pool:  Purge pending job for purged chart\n");
-        auto found = std::find(todo_list.begin(), todo_list.end(), ticket);
-        if (found != todo_list.end()) todo_list.erase(found);
-        delete ticket;
-      }
-    }
-
-    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
-      JobTicket *ticket = *node;
-      if (ticket->m_ChartPath.IsSameAs(chart_path)) {
-        ticket->b_abort = true;
-      }
-    }
+    auto removed_begin = std::remove_if(
+        todo_list.begin(), todo_list.end(), [chart_path](JobTicket *ticket) {
+          return ticket->m_ChartPath == chart_path;
+        });
+    for (auto it = removed_begin; it != todo_list.end(); ++it) delete *it;
+    todo_list.erase(removed_begin, todo_list.end());
 
     if (bthread_debug)
-      printf("Pool:  Purge, todo count: %lu\n",
-             (long unsigned)todo_list.size());
+      std::cout << "Pool:  Purge, todo count: " << todo_list.size() << "\n";
   } else {
     for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
       JobTicket *ticket = *node;
