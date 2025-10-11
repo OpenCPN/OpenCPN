@@ -26,6 +26,7 @@
 #define __GLTEXTUREMANAGER_H__
 
 #include <list>
+#include <atomic>
 
 #include <wx/event.h>
 #include <wx/string.h>
@@ -98,8 +99,8 @@ public:
   unsigned char *level0_bits;
   unsigned char *comp_bits_array[10];
   wxString m_ChartPath;
-  bool b_abort;
-  bool b_isaborted;
+  std::atomic<bool> b_abort{false};
+  std::atomic<bool> b_isaborted{false};
   bool bpost_zip_compress;
   bool binplace;
   unsigned char *compcomp_bits_array[10];
