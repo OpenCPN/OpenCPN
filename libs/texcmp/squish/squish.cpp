@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <atomic>
 
 #include "squish.h"
 #include "colourset.h"
@@ -284,8 +285,8 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
 }
 
 void CompressImageRGBpow2_Flatten_Throttle_Abort( u8 const* rgb, int width, int height, void* blocks, int flags,
-                                                  bool b_flatten, void (*throttle)(void*), void *throttle_data, volatile bool &b_abort )
-{
+    bool b_flatten, void (*throttle)(void*), void* throttle_data,
+    std::atomic<bool>& b_abort) {
     // fix any bad flags
     flags = FixFlags( flags );
 
@@ -345,7 +346,7 @@ void CompressImageRGBpow2_Flatten_Throttle_Abort( u8 const* rgb, int width, int 
         if( throttle )
             throttle(throttle_data);
 
-        if( b_abort)
+        if(b_abort.load(std::memory_order_relaxed))
             break;
     }
 }
