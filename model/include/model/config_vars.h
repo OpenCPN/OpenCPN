@@ -120,6 +120,7 @@ extern bool g_oz_vector_scale;
 extern bool g_persist_active_route;
 extern bool g_useMUI;
 extern bool s_bSetSystemTime;
+extern bool g_allow_arb_system_plugin;
 
 extern double g_COGAvg;  ///< Debug only usage
 extern double g_defaultBoatSpeed;

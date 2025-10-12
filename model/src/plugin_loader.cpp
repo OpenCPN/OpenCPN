@@ -567,14 +567,18 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   if (!base_plugin_path.EndsWith(wxFileName::GetPathSeparator()))
     base_plugin_path += wxFileName::GetPathSeparator();
 
-  if (!g_bportable) {
-    if (base_plugin_path.IsSameAs(plugin_file_path)) {
-      if (!IsSystemPluginPath(file_name.ToStdString())) {
-        DEBUG_LOG << "Skipping plugin " << file_name << " in "
-                  << g_BasePlatform->GetPluginDir();
+  // By hidden config file entry, allow loading arbitrary plugins from
+  // "system" plugin directory, e.g. /usr/lib/opencpn on linux
+  if (!g_allow_arb_system_plugin) {
+    if (!g_bportable) {
+      if (base_plugin_path.IsSameAs(plugin_file_path)) {
+        if (!IsSystemPluginPath(file_name.ToStdString())) {
+          DEBUG_LOG << "Skipping plugin " << file_name << " in "
+                    << g_BasePlatform->GetPluginDir();
 
-        ClearLoadStamp(plugin_loadstamp.ToStdString());  // Not a fatal error
-        return false;
+          ClearLoadStamp(plugin_loadstamp.ToStdString());  // Not a fatal error
+          return false;
+        }
       }
     }
   }

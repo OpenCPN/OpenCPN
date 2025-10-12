@@ -714,6 +714,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("RoutePropPosX", &g_route_prop_x);
   Read("RoutePropPosY", &g_route_prop_y);
 
+  Read("AllowArbitrarySystemPlugins", &g_allow_arb_system_plugin);
+
   read_int = -1;
   Read("S52_DEPTH_UNIT_SHOW", &read_int);  // default is metres
   if (read_int >= 0) {

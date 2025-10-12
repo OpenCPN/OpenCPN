@@ -115,6 +115,7 @@ bool g_oz_vector_scale = false;
 bool g_persist_active_route = false;
 bool g_useMUI = false;
 bool s_bSetSystemTime = false;
+bool g_allow_arb_system_plugin = false;
 
 double g_COGAvg = 0.0;
 double g_defaultBoatSpeed = 0.0;
