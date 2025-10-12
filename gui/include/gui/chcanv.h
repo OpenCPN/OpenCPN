@@ -1344,6 +1344,16 @@ private:
   NotificationButton *m_notification_button;
   NotificationsList *m_NotificationsList;
   ObservableListener evt_notificationlist_change_listener;
+
+  wxStopWatch m_sw_left_down;
+  wxStopWatch m_sw_left_up;
+  long m_sw_down_time;
+  long m_sw_up_time;
+  wxTimer m_tap_timer;
+  wxPoint m_lastTapPos;
+  int m_tap_count;
+  void OnTapTimer(wxTimerEvent &event);
+
   DECLARE_EVENT_TABLE()
 };
 

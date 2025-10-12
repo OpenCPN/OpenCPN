@@ -3806,7 +3806,7 @@ void glChartCanvas::Render() {
 
   if (!g_true_zoom && m_binPinch) return;
 
-  if (m_binPinch) printf("    %ld Render Start\n", m_glstopwatch.Time());
+  // if (m_binPinch) printf("    %ld Render Start\n", m_glstopwatch.Time());
   long render_start_time = m_glstopwatch.Time();
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
@@ -4361,9 +4361,9 @@ void glChartCanvas::Render() {
     RenderCharts(m_gldc, screen_region);
   }
 
-  if (m_binPinch)
-    printf("        Render Charts Done  %ld\n",
-           m_glstopwatch.Time() - render_start_time);
+  // if (m_binPinch)
+  //   printf("        Render Charts Done  %ld\n",
+  //          m_glstopwatch.Time() - render_start_time);
 
   // Done with base charts.
   // Now the overlays
@@ -4565,9 +4565,9 @@ void glChartCanvas::Render() {
   m_pParentCanvas->PaintCleanup();
   m_bforcefull = false;
 
-  if (m_binPinch)
-    printf("    Render Finished:  %ld\n",
-           m_glstopwatch.Time() - render_start_time);
+  // if (m_binPinch)
+  //   printf("    Render Finished:  %ld\n",
+  //          m_glstopwatch.Time() - render_start_time);
 
   n_render++;
 }

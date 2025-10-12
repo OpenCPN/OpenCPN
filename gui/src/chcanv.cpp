@@ -238,6 +238,7 @@ EVT_TIMER(MOVEMENT_VP_TIMER, ChartCanvas::MovementVPTimerEvent)
 EVT_TIMER(DRAG_INERTIA_TIMER, ChartCanvas::OnChartDragInertiaTimer)
 EVT_TIMER(JUMP_EASE_TIMER, ChartCanvas::OnJumpEaseTimer)
 EVT_TIMER(MENU_TIMER, ChartCanvas::OnMenuTimer)
+EVT_TIMER(6502, ChartCanvas::OnTapTimer)
 
 END_EVENT_TABLE()
 
@@ -387,6 +388,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_leftdown = false;
 #endif /* HAVE_WX_GESTURE_EVENTS */
   m_inLongPress = false;
+  m_sw_down_time = 0;
+  m_sw_up_time = 0;
+  m_sw_left_down.Start();
+  m_sw_left_up.Start();
+
   SetupGlCanvas();
 
   singleClickEventIsValid = false;
@@ -427,6 +433,8 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_easeTimer.SetOwner(this, JUMP_EASE_TIMER);
   m_animationActive = false;
   m_menuTimer.SetOwner(this, MENU_TIMER);
+
+  m_tap_timer.SetOwner(this, 6502);
 
   m_panx = m_pany = 0;
   m_panspeed = 0;
@@ -956,7 +964,8 @@ void ChartCanvas::OnLongPress(wxLongPressEvent &event) {
   */
   m_popupWanted = true;
 #else
-  // m_inLongPress = true;
+  m_inLongPress = !g_bhide_context_menus;
+
   //  Send a synthetic mouse left-up event to sync the mouse pan logic.
   m_menuPos = event.GetPosition();
   wxMouseEvent ev(wxEVT_LEFT_UP);
@@ -983,10 +992,24 @@ void ChartCanvas::OnRightUp(wxMouseEvent &event) { MouseEvent(event); }
 void ChartCanvas::OnRightDown(wxMouseEvent &event) { MouseEvent(event); }
 
 void ChartCanvas::OnLeftUp(wxMouseEvent &event) {
+#ifdef __WXGTK__
+  long dt = m_sw_left_up.Time() - m_sw_up_time;
+  m_sw_up_time = m_sw_left_up.Time();
+
+  // printf("  dt %ld\n",dt);
+  if (dt < 5) {
+    // printf("  Ignored %ld\n",dt );// This is a duplicate emulated event,
+    // ignore it.
+    return;
+  }
+#endif
+  // printf("Left_UP\n");
+
   wxPoint pos = event.GetPosition();
 
   m_leftdown = false;
 
+#if 1
   if (!m_popupWanted) {
     wxMouseEvent ev(wxEVT_LEFT_UP);
     ev.m_x = pos.x;
@@ -1002,13 +1025,70 @@ void ChartCanvas::OnLeftUp(wxMouseEvent &event) {
   ev.m_y = pos.y;
 
   MouseEvent(ev);
+#else
+  MouseEvent(event);
+#endif
 }
 
 void ChartCanvas::OnLeftDown(wxMouseEvent &event) {
   m_leftdown = true;
 
-  wxPoint pos = event.GetPosition();
+  //  Detect and manage multiple left-downs coming from GTK mouse emulation
+#ifdef __WXGTK__
+  long dt = m_sw_left_down.Time() - m_sw_down_time;
+  m_sw_down_time = m_sw_left_down.Time();
+
+  // printf("Left_DOWN_Entry:  dt: %ld\n", dt);
+
+  if (dt < 5) {
+    // printf("  Ignored %ld\n",dt );// This is a duplicate emulated event,
+    // ignore it.
+    return;
+  }
+#endif
+
+  // printf("Left_DOWN\n");
+
+  // detect and manage double-tap
+#ifdef __WXGTK__
+  int max_double_click_distance = wxSystemSettings::GetMetric(wxSYS_DCLICK_X) *
+                                  2;  // Use system setting for distance
+  wxRect tap_area(m_lastTapPos.x - max_double_click_distance,
+                  m_lastTapPos.y - max_double_click_distance,
+                  max_double_click_distance * 2, max_double_click_distance * 2);
+
+  // A new tap has started, check if it's close enough and in time
+  if (m_tap_timer.IsRunning() && tap_area.Contains(event.GetPosition())) {
+    // printf("    TapBump 1\n");
+    m_tap_count += 1;
+  } else {
+    // printf("    TapSet 1\n");
+    m_tap_count = 1;
+    m_lastTapPos = event.GetPosition();
+    m_tap_timer.StartOnce(
+        350);  //(wxSystemSettings::GetMetric(wxSYS_DCLICK_MSEC));
+  }
+
+  if (m_tap_count == 2) {
+    // printf("    Doubletap detected\n");
+    m_tap_count = 0;  // Reset after a double-tap
+
+    wxMouseEvent ev(wxEVT_LEFT_DCLICK);
+    ev.m_x = event.m_x;
+    ev.m_y = event.m_y;
+    // wxPostEvent(this, ev);
+    MouseEvent(ev);
+    return;
+  }
+
+#endif
+
   MouseEvent(event);
+}
+
+void ChartCanvas::OnTapTimer(wxTimerEvent &event) {
+  // printf("tap timer %d\n", m_tap_count);
+  m_tap_count = 0;
 }
 
 void ChartCanvas::OnMotion(wxMouseEvent &event) {
