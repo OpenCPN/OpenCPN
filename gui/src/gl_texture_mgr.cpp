@@ -221,7 +221,8 @@ void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=
 
 /* return malloced data which is the etc compressed texture of the source */
 static void CompressDataETC(const unsigned char *data, int dim, int size,
-                            unsigned char *tex_data, volatile bool &b_abort) {
+                            unsigned char *tex_data,
+                            std::atomic<bool> &b_abort) {
   wxASSERT(dim * dim == 2 * size || (dim < 4 && size == 8));  // must be 4bpp
   uint64_t *tex_data64 = (uint64_t *)tex_data;
 
@@ -237,7 +238,7 @@ static void CompressDataETC(const unsigned char *data, int dim, int size,
       extern uint64_t ProcessRGB(const uint8_t *src);
       *tex_data64++ = ProcessRGB(block);
     }
-    if (b_abort) break;
+    if (b_abort.load(std::memory_order_relaxed)) break;
   }
 }
 
@@ -522,7 +523,7 @@ bool JobTicket::DoJob(const wxRect &rect) {
     else if (g_raster_format == GL_COMPRESSED_RGB_FXT1_3DFX) {
       if (!CompressUsingGPU(bit_array[level], dim, size, tex_data,
                             texture_level, binplace)) {
-        b_abort = true;
+        b_abort.store(true, std::memory_order_relaxed);
         break;
       }
 
@@ -532,7 +533,7 @@ bool JobTicket::DoJob(const wxRect &rect) {
     }
     comp_bits_array[level] = tex_data;
 
-    if (b_abort) {
+    if (b_abort.load(std::memory_order_relaxed)) {
       for (int i = 0; i < g_mipmap_max_level + 1; i++) {
         free(bit_array[i]);
         bit_array[i] = 0;
@@ -549,13 +550,13 @@ bool JobTicket::DoJob(const wxRect &rect) {
 
   if (b_throttle) wxThread::Sleep(1);
 
-  if (b_abort) return false;
+  if (b_abort.load(std::memory_order_relaxed)) return false;
 
   if (bpost_zip_compress) {
     int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
     for (int level = level_min_request; level < g_mipmap_max_level + 1;
          level++) {
-      if (b_abort) return false;
+      if (b_abort.load(std::memory_order_relaxed)) return false;
 
       unsigned char *compressed_data =
           (unsigned char *)malloc(max_compressed_size);
@@ -671,7 +672,8 @@ void *CompressionPoolThread::Entry() {
   {
     SetPriority(WXTHREAD_MIN_PRIORITY);
 
-    if (!m_ticket->DoJob()) m_ticket->b_isaborted = true;
+    if (!m_ticket->DoJob())
+      m_ticket->b_isaborted.load(std::memory_order_relaxed);
 
     if (m_pMessageTarget) {
       OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
@@ -688,7 +690,7 @@ void *CompressionPoolThread::Entry() {
   catch (SE_Exception e) {
     if (m_pMessageTarget) {
       OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
-      m_ticket->b_isaborted = true;
+      m_ticket->b_isaborted.store(true, std::memory_order_relaxed);
       Nevent.SetTicket(m_ticket);
       Nevent.type = 0;
       m_pMessageTarget->QueueEvent(Nevent.Clone());
@@ -832,7 +834,8 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     return;
   }
 
-  if (ticket->b_isaborted || ticket->b_abort) {
+  if (ticket->b_isaborted.load(std::memory_order_relaxed) ||
+      ticket->b_abort.load(std::memory_order_relaxed)) {
     for (int i = 0; i < g_mipmap_max_level + 1; i++) {
       free(ticket->comp_bits_array[i]);
       free(ticket->compcomp_bits_array[i]);
@@ -956,11 +959,10 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
     //  rectangle
     for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
       JobTicket *ticket = *node;
-      if ((ticket->m_ChartPath == chart_path) && (ticket->m_rect == rect)) {
-        // bump to front
-        auto found = std::find(todo_list.begin(), todo_list.end(), ticket);
-        if (found != todo_list.end()) todo_list.erase(found);
-        todo_list.insert(todo_list.begin(), ticket);
+      if (ticket->m_ChartPath == chart_path && ticket->m_rect == rect) {
+        // Move the existing job to the front in O(1) without invalidating
+        // others
+        todo_list.splice(todo_list.begin(), todo_list, node);
         ticket->level_min_request = level;
         return false;
       }
@@ -985,8 +987,8 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
   pt->m_ChartPath = chart_path;
 
   pt->level0_bits = NULL;
-  pt->b_abort = false;
-  pt->b_isaborted = false;
+  pt->b_abort.store(false, std::memory_order_relaxed);
+  pt->b_isaborted.store(false, std::memory_order_relaxed);
   pt->bpost_zip_compress = b_postZip;
   pt->binplace = b_inplace;
   pt->b_inCompressAll = b_inCompressAllCharts;
@@ -1094,29 +1096,33 @@ bool glTextureManager::AsJob(wxString const &chart_path) const {
 }
 
 void glTextureManager::PurgeJobList(wxString chart_path) {
+  wxASSERT_MSG(wxIsMainThread(),
+               "PurgeJobList must be called from the main thread");
   if (chart_path.Len()) {
     //  Remove all pending jobs relating to the passed chart path
-    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
+    for (auto node = todo_list.begin(); node != todo_list.end();
+         /* no increment here */) {
       JobTicket *ticket = *node;
       if (ticket->m_ChartPath.IsSameAs(chart_path)) {
         if (bthread_debug)
           printf("Pool:  Purge pending job for purged chart\n");
-        auto found = std::find(todo_list.begin(), todo_list.end(), ticket);
-        if (found != todo_list.end()) todo_list.erase(found);
+        node = todo_list.erase(node);  // safe: returns iterator to next
         delete ticket;
+      } else {
+        ++node;
       }
     }
 
     for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
       JobTicket *ticket = *node;
       if (ticket->m_ChartPath.IsSameAs(chart_path)) {
-        ticket->b_abort = true;
+        ticket->b_abort.store(true, std::memory_order_relaxed);
       }
     }
 
     if (bthread_debug)
-      printf("Pool:  Purge, todo count: %lu\n",
-             (long unsigned)todo_list.size());
+      wxLogDebug("Pool:  Purge, todo count: %lu\n",
+                 (long unsigned)todo_list.size());
   } else {
     for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
       JobTicket *ticket = *node;
@@ -1126,7 +1132,7 @@ void glTextureManager::PurgeJobList(wxString chart_path) {
     //  Mark all running tasks for "abort"
     for (auto node = running_list.begin(); node != running_list.end(); ++node) {
       JobTicket *ticket = *node;
-      ticket->b_abort = true;
+      ticket->b_abort.store(true, std::memory_order_relaxed);
     }
   }
 }
