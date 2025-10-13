@@ -35,6 +35,7 @@ public:
   /** An instance which accepts messages and forwards it the listener  */
   LoopbackDriver(DriverListener& l) : m_listener(l) {
     AbstractCommDriver::attributes["protocol"] = "loopback";
+    AbstractCommDriver::attributes["direction"] = "OUT";
   }
 
   ~LoopbackDriver() override = default;
