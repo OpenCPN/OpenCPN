@@ -238,7 +238,7 @@ EVT_TIMER(MOVEMENT_VP_TIMER, ChartCanvas::MovementVPTimerEvent)
 EVT_TIMER(DRAG_INERTIA_TIMER, ChartCanvas::OnChartDragInertiaTimer)
 EVT_TIMER(JUMP_EASE_TIMER, ChartCanvas::OnJumpEaseTimer)
 EVT_TIMER(MENU_TIMER, ChartCanvas::OnMenuTimer)
-EVT_TIMER(6502, ChartCanvas::OnTapTimer)
+EVT_TIMER(TAP_TIMER, ChartCanvas::OnTapTimer)
 
 END_EVENT_TABLE()
 
@@ -433,8 +433,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_easeTimer.SetOwner(this, JUMP_EASE_TIMER);
   m_animationActive = false;
   m_menuTimer.SetOwner(this, MENU_TIMER);
-
-  m_tap_timer.SetOwner(this, 6502);
+  m_tap_timer.SetOwner(this, TAP_TIMER);
 
   m_panx = m_pany = 0;
   m_panspeed = 0;
@@ -1009,7 +1008,6 @@ void ChartCanvas::OnLeftUp(wxMouseEvent &event) {
 
   m_leftdown = false;
 
-#if 1
   if (!m_popupWanted) {
     wxMouseEvent ev(wxEVT_LEFT_UP);
     ev.m_x = pos.x;
@@ -1025,9 +1023,6 @@ void ChartCanvas::OnLeftUp(wxMouseEvent &event) {
   ev.m_y = pos.y;
 
   MouseEvent(ev);
-#else
-  MouseEvent(event);
-#endif
 }
 
 void ChartCanvas::OnLeftDown(wxMouseEvent &event) {
@@ -1086,11 +1081,6 @@ void ChartCanvas::OnLeftDown(wxMouseEvent &event) {
   MouseEvent(event);
 }
 
-void ChartCanvas::OnTapTimer(wxTimerEvent &event) {
-  // printf("tap timer %d\n", m_tap_count);
-  m_tap_count = 0;
-}
-
 void ChartCanvas::OnMotion(wxMouseEvent &event) {
   /* This is a workaround, to the fact that on touchscreen, OnMotion comes with
      dragging, upon simple click, and without the OnLeftDown event before Thus,
@@ -1131,6 +1121,12 @@ void ChartCanvas::OnDoubleLeftClick(wxMouseEvent &event) {
   DoRotateCanvas(0.0);
 }
 #endif /* HAVE_WX_GESTURE_EVENTS */
+
+void ChartCanvas::OnTapTimer(wxTimerEvent &event) {
+  // printf("tap timer %d\n", m_tap_count);
+  m_tap_count = 0;
+}
+
 void ChartCanvas::OnMenuTimer(wxTimerEvent &event) {
   m_FinishRouteOnKillFocus = false;
   CallPopupMenu(m_menuPos.x, m_menuPos.y);

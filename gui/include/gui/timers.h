@@ -43,4 +43,5 @@
 #define JUMP_EASE_TIMER 17
 #define TCWIN_TIME_INDICATOR_TIMER 18
 #define MENU_TIMER 19
+#define TAP_TIMER 20
 #endif
