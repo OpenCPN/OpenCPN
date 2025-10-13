@@ -23,8 +23,6 @@
 
 #include "model/select_item.h"
 
-#include <wx/listimpl.cpp>
-
 SelectItem::SelectItem() {}
 
 SelectItem::~SelectItem() {}

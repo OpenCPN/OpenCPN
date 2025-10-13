@@ -102,25 +102,13 @@ bool Select::AddSelectableRouteSegment(float slat1, float slon1, float slat2,
 }
 
 bool Select::DeleteAllSelectableRouteSegments(Route *pr) {
-  SelectItem *pFindSel;
-
-  //    Iterate on the select list
-  auto node = pSelectList->begin();
-
-  while (node != pSelectList->end()) {
-    pFindSel = *node;
-    if (pFindSel->m_seltype == SELTYPE_ROUTESEGMENT &&
-        (Route *)pFindSel->m_pData3 == pr) {
-      delete pFindSel;
-      auto d = node;
-      ++node;
-      auto pos = std::find(pSelectList->begin(), pSelectList->end(), *d);
-      if (pos != pSelectList->end()) pSelectList->erase(pos);
-    } else {
-      ++node;  // FIXME (leamas) proper erase idiom
-    }
-  }
-
+  auto removed_begin = std::remove_if(
+      pSelectList->begin(), pSelectList->end(), [pr](SelectItem *si) {
+        bool is_pr = (Route *)si->m_pData3 == pr;
+        if (is_pr) delete si;
+        return is_pr;
+      });
+  pSelectList->erase(removed_begin, pSelectList->end());
   return true;
 }
 
@@ -261,55 +249,38 @@ bool Select::DeleteAllPoints( void )
 */
 
 bool Select::DeleteSelectablePoint(void *pdata, int SeltypeToDelete) {
-  SelectItem *pFindSel;
+  if (!pdata) return false;
 
-  if (NULL != pdata) {
-    //    Iterate on the list
-    auto node = pSelectList->begin();
-
-    while (node != pSelectList->end()) {
-      pFindSel = *node;
-      if (pFindSel->m_seltype == SeltypeToDelete) {
-        if (pdata == pFindSel->m_pData1) {
-          auto pos =
-              std::find(pSelectList->begin(), pSelectList->end(), pFindSel);
-          if (pos != pSelectList->end()) pSelectList->erase(pos);
-          delete pFindSel;
-          if (SELTYPE_ROUTEPOINT == SeltypeToDelete) {
-            RoutePoint *prp = (RoutePoint *)pdata;
-            prp->SetSelectNode(NULL);
-          }
-
-          return true;
-        }
-      }
-      ++node;
-    }
-  }
-  return false;
+  auto removed_begin =
+      std::remove_if(pSelectList->begin(), pSelectList->end(),
+                     [pdata, SeltypeToDelete](SelectItem *si) {
+                       bool is_victim = si->m_seltype == SeltypeToDelete &&
+                                        si->m_pData1 == pdata;
+                       if (is_victim) delete si;
+                       if (is_victim && SELTYPE_ROUTEPOINT == SeltypeToDelete) {
+                         RoutePoint *prp = (RoutePoint *)pdata;
+                         prp->SetSelectNode(NULL);
+                       }
+                       return is_victim;
+                     });
+  pSelectList->erase(removed_begin, pSelectList->end());
+  return true;
 }
 
 bool Select::DeleteAllSelectableTypePoints(int SeltypeToDelete) {
-  SelectItem *pFindSel;
+  auto removed_begin =
+      std::remove_if(pSelectList->begin(), pSelectList->end(),
+                     [SeltypeToDelete](SelectItem *si) {
+                       bool is_match = si->m_seltype == SeltypeToDelete;
+                       if (is_match && SELTYPE_ROUTEPOINT == SeltypeToDelete) {
+                         RoutePoint *prp = (RoutePoint *)si->m_pData1;
+                         prp->SetSelectNode(NULL);
+                       }
+                       if (is_match) delete si;
+                       return is_match;
+                     });
+  pSelectList->erase(removed_begin, pSelectList->end());
 
-  //    Iterate on the list
-  auto node = pSelectList->begin();
-
-  while (node != pSelectList->end()) {
-    pFindSel = *node;
-    if (pFindSel->m_seltype == SeltypeToDelete) {
-      auto pos = std::find(pSelectList->begin(), pSelectList->end(), pFindSel);
-      if (pos != pSelectList->end()) pSelectList->erase(pos);
-      if (SELTYPE_ROUTEPOINT == SeltypeToDelete) {
-        RoutePoint *prp = (RoutePoint *)pFindSel->m_pData1;
-        prp->SetSelectNode(NULL);
-      }
-      delete pFindSel;
-      node = pSelectList->begin();
-    } else {
-      ++node;
-    }
-  }
   return true;
 }
 
@@ -368,47 +339,27 @@ bool Select::AddSelectableTrackSegment(float slat1, float slon1, float slat2,
 }
 
 bool Select::DeleteAllSelectableTrackSegments(Track *pt) {
-  SelectItem *pFindSel;
-
-  //    Iterate on the select list
-  auto node = pSelectList->begin();
-
-  while (node != pSelectList->end()) {
-    pFindSel = *node;
-    if (pFindSel->m_seltype == SELTYPE_TRACKSEGMENT &&
-        (Track *)pFindSel->m_pData3 == pt) {
-      delete pFindSel;
-      auto d = node;
-      ++node;
-      auto pos = std::find(pSelectList->begin(), pSelectList->end(), *d);
-      if (pos != pSelectList->end()) pSelectList->erase(pos);
-    } else {
-      ++node;
-    }
-  }
+  auto removed_begin = std::remove_if(
+      pSelectList->begin(), pSelectList->end(), [pt](SelectItem *si) {
+        bool is_victim = si->m_seltype == SELTYPE_TRACKSEGMENT &&
+                         (Track *)si->m_pData3 == pt;
+        if (is_victim) delete si;
+        return is_victim;
+      });
+  pSelectList->erase(removed_begin, pSelectList->end());
   return true;
 }
 
 bool Select::DeletePointSelectableTrackSegments(TrackPoint *pt) {
-  SelectItem *pFindSel;
-
-  //    Iterate on the select list
-  auto node = pSelectList->begin();
-
-  while (node != pSelectList->end()) {
-    pFindSel = *node;
-    if (pFindSel->m_seltype == SELTYPE_TRACKSEGMENT &&
-        ((TrackPoint *)pFindSel->m_pData1 == pt ||
-         (TrackPoint *)pFindSel->m_pData2 == pt)) {
-      delete pFindSel;
-      auto d = node;
-      ++node;
-      auto pos = std::find(pSelectList->begin(), pSelectList->end(), *d);
-      if (pos != pSelectList->end()) pSelectList->erase(pos);
-    } else {
-      ++node;
-    }
-  }
+  auto removed_begin = std::remove_if(
+      pSelectList->begin(), pSelectList->end(), [pt](SelectItem *si) {
+        bool is_victim = si->m_seltype == SELTYPE_TRACKSEGMENT &&
+                         ((TrackPoint *)si->m_pData1 == pt ||
+                          (TrackPoint *)si->m_pData2 == pt);
+        if (is_victim) delete si;
+        return is_victim;
+      });
+  pSelectList->erase(removed_begin, pSelectList->end());
   return true;
 }
 

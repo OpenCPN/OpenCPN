@@ -3999,12 +3999,11 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
           if (segShow_point_a != *pr->pRoutePointList->begin()) {
             auto node = pr->pRoutePointList->begin();
-            ++node;
             RoutePoint *prp;
             float dist_to_endleg = 0;
             wxString t;
 
-            while (node != pr->pRoutePointList->end()) {
+            for (++node; node != pr->pRoutePointList->end(); ++node) {
               prp = *node;
               if (validActive)
                 shiptoEndLeg += prp->m_seg_len;
@@ -4012,7 +4011,6 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
                 validActive = true;
               dist_to_endleg += prp->m_seg_len;
               if (prp->IsSame(segShow_point_a)) break;
-              ++node;
             }
             s << " (+" << FormatDistanceAdaptive(dist_to_endleg) << ")";
           }
