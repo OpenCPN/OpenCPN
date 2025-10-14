@@ -498,6 +498,7 @@ void CommDriverN2KNet::HandleResume() {
 
 bool CommDriverN2KNet::SendMessage(std::shared_ptr<const NavMsg> msg,
                                    std::shared_ptr<const NavAddr> addr) {
+  if (!msg) return false;
   auto msg_n2k = std::dynamic_pointer_cast<const Nmea2000Msg>(msg);
   auto dest_addr_n2k = std::static_pointer_cast<const NavAddr2000>(addr);
   return SendN2KNetwork(msg_n2k, dest_addr_n2k);

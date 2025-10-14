@@ -323,6 +323,7 @@ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
 bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                       std::shared_ptr<const NavAddr> addr) {
   if (m_closing) return false;
+  if (!msg) return false;
 
 #ifndef ANDROID
 
