@@ -25,6 +25,7 @@
 #include "model/comm_navmsg_bus.h"
 
 void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
+  if (!msg) return;
   std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
   RegisterKey(key);
   Observable(*msg).Notify(msg);
