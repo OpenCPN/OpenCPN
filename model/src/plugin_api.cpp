@@ -219,6 +219,7 @@ CommDriverResult WriteCommDriver(
   } else if (protocol == "loopback") {
     std::string msg(payload->begin(), payload->end());
     auto navmsg = LoopbackDriver::ParsePluginMessage(msg);
+    if (!navmsg) return RESULT_COMM_INVALID_PARMS;
     bool send_ok = found->SendMessage(navmsg, nullptr);
     return send_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
   } else {
