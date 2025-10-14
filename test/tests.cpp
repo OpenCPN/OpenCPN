@@ -362,6 +362,68 @@ public:
   }
 };
 
+class LoopbackBad2000App : public BasicTest {
+public:
+  class Source {
+  public:
+    Source() {
+      const auto& handles = GetActiveDrivers();
+      auto found = std::find_if(
+          handles.begin(), handles.end(), [](const DriverHandle& h) {
+            return GetAttributes(h).at("protocol") == "loopback";
+          });
+      EXPECT_TRUE(found != handles.end());
+      auto driver = *found;
+      static const std::string msg =
+          "1760344254730,NMEA2000,COM5,130306,"
+          "93 13 04 02 fd 01 ff 02 00 00 00 00 08 30 cf 01 fe 4a fa ff ff 0d ";
+      auto payload =
+          std::make_shared<std::vector<unsigned char>>(msg.begin(), msg.end());
+      auto result = WriteCommDriver(driver, payload);
+      EXPECT_EQ(result, RESULT_COMM_INVALID_PARMS);
+    }
+  };
+
+  class Sink : public wxEvtHandler {
+  public:
+    Sink() {
+      auto& t = NavMsgBus::GetInstance();
+      auto msg = Nmea2000Msg(129026);
+      listener.Listen(msg, this, EVT_FOO);
+
+      Bind(EVT_FOO, [&](ObservedEvt ev) {
+        using namespace std;
+        auto ptr = ev.GetSharedPtr();
+        auto plugin_msg = std::static_pointer_cast<const Nmea2000Msg>(ptr);
+        std::stringstream ss;
+        for (auto byte : plugin_msg->payload) {
+          char buff[4];
+          snprintf(buff, sizeof(buff), "%02x ", byte);
+          ss << buff;
+        }
+        s_result = ss.str();
+        s_bus = plugin_msg->bus;
+        s_result2 = plugin_msg->PGN.to_string();
+        s_result3 = plugin_msg->source->iface;
+      });
+    }
+    ObservableListener listener;
+  };
+
+  LoopbackBad2000App() : BasicTest() { Work(); }
+
+  void Work() {
+    s_result = "";
+    s_bus = NavAddr::Bus::Undef;
+    Sink sink;
+    Source source;
+    ProcessPendingEvents();
+
+    EXPECT_EQ(s_result, "");
+    EXPECT_EQ(NavAddr::Bus::Undef, s_bus);
+  }
+};
+
 class Loopback2000App : public BasicTest {
 public:
   class Source {
@@ -1301,6 +1363,12 @@ TEST(Loopback, N2000) {
   EXPECT_TRUE(s_bus == NavAddr::Bus::N2000);
   EXPECT_TRUE(s_result2 == "129026");
   EXPECT_TRUE(s_result3 == "TCP:signalk.stupan.se:1455");
+}
+
+TEST(Loopback, BadN2000) {
+  s_result = "";
+  LoopbackBad2000App app;
+  EXPECT_TRUE(s_result == "");
 }
 
 TEST(Loopback, SignalK) {
