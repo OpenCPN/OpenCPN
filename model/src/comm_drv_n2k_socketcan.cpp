@@ -298,6 +298,7 @@ bool CommDriverN2KSocketCanImpl::SendProductInfo() {
 
 bool CommDriverN2KSocketCanImpl::SendMessage(
     std::shared_ptr<const NavMsg> msg, std::shared_ptr<const NavAddr> addr) {
+  if (!msg) return false;
   wxMutexLocker lock(m_TX_mutex);
 
   // Verify claimed address is useable
