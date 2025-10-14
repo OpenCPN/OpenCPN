@@ -3052,18 +3052,19 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
   }
 
   // Process waypoints in this layer
+  std::vector<RoutePoint *> to_be_destroyed;
   auto node = pWayPointMan->GetWaypointList()->begin();
-
   while (node != pWayPointMan->GetWaypointList()->end()) {
     RoutePoint *rp = *node;
     if (rp && (rp->m_LayerID == layer->m_LayerID)) {
       rp->m_bIsInLayer = false;
       rp->m_LayerID = 0;
       // no need to update the change set on layer ops
-      pWayPointMan->DestroyWaypoint(rp, false);
+      to_be_destroyed.push_back(rp);
     }
     ++node;
   }
+  for (auto rp : to_be_destroyed) pWayPointMan->DestroyWaypoint(rp, false);
 
   if (g_pMarkInfoDialog) {
     g_pMarkInfoDialog->ClearData();
