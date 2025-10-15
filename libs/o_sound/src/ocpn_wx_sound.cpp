@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,58 +12,65 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement ocpn_wx_sound.h -- sound backend on top of wxwidget's sound
  */
+
+
 #include <thread>
 
 #include <wx/file.h>
 #include <wx/log.h>
 #include <wx/sound.h>
 
-#include "OcpnWxSound.h"
+#include "ocpn_wx_sound.h"
+
+using namespace o_sound_private;
 
 std::string OcpnWxSound::GetDeviceInfo(int deviceIndex) {
   return "OcpnWxSound";
 }
 
 bool OcpnWxSound::Load(const char* path, int deviceIndex) {
-  m_OK = m_sound.Create(path);
-  m_isPlaying = false;
-  if (m_OK) {
+  m_ok = m_sound.Create(path);
+  m_is_playing = false;
+  if (m_ok) {
     m_path = path;
   }
-  return m_OK;
+  return m_ok;
 }
 
-bool OcpnWxSound::Stop(void) {
+bool OcpnWxSound::Stop() {
   m_sound.Stop();
-  m_OK = false;
-  m_isPlaying = false;
+  m_ok = false;
+  m_is_playing = false;
   return false;
 }
 
-void OcpnWxSound::worker(void) {
+void OcpnWxSound::Worker() {
   wxLogDebug("wxSound::worker()");
-  m_isPlaying = true;
+  m_is_playing = true;
   m_sound.Play(wxSOUND_SYNC);
-  if (m_onFinished) {
-    m_onFinished(m_callbackData);
-    m_onFinished = 0;
+  if (m_on_finished) {
+    m_on_finished(m_callback_data);
+    m_on_finished = nullptr;
   }
-  m_isPlaying = false;
+  m_is_playing = false;
 }
 
 bool OcpnWxSound::Play() {
   wxLogDebug("wxSound::Play()");
-  if (!m_OK || m_isPlaying) {
+  if (!m_ok || m_is_playing) {
     wxLogWarning("OcpnWxSound: cannot play: not loaded or busy playing.");
     return false;
   }
-  if (m_onFinished) {
-    std::thread t([this]() { worker(); });
+  if (m_on_finished) {
+    std::thread t([this]() { Worker(); });
     t.detach();
     return true;
   }

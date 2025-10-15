@@ -76,6 +76,8 @@
 
 #include "config.h"
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
@@ -107,14 +109,11 @@
 #include "observable_globvar.h"
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
-#include "OCPN_Sound.h"
 #include "options.h"
 #include "s52plib.h"
 #include "s52utils.h"
-#include "SoundFactory.h"
 #include "styles.h"
 #include "model/svg_utils.h"
-#include "SystemCmdSound.h"
 #include "usb_devices.h"
 #include "waypointman_gui.h"
 
@@ -1691,7 +1690,8 @@ void options::Init() {
     m_bcompact = true;
 
   auto sound_action = [](ObservedEvt ev) {
-    auto sound = static_cast<OcpnSound*>(ev.GetClientData());
+    auto sound = static_cast<o_sound::Sound*>(ev.GetClientData());
+
     delete sound;
   };
   m_sound_done_listener.Init(m_on_sound_done, sound_action);
@@ -4829,7 +4829,7 @@ public:
 
   wxButton* SelSound;
   wxButton* TestSound;
-  OcpnSound* m_sound;
+  o_sound::Sound* m_sound;
 
   /** Notified with a OCPN_Sound* pointer when sound has completed. */
   EventVar m_on_sp_sound_done;
@@ -4860,7 +4860,7 @@ OCPNSoundPanel::OCPNSoundPanel(wxWindow* parent, wxWindowID id,
   m_pSoundFile = pSoundFile;
   if (pSoundFile) m_sound_file = *pSoundFile;
 
-  m_sound = SoundFactory();
+  m_sound = o_sound::Factory();
 
   int border_size = 4;
   int group_item_spacing = 2;
@@ -5075,7 +5075,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
       new wxStaticBoxSizer(StatBoxSoundConfig, wxVERTICAL);
   wrapperSizer->Add(StatBoxSoundConfigSizer, 0, wxALL | wxEXPAND, border_size);
 
-  auto sound = std::unique_ptr<OcpnSound>(SoundFactory());
+  auto sound = std::unique_ptr<o_sound::Sound>(o_sound::Factory());
   int deviceCount = sound->DeviceCount();
   wxLogMessage("options: got device count: %d", deviceCount);
   if (deviceCount >= 1) {
@@ -5124,7 +5124,7 @@ void options::CreatePanel_Sounds(size_t parent, int border_size,
   }
 
 #ifndef __ANDROID__
-  if ((bool)dynamic_cast<SystemCmdSound*>(SoundFactory())) {
+  if ((bool)dynamic_cast<o_sound::SystemCmdSound*>(o_sound::Factory())) {
     wxBoxSizer* pSoundSizer = new wxBoxSizer(wxVERTICAL);
     StatBoxSoundConfigSizer->Add(pSoundSizer, 0, wxALL | wxEXPAND,
                                  group_item_spacing);
@@ -8748,8 +8748,8 @@ void options::OnButtonSelectSound(wxCommandEvent& event) {
 }
 
 void options::OnButtonTestSound(wxCommandEvent& event) {
-  auto sound = SoundFactory();
-  auto cmd_sound = dynamic_cast<SystemCmdSound*>(sound);
+  auto sound = o_sound::Factory();
+  auto cmd_sound = dynamic_cast<o_sound::SystemCmdSound*>(sound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str());
   sound->SetFinishedCallback([&](void* snd) { m_on_sound_done.Notify(snd); });
   sound->Load(m_soundPanelAIS->GetSoundFile(), g_iSoundDeviceIndex);

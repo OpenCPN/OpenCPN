@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement msw_sound.h -- Windows sound backend
  */
+
 #include <thread>
 
 #include <windows.h>
@@ -28,41 +28,48 @@
 #include <wx/string.h>
 #include <wx/log.h>
 
-#include "MswSound.h"
+#include "msw_sound.h"
+
+using namespace o_sound_private;
 
 bool MswSound::Load(const char* path, int deviceIndex) {
   m_path = wxString(path).ToStdWstring();
-  m_isPlaying = false;
-  m_OK = true;
-  return m_OK;
+  m_is_playing = false;
+  m_ok = true;
+  return m_ok;
 }
 
-bool MswSound::Stop(void) {
-  m_isPlaying = false;
+bool MswSound::Stop() {
+  m_is_playing = false;
   return PlaySound(NULL, NULL, 0);
 }
 
-void MswSound::worker(void) {
+void MswSound::Worker() {
   wxLogDebug("mswSound::worker()");
-  m_isPlaying = true;
+  m_is_playing = true;
   PlaySound(m_path.c_str(), NULL, SND_FILENAME);
-  if (m_onFinished) {
-    m_onFinished(m_callbackData);
-    m_onFinished = 0;
+  if (m_on_finished) {
+    m_on_finished(m_callback_data);
+    m_on_finished = 0;
   }
-  m_isPlaying = false;
+  m_is_playing = false;
 }
 
 bool MswSound::Play() {
   wxLogDebug("mswSound::Play()");
-  if (!m_OK || m_isPlaying) {
+  if (!m_ok || m_is_playing) {
     wxLogWarning("MswSound: cannot play: not loaded or busy playing.");
     return false;
   }
-  if (m_onFinished) {
-    std::thread t([this]() { worker(); });
+  if (m_on_finished) {
+    std::thread t([this]() { Worker(); });
     t.detach();
     return true;
   }
   return PlaySound(m_path.c_str(), NULL, SND_FILENAME);
+}
+
+void MswSound::UnLoad() {
+  PlaySound(NULL, NULL, 0);
+  m_ok = false;
 }

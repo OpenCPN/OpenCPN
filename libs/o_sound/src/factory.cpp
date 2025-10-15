@@ -18,15 +18,52 @@
 /**
  * \file
  *
- * Implement select_item.h -- a single, selected generic item.
+ * Implement sound_factory.h -- Sound factory.
  */
 
-#include "model/select_item.h"
+#include "snd_config.h"
+#include "factory.h"
+#include "ocpn_wx_sound.h"
 
-SelectItem::SelectItem() {}
+#if defined(__ANDROID__)
+#include "android_sound.h"
+#endif
 
-SelectItem::~SelectItem() {}
+#if defined(HAVE_PORTAUDIO)
+#include "port_audio_sound.h"
+#endif
 
-int SelectItem::GetUserData() { return m_Data4; }
+#if defined(HAVE_SYSTEM_CMD_SOUND)
+#include "system_cmd_sound.h"
+#endif
 
-void SelectItem::SetUserData(int data) { m_Data4 = data; }
+#if defined(_WIN32)
+#include "msw_sound.h"
+#endif
+
+namespace o_sound {
+
+using namespace  o_sound_private;
+
+Sound *g_anchorwatch_sound = Factory();
+
+#if defined(__ANDROID__)
+Sound* Factory(const char* not_used) { return new AndroidSound(); }
+
+#elif defined(HAVE_PORTAUDIO)
+Sound* Factory(const char* not_used) { return new PortAudioSound(); }
+
+#elif defined(HAVE_SYSTEM_CMD_SOUND)
+Sound* Factory(const char* sound_cmd) {
+  return new SystemCmdSound(sound_cmd ? sound_cmd : OCPN_SOUND_CMD);
+}
+
+#elif defined(_WIN32)
+Sound* Factory(const char* not_used) { return new MswSound(); }
+
+#else
+Sound* Factory(const char* not_used) { return new OcpnWxSound(); }
+
+#endif
+
+}  // namespace o_sound
