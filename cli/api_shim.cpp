@@ -1621,6 +1621,9 @@ DECL_EXP PlugIn_Route_Ex::~PlugIn_Route_Ex(void) {}
 DECL_EXP PlugIn_Route_ExV2::PlugIn_Route_ExV2() {}
 DECL_EXP PlugIn_Route_ExV2::~PlugIn_Route_ExV2() {}
 
+DECL_EXP PlugIn_Route_ExV3::PlugIn_Route_ExV3() {}
+DECL_EXP PlugIn_Route_ExV3::~PlugIn_Route_ExV3() {}
+
 DECL_EXP wxArrayString GetRouteGUIDArray(void) { return dummy_array_string; }
 DECL_EXP wxArrayString GetTrackGUIDArray(void) { return dummy_array_string; }
 
