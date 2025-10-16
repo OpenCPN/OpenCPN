@@ -104,9 +104,11 @@ enum ZoneSelection {
   COMPLETE_SELECTION
 };
 
-/// @brief Structure used to store XyGrib configuration. It is used to
-/// recover/store model and parameter choices from/to OpenCPN configuration
-/// file.
+/**
+ * Structure used to store XyGrib configuration. It is used to
+ * recover/store model and parameter choices from/to OpenCPN configuration
+ * file.
+ */
 typedef struct {
   int atmModelIndex;
   int waveModelIndex;
@@ -124,6 +126,7 @@ typedef struct {
   bool precipitation;
   bool waveHeight;
   bool windWaves;
+  bool swellWaves;
 } XyGribConfig_t;
 
 /**
@@ -246,7 +249,7 @@ public:
   void OnMouseEvent(wxMouseEvent &event);
   GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
   bool InDataPlot(int id) {
-    return id > wxID_ANY && id < (int)GribOverlaySettings::GEO_ALTITUDE;
+    return id > wxID_ANY && id < (int)GribOverlaySettings::SETTINGS_COUNT;
   }
   void SetScaledBitmap(double factor);
   void OpenFileFromJSON(wxString json);
@@ -270,8 +273,8 @@ public:
   GribRequestSetting *pReq_Dialog;
   /** Currently active GRIB file being displayed. */
   GRIBFile *m_bGRIBActiveFile;
-  bool m_bDataPlot[GribOverlaySettings::GEO_ALTITUDE];  // only for no altitude
-                                                        // parameters
+  bool m_bDataPlot[GribOverlaySettings::SETTINGS_COUNT];  // only for no
+                                                          // altitude parameters
   bool m_CDataIsShown;
   int m_ZoneSelAllowed;
   int m_old_DialogStyle;
