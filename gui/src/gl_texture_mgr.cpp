@@ -713,7 +713,9 @@ glTextureManager::glTextureManager() {
     // obviously there's at least one CPU!
     nCPU = 1;
 
-  m_max_jobs = wxMax(nCPU, 1);
+  // m_max_jobs = wxMax(nCPU, 1);
+  m_max_jobs = wxMax(nCPU / 2, 1);
+
   m_prevMemUsed = 0;
 
   if (bthread_debug) printf(" nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
