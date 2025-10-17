@@ -7067,17 +7067,16 @@ void ChartCanvas::ProcessNewGUIScale() {
 
 void ChartCanvas::CreateMUIBar() {
   if (g_useMUI && !m_muiBar) {  // rebuild if necessary
-
-    // We need to update the m_bENCGroup flag, at least for the initial creation
-    // of a MUIBar
-    if (ChartData) m_bENCGroup = ChartData->IsENCInGroup(m_groupIndex);
-
     m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
     m_muiBar->SetColorScheme(m_cs);
     m_muiBarHOSize = m_muiBar->m_size;
   }
 
   if (m_muiBar) {
+    // We need to update the m_bENCGroup flag, not least for the initial
+    // creation of a MUIBar
+    if (ChartData) m_bENCGroup = ChartData->IsENCInGroup(m_groupIndex);
+
     SetMUIBarPosition();
     UpdateFollowButtonState();
     m_muiBar->UpdateDynamicValues();
