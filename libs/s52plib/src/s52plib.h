@@ -432,7 +432,7 @@ public:
   void SetReducedBBox(LLBBox box){ reducedBBox = box;}
 
   void RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
-                          float scale, double rot_angle, float sym_len, float sym_height);
+                          float scale, double rot_angle, float sym_len, float sym_height, float seg_len);
   int BuildLCSymbolTexture(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
                                      float scale, float sym_len, float sym_height);
 

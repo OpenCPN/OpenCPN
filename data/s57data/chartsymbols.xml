@@ -32196,7 +32196,7 @@
             <vector width="300" height="150">
                 <distance min="0" max="0" />
                 <pivot x="1000" y="1000" />
-                <origin x="1000" y="1150" />
+                <origin x="1000" y="1000" />
             </vector>
             <description>boundary of a restricted area</description>
             <HPGL>SPA;SW1;PU1000,1000;PD1300,1000;PU1150,1000;PD1150,1150;</HPGL>

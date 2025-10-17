@@ -6157,8 +6157,7 @@ int s52plib::BuildLCSymbolTexture(char *str, char *col, wxPoint &r, wxPoint &piv
 #endif
 
     wxPoint rt(0, 0);
-    // HPGL->Render(str, col, rt, pivot, origin, xscale, render_angle, true);
-    HPGL->Render(str, col, rt, origin, pivot, 1.0, 0, false);
+    HPGL->Render(str, col, rt, origin, wxPoint(0,0), 1.0, 0, false);
     mdc.SelectObject(wxNullBitmap);
 
     wxImage image = bmp.ConvertToImage();
@@ -6224,7 +6223,7 @@ int s52plib::BuildLCSymbolTexture(char *str, char *col, wxPoint &r, wxPoint &piv
 
 //      Render Line Complex Polyline
 void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
-            float scale, double rot_angle, float sym_len, float sym_height ) {
+            float scale, double rot_angle, float sym_len, float sym_height, float seg_len ) {
 
 #ifdef ocpnUSE_GL
   int symbol_texture = 0;
@@ -6245,55 +6244,40 @@ void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoin
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, symbol_texture);
 
-  //int w = rule_in->parm2;
-  //int h = rule_in->parm3;
-  int w = sym_len;
-  int h =  sym_height;
+  int w;
+  int h;
 
-  //if ((w == 0) || (h == 0))
-  {
-    // Get the texture dimensions a slower way, first time only
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
-    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
-    //rule_in->parm2 = w;
-    //rule_in->parm3 = h;
-  }
-
-  float tx1 = 0, ty1 = 0;
-  float tx2 = tx1 + w, ty2 = ty1 + h;
-
-  if (m_TextureFormat == GL_TEXTURE_2D) {
-    // Normalize the sybmol texture coordinates against the next higher POT
-    // size
-    int rb_x = w;
-    int rb_y = h;
-    tx1 /= rb_x, tx2 /= rb_x;
-    ty1 /= rb_y, ty2 /= rb_y;
-  }
+  // Get the texture dimensions
+  // TODO Could save these dimensions as a rule parm, faster.
+  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
+  glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
 
   float uv[8];
   float coords[8];
 
+  float xa = wxMin(sym_len, seg_len);
+
   // Note swizzle of points to allow TRIANGLE_STRIP drawing
   // normal uv
-  uv[0] = tx1;
-  uv[1] = ty1;
-  uv[2] = tx2;
-  uv[3] = ty1;
-  uv[6] = tx2;
-  uv[7] = ty2;
-  uv[4] = tx1;
-  uv[5] = ty2;
+  uv[0] = 0;
+  uv[1] = 0;
+  uv[2] = xa / w;
+  uv[3] = 0;
+  uv[6] = xa / w;
+  uv[7] = sym_height / h;
+  uv[4] = 0;
+  uv[5] = sym_height / h;
 
   // pixels
   coords[0] = 0;
   coords[1] = 0;
-  coords[2] = w;
+  coords[2] = xa;
   coords[3] = 0;
-  coords[6] = w;
-  coords[7] = h;
+  coords[6] = xa;
+  coords[7] = sym_height;
   coords[4] = 0;
-  coords[5] = h;
+  coords[5] = sym_height;
+
 
   if (pCtexture_2D_shader_program[0]){
     pCtexture_2D_shader_program[0]->Bind();
@@ -6319,8 +6303,8 @@ void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoin
     double xadj = (pivot.x - origin.x) * canvas_pix_per_mm / 100;
 
     mat4x4_translate_in_place(I, r.x, r.y, 0);
-//    mat4x4_translate_in_place(I, -xadj, -yadj, 0);
-//    mat4x4_translate_in_place(I, xadj, yadj, 0);
+    //mat4x4_translate_in_place(I, xadj, yadj, 0);
+    //mat4x4_translate_in_place(I, -xadj, -yadj, 0);
     mat4x4_rotate_Z(Q, I, rot_angle * PI / 180.);
     mat4x4_translate_in_place(Q, -xadj, -yadj, 0);
 
@@ -6667,98 +6651,6 @@ void s52plib::draw_lc_poly_texture(wxDC *pdc, wxColor &color, int width, wxPoint
 
   int x0, y0, x1, y1;
 
-  if (pdc) {
-    wxPen *pthispen =
-        wxThePenList->FindOrCreatePen(color, width, wxPENSTYLE_SOLID);
-    m_pdc->SetPen(*pthispen);
-
-    int start_seg = 0;
-    int end_seg = npt - 1;
-    int inc = 1;
-
-    if (cw) {
-      start_seg = npt - 1;
-      end_seg = 0;
-      inc = -1;
-    }
-
-    float dx, dy, seg_len, theta;
-
-    bool done = false;
-    ClipResult res;
-    int iseg = start_seg;
-    while (!done) {
-      // Do not bother with segments that are invisible
-
-      x0 = ptp[iseg].x;
-      y0 = ptp[iseg].y;
-      x1 = ptp[iseg + inc].x;
-      y1 = ptp[iseg + inc].y;
-
-      //  Also, segments marked (by mask) as invisible
-      if (mask && !mask[iseg]) goto next_seg_dc;
-
-      res = cohen_sutherland_line_clip_i(&x0, &y0, &x1, &y1, xmin_, xmax_,
-                                         ymin_, ymax_);
-
-      if (res == Invisible) goto next_seg_dc;
-
-      dx = ptp[iseg + inc].x - ptp[iseg].x;
-      dy = ptp[iseg + inc].y - ptp[iseg].y;
-      seg_len = sqrt(dx * dx + dy * dy);
-      theta = atan2f(dy, dx);
-
-      if (seg_len >= 1.0) {
-        if (seg_len <= sym_len * sym_factor) {
-          int xst1 = ptp[iseg].x;
-          int yst1 = ptp[iseg].y;
-          float xst2, yst2;
-          if (seg_len >= sym_len) {
-            xst2 = xst1 + (sym_len * dx / seg_len);
-            yst2 = yst1 + (sym_len * dy / seg_len);
-          } else {
-            xst2 = ptp[iseg + inc].x;
-            yst2 = ptp[iseg + inc].y;
-          }
-
-          pdc->DrawLine(xst1, yst1, (wxCoord)floor(xst2), (wxCoord)floor(yst2));
-        }
-
-        else {
-          float s = 0;
-          float xs = ptp[iseg].x;
-          float ys = ptp[iseg].y;
-
-          while (s + (sym_len * sym_factor) < seg_len) {
-            r.x = (int)xs;
-            r.y = (int)ys;
-            char *str = draw_rule->vector.LVCT;
-            char *col = draw_rule->colRef.LCRF;
-            wxPoint pivot(draw_rule->pos.line.pivot_x.LICL,
-                          draw_rule->pos.line.pivot_y.LIRW);
-
-            HPGL->SetTargetDC(pdc);
-            HPGL->SetVP(&vp_plib);
-            HPGL->Render(str, col, r, pivot, pivot, 1.0, theta * 180. / PI,
-                         false);
-
-            xs += sym_len * dx / seg_len * sym_factor;
-            ys += sym_len * dy / seg_len * sym_factor;
-            s += sym_len * sym_factor;
-          }
-
-          pdc->DrawLine((int)xs, (int)ys, ptp[iseg + inc].x, ptp[iseg + inc].y);
-        }
-      }
-    next_seg_dc:
-      iseg += inc;
-      if (iseg == end_seg) done = true;
-
-    }  // while
-  }    // if pdc
-  else  // opengl
-  {
-    //    Set up the color
 #ifdef ocpnUSE_GL
     // Adjust line width up a bit, to improve render quality for
     // GL_BLEND/GL_LINE_SMOOTH
@@ -6803,139 +6695,36 @@ void s52plib::draw_lc_poly_texture(wxDC *pdc, wxColor &color, int width, wxPoint
       seg_len = sqrt(dx * dx + dy * dy);
 
       if (seg_len >= 1.0) {
-        if (seg_len <= sym_len * sym_factor) {
-          //  Fill shorter segments with solid line of the correct color
-          int xst1 = ptp[iseg].x;
-          int yst1 = ptp[iseg].y;
-          float xst2, yst2;
-
-          if (seg_len >= sym_len) {
-            xst2 = xst1 + (sym_len * dx / seg_len);
-            yst2 = yst1 + (sym_len * dy / seg_len);
-          } else {
-            xst2 = ptp[iseg + inc].x;
-            yst2 = ptp[iseg + inc].y;
-          }
-
-          //      Enable anti-aliased lines, at best quality
-#ifndef __OCPN__ANDROID__
-          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          glEnable(GL_BLEND);
-
-          if (m_GLLineSmoothing) {
-            glEnable(GL_LINE_SMOOTH);
-            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-          }
-#endif
-
-#ifdef ocpnUSE_GL
-          CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
-          shader->Bind();
-
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-          float colorv[4];
-          colorv[0] = color.Red() / float(256);
-          colorv[1] = color.Green() / float(256);
-          colorv[2] = color.Blue() / float(256);
-          colorv[3] = 1.0;  // transparency;
-
-          shader->SetUniform4fv("color", colorv);
-
-          float pts[4];
-          pts[0] = xst1;
-          pts[1] = yst1;
-          pts[2] = xst2;
-          pts[3] = yst2;
-
-          GLint pos = shader->getAttributeLocation("position");
-          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
-                                pts);
-          glEnableVertexAttribArray(pos);
-
-          glDrawArrays(GL_LINES, 0, 2);
-
-          shader->UnBind();
-
-          glDisable(GL_LINE_SMOOTH);
-          glDisable(GL_BLEND);
-#endif
-        } else {
-          // Render a symbol
+          // Render symbols to fill seg_len
           float s = 0;
           float xs = ptp[iseg].x;
           float ys = ptp[iseg].y;
+          char *str = draw_rule->vector.LVCT;
+          char *col = draw_rule->colRef.LCRF;
+          wxPoint pivot(draw_rule->pos.line.pivot_x.LICL,
+                        draw_rule->pos.line.pivot_y.LIRW);
+          wxPoint origin(draw_rule->pos.line.bnbox_x.LBXC,
+                         draw_rule->pos.line.bnbox_y.LBXR);
 
-          while (s + (sym_len * sym_factor) < seg_len) {
+          while (1) {
             r.x = (int)xs;
             r.y = (int)ys;
-            char *str = draw_rule->vector.LVCT;
-            char *col = draw_rule->colRef.LCRF;
-            wxPoint pivot(draw_rule->pos.line.pivot_x.LICL,
-                          draw_rule->pos.line.pivot_y.LIRW);
-            wxPoint origin(draw_rule->pos.line.bnbox_x.LBXC,
-                          draw_rule->pos.line.bnbox_y.LBXR);
 
             HPGL->SetVP(&vp_plib);
             theta = atan2f(dy, dx);
-            RenderTex(str, col, r, pivot, origin, 1.0, theta * 180. / PI, sym_len, sym_height);
+            RenderTex(str, col, r, pivot, origin, 1.0, theta * 180. / PI, sym_len, sym_height, seg_len-s);
 
             xs += sym_len * dx / seg_len * sym_factor;
             ys += sym_len * dy / seg_len * sym_factor;
             s += sym_len * sym_factor;
+            if (s > seg_len)
+              break;
           }
-#ifndef __OCPN__ANDROID__
-          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          glEnable(GL_BLEND);
-
-          if (m_GLLineSmoothing) {
-            glEnable(GL_LINE_SMOOTH);
-            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-          }
-#endif
-
-#ifdef ocpnUSE_GL
-          CGLShaderProgram *shader = pCcolor_tri_shader_program[0/*GetCanvasIndex()*/];
-          shader->Bind();
-
-          glBindBuffer(GL_ARRAY_BUFFER, 0);
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-          float colorv[4];
-          colorv[0] = color.Red() / float(256);
-          colorv[1] = color.Green() / float(256);
-          colorv[2] = color.Blue() / float(256);
-          colorv[3] = 1.0;  // transparency;
-
-          shader->SetUniform4fv("color", colorv);
-
-          float pts[4];
-          pts[0] = xs;
-          pts[1] = ys;
-          pts[2] = ptp[iseg + inc].x;
-          pts[3] = ptp[iseg + inc].y;
-
-          GLint pos = shader->getAttributeLocation("position");
-          glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
-                                pts);
-          glEnableVertexAttribArray(pos);
-
-          glDrawArrays(GL_LINES, 0, 2);
-          glDisableVertexAttribArray(pos);
-          shader->UnBind();
-
-          glDisable(GL_LINE_SMOOTH);
-          glDisable(GL_BLEND);
-#endif
-        }
       }
     next_seg:
       iseg += inc;
       if (iseg == end_seg) done = true;
     }  // while
-
-  }  // opengl
 }
 
 // Multipoint Sounding
