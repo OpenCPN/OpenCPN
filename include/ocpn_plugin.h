@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
@@ -43,23 +41,30 @@
 #define DECL_IMP
 #endif
 
-#include <wx/xml/xml.h>
-#include <wx/dcmemory.h>
-#include <wx/dialog.h>
-#include <wx/event.h>
-#include <wx/menuitem.h>
-#include <wx/gdicmn.h>
-
-#ifdef ocpnUSE_SVG
-#include <wx/bitmap.h>
-#endif  // ocpnUSE_SVG
-
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 #include <unordered_map>
 
-class wxGLContext;
+#include <wx/arrstr.h>
+#include <wx/bitmap.h>
+#include <wx/colour.h>
+#include <wx/cursor.h>
+#include <wx/dcmemory.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/fileconf.h>
+#include <wx/font.h>
+#include <wx/framemanager.h>
+#include <wx/gdicmn.h>
+#include <wx/geometry.h>
+#include <wx/glcanvas.h>
+#include <wx/menuitem.h>
+#include <wx/notebook.h>
+#include <wx/region.h>
+#include <wx/scrolwin.h>
+#include <wx/xml/xml.h>
 
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
@@ -69,12 +74,6 @@ class wxGLContext;
 #define API_VERSION_MINOR 21
 
 //    Fwd Definitions
-class wxFileConfig;
-class wxNotebook;
-class wxFont;
-class wxAuiManager;
-class wxScrolledWindow;
-class wxGLCanvas;
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -525,7 +524,7 @@ public:
    *
    * @see ChartDatabase::SearchDirAndAddCharts() for usage details
    */
-  virtual wxString GetFileSearchMask(void);
+  virtual wxString GetFileSearchMask();
 
   /**
    * Initializes a chart instance from a file.
@@ -1110,7 +1109,7 @@ public:
    * @note Used for chart update management and information display
    * @note Should reflect the date of the latest corrections included
    */
-  virtual wxDateTime GetEditionDate(void) { return m_EdDate; }
+  virtual wxDateTime GetEditionDate() { return m_EdDate; }
 
   //    Methods pertaining to CHART_FAMILY_RASTER type PlugIn charts only
 
@@ -1301,7 +1300,7 @@ public:
    *   - WANTS_TOOLBAR_CALLBACK
    *   - etc. (see enum definitions)
    */
-  virtual int Init(void);
+  virtual int Init();
 
   /**
    * Clean up plugin resources.
@@ -1312,7 +1311,7 @@ public:
    *
    * @return True if cleanup successful, False if error
    */
-  virtual bool DeInit(void);
+  virtual bool DeInit();
 
   /**
    * Returns the major version number of the plugin API that this plugin
@@ -1441,7 +1440,7 @@ public:
    * @note Called before plugin is activated in GUI
    * @note Good place to load saved settings from config file
    */
-  virtual void SetDefaults(void);
+  virtual void SetDefaults();
 
   /**
    * Returns the number of toolbar tools this plugin provides.
@@ -1456,7 +1455,7 @@ public:
    * @note Each tool needs unique ID for callbacks
    * @note Called during plugin initialization
    */
-  virtual int GetToolbarToolCount(void);
+  virtual int GetToolbarToolCount();
 
   /**
    * Returns the number of preference pages this plugin provides.
@@ -1470,7 +1469,7 @@ public:
    * @note Return 0 if no preference pages
    * @note Called during preferences dialog creation
    */
-  virtual int GetToolboxPanelCount(void);
+  virtual int GetToolboxPanelCount();
 
   /**
    * Creates a plugin preferences page.
@@ -1694,7 +1693,7 @@ public:
    * their AUI managed windows and panes. Must be implemented if plugin declares
    * USES_AUI_MANAGER capability.
    */
-  virtual void UpdateAuiStatus(void);
+  virtual void UpdateAuiStatus();
 
   /**
    * Returns array of dynamically loaded chart class names.
@@ -1707,7 +1706,7 @@ public:
    * @note For plugins that implement INSTALLS_PLUGIN_CHART capability
    * @note Custom chart types must also implement PlugInChartBase interface
    */
-  virtual wxArrayString GetDynamicChartClassNameArray(void);
+  virtual wxArrayString GetDynamicChartClassNameArray();
 };
 
 // the types of the class factories used to create PlugIn instances
@@ -1882,7 +1881,7 @@ public:
    * Plugin can add its own pages to the Options dialog.
    *
    */
-  virtual void OnSetupOptions(void);
+  virtual void OnSetupOptions();
 };
 
 class DECL_EXP opencpn_plugin_110 : public opencpn_plugin_19 {
@@ -1890,7 +1889,7 @@ public:
   opencpn_plugin_110(void *pmgr);
   virtual ~opencpn_plugin_110();
 
-  virtual void LateInit(void);  // If WANTS_LATE_INIT is returned by Init()
+  virtual void LateInit();  // If WANTS_LATE_INIT is returned by Init()
 };
 
 class DECL_EXP opencpn_plugin_111 : public opencpn_plugin_110 {
@@ -2332,7 +2331,7 @@ public:
    * @param GUID Optional globally unique identifier (empty for auto-generated)
    */
   PlugIn_Waypoint(double lat, double lon, const wxString &icon_ident,
-                  const wxString &wp_name, const wxString &GUID = _T(""));
+                  const wxString &wp_name, const wxString &GUID = "");
   ~PlugIn_Waypoint();
 
   double m_lat;                //!< Latitude in decimal degrees
@@ -2357,8 +2356,8 @@ WX_DECLARE_LIST(PlugIn_Waypoint, Plugin_WaypointList);
  */
 class DECL_EXP PlugIn_Route {
 public:
-  PlugIn_Route(void);
-  ~PlugIn_Route(void);
+  PlugIn_Route();
+  ~PlugIn_Route();
 
   wxString m_NameString;   //!< Route name
   wxString m_StartString;  //!< Name/description of starting point
@@ -2387,8 +2386,8 @@ public:
  */
 class DECL_EXP PlugIn_Track {
 public:
-  PlugIn_Track(void);
-  ~PlugIn_Track(void);
+  PlugIn_Track();
+  ~PlugIn_Track();
 
   wxString m_NameString;   //!< Display name of the track
   wxString m_StartString;  //!< Description of track start point/time
@@ -2563,7 +2562,7 @@ extern "C" DECL_EXP void SetCanvasContextMenuItemGrey(int item, bool grey);
  * @return Pointer to global config object
  * @note Do not delete the returned pointer
  */
-extern "C" DECL_EXP wxFileConfig *GetOCPNConfigObject(void);
+extern "C" DECL_EXP wxFileConfig *GetOCPNConfigObject();
 
 /**
  * Requests window refresh.
@@ -2689,7 +2688,7 @@ extern "C" DECL_EXP wxString *GetpSharedDataLocation();
  * @return Pointer to array of PlugIn_AIS_Target pointers
  * @note Array contents owned by core - do not delete targets
  */
-extern "C" DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
+extern "C" DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray();
 
 /**
  * Gets main frame AUI manager.
@@ -2700,7 +2699,7 @@ extern "C" DECL_EXP ArrayOfPlugIn_AIS_Targets *GetAISTargetArray(void);
  * @return Pointer to main frame wxAuiManager
  * @note Only available if plugin declares USES_AUI_MANAGER capability
  */
-extern "C" DECL_EXP wxAuiManager *GetFrameAuiManager(void);
+extern "C" DECL_EXP wxAuiManager *GetFrameAuiManager();
 
 /**
  * Adds a locale catalog for translations.
@@ -2949,7 +2948,7 @@ extern "C" DECL_EXP bool DecodeSingleVDOMessage(const wxString &str,
  * @return Height of chart bar widget
  */
 
-extern "C" DECL_EXP int GetChartbarHeight(void);
+extern "C" DECL_EXP int GetChartbarHeight();
 /**
  * Gets GPX representation of active route waypoint.
  *
@@ -3602,7 +3601,7 @@ wxColour DECL_EXP GetBaseGlobalColor(wxString colorName);
  * @return ID of button pressed
  */
 int DECL_EXP OCPNMessageBox_PlugIn(wxWindow *parent, const wxString &message,
-                                   const wxString &caption = _T("Message"),
+                                   const wxString &caption = "Message",
                                    int style = wxOK, int x = -1, int y = -1);
 
 /**
@@ -3640,7 +3639,7 @@ extern "C" DECL_EXP wxString *GetpPrivateApplicationDataLocation();
  *
  * @return wxString containing executable path
  */
-extern DECL_EXP wxString GetOCPN_ExePath(void);
+extern DECL_EXP wxString GetOCPN_ExePath();
 
 /**
  * Gets plugins directory location.
@@ -4308,7 +4307,7 @@ void DECL_EXP PI_PLIBSetLineFeaturePriority(PI_S57Obj *pObj, int prio);
  * Prepares PLIB for new rendering pass.
  * Clears internal caches and states.
  */
-void DECL_EXP PI_PLIBPrepareForNewRender(void);
+void DECL_EXP PI_PLIBPrepareForNewRender();
 
 /**
  * Frees S52 PLIB context.
@@ -4772,7 +4771,7 @@ extern DECL_EXP void ForceChartDBRebuild();
  *
  * @return Path to writeable documents directory
  */
-extern DECL_EXP wxString GetWritableDocumentsDir(void);
+extern DECL_EXP wxString GetWritableDocumentsDir();
 
 /**
  * Gets pointer to active options dialog.
@@ -4791,14 +4790,14 @@ extern DECL_EXP wxDialog *GetActiveOptionsDialog();
  * @see GetSingleWaypoint()
  * @see GetSingleWaypointEx()
  */
-extern DECL_EXP wxArrayString GetWaypointGUIDArray(void);
+extern DECL_EXP wxArrayString GetWaypointGUIDArray();
 
 /**
  * Gets array of available waypoint icons.
  *
  * @return Array of icon names that can be used for waypoints
  */
-extern DECL_EXP wxArrayString GetIconNameArray(void);
+extern DECL_EXP wxArrayString GetIconNameArray();
 
 /**
  * Registers a new font configuration element.
@@ -4856,7 +4855,7 @@ extern DECL_EXP wxBitmap GetBitmapFromSVGFile(wxString filename,
  * @note Affects toolbar, dialog and control sizes
  * @note May affect gesture recognition
  */
-extern DECL_EXP bool IsTouchInterface_PlugIn(void);
+extern DECL_EXP bool IsTouchInterface_PlugIn();
 
 /*  Platform optimized File/Dir selector dialogs */
 /**
@@ -5263,7 +5262,7 @@ extern DECL_EXP wxString GetPluginDataDir(const char *plugin_name);
  *
  * @return True if OpenCPN is shutting down, false otherwise
  */
-extern DECL_EXP bool ShuttingDown(void);
+extern DECL_EXP bool ShuttingDown();
 
 //  Support for MUI MultiCanvas model
 
@@ -5523,7 +5522,7 @@ enum SDDMFORMAT {
  *
  * @return Format enum value (see SDDMFORMAT)
  */
-extern DECL_EXP int GetLatLonFormat(void);
+extern DECL_EXP int GetLatLonFormat();
 
 // API 1.17
 
@@ -5755,8 +5754,8 @@ WX_DECLARE_LIST(PlugIn_Waypoint_ExV2, Plugin_WaypointExV2List);
  */
 class DECL_EXP PlugIn_Route_Ex {
 public:
-  PlugIn_Route_Ex(void);
-  ~PlugIn_Route_Ex(void);
+  PlugIn_Route_Ex();
+  ~PlugIn_Route_Ex();
 
   wxString m_NameString;   //!< User-visible name of the route
   wxString m_StartString;  //!< Description of route start point
@@ -5816,7 +5815,7 @@ public:
  *
  * @return Array of route GUID strings
  */
-extern DECL_EXP wxArrayString GetRouteGUIDArray(void);
+extern DECL_EXP wxArrayString GetRouteGUIDArray();
 
 /**
  * Gets array of track GUIDs.
@@ -5825,7 +5824,7 @@ extern DECL_EXP wxArrayString GetRouteGUIDArray(void);
  *
  * @return Array of track GUID strings
  */
-extern DECL_EXP wxArrayString GetTrackGUIDArray(void);
+extern DECL_EXP wxArrayString GetTrackGUIDArray();
 
 /**
  * Gets extended waypoint data by GUID.
@@ -5969,14 +5968,14 @@ extern DECL_EXP std::unique_ptr<PlugIn_Route_ExV2> GetRouteExV2_Plugin(
  *
  * @return GUID string, empty if no active waypoint
  */
-extern DECL_EXP wxString GetActiveWaypointGUID(void);
+extern DECL_EXP wxString GetActiveWaypointGUID();
 
 /**
  * Gets GUID of currently active route.
  *
  * @return GUID string, empty if no active route
  */
-extern DECL_EXP wxString GetActiveRouteGUID(void);
+extern DECL_EXP wxString GetActiveRouteGUID();
 
 // API 1.18
 
