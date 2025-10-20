@@ -48,6 +48,7 @@
 #include <unordered_map>
 
 #include <wx/arrstr.h>
+#include <wx/aui/framemanager.h>
 #include <wx/bitmap.h>
 #include <wx/colour.h>
 #include <wx/cursor.h>
@@ -56,7 +57,6 @@
 #include <wx/event.h>
 #include <wx/fileconf.h>
 #include <wx/font.h>
-#include <wx/framemanager.h>
 #include <wx/gdicmn.h>
 #include <wx/geometry.h>
 #include <wx/glcanvas.h>
