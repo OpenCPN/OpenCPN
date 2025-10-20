@@ -724,6 +724,7 @@ wxString formatTimeDelta(wxLongLong secs) {
 // 122°18.621' W
 // 122w 18 37
 // -122.31035
+// -122 18.37
 /****************************************************************************/
 double fromDMM(wxString sdms) {
   wchar_t buf[64];
@@ -765,7 +766,7 @@ double fromDMM(wxString sdms) {
 
   for (i = 0; i < len; i++) {
     wchar_t c = buf[i];
-    if ((c >= '0' && c <= '9') || c == '-' || c == '.' || c == '+') {
+    if ((c >= '0' && c <= '9') || c == '.' || c == '+') {
       narrowbuf[i] = c;
       continue; /* Digit characters are cool as is */
     }
@@ -773,7 +774,7 @@ double fromDMM(wxString sdms) {
       narrowbuf[i] = '.'; /* convert to decimal dot */
       continue;
     }
-    if ((c | 32) == 'w' || (c | 32) == 's')
+    if ((c | 32) == 'w' || (c | 32) == 's' || c == '-')
       sign = -1;      /* These mean "negate" (note case insensitivity) */
     narrowbuf[i] = 0; /* Replace everything else with nuls */
   }
