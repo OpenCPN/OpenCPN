@@ -5449,6 +5449,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
   //  Handle the quilted case
   if (VPoint.b_quilt) {
+    VPoint.SetBoxes();
+
     if (last_vp.view_scale_ppm != scale_ppm)
       m_pQuilt->InvalidateAllQuiltPatchs();
 
@@ -5592,8 +5594,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
         VPoint.SetProjectionType(proj);
       }
 
-      VPoint.SetBoxes();
-
       //    If this quilt will be a perceptible delta from the existing quilt,
       //    then refresh the entire screen
       if (m_pQuilt->IsQuiltDelta(VPoint)) {
@@ -5663,8 +5663,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
   UpdateCanvasControlBar();  // Refresh the Piano
 
   VPoint.chart_scale = 1.0;  // fallback default value
-
-  /*if (!VPoint.GetBBox().GetValid())*/ VPoint.SetBoxes();
 
   if (VPoint.GetBBox().GetValid()) {
     //      Update the viewpoint reference scale
@@ -11706,7 +11704,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   }
 
   //  If necessary, reconfigure the S52 PLIB
-  UpdateCanvasS52PLIBConfig();
+  /// TODO UpdateCanvasS52PLIBConfig();
 
 #ifdef ocpnUSE_GL
   if (!g_bdisable_opengl && m_glcc) m_glcc->Show(g_bopengl);
