@@ -609,35 +609,54 @@ if not exist "%wxDIR%\lib\vc_dll" (
   @echo Checking wxWidgets libraries...this may take a few minutes...
   set wxVerb=quiet
 )
-msbuild "%wxDIR%\build\msw\wx_vc%VCver%.sln" ^
-  -noLogo -verbosity:%wxVerb% -maxCpuCount ^
-  -property:UseMultiToolTask=true ^
-  -property:EnableClServerMode=true ^
-  -property:BuildPassReferences=true ^
-  -property:"Configuration=DLL Debug";Platform=Win32 ^
-  -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
-  -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxDIR%\lib\vc_dll\MSBuild_DEBUG_WIN32.log"
-if errorlevel 1 (
-  echo wxWidgets Debug build [101;93mNOT OK[0m
-  goto :buildErr
+set wxDebug=0
+set wxRelease=0
+if exist "%OCPN_DIR%"\build\.Debug\ (
+  set wxDebug=1
 )
-echo wxWidgets Debug build OK
-msbuild "%wxDIR%\build\msw\wx_vc%VCver%.sln" ^
-  -noLogo -verbosity:%wxVerb% -maxCpuCount ^
-  -property:DebugSymbols=true^
-  -property:DebugType=pdbonly^
-  -property:UseMultiToolTask=true^
-  -property:EnableClServerMode=true ^
-  -property:BuildPassReferences=true ^
-  -property:"Configuration=DLL Release";Platform=Win32 ^
-  -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
-  -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxDIR%\lib\vc_dll\MSBuild_RELEASE_WIN32.log"
-if errorlevel 1 (
-  echo wxWidgets Release build [101;93mNOT OK[0m
-  goto :buildErr
+if exist "%OCPN_DIR%"\build\.Release\ (
+  set wxRelease=1
 )
-echo wxWidgets Release build OK
-
+if exist "%OCPN_DIR%"\build\.RelWithDebInfo\ (
+  set wxRelease=1
+)
+if exist "%OCPN_DIR%"\build\.MinSizeRel\ (
+  set wxRelease=1
+)
+@echo wxDebug=%wxDebug%
+if [%wxDebug%]==[1] (
+  msbuild "%wxDIR%\build\msw\wx_vc%VCver%.sln" ^
+    -noLogo -verbosity:%wxVerb% -maxCpuCount ^
+    -property:UseMultiToolTask=true ^
+    -property:EnableClServerMode=true ^
+    -property:BuildPassReferences=true ^
+    -property:"Configuration=DLL Debug";Platform=Win32 ^
+    -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
+    -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxDIR%\lib\vc_dll\MSBuild_DEBUG_WIN32.log"
+  if errorlevel 1 (
+    echo wxWidgets Debug build [101;93mNOT OK[0m
+    goto :buildErr
+  )
+  echo wxWidgets Debug build OK
+)
+@echo wxRelease=%wxRelease%
+if [%wxRelease%]==[1] (
+  msbuild "%wxDIR%\build\msw\wx_vc%VCver%.sln" ^
+    -noLogo -verbosity:%wxVerb% -maxCpuCount ^
+    -property:DebugSymbols=true^
+    -property:DebugType=pdbonly^
+    -property:UseMultiToolTask=true^
+    -property:EnableClServerMode=true ^
+    -property:BuildPassReferences=true ^
+    -property:"Configuration=DLL Release";Platform=Win32 ^
+    -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
+    -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxDIR%\lib\vc_dll\MSBuild_RELEASE_WIN32.log"
+  if errorlevel 1 (
+    echo wxWidgets Release build [101;93mNOT OK[0m
+    goto :buildErr
+  )
+  echo wxWidgets Release build OK
+)
 for /f "tokens=*" %%p in ('dir "%wxDIR%\lib\vc_dll\wxmsw32*.dll" /b') do (
   ::@echo  copy_if_different "%wxDIR%\lib\vc_dll\%%p" "%CACHE_DIR%\buildwin\wxWidgets\%%~np%%~xp"
   cmake -E copy_if_different "%wxDIR%\lib\vc_dll\%%p" "%CACHE_DIR%\buildwin\wxWidgets\%%~np%%~xp"
