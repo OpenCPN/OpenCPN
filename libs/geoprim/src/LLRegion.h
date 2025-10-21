@@ -27,7 +27,7 @@
 #ifndef _LLREGION_H_
 #define _LLREGION_H_
 
-#include <list>
+#include <vector>
 
 #include "bbox.h"
 
@@ -39,7 +39,7 @@ struct contour_pt {
 // LLRegion
 // ----------------------------------------------------------------------------
 
-typedef std::list<contour_pt> poly_contour;
+typedef std::vector<contour_pt> poly_contour;
 class LLBBox;
 
 struct work;
@@ -50,7 +50,13 @@ public:
   LLRegion(const LLBBox& llbbox);
   LLRegion(size_t n, const float* points);
   LLRegion(size_t n, const double* points);
+  // Explicitly defaulted special members (optional but clear)
+  LLRegion(const LLRegion&) = default;
+  LLRegion(LLRegion&&) noexcept = default;
 
+  // Unqualified member declaration
+  LLRegion& operator=(const LLRegion& rhs);
+  LLRegion& operator=(LLRegion&&) noexcept = default;
   static bool PointsCCW(size_t n, const double* points);
 
   void Print() const;
@@ -70,7 +76,7 @@ public:
 
   void Reduce(double factor);
 
-  std::list<poly_contour> contours;
+  std::vector<poly_contour> contours;
 
 private:
   bool NoIntersection(const LLBBox& box) const;
