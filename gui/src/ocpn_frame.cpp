@@ -5469,7 +5469,7 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
     for (ChartCanvas *cc : g_canvasArray) {
       if (cc) {
         if (g_bopengl) {
-          if (b_rotate || cc->m_bFollow) {
+          if (cc->GetUpMode() != NORTH_UP_MODE || cc->m_bFollow) {
             cc->DoCanvasUpdate();
           } else
             cc->Refresh();
