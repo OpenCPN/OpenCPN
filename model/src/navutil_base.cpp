@@ -79,7 +79,7 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
       mpy = 600.0;
       if (hi_precision) mpy = mpy * 1000;
 
-      m = (long)wxRound((a - (double)d) * mpy);
+      m = (long)wxRound((a - (double)abs(d)) * mpy);
 
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
@@ -111,10 +111,10 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
         s.Printf("%03.4f", ang);  // cca 11m
       break;
     case 2:
-      m = (long)((a - (double)d) * 60);
+      m = (long)((a - (double)abs(d)) * 60);
       mpy = 10.0;
       if (hi_precision) mpy = mpy * 100;
-      long sec = (long)((a - (double)d - (((double)m) / 60)) * 3600 * mpy);
+      long sec = (long)((a - (double)abs(d) - (((double)m) / 60)) * 3600 * mpy);
 
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
