@@ -7198,110 +7198,132 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
 
-//  Plugin API121 Utility functions
-
-extern DECL_EXP wxString DropMarkPI(double lat, double lon);
-extern DECL_EXP wxString RouteCreatePI(int canvas_index, bool start);
-extern DECL_EXP wxString NavToHerePI(double lat, double lon);
-extern DECL_EXP bool ActivateRoutePI(wxString route_guid, bool activate);
-
-extern DECL_EXP void EnableDefaultConsole(bool enable);
-extern DECL_EXP void EnableDefaultContextMenus(bool enable);
-
-extern DECL_EXP void SetMinZoomScale(double min_scale);
-extern DECL_EXP void SetMaxZoomScale(double max_scale);
-
-extern DECL_EXP wxBitmap GetObjectIcon_PlugIn(const wxString &name);
-
-extern DECL_EXP void SetDepthUnitVisible(bool bviz);
-extern DECL_EXP void SetOverzoomFlagVisible(bool bviz);
-
-extern DECL_EXP bool IsRouteActive(wxString route_guid);
-extern DECL_EXP void SetBoatPosition(double zlat, double zlon);
-
-extern DECL_EXP void RouteInsertWaypoint(int canvas_index, wxString route_guid,
-                                         double zlat, double zlon);
-extern DECL_EXP void RouteAppendWaypoint(int canvas_index, wxString route_guid);
-extern DECL_EXP void FinishRoute(int canvas_index);
-extern DECL_EXP bool IsRouteBeingCreated(int canvas_index);
-extern DECL_EXP bool AreRouteWaypointNamesVisible(wxString route_guid);
-extern DECL_EXP void ShowRouteWaypointNames(wxString route_guid, bool show);
-extern DECL_EXP void NavigateToWaypoint(wxString waypoint_guid);
-extern DECL_EXP bool DoMeasurePI(int canvas_index, bool start);
-extern DECL_EXP bool IsMeasureActive(int canvas_index);
-extern DECL_EXP void CancelMeasure(int canvas_index);
-
-// AIS related
-extern DECL_EXP bool IsAISTrackVisible(
-    wxString ais_mmsi);  // for Show/Hide Target Track
-extern DECL_EXP void AISToggleShowTrack(
-    wxString ais_mmsi);  // for Show/Hide Target Track
-extern DECL_EXP bool IsAIS_CPAVisible(
-    wxString ais_mmsi);  // for Show/Hide Target CPA
-extern DECL_EXP void AISToggleShowCPA(
-    wxString ais_mmsi);  // for Show/Hide Target CPA
-extern DECL_EXP void ShowAISTargetQueryDialog(
-    int canvas_index,
-    wxString ais_mmsi);                                    // for Target Query
-extern DECL_EXP void ShowAISTargetList(int canvas_index);  // for Target List
-
-//  Plugin Context Menu support
-typedef enum _PI_ContextObjectType {
-  OBJECT_CHART = 0,
-  OBJECT_ROUTEPOINT,
-  OBJECT_ROUTESEGMENT,
-  OBJECT_AISTARGET,
-  OBJECT_UNKNOWN
-} PI_ContextObjectType;
-
-typedef struct _PI_PointContext {
-  _PI_ContextObjectType object_type;
-  std::string object_ident;
-} PI_PointContext;
-
-extern DECL_EXP std::shared_ptr<PI_PointContext> GetContextAtPoint(
-    int x, int y, int canvas_index);
-
-// Extended Chart table management support
-extern DECL_EXP void AddNoShowDirectory(std::string chart_dir);
-extern DECL_EXP void RemoveNoShowDirectory(std::string chart_dir);
-extern DECL_EXP void ClearNoShowVector();
-extern DECL_EXP const std::vector<std::string> &GetNoShowVector();
-
-// Enhanced AIS Target List support
-// extern DECL_EXP wxString GetAISTargetColumnData(wxString ais_mmsi, int
-// column); // same as OCPNListCtrl::GetTargetColumnData
-extern DECL_EXP void CenterToAisTarget(wxString ais_mmsi);
-extern DECL_EXP void AisTargetCreateWpt(wxString ais_mmsi);
-extern DECL_EXP void AisShowAllTracks(bool show);
-extern DECL_EXP void AisToggleTrack(wxString ais_mmsi);
-
-//  Context menu enable/disable, by object type
-#define CONTEXT_MENU_DISABLE_WAYPOINT 1
-#define CONTEXT_MENU_DISABLE_ROUTE 2
-#define CONTEXT_MENU_DISABLE_TRACK 4
-#define CONTEXT_MENU_DISABLE_AISTARGET 8
-
-extern DECL_EXP int GetContextMenuMask();
-extern DECL_EXP void SetContextMenuMask(int mask);
-
-// Extended plugin route, V3
-class DECL_EXP PlugIn_Route_ExV3 : public PlugIn_Route_ExV2 {
+/** Empty, virtual base class for HostApi versions. */
+class HostApi {
 public:
-  PlugIn_Route_ExV3();
-  virtual ~PlugIn_Route_ExV3();
-
-  double m_PlannedSpeed;
-  wxString m_Colour;
-  wxPenStyle m_style;
-  wxDateTime m_PlannedDeparture;
-  wxString m_TimeDisplayFormat;
+  virtual ~HostApi() = default;
 };
 
-extern DECL_EXP bool AddPlugInRouteExV3(PlugIn_Route_ExV3 *proute,
-                                        bool b_permanent = true);
-extern DECL_EXP bool UpdatePlugInRouteExV3(PlugIn_Route_ExV3 *proute);
-extern DECL_EXP std::unique_ptr<PlugIn_Route_ExV3> GetRouteExV3_Plugin(
-    const wxString &GUID);
+/**
+ * HostApi factory,
+ * @return Last known HostApi instance.
+ */
+std::unique_ptr<HostApi> GetHostApi();
+
+class HostApi121 : public HostApi {
+public:
+  HostApi121()
+      : HostApi(),
+        kContextMenuDisableWaypoint(1),
+        kContextMenuDisableRoute(2),
+        kContextMenuDisableTrack(4),
+        kContextMenuDisableAistarget(8) {}
+  ~HostApi121() override = default;
+
+  const int kContextMenuDisableWaypoint;
+  const int kContextMenuDisableRoute;
+  const int kContextMenuDisableTrack;
+  const int kContextMenuDisableAistarget;
+
+  enum class PiContextObjectType {
+    kObjectChart = 0,
+    kObjectRoutepoint,
+    kObjectRoutesegment,
+    kObjectAisTarget,
+    kObjectUnknown
+  };
+
+  struct PiPointContext {
+    PiContextObjectType object_type;
+    std::string object_ident;
+  };
+
+  // Extended plugin route, V3
+  class DECL_EXP PlugIn_Route_Ex : public PlugIn_Route_ExV2 {
+  public:
+    PlugIn_Route_Ex();
+    virtual ~PlugIn_Route_Ex();
+
+    double m_PlannedSpeed;
+    wxString m_Colour;
+    wxPenStyle m_style;
+    wxDateTime m_PlannedDeparture;
+    wxString m_TimeDisplayFormat;
+  };
+
+  virtual wxString DropMarkPI(double lat, double lon);
+  virtual wxString RouteCreatePI(int canvas_index, bool start);
+  virtual wxString NavToHerePI(double lat, double lon);
+  virtual bool ActivateRoutePI(wxString route_guid, bool activate);
+
+  virtual void EnableDefaultConsole(bool enable);
+  virtual void EnableDefaultContextMenus(bool enable);
+
+  virtual void SetMinZoomScale(double min_scale);
+  virtual void SetMaxZoomScale(double max_scale);
+
+  virtual wxBitmap GetObjectIcon_PlugIn(const wxString &name);
+
+  virtual void SetDepthUnitVisible(bool bviz);
+  virtual void SetOverzoomFlagVisible(bool bviz);
+
+  virtual bool IsRouteActive(wxString route_guid);
+  virtual void SetBoatPosition(double zlat, double zlon);
+
+  virtual void RouteInsertWaypoint(int canvas_index, wxString route_guid,
+                                   double zlat, double zlon);
+  virtual void RouteAppendWaypoint(int canvas_index, wxString route_guid);
+  virtual void FinishRoute(int canvas_index);
+  virtual bool IsRouteBeingCreated(int canvas_index);
+  virtual bool AreRouteWaypointNamesVisible(wxString route_guid);
+  virtual void ShowRouteWaypointNames(wxString route_guid, bool show);
+  virtual void NavigateToWaypoint(wxString waypoint_guid);
+  virtual bool DoMeasurePI(int canvas_index, bool start);
+  virtual bool IsMeasureActive(int canvas_index);
+  virtual void CancelMeasure(int canvas_index);
+
+  // AIS related
+  // for Show/Hide Target Track
+  virtual bool IsAISTrackVisible(const wxString &ais_mmsi) const;
+  // for Show/Hide Target Track
+  virtual void AISToggleShowTrack(const wxString &ais_mmsi);
+  // for Show/Hide Target CPA
+  virtual bool IsAIS_CPAVisible(const wxString &ais_mmsi) const;
+  // for Show/Hide Target CPA
+  virtual void AISToggleShowCPA(const wxString &ais_mmsi);
+  // for Target Query
+  virtual void ShowAISTargetQueryDialog(int canvas_index,
+                                        const wxString &ais_mmsi);
+  // for Target List
+  virtual void ShowAISTargetList(int canvas_index);
+  virtual std::shared_ptr<PiPointContext> GetContextAtPoint(int x, int y,
+                                                            int canvas_index);
+
+  // Extended Chart table management support
+  virtual void AddNoShowDirectory(std::string chart_dir);
+  virtual void RemoveNoShowDirectory(std::string chart_dir);
+  virtual void ClearNoShowVector();
+  virtual const std::vector<std::string> &GetNoShowVector();
+
+  // Enhanced AIS Target List support
+  virtual void CenterToAisTarget(wxString ais_mmsi);
+  virtual void AisTargetCreateWpt(wxString ais_mmsi);
+  virtual void AisShowAllTracks(bool show);
+  virtual void AisToggleTrack(wxString ais_mmsi);
+
+  virtual int GetContextMenuMask();
+  virtual void SetContextMenuMask(int mask);
+
+  // Extended plugin route, V3
+
+  /** Add route to database, updated version of AddPlugInRouteExV2. */
+  virtual bool AddRoute(PlugIn_Route_Ex *proute, bool b_permanent = true);
+
+  /** Update database route, updated version of UpdatePlugInRouteExV2 */
+  virtual bool UpdateRoute(PlugIn_Route_Ex *proute);
+
+  /** Retrieve route from database */
+  virtual std::unique_ptr<::PlugIn_Route_Ex> GetRoute(const wxString &GUID);
+};
 
 #endif  //_PLUGIN_H_
