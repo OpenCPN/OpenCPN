@@ -7400,8 +7400,8 @@ void ChartCanvas::FindRoutePointsAtCursor(float selectRadius,
     }
   }  // for (SelectItem...
 }
-std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
-                                                                      int y) {
+std::shared_ptr<HostApi121::PiPointContext>
+ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
   // General Right Click
   // Look for selectable objects
   double slat, slon;
@@ -7658,23 +7658,24 @@ std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
   if (0 == seltype) seltype |= SELTYPE_UNKNOWN;
 
   // Populate the return struct
-  auto rstruct = std::make_shared<PI_PointContext>();
-  rstruct->object_type = OBJECT_CHART;
+  auto rstruct = std::make_shared<HostApi121::PiPointContext>();
+  rstruct->object_type = HostApi121::PiContextObjectType::kObjectChart;
   rstruct->object_ident = "";
 
   if (seltype == SELTYPE_AISTARGET) {
-    rstruct->object_type = OBJECT_AISTARGET;
+    rstruct->object_type = HostApi121::PiContextObjectType::kObjectAisTarget;
     wxString val;
     val.Printf("%d", FoundAIS_MMSI);
     rstruct->object_ident = val.ToStdString();
   } else if (seltype & SELTYPE_MARKPOINT) {
     if (FoundRoutePoint) {
-      rstruct->object_type = OBJECT_ROUTEPOINT;
+      rstruct->object_type = HostApi121::PiContextObjectType::kObjectRoutepoint;
       rstruct->object_ident = FoundRoutePoint->m_GUID.ToStdString();
     }
   } else if (seltype & SELTYPE_ROUTESEGMENT) {
     if (SelectedRoute) {
-      rstruct->object_type = OBJECT_ROUTESEGMENT;
+      rstruct->object_type =
+          HostApi121::PiContextObjectType::kObjectRoutesegment;
       rstruct->object_ident = SelectedRoute->m_GUID.ToStdString();
     }
   }

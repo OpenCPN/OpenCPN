@@ -1915,7 +1915,7 @@ PlugIn_Route_ExV2::~PlugIn_Route_ExV2() {
   }
 }
 
-PlugIn_Route_ExV3::PlugIn_Route_ExV3() {
+HostApi121::PlugIn_Route_Ex::PlugIn_Route_Ex() {
   m_PlannedSpeed = 0;
   m_Colour = "";
   m_style = wxPENSTYLE_SOLID;
@@ -1923,7 +1923,7 @@ PlugIn_Route_ExV3::PlugIn_Route_ExV3() {
   m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
 }
 
-PlugIn_Route_ExV3::~PlugIn_Route_ExV3() {
+HostApi121::PlugIn_Route_Ex::~PlugIn_Route_Ex() {
   if (pWaypointList) {
     pWaypointList->DeleteContents(true);
     delete pWaypointList;
@@ -2175,7 +2175,7 @@ std::unique_ptr<PlugIn_Waypoint_ExV2> GetWaypointExV2_Plugin(
 
 // PlugIn_Route_ExV3 utilities
 
-bool AddPlugInRouteExV3(PlugIn_Route_ExV3* proute, bool b_permanent) {
+bool AddPlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute, bool b_permanent) {
   Route* route = new Route();
 
   PlugIn_Waypoint_ExV2* pwaypointex;
@@ -2240,7 +2240,7 @@ bool AddPlugInRouteExV3(PlugIn_Route_ExV3* proute, bool b_permanent) {
   return true;
 }
 
-bool UpdatePlugInRouteExV3(PlugIn_Route_ExV3* proute) {
+bool UpdatePlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute) {
   bool b_found = false;
 
   // Find the Route
@@ -2257,13 +2257,15 @@ bool UpdatePlugInRouteExV3(PlugIn_Route_ExV3* proute) {
   return b_found;
 }
 
-std::unique_ptr<PlugIn_Route_ExV3> GetRouteExV3_Plugin(const wxString& GUID) {
-  std::unique_ptr<PlugIn_Route_ExV3> r;
+std::unique_ptr<HostApi121::PlugIn_Route_Ex> GetRouteExV3_Plugin(
+    const wxString& GUID) {
+  std::unique_ptr<HostApi121::PlugIn_Route_Ex> dst_route;
   Route* route = g_pRouteMan->FindRouteByGUID(GUID);
-  if (route == nullptr) return r;
+  if (route == nullptr) return dst_route;
 
-  r = std::unique_ptr<PlugIn_Route_ExV3>(new PlugIn_Route_ExV3);
-  PlugIn_Route_ExV3* dst_route = r.get();
+  dst_route = std::unique_ptr<HostApi121::PlugIn_Route_Ex>(
+      new HostApi121::PlugIn_Route_Ex);
+  // PlugIn_Route_ExV3* dst_route = r.get();
 
   for (RoutePoint* src_wp : *route->pRoutePointList) {
     PlugIn_Waypoint_ExV2* dst_wp = new PlugIn_Waypoint_ExV2();
@@ -2283,7 +2285,7 @@ std::unique_ptr<PlugIn_Route_ExV3> GetRouteExV3_Plugin(const wxString& GUID) {
   dst_route->m_PlannedDeparture = route->m_PlannedDeparture;
   dst_route->m_TimeDisplayFormat = route->m_TimeDisplayFormat;
 
-  return r;
+  return dst_route;
 }
 
 // PlugIn_Route_ExV2 utilities
@@ -3386,14 +3388,14 @@ void SetMaxZoomScale(double max_scale) {
   g_maxzoomin = wxRound(wxMax(max_scale, 100.));
 }
 
-std::shared_ptr<PI_PointContext> GetContextAtPoint(int x, int y,
-                                                   int canvas_index) {
+std::shared_ptr<HostApi121::PiPointContext> GetContextAtPoint(
+    int x, int y, int canvas_index) {
   ChartCanvas* cc = g_canvasArray.Item(canvas_index);
   if (cc) {
     return cc->GetCanvasContextAtPoint(x, y);
   } else {
-    auto rstruct = std::make_shared<PI_PointContext>();
-    rstruct->object_type = OBJECT_UNKNOWN;
+    auto rstruct = std::make_shared<HostApi121::PiPointContext>();
+    rstruct->object_type = HostApi121::PiContextObjectType::kObjectUnknown;
     rstruct->object_ident = "";
     return rstruct;
   }
