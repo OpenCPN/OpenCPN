@@ -3692,5 +3692,12 @@ void AisToggleTrack(wxString ais_mmsi) {
 }
 
 //  Context menu enable/disable, by object type
-int GetContextMenuMask() { return g_canvas_context_Menu_Disable_Mask; }
+static int GetContextMenuMask() { return g_canvas_context_Menu_Disable_Mask; }
+int HostApi121::GetContextMenuMask() { return ::GetContextMenuMask(); }
+
+HostApi& GetHostApi() {
+  static HostApi121 host_api;
+  return host_api;
+}
+
 void SetContextMenuMask(int mask) { g_canvas_context_Menu_Disable_Mask = mask; }
