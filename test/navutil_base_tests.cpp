@@ -77,3 +77,40 @@ TEST(NavUtils, toSDMM) {
         << ", hi_precision = " << test_case.input.hi_precision;
   }
 }
+
+TEST(NavUtils, ParseGPXDateTime) {
+  struct TestCase {
+    std::wstring dateString;
+    struct tm expected;
+    wxDateTime::TimeZone tz;
+    int charsConsumed=-1; // -1 means we all chars should be consumed
+  };
+  std::vector<TestCase> test_cases = {
+      {L"2010-10-30T14:34:56Z", {56,34,14,30,10,110,}, wxDateTime::UTC},
+      {L"2010-10-30T14:34:56-04:00", {56,34,14,30,10,110,}, wxDateTime::GMT_4},
+      {L"2010-12-01T23:59:59+02:00", {59,59,23,01,12,110,}, wxDateTime::GMT2},
+  };
+  for (const auto& test_case : test_cases) {
+    wxDateTime dateTime;
+    auto result = ParseGPXDateTime(dateTime, wxString(test_case.dateString));
+    std::stringstream msg;
+    msg << "Input: " << "dateString = " << test_case.dateString
+        << ", expected.tz = " << test_case.tz.GetOffset()/3600;
+    EXPECT_TRUE(result != NULL) << msg.str(); 
+    if (result) {
+      dateTime.MakeFromTimezone(wxDateTime::UTC);
+      EXPECT_EQ(dateTime.GetYear(test_case.tz), test_case.expected.tm_year+1900)
+        << msg.str();
+      EXPECT_EQ(dateTime.GetMonth(test_case.tz), test_case.expected.tm_mon-1)
+        << msg.str();
+      EXPECT_EQ(dateTime.GetDay(test_case.tz), test_case.expected.tm_mday)
+        << msg.str();
+      EXPECT_EQ(dateTime.GetHour(test_case.tz), test_case.expected.tm_hour)
+        << msg.str();
+      EXPECT_EQ(dateTime.GetMinute(test_case.tz), test_case.expected.tm_min)
+        << msg.str();
+      EXPECT_EQ(dateTime.GetSecond(test_case.tz), test_case.expected.tm_sec)
+        << msg.str();
+    }
+  }
+}
