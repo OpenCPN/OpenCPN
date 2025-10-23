@@ -2175,7 +2175,8 @@ std::unique_ptr<PlugIn_Waypoint_ExV2> GetWaypointExV2_Plugin(
 
 // PlugIn_Route_ExV3 utilities
 
-bool AddPlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute, bool b_permanent) {
+static bool AddPlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute,
+                               bool b_permanent) {
   Route* route = new Route();
 
   PlugIn_Waypoint_ExV2* pwaypointex;
@@ -2240,7 +2241,12 @@ bool AddPlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute, bool b_permanent) {
   return true;
 }
 
-bool UpdatePlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute) {
+bool HostApi121::AddPlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute,
+                                    bool b_permanent) {
+  return ::AddPlugInRouteExV3(proute, b_permanent);
+}
+
+static bool UpdatePlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute) {
   bool b_found = false;
 
   // Find the Route
@@ -2255,6 +2261,10 @@ bool UpdatePlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute) {
   }
 
   return b_found;
+}
+
+bool HostApi121::UpdatePlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute) {
+  return ::UpdatePlugInRouteExV3(proute);
 }
 
 std::unique_ptr<HostApi121::PlugIn_Route_Ex> GetRouteExV3_Plugin(
@@ -2721,6 +2731,11 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString& GUID) {
   dst_route->m_Description = route->m_RouteDescription;
 
   return r;
+}
+
+std::unique_ptr<::PlugIn_Route_Ex> HostApi121::GetRouteEx_Plugin(
+    const wxString& GUID) {
+  return ::GetRouteEx_Plugin(GUID);
 }
 
 wxString GetActiveWaypointGUID(
@@ -3283,7 +3298,7 @@ void EnableNotificationCanvasIcon(bool enable) {
 
 //  Plugin API121 Utility functions
 
-wxString DropMarkPI(double lat, double lon) {
+static wxString DropMarkPI(double lat, double lon) {
   if ((fabs(lat) > 80.0) || (fabs(lon) > 180.)) return "";
 
   RoutePoint* pWP =
@@ -3294,7 +3309,11 @@ wxString DropMarkPI(double lat, double lon) {
   return pWP->m_GUID;
 }
 
-wxString RouteCreatePI(int canvas_index, bool start) {
+wxString HostApi121::DropMarkPI(double lat, double lon) {
+  return ::DropMarkPI(lat, lon);
+}
+
+static wxString RouteCreatePI(int canvas_index, bool start) {
   if ((size_t)canvas_index < g_canvasArray.GetCount()) {
     ChartCanvas* cc = g_canvasArray.Item(canvas_index);
     if (cc) {
@@ -3309,7 +3328,11 @@ wxString RouteCreatePI(int canvas_index, bool start) {
   return "-1";
 }
 
-bool DoMeasurePI(int canvas_index, bool start) {
+wxString HostApi121::RouteCreatePI(int canvas_index, bool start) {
+  return ::RouteCreatePI(canvas_index, start);
+}
+
+static bool DoMeasurePI(int canvas_index, bool start) {
   if ((size_t)canvas_index < g_canvasArray.GetCount()) {
     ChartCanvas* cc = g_canvasArray.Item(canvas_index);
     if (cc) {
@@ -3324,6 +3347,10 @@ bool DoMeasurePI(int canvas_index, bool start) {
     }
   }
   return false;
+}
+
+bool HostApi121::DoMeasurePI(int canvas_index, bool start) {
+  return ::DoMeasurePI(canvas_index, start);
 }
 
 wxString NavToHerePI(double lat, double lon) {
@@ -3355,6 +3382,10 @@ wxString NavToHerePI(double lat, double lon) {
   return temp_route->m_GUID;
 }
 
+wxString HostApi121::NavToHerePI(double lat, double lon) {
+  return ::NavToHerePI(lat, lon);
+}
+
 bool ActivateRoutePI(wxString route_guid, bool activate) {
   Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
   if (!route) return false;
@@ -3374,21 +3405,45 @@ bool ActivateRoutePI(wxString route_guid, bool activate) {
   return false;
 }
 
-void EnableDefaultConsole(bool enable) { g_bhide_route_console = !enable; }
-void EnableDefaultContextMenus(bool enable) { g_bhide_context_menus = !enable; }
+bool HostApi121::ActivateRoutePI(wxString route_guid, bool activate) {
+  return ::ActivateRoutePI(route_guid, activate);
+}
 
-void SetMinZoomScale(double min_scale) {
+static void EnableDefaultConsole(bool enable) {
+  g_bhide_route_console = !enable;
+}
+void HostApi121::EnableDefaultConsole(bool enable) {
+  ::EnableDefaultConsole(enable);
+}
+
+static void EnableDefaultContextMenus(bool enable) {
+  g_bhide_context_menus = !enable;
+}
+
+void HostApi121::EnableDefaultContextMenus(bool enable) {
+  ::EnableDefaultContextMenus(enable);
+}
+
+static void SetMinZoomScale(double min_scale) {
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas* cc = g_canvasArray.Item(i);
     cc->SetAbsoluteMinScale(min_scale);
   }
 }
 
-void SetMaxZoomScale(double max_scale) {
+void HostApi121::SetMinZoomScale(double min_scale) {
+  ::SetMinZoomScale(min_scale);
+}
+
+static void SetMaxZoomScale(double max_scale) {
   g_maxzoomin = wxRound(wxMax(max_scale, 100.));
 }
 
-std::shared_ptr<HostApi121::PiPointContext> GetContextAtPoint(
+void HostApi121::SetMaxZoomScale(double max_scale) {
+  ::SetMaxZoomScale(max_scale);
+}
+
+static std::shared_ptr<HostApi121::PiPointContext> GetContextAtPoint(
     int x, int y, int canvas_index) {
   ChartCanvas* cc = g_canvasArray.Item(canvas_index);
   if (cc) {
@@ -3401,28 +3456,45 @@ std::shared_ptr<HostApi121::PiPointContext> GetContextAtPoint(
   }
 }
 
-wxBitmap GetObjectIcon_PlugIn(const wxString& name) {
-  if (pWayPointMan) {
+std::shared_ptr<HostApi121::PiPointContext> HostApi121::GetContextAtPoint(
+    int x, int y, int canvas_index) {
+  return ::GetContextAtPoint(x, y, canvas_index);
+}
+
+static wxBitmap GetObjectIcon_PlugIn(const wxString& name) {
+  if (pWayPointMan)
     return *pWayPointMan->GetIconBitmap(name);
-  } else
+  else
     return wxNullBitmap;
 }
 
-bool IsRouteActive(wxString route_guid) {
+wxBitmap HostApi121::GetObjectIcon_PlugIn(const wxString& name) {
+  return ::GetObjectIcon_PlugIn(name);
+}
+
+static bool IsRouteActive(wxString route_guid) {
   if (g_pRouteMan->GetpActiveRoute())
     return (route_guid.IsSameAs(g_pRouteMan->GetpActiveRoute()->m_GUID));
   else
     return false;
 }
 
-void SetBoatPosition(double zlat, double zlon) {
+bool HostApi121::IsRouteActive(wxString route_guid) {
+  return ::IsRouteActive(route_guid);
+}
+
+static void SetBoatPosition(double zlat, double zlon) {
   gLat = zlat;
   gLon = zlon;
   gFrame->UpdateStatusBar();
 }
 
-void RouteInsertWaypoint(int canvas_index, wxString route_guid, double zlat,
-                         double zlon) {
+void HostApi121::SetBoatPosition(double zlat, double zlon) {
+  ::SetBoatPosition(zlat, zlon);
+}
+
+static void RouteInsertWaypoint(int canvas_index, wxString route_guid,
+                                double zlat, double zlon) {
   ChartCanvas* parent =
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return;
@@ -3446,7 +3518,12 @@ void RouteInsertWaypoint(int canvas_index, wxString route_guid, double zlat,
   NavObj_dB::GetInstance().UpdateRoute(route);
 }
 
-void RouteAppendWaypoint(int canvas_index, wxString route_guid) {
+void HostApi121::RouteInsertWaypoint(int canvas_index, wxString route_guid,
+                                     double zlat, double zlon) {
+  ::RouteInsertWaypoint(canvas_index, route_guid, zlat, zlon);
+}
+
+static void RouteAppendWaypoint(int canvas_index, wxString route_guid) {
   Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
   if (!route) return;
 
@@ -3468,7 +3545,11 @@ void RouteAppendWaypoint(int canvas_index, wxString route_guid) {
   parent->m_bAppendingRoute = true;
 }
 
-void FinishRoute(int canvas_index) {
+void HostApi121::RouteAppendWaypoint(int canvas_index, wxString route_guid) {
+  ::RouteAppendWaypoint(canvas_index, route_guid);
+}
+
+static void FinishRoute(int canvas_index) {
   ChartCanvas* parent =
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return;
@@ -3476,26 +3557,40 @@ void FinishRoute(int canvas_index) {
   parent->FinishRoute();
 }
 
-bool IsRouteBeingCreated(int canvas_index) {
+void HostApi121::FinishRoute(int canvas_index) { ::FinishRoute(canvas_index); }
+
+static bool IsRouteBeingCreated(int canvas_index) {
   ChartCanvas* parent =
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return false;
   return !(parent->m_pMouseRoute == NULL);
 }
 
-bool AreRouteWaypointNamesVisible(wxString route_guid) {
+bool HostApi121::IsRouteBeingCreated(int canvas_index) {
+  return ::IsRouteBeingCreated(canvas_index);
+}
+
+static bool AreRouteWaypointNamesVisible(wxString route_guid) {
   Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
   if (!route) return false;
   return route->AreWaypointNamesVisible();
 }
 
-void ShowRouteWaypointNames(wxString route_guid, bool show) {
+bool HostApi121::AreRouteWaypointNamesVisible(wxString route_guid) {
+  return ::AreRouteWaypointNamesVisible(route_guid);
+}
+
+static void ShowRouteWaypointNames(wxString route_guid, bool show) {
   Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
   if (!route) return;
   route->ShowWaypointNames(show);
 }
 
-void NavigateToWaypoint(wxString waypoint_guid) {
+void HostApi121::ShowRouteWaypointNames(wxString route_guid, bool show) {
+  ::ShowRouteWaypointNames(route_guid, show);
+}
+
+static void NavigateToWaypoint(wxString waypoint_guid) {
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(waypoint_guid);
   if (!prp) return;
 
@@ -3526,8 +3621,12 @@ void NavigateToWaypoint(wxString waypoint_guid) {
   g_pRouteMan->ActivateRoute(temp_route, prp);
 }
 
+void HostApi121::NavigateToWaypoint(wxString waypoint_guid) {
+  ::NavigateToWaypoint(waypoint_guid);
+}
+
 // AIS related
-bool IsAISTrackVisible(wxString ais_mmsi) {
+static bool IsAISTrackVisible(wxString ais_mmsi) {
   long mmsi = 0;
   ais_mmsi.ToLong(&mmsi);
   auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
@@ -3537,11 +3636,19 @@ bool IsAISTrackVisible(wxString ais_mmsi) {
     return false;
 }
 
-void AISToggleShowTrack(wxString ais_mmsi) {
+bool HostApi121::IsAISTrackVisible(const wxString& ais_mmsi) const {
+  return ::IsAISTrackVisible(ais_mmsi);
+}
+
+static void AISToggleShowTrack(wxString ais_mmsi) {
   long mmsi = 0;
   ais_mmsi.ToLong(&mmsi);
   auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
   if (myptarget) myptarget->ToggleShowTrack();
+}
+
+void HostApi121::AISToggleShowTrack(const wxString& ais_mmsi) {
+  ::AISToggleShowTrack(ais_mmsi);
 }
 
 bool IsAIS_CPAVisible(wxString ais_mmsi) {
@@ -3554,14 +3661,22 @@ bool IsAIS_CPAVisible(wxString ais_mmsi) {
     return false;
 }
 
-void AISToggleShowCPA(wxString ais_mmsi) {
+bool HostApi121::IsAIS_CPAVisible(const wxString& ais_mmsi) const {
+  return ::IsAIS_CPAVisible(ais_mmsi);
+}
+
+static void AISToggleShowCPA(wxString ais_mmsi) {
   long mmsi = 0;
   ais_mmsi.ToLong(&mmsi);
   auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
   if (myptarget) myptarget->Toggle_AIS_CPA();
 }
 
-void ShowAISTargetQueryDialog(int canvas_index, wxString ais_mmsi) {
+void HostApi121::AISToggleShowCPA(const wxString& ais_mmsi) {
+  ::AISToggleShowCPA(ais_mmsi);
+}
+
+static void ShowAISTargetQueryDialog(int canvas_index, wxString ais_mmsi) {
   ChartCanvas* parent =
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return;
@@ -3571,49 +3686,88 @@ void ShowAISTargetQueryDialog(int canvas_index, wxString ais_mmsi) {
   ShowAISTargetQueryDialog(parent, mmsi);
 }
 
-void ShowAISTargetList(int canvas_index) {
+void HostApi121::ShowAISTargetQueryDialog(int canvas_index,
+                                          const wxString& ais_mmsi) {
+  ::ShowAISTargetQueryDialog(canvas_index, ais_mmsi);
+}
+
+static void ShowAISTargetList(int canvas_index) {
   ChartCanvas* parent =
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return;
   parent->ShowAISTargetList();
 }
 
-bool IsMeasureActive(int canvas_index) {
+void HostApi121::ShowAISTargetList(int canvas_index) {
+  ::ShowAISTargetList(canvas_index);
+}
+
+static bool IsMeasureActive(int canvas_index) {
   ChartCanvas* parent =
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return false;
   return parent->m_bMeasure_Active;
 }
 
-void CancelMeasure(int canvas_index) {
+bool HostApi121::IsMeasureActive(int canvas_index) {
+  return ::IsMeasureActive(canvas_index);
+}
+
+static void CancelMeasure(int canvas_index) {
   ChartCanvas* parent =
       static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
   if (!parent) return;
   parent->CancelMeasureRoute();
 }
 
-void SetDepthUnitVisible(bool bviz) { g_bhide_depth_units = !bviz; }
+void HostApi121::CancelMeasure(int canvas_index) {
+  ::CancelMeasure(canvas_index);
+}
+static void SetDepthUnitVisible(bool bviz) { g_bhide_depth_units = !bviz; }
 
-void SetOverzoomFlagVisible(bool bviz) { g_bhide_overzoom_flag = !bviz; }
+void HostApi121::SetDepthUnitVisible(bool bviz) { ::SetDepthUnitVisible(bviz); }
+
+static void SetOverzoomFlagVisible(bool bviz) { g_bhide_overzoom_flag = !bviz; }
+
+void HostApi121::SetOverzoomFlagVisible(bool bviz) {
+  ::SetOverzoomFlagVisible(bviz);
+}
 
 // Extended Chart table management support
-void AddNoShowDirectory(std::string chart_dir) {
+static void AddNoShowDirectory(std::string chart_dir) {
   ChartDirectoryExcludedVector.push_back(chart_dir);
 }
-void RemoveNoShowDirectory(std::string chart_dir) {
+
+void HostApi121::AddNoShowDirectory(std::string chart_dir) {
+  ::AddNoShowDirectory(chart_dir);
+}
+
+static void RemoveNoShowDirectory(std::string chart_dir) {
   auto it = std::find(ChartDirectoryExcludedVector.begin(),
                       ChartDirectoryExcludedVector.end(), chart_dir);
   if (it != ChartDirectoryExcludedVector.end())
     ChartDirectoryExcludedVector.erase(it);  // Erase the element
 }
-void ClearNoShowVector() { ChartDirectoryExcludedVector.clear(); }
-const std::vector<std::string>& GetNoShowVector() {
+
+void HostApi121::RemoveNoShowDirectory(std::string chart_dir) {
+  ::RemoveNoShowDirectory(chart_dir);
+}
+
+static void ClearNoShowVector() { ChartDirectoryExcludedVector.clear(); }
+
+void HostApi121::ClearNoShowVector() { ::ClearNoShowVector(); }
+
+static const std::vector<std::string>& GetNoShowVector() {
   return ChartDirectoryExcludedVector;
+}
+
+const std::vector<std::string>& HostApi121::GetNoShowVector() {
+  return ::GetNoShowVector();
 }
 
 // Enhanced AIS Target List support
 
-void CenterToAisTarget(wxString ais_mmsi) {
+static void CenterToAisTarget(wxString ais_mmsi) {
   long mmsi = 0;
   if (ais_mmsi.ToLong(&mmsi)) {
     std::shared_ptr<AisTargetData> pAISTarget = NULL;
@@ -3637,7 +3791,11 @@ void CenterToAisTarget(wxString ais_mmsi) {
   }
 }  // same as AISTargetListDialog::CenterToTarget ( false )
 
-void AisTargetCreateWpt(wxString ais_mmsi) {
+void HostApi121::CenterToAisTarget(wxString ais_mmsi) {
+  ::CenterToAisTarget(ais_mmsi);
+}
+
+static void AisTargetCreateWpt(wxString ais_mmsi) {
   long mmsi = 0;
   if (ais_mmsi.ToLong(&mmsi)) {
     std::shared_ptr<AisTargetData> pAISTarget = NULL;
@@ -3657,7 +3815,11 @@ void AisTargetCreateWpt(wxString ais_mmsi) {
   }
 }  // same as AISTargetListDialog::OnTargetCreateWpt
 
-void AisShowAllTracks(bool show) {
+void HostApi121::AisTargetCreateWpt(wxString ais_mmsi) {
+  ::AisTargetCreateWpt(ais_mmsi);
+}
+
+static void AisShowAllTracks(bool show) {
   if (g_pAIS) {
     for (const auto& it : g_pAIS->GetTargetList()) {
       auto pAISTarget = it.second;
@@ -3676,7 +3838,9 @@ void AisShowAllTracks(bool show) {
      // AISTargetListDialog::OnShowAllTracks
 }
 
-void AisToggleTrack(wxString ais_mmsi) {
+void HostApi121::AisShowAllTracks(bool show) { ::AisShowAllTracks(show); }
+
+static void AisToggleTrack(wxString ais_mmsi) {
   long mmsi = 0;
   if (ais_mmsi.ToLong(&mmsi)) {
     std::shared_ptr<AisTargetData> pAISTarget = NULL;
@@ -3691,6 +3855,10 @@ void AisToggleTrack(wxString ais_mmsi) {
   }
 }
 
+void HostApi121::AisToggleTrack(wxString ais_mmsi) {
+  ::AisToggleTrack(ais_mmsi);
+}
+
 //  Context menu enable/disable, by object type
 static int GetContextMenuMask() { return g_canvas_context_Menu_Disable_Mask; }
 int HostApi121::GetContextMenuMask() { return ::GetContextMenuMask(); }
@@ -3700,4 +3868,7 @@ HostApi& GetHostApi() {
   return host_api;
 }
 
-void SetContextMenuMask(int mask) { g_canvas_context_Menu_Disable_Mask = mask; }
+static void SetContextMenuMask(int mask) {
+  g_canvas_context_Menu_Disable_Mask = mask;
+}
+void HostApi121::SetContextMenuMask(int mask) { ::SetContextMenuMask(mask); }
