@@ -585,6 +585,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("SkewCompUpdatePeriod", &g_SkewCompUpdatePeriod);
 
   Read("SetSystemTime", &s_bSetSystemTime);
+  Read("EnableKioskStartup", &g_kiosk_startup);
   Read("ShowStatusBar", &g_bShowStatusBar);
 #ifndef __WXOSX__
   Read("ShowMenuBar", &g_bShowMenuBar);
@@ -2288,7 +2289,7 @@ void MyConfig::UpdateSettings() {
   font_path = ("/Settings/QTFonts");
 #endif
 
-  DeleteGroup(font_path);
+  if (HasEntry(font_path)) DeleteGroup(font_path);
 
   SetPath(font_path);
 
@@ -2301,7 +2302,8 @@ void MyConfig::UpdateSettings() {
   }
 
   //  Tide/Current Data Sources
-  DeleteGroup("/TideCurrentDataSources");
+  if (HasEntry("/TideCurrentDataSources"))
+    DeleteGroup("/TideCurrentDataSources");
   SetPath("/TideCurrentDataSources");
   unsigned int id = 0;
   for (auto val : TideCurrentDataSet) {

@@ -1943,7 +1943,7 @@ void MyFrame::TriggerRecaptureTimer() {
       1000, wxTIMER_ONE_SHOT);  // One second seems enough, on average
 }
 
-void MyFrame::OnRecaptureTimer(wxTimerEvent &event) { Raise(); }
+void MyFrame::OnRecaptureTimer(wxTimerEvent &event) { /*Raise();*/ }
 
 void MyFrame::SetCanvasSizes(wxSize frameSize) {
   if (!g_canvasArray.GetCount()) return;
@@ -4565,12 +4565,14 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   wxString msg;
   msg.Printf("OnInitTimer...%d", m_iInitCount);
   wxLogMessage(msg);
+  // printf("init-%d\n", m_iInitCount);
 
   wxLog::FlushActive();
 
   switch (m_iInitCount++) {
     case 0: {
-      if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, false);
+      FontMgr::Get()
+          .ScrubList();  // Clean the font list, removing nonsensical entries
 
       if (g_bInlandEcdis) {
         double range = GetPrimaryCanvas()->GetCanvasRangeMeters();
@@ -4628,6 +4630,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         g_NeedDBUpdate = 0;
       }
 
+#if 0
       // Load the waypoints. Both of these routines are very slow to execute
       // which is why they have been to defered until here
       auto colour_func = [](wxString c) { return GetGlobalColor(c); };
@@ -4664,6 +4667,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         wxLogMessage(laymsg);
         pConfig->LoadLayers(layerdir);
       }
+#endif
 
       break;
     }
@@ -4679,6 +4683,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       break;
 
     case 2: {
+#if 0
       if (m_initializing) break;
       m_initializing = true;
       AbstractPlatform::ShowBusySpinner();
@@ -4727,15 +4732,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       if (!bno_load) g_pauimgr->LoadPerspective(perspective, false);
 
-#if 0
-            // Undefine the canvas sizes as expressed by the loaded perspective
-            for(unsigned int i=0 ; i < g_canvasArray.GetCount() ; i++){
-                ChartCanvas *cc = g_canvasArray.Item(i);
-                if(cc)
-                    g_pauimgr->GetPane(cc).MinSize(10,10);
-            }
-
-#endif
 
       // Touch up the AUI manager
       //  Make sure that any pane width is reasonable default value
@@ -4760,7 +4756,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       g_pi_manager->CallLateInit();
 
       if (g_pi_manager->IsAnyPlugInChartEnabled()) b_reloadForPlugins = true;
-
+#endif
       break;
     }
 
@@ -4792,8 +4788,9 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 #ifdef __WXOSX__
       optionsParent = GetPrimaryCanvas();
 #endif
-      g_options = new options(optionsParent, -1, _("Options"), wxPoint(-1, -1),
-                              wxSize(sx, sy));
+      // g_options = new options(optionsParent, -1, _("Options"), wxPoint(-1,
+      // -1),
+      //                         wxSize(sx, sy));
 
       BuildiENCToolbar(true);
 
@@ -4836,19 +4833,70 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       break;
     }
 
+    case 7: {
+      // Load the waypoints. Both of these routines are very slow to execute
+      // which is why they have been to defered until here
+      auto colour_func = [](wxString c) { return GetGlobalColor(c); };
+      pWayPointMan = new WayPointman(colour_func);
+      WayPointmanGui(*pWayPointMan)
+          .SetColorScheme(global_color_scheme, g_Platform->GetDisplayDPmm());
+      // Reload the ownship icon from UserIcons, if present
+      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+        ChartCanvas *cc = g_canvasArray.Item(i);
+        if (cc) {
+          if (cc->SetUserOwnship()) cc->SetColorScheme(global_color_scheme);
+        }
+      }
+
+      NavObj_dB::GetInstance().ImportLegacyNavobj(this);
+      NavObj_dB::GetInstance().LoadNavObjects();
+
+      //    Re-enable anchor watches if set in config file
+      if (!g_AW1GUID.IsEmpty()) {
+        pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID(g_AW1GUID);
+      }
+      if (!g_AW2GUID.IsEmpty()) {
+        pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID(g_AW2GUID);
+      }
+
+      // Import Layer-wise any .gpx files from /layers directory
+      wxString layerdir = g_Platform->GetPrivateDataDir();
+      appendOSDirSlash(&layerdir);
+      layerdir.Append("layers");
+
+      if (wxDir::Exists(layerdir)) {
+        wxString laymsg;
+        laymsg.Printf("Getting .gpx layer files from: %s", layerdir.c_str());
+        wxLogMessage(laymsg);
+        pConfig->LoadLayers(layerdir);
+      }
+      break;
+    }
+
     default: {
       // Last call....
       wxLogMessage("OnInitTimer...Last Call");
+
+      RequestNewMasterToolbar();
 
       PositionIENCToolbar();
 
       g_bDeferredInitDone = true;
 
+      gFrame->DoChartUpdate();
+      FontMgr::Get()
+          .ScrubList();  // Clean the font list, removing nonsensical entries
+
+      gFrame->ReloadAllVP();  // once more, and good to go
+      // gFrame->Refresh(false);
+      // gFrame->Raise();
+
       GetPrimaryCanvas()->SetFocus();
+      GetPrimaryCanvas()->Enable();
       g_focusCanvas = GetPrimaryCanvas();
 
 #ifndef __ANDROID__
-      gFrame->Raise();
+      // gFrame->Raise();
 #endif
 
       if (b_reloadForPlugins) {
@@ -4884,16 +4932,23 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       androidLastCall();
 #endif
 
-      if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
+      // if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
 
       UpdateStatusBar();
-
       SendSizeEvent();
+
+      //      Start up the tickers....
+      gFrame->FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+      //      Start up the ViewPort Rotation angle Averaging Timer....
+      gFrame->FrameCOGTimer.Start(2000, wxTIMER_CONTINUOUS);
+      //      Start up the Ten Hz timer....
+      gFrame->FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+
       break;
     }
   }  // switch
 
-  if (!g_bDeferredInitDone) InitTimer.Start(100, wxTIMER_ONE_SHOT);
+  if (!g_bDeferredInitDone) InitTimer.Start(10, wxTIMER_ONE_SHOT);
 
   wxLog::FlushActive();
 
@@ -6191,7 +6246,7 @@ void MyFrame::DoPrint(void) {
   Refresh();
 #ifdef __WXGTK__
   GetPrimaryCanvas()->SetFocus();
-  Raise();  // I dunno why...
+  // Raise();  // I dunno why...
 #endif
 }
 
@@ -6758,7 +6813,7 @@ void MyFrame::applySettingsString(wxString settings) {
     RequestNewMasterToolbar(true);
   }
 
-  gFrame->Raise();
+  // gFrame->Raise();
 
   InvalidateAllGL();
   DoChartUpdate();

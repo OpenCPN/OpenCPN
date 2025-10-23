@@ -1000,8 +1000,10 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
 
 wxArrayString GetWaypointGUIDArray() {
   wxArrayString result;
-  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
-    result.Add(prp->m_GUID);
+  if (pWayPointMan) {
+    for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
+      result.Add(prp->m_GUID);
+    }
   }
   return result;
 }

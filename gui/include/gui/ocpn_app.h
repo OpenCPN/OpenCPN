@@ -49,6 +49,10 @@ public:
   ~MyApp() {};
 
   bool OnInit() override;
+  void BuildMainFrame();
+  void LoadChartDatabase();
+
+  void OnMainFrameReady();
   int OnExit() override;
 #ifndef __ANDROID__
   void OnInitCmdLine(wxCmdLineParser& parser) override;
