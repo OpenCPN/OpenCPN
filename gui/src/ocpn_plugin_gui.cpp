@@ -35,6 +35,8 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/gui_vars.h"
@@ -68,8 +70,6 @@
 #include "routeman_gui.h"
 #include "s52plib.h"
 #include "shapefile_basemap.h"
-#include "SoundFactory.h"
-#include "SystemCmdSound.h"
 #include "toolbar.h"
 #include "waypointman_gui.h"
 
@@ -1000,8 +1000,10 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
 
 wxArrayString GetWaypointGUIDArray() {
   wxArrayString result;
-  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
-    result.Add(prp->m_GUID);
+  if (pWayPointMan) {
+    for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
+      result.Add(prp->m_GUID);
+    }
   }
   return result;
 }
@@ -1359,7 +1361,7 @@ void SetCanvasProjection(int projection) {
   gFrame->GetPrimaryCanvas()->SetVPProjection(projection);
 }
 
-OcpnSound* g_PluginSound = SoundFactory();
+o_sound::Sound* g_PluginSound = o_sound::Factory();
 static void onPlugInPlaySoundExFinished(void* ptr) {}
 
 // Start playing a sound to a given device and return status to plugin
@@ -1369,7 +1371,7 @@ bool PlugInPlaySoundEx(wxString& sound_file, int deviceIndex) {
     wxLogWarning("Cannot load sound file: %s", sound_file);
     return false;
   }
-  auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_PluginSound);
+  auto cmd_sound = dynamic_cast<o_sound::SystemCmdSound*>(g_PluginSound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
 
   g_PluginSound->SetFinishedCallback(onPlugInPlaySoundExFinished, NULL);
@@ -1913,6 +1915,22 @@ PlugIn_Route_ExV2::~PlugIn_Route_ExV2() {
   }
 }
 
+PlugIn_Route_ExV3::PlugIn_Route_ExV3() {
+  m_PlannedSpeed = 0;
+  m_Colour = "";
+  m_style = wxPENSTYLE_SOLID;
+  m_PlannedDeparture = wxDateTime::Now();
+  m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
+}
+
+PlugIn_Route_ExV3::~PlugIn_Route_ExV3() {
+  if (pWaypointList) {
+    pWaypointList->DeleteContents(true);
+    delete pWaypointList;
+    pWaypointList = NULL;
+  }
+}
+
 // translate O route class to PlugIn_Waypoint_ExV2
 static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
                                      /* const*/ RoutePoint* src) {
@@ -2154,6 +2172,121 @@ std::unique_ptr<PlugIn_Waypoint_ExV2> GetWaypointExV2_Plugin(
   GetSingleWaypointExV2(GUID, w.get());
   return w;
 }
+
+// PlugIn_Route_ExV3 utilities
+
+bool AddPlugInRouteExV3(PlugIn_Route_ExV3* proute, bool b_permanent) {
+  Route* route = new Route();
+
+  PlugIn_Waypoint_ExV2* pwaypointex;
+  RoutePoint *pWP, *pWP_src;
+  int ip = 0;
+  wxDateTime plannedDeparture;
+
+  wxPlugin_WaypointExV2ListNode* pwpnode = proute->pWaypointList->GetFirst();
+  while (pwpnode) {
+    pwaypointex = pwpnode->GetData();
+
+    pWP = pWayPointMan->FindRoutePointByGUID(pwaypointex->m_GUID);
+    if (!pWP) {
+      pWP = CreateNewPoint(pwaypointex, b_permanent);
+      pWP->m_bIsolatedMark = false;
+    }
+
+    route->AddPoint(pWP);
+
+    pSelect->AddSelectableRoutePoint(pWP->m_lat, pWP->m_lon, pWP);
+
+    if (ip > 0)
+      pSelect->AddSelectableRouteSegment(pWP_src->m_lat, pWP_src->m_lon,
+                                         pWP->m_lat, pWP->m_lon, pWP_src, pWP,
+                                         route);
+
+    plannedDeparture = pwaypointex->m_CreateTime;
+    ip++;
+    pWP_src = pWP;
+
+    pwpnode = pwpnode->GetNext();  // PlugInWaypoint
+  }
+
+  route->m_PlannedDeparture = plannedDeparture;
+
+  route->m_RouteNameString = proute->m_NameString;
+  route->m_RouteStartString = proute->m_StartString;
+  route->m_RouteEndString = proute->m_EndString;
+  if (!proute->m_GUID.IsEmpty()) {
+    route->m_GUID = proute->m_GUID;
+  }
+  route->m_btemp = (b_permanent == false);
+  route->SetVisible(proute->m_isVisible);
+  route->m_RouteDescription = proute->m_Description;
+
+  route->m_PlannedSpeed = proute->m_PlannedSpeed;
+  route->m_Colour = proute->m_Colour;
+  route->m_style = proute->m_style;
+  route->m_PlannedDeparture = proute->m_PlannedDeparture;
+  route->m_TimeDisplayFormat = proute->m_TimeDisplayFormat;
+
+  pRouteList->push_back(route);
+
+  if (b_permanent) {
+    // pConfig->AddNewRoute(route);
+    NavObj_dB::GetInstance().InsertRoute(route);
+  }
+
+  if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+    pRouteManagerDialog->UpdateRouteListCtrl();
+
+  return true;
+}
+
+bool UpdatePlugInRouteExV3(PlugIn_Route_ExV3* proute) {
+  bool b_found = false;
+
+  // Find the Route
+  Route* pRoute = g_pRouteMan->FindRouteByGUID(proute->m_GUID);
+  if (pRoute) b_found = true;
+
+  if (b_found) {
+    bool b_permanent = !pRoute->m_btemp;
+    g_pRouteMan->DeleteRoute(pRoute);
+
+    b_found = AddPlugInRouteExV3(proute, b_permanent);
+  }
+
+  return b_found;
+}
+
+std::unique_ptr<PlugIn_Route_ExV3> GetRouteExV3_Plugin(const wxString& GUID) {
+  std::unique_ptr<PlugIn_Route_ExV3> r;
+  Route* route = g_pRouteMan->FindRouteByGUID(GUID);
+  if (route == nullptr) return r;
+
+  r = std::unique_ptr<PlugIn_Route_ExV3>(new PlugIn_Route_ExV3);
+  PlugIn_Route_ExV3* dst_route = r.get();
+
+  for (RoutePoint* src_wp : *route->pRoutePointList) {
+    PlugIn_Waypoint_ExV2* dst_wp = new PlugIn_Waypoint_ExV2();
+    PlugInExV2FromRoutePoint(dst_wp, src_wp);
+    dst_route->pWaypointList->Append(dst_wp);
+  }
+  dst_route->m_NameString = route->m_RouteNameString;
+  dst_route->m_StartString = route->m_RouteStartString;
+  dst_route->m_EndString = route->m_RouteEndString;
+  dst_route->m_GUID = route->m_GUID;
+  dst_route->m_isActive = g_pRouteMan->GetpActiveRoute() == route;
+  dst_route->m_isVisible = route->IsVisible();
+  dst_route->m_Description = route->m_RouteDescription;
+  dst_route->m_PlannedSpeed = route->m_PlannedSpeed;
+  dst_route->m_Colour = route->m_Colour;
+  dst_route->m_style = route->m_style;
+  dst_route->m_PlannedDeparture = route->m_PlannedDeparture;
+  dst_route->m_TimeDisplayFormat = route->m_TimeDisplayFormat;
+
+  return r;
+}
+
+// PlugIn_Route_ExV2 utilities
 
 bool AddPlugInRouteExV2(PlugIn_Route_ExV2* proute, bool b_permanent) {
   Route* route = new Route();

@@ -7283,4 +7283,23 @@ extern DECL_EXP void AisToggleTrack(wxString ais_mmsi);
 extern DECL_EXP int GetContextMenuMask();
 extern DECL_EXP void SetContextMenuMask(int mask);
 
+// Extended plugin route, V3
+class DECL_EXP PlugIn_Route_ExV3 : public PlugIn_Route_ExV2 {
+public:
+  PlugIn_Route_ExV3();
+  virtual ~PlugIn_Route_ExV3();
+
+  double m_PlannedSpeed;
+  wxString m_Colour;
+  wxPenStyle m_style;
+  wxDateTime m_PlannedDeparture;
+  wxString m_TimeDisplayFormat;
+};
+
+extern DECL_EXP bool AddPlugInRouteExV3(PlugIn_Route_ExV3 *proute,
+                                        bool b_permanent = true);
+extern DECL_EXP bool UpdatePlugInRouteExV3(PlugIn_Route_ExV3 *proute);
+extern DECL_EXP std::unique_ptr<PlugIn_Route_ExV3> GetRouteExV3_Plugin(
+    const wxString &GUID);
+
 #endif  //_PLUGIN_H_

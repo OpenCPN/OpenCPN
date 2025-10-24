@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,21 +12,28 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement ocpn_sound.h -- abstract sound interface
  */
-#include "snd_config.h"
-#include "SoundFileLoader.h"
 
-#ifdef HAVE_SNDFILE
-#include "SndfileSoundLoader.h"
+#include "sound.h"
 
-AbstractSoundLoader* SoundLoaderFactory() { return new SndfileSoundLoader(); }
+using namespace o_sound;
 
-#else
+Sound::Sound()
+  : m_ok(false),
+    m_device_ix(-1),
+    m_on_finished(nullptr),
+    m_callback_data(nullptr) {}
 
-AbstractSoundLoader* SoundLoaderFactory() { return new SoundFileLoader(); }
+Sound::~Sound()  = default;
 
-#endif
+void Sound::SetFinishedCallback(AudioDoneCallback cb, void* user_data) {
+  m_on_finished = std::move(cb);
+  m_callback_data = user_data;
+}

@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,26 +12,31 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Sound factory class
  */
 
-#include "OCPN_Sound.h"
+#ifndef SOUND_FACTORY_H
+#define SOUND_FACTORY_H
 
+#include "sound.h"
 
-OcpnSound::OcpnSound() {
-  m_OK = false;
-  m_deviceIx = -1;
-  m_soundfile = "";
-  m_onFinished = 0;
-  m_callbackData = 0;
-}
+namespace o_sound {
 
-OcpnSound::~OcpnSound() {}
+/**
+ * Creates a Sound instance based on configuration done by cmake
+ * enshrined in config.h.
+ *
+ * @return Sound* instance owned by caller.
+ */
 
-void OcpnSound::SetFinishedCallback(AudioDoneCallback cb, void* userData) {
-  m_onFinished = cb;
-  m_callbackData = userData;
-}
+Sound* Factory(const char* system_command = nullptr);
+
+}  // namespace o_sound
+
+#endif  // SOUND_FACTORY_H

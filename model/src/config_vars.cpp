@@ -27,6 +27,7 @@
 #include "model/config_vars.h"
 #include "config.h"
 
+bool g_allow_arb_system_plugin = false;
 bool g_always_send_rmb_rmc = false;
 bool g_bAISRolloverShowClass = false;
 bool g_bAISRolloverShowCOG = false;
@@ -101,8 +102,8 @@ bool g_bTransparentToolbar = false;
 bool g_bUIexpert = false;
 bool g_bUseGLL = true;
 bool g_bUseGreenShip = false;
-bool g_bUserIconsFirst = true;
 bool g_bUseOnlyConfirmedAISName = false;
+bool g_bUserIconsFirst = true;
 bool g_bUseWptScaMin = false;
 bool g_bWayPointPreventDragging = false;
 bool g_bWplUsePosition = false;
@@ -115,7 +116,7 @@ bool g_oz_vector_scale = false;
 bool g_persist_active_route = false;
 bool g_useMUI = false;
 bool s_bSetSystemTime = false;
-bool g_allow_arb_system_plugin = false;
+bool g_kiosk_startup = false;
 
 double g_COGAvg = 0.0;
 double g_defaultBoatSpeed = 0.0;

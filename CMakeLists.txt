@@ -1987,7 +1987,7 @@ else ()
   set(SOUND_WX_INCLUDE_DIR "${wxWidgets_INCLUDE_DIRS}" CACHE STRING "")
   set(SOUND_WX_LIBS "${wxWidgets_LIBRARIES}" CACHE STRING "")
 endif ()
-add_subdirectory(libs/sound)
+add_subdirectory(libs/o_sound)
 
 add_subdirectory(libs/wxJSON)
 

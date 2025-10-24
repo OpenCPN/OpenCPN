@@ -95,6 +95,8 @@
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/certificates.h"
@@ -159,7 +161,6 @@
 #include "s57chart.h"
 #include "s57_query_dlg.h"
 #include "safe_mode_gui.h"
-#include "SoundFactory.h"
 #include "std_filesystem.h"
 #include "styles.h"
 #include "tcmgr.h"
@@ -330,6 +331,28 @@ wxString newPrivateFileName(wxString, const char *name,
 
   return filePathAndName;
 }
+
+class WallpaperFrame : public wxFrame {
+public:
+  WallpaperFrame()
+      : wxFrame(nullptr, wxID_ANY, "Loading...", wxDefaultPosition,
+                wxSize(900, 600), wxSTAY_ON_TOP) {
+    // Customize the wallpaper appearance
+    SetBackgroundColour(wxColour(0, 0, 0));  // Black background
+
+    // Add a text message
+    wxStaticText *text =
+        new wxStaticText(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                         wxALIGN_CENTRE_HORIZONTAL);
+    text->SetForegroundColour(wxColour(255, 255, 255));
+
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(text, 1, wxALIGN_CENTER);
+    SetSizerAndFit(sizer);
+
+    Center();  // Center the wallpaper frame
+  }
+};
 
 // `Main program` equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
@@ -591,8 +614,11 @@ MyApp::MyApp()
 #endif     // __linux__
 }
 
+WallpaperFrame *g_wallpaper;
+
 bool MyApp::OnInit() {
   if (!wxApp::OnInit()) return false;
+
 #ifdef __ANDROID__
   androidEnableBackButton(false);
   androidEnableOptionItems(false);
@@ -882,6 +908,12 @@ bool MyApp::OnInit() {
   InitBaseConfig(pConfig);
   pConfig->LoadMyConfig();
 
+  if (g_kiosk_startup) {
+    g_wallpaper = new WallpaperFrame();
+    g_wallpaper->ShowFullScreen(true);  // For a kiosk app, make it fullscreen
+    g_wallpaper->Show();
+  }
+
   //  Override for some safe and nice default values if the config file was
   //  created from scratch
   if (b_initial_load) g_Platform->SetDefaultOptions();
@@ -890,9 +922,6 @@ bool MyApp::OnInit() {
 
   // Now initialize UI Style.
   g_StyleManager = new ocpnStyle::StyleManager();
-
-  //     if(g_useMUI)
-  //         g_uiStyle = "MUI_flat";
 
   g_StyleManager->SetStyle("MUI_flat");
   if (!g_StyleManager->IsOK()) {
@@ -1020,7 +1049,6 @@ bool MyApp::OnInit() {
   // Validate OpenGL functionality, if selected
 #ifndef ocpnUSE_GL
   g_bdisable_opengl = true;
-  ;
 #endif
 
   if (g_bdisable_opengl) g_bopengl = false;
@@ -1111,6 +1139,139 @@ bool MyApp::OnInit() {
 
   g_Platform->Initialize_2();
 
+  LoadChartDatabase();
+
+  // Kiosk startup mode only available in linux/GTK builds.
+#ifndef __WXGTK__
+  g_kiosk_startup = false;
+#endif
+
+  // Create and initialize the main application frame.
+  if (!g_kiosk_startup) {
+    BuildMainFrame();
+    SetTopWindow(gFrame);  // Set the main frame as the new top window.
+    gFrame->Show();
+    gFrame->Raise();
+
+    // Start delayed initialization chain after some milliseconds
+    gFrame->InitTimer.Start(50, wxTIMER_CONTINUOUS);
+
+  } else {
+    wxTheApp->CallAfter(&MyApp::OnMainFrameReady);
+  }
+
+  OCPNPlatform::Initialize_4();
+
+#ifdef __ANDROID__
+  androidHideBusyIcon();
+#endif
+  wxLogMessage(
+      wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time()));
+
+  wxMilliSleep(500);
+
+#ifdef __ANDROID__
+  //  We defer the startup message to here to allow the app frame to be
+  //  contructed, thus avoiding a dialog with NULL parent which might not work
+  //  on some devices.
+  if (!n_NavMessageShown || (vs != g_config_version_string) ||
+      (g_AndroidVersionCode != androidGetVersionCode())) {
+    // qDebug() << "Showing NavWarning";
+    wxMilliSleep(500);
+
+    if (!ShowNavWarning()) {
+      qDebug() << "Closing due to NavWarning Cancel";
+      gFrame->Close();
+      androidTerminate();
+      return true;
+    }
+
+    n_NavMessageShown = 1;
+  }
+
+  // Finished with upgrade checking, so persist the currect Version Code
+  g_AndroidVersionCode = androidGetVersionCode();
+  qDebug() << "Persisting Version Code: " << g_AndroidVersionCode;
+#else
+  //  Send the Welcome/warning message if it has never been sent before,
+  //  or if the version string has changed at all
+  //  We defer until here to allow for localization of the message
+  if (!n_NavMessageShown || (vs != g_config_version_string)) {
+    if (!ShowNavWarning()) return false;
+    n_NavMessageShown = 1;
+    pConfig->Flush();
+  }
+#endif
+
+  // As an a.e. Raspberry does not have a hardwareclock we will have some
+  // problems with date/time setting
+  g_bHasHwClock = true;  // by default most computers do have a hwClock
+#if defined(__UNIX__) && !defined(__ANDROID__)
+  struct stat buffer;
+  g_bHasHwClock =
+      ((stat("/dev/rtc", &buffer) == 0) || (stat("/dev/rtc0", &buffer) == 0) ||
+       (stat("/dev/misc/rtc", &buffer) == 0));
+#endif
+
+  g_config_version_string = vs;
+
+  // The user accepted the "not for navigation" nag, so persist it here...
+  pConfig->UpdateSettings();
+
+  for (auto *cp : TheConnectionParams()) {
+    if (cp->bEnabled) {
+      if (cp->GetDSPort().Contains("Serial")) {
+        std::string port(cp->Port.ToStdString());
+        /// CheckSerialAccess(gFrame, port);
+      }
+    }
+  }
+  /// CheckDongleAccess(gFrame);
+
+  // Initialize the CommBridge
+  m_comm_bridge.Initialize();
+
+  std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
+
+  // If network connection is available, start the server and mDNS client
+  if (ipv4_addrs.size()) {
+    std::string ipAddr = ipv4_addrs[0];
+
+    wxString data_dir = g_Platform->GetPrivateDataDir();
+    if (data_dir.Last() != wxFileName::GetPathSeparator())
+      data_dir.Append(wxFileName::GetPathSeparator());
+
+    make_certificate(ipAddr, data_dir.ToStdString());
+
+    m_rest_server.StartServer(fs::path(data_dir.ToStdString()));
+    StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
+                     8000);
+  }
+  return TRUE;
+}
+
+void MyApp::OnMainFrameReady() {
+  BuildMainFrame();
+  gFrame->Hide();
+
+  // Hide the old frame and show the new one.
+  g_wallpaper->Show(false);
+  /// wxTheApp->SetTopWindow(gFrame);
+
+  gFrame->ShowFullScreen(true);
+
+  // Cleanup the wallpaper frame.
+  g_wallpaper->Destroy();
+  g_wallpaper = nullptr;
+
+  SetTopWindow(gFrame);  // Set the main frame as the new top window.
+  gFrame->Raise();
+
+  // Start delayed initialization chain after some milliseconds
+  gFrame->InitTimer.Start(50, wxTIMER_CONTINUOUS);
+}
+
+void MyApp::BuildMainFrame() {
   //  Set up the frame initial visual parameters
   //      Default size, resized later
   wxSize new_frame_size(-1, -1);
@@ -1118,13 +1279,6 @@ bool MyApp::OnInit() {
   ::wxClientDisplayRect(&cx, &cy, &cw, &ch);
 
   InitializeUserColors();
-
-  auto style = g_StyleManager->GetCurrentStyle();
-  auto bitmap = new wxBitmap(style->GetIcon("default_pi", 32, 32));
-  if (bitmap->IsOk())
-    PluginLoader::GetInstance()->SetPluginDefaultIcon(bitmap);
-  else
-    wxLogWarning("Cannot initiate plugin default jigsaw icon.");
 
   if ((g_nframewin_x > 100) && (g_nframewin_y > 100) && (g_nframewin_x <= cw) &&
       (g_nframewin_y <= ch))
@@ -1222,15 +1376,11 @@ bool MyApp::OnInit() {
 
   gFrame = new MyFrame(NULL, myframe_window_title, position, new_frame_size,
                        app_style, dockart);
-  wxTheApp->SetTopWindow(gFrame);
 
   //  Initialize the Plugin Manager
   g_pi_manager = new PlugInManager(gFrame);
 
-  // g_pauimgr = new wxAuiManager;
   g_pauimgr->SetDockSizeConstraint(.9, .9);
-
-  // g_pauimgr->SetFlags(g_pauimgr->GetFlags() | wxAUI_MGR_LIVE_RESIZE);
 
   // tell wxAuiManager to manage the frame
   g_pauimgr->SetManagedWindow(gFrame);
@@ -1244,22 +1394,11 @@ bool MyApp::OnInit() {
 
   gFrame->SetChartUpdatePeriod();  // Reasonable default
 
-  gFrame->Enable();
-
-  gFrame->GetPrimaryCanvas()->SetFocus();
-
   pthumbwin = new ThumbWin(gFrame->GetPrimaryCanvas());
 
   gFrame->ApplyGlobalSettings(false);  // done once on init with resize
-
   gFrame->SetAllToolbarScale();
-
-  // Show the frame
-  gFrame->Show(TRUE);
-  Yield();  // required for Gnome 45
-
   gFrame->SetAndApplyColorScheme(global_color_scheme);
-
   if (g_bframemax) gFrame->Maximize(true);
 
 #ifdef __ANDROID__
@@ -1267,9 +1406,196 @@ bool MyApp::OnInit() {
     gFrame->Maximize(true);
 #endif
 
-  //  Yield to pick up the OnSize() calls that result from Maximize()
-  Yield();
+    //      All set to go.....
 
+    // Process command line option to rebuild cache
+#ifdef ocpnUSE_GL
+  extern ocpnGLOptions g_GLOptions;
+
+  if (g_rebuild_gl_cache && g_bopengl && g_GLOptions.m_bTextureCompression &&
+      g_GLOptions.m_bTextureCompressionCaching) {
+    gFrame->ReloadAllVP();  //  Get a nice chart background loaded
+
+    //      Turn off the toolbar as a clear signal that the system is busy right
+    //      now.
+    // Note: I commented this out because the toolbar never comes back for me
+    // and is unusable until I restart opencpn without generating the cache
+    //        if( g_MainToolbar )
+    //            g_MainToolbar->Hide();
+
+    if (g_glTextureManager) g_glTextureManager->BuildCompressedCache();
+  }
+#endif
+
+  // FIXME (dave)
+  //  move method to frame
+  // if (g_parse_all_enc) ParseAllENC(gFrame);
+
+  //      establish GPS timeout value as multiple of frame timer
+  //      This will override any nonsense or unset value from the config file
+  if ((gps_watchdog_timeout_ticks > 60) || (gps_watchdog_timeout_ticks <= 0))
+    gps_watchdog_timeout_ticks = (GPS_TIMEOUT_SECONDS * 1000) / TIMER_GFRAME_1;
+
+  wxString dogmsg;
+  dogmsg.Printf("GPS Watchdog Timeout is: %d sec.", gps_watchdog_timeout_ticks);
+  wxLogMessage(dogmsg);
+
+  sat_watchdog_timeout_ticks = gps_watchdog_timeout_ticks;
+
+  g_priSats = 99;
+
+  //  Most likely installations have no ownship heading information
+  g_bVAR_Rx = false;
+
+  //  Start up a new track if enabled in config file
+  if (g_bTrackCarryOver) g_bDeferredStartTrack = true;
+
+  pAnchorWatchPoint1 = NULL;
+  pAnchorWatchPoint2 = NULL;
+
+  gFrame->DoChartUpdate();
+
+  // Load and initialize plugins
+  auto style = g_StyleManager->GetCurrentStyle();
+  auto bitmap = new wxBitmap(style->GetIcon("default_pi", 32, 32));
+  if (bitmap->IsOk())
+    PluginLoader::GetInstance()->SetPluginDefaultIcon(bitmap);
+  else
+    wxLogWarning("Cannot initiate plugin default jigsaw icon.");
+
+  /// AbstractPlatform::ShowBusySpinner();
+  PluginLoader::GetInstance()->LoadAllPlugIns(true);
+  /// AbstractPlatform::HideBusySpinner();
+
+  // A Plugin (e.g. Squiddio) may have redefined some routepoint icons...
+  // Reload all icons, to be sure.
+  /// if (pWayPointMan) WayPointmanGui(*pWayPointMan).ReloadRoutepointIcons();
+
+  wxString perspective;
+  pConfig->SetPath("/AUI");
+  pConfig->Read("AUIPerspective", &perspective);
+
+  // Make sure the perspective saved in the config file is "reasonable"
+  // In particular, the perspective should have an entry for every
+  // windows added to the AUI manager so far.
+  // If any are not found, then use the default layout
+
+  bool bno_load = false;
+
+  wxArrayString name_array;
+  wxStringTokenizer st(perspective, "|;");
+  while (st.HasMoreTokens()) {
+    wxString s1 = st.GetNextToken();
+    if (s1.StartsWith("name=")) {
+      wxString sc = s1.AfterFirst('=');
+      name_array.Add(sc);
+    }
+  }
+
+  wxAuiPaneInfoArray pane_array_val = g_pauimgr->GetAllPanes();
+  for (unsigned int i = 0; i < pane_array_val.GetCount(); i++) {
+    wxAuiPaneInfo pane = pane_array_val.Item(i);
+
+    // If we find a pane that is not in the perspective,
+    //  then we should not load the perspective at all
+    if (name_array.Index(pane.name) == wxNOT_FOUND) {
+      bno_load = true;
+      break;
+    }
+  }
+
+  if (!bno_load) g_pauimgr->LoadPerspective(perspective, false);
+
+    // Touch up the AUI manager
+    //  Make sure that any pane width is reasonable default value
+#if 0  // TODO nees this?
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas *cc = g_canvasArray.Item(i);
+    if (cc) {
+      wxSize frameSize = GetClientSize();
+      wxSize minSize = g_pauimgr->GetPane(cc).min_size;
+      int width = wxMax(minSize.x, frameSize.x / 10);
+      g_pauimgr->GetPane(cc).MinSize(frameSize.x * 1 / 5, frameSize.y);
+    }
+  }
+  g_pauimgr->Update();
+#endif
+  g_pauimgr->Update();
+
+  //   Notify all the AUI PlugIns so that they may syncronize with the
+  //   Perspective
+  g_pi_manager->NotifyAuiPlugIns();
+
+  //  Give the user dialog on any blacklisted PlugIns
+  g_pi_manager->ShowDeferredBlacklistMessages();
+  g_pi_manager->CallLateInit();
+
+  return;
+
+  gFrame->DoChartUpdate();
+
+  FontMgr::Get()
+      .ScrubList();  // Clean the font list, removing nonsensical entries
+
+  gFrame->ReloadAllVP();  // once more, and good to go
+
+  gFrame->Refresh(false);
+  gFrame->Raise();
+
+  gFrame->GetPrimaryCanvas()->Enable();
+  gFrame->GetPrimaryCanvas()->SetFocus();
+
+  //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
+  //  We need a deferred resize to get glDrawPixels() to work right.
+  //  So we set a trigger to generate a resize after 5 seconds....
+  //  See the "UniChrome" hack elsewhere
+#ifdef ocpnUSE_GL
+  if (!g_bdisable_opengl) {
+    glChartCanvas *pgl =
+        (glChartCanvas *)gFrame->GetPrimaryCanvas()->GetglCanvas();
+    if (pgl && (pgl->GetRendererString().Find("UniChrome") != wxNOT_FOUND)) {
+      gFrame->m_defer_size = gFrame->GetSize();
+      gFrame->SetSize(gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y);
+      g_pauimgr->Update();
+      gFrame->m_bdefer_resize = true;
+    }
+  }
+#endif
+
+  // Horrible Hack (tm): Make sure the RoutePoint destructor can invoke
+  // glDeleteTextures. Truly awful.
+#ifdef ocpnUSE_GL
+  if (g_bopengl)
+    RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {
+      glDeleteTextures(n, texts);
+    };
+#else
+  RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {};
+#endif
+
+  if (g_start_fullscreen) gFrame->ToggleFullScreen();
+
+#ifdef __ANDROID__
+  //  We need a resize to pick up height adjustment after building android
+  //  ActionBar
+  gFrame->SetSize(getAndroidDisplayDimensions());
+  androidSetFollowTool(gFrame->GetPrimaryCanvas()->m_bFollow ? 1 : 0, true);
+#endif
+
+  /// gFrame->Raise();
+  gFrame->GetPrimaryCanvas()->Enable();
+  gFrame->GetPrimaryCanvas()->SetFocus();
+
+  // Setup Tides/Currents to settings present at last shutdown
+  // TODO
+  //     gFrame->ShowTides( g_bShowTide );
+  //     gFrame->ShowCurrents( g_bShowCurrent );
+
+  //    wxLogMessage( wxString::Format("OpenCPN Initialized in %ld ms.",
+  //    init_sw.Time() ) );
+}
+
+void MyApp::LoadChartDatabase() {
   //   Build the initial chart dir array
   ArrayOfCDI ChartDirArray;
   pConfig->LoadChartDirArray(ChartDirArray);
@@ -1340,220 +1666,6 @@ bool MyApp::OnInit() {
 
   //  Apply the inital Group Array structure to the chart database
   ChartData->ApplyGroupArray(g_pGroupArray);
-
-  //      All set to go.....
-
-  // Process command line option to rebuild cache
-#ifdef ocpnUSE_GL
-  extern ocpnGLOptions g_GLOptions;
-
-  if (g_rebuild_gl_cache && g_bopengl && g_GLOptions.m_bTextureCompression &&
-      g_GLOptions.m_bTextureCompressionCaching) {
-    gFrame->ReloadAllVP();  //  Get a nice chart background loaded
-
-    //      Turn off the toolbar as a clear signal that the system is busy right
-    //      now.
-    // Note: I commented this out because the toolbar never comes back for me
-    // and is unusable until I restart opencpn without generating the cache
-    //        if( g_MainToolbar )
-    //            g_MainToolbar->Hide();
-
-    if (g_glTextureManager) g_glTextureManager->BuildCompressedCache();
-  }
-#endif
-
-  // FIXME (dave)
-  //  move method to frame
-  // if (g_parse_all_enc) ParseAllENC(gFrame);
-
-  //      establish GPS timeout value as multiple of frame timer
-  //      This will override any nonsense or unset value from the config file
-  if ((gps_watchdog_timeout_ticks > 60) || (gps_watchdog_timeout_ticks <= 0))
-    gps_watchdog_timeout_ticks = (GPS_TIMEOUT_SECONDS * 1000) / TIMER_GFRAME_1;
-
-  wxString dogmsg;
-  dogmsg.Printf("GPS Watchdog Timeout is: %d sec.", gps_watchdog_timeout_ticks);
-  wxLogMessage(dogmsg);
-
-  sat_watchdog_timeout_ticks = gps_watchdog_timeout_ticks;
-
-  g_priSats = 99;
-
-  //  Most likely installations have no ownship heading information
-  g_bVAR_Rx = false;
-
-  //  Start up a new track if enabled in config file
-  if (g_bTrackCarryOver) g_bDeferredStartTrack = true;
-
-  pAnchorWatchPoint1 = NULL;
-  pAnchorWatchPoint2 = NULL;
-
-  Yield();
-
-  gFrame->DoChartUpdate();
-
-  FontMgr::Get()
-      .ScrubList();  // Clean the font list, removing nonsensical entries
-
-  gFrame->ReloadAllVP();  // once more, and good to go
-
-  gFrame->Refresh(false);
-  gFrame->Raise();
-
-  gFrame->GetPrimaryCanvas()->Enable();
-  gFrame->GetPrimaryCanvas()->SetFocus();
-
-  //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
-  //  We need a deferred resize to get glDrawPixels() to work right.
-  //  So we set a trigger to generate a resize after 5 seconds....
-  //  See the "UniChrome" hack elsewhere
-#ifdef ocpnUSE_GL
-  if (!g_bdisable_opengl) {
-    glChartCanvas *pgl =
-        (glChartCanvas *)gFrame->GetPrimaryCanvas()->GetglCanvas();
-    if (pgl && (pgl->GetRendererString().Find("UniChrome") != wxNOT_FOUND)) {
-      gFrame->m_defer_size = gFrame->GetSize();
-      gFrame->SetSize(gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y);
-      g_pauimgr->Update();
-      gFrame->m_bdefer_resize = true;
-    }
-  }
-#endif
-
-  // Horrible Hack (tm): Make sure the RoutePoint destructor can invoke
-  // glDeleteTextures. Truly awful.
-#ifdef ocpnUSE_GL
-  if (g_bopengl)
-    RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {
-      glDeleteTextures(n, texts);
-    };
-#else
-  RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {};
-#endif
-
-  if (g_start_fullscreen) gFrame->ToggleFullScreen();
-
-#ifdef __ANDROID__
-  //  We need a resize to pick up height adjustment after building android
-  //  ActionBar
-  gFrame->SetSize(getAndroidDisplayDimensions());
-  androidSetFollowTool(gFrame->GetPrimaryCanvas()->m_bFollow ? 1 : 0, true);
-#endif
-
-  gFrame->Raise();
-  gFrame->GetPrimaryCanvas()->Enable();
-  gFrame->GetPrimaryCanvas()->SetFocus();
-
-  // Setup Tides/Currents to settings present at last shutdown
-  // TODO
-  //     gFrame->ShowTides( g_bShowTide );
-  //     gFrame->ShowCurrents( g_bShowCurrent );
-
-  //      Start up the ticker....
-  gFrame->FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
-
-  //      Start up the ViewPort Rotation angle Averaging Timer....
-  gFrame->FrameCOGTimer.Start(2000, wxTIMER_CONTINUOUS);
-
-  //      Start up the Ten Hz timer....
-  gFrame->FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
-
-  //    wxLogMessage( wxString::Format("OpenCPN Initialized in %ld ms.",
-  //    init_sw.Time() ) );
-
-  OCPNPlatform::Initialize_4();
-
-#ifdef __ANDROID__
-  androidHideBusyIcon();
-#endif
-  wxLogMessage(
-      wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time()));
-
-  wxMilliSleep(500);
-
-#ifdef __ANDROID__
-  //  We defer the startup message to here to allow the app frame to be
-  //  contructed, thus avoiding a dialog with NULL parent which might not work
-  //  on some devices.
-  if (!n_NavMessageShown || (vs != g_config_version_string) ||
-      (g_AndroidVersionCode != androidGetVersionCode())) {
-    // qDebug() << "Showing NavWarning";
-    wxMilliSleep(500);
-
-    if (!ShowNavWarning()) {
-      qDebug() << "Closing due to NavWarning Cancel";
-      gFrame->Close();
-      androidTerminate();
-      return true;
-    }
-
-    n_NavMessageShown = 1;
-  }
-
-  // Finished with upgrade checking, so persist the currect Version Code
-  g_AndroidVersionCode = androidGetVersionCode();
-  qDebug() << "Persisting Version Code: " << g_AndroidVersionCode;
-#else
-  //  Send the Welcome/warning message if it has never been sent before,
-  //  or if the version string has changed at all
-  //  We defer until here to allow for localization of the message
-  if (!n_NavMessageShown || (vs != g_config_version_string)) {
-    if (!ShowNavWarning()) return false;
-    n_NavMessageShown = 1;
-    pConfig->Flush();
-  }
-#endif
-
-  // As an a.e. Raspberry does not have a hardwareclock we will have some
-  // problems with date/time setting
-  g_bHasHwClock = true;  // by default most computers do have a hwClock
-#if defined(__UNIX__) && !defined(__ANDROID__)
-  struct stat buffer;
-  g_bHasHwClock =
-      ((stat("/dev/rtc", &buffer) == 0) || (stat("/dev/rtc0", &buffer) == 0) ||
-       (stat("/dev/misc/rtc", &buffer) == 0));
-#endif
-
-  g_config_version_string = vs;
-
-  // The user accepted the "not for navigation" nag, so persist it here...
-  pConfig->UpdateSettings();
-
-  // Start delayed initialization chain after some milliseconds
-  gFrame->InitTimer.Start(5, wxTIMER_CONTINUOUS);
-
-  g_pauimgr->Update();
-
-  for (auto *cp : TheConnectionParams()) {
-    if (cp->bEnabled) {
-      if (cp->GetDSPort().Contains("Serial")) {
-        std::string port(cp->Port.ToStdString());
-        CheckSerialAccess(gFrame, port);
-      }
-    }
-  }
-  CheckDongleAccess(gFrame);
-
-  // Initialize the CommBridge
-  m_comm_bridge.Initialize();
-
-  std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
-
-  // If network connection is available, start the server and mDNS client
-  if (ipv4_addrs.size()) {
-    std::string ipAddr = ipv4_addrs[0];
-
-    wxString data_dir = g_Platform->GetPrivateDataDir();
-    if (data_dir.Last() != wxFileName::GetPathSeparator())
-      data_dir.Append(wxFileName::GetPathSeparator());
-
-    make_certificate(ipAddr, data_dir.ToStdString());
-
-    m_rest_server.StartServer(fs::path(data_dir.ToStdString()));
-    StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
-                     8000);
-  }
-  return TRUE;
 }
 
 int MyApp::OnExit() {
@@ -1663,7 +1775,7 @@ int MyApp::OnExit() {
 #endif
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
-  if (plocale_def_lang) delete plocale_def_lang;
+  /// TODO if (plocale_def_lang) delete plocale_def_lang;
 #endif
 
   FontMgr::Shutdown();

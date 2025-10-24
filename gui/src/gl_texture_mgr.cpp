@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <list>
+#include <vector>
 
 #include <wx/wxprec.h>
 #include <wx/progdlg.h>
@@ -714,7 +715,9 @@ glTextureManager::glTextureManager() {
     // obviously there's at least one CPU!
     nCPU = 1;
 
-  m_max_jobs = wxMax(nCPU, 1);
+  // m_max_jobs = wxMax(nCPU, 1);
+  m_max_jobs = wxMax(nCPU / 2, 1);
+
   m_prevMemUsed = 0;
 
   if (bthread_debug) printf(" nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
@@ -1100,25 +1103,14 @@ void glTextureManager::PurgeJobList(wxString chart_path) {
                "PurgeJobList must be called from the main thread");
   if (chart_path.Len()) {
     //  Remove all pending jobs relating to the passed chart path
-    for (auto node = todo_list.begin(); node != todo_list.end();
-         /* no increment here */) {
-      JobTicket *ticket = *node;
-      if (ticket->m_ChartPath.IsSameAs(chart_path)) {
-        if (bthread_debug)
-          printf("Pool:  Purge pending job for purged chart\n");
-        node = todo_list.erase(node);  // safe: returns iterator to next
-        delete ticket;
-      } else {
-        ++node;
-      }
-    }
-
-    for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
-      JobTicket *ticket = *node;
-      if (ticket->m_ChartPath.IsSameAs(chart_path)) {
-        ticket->b_abort.store(true, std::memory_order_relaxed);
-      }
-    }
+    auto &list = todo_list;
+    auto removed_begin =
+        std::remove_if(list.begin(), list.end(), [chart_path](JobTicket *t) {
+          bool is_chart_match = t->m_ChartPath == chart_path;
+          if (is_chart_match) delete t;
+          return is_chart_match;
+        });
+    list.erase(removed_begin, list.end());
 
     if (bthread_debug)
       wxLogDebug("Pool:  Purge, todo count: %lu\n",

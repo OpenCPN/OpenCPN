@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,19 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * Sound file loader abstract interface and WAV implementation
  */
 
 #ifndef SOUND_FILE_LOADER_H
 #define SOUND_FILE_LOADER_H
 
-#include <functional>
 #include <memory>
-#include <string>
 #include <cstdint>
+
+namespace o_sound_private {
 
 /**
  * A sound loader loads data from a sound file into memory, making it
@@ -36,7 +33,7 @@
  */
 class AbstractSoundLoader {
 public:
-  virtual ~AbstractSoundLoader() {};
+  virtual ~AbstractSoundLoader()  = default;
 
   /** Load data from sound file at given path. */
   virtual bool Load(const char* path) = 0;
@@ -54,13 +51,13 @@ public:
   virtual size_t Get(void* samples, size_t length) = 0;
 
   /** Get bytes/sample, typically 1 or 2. */
-  virtual unsigned GetBytesPerSample() const = 0;
+ [[nodiscard]] virtual unsigned GetBytesPerSample() const = 0;
 
   /** Get nr of channels, typically 1 (mono) or 2 (stereo). */
-  virtual unsigned GetChannelCount() const = 0;
+  [[nodiscard]]virtual unsigned GetChannelCount() const = 0;
 
   /** Get sampling rate . */
-  virtual unsigned GetSamplingRate() const = 0;
+  [[nodiscard]]virtual unsigned GetSamplingRate() const = 0;
 };
 
 /**
@@ -68,25 +65,23 @@ public:
  */
 class SoundFileLoader : public AbstractSoundLoader {
 public:
-  SoundFileLoader() {};
-  virtual ~SoundFileLoader();
+  SoundFileLoader()  : m_next(0) {};
+  ~SoundFileLoader() override;
 
-  virtual bool Load(const char* path) override;
-  virtual void UnLoad() override;
-  virtual bool Reset() override;
-  virtual size_t Get(void* samples, size_t length) override;
-  unsigned GetBytesPerSample() const override;
-  unsigned GetChannelCount() const override;
-  unsigned GetSamplingRate() const override;
+  bool Load(const char* path) override;
+  void UnLoad() override;
+  bool Reset() override;
+  size_t Get(void* samples, size_t length) override;
+  [[nodiscard]] unsigned GetBytesPerSample() const override;
+  [[nodiscard]] unsigned GetChannelCount() const override;
+  [[nodiscard]] unsigned GetSamplingRate() const override;
 
 protected:
   union SoundSamples {
     const uint8_t* bytes;   // Unsigned 8-bit samples
     const uint16_t* words;  // Signed 16-bit samples
-    SoundSamples() { bytes = 0; }
-    ~SoundSamples() {
-      if (bytes) delete[] bytes;
-    }
+    SoundSamples() : bytes(nullptr) {}
+    ~SoundSamples() { delete[] bytes; }
   };
 
   /** Sound data as loaded from .wav file: */
@@ -102,9 +97,13 @@ protected:
     union SoundSamples m_data;  // The sound samples.
   };
 
+  bool LoadWAV(const uint8_t* data, size_t len);
+
   int m_next;
   std::unique_ptr<SoundData> m_osdata;
-  bool LoadWAV(const uint8_t* data, size_t len);
 };
+
+}   // namespace o_sound_private
+
 
 #endif  //  SOUND_FILE_LOADER_H

@@ -36,6 +36,8 @@
 
 #include "config.h"
 
+#include "o_sound/o_sound.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
@@ -103,7 +105,6 @@
 #include "s57chart.h"  // for ArrayOfS57Obj
 #include "shapefile_basemap.h"
 #include "styles.h"
-#include "SystemCmdSound.h"
 #include "tcmgr.h"
 #include "tc_win.h"
 #include "thumbwin.h"
@@ -238,7 +239,7 @@ EVT_TIMER(MOVEMENT_VP_TIMER, ChartCanvas::MovementVPTimerEvent)
 EVT_TIMER(DRAG_INERTIA_TIMER, ChartCanvas::OnChartDragInertiaTimer)
 EVT_TIMER(JUMP_EASE_TIMER, ChartCanvas::OnJumpEaseTimer)
 EVT_TIMER(MENU_TIMER, ChartCanvas::OnMenuTimer)
-EVT_TIMER(6502, ChartCanvas::OnTapTimer)
+EVT_TIMER(TAP_TIMER, ChartCanvas::OnTapTimer)
 
 END_EVENT_TABLE()
 
@@ -433,8 +434,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_easeTimer.SetOwner(this, JUMP_EASE_TIMER);
   m_animationActive = false;
   m_menuTimer.SetOwner(this, MENU_TIMER);
-
-  m_tap_timer.SetOwner(this, 6502);
+  m_tap_timer.SetOwner(this, TAP_TIMER);
 
   m_panx = m_pany = 0;
   m_panspeed = 0;
@@ -624,9 +624,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_Compass->SetScaleFactor(g_compass_scalefactor);
   m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
 
-  m_notification_button = new NotificationButton(this);
-  m_notification_button->SetScaleFactor(g_compass_scalefactor);
-  m_notification_button->Show(true);
+  if (IsPrimaryCanvas()) {
+    m_notification_button = new NotificationButton(this);
+    m_notification_button->SetScaleFactor(g_compass_scalefactor);
+    m_notification_button->Show(true);
+  }
 
   m_pianoFrozen = false;
 
@@ -1009,7 +1011,6 @@ void ChartCanvas::OnLeftUp(wxMouseEvent &event) {
 
   m_leftdown = false;
 
-#if 1
   if (!m_popupWanted) {
     wxMouseEvent ev(wxEVT_LEFT_UP);
     ev.m_x = pos.x;
@@ -1025,9 +1026,6 @@ void ChartCanvas::OnLeftUp(wxMouseEvent &event) {
   ev.m_y = pos.y;
 
   MouseEvent(ev);
-#else
-  MouseEvent(event);
-#endif
 }
 
 void ChartCanvas::OnLeftDown(wxMouseEvent &event) {
@@ -1086,11 +1084,6 @@ void ChartCanvas::OnLeftDown(wxMouseEvent &event) {
   MouseEvent(event);
 }
 
-void ChartCanvas::OnTapTimer(wxTimerEvent &event) {
-  // printf("tap timer %d\n", m_tap_count);
-  m_tap_count = 0;
-}
-
 void ChartCanvas::OnMotion(wxMouseEvent &event) {
   /* This is a workaround, to the fact that on touchscreen, OnMotion comes with
      dragging, upon simple click, and without the OnLeftDown event before Thus,
@@ -1131,6 +1124,12 @@ void ChartCanvas::OnDoubleLeftClick(wxMouseEvent &event) {
   DoRotateCanvas(0.0);
 }
 #endif /* HAVE_WX_GESTURE_EVENTS */
+
+void ChartCanvas::OnTapTimer(wxTimerEvent &event) {
+  // printf("tap timer %d\n", m_tap_count);
+  m_tap_count = 0;
+}
+
 void ChartCanvas::OnMenuTimer(wxTimerEvent &event) {
   m_FinishRouteOnKillFocus = false;
   CallPopupMenu(m_menuPos.x, m_menuPos.y);
@@ -1193,7 +1192,7 @@ void ChartCanvas::ApplyGlobalSettings() {
     m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
     if (m_bShowCompassWin && g_bShowCompassWin) m_Compass->UpdateStatus();
   }
-  m_notification_button->UpdateStatus();
+  if (m_notification_button) m_notification_button->UpdateStatus();
 }
 
 void ChartCanvas::CheckGroupValid(bool showMessage, bool switchGroup0) {
@@ -4003,12 +4002,11 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
 
           if (segShow_point_a != *pr->pRoutePointList->begin()) {
             auto node = pr->pRoutePointList->begin();
-            ++node;
             RoutePoint *prp;
             float dist_to_endleg = 0;
             wxString t;
 
-            while (node != pr->pRoutePointList->end()) {
+            for (++node; node != pr->pRoutePointList->end(); ++node) {
               prp = *node;
               if (validActive)
                 shiptoEndLeg += prp->m_seg_len;
@@ -4016,7 +4014,6 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
                 validActive = true;
               dist_to_endleg += prp->m_seg_len;
               if (prp->IsSame(segShow_point_a)) break;
-              ++node;
             }
             s << " (+" << FormatDistanceAdaptive(dist_to_endleg) << ")";
           }
@@ -5454,6 +5451,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
   //  Handle the quilted case
   if (VPoint.b_quilt) {
+    VPoint.SetBoxes();
+
     if (last_vp.view_scale_ppm != scale_ppm)
       m_pQuilt->InvalidateAllQuiltPatchs();
 
@@ -5597,8 +5596,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
         VPoint.SetProjectionType(proj);
       }
 
-      VPoint.SetBoxes();
-
       //    If this quilt will be a perceptible delta from the existing quilt,
       //    then refresh the entire screen
       if (m_pQuilt->IsQuiltDelta(VPoint)) {
@@ -5668,8 +5665,6 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
   UpdateCanvasControlBar();  // Refresh the Piano
 
   VPoint.chart_scale = 1.0;  // fallback default value
-
-  /*if (!VPoint.GetBBox().GetValid())*/ VPoint.SetBoxes();
 
   if (VPoint.GetBBox().GetValid()) {
     //      Update the viewpoint reference scale
@@ -6747,11 +6742,12 @@ void ChartCanvas::JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius) {
 static bool bAnchorSoundPlaying = false;
 
 static void onAnchorSoundFinished(void *ptr) {
-  g_anchorwatch_sound->UnLoad();
+  o_sound::g_anchorwatch_sound->UnLoad();
   bAnchorSoundPlaying = false;
 }
 
 void ChartCanvas::AlertDraw(ocpnDC &dc) {
+  using namespace o_sound;
   // Visual and audio alert for anchorwatch goes here
   bool play_sound = false;
   if (pAnchorWatchPoint1 && AnchorAlertOn1) {
@@ -7071,17 +7067,16 @@ void ChartCanvas::ProcessNewGUIScale() {
 
 void ChartCanvas::CreateMUIBar() {
   if (g_useMUI && !m_muiBar) {  // rebuild if necessary
-
-    // We need to update the m_bENCGroup flag, at least for the initial creation
-    // of a MUIBar
-    if (ChartData) m_bENCGroup = ChartData->IsENCInGroup(m_groupIndex);
-
     m_muiBar = new MUIBar(this, wxHORIZONTAL, g_toolbar_scalefactor);
     m_muiBar->SetColorScheme(m_cs);
     m_muiBarHOSize = m_muiBar->m_size;
   }
 
   if (m_muiBar) {
+    // We need to update the m_bENCGroup flag, not least for the initial
+    // creation of a MUIBar
+    if (ChartData) m_bENCGroup = ChartData->IsENCInGroup(m_groupIndex);
+
     SetMUIBarPosition();
     UpdateFollowButtonState();
     m_muiBar->UpdateDynamicValues();
@@ -11711,7 +11706,7 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
   }
 
   //  If necessary, reconfigure the S52 PLIB
-  UpdateCanvasS52PLIBConfig();
+  /// TODO UpdateCanvasS52PLIBConfig();
 
 #ifdef ocpnUSE_GL
   if (!g_bdisable_opengl && m_glcc) m_glcc->Show(g_bopengl);
@@ -11786,9 +11781,11 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
     }
   }
 
-  wxRect noteRect = m_notification_button->GetRect();
-  if (ru.Contains(noteRect) != wxOutRegion) {
-    ru.Subtract(noteRect);
+  if (m_notification_button) {
+    wxRect noteRect = m_notification_button->GetRect();
+    if (ru.Contains(noteRect) != wxOutRegion) {
+      ru.Subtract(noteRect);
+    }
   }
 
   //  Is this viewpoint the same as the previously painted one?
@@ -12747,14 +12744,16 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
     if (m_Compass) m_Compass->Paint(dc);
 
     if (!g_CanvasHideNotificationIcon) {
-      auto &noteman = NotificationManager::GetInstance();
-      if (noteman.GetNotificationCount()) {
-        m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
-        if (m_notification_button->UpdateStatus()) Refresh();
-        m_notification_button->Show(true);
-        m_notification_button->Paint(dc);
-      } else {
-        m_notification_button->Show(false);
+      if (IsPrimaryCanvas()) {
+        auto &noteman = NotificationManager::GetInstance();
+        if (noteman.GetNotificationCount()) {
+          m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
+          if (m_notification_button->UpdateStatus()) Refresh();
+          m_notification_button->Show(true);
+          m_notification_button->Paint(dc);
+        } else {
+          m_notification_button->Show(false);
+        }
       }
     }
   }
@@ -14038,8 +14037,10 @@ void ChartCanvas::UpdateGPSCompassStatusBox(bool b_force_new) {
   scaler = wxMax(scaler, 1.0);
   wxPoint note_point = wxPoint(
       parent_size.x - (scaler * 20 * wxWindow::GetCharWidth()), compass_rect.y);
-  m_notification_button->Move(note_point);
-  m_notification_button->UpdateStatus();
+  if (m_notification_button) {
+    m_notification_button->Move(note_point);
+    m_notification_button->UpdateStatus();
+  }
 
   if (b_force_new | b_update) Refresh();
 }

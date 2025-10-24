@@ -1,6 +1,5 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *   Copyright (C) 2022 Alec Leamas                                        *
+/***************************************************************************
+ *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,31 +18,20 @@
 /**
  * \file
  *
- * Implement comm_navmsg_bus.h i. e., NavMsgBus.
+ * Sound loader factory function.
  */
 
-#include "model/comm_navmsg_bus.h"
+#ifndef SOUND_LOADER_FACTORY_H
+#define SOUND_LOADER_FACTORY_H
 
-void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
-  if (!msg) return;
-  std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
-  RegisterKey(key);
-  Observable(*msg).Notify(msg);
-}
+#include "sound_file_loader.h"
 
-void NavMsgBus::RegisterKey(const std::string& key) {
-  {
-    std::lock_guard lock(m_mutex);
-    if (m_active_messages.find(key) == m_active_messages.end())
-      new_msg_event.Notify();
-    m_active_messages.insert(key);
-  }
-}
+namespace o_sound_private {
 
-NavMsgBus& NavMsgBus::GetInstance() {
-  static NavMsgBus instance;
-  return instance;
-}
+/** Return the sound loader to use as configured by cmake. */
+AbstractSoundLoader* SoundLoaderFactory();
 
-/** Handle changes in driver list. */
-void NavMsgBus::Notify(AbstractCommDriver const&) {}
+}  // namespace
+
+
+#endif  // SOUND_LOADER_FACTORY_H

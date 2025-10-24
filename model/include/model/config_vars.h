@@ -19,6 +19,10 @@
  * \file
  *
  * Global variables stored in configuration file.
+ *
+ * Note: please keep variable definitions at one single line, extended
+ * docs goes to the bottom. This is to make it possible to maintain the
+ * sorted list.
  */
 
 #ifndef CONFIG_VARS_H__
@@ -30,6 +34,7 @@
 #include <wx/config.h>
 #include <wx/string.h>
 
+extern bool g_allow_arb_system_plugin;
 extern bool g_always_send_rmb_rmc;  // See extended docs below
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
@@ -120,7 +125,7 @@ extern bool g_oz_vector_scale;
 extern bool g_persist_active_route;
 extern bool g_useMUI;
 extern bool s_bSetSystemTime;
-extern bool g_allow_arb_system_plugin;
+extern bool g_kiosk_startup;
 
 extern double g_COGAvg;  ///< Debug only usage
 extern double g_defaultBoatSpeed;
@@ -140,7 +145,6 @@ extern double g_TrackDeltaDistance;
 extern double g_TrackIntervalSeconds;
 extern double g_UserVar;
 
-extern float g_fNavAidRadarRingsStep;
 extern float g_fNavAidRadarRingsStep;
 extern float g_fWaypointRangeRingsStep;
 extern float g_GLMinSymbolLineWidth;
@@ -167,34 +171,17 @@ extern int g_detailslider_dialog_y;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_GUIScaleFactor;
-/**
- * User-selected distance (horizontal) unit format for display and input.
- * Values correspond to DISTANCE_* enum (e.g., NMi, mi, km, m, ft, yd, etc.).
- */
-extern int g_iDistanceFormat;
+
+extern int g_iDistanceFormat;  // see extended docs below
 extern int g_iENCToolbarPosX;
 extern int g_iENCToolbarPosY;
-/**
- * User-selected height (vertical, above reference datum) unit format for
- * display and input. Values correspond to HEIGHT_* enum (e.g., meters, feet).
- * Used for tide levels, bridge clearances, and other height displays.
- */
-extern int g_iHeightFormat;
+extern int g_iHeightFormat;  // see extended docs below
 extern int g_iNavAidRadarRingsNumberVisible;
 extern int g_iSDMMFormat;
 extern int g_iSoundDeviceIndex;
-/**
- * User-selected speed unit format for display and input.
- * Values correspond to SPEED_* enum (e.g., knots, mph, km/h, m/s).
- * Used for ownship speed, route planning, and other speed displays.
- */
-extern int g_iSpeedFormat;
-/**
- * User-selected temperature unit format for display and input.
- * Values correspond to TEMPERATURE_* enum (e.g., Celsius, Fahrenheit, Kelvin).
- * Used for weather overlays, tide info, and other temperature displays.
- */
-extern int g_iTempFormat;
+
+extern int g_iSpeedFormat;  // See extended docs below
+extern int g_iTempFormat;   // See extended docs below
 extern int g_iWaypointRangeRingsNumber;
 extern int g_iWaypointRangeRingsStepUnits;
 extern int g_iWindSpeedFormat;
@@ -219,12 +206,7 @@ extern int g_nbrightness;
 extern int g_nCacheLimit;
 extern int g_nCOMPortCheck;
 extern int g_nCPUCount;
-/**
- * User-selected depth (below surface) unit format for display and input.
- * Values correspond to DEPTH_* enum (e.g., meters, feet, fathoms).
- * Used for chart soundings, depth contours, and other depth displays.
- */
-extern int g_nDepthUnitDisplay;
+extern int g_nDepthUnitDisplay;  // see extended docs below
 extern int g_netmask_bits;
 extern int g_nframewin_posx;
 extern int g_nframewin_posy;
@@ -232,7 +214,6 @@ extern int g_nframewin_x;
 extern int g_nframewin_y;
 extern int g_NMEAAPBPrecision;
 extern int g_nNMEADebug;
-extern int n_NavMessageShown;
 extern int g_n_ownship_min_mm;
 extern int g_nTrackPrecision;
 extern int g_ownship_HDTpredictor_endmarker;
@@ -271,26 +252,13 @@ extern long g_maintoolbar_orient;
 extern std::vector<std::string> TideCurrentDataSet;
 extern unsigned g_canvasConfig;
 
-extern wxString gWorldMapLocation;
-extern wxString gWorldShapefileLocation;
-extern wxString g_AW1GUID;
-extern wxString g_AW2GUID;
-extern wxString g_CmdSoundString;
-extern wxString g_GPS_Ident;
-extern wxString g_InVisiNameinLayers;
-extern wxString g_InvisibleLayer;
-extern wxString g_InvisibleLayers;
-extern wxString g_ObjQFileExt;
-extern wxString g_SART_sound_file;
-extern wxString g_TCData_Dir;
-extern wxString g_TalkerIdText;
-extern wxString g_UserPresLibData;
-extern wxString g_VisiNameinLayers;
-extern wxString g_VisibleLayers;
 extern wxString g_active_route;
 extern wxString g_android_Device_Model;
+extern wxString g_AW1GUID;
+extern wxString g_AW2GUID;
 extern wxString g_catalog_channel;
 extern wxString g_catalog_custom_url;
+extern wxString g_CmdSoundString;
 extern wxString g_cog_predictor_color;
 extern wxString g_compatOS;
 extern wxString g_compatOsVersion;
@@ -300,6 +268,7 @@ extern wxString g_datetime_format;        // See extended docs below
 extern wxString g_default_font_facename;  // See extended docs below
 extern wxString g_default_routepoint_icon;
 extern wxString g_default_wp_icon;
+extern wxString g_GPS_Ident;
 extern wxString g_gpx_path;
 extern wxString g_hostname;
 extern wxString g_InvisibleLayer;
@@ -308,21 +277,65 @@ extern wxString g_InVisiNameinLayers;
 extern wxString g_lastAppliedTemplateGUID;
 extern wxString g_locale;
 extern wxString g_localeOverride;
+extern wxString g_ObjQFileExt;
 extern wxString g_ownship_HDTpredictor_color;
+extern wxString g_SART_sound_file;
+extern wxString g_TalkerIdText;
+extern wxString g_TCData_Dir;
 extern wxString g_toolbarConfig;
 extern wxString g_uiStyle;  // Not used
 extern wxString g_uploadConnection;
 extern wxString g_UserPresLibData;
 extern wxString g_VisibleLayers;
 extern wxString g_VisiNameinLayers;
-extern wxString g_winPluginDir;  // Base plugin directory on Windows.
 extern wxString g_winPluginDir;  ///< Base plugin directory on Windows.
+extern wxString gWorldMapLocation;
+extern wxString gWorldShapefileLocation;
 
 /** Size of pysical screen in millimeters. */
 extern std::vector<size_t> g_config_display_size_mm;
 
 wxConfigBase* TheBaseConfig();
 void InitBaseConfig(wxConfigBase* cfg);
+
+/**
+ * \var g_iHeightFormat
+ *
+ * User-selected height (vertical, above reference datum) unit format for
+ * display and input. Values correspond to HEIGHT_* enum (e.g., meters, feet).
+ * Used for tide levels, bridge clearances, and other height displays.
+ */
+
+/**
+ * \var g_iTempFormat
+ *
+ * User-selected temperature unit format for display and input.
+ * Values correspond to TEMPERATURE_* enum (e.g., Celsius, Fahrenheit, Kelvin).
+ * Used for weather overlays, tide info, and other temperature displays.
+ */
+
+/**
+ * \var g_iDistanceFormat
+ *
+ * User-selected distance (horizontal) unit format for display and input.
+ * Values correspond to DISTANCE_* enum (e.g., NMi, mi, km, m, ft, yd, etc.).
+ */
+
+/**
+ * \var g_iSpeedFormat
+ *
+ * User-selected speed unit format for display and input.
+ * Values correspond to SPEED_* enum (e.g., knots, mph, km/h, m/s).
+ * Used for ownship speed, route planning, and other speed displays.
+ */
+
+/**
+ * \var g_nDepthUnitDisplay
+ *
+ * User-selected depth (below surface) unit format for display and input.
+ * Values correspond to DEPTH_* enum (e.g., meters, feet, fathoms).
+ * Used for chart soundings, depth contours, and other depth displays.
+ */
 
 /**
  * \var g_bsmoothpanzoom
