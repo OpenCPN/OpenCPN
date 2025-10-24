@@ -7196,14 +7196,14 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
 
-/** Empty base class for HostApi versions. */
+/** Empty, virtual base class for HostApi versions. */
 class HostApi {
 public:
   virtual ~HostApi() = default;
 };
 
 /** @return reference to current HostApi. */
-HostApi &GetHostApi();
+std::unique_ptr<HostApi> GetHostApi();
 
 class HostApi121 : public HostApi {
 public:
