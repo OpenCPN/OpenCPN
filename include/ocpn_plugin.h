@@ -7198,19 +7198,23 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
 
-/** Empty base class for HostApi versions. */
+/** Empty, virtual base class for HostApi versions. */
 class HostApi {
 public:
   virtual ~HostApi() = default;
 };
 
-/** @return reference to current HostApi. */
-HostApi &GetHostApi();
+/**
+ * HostApi factory,
+ * @return Last known HostApi instance.
+ */
+std::unique_ptr<HostApi> GetHostApi();
 
 class HostApi121 : public HostApi {
 public:
   HostApi121()
-      : kContextMenuDisableWaypoint(1),
+      : HostApi(),
+        kContextMenuDisableWaypoint(1),
         kContextMenuDisableRoute(2),
         kContextMenuDisableTrack(4),
         kContextMenuDisableAistarget(8) {}
@@ -7229,7 +7233,6 @@ public:
     kObjectUnknown
   };
 
-  HostApi121 *api_12;
   struct PiPointContext {
     PiContextObjectType object_type;
     std::string object_ident;

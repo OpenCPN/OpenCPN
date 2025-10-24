@@ -600,16 +600,15 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   menuFocus = contextMenu;
 
   wxString name;
-  bool has_api_121 = false;
-  try {
-    auto &api_121 = dynamic_cast<HostApi121 &>(GetHostApi());
-    has_api_121 = true;
+  std::unique_ptr<HostApi> host_api = GetHostApi();
+  auto *api_121 = dynamic_cast<HostApi121 *>(host_api.get());
+  if (api_121) {
     if (!g_bBasicMenus || (seltype != SELTYPE_ROUTECREATE)) {
       if (g_pAIS) {
-        if (has_api_121 && parent->GetShowAIS() &&
+        if (api_121 && parent->GetShowAIS() &&
             (seltype & SELTYPE_AISTARGET &&
-             !(api_121.GetContextMenuMask() &
-               api_121.kContextMenuDisableAistarget))) {
+             !(api_121->GetContextMenuMask() &
+               api_121->kContextMenuDisableAistarget))) {
           auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(m_FoundAIS_MMSI);
           if (!g_bBasicMenus && myptarget) {
             name = myptarget->GetFullName();
@@ -689,7 +688,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     }
 
     if (seltype & SELTYPE_ROUTESEGMENT &&
-        !(api_121.GetContextMenuMask() & api_121.kContextMenuDisableRoute)) {
+        !(api_121->GetContextMenuMask() & api_121->kContextMenuDisableRoute)) {
       if (!g_bBasicMenus && m_pSelectedRoute) {
         name = m_pSelectedRoute->m_RouteNameString;
         if (name.IsEmpty()) name = _("Unnamed Route");
@@ -779,7 +778,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     }
 
     if (seltype & SELTYPE_TRACKSEGMENT &&
-        !(api_121.GetContextMenuMask() & api_121.kContextMenuDisableTrack)) {
+        !(api_121->GetContextMenuMask() & api_121->kContextMenuDisableTrack)) {
       name = wxEmptyString;
       if (!g_bBasicMenus && m_pSelectedTrack)
         name = " ( " + m_pSelectedTrack->GetName(true) + " )";
@@ -806,7 +805,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     }
 
     if (seltype & SELTYPE_ROUTEPOINT &&
-        !(api_121.GetContextMenuMask() & api_121.kContextMenuDisableWaypoint)) {
+        !(api_121->GetContextMenuMask() &
+          api_121->kContextMenuDisableWaypoint)) {
       if (!g_bBasicMenus && m_pFoundRoutePoint) {
         name = m_pFoundRoutePoint->GetName();
         if (name.IsEmpty()) name = _("Unnamed Waypoint");
@@ -882,7 +882,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     }
 
     if (seltype & SELTYPE_MARKPOINT &&
-        !(api_121.GetContextMenuMask() & api_121.kContextMenuDisableWaypoint)) {
+        !(api_121->GetContextMenuMask() &
+          api_121->kContextMenuDisableWaypoint)) {
       if (!g_bBasicMenus && m_pFoundRoutePoint) {
         name = m_pFoundRoutePoint->GetName();
         if (name.IsEmpty()) name = _("Unnamed Mark");
@@ -1034,8 +1035,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     if (!(sub_menu & RTMENU)) delete menuRoute;
     if (!(sub_menu & TKMENU)) delete menuTrack;
     if (!(sub_menu & WPMENU)) delete menuWaypoint;
-  } catch (const std::bad_cast &) {
-  }
+  }  // api_121
 }
 
 void CanvasMenuHandler::AddPluginContextMenuItems(wxMenu *contextMenu,

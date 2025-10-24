@@ -3863,9 +3863,8 @@ void HostApi121::AisToggleTrack(wxString ais_mmsi) {
 static int GetContextMenuMask() { return g_canvas_context_Menu_Disable_Mask; }
 int HostApi121::GetContextMenuMask() { return ::GetContextMenuMask(); }
 
-HostApi& GetHostApi() {
-  static HostApi121 host_api;
-  return host_api;
+std::unique_ptr<HostApi> GetHostApi() {
+  return std::make_unique<HostApi121>(HostApi121());
 }
 
 static void SetContextMenuMask(int mask) {
