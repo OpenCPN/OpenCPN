@@ -1113,8 +1113,7 @@ void glTextureManager::PurgeJobList(wxString chart_path) {
     list.erase(removed_begin, list.end());
 
     if (bthread_debug)
-      wxLogDebug("Pool:  Purge, todo count: %lu\n",
-                 (long unsigned)todo_list.size());
+      std::cout << "Pool: Purge, todo count: " << list.size() << "\n";
   } else {
     for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
       JobTicket *ticket = *node;
