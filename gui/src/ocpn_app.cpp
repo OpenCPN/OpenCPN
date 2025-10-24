@@ -1141,6 +1141,11 @@ bool MyApp::OnInit() {
 
   LoadChartDatabase();
 
+  // Kiosk startup mode only available in linux/GTK builds.
+#ifndef __WXGTK__
+  g_kiosk_startup = false;
+#endif
+
   // Create and initialize the main application frame.
   if (!g_kiosk_startup) {
     BuildMainFrame();
