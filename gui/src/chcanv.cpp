@@ -624,9 +624,11 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_Compass->SetScaleFactor(g_compass_scalefactor);
   m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
 
-  m_notification_button = new NotificationButton(this);
-  m_notification_button->SetScaleFactor(g_compass_scalefactor);
-  m_notification_button->Show(true);
+  if (IsPrimaryCanvas()) {
+    m_notification_button = new NotificationButton(this);
+    m_notification_button->SetScaleFactor(g_compass_scalefactor);
+    m_notification_button->Show(true);
+  }
 
   m_pianoFrozen = false;
 
@@ -1190,7 +1192,7 @@ void ChartCanvas::ApplyGlobalSettings() {
     m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
     if (m_bShowCompassWin && g_bShowCompassWin) m_Compass->UpdateStatus();
   }
-  m_notification_button->UpdateStatus();
+  if (m_notification_button) m_notification_button->UpdateStatus();
 }
 
 void ChartCanvas::CheckGroupValid(bool showMessage, bool switchGroup0) {
@@ -11779,9 +11781,11 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
     }
   }
 
-  wxRect noteRect = m_notification_button->GetRect();
-  if (ru.Contains(noteRect) != wxOutRegion) {
-    ru.Subtract(noteRect);
+  if (m_notification_button) {
+    wxRect noteRect = m_notification_button->GetRect();
+    if (ru.Contains(noteRect) != wxOutRegion) {
+      ru.Subtract(noteRect);
+    }
   }
 
   //  Is this viewpoint the same as the previously painted one?
@@ -12740,14 +12744,16 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
     if (m_Compass) m_Compass->Paint(dc);
 
     if (!g_CanvasHideNotificationIcon) {
-      auto &noteman = NotificationManager::GetInstance();
-      if (noteman.GetNotificationCount()) {
-        m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
-        if (m_notification_button->UpdateStatus()) Refresh();
-        m_notification_button->Show(true);
-        m_notification_button->Paint(dc);
-      } else {
-        m_notification_button->Show(false);
+      if (IsPrimaryCanvas()) {
+        auto &noteman = NotificationManager::GetInstance();
+        if (noteman.GetNotificationCount()) {
+          m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
+          if (m_notification_button->UpdateStatus()) Refresh();
+          m_notification_button->Show(true);
+          m_notification_button->Paint(dc);
+        } else {
+          m_notification_button->Show(false);
+        }
       }
     }
   }
@@ -14031,8 +14037,10 @@ void ChartCanvas::UpdateGPSCompassStatusBox(bool b_force_new) {
   scaler = wxMax(scaler, 1.0);
   wxPoint note_point = wxPoint(
       parent_size.x - (scaler * 20 * wxWindow::GetCharWidth()), compass_rect.y);
-  m_notification_button->Move(note_point);
-  m_notification_button->UpdateStatus();
+  if (m_notification_button) {
+    m_notification_button->Move(note_point);
+    m_notification_button->UpdateStatus();
+  }
 
   if (b_force_new | b_update) Refresh();
 }
