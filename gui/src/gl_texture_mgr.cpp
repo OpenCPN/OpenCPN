@@ -674,7 +674,7 @@ void *CompressionPoolThread::Entry() {
     SetPriority(WXTHREAD_MIN_PRIORITY);
 
     if (!m_ticket->DoJob())
-      m_ticket->b_isaborted.load(std::memory_order_relaxed);
+      m_ticket->b_isaborted.store(true, std::memory_order_relaxed);
 
     if (m_pMessageTarget) {
       OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
@@ -716,7 +716,7 @@ glTextureManager::glTextureManager() {
     nCPU = 1;
 
   // m_max_jobs = wxMax(nCPU, 1);
-  m_max_jobs = wxMax(nCPU / 2, 1);
+  m_max_jobs = wxMax(nCPU - 3, 1);
 
   m_prevMemUsed = 0;
 
