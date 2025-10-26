@@ -8794,6 +8794,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       }
     }  // !g_btouch
     else {  // g_btouch
+      m_last_touch_down_pos = event.GetPosition();
 
       if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
         // if near screen edge, pan with injection
@@ -9367,6 +9368,16 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         } else if (!g_pMarkInfoDialog->IsShown() && g_bWayPointPreventDragging)
           bSelectAllowed = false;
 
+        // Avoid accidental selection of routepoint if last touchdown started
+        // a significant chart drag operation
+        int significant_drag = g_Platform->GetSelectRadiusPix() * 2;
+        if ((abs(m_last_touch_down_pos.x - event.GetPosition().x) >
+             significant_drag) ||
+            (abs(m_last_touch_down_pos.y - event.GetPosition().y) >
+             significant_drag)) {
+          bSelectAllowed = false;
+        }
+
         /*if this left up happens at the end of a route point dragging and if
         the cursor/thumb is on the draghandle icon, not on the point iself a new
         selection will select nothing and the drag will never be ended, so the
@@ -9420,7 +9431,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             b_startedit_route = false;
           }
 
-          //  Mark editing
+          //  Mark editing in touch mode, left-up event.
           if (m_pRoutePointEditTarget) {
             if (b_was_editing_mark ||
                 b_was_editing_route) {  // kill previous hilight

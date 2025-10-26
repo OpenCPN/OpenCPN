@@ -1060,6 +1060,7 @@ private:
   int yb_margin;
 
   wxPoint last_drag;
+  wxPoint m_last_touch_down_pos;
 
   wxMemoryDC *pmemdc;
 
