@@ -43,6 +43,12 @@
 #define DECL_IMP
 #endif
 
+#include <wx/aui/framemanager.h>  // for wxAuiManager
+#include <wx/fileconf.h>          // for wxFileConfig
+#include <wx/font.h>              // for wxFont
+#include <wx/glcanvas.h>          // for wxGLContext, wxGLCanvas
+#include <wx/notebook.h>          // for wxNotebook
+#include <wx/vscroll.h>           // for wxScrolledWindow
 #include <wx/xml/xml.h>
 #include <wx/dcmemory.h>
 #include <wx/dialog.h>
@@ -59,8 +65,6 @@
 #include <vector>
 #include <unordered_map>
 
-class wxGLContext;
-
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
 //    PlugIns conforming to API Version less than the most modern will also
@@ -69,12 +73,6 @@ class wxGLContext;
 #define API_VERSION_MINOR 21
 
 //    Fwd Definitions
-class wxFileConfig;
-class wxNotebook;
-class wxFont;
-class wxAuiManager;
-class wxScrolledWindow;
-class wxGLCanvas;
 
 //---------------------------------------------------------------------------------------------------------
 //
