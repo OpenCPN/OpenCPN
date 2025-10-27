@@ -3045,64 +3045,81 @@ bool androidWriteSerial(wxString &portname, wxString &message) {
 
 int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &title, const wxString &suggestion,
-                       const wxString &wildcard, bool dirOnly, bool addFile) {
+                       const wxString &wildcard, bool dirOnly, bool addFile,
+                       bool plugin_caller) {
   wxString tresult;
 
   if (g_androidUtilHandler) {
     wxString activityResult;
-    if (dirOnly)
+    if (dirOnly) {
       activityResult = callActivityMethod_s2s2i("DirChooserDialog", initDir,
                                                 title, addFile, 0);
-
-    else
-      activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
-                                              title, suggestion, wildcard);
-
-    if (activityResult == _T("OK")) {
-      return wxID_OK;
-    } else if (activityResult == "cancel:") {
-      return wxID_CANCEL;
-    } else {
-      *result = activityResult.AfterFirst(':');
-      return wxID_OK;
-    }
-
-#if 0
-      // qDebug() << "ResultOK, starting spin loop";
-      g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
-      g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
-
-      //  Spin, waiting for result
-      while (!g_androidUtilHandler->m_done) {
-        wxMilliSleep(50);
-        wxSafeYield(NULL, true);
+      if (activityResult == _T("OK")) {
+        return wxID_OK;
+      } else if (activityResult == "cancel:") {
+        return wxID_CANCEL;
+      } else {
+        *result = activityResult.AfterFirst(':');
+        return wxID_OK;
       }
 
-      // qDebug() << "out of spin loop";
-      g_androidUtilHandler->m_action = ACTION_NONE;
-      g_androidUtilHandler->m_eventTimer.Stop();
+    } else {
+      if (!plugin_caller) {
+        activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
+                                                title, suggestion, wildcard);
 
-      tresult = g_androidUtilHandler->GetStringResult();
-
-      if (tresult.StartsWith(_T("cancel:"))) {
-        // qDebug() << "Cancel1";
-        return wxID_CANCEL;
-      } else if (tresult.StartsWith(_T("file:"))) {
-        if (result) {
-          *result = tresult.AfterFirst(':');
-          // qDebug() << "OK";
+        if (activityResult == _T("OK")) {
           return wxID_OK;
+        } else if (activityResult == "cancel:") {
+          return wxID_CANCEL;
         } else {
-          // qDebug() << "Cancel2";
+          *result = activityResult.AfterFirst(':');
+          return wxID_OK;
+        }
+      } else {
+        // Calls originating from a plugin (e.g.vdr_pi) will need polling loop
+        // to detect end of java file chooser dialog.
+        // Set it up
+        g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
+        g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
+        g_androidUtilHandler->m_done = false;
+        g_androidUtilHandler->m_stringResult = "cancel:";
+
+        activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
+                                                title, suggestion, wildcard);
+
+        if (activityResult == "cancel:") {
+          g_androidUtilHandler->m_action = ACTION_NONE;
+          g_androidUtilHandler->m_eventTimer.Stop();
           return wxID_CANCEL;
         }
-      }
-    } else {
-      // qDebug() << "Result NOT OK";
-    }
-#endif
-  }
 
+        //  Spin, waiting for result
+        int nloop = 20 * 20;  // 20 seconds max.
+        while (nloop-- && !g_androidUtilHandler->m_done) {
+          wxMilliSleep(50);
+          wxSafeYield(NULL, true);
+        }
+
+        g_androidUtilHandler->m_action = ACTION_NONE;
+        g_androidUtilHandler->m_eventTimer.Stop();
+
+        tresult = g_androidUtilHandler->GetStringResult();
+
+        if (tresult.StartsWith(_T("cancel:"))) {
+          if (result) *result = "";
+          return wxID_CANCEL;
+        } else if (tresult.StartsWith(_T("file:"))) {
+          if (result) {
+            *result = tresult.AfterFirst(':');
+            return wxID_OK;
+          } else {
+            return wxID_CANCEL;
+          }
+        }
+      }
+    }
+  }
   return wxID_CANCEL;
 }
 

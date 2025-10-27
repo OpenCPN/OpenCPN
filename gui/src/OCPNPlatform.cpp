@@ -1590,7 +1590,7 @@ static wxString ExpandPaths(wxString paths, OCPNPlatform *platform);
 int OCPNPlatform::DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
                                        wxString Title, wxString initDir,
                                        wxString suggestedName,
-                                       wxString wildcard) {
+                                       wxString wildcard, bool plugin_caller) {
   wxString file;
   int result = wxID_CANCEL;
 
@@ -1601,7 +1601,8 @@ int OCPNPlatform::DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
           _T("/data/data")))  // not good, provokes a crash usually...
     idir = GetWritableDocumentsDir();
 
-  result = androidFileChooser(&file, idir, Title, suggestedName, wildcard);
+  result = androidFileChooser(&file, idir, Title, suggestedName, wildcard,
+                              false, false, plugin_caller);
   if (file_spec) *file_spec = file;
 #else
   long flag = wxFD_DEFAULT_STYLE;

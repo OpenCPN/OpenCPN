@@ -168,7 +168,8 @@ public:
 
   int DoFileSelectorDialog(wxWindow *parent, wxString *file_spec,
                            wxString Title, wxString initDir,
-                           wxString suggestedName, wxString wildcard);
+                           wxString suggestedName, wxString wildcard,
+                           bool plugin_caller = false);
   int DoDirSelectorDialog(wxWindow *parent, wxString *file_spec, wxString Title,
                           wxString initDir, bool b_addFiles = true);
 

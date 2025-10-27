@@ -117,7 +117,8 @@ extern bool DoAndroidPreferences(void);
 extern int androidFileChooser(wxString *result, const wxString &initDir,
                               const wxString &title, const wxString &suggestion,
                               const wxString &wildcard, bool dirOnly = false,
-                              bool addFiles = false);
+                              bool addFiles = false,
+                              bool plugin_caller = false);
 
 extern void androidSetChartTypeMaskSel(int mask, wxString &indicator);
 extern void androidSetRouteAnnunciator(bool viz);

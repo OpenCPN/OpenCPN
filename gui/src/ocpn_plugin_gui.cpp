@@ -1499,7 +1499,7 @@ int PlatformFileSelectorDialog(wxWindow* parent, wxString* file_spec,
                                wxString Title, wxString initDir,
                                wxString suggestedName, wxString wildcard) {
   return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, initDir,
-                                          suggestedName, wildcard);
+                                          suggestedName, wildcard, true);
 }
 
 //---------------------------------------------------------------------------
