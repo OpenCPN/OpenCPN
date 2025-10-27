@@ -9568,14 +9568,6 @@ void options::OnInsertTideDataLocation(wxCommandEvent& event) {
   sel_file = popenDialog->GetPath();
   delete popenDialog;
 
-#else
-  wxString path;
-  response = g_Platform->DoFileSelectorDialog(this, &path,
-                                              _("Select Tide/Current Data"),
-                                              g_TCData_Dir, _T(""), wxT("*.*"));
-  sel_file = path;
-#endif
-
   if (response == wxID_OK) {
     wxListItem li;
     int id = tcDataSelected->GetItemCount();  // next index
@@ -9588,9 +9580,37 @@ void options::OnInsertTideDataLocation(wxCommandEvent& event) {
     wxString data_dir = fn.GetPath();
     g_TCData_Dir = g_Platform->NormalizePath(data_dir);
   }
+#else
+  wxString path;
+  response = g_Platform->DoFileSelectorDialog(
+      this, &path, _("Select Tide/Current Data"), "", _T(""), wxT("*.*"));
+  if (path.IsEmpty()) {  // Return from SAF processing, expecting callback
+    PrepareImportAndroidTC();
+    return;
+  } else {
+    sel_file = path;  // Return from safe app arena access
+
+    if (response == wxID_OK) {
+      wxListItem li;
+      int id = tcDataSelected->GetItemCount();  // next index
+      li.SetId(id);
+      long idx = tcDataSelected->InsertItem(li);
+      tcDataSelected->SetItem(id, 0, g_Platform->NormalizePath(sel_file));
+    }
+  }
+#endif
 }
 
+void options::AddTCDataSource(wxString& TCD_file) {
+  wxListItem li;
+  int id = tcDataSelected->GetItemCount();  // next index
+  li.SetId(id);
+  long idx = tcDataSelected->InsertItem(li);
+  tcDataSelected->SetItem(id, 0, g_Platform->NormalizePath(TCD_file));
+};
+
 void options::OnRemoveTideDataLocation(wxCommandEvent& event) {
+#ifndef __ANDROID__
   long item = -1;
   for (;;) {
     item = tcDataSelected->GetNextItem(item, wxLIST_NEXT_ALL,
@@ -9599,6 +9619,12 @@ void options::OnRemoveTideDataLocation(wxCommandEvent& event) {
     tcDataSelected->DeleteItem(item);
     item = -1;  // Restart
   }
+#else
+  long item = -1;
+  item =
+      tcDataSelected->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+  if (item != -1) tcDataSelected->DeleteItem(item);
+#endif
 }
 
 // OpenGLOptionsDlg

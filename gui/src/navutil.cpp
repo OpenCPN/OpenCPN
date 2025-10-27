@@ -2911,7 +2911,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
     wxFileName fn(path);
     g_gpx_path = fn.GetPath();
     if (path.IsEmpty()) {  // Return from SAF processing, expecting callback
-      PrepareImportAndroid(islayer, isPersistent);
+      PrepareImportAndroidGPX(islayer, isPersistent);
       return;
     } else
       file_array.Add(path);  // Return from safe app arena access

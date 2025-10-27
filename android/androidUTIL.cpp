@@ -329,9 +329,10 @@ int g_orientation;
 int g_Android_SDK_Version;
 MigrateAssistantDialog *g_migrateDialog;
 
-bool g_android_import_active;
+bool g_android_import_GPX_active;
 bool g_android_import_islayer;
 bool g_android_import_ispersistent;
+bool g_android_import_TC_active;
 
 //      Some dummy devices to ensure plugins have static access to these classes
 //      not used elsewhere
@@ -1065,11 +1066,13 @@ bool androidUtilInit(void) {
   return true;
 }
 
-void PrepareImportAndroid(bool isLayer, bool isPersistent) {
-  g_android_import_active = true;
+void PrepareImportAndroidGPX(bool isLayer, bool isPersistent) {
+  g_android_import_GPX_active = true;
   g_android_import_islayer = isLayer;
   g_android_import_ispersistent = isPersistent;
 }
+
+void PrepareImportAndroidTC() { g_android_import_TC_active = true; }
 
 wxString androidGetIpV4Address(void) {
   wxString ipa = callActivityMethod_vs("getIpAddress");
@@ -1126,21 +1129,41 @@ extern "C" {
 JNIEXPORT void JNICALL Java_org_opencpn_OCPNNativeLib_ImportTmpGPX(
     JNIEnv *env, jobject obj, jstring filePath, bool isLayer,
     bool isPersistent) {
-  if (!g_android_import_active) return;
-  wxArrayString file_array;
-  const char *string = env->GetStringUTFChars(filePath, NULL);
-  file_array.Add(wxString(string));
-  ImportFileArray(file_array, g_android_import_islayer,
-                  g_android_import_ispersistent, "");
-  g_android_import_active = false;
-  g_android_import_islayer = false;
-  g_android_import_ispersistent = false;
+  if (g_android_import_GPX_active) {
+    wxArrayString file_array;
+    const char *string = env->GetStringUTFChars(filePath, NULL);
+    file_array.Add(wxString(string));
+    ImportFileArray(file_array, g_android_import_islayer,
+                    g_android_import_ispersistent, "");
+    g_android_import_GPX_active = false;
+    g_android_import_islayer = false;
+    g_android_import_ispersistent = false;
 
-  // Update the RouteManagerDialog on the wx event loop
-  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-  evt.SetId(SCHEDULED_EVENT_UPDATE_RMD);
-  if (gFrame && gFrame->GetEventHandler()) {
-    g_androidUtilHandler->AddPendingEvent(evt);
+    // Update the RouteManagerDialog on the wx event loop
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+    evt.SetId(SCHEDULED_EVENT_UPDATE_RMD);
+    if (gFrame && gFrame->GetEventHandler()) {
+      g_androidUtilHandler->AddPendingEvent(evt);
+    }
+  }
+
+  if (g_android_import_TC_active) {
+    // TCD source file
+    const char *path = env->GetStringUTFChars(filePath, NULL);
+    wxString src = wxString(path);
+    // Destination file location
+    wxString TCD_file_dir =
+        g_Platform->GetPrivateDataDir() + _T("/") + _T("tcdata");
+    if (!wxDirExists(TCD_file_dir)) wxMkdir(TCD_file_dir);
+
+    wxFileName fn(src);
+    wxString final_TCD_file = TCD_file_dir + "/" + fn.GetFullName();
+
+    wxRemoveFile(final_TCD_file);  // Avoid auto paren on duplicate name
+    AndroidSecureCopyFile(src, final_TCD_file);
+
+    if (g_options) g_options->AddTCDataSource(final_TCD_file);
+    g_android_import_TC_active = false;
   }
 }
 }

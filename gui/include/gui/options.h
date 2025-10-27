@@ -392,6 +392,7 @@ public:
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
+  void AddTCDataSource(wxString &TCD_file);
 
 #ifdef __OCPN__OPTIONS_USE_LISTBOOK__
   wxListbook *m_pListbook;
