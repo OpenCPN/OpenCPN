@@ -21,6 +21,8 @@
  * Implement send_to_gps_dlg.h -- Send route/waypoint to GPS dialog
  */
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/arrstr.h>
 #include <wx/button.h>
 #include <wx/combobox.h>

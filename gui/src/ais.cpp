@@ -40,6 +40,8 @@
 #include <wx/imaglist.h>
 #include <wx/window.h>
 
+#include "gl_headers.h"  // Must come before anything including GL stuff
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"

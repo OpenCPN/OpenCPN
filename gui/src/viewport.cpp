@@ -21,6 +21,9 @@
  * Implement viewport.h -- geographic projection and coordinate transformations
  */
 
+// Must come before any GL includes:
+#include "gl_headers.h"
+
 #include <vector>
 
 #ifndef __WXMSW__

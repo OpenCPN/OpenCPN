@@ -36,6 +36,8 @@
 #include <wx/wx.h>
 #endif
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/artprov.h>
 #include <wx/aui/aui.h>
 #include <wx/brush.h>

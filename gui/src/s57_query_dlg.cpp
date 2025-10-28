@@ -21,6 +21,8 @@
  * Implement s57_query_dlg.h -- S57 object query result window
  */
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/wxprec.h>
 #include <wx/arrstr.h>
 #include <wx/gdicmn.h>

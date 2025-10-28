@@ -20,12 +20,12 @@
  *
  * Implement ocpn_aui_manager.h -- OCPN_AUIManager
  */
-
+#include "gl_headers.h"  // Must come before anything using GL stuff
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
 
-#include <ocpn_aui_manager.h>
+#include "ocpn_aui_manager.h"
 #include "ocpn_plugin.h"
 #include "ocpn_frame.h"
 

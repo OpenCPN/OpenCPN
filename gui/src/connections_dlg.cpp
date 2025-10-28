@@ -27,6 +27,8 @@
 #include <string>
 #include <vector>
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/arrstr.h>
 #include <wx/bitmap.h>
 #include <wx/grid.h>

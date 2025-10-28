@@ -21,6 +21,8 @@
  * Implement ocpn_list_ctrl.h -- AIS info display component
  */
 
+#include "gl_headers.h"  // Must come before anythng using GL stuff
+
 #include "ocpn_list_ctrl.h"
 
 #include "model/ais_state_vars.h"

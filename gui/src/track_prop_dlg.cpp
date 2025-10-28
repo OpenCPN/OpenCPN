@@ -24,6 +24,8 @@
 
 #include "config.h"
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include "model/georef.h"
 #include "model/gui_vars.h"
 #include "model/navobj_db.h"
