@@ -21,6 +21,8 @@
  * Implement priorities_gui.h -- input priorities management dialog
  */
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #ifdef __ANDROID__
 #include "qdebug.h"
 #include <QtWidgets/QScroller>

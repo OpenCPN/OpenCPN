@@ -32,6 +32,8 @@
 
 #include <wx/datetime.h>
 
+#include "gl_headers.h"  // Must be before anything using GL
+
 #include "model/config_vars.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"

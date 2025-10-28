@@ -25,6 +25,8 @@
 
 #include <string>
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/colour.h>
 #include <wx/gdicmn.h>
 #include <wx/pen.h>

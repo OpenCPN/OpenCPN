@@ -22,6 +22,7 @@
  */
 
 #include "config.h"
+#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <set>
 #include <sstream>

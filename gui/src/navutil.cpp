@@ -23,6 +23,8 @@
  *  Implement nav_util.h -- Utility Functions
  */
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/wxprec.h>
 
 #ifdef __MINGW32__

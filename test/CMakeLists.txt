@@ -74,8 +74,8 @@ endif ()
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   set(_IPC_SRV_SRC ipc-srv-tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
   add_executable(ipc-srv-tests ${_IPC_SRV_SRC} )
-  target_link_libraries(
-    ipc-srv-tests PRIVATE ocpn::gtest ocpn::model-src win32_libs
+  target_link_libraries(ipc-srv-tests
+    PRIVATE ocpn::gtest ocpn::model-src ocpn::gl-headers win32_libs
   )
   if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
     target_link_libraries(ipc-srv-tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
@@ -88,7 +88,7 @@ endif ()
 set(_BUF_TEST_SRC buffer_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 add_executable(buffer_tests ${_BUF_TEST_SRC})
 target_link_libraries(
-  buffer_tests PRIVATE  ocpn::model-src ocpn::gtest win32_libs
+  buffer_tests PRIVATE  ocpn::model-src ocpn::gtest ocpn::gl-headers win32_libs
 )
 target_compile_definitions(
   buffer_tests PUBLIC TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"

@@ -34,6 +34,8 @@
 #include <unistd.h>
 #endif
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>

@@ -26,6 +26,8 @@
 
 #include <wx/html/htmlwin.h>
 
+#include "gl_headers.h"  // Muyst be before anything including GL stuff
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"

@@ -22,6 +22,8 @@
  ***************************************************************************
  */
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/textctrl.h>
 #include <wx/sizer.h>
 #include <wx/tokenzr.h>

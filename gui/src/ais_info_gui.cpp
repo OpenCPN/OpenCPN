@@ -38,6 +38,7 @@
 #include <wx/string.h>
 
 #include "o_sound/o_sound.h"
+#include "gl_headers.h"  // Must be before anything including GL stuff
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"

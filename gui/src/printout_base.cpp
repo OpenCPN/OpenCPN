@@ -22,6 +22,8 @@
  * Implement printout_base.h -- print support abstract base class
  */
 
+#include "gl_headers.h"  // Must come before anything using GL stuff
+
 #include "ocpn_frame.h"
 #include "printout_base.h"
 

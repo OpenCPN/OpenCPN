@@ -21,6 +21,8 @@
  * Implement download_mgr.h -- generic GUI downloads tool.
  */
 
+#include "gl_headers.h"  // Must come before anything including GL stuff
+
 #include "config.h"
 #include "download_mgr.h"
 

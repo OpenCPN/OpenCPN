@@ -25,6 +25,7 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <wx/wxprec.h>
 
