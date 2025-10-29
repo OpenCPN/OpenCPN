@@ -43,6 +43,15 @@ extern RouteList* pRouteList;
 
 void ReportError(const std::string zmsg);
 
+std::string GetSafeString(sqlite3_stmt* stmt, int column) {
+  std::string rv;
+  const char* p =
+      reinterpret_cast<const char*>(sqlite3_column_text(stmt, column));
+  if (p) rv = p;
+
+  return rv;
+}
+
 static bool executeSQL(sqlite3* db, const char* sql) {
   char* errMsg = nullptr;
   if (sqlite3_exec(db, sql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
@@ -1945,32 +1954,24 @@ bool NavObj_dB::LoadAllPoints() {
   while (sqlite3_step(stmtp) == SQLITE_ROW) {
     // Grab all the point attributes from the SELECT statement
     int col = 0;
-    std::string point_guid =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+    std::string point_guid = GetSafeString(stmtp, col++);
     double latitude = sqlite3_column_double(stmtp, col++);
     double longitude = sqlite3_column_double(stmtp, col++);
-    std::string symbol =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    std::string name =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    std::string description =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    std::string tide_station =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+    std::string symbol = GetSafeString(stmtp, col++);
+    std::string name = GetSafeString(stmtp, col++);
+    std::string description = GetSafeString(stmtp, col++);
+    std::string tide_station = GetSafeString(stmtp, col++);
     double plan_speed = sqlite3_column_double(stmtp, col++);
     time_t etd = sqlite3_column_int(stmtp, col++);
-    std::string type =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    std::string point_time_string =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+    std::string type = GetSafeString(stmtp, col++);
+    std::string point_time_string = GetSafeString(stmtp, col++);
     double arrival_radius = sqlite3_column_double(stmtp, col++);
 
     int range_ring_number = sqlite3_column_int(stmtp, col++);
     double range_ring_step = sqlite3_column_double(stmtp, col++);
     int range_ring_units = sqlite3_column_int(stmtp, col++);
     int range_ring_visible = sqlite3_column_int(stmtp, col++);
-    std::string range_ring_color =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+    std::string range_ring_color = GetSafeString(stmtp, col++);
 
     int scamin = sqlite3_column_int(stmtp, col++);
     int scamax = sqlite3_column_int(stmtp, col++);
@@ -1980,15 +1981,14 @@ bool NavObj_dB::LoadAllPoints() {
     int viz_name = sqlite3_column_int(stmtp, col++);
     int shared = sqlite3_column_int(stmtp, col++);
     int isolated = sqlite3_column_int(stmtp, col++);
-    std::string point_created_at =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+    std::string point_created_at = GetSafeString(stmtp, col++);
 
     if (isolated) {
       point =
           new RoutePoint(latitude, longitude, symbol, name, point_guid, false);
 
-      point->m_MarkDescription = description;
-      point->m_TideStation = tide_station;
+      if (!description.empty()) point->m_MarkDescription = description;
+      if (!tide_station.empty()) point->m_TideStation = tide_station;
       point->SetPlannedSpeed(plan_speed);
       point->m_WaypointArrivalRadius = arrival_radius;
 
@@ -1996,8 +1996,9 @@ bool NavObj_dB::LoadAllPoints() {
       point->m_fWaypointRangeRingsStep = range_ring_step;
       point->m_iWaypointRangeRingsStepUnits = range_ring_units;
       point->SetShowWaypointRangeRings(range_ring_visible == 1);
-      
-      point->m_wxcWaypointRangeRingsColour.Set(range_ring_color);
+
+      if (!range_ring_color.empty())
+        point->m_wxcWaypointRangeRingsColour.Set(range_ring_color);
 
       point->SetScaMin(scamin);
       point->SetScaMax(scamax);
@@ -2008,7 +2009,7 @@ bool NavObj_dB::LoadAllPoints() {
       point->SetShared(shared == 1);
       point->m_bIsolatedMark = (isolated == 1);
 
-      if (point_created_at.size()) {
+      if (!point_created_at.empty()) {
         // Convert from sqLite default date/time format to wxDateTime
         // sqLite format uses UTC, so conversion to epoch_time is clear.
         std::tm tm = {};
@@ -2016,6 +2017,8 @@ bool NavObj_dB::LoadAllPoints() {
         ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
         time_t epoch_time = mktime(&tm);
         point->m_CreateTimeX = epoch_time;
+      } else {
+        point->m_CreateTimeX = wxDateTime::Now();
       }
 
       // Add it here
@@ -2041,19 +2044,15 @@ bool NavObj_dB::LoadAllPoints() {
                         SQLITE_TRANSIENT);
 
       while (sqlite3_step(stmt) == SQLITE_ROW) {
-        std::string link_guid =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        std::string link_link =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        std::string link_description =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        std::string link_type =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        std::string link_guid = GetSafeString(stmt, 0);
+        std::string link_link = GetSafeString(stmt, 1);
+        std::string link_description = GetSafeString(stmt, 2);
+        std::string link_type = GetSafeString(stmt, 3);
 
         Hyperlink* h = new Hyperlink();
-        h->DescrText = link_description;
-        h->Link = link_link;
-        h->LType = link_type;
+        if (!link_description.empty()) h->DescrText = link_description;
+        if (!link_link.empty()) h->Link = link_link;
+        if (!link_type.empty()) h->LType = link_type;
 
         point->m_HyperlinkList->Append(h);
       }
