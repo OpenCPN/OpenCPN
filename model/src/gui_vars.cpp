@@ -77,6 +77,7 @@ size_t g_current_monitor = 0;
 float g_compass_scalefactor = 0;
 float g_toolbar_scalefactor = 0;
 
+int g_canvas_context_menu_disable_mask = 0;
 int g_ChartUpdatePeriod = 0;
 int g_click_stop = 0;
 int g_FlushNavobjChangesTimeout = 0;
@@ -89,7 +90,7 @@ int g_tick = 0;
 int g_tile_size = 0;
 int g_uncompressed_tile_size = 0;
 int quitflag = 0;
-;
+
 int options_lastPage = 0;
 int g_NeedDBUpdate = 0;
 
