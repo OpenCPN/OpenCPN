@@ -450,6 +450,7 @@ private:
   ObsListener m_on_quit_listener;
   ObsListener m_routes_update_listener;
   ObsListener m_evt_drv_msg_listener;
+  ObsListener m_update_statusbar_listener;
 
   ConnectionsDlg* m_connections_dlg;
   bool m_need_new_options;
