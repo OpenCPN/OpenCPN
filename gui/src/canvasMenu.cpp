@@ -1579,6 +1579,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     }
 
     case ID_RT_MENU_DELETE: {
+      parent->CancelMeasureRoute();
       bool confirmed = RouteGui::OnDelete(parent);
 
       if (confirmed) {

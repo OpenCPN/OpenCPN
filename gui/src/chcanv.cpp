@@ -10804,6 +10804,7 @@ void ChartCanvas::PopupMenuHandler(wxCommandEvent &event) {
 void ChartCanvas::StartRoute(void) {
   // Do not allow more than one canvas to create a route at one time.
   if (g_brouteCreating) return;
+  if (m_bMeasure_Active) CancelMeasureRoute();
 
   if (g_MainToolbar) g_MainToolbar->DisableTooltips();
 

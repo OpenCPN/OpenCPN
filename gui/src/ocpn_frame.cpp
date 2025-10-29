@@ -2741,6 +2741,11 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_MENU_ROUTE_MANAGER:
     case ID_ROUTEMANAGER: {
+      // Cancel measure mode on each canvas
+      for (auto canvas : g_canvasArray) {
+        canvas->CancelMeasureRoute();
+      }
+
       pRouteManagerDialog = RouteManagerDialog::getInstance(
           this);  // There is one global instance of the Dialog
 
