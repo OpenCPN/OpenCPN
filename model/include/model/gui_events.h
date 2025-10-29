@@ -44,6 +44,11 @@ public:
    */
   EventVar color_scheme_change;
 
+  /**
+   * Notified when the top level status bas should be updated by gFrame
+   */
+  EventVar gframe_update_status_bar;
+
 private:
   GuiEvents() = default;
 };

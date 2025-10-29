@@ -32,6 +32,7 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "model/gui_events.h"
 #include "model/gui_vars.h"
 #include "model/navobj_db.h"
 #include "model/notification_manager.h"
@@ -446,7 +447,7 @@ static bool IsRouteActive(wxString route_guid) {
 static void SetBoatPosition(double zlat, double zlon) {
   gLat = zlat;
   gLon = zlon;
-  gFrame->UpdateStatusBar();
+  GuiEvents::GetInstance().gframe_update_status_bar.Notify();
 }
 
 static void RouteInsertWaypoint(int canvas_index, wxString route_guid,

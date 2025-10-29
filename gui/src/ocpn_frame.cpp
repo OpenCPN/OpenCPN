@@ -704,6 +704,9 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                                 [&](wxCommandEvent) { Refresh(); });
   m_evt_drv_msg_listener.Init(CommDriverRegistry::GetInstance().evt_driver_msg,
                               [&](ObservedEvt &ev) { OnDriverMsg(ev); });
+  m_update_statusbar_listener.Init(
+      GuiEvents::GetInstance().gframe_update_status_bar,
+      [&](ObservedEvt &) { UpdateStatusBar(); });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
