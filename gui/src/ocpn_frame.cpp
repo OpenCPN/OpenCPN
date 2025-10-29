@@ -743,6 +743,11 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_update_statusbar_listener.Init(
       GuiEvents::GetInstance().gframe_update_status_bar,
       [&](ObservedEvt &) { UpdateStatusBar(); });
+  m_jump_aistarget_listener.Init(
+      GuiEvents::GetInstance().gframe_jump_ais_target, [&](ObservedEvt &ev) {
+        auto ais_target = UnpackEvtPointer<AisTargetData>(ev);
+        JumpToAisTarget(ais_target);
+      });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
@@ -783,6 +788,21 @@ void MyFrame::FreezeCharts() {
     if (cc && !cc->IsFrozen()) cc->Freeze();
   }
 #endif
+}
+void MyFrame::JumpToAisTarget(
+    const std::shared_ptr<const AisTargetData> &ais_target) {
+  double scale = GetFocusCanvas()->GetVPScale();
+  if (1) {
+    JumpToPosition(GetFocusCanvas(), ais_target->Lat, ais_target->Lon, scale);
+  } else {
+    // Set a reasonable (1:5000) chart scale to see the target.
+    if (scale < 0.7) {  // Don't zoom if already close.
+      ChartCanvas *cc = gFrame->GetFocusCanvas();
+      double factor = cc->GetScaleValue() / 5000.0;
+      JumpToPosition(GetFocusCanvas(), ais_target->Lat, ais_target->Lon,
+                     scale * factor);
+    }
+  }
 }
 
 void MyFrame::ThawCharts() {

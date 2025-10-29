@@ -49,6 +49,12 @@ public:
    */
   EventVar gframe_update_status_bar;
 
+  /**
+   * Notified with a shared_ptr<AisTargetData> when gFrame should jump to
+   * the given AIS target
+   */
+  EventVar gframe_jump_ais_target;
+
 private:
   GuiEvents() = default;
 };
