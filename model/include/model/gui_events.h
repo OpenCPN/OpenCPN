@@ -49,6 +49,12 @@ public:
    */
   EventVar gframe_update_status_bar;
 
+  /**
+   * Notified with a shared_ptr<const AisTargetData> when gFrame should center
+   * the given AIS target
+   */
+  EventVar on_center_ais_target;
+
 private:
   GuiEvents() = default;
 };

@@ -32,6 +32,8 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
+#include "model/ais_decoder.h"
+#include "model/ais_target_data.h"
 #include "model/gui_events.h"
 #include "model/gui_vars.h"
 #include "model/navobj_db.h"
@@ -41,7 +43,7 @@
 #include "model/routeman.h"
 #include "model/track.h"
 
-#include "ocpn_frame.h"
+#include "chcanv.h"
 #include "ocpn_plugin.h"
 
 extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
@@ -636,24 +638,11 @@ static const std::vector<std::string>& GetNoShowVector() {
 static void CenterToAisTarget(wxString ais_mmsi) {
   long mmsi = 0;
   if (ais_mmsi.ToLong(&mmsi)) {
-    std::shared_ptr<AisTargetData> pAISTarget = NULL;
+    std::shared_ptr<AisTargetData> pAISTarget = nullptr;
     if (g_pAIS) pAISTarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
 
-    if (pAISTarget) {
-      double scale = gFrame->GetFocusCanvas()->GetVPScale();
-      if (1) {
-        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                               pAISTarget->Lon, scale);
-      } else {
-        // Set a reasonable (1:5000) chart scale to see the target.
-        if (scale < 0.7) {  // Don't zoom if already close.
-          ChartCanvas* cc = gFrame->GetFocusCanvas();
-          double factor = cc->GetScaleValue() / 5000.0;
-          gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                                 pAISTarget->Lon, scale * factor);
-        }
-      }
-    }
+    if (pAISTarget)
+      GuiEvents::GetInstance().on_center_ais_target.Notify(pAISTarget);
   }
 }  // same as AISTargetListDialog::CenterToTarget ( false )
 

@@ -451,6 +451,7 @@ private:
   ObsListener m_routes_update_listener;
   ObsListener m_evt_drv_msg_listener;
   ObsListener m_update_statusbar_listener;
+  ObsListener m_center_aistarget_listener;
 
   ConnectionsDlg* m_connections_dlg;
   bool m_need_new_options;
@@ -459,6 +460,8 @@ private:
   unsigned int last_canvasConfig;
   DataMonitor* m_data_monitor;
   wxAuiDefaultDockArt* m_pauidockart;
+
+  void CenterAisTarget(const std::shared_ptr<const AisTargetData>& ais_target);
 
   DECLARE_EVENT_TABLE()
 };
