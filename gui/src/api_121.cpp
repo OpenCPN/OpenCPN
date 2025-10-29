@@ -37,11 +37,11 @@
 #include "model/notification_manager.h"
 #include "model/own_ship.h"
 #include "model/route.h"
+#include "model/routeman.h"
 #include "model/track.h"
 
 #include "ocpn_frame.h"
 #include "ocpn_plugin.h"
-#include "routemanagerdialog.h"
 
 extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
 
@@ -220,8 +220,7 @@ static bool AddPlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute,
     NavObj_dB::GetInstance().InsertRoute(route);
   }
 
-  if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-    pRouteManagerDialog->UpdateRouteListCtrl();
+  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
 
   return true;
 }
@@ -671,8 +670,7 @@ static void AisTargetCreateWpt(wxString ais_mmsi) {
       pSelect->AddSelectableRoutePoint(pAISTarget->Lat, pAISTarget->Lon, pWP);
       NavObj_dB::GetInstance().InsertRoutePoint(pWP);
 
-      if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
-        pRouteManagerDialog->UpdateWptListCtrl();
+      if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
     }
   }
 }  // same as AISTargetListDialog::OnTargetCreateWpt
