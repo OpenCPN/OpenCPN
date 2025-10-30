@@ -216,6 +216,7 @@ wxArrayString GetConfigChartDirectories();
 wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
                                      wxDateTime time);
 void PrepareImportAndroidGPX(bool isLayer, bool isPersistent);
+void ClearImportAndroidGPX();
 void PrepareImportAndroidTC();
 
 class InProgressIndicator : public wxGauge {

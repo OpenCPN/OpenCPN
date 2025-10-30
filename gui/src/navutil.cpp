@@ -2904,6 +2904,7 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
     }
     delete popenDialog;
 #else  // Android
+    PrepareImportAndroidGPX(islayer, isPersistent);
     wxString path;
     response = g_Platform->DoFileSelectorDialog(
         NULL, &path, _("Import GPX file"), g_gpx_path, _T(""), wxT("*.gpx"));
@@ -2911,10 +2912,11 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
     wxFileName fn(path);
     g_gpx_path = fn.GetPath();
     if (path.IsEmpty()) {  // Return from SAF processing, expecting callback
-      PrepareImportAndroidGPX(islayer, isPersistent);
       return;
-    } else
+    } else {
+      ClearImportAndroidGPX();
       file_array.Add(path);  // Return from safe app arena access
+    }
 
 #endif
   } else {

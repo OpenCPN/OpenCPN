@@ -953,8 +953,10 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
 
     case SCHEDULED_EVENT_UPDATE_RMD:
       qDebug() << "SCHEDULED_EVENT_UPDATE_RMD";
-      if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+      if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
         pRouteManagerDialog->UpdateLists();
+        pRouteManagerDialog->Refresh();
+      }
       break;
 
     case ID_CMD_PERSIST_DATA:
@@ -1071,6 +1073,8 @@ void PrepareImportAndroidGPX(bool isLayer, bool isPersistent) {
   g_android_import_islayer = isLayer;
   g_android_import_ispersistent = isPersistent;
 }
+
+void ClearImportAndroidGPX() { g_android_import_GPX_active = false; }
 
 void PrepareImportAndroidTC() { g_android_import_TC_active = true; }
 
