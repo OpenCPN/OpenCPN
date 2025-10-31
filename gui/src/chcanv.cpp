@@ -1040,7 +1040,16 @@ void ChartCanvas::OnLeftDown(wxMouseEvent &event) {
 
   // printf("Left_DOWN_Entry:  dt: %ld\n", dt);
 
-  if (dt < 5) {
+  // In touch mode, GTK mouse emulation will send duplicate mouse-down events.
+  // The timing between the two events is dependent upon the wxWidgets
+  // message queue status, and the processing time required for intervening
+  // events.
+  // We detect and remove the duplicate events by measuring the elapsed time
+  // between arrival of events.
+  // Choose a duplicate detection time long enough to catch worst case time lag
+  // between duplicating events, but considerably shorter than the nominal
+  // "intentional double-click" time interval defined generally as 350 msec.
+  if (dt < 100) {  // 10 taps per sec. is about the maximum human rate.
     // printf("  Ignored %ld\n",dt );// This is a duplicate emulated event,
     // ignore it.
     return;
