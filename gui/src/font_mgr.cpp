@@ -28,6 +28,8 @@
 #include <wx/gdicmn.h>
 #include <wx/tokenzr.h>
 
+#include "gl_headers.h"  // Must come before anything using GL stuff
+
 #include "model/config_vars.h"
 #include "font_mgr.h"
 #include "ocpn_platform.h"

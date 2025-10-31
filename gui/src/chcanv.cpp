@@ -23,6 +23,8 @@
 
 #include <vector>
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 

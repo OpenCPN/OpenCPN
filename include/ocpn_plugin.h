@@ -43,23 +43,27 @@
 #define DECL_IMP
 #endif
 
-#include <wx/xml/xml.h>
-#include <wx/dcmemory.h>
-#include <wx/dialog.h>
-#include <wx/event.h>
-#include <wx/menuitem.h>
-#include <wx/gdicmn.h>
-
-#ifdef ocpnUSE_SVG
-#include <wx/bitmap.h>
-#endif  // ocpnUSE_SVG
-
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <vector>
 #include <unordered_map>
 
-class wxGLContext;
+#include <wx/arrstr.h>
+#include <wx/aui/framemanager.h>
+#include <wx/bitmap.h>
+#include <wx/colour.h>
+#include <wx/cursor.h>
+#include <wx/dcmemory.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/fileconf.h>
+#include <wx/gdicmn.h>
+#include <wx/menuitem.h>
+#include <wx/notebook.h>
+#include <wx/region.h>
+#include <wx/scrolwin.h>
+#include <wx/xml/xml.h>
 
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
@@ -68,12 +72,10 @@ class wxGLContext;
 #define API_VERSION_MAJOR 1
 #define API_VERSION_MINOR 21
 
-//    Fwd Definitions
-class wxFileConfig;
-class wxNotebook;
-class wxFont;
-class wxAuiManager;
-class wxScrolledWindow;
+//  Using the correct #include <wx/glcanvas.h> causes compilation errors
+//  on windows, probably errors in bundled and partly modified GL headers.
+//  For now, use this as work around.
+class wxGLContext;
 class wxGLCanvas;
 
 //---------------------------------------------------------------------------------------------------------

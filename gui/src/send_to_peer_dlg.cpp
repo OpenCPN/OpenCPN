@@ -27,6 +27,8 @@
 
 #include <curl/curl.h>
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include "send_to_peer_dlg.h"
 
 #include "model/cmdline.h"

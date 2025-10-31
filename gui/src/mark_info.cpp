@@ -22,6 +22,7 @@
  */
 
 #include "config.h"
+#include "gl_headers.h"  // Must be included befoore anything using GL stuff
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>

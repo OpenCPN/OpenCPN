@@ -23,6 +23,8 @@
 
 #include <wx/clipbrd.h>
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include "model/georef.h"
 #include "model/own_ship.h"
 #include "model/routeman.h"

@@ -33,6 +33,8 @@
 #include <wx/textctrl.h>
 #include <wx/utils.h>
 
+#include "gl_headers.h"  // Must come before anything using GL stuff
+
 #include "model/config_vars.h"
 #include "model/gui_events.h"
 

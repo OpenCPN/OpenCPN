@@ -39,6 +39,8 @@
 #include <setjmp.h>
 #endif
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #ifdef __WXMSW__
 // #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif

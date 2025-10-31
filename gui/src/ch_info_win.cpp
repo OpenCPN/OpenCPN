@@ -20,8 +20,11 @@
  *
  * implement ch_info_win.h -- ChInfoWin chart info panel
  */
+
 #include <wx/wxprec.h>
 #include <wx/dcclient.h>
+
+#include "gl_headers.h"  // Must come before anyting using GL stuff
 
 #include "model/config_vars.h"
 #include "ch_info_win.h"

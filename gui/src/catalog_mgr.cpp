@@ -25,6 +25,8 @@
 #include <sstream>
 #include <thread>
 
+#include "gl_headers.h"  // Must come before anything using GL stuff
+
 #include <wx/button.h>
 #include <wx/debug.h>
 #include <wx/filename.h>

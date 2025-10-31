@@ -21,6 +21,8 @@
  * Implement conn_params_panel.h -- panel editing a connection
  */
 
+#include "gl_headers.h"  // Must come before anything using GL stuff
+
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>

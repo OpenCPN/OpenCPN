@@ -15,6 +15,8 @@
  *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/arrstr.h>
 #include <wx/button.h>
 #include <wx/combobox.h>

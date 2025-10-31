@@ -21,6 +21,8 @@
  * Implement link_prop_dlg.h -- Hyperlink properties dialog
  */
 
+#include "gl_headers.h"  // Must come before anything using GL stuff
+
 #include "link_prop_dlg.h"
 #include "navutil.h"
 #include "gui_lib.h"

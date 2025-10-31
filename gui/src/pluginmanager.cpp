@@ -34,6 +34,8 @@
 #include <typeinfo>
 #include <unordered_map>
 
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #ifdef _WIN32
 #include <winsock2.h>
 #include <windows.h>

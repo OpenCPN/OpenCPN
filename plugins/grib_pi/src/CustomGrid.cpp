@@ -20,6 +20,9 @@
  * \file
  * \implements \ref CustomGrid.h
  */
+
+#include "pi_gl.h"  // Must included before anything using GL stuff
+
 #include "CustomGrid.h"
 
 #include <wx/graphics.h>
