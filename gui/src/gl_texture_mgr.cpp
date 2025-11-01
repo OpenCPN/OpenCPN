@@ -959,11 +959,10 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
     //  rectangle
     for (auto node = todo_list.begin(); node != todo_list.end(); ++node) {
       JobTicket *ticket = *node;
-      if ((ticket->m_ChartPath == chart_path) && (ticket->m_rect == rect)) {
-        // bump to front
-        auto found = std::find(todo_list.begin(), todo_list.end(), ticket);
-        if (found != todo_list.end()) todo_list.erase(found);
-        todo_list.insert(todo_list.begin(), ticket);
+      if (ticket->m_ChartPath == chart_path && ticket->m_rect == rect) {
+        // Move the existing job to the front in O(1) without invalidating
+        // others
+        todo_list.splice(todo_list.begin(), todo_list, node);
         ticket->level_min_request = level;
         return false;
       }

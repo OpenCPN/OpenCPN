@@ -218,6 +218,7 @@ glTexFactory::~glTexFactory() {
 }
 
 glTextureDescriptor *glTexFactory::GetpTD(wxRect &rect) {
+  if (m_tex_dim <= 0) return nullptr;
   int array_index = ArrayIndex(rect.x, rect.y);
   return m_td_array[array_index];
 }
