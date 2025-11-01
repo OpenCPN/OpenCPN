@@ -437,7 +437,9 @@ wxString AisTargetData::BuildQueryResult() {
   wxString html;
   wxDateTime now = wxDateTime::Now();
 
-  wxString tableStart = "\n<table border=0 cellpadding=1 cellspacing=0>\n";
+  wxString tableStart =
+      "\n<table width=100% border=0 cellpadding=1 cellspacing=0>\n";
+
   wxString tableEnd = "</table>\n\n";
   wxString rowStart = "<tr><td><font size=-2>";
   wxString rowStartH = "<tr><td nowrap>";
@@ -445,8 +447,7 @@ wxString AisTargetData::BuildQueryResult() {
   wxString rowSeparatorH = "</td><td></td><td>";
   wxString colSeparator = "<td></td>";
   wxString rowEnd = "</b></td></tr>\n";
-  wxString vertSpacer =
-      "<tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>\n\n";
+  wxString vertSpacer = "<tr><td></td></tr>\n\n";
 
   wxString IMOstr, MMSIstr, ClassStr;
 
