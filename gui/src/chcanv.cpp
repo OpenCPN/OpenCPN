@@ -9048,7 +9048,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         gFrame->RefreshCanvasOther(this);
         m_bRoutePoinDragging = true;
       }
-      ret = true;
+      ret = g_btouch ? m_bRoutePoinDragging : true;
     }
 
     if (ret) return true;
@@ -10139,7 +10139,6 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 }
 
 bool panleftIsDown;
-
 bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
   // Skip all mouse processing if shift is held.
   // This allows plugins to implement shift+drag behaviors.
@@ -10330,7 +10329,8 @@ void ChartCanvas::MouseEvent(wxMouseEvent &event) {
 
   if (MouseEventSetup(event)) return;  // handled, no further action required
 
-  if (!MouseEventProcessObjects(event)) MouseEventProcessCanvas(event);
+  bool nm = MouseEventProcessObjects(event);
+  if (!nm) MouseEventProcessCanvas(event);
 }
 
 void ChartCanvas::SetCanvasCursor(wxMouseEvent &event) {
