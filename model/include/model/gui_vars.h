@@ -77,6 +77,7 @@ extern double vLon; /**< Virtual lon from chcanv popup */
 extern float g_compass_scalefactor;
 extern float g_toolbar_scalefactor;
 
+extern int g_canvas_context_menu_disable_mask;
 extern int g_ChartUpdatePeriod;
 extern int g_click_stop;
 extern int g_FlushNavobjChangesTimeout;
