@@ -547,12 +547,12 @@ void LLRegion::InitBox(float minlat, float minlon, float maxlat, float maxlon) {
 
 void LLRegion::InitPoints(size_t n, const double *points) {
   if (n < 3) {
-    printf("invalid point count\n");
+    wxLogWarning("  LLRegion::InitPoints - invalid point count: %zu", n);
     return;
   }
 
   std::vector<contour_pt> pts;
-  pts.reserve(0);
+  pts.reserve(n);
   bool adjust = false;
 
   bool ccw = PointsCCW(n, points);
@@ -607,7 +607,8 @@ void LLRegion::Optimize() {
   auto i = contours.begin();
   while (i != contours.end()) {
     if (i->size() < 3) {
-      printf("invalid contour");
+      wxLogDebug("  LLRegion::Optimize() - invalid contour erased.");
+      i = contours.erase(i);
       continue;
     }
 
@@ -630,7 +631,8 @@ void LLRegion::Optimize() {
     std::vector<contour_pt> new_pts;
     size_t s = i->size();
     new_pts.reserve(s);
-    for (size_t idx = 0; idx < s; ++idx) {
+    new_pts.push_back((*i)[0]);
+    for (size_t idx = 1; idx < s; ++idx) {
       const auto &prev = (*i)[(idx + s - 1) % s];
       const auto &curr = (*i)[idx];
       const auto &next = (*i)[(idx + 1) % s];
