@@ -2304,7 +2304,7 @@ void MyConfig::UpdateSettings() {
   }
 
   //  Tide/Current Data Sources
-  if (HasEntry("/TideCurrentDataSources"))
+  if (HasGroup("/TideCurrentDataSources"))
     DeleteGroup("/TideCurrentDataSources");
   SetPath("/TideCurrentDataSources");
   unsigned int id = 0;
