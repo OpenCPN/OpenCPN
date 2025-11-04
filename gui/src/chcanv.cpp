@@ -977,13 +977,13 @@ void ChartCanvas::OnLongPress(wxLongPressEvent &event) {
   ev.m_y = m_menuPos.y;
   wxPostEvent(this, ev);
 
-  // Send a "RIGHT CLICK" event, for plugins
-  wxMouseEvent ev_right_click(wxEVT_RIGHT_DOWN);
-  ev_right_click.m_x = m_menuPos.x;
-  ev_right_click.m_y = m_menuPos.y;
-  MouseEvent(ev_right_click);
-
-  // m_menuTimer.StartOnce(20);  // Delay of 20 millisecond
+  // In touch mode, send a "RIGHT CLICK" event, for plugins
+  if (g_btouch) {
+    wxMouseEvent ev_right_click(wxEVT_RIGHT_DOWN);
+    ev_right_click.m_x = m_menuPos.x;
+    ev_right_click.m_y = m_menuPos.y;
+    MouseEvent(ev_right_click);
+  }
 #endif
 }
 
