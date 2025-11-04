@@ -1534,19 +1534,6 @@ void MyApp::BuildMainFrame() {
 
   return;
 
-  gFrame->DoChartUpdate();
-
-  FontMgr::Get()
-      .ScrubList();  // Clean the font list, removing nonsensical entries
-
-  gFrame->ReloadAllVP();  // once more, and good to go
-
-  gFrame->Refresh(false);
-  gFrame->Raise();
-
-  gFrame->GetPrimaryCanvas()->Enable();
-  gFrame->GetPrimaryCanvas()->SetFocus();
-
   //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
   //  We need a deferred resize to get glDrawPixels() to work right.
   //  So we set a trigger to generate a resize after 5 seconds....
@@ -1575,18 +1562,12 @@ void MyApp::BuildMainFrame() {
   RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {};
 #endif
 
-  if (g_start_fullscreen) gFrame->ToggleFullScreen();
-
 #ifdef __ANDROID__
   //  We need a resize to pick up height adjustment after building android
   //  ActionBar
   gFrame->SetSize(getAndroidDisplayDimensions());
   androidSetFollowTool(gFrame->GetPrimaryCanvas()->m_bFollow ? 1 : 0, true);
 #endif
-
-  /// gFrame->Raise();
-  gFrame->GetPrimaryCanvas()->Enable();
-  gFrame->GetPrimaryCanvas()->SetFocus();
 
   // Setup Tides/Currents to settings present at last shutdown
   // TODO

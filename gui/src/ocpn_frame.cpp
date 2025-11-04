@@ -4862,6 +4862,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       // if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
 
+      if (g_start_fullscreen) ToggleFullScreen();
+
       UpdateStatusBar();
       SendSizeEvent();
 
