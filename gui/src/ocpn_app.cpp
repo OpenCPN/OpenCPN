@@ -398,7 +398,7 @@ bool DoNavMessage(wxString &new_version_string) {
   //  We defer the startup message to here to allow the app frame to be
   //  contructed, thus avoiding a dialog with NULL parent which might not work
   //  on some devices.
-  if (!n_NavMessageShown || (vs != g_config_version_string) ||
+  if (!n_NavMessageShown || (new_version_string != g_config_version_string) ||
       (g_AndroidVersionCode != androidGetVersionCode())) {
     // qDebug() << "Showing NavWarning";
     wxMilliSleep(500);
