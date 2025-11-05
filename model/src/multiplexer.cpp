@@ -230,16 +230,6 @@ void Multiplexer::LogInputMessage(const std::shared_ptr<const NavMsg> &msg,
 
 void Multiplexer::HandleN0183(
     const std::shared_ptr<const Nmea0183Msg> &n0183_msg) const {
-  // Find the driver that originated this message
-  const auto &drivers = CommDriverRegistry::GetInstance().GetDrivers();
-  auto &source_driver = FindDriver(drivers, n0183_msg->source->iface);
-  if (!source_driver) {
-    // might be a message from a "virtual" plugin.
-    if ((n0183_msg->source->iface != "virtual")) {
-      return;
-    }
-  }
-
   std::string error_msg;
   if (n0183_msg->state == NavMsg::State::kCannotParse)
     error_msg = _("Unparsable NMEA0183 message").ToStdString();
@@ -249,14 +239,8 @@ void Multiplexer::HandleN0183(
   bool cs_error = n0183_msg->state == NavMsg::State::kBadChecksum;
   LogInputMessage(n0183_msg, is_filtered, cs_error, error_msg);
 
-  // Detect virtual driver, message comes from plugin API
-  // Set such source iface to "" for later test
-  std::string source_iface;
-  if (source_driver)  // NULL for virtual driver
-    source_iface = source_driver->iface;
-
   // Perform multiplexer output functions
-  for (auto &driver : drivers) {
+  for (auto &driver : CommDriverRegistry::GetInstance().GetDrivers()) {
     if (!driver) continue;
     if (driver->bus == NavAddr::Bus::N0183) {
       auto *drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
@@ -273,7 +257,7 @@ void Multiplexer::HandleN0183(
         //  But, do not echo to the source network interface.  This will
         //  likely recurse...
         if ((!params_.DisableEcho && params_.Type == SERIAL) ||
-            driver->iface != source_iface) {
+            driver->iface != n0183_msg->source->iface) {
           if (params_.IOSelect == DS_TYPE_INPUT_OUTPUT ||
               params_.IOSelect == DS_TYPE_OUTPUT) {
             bool bout_filter = true;
