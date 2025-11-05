@@ -139,6 +139,7 @@
 #include "config.h"
 #include "config_mgr.h"
 #include "detail_slider.h"
+#include "dialog_alert.h"
 #include "dychart.h"
 #include "font_mgr.h"
 #include "gdal/cpl_csv.h"
@@ -355,6 +356,78 @@ public:
     Center();  // Center the wallpaper frame
   }
 };
+
+bool ShowNavWarning() {
+  wxString msg(
+      _("\n\
+OpenCPN is distributed in the hope that it will be useful, \
+but WITHOUT ANY WARRANTY; without even the implied \
+warranty of MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.\n\n\
+See the GNU General Public License for more details.\n\n\
+OpenCPN must only be used in conjunction with approved \
+paper charts and traditional methods of navigation.\n\n\
+DO NOT rely upon OpenCPN for safety of life or property.\n\n\
+Please click \"Agree\" and proceed, or \"Cancel\" to quit.\n"));
+
+  wxString vs = wxString::Format(" .. Version %s", VERSION_FULL);
+
+#ifdef __ANDROID__
+  androidShowDisclaimer(_("OpenCPN for Android") + vs, msg);
+  return true;
+#else
+  msg.Replace("\n", "<br>");
+
+  std::stringstream html;
+  html << "<html><body><p>";
+  html << msg.ToStdString();
+  html << "</p></body></html>";
+
+  std::string title = _("Welcome to OpenCPN").ToStdString();
+  std::string action = _("Agree").ToStdString();
+  AlertDialog info_dlg(gFrame, title, action);
+  info_dlg.SetInitialSize();
+  info_dlg.AddHtmlContent(html);
+  int agreed = info_dlg.ShowModal();
+  return agreed == wxID_OK;
+#endif
+}
+
+bool DoNavMessage(wxString &new_version_string) {
+#ifdef __ANDROID__
+  //  We defer the startup message to here to allow the app frame to be
+  //  contructed, thus avoiding a dialog with NULL parent which might not work
+  //  on some devices.
+  if (!n_NavMessageShown || (vs != g_config_version_string) ||
+      (g_AndroidVersionCode != androidGetVersionCode())) {
+    // qDebug() << "Showing NavWarning";
+    wxMilliSleep(500);
+
+    if (!ShowNavWarning()) {
+      qDebug() << "Closing due to NavWarning Cancel";
+      gFrame->Close();
+      androidTerminate();
+      return true;
+    }
+
+    n_NavMessageShown = 1;
+  }
+
+  // Finished with upgrade checking, so persist the currect Version Code
+  g_AndroidVersionCode = androidGetVersionCode();
+  qDebug() << "Persisting Version Code: " << g_AndroidVersionCode;
+#else
+  //  Send the Welcome/warning message if it has never been sent before,
+  //  or if the version string has changed at all
+  //  We defer until here to allow for localization of the message
+  if (!n_NavMessageShown || (new_version_string != g_config_version_string)) {
+    if (!ShowNavWarning()) return false;
+    n_NavMessageShown = 1;
+    pConfig->Flush();
+  }
+#endif
+  return true;
+}
 
 // `Main program` equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
@@ -1170,40 +1243,13 @@ bool MyApp::OnInit() {
   wxLogMessage(
       wxString::Format(_("OpenCPN Initialized in %ld ms."), init_sw.Time()));
 
-  wxMilliSleep(500);
+  wxMilliSleep(100);
 
-#ifdef __ANDROID__
-  //  We defer the startup message to here to allow the app frame to be
-  //  contructed, thus avoiding a dialog with NULL parent which might not work
-  //  on some devices.
-  if (!n_NavMessageShown || (vs != g_config_version_string) ||
-      (g_AndroidVersionCode != androidGetVersionCode())) {
-    // qDebug() << "Showing NavWarning";
-    wxMilliSleep(500);
-
-    if (!ShowNavWarning()) {
-      qDebug() << "Closing due to NavWarning Cancel";
-      gFrame->Close();
-      androidTerminate();
-      return true;
+  if (!g_kiosk_startup) {
+    if (!DoNavMessage(vs)) {
+      Exit();
     }
-
-    n_NavMessageShown = 1;
   }
-
-  // Finished with upgrade checking, so persist the currect Version Code
-  g_AndroidVersionCode = androidGetVersionCode();
-  qDebug() << "Persisting Version Code: " << g_AndroidVersionCode;
-#else
-  //  Send the Welcome/warning message if it has never been sent before,
-  //  or if the version string has changed at all
-  //  We defer until here to allow for localization of the message
-  if (!n_NavMessageShown || (vs != g_config_version_string)) {
-    if (!ShowNavWarning()) return false;
-    n_NavMessageShown = 1;
-    pConfig->Flush();
-  }
-#endif
 
   // As an a.e. Raspberry does not have a hardwareclock we will have some
   // problems with date/time setting
@@ -1268,6 +1314,11 @@ void MyApp::OnMainFrameReady() {
 
   SetTopWindow(gFrame);  // Set the main frame as the new top window.
   gFrame->Raise();
+
+  wxString vs = wxString("Version ") + VERSION_FULL + " Build " + VERSION_DATE;
+  if (!DoNavMessage(vs)) {
+    Exit();
+  }
 
   // Start delayed initialization chain after some milliseconds
   gFrame->InitTimer.Start(50, wxTIMER_CONTINUOUS);

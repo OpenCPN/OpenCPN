@@ -375,42 +375,6 @@ void BuildiENCToolbar(bool bnew) {
   }
 }
 
-bool ShowNavWarning() {
-  wxString msg(
-      _("\n\
-OpenCPN is distributed in the hope that it will be useful, \
-but WITHOUT ANY WARRANTY; without even the implied \
-warranty of MERCHANTABILITY or FITNESS FOR A \
-PARTICULAR PURPOSE.\n\n\
-See the GNU General Public License for more details.\n\n\
-OpenCPN must only be used in conjunction with approved \
-paper charts and traditional methods of navigation.\n\n\
-DO NOT rely upon OpenCPN for safety of life or property.\n\n\
-Please click \"Agree\" and proceed, or \"Cancel\" to quit.\n"));
-
-  wxString vs = wxString::Format(" .. Version %s", VERSION_FULL);
-
-#ifdef __ANDROID__
-  androidShowDisclaimer(_("OpenCPN for Android") + vs, msg);
-  return true;
-#else
-  msg.Replace("\n", "<br>");
-
-  std::stringstream html;
-  html << "<html><body><p>";
-  html << msg.ToStdString();
-  html << "</p></body></html>";
-
-  std::string title = _("Welcome to OpenCPN").ToStdString();
-  std::string action = _("Agree").ToStdString();
-  AlertDialog info_dlg(gFrame, title, action);
-  info_dlg.SetInitialSize();
-  info_dlg.AddHtmlContent(html);
-  int agreed = info_dlg.ShowModal();
-  return agreed == wxID_OK;
-#endif
-}
-
 bool isSingleChart(ChartBase *chart) {
   if (chart == nullptr) return false;
 
