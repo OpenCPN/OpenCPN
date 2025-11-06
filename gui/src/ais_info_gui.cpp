@@ -145,6 +145,7 @@ AisInfoGui::AisInfoGui() {
   m_AIS_Sound = 0;
   m_bAIS_Audio_Alert_On = false;
   m_bAIS_AlertPlaying = false;
+  m_alarm_defer_count = -1;
 }
 
 void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
@@ -175,47 +176,64 @@ void AisInfoGui::ShowAisInfo(
       break;
   }
 
+  // Reset deferral counter
+  if (palert_target->MMSI != m_lastMMSI) m_alarm_defer_count = -1;
+
+  m_lastMMSI = palert_target->MMSI;
+
+  // printf("defer count: %d\n", m_alarm_defer_count);
+
   // If no alert dialog shown yet...
   if (!g_pais_alert_dialog_active) {
-    bool b_jumpto =
-        (palert_target->Class == AIS_SART) || (palert_target->Class == AIS_DSC);
-    bool b_createWP = palert_target->Class == AIS_DSC;
-    bool b_ack = palert_target->Class != AIS_DSC;
+    // Manage deferred Alarm dialog and sound
+    if (m_alarm_defer_count < 0) {
+      m_alarm_defer_count = g_AIS_alert_delay;
+    } else {
+      if (m_alarm_defer_count >= 1) {
+        m_alarm_defer_count--;
+      }
+    }
+    if (m_alarm_defer_count == 0) {  // Fire the Alarm, with sound
+      bool b_jumpto = (palert_target->Class == AIS_SART) ||
+                      (palert_target->Class == AIS_DSC);
+      bool b_createWP = palert_target->Class == AIS_DSC;
+      bool b_ack = palert_target->Class != AIS_DSC;
 
-    //    Show the Alert dialog
+      //    Show the Alert dialog
 
-    //      See FS# 968/998
-    //      If alert occurs while OCPN is iconized to taskbar, then clicking
-    //      the taskbar icon only brings up the Alert dialog, and not the
-    //      entire application. This is an OS specific behavior, not seen on
-    //      linux or Mac. This patch will allow the audio alert to occur, and
-    //      the visual alert will pop up soon after the user selects the OCPN
-    //      icon from the taskbar. (on the next timer tick, probably)
+      //      See FS# 968/998
+      //      If alert occurs while OCPN is iconized to taskbar, then clicking
+      //      the taskbar icon only brings up the Alert dialog, and not the
+      //      entire application. This is an OS specific behavior, not seen on
+      //      linux or Mac. This patch will allow the audio alert to occur, and
+      //      the visual alert will pop up soon after the user selects the OCPN
+      //      icon from the taskbar. (on the next timer tick, probably)
 
 #ifndef __ANDROID__
-    if (gFrame->IsIconized() || !gFrame->IsActive())
-      gFrame->RequestUserAttention();
+      if (gFrame->IsIconized() || !gFrame->IsActive())
+        gFrame->RequestUserAttention();
 #endif
 
-    if (!gFrame->IsIconized()) {
-      AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
-      pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS, b_jumpto,
-                              b_createWP, b_ack, -1, _("AIS Alert"));
+      if (!gFrame->IsIconized()) {
+        AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
+        pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS, b_jumpto,
+                                b_createWP, b_ack, -1, _("AIS Alert"));
 
-      g_pais_alert_dialog_active = pAISAlertDialog;
+        g_pais_alert_dialog_active = pAISAlertDialog;
 
-      wxTimeSpan alertLifeTime(0, 1, 0,
-                               0);  // Alert default lifetime, 1 minute.
-      auto alert_dlg_active =
-          dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
-      alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
-      g_Platform->PositionAISAlert(pAISAlertDialog);
+        wxTimeSpan alertLifeTime(0, 1, 0,
+                                 0);  // Alert default lifetime, 1 minute.
+        auto alert_dlg_active =
+            dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
+        alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+        g_Platform->PositionAISAlert(pAISAlertDialog);
 
-      pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
+        pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
+      }
+
+      //    Audio alert if requested
+      m_bAIS_Audio_Alert_On = true;  // always on when alert is first shown
     }
-
-    //    Audio alert if requested
-    m_bAIS_Audio_Alert_On = true;  // always on when alert is first shown
   }
 
   //    The AIS Alert dialog is already shown.  If the  dialog MMSI number is
@@ -276,6 +294,7 @@ void AisInfoGui::ShowAisInfo(
       } else {
         alert_dlg_active->Close();
         m_bAIS_Audio_Alert_On = false;
+        m_alarm_defer_count = -1;
       }
 
       if (true == palert_target->b_suppress_audio)
@@ -285,10 +304,11 @@ void AisInfoGui::ShowAisInfo(
     } else {  // this should not happen, however...
       alert_dlg_active->Close();
       m_bAIS_Audio_Alert_On = false;
+      m_alarm_defer_count = -1;
     }
   }
 
-  //    At this point, the audio flag is set
+  //    At this point, the audio flag (m_bAIS_Audio_Alert_On) is set
   //    Honor the global flag
   if (!g_bAIS_CPA_Alert_Audio) m_bAIS_Audio_Alert_On = false;
 
@@ -327,6 +347,7 @@ void AisInfoGui::ShowAisInfo(
       }
     }
   }
+
   //  If a SART Alert is active, check to see if the MMSI has special properties
   //  set indicating that this Alert is a MOB for THIS ship.
   if (palert_target && (palert_target->Class == AIS_SART)) {

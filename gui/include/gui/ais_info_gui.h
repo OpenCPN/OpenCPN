@@ -45,6 +45,8 @@ public:
 
   bool m_bAIS_Audio_Alert_On;
   bool m_bAIS_AlertPlaying;
+  int m_alarm_defer_count;
+  int m_lastMMSI;
   o_sound::Sound* m_AIS_Sound;
   ObservableListener ais_info_listener;
   ObservableListener ais_touch_listener;

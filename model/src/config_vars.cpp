@@ -235,6 +235,7 @@ int g_track_line_width = 0;
 int g_WplAction = 0;
 int n_NavMessageShown = 0;
 int sat_watchdog_timeout_ticks = 12;
+int g_AIS_alert_delay = 20;
 
 long g_maintoolbar_orient = 0L;
 

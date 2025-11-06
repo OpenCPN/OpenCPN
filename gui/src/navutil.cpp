@@ -853,6 +853,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("bAISRolloverShowClass", &g_bAISRolloverShowClass);
   Read("bAISRolloverShowCOG", &g_bAISRolloverShowCOG);
   Read("bAISRolloverShowCPA", &g_bAISRolloverShowCPA);
+  Read("AISAlertDelay", &g_AIS_alert_delay);
 
   Read("S57QueryDialogSizeX", &g_S57_dialog_sx);
   Read("S57QueryDialogSizeY", &g_S57_dialog_sy);
