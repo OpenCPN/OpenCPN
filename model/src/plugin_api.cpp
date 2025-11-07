@@ -199,17 +199,14 @@ CommDriverResult WriteCommDriver(
   // all drivers should have the same interface and there should be no
   // need to handle different protocols separately. Part of the problem
   // is that there is no "internal" driver.
+  const std::string msg(payload->begin(), payload->end());
   if (protocol == "nmea0183") {
-    auto d0183 = dynamic_cast<CommDriverN0183*>(found);  // FIXME (leamas)
-
-    std::string msg(payload->begin(), payload->end());
     std::string id = msg.substr(1, 5);
     auto address = std::make_shared<NavAddr>();
     auto msg_out = std::make_shared<Nmea0183Msg>(id, msg, address);
-    bool xmit_ok = d0183->SendMessage(msg_out, address);
+    bool xmit_ok = found->SendMessage(msg_out, address);
     return xmit_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
   } else if (protocol == "internal") {
-    std::string msg(payload->begin(), payload->end());
     size_t space_pos = msg.find(" ");
     if (space_pos == std::string::npos) return RESULT_COMM_INVALID_PARMS;
     auto plugin_msg = std::make_shared<PluginMsg>(msg.substr(0, space_pos),
@@ -217,7 +214,6 @@ CommDriverResult WriteCommDriver(
     NavMsgBus::GetInstance().Notify(static_pointer_cast<NavMsg>(plugin_msg));
     return RESULT_COMM_NO_ERROR;
   } else if (protocol == "loopback") {
-    std::string msg(payload->begin(), payload->end());
     auto navmsg = LoopbackDriver::ParsePluginMessage(msg);
     if (!navmsg) return RESULT_COMM_INVALID_PARMS;
     bool send_ok = found->SendMessage(navmsg, nullptr);
