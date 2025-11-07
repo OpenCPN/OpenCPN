@@ -2361,6 +2361,104 @@
                     ]
                 }
             ]
+        },
+        {
+            "source": "CURRENT (BSH)",
+            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA?path=%2Fgrib2%2Ffixname",
+            "areas": [
+                {
+                    "name": "North Sea including The Channel",
+                    "boundary": {
+                        "lat_min": 48.37,
+                        "lon_min": -3.53,
+                        "lat_max": 60.24,
+                        "lon_max": 8.51
+                    },
+                    "gribs": [
+                        {
+                            "name": "today",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_no_today.grb2"
+                        },
+                        {
+                            "name": "tomorrow",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_no_today_plusone.grb2"
+                        },
+                        {
+                            "name": "today+2",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_no_today_plustwo.grb2"
+                        }
+                    ]
+                },
+                {
+                    "name": "German Bight",
+                    "boundary": {
+                        "lat_min": 53.0,
+                        "lon_min": 6.05,
+                        "lat_max": 56.6,
+                        "lon_max": 9.5
+                    },
+                    "gribs": [
+                        {
+                            "name": "today",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_db_today.grb2"
+                        },
+                        {
+                            "name": "tomorrow",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_db_today_plusone.grb2"
+                        },
+                        {
+                            "name": "today+2",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_db_today_plustwo.grb2"
+                        }
+                    ]
+                },
+                {
+                    "name": "Baltic Sea including Kattegat and parts of Skagerrak",
+                    "boundary": {
+                        "lat_min": 53.2,
+                        "lon_min": 8.55,
+                        "lat_max": 65.5,
+                        "lon_max": 30.2
+                    },
+                    "gribs": [
+                        {
+                            "name": "today",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_ba_today.grb2"
+                        },
+                        {
+                            "name": "tomorrow",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_ba_today_plusone.grb2"
+                        },
+                        {
+                            "name": "today+2",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_ba_today_plustwo.grb2"
+                        }
+                    ]
+                },
+                {
+                    "name": "Western Baltic including Belts and Sound extending east to Bornholm",
+                    "boundary": {
+                        "lat_min": 53.0,
+                        "lon_min": 9.2,
+                        "lat_max": 56.3,
+                        "lon_max": 14.9
+                    },
+                    "gribs": [
+                        {
+                            "name": "today",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_wb_today.grb2"
+                        },
+                        {
+                            "name": "tomorrow",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_wb_today_plusone.grb2"
+                        },
+                        {
+                            "name": "today+2",
+                            "url": "https://filebox.bsh.de/index.php/s/Z8k9NMB3dKVpOXA/download?path=%2Fgrib2%2Ffixname&files=Current_wb_today_plustwo.grb2"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
