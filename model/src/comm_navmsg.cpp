@@ -118,8 +118,7 @@ std::string Nmea2000Msg::to_string() const {
 
   std::stringstream ss1;
   std::string spgn = "    ";
-  if (PGN.pgn == 1) spgn = "ALL ";
-  ss1 << "n2000-" << spgn << "PGN: " << pgn << " [ " << st << " ]";
+  ss1 << "n2000  pgn: " << pgn << " [ " << st << " ]";
   return ss1.str();
 }
 
