@@ -29,6 +29,6 @@
 
 WX_DEFINE_OBJARRAY(ArrayOfIDXEntry);
 
-IDX_entry::IDX_entry() { memset(this, 0, sizeof(IDX_entry)); }
+IDX_entry::IDX_entry() { *this = {}; }
 
 IDX_entry::~IDX_entry() { free(IDX_tzname); }
