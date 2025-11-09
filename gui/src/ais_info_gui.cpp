@@ -146,6 +146,7 @@ AisInfoGui::AisInfoGui() {
   m_bAIS_Audio_Alert_On = false;
   m_bAIS_AlertPlaying = false;
   m_alarm_defer_count = -1;
+  m_lastMMSItime = wxDateTime::Now();
 }
 
 void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
@@ -176,10 +177,20 @@ void AisInfoGui::ShowAisInfo(
       break;
   }
 
-  // Reset deferral counter
-  if (palert_target->MMSI != m_lastMMSI) m_alarm_defer_count = -1;
+  // Maybe Reset deferral counter
+  // Arrange to reset deferral counter if 5 seconds have passed without an alarm
+  int last_alert_MMSI = m_lastMMSI;
+  wxDateTime last_alert_time = m_lastMMSItime;
+
+  if (palert_target->MMSI != last_alert_MMSI) {
+    wxTimeSpan dt = wxDateTime::Now() - last_alert_time;
+    if (dt.GetSeconds() > 5) {
+      m_alarm_defer_count = -1;  // reset the counter
+    }
+  }
 
   m_lastMMSI = palert_target->MMSI;
+  m_lastMMSItime = wxDateTime::Now();
 
   // printf("defer count: %d\n", m_alarm_defer_count);
 
@@ -273,6 +284,7 @@ void AisInfoGui::ShowAisInfo(
         if (palert_target_lowestcpa) {
           palert_target = NULL;
         }
+        m_alarm_defer_count = -1;
       }
     }
 
