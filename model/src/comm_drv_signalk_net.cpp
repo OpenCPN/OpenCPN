@@ -398,9 +398,7 @@ void CommDriverSignalKNet::handle_SK_sentence(
 
   // LOG_DEBUG("%s\n", msg.c_str());
 
-  std::string* msg = event.GetPayload().get();
-  std::string msgTerminated = *msg;
-  msgTerminated.append("\r\n");
+  std::shared_ptr<const std::string> msg = event.GetPayload();
 
   root.Parse(*msg);
   if (root.HasParseError()) {
@@ -442,8 +440,8 @@ void CommDriverSignalKNet::handle_SK_sentence(
   auto pos = iface.find(":");
   std::string comm_interface = "";
   if (pos != std::string::npos) comm_interface = iface.substr(pos + 1);
-  auto navmsg = std::make_shared<const SignalkMsg>(
-      m_self, m_context, msgTerminated, comm_interface);
+  auto navmsg = std::make_shared<const SignalkMsg>(m_self, m_context, *msg,
+                                                   comm_interface);
   m_listener.Notify(std::move(navmsg));
 }
 
