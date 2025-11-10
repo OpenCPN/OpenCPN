@@ -52,6 +52,9 @@
 extern MyFrame *gFrame;
 extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
 
+int g_console_window_x;
+int g_console_window_y;
+
 enum eMenuItems { ID_NAVLEG = 1, ID_NAVROUTE, ID_NAVHIGHWAY } menuItems;
 
 APConsole* console;  ///< Global instance
@@ -66,6 +69,7 @@ EVT_CONTEXT_MENU(ConsoleCanvasWin::OnContextMenu)
 EVT_MENU(ID_NAVLEG, ConsoleCanvasWin::OnContextMenuSelection)
 EVT_MENU(ID_NAVROUTE, ConsoleCanvasWin::OnContextMenuSelection)
 EVT_MENU(ID_NAVHIGHWAY, ConsoleCanvasWin::OnContextMenuSelection)
+EVT_MOUSE_EVENTS(ConsoleCanvasWin::OnMouseEvent)
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -179,6 +183,24 @@ void ConsoleCanvasWin::OnShow(wxShowEvent& event) {
   m_pitemBoxSizerLeg->SetSizeHints(this);
 }
 
+void ConsoleCanvasWin::OnMouseEvent(wxMouseEvent& event){
+  if (event.LeftDown()){
+    m_dragStartPos = event.GetPosition();
+    }
+    else if (event.Dragging()){
+      // We will start dragging if we've moved beyond a couple of pixels
+
+      int tolerance = 2;
+      int dx = event.GetPosition().x - m_dragStartPos.x;
+      int dy = event.GetPosition().y - m_dragStartPos.y;
+      if (abs(dx) <= tolerance && abs(dy) <= tolerance)
+        return;
+      g_console_window_x = GetPosition().x + dx;
+      g_console_window_y = GetPosition().y + dy;
+      PositionConsole();
+    }
+}
+
 void ConsoleCanvasWin::LegRoute() {
   if (g_bShowRouteTotal)
     pThisLegText->SetLabel(_("Route"));
@@ -277,24 +299,33 @@ void ConsoleCanvasWin::PositionConsole(){
         yBottomOffset = ccsy - mui_rect.y;
       }
     }
-
-    wxSize csz = GetSize();
-    consx = csz.x;
-    consy = csz.y;
-    int yAvail = ccsy - (yTopOffset + yBottomOffset);
-    int yFinal = 30;
-    if (consy < yAvail) {
-      yFinal = (yAvail - consy) / 2;
-      yFinal += yTopOffset;
-    } else if (pCDI->IsShown()) {
-      int cdi_height = pCDI->GetSize().y;
-      int consy_no_cdi = consy - cdi_height;
-      yFinal = (yAvail - consy_no_cdi) / 2;
-      yFinal += yTopOffset;
-      ToggleShowHighway();
+    wxPoint in_canvas_pos;
+    if(g_console_window_x > 0 || g_console_window_y > 0){
+      g_console_window_x = wxMin(g_console_window_x, ccsx - GetSize().x );
+      g_console_window_x = wxMax(g_console_window_x, 0 );
+      g_console_window_y = wxMin(g_console_window_y, ccsy - GetSize().y);
+      g_console_window_y = wxMax(g_console_window_y, 0 );
+      in_canvas_pos=wxPoint(g_console_window_x, g_console_window_y);
     }
+    else{
+      wxSize csz = GetSize();
+      consx = csz.x ;
+      consy = csz.y - g_console_window_y;
+      int yAvail = ccsy - (yTopOffset + yBottomOffset);
+      int yFinal = 30;
+      if (consy < yAvail) {
+        yFinal = (yAvail - consy) / 2;
+        yFinal += yTopOffset;
+      } else if (pCDI->IsShown()) {
+        int cdi_height = pCDI->GetSize().y;
+        int consy_no_cdi = consy - cdi_height;
+        yFinal = (yAvail - consy_no_cdi) / 2;
+        yFinal += yTopOffset;
+        ToggleShowHighway();
+      }
 
-    wxPoint in_canvas_pos = wxPoint(ccsx - consx - 2, yFinal);
+      in_canvas_pos = wxPoint(ccsx - consx - 2 , yFinal);
+    }
     Move(in_canvas_pos);
 }
 
@@ -1243,6 +1274,7 @@ void CDI::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
   dc.Blit(0, 0, sx, sy, &mdc, 0, 0);
 }
+
 
 #if defined(__WXMSW__) || defined(__WXMAC__) || defined(__ANDROID__)
 APConsole::APConsole(wxWindow* parent) {
