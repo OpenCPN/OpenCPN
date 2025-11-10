@@ -140,7 +140,7 @@ public:
   void OnContextMenuSelection(wxCommandEvent &event);
   void RefreshConsoleData(void);
   void ToggleShowHighway();
-
+  void PositionConsole();
   /**
    * Toggles between route total and current leg display modes.
    *
@@ -199,7 +199,7 @@ public:
   void OnContextMenuSelection(wxCommandEvent &event);
   void RefreshConsoleData(void);
   void ToggleShowHighway();
-
+  void PositionConsole();
   /**
    * Toggles between route total and current leg display modes.
    *
@@ -248,6 +248,7 @@ public:
   CDI *GetCDI();
   wxSize GetSize();
   void ToggleShowHighway();
+  void PositionConsole();
   void Move(wxPoint p);
 
 private:
