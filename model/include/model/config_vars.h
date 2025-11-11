@@ -250,7 +250,6 @@ extern int g_AIS_alert_delay;
 extern int g_console_window_x;
 extern int g_console_window_y;
 
-
 extern long g_maintoolbar_orient;
 
 extern std::vector<std::string> TideCurrentDataSet;

@@ -169,7 +169,7 @@ public:
 private:
   void OnPaint(wxPaintEvent &event);
   void OnShow(wxShowEvent &event);
-  void OnMouseEvent(wxMouseEvent& event);
+  void OnMouseEvent(wxMouseEvent &event);
   char m_speedUsed;
   wxPoint m_dragStartPos;
 
@@ -230,7 +230,7 @@ public:
 private:
   void OnPaint(wxPaintEvent &event);
   void OnShow(wxShowEvent &event);
-  void OnMouseEvent(wxMouseEvent& event);
+  void OnMouseEvent(wxMouseEvent &event);
   char m_speedUsed;
   wxPoint m_dragStartPos;
 

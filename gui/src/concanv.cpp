@@ -312,8 +312,7 @@ void ConsoleCanvasWin::PositionConsole() {
     if (consy < yAvail) {
       yFinal = (yAvail - consy) / 2;
       yFinal += yTopOffset;
-    }
-    else if (pCDI->IsShown()) {
+    } else if (pCDI->IsShown()) {
       int cdi_height = pCDI->GetSize().y;
       int consy_no_cdi = consy - cdi_height;
       yFinal = (yAvail - consy_no_cdi) / 2;
