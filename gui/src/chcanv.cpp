@@ -7897,7 +7897,8 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
     StartChartDragInertia();
   }
 
-  if (b_handle_dclick && event.LeftUp() && !singleClickEventIsValid) {
+  if (!g_btouch && b_handle_dclick && event.LeftUp() &&
+      !singleClickEventIsValid) {
     // Ignore the second LeftUp after the DClick.
     if (m_DoubleClickTimer->IsRunning()) {
       m_DoubleClickTimer->Stop();
