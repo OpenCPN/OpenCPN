@@ -44,6 +44,17 @@ public:
    */
   EventVar color_scheme_change;
 
+  /**
+   * Notified when the top level status bas should be updated by gFrame
+   */
+  EventVar gframe_update_status_bar;
+
+  /**
+   * Notified with a shared_ptr<AisTargetData> when gFrame should jump to
+   * the given AIS target
+   */
+  EventVar gframe_jump_ais_target;
+
 private:
   GuiEvents() = default;
 };
