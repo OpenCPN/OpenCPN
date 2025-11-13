@@ -3424,8 +3424,17 @@ void ChartCanvas::StartChartDragInertia() {
 
   if (tacc == 0) return;
 
-  m_chart_drag_velocity_x = xacc / tacc;
-  m_chart_drag_velocity_y = yacc / tacc;
+  double drag_velocity_x = xacc / tacc;
+  double drag_velocity_y = yacc / tacc;
+  // printf("drag total  %d  %d  %g %g %g\n", xacc, yacc, tacc, drag_velocity_x,
+  // drag_velocity_y);
+
+  // Abort inertia drag if velocity is very slow, preventing jitters on sloppy
+  // touch tap.
+  if ((fabs(drag_velocity_x) < 200) && (fabs(drag_velocity_y) < 200)) return;
+
+  m_chart_drag_velocity_x = drag_velocity_x;
+  m_chart_drag_velocity_y = drag_velocity_y;
 
   m_chart_drag_inertia_active = true;
   // First callback as fast as possible.
