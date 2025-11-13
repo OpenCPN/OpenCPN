@@ -778,6 +778,7 @@ double fromDMM(wxString sdms) {
       sign = -1;      /* These mean "negate" (note case insensitivity) */
     narrowbuf[i] = 0; /* Replace everything else with nuls */
   }
+  narrowbuf[len] = 0;
 
   /* Build a stack of doubles */
   stk[0] = stk[1] = stk[2] = 0;
