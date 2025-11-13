@@ -442,6 +442,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_panspeed = 0;
   m_panx_target_final = m_pany_target_final = 0;
   m_panx_target_now = m_pany_target_now = 0;
+  m_DragTrigger = -1;
 
   pCurTrackTimer = new wxTimer(this, CURTRACK_TIMER);
   pCurTrackTimer->Stop();
@@ -10250,15 +10251,31 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
      *
      * Anyways, guarded it to be active in touch situations only.
      */
-
     if (g_btouch && !m_inPinch) {
       struct timespec now;
       clock_gettime(CLOCK_MONOTONIC, &now);
       uint64_t tnow = (1e9 * now.tv_sec) + now.tv_nsec;
 
+      bool trigger_hold = false;
       if (false == m_bChartDragging) {
-        // Reset drag calculation members
-        last_drag.x = x, last_drag.y = y;
+        if (m_DragTrigger < 0) {
+          // printf("\ntrigger1\n");
+          m_DragTrigger = 0;
+          m_DragTriggerStartTime = tnow;
+          trigger_hold = true;
+        } else {
+          if (((tnow - m_DragTriggerStartTime) / 1e6) > 20) {  // m sec
+            m_DragTrigger = -1;                                // Reset trigger
+            // printf("trigger fired\n");
+          }
+        }
+      }
+      if (trigger_hold) return true;
+
+      if (false == m_bChartDragging) {
+        // printf("starting drag\n");
+        //  Reset drag calculation members
+        last_drag.x = x - 1, last_drag.y = y - 1;
         m_bChartDragging = true;
         m_chart_drag_total_time = 0;
         m_chart_drag_total_x = 0;
@@ -10287,11 +10304,12 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
       m_inertia_last_drag_y = y;
       m_last_drag_time = tnow;
 
-      if ((last_drag.x != x) || (last_drag.y != y)) {
+      if ((abs(last_drag.x - x) > 2) || (abs(last_drag.y - y) > 2)) {
         if (!m_routeState) {  // Correct fault on wx32/gtk3, uncommanded
                               // dragging on route create.
                               //   github #2994
           m_bChartDragging = true;
+          // printf("STM %d %d\n", last_drag.x - x, last_drag.y - y  );
           StartTimedMovement();
           m_pan_drag.x += last_drag.x - x;
           m_pan_drag.y += last_drag.y - y;

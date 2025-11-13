@@ -1354,6 +1354,8 @@ private:
   wxPoint m_lastTapPos;
   int m_tap_count;
   void OnTapTimer(wxTimerEvent &event);
+  int m_DragTrigger;
+  uint64_t m_DragTriggerStartTime;
 
   DECLARE_EVENT_TABLE()
 };
