@@ -7601,70 +7601,6 @@ std::shared_ptr<PI_PointContext> ChartCanvas::GetCanvasContextAtPoint(int x,
   }
 #endif
 
-#if 0
-  bool bseltc = false;
-  //                      if(0 == seltype)
-  {
-    if (pFindCurrent) {
-      // There may be multiple current entries at the same point.
-      // For example, there often is a current substation (with directions
-      // specified) co-located with its master.  We want to select the
-      // substation, so that the direction will be properly indicated on the
-      // graphic. So, we search the select list looking for IDX_type == 'c' (i.e
-      // substation)
-      IDX_entry *pIDX_best_candidate;
-
-      SelectItem *pFind = NULL;
-      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
-      SelectableItemList SelList = pSelectTC->FindSelectionList(
-          ctx, m_cursor_lat, m_cursor_lon, SELTYPE_CURRENTPOINT);
-
-      //      Default is first entry
-      wxSelectableItemListNode *node = SelList.GetFirst();
-      pFind = node->GetData();
-      pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
-
-      if (SelList.GetCount() > 1) {
-        node = node->GetNext();
-        while (node) {
-          pFind = node->GetData();
-          IDX_entry *pIDX_candidate = (IDX_entry *)(pFind->m_pData1);
-          if (pIDX_candidate->IDX_type == 'c') {
-            pIDX_best_candidate = pIDX_candidate;
-            break;
-          }
-
-          node = node->GetNext();
-        }  // while (node)
-      } else {
-        wxSelectableItemListNode *node = SelList.GetFirst();
-        pFind = node->GetData();
-        pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
-      }
-
-      m_pIDXCandidate = pIDX_best_candidate;
-
-      if (0 == seltype) {
-        DrawTCWindow(x, y, (void *)pIDX_best_candidate);
-        Refresh(false);
-        bseltc = true;
-      } else
-        seltype |= SELTYPE_CURRENTPOINT;
-    }
-
-    else if (pFindTide) {
-      m_pIDXCandidate = (IDX_entry *)pFindTide->m_pData1;
-
-      if (0 == seltype) {
-        DrawTCWindow(x, y, (void *)pFindTide->m_pData1);
-        Refresh(false);
-        bseltc = true;
-      } else
-        seltype |= SELTYPE_TIDEPOINT;
-    }
-  }
-#endif
-
   if (0 == seltype) seltype |= SELTYPE_UNKNOWN;
 
   // Populate the return struct
@@ -8224,41 +8160,10 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
     if (m_pSelectedTrack) seltype |= SELTYPE_TRACKSEGMENT;
   }
 
+#if 0  // disable tide and current graph on right click
   {
     if (pFindCurrent) {
-      // There may be multiple current entries at the same point.
-      // For example, there often is a current substation (with directions
-      // specified) co-located with its master.  We want to select the
-      // substation, so that the direction will be properly indicated on the
-      // graphic. So, we search the select list looking for IDX_type == 'c' (i.e
-      // substation)
-      IDX_entry *pIDX_best_candidate;
-
-      SelectItem *pFind = NULL;
-      SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
-      SelectableItemList SelList =
-          pSelectTC->FindSelectionList(ctx, slat, slon, SELTYPE_CURRENTPOINT);
-
-      //      Default is first entry
-      pFind = *SelList.begin();
-      pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
-
-      auto node = SelList.begin();
-      if (SelList.size() > 1) {
-        for (++node; node != SelList.end(); ++node) {
-          pFind = *node;
-          IDX_entry *pIDX_candidate = (IDX_entry *)(pFind->m_pData1);
-          if (pIDX_candidate->IDX_type == 'c') {
-            pIDX_best_candidate = pIDX_candidate;
-            break;
-          }
-        }  // while (node)
-      } else {
-        pFind = *SelList.begin();
-        pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
-      }
-
-      m_pIDXCandidate = pIDX_best_candidate;
+      m_pIDXCandidate = FindBestCurrentObject(slat, slon);
       seltype |= SELTYPE_CURRENTPOINT;
     }
 
@@ -8267,12 +8172,48 @@ int ChartCanvas::PrepareContextSelections(double lat, double lon) {
       seltype |= SELTYPE_TIDEPOINT;
     }
   }
+#endif
 
   if (0 == seltype) seltype |= SELTYPE_UNKNOWN;
 
   return seltype;
 }
 
+IDX_entry *ChartCanvas::FindBestCurrentObject(double lat, double lon) {
+  // There may be multiple current entries at the same point.
+  // For example, there often is a current substation (with directions
+  // specified) co-located with its master.  We want to select the
+  // substation, so that the direction will be properly indicated on the
+  // graphic. So, we search the select list looking for IDX_type == 'c' (i.e
+  // substation)
+  IDX_entry *pIDX_best_candidate;
+
+  SelectItem *pFind = NULL;
+  SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
+  SelectableItemList SelList =
+      pSelectTC->FindSelectionList(ctx, lat, lon, SELTYPE_CURRENTPOINT);
+
+  //      Default is first entry
+  pFind = *SelList.begin();
+  pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
+
+  auto node = SelList.begin();
+  if (SelList.size() > 1) {
+    for (++node; node != SelList.end(); ++node) {
+      pFind = *node;
+      IDX_entry *pIDX_candidate = (IDX_entry *)(pFind->m_pData1);
+      if (pIDX_candidate->IDX_type == 'c') {
+        pIDX_best_candidate = pIDX_candidate;
+        break;
+      }
+    }  // while (node)
+  } else {
+    pFind = *SelList.begin();
+    pIDX_best_candidate = (IDX_entry *)(pFind->m_pData1);
+  }
+
+  return pIDX_best_candidate;
+}
 void ChartCanvas::CallPopupMenu(int x, int y) {
   last_drag.x = x;
   last_drag.y = y;
@@ -8446,8 +8387,32 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       }
     }
 
-    // Found no object to act on, so show chart info.
+    //  Tide and current points
+    SelectItem *pFindCurrent = NULL;
+    SelectItem *pFindTide = NULL;
 
+    if (m_bShowCurrent) {  // look for current stations
+      pFindCurrent =
+          pSelectTC->FindSelection(ctx, zlat, zlon, SELTYPE_CURRENTPOINT);
+      if (pFindCurrent) {
+        m_pIDXCandidate = FindBestCurrentObject(zlat, zlon);
+        DrawTCWindow(x, y, (void *)m_pIDXCandidate);
+        Refresh(false);
+        return true;
+      }
+    }
+
+    if (m_bShowTide) {  // look for tide stations
+      pFindTide = pSelectTC->FindSelection(ctx, zlat, zlon, SELTYPE_TIDEPOINT);
+      if (pFindTide) {
+        m_pIDXCandidate = (IDX_entry *)pFindTide->m_pData1;
+        DrawTCWindow(x, y, (void *)m_pIDXCandidate);
+        Refresh(false);
+        return true;
+      }
+    }
+
+    // Found no object to act on, so show chart info.
     ShowObjectQueryWindow(x, y, zlat, zlon);
     return true;
   }

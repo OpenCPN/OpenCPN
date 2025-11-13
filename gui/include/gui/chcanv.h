@@ -1016,6 +1016,7 @@ private:
   void DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox);
   void RebuildTideSelectList(LLBBox &BBox);
   void RebuildCurrentSelectList(LLBBox &BBox);
+  IDX_entry *FindBestCurrentObject(double lat, double lon);
 
   void RenderAllChartOutlines(ocpnDC &dc, ViewPort &vp);
   void RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp);
