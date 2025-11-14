@@ -140,7 +140,7 @@ public:
   void OnContextMenuSelection(wxCommandEvent &event);
   void RefreshConsoleData(void);
   void ToggleShowHighway();
-
+  void PositionConsole();
   /**
    * Toggles between route total and current leg display modes.
    *
@@ -169,7 +169,9 @@ public:
 private:
   void OnPaint(wxPaintEvent &event);
   void OnShow(wxShowEvent &event);
+  void OnMouseEvent(wxMouseEvent &event);
   char m_speedUsed;
+  wxPoint m_dragStartPos;
 
   DECLARE_EVENT_TABLE()
 };
@@ -199,7 +201,7 @@ public:
   void OnContextMenuSelection(wxCommandEvent &event);
   void RefreshConsoleData(void);
   void ToggleShowHighway();
-
+  void PositionConsole();
   /**
    * Toggles between route total and current leg display modes.
    *
@@ -228,7 +230,9 @@ public:
 private:
   void OnPaint(wxPaintEvent &event);
   void OnShow(wxShowEvent &event);
+  void OnMouseEvent(wxMouseEvent &event);
   char m_speedUsed;
+  wxPoint m_dragStartPos;
 
   DECLARE_EVENT_TABLE()
 };
@@ -248,6 +252,7 @@ public:
   CDI *GetCDI();
   wxSize GetSize();
   void ToggleShowHighway();
+  void PositionConsole();
   void Move(wxPoint p);
 
 private:
