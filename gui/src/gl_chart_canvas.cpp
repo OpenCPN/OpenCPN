@@ -984,7 +984,7 @@ void glChartCanvas::BuildFBO() {
 }
 
 void glChartCanvas::SetupOpenGL() {
-  SetCurrent(*m_pcontext);
+  if (IsShown()) SetCurrent(*m_pcontext);
 
   char *str = (char *)glGetString(GL_RENDERER);
   if (str == NULL) {
@@ -1349,7 +1349,7 @@ void glChartCanvas::OnPaint(wxPaintEvent &event) {
     return;
   }
 
-  SetCurrent(*m_pcontext);
+  if (IsShown()) SetCurrent(*m_pcontext);
 
   if (!m_bsetup) {
     SetupOpenGL();
@@ -4813,7 +4813,7 @@ void glChartCanvas::FastPan(int dx, int dy) {
 
 void glChartCanvas::ZoomProject(float offset_x, float offset_y, float swidth,
                                 float sheight) {
-  SetCurrent(*m_pcontext);
+  if (IsShown()) SetCurrent(*m_pcontext);
   float sx = GetSize().x;
   float sy = GetSize().y;
   glClear(GL_COLOR_BUFFER_BIT);
@@ -5207,7 +5207,7 @@ void glChartCanvas::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
       m_cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
 
       // Render the full charts with overlay objects onto the frame buffer.
-      SetCurrent(*m_pcontext);
+      if (IsShown()) SetCurrent(*m_pcontext);
       RenderScene();
 
       zoom_inc = 1.0;
@@ -5492,7 +5492,7 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
           m_step_zoom_val = m_step_zoom_val * (1 + zoom_step);
           printf("   Partial zoom: %6g\n", 1 + zoom_step);
           m_pParentCanvas->ZoomCanvasSimple(1 + zoom_step);
-          SetCurrent(*m_pcontext);
+          if (IsShown()) SetCurrent(*m_pcontext);
           Render();
         } else {
           if (fabs(inc_zoom_val - 1.) > zoom_trigger) {
@@ -5517,7 +5517,7 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
               m_pParentCanvas->PanCanvas(dx, dy);
             }
 
-            SetCurrent(*m_pcontext);
+            if (IsShown()) SetCurrent(*m_pcontext);
             Render();
           }
         }
@@ -5566,7 +5566,7 @@ void glChartCanvas::OnEvtZoomGesture(wxZoomGestureEvent &event) {
       m_cc_y = m_fbo_offsety + (m_fbo_sheight / 2);
 
       // Render the full charts with overlay objects onto the frame buffer.
-      SetCurrent(*m_pcontext);
+      if (IsShown()) SetCurrent(*m_pcontext);
       RenderScene();
 #ifndef __ANDROID__
       ViewPort vpr = m_pParentCanvas->VPoint;
