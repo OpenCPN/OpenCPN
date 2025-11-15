@@ -55,7 +55,7 @@ void GribRecord::print() {
 //-------------------------------------------------------------------------------
 // Constructeur de recopie
 //-------------------------------------------------------------------------------
-GribRecord::GribRecord(const GribRecord &rec) {
+GribRecord::GribRecord(const GribRecord& rec) {
   *this = rec;
   IsDuplicated = true;
   // recopie les champs de bits
@@ -72,10 +72,10 @@ GribRecord::GribRecord(const GribRecord &rec) {
 }
 
 bool GribRecord::GetInterpolatedParameters(
-    const GribRecord &rec1, const GribRecord &rec2, double &La1, double &Lo1,
-    double &La2, double &Lo2, double &Di, double &Dj, int &im1, int &jm1,
-    int &im2, int &jm2, int &Ni, int &Nj, int &rec1offi, int &rec1offj,
-    int &rec2offi, int &rec2offj) {
+    const GribRecord& rec1, const GribRecord& rec2, double& La1, double& Lo1,
+    double& La2, double& Lo2, double& Di, double& Dj, int& im1, int& jm1,
+    int& im2, int& jm2, int& Ni, int& Nj, int& rec1offi, int& rec1offj,
+    int& rec2offi, int& rec2offj) {
   if (!rec1.isOk() || !rec2.isOk()) return false;
 
   /* make sure Dj both have same sign */
@@ -156,8 +156,8 @@ bool GribRecord::GetInterpolatedParameters(
 //-------------------------------------------------------------------------------
 // Constructeur de interpolate
 //-------------------------------------------------------------------------------
-GribRecord *GribRecord::InterpolatedRecord(const GribRecord &rec1,
-                                           const GribRecord &rec2, double d,
+GribRecord* GribRecord::InterpolatedRecord(const GribRecord& rec1,
+                                           const GribRecord& rec2, double d,
                                            bool dir) {
   double La1, Lo1, La2, Lo2, Di, Dj;
   int im1, jm1, im2, jm2;
@@ -169,9 +169,9 @@ GribRecord *GribRecord::InterpolatedRecord(const GribRecord &rec1,
 
   // recopie les champs de bits
   int size = Ni * Nj;
-  double *data = new double[size];
+  double* data = new double[size];
 
-  zuchar *BMSbits = nullptr;
+  zuchar* BMSbits = nullptr;
   if (rec1.BMSbits != nullptr && rec2.BMSbits != nullptr)
     BMSbits = new zuchar[(Ni * Nj - 1) / 8 + 1]();
 
@@ -202,7 +202,7 @@ GribRecord *GribRecord::InterpolatedRecord(const GribRecord &rec1,
 
   /* should maybe update strCurDate ? */
 
-  GribRecord *ret = new GribRecord;
+  GribRecord* ret = new GribRecord;
   *ret = rec1;
 
   ret->Di = Di, ret->Dj = Dj;
@@ -225,9 +225,9 @@ GribRecord *GribRecord::InterpolatedRecord(const GribRecord &rec1,
 /* for interpolation for x and y records, we must do them together because
    otherwise we end up with a vector interpolation which is not what we want..
    instead we want to interpolate from the polar magnitude, and angles */
-GribRecord *GribRecord::Interpolated2DRecord(
-    GribRecord *&rety, const GribRecord &rec1x, const GribRecord &rec1y,
-    const GribRecord &rec2x, const GribRecord &rec2y, double d) {
+GribRecord* GribRecord::Interpolated2DRecord(
+    GribRecord*& rety, const GribRecord& rec1x, const GribRecord& rec1y,
+    const GribRecord& rec2x, const GribRecord& rec2y, double d) {
   double La1, Lo1, La2, Lo2, Di, Dj;
   int im1, jm1, im2, jm2;
   int Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj;
@@ -283,7 +283,7 @@ GribRecord *GribRecord::Interpolated2DRecord(
 
   /* should maybe update strCurDate ? */
 
-  GribRecord *ret = new GribRecord;
+  GribRecord* ret = new GribRecord;
 
   *ret = rec1x;
 
@@ -310,9 +310,9 @@ GribRecord *GribRecord::Interpolated2DRecord(
   return ret;
 }
 
-GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1,
-                                        const GribRecord &rec2) {
-  GribRecord *rec = new GribRecord(rec1);
+GribRecord* GribRecord::MagnitudeRecord(const GribRecord& rec1,
+                                        const GribRecord& rec2) {
+  GribRecord* rec = new GribRecord(rec1);
 
   /* generate a record which is the combined magnitude of two records */
   if (rec1.data && rec2.data && rec1.Ni == rec2.Ni && rec1.Nj == rec2.Nj) {
@@ -337,7 +337,7 @@ GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1,
   return rec;
 }
 
-void GribRecord::Polar2UV(GribRecord *pDIR, GribRecord *pSPEED) {
+void GribRecord::Polar2UV(GribRecord* pDIR, GribRecord* pSPEED) {
   if (pDIR->data && pSPEED->data && pDIR->Ni == pSPEED->Ni &&
       pDIR->Nj == pSPEED->Nj) {
     int size = pDIR->Ni * pDIR->Nj;
@@ -359,7 +359,7 @@ void GribRecord::Polar2UV(GribRecord *pDIR, GribRecord *pSPEED) {
   }
 }
 
-void GribRecord::Substract(const GribRecord &rec, bool pos) {
+void GribRecord::Substract(const GribRecord& rec, bool pos) {
   // for now only substract records of same size
   if (rec.data == 0 || !rec.isOk()) return;
 
@@ -387,7 +387,7 @@ void GribRecord::Substract(const GribRecord &rec, bool pos) {
 }
 
 //------------------------------------------------------------------------------
-void GribRecord::Average(const GribRecord &rec) {
+void GribRecord::Average(const GribRecord& rec) {
   // for now only average records of same size
   // this : 6-12
   // rec  : 6-9
@@ -426,13 +426,8 @@ void GribRecord::setDataType(const zuchar t) {
   dataKey = makeKey(dataType, levelType, levelValue);
 }
 //------------------------------------------------------------------------------
-std::string GribRecord::makeKey(
-    int dataType, int levelType,
-    int levelValue) {  // Make data type key  sample:'11-100-850'
-                       //  char ktmp[32];
-  //  wxSnprintf((wxChar *)ktmp, 32, "%d-%d-%d", dataType, levelType,
-  //  levelValue); return std::string(ktmp);
-
+std::string GribRecord::makeKey(int dataType, int levelType, int levelValue) {
+  // Make data type key  sample:'11-100-850'
   wxString k;
   k.Printf(_T("%d-%d-%d"), dataType, levelType, levelValue);
   return std::string(k.mb_str());
@@ -469,7 +464,7 @@ void GribRecord::multiplyAllData(double k) {
 void GribRecord::setRecordCurrentDate(time_t t) {
   curDate = t;
 
-  struct tm *date = gmtime(&t);
+  struct tm* date = gmtime(&t);
 
   zuint year = date->tm_year + 1900;
   zuint month = date->tm_mon + 1;
@@ -647,9 +642,9 @@ double GribRecord::getInterpolatedValue(double px, double py,
   return k2 * vx + (1 - k2) * vy;
 }
 
-bool GribRecord::getInterpolatedValues(double &M, double &A,
-                                       const GribRecord *GRX,
-                                       const GribRecord *GRY, double px,
+bool GribRecord::getInterpolatedValues(double& M, double& A,
+                                       const GribRecord* GRX,
+                                       const GribRecord* GRY, double px,
                                        double py, bool numericalInterpolation) {
   if (!GRX || !GRY) return false;
 
