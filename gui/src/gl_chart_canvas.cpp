@@ -530,7 +530,9 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
     wxLogMessage("BuildFBO 3");
     BuildFBO();
   }
-
+  // We need to force a complete refresh of the parent ChartCanvas
+  // First, complete any pending GL operations
+  glFinish();
   //  Set the shader viewport transform matrix
   ViewPort *vp = m_pParentCanvas->GetpVP();
   mat4x4 m;
