@@ -104,6 +104,7 @@
 #include "model/certificates.h"
 #include "model/cmdline.h"
 #include "model/comm_bridge.h"
+#include "model/comm_drv_factory.h"
 #include "model/comm_n0183_output.h"
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
@@ -1507,6 +1508,15 @@ void MyApp::BuildMainFrame() {
   pAnchorWatchPoint2 = NULL;
 
   gFrame->DoChartUpdate();
+
+  // Load comm connections
+  for (auto *cp : TheConnectionParams()) {
+    if (cp->bEnabled) {
+      MakeCommDriver(cp);
+      cp->b_IsSetup = TRUE;
+    }
+  }
+  MakeLoopbackDriver();
 
   // Load and initialize plugins
   auto style = g_StyleManager->GetCurrentStyle();

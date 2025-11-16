@@ -4637,14 +4637,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       break;
     }
     case 1:
-      // Connect Datastreams
-      for (auto *cp : TheConnectionParams()) {
-        if (cp->bEnabled) {
-          MakeCommDriver(cp);
-          cp->b_IsSetup = TRUE;
-        }
-      }
-      MakeLoopbackDriver();
       break;
 
     case 2: {
