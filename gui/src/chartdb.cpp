@@ -1467,6 +1467,10 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate) {
 void ChartDB::ApplyColorSchemeToCachedCharts(ColorScheme cs) {
   ChartBase *Ch;
   CacheEntry *pce;
+#ifdef ocpnUSE_GL
+  // The background texture cache threads might be running
+  if (g_glTextureManager) g_glTextureManager->PurgeJobList();
+#endif
   //    Search the cache
 
   if (wxMUTEX_NO_ERROR == m_cache_mutex.Lock()) {
