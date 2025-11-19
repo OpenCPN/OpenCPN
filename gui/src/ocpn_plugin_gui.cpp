@@ -3242,10 +3242,15 @@ void EnableTenHertzUpdate(bool enable) { g_btenhertz = enable; }
 
 void ConfigFlushAndReload() {
   if (pConfig) {
+    // Store current locale to detect changes
+    wxString oldLocale = g_locale;
     pConfig->Flush();
 
     // Handle system general configuration options
     pConfig->LoadMyConfigRaw(false);
+
+    // Handle S57 configuration options
+    pConfig->LoadS57Config();
 
     // Handle chart canvas window configuration options
     pConfig->LoadCanvasConfigs(false);
@@ -3256,6 +3261,15 @@ void ConfigFlushAndReload() {
         pcc->canvas->Refresh();
       }
     }
+
+#if wxUSE_XLOCALE
+    // Detect and apply locale changes
+    if (g_locale != oldLocale && !g_locale.IsEmpty()) {
+      wxLogMessage("ConfigFlushAndReload: Locale changed, applying...");
+      g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
+      ApplyLocale();  // Deactivates/reactivates plugins, rebuilds UI
+    }
+#endif
   }
 }
 
