@@ -7238,7 +7238,7 @@ public:
     std::string object_ident;
   };
 
-  // Extended plugin route, V3
+  // Extended plugin route
   class Route : public PlugIn_Route_ExV2 {
   public:
     Route();
