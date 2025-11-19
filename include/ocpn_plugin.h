@@ -7327,7 +7327,8 @@ public:
       const wxString &guid);
 
   /** Retrieve route from database in "new" format */
-  virtual std::unique_ptr<PlugIn_Route_Ex> GetRoute(const wxString &guid);
+  virtual std::unique_ptr<HostApi121::PlugIn_Route_Ex> GetRoute(
+      const wxString &guid);
 };
 
 #endif  //_PLUGIN_H_

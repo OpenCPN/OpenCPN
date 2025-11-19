@@ -719,7 +719,7 @@ std::unique_ptr<HostApi> GetHostApi() {
   return std::make_unique<HostApi121>(HostApi121());
 }
 
-HostApi121::PlugIn_Route_Ex::PlugIn_Route_Ex() {
+HostApi121::PlugIn_Route_Ex::PlugIn_Route_Ex() : PlugIn_Route_ExV2() {
   m_PlannedSpeed = 0;
   m_Colour = "";
   m_style = wxPENSTYLE_SOLID;
@@ -754,9 +754,8 @@ std::unique_ptr<HostApi121::PlugIn_Route_Ex> HostApi121::GetRoute(
   Route* route = g_pRouteMan->FindRouteByGUID(guid);
   if (!route) return nullptr;
 
-  auto* dst_route = new PlugIn_Route_Ex;
+  auto dst_route = std::make_unique<HostApi121::PlugIn_Route_Ex>();
 
-  // PlugIn_Waypoint *pwp;
   for (RoutePoint* src_wp : *route->pRoutePointList) {
     PlugIn_Waypoint_ExV2* dst_wp = new PlugIn_Waypoint_ExV2();
     PlugInExV2FromRoutePoint(dst_wp, src_wp);
@@ -770,7 +769,7 @@ std::unique_ptr<HostApi121::PlugIn_Route_Ex> HostApi121::GetRoute(
   dst_route->m_isVisible = route->IsVisible();
   dst_route->m_Description = route->m_RouteDescription;
 
-  return std::unique_ptr<HostApi121::PlugIn_Route_Ex>(dst_route);
+  return dst_route;
 }
 
 wxString HostApi121::DropMarkPI(double lat, double lon) {
