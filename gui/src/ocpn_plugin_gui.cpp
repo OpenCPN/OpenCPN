@@ -2157,8 +2157,7 @@ std::unique_ptr<PlugIn_Waypoint_ExV2> GetWaypointExV2_Plugin(
 
 // PlugIn_Route_ExV3 utilities
 
-static bool AddPlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute,
-                               bool b_permanent) {
+static bool AddPlugInRouteExV3(HostApi121::Route* proute, bool b_permanent) {
   Route* route = new Route();
 
   PlugIn_Waypoint_ExV2* pwaypointex;
@@ -2223,7 +2222,7 @@ static bool AddPlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute,
   return true;
 }
 
-static bool UpdatePlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute) {
+static bool UpdatePlugInRouteExV3(HostApi121::Route* proute) {
   bool b_found = false;
 
   // Find the Route
@@ -2238,37 +2237,6 @@ static bool UpdatePlugInRouteExV3(HostApi121::PlugIn_Route_Ex* proute) {
   }
 
   return b_found;
-}
-
-std::unique_ptr<HostApi121::PlugIn_Route_Ex> GetRouteExV3_Plugin(
-    const wxString& GUID) {
-  std::unique_ptr<HostApi121::PlugIn_Route_Ex> dst_route;
-  Route* route = g_pRouteMan->FindRouteByGUID(GUID);
-  if (route == nullptr) return dst_route;
-
-  dst_route = std::unique_ptr<HostApi121::PlugIn_Route_Ex>(
-      new HostApi121::PlugIn_Route_Ex);
-  // PlugIn_Route_ExV3* dst_route = r.get();
-
-  for (RoutePoint* src_wp : *route->pRoutePointList) {
-    PlugIn_Waypoint_ExV2* dst_wp = new PlugIn_Waypoint_ExV2();
-    PlugInExV2FromRoutePoint(dst_wp, src_wp);
-    dst_route->pWaypointList->Append(dst_wp);
-  }
-  dst_route->m_NameString = route->m_RouteNameString;
-  dst_route->m_StartString = route->m_RouteStartString;
-  dst_route->m_EndString = route->m_RouteEndString;
-  dst_route->m_GUID = route->m_GUID;
-  dst_route->m_isActive = g_pRouteMan->GetpActiveRoute() == route;
-  dst_route->m_isVisible = route->IsVisible();
-  dst_route->m_Description = route->m_RouteDescription;
-  dst_route->m_PlannedSpeed = route->m_PlannedSpeed;
-  dst_route->m_Colour = route->m_Colour;
-  dst_route->m_style = route->m_style;
-  dst_route->m_PlannedDeparture = route->m_PlannedDeparture;
-  dst_route->m_TimeDisplayFormat = route->m_TimeDisplayFormat;
-
-  return dst_route;
 }
 
 // PlugIn_Route_ExV2 utilities
@@ -2704,10 +2672,6 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString& GUID) {
   dst_route->m_Description = route->m_RouteDescription;
 
   return r;
-}
-
-std::unique_ptr<::PlugIn_Route_Ex> HostApi121::GetRoute(const wxString& GUID) {
-  return ::GetRouteEx_Plugin(GUID);
 }
 
 wxString GetActiveWaypointGUID(

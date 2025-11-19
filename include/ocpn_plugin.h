@@ -7239,10 +7239,10 @@ public:
   };
 
   // Extended plugin route, V3
-  class DECL_EXP PlugIn_Route_Ex : public PlugIn_Route_ExV2 {
+  class Route : public PlugIn_Route_ExV2 {
   public:
-    PlugIn_Route_Ex();
-    virtual ~PlugIn_Route_Ex();
+    Route();
+    virtual ~Route();
 
     double m_PlannedSpeed;
     wxString m_Colour;
@@ -7317,13 +7317,13 @@ public:
   // Extended plugin route, V3
 
   /** Add route to database, updated version of AddPlugInRouteExV2. */
-  virtual bool AddRoute(PlugIn_Route_Ex *proute, bool b_permanent = true);
+  virtual bool AddRoute(Route *route, bool permanent = true);
 
   /** Update database route, updated version of UpdatePlugInRouteExV2 */
-  virtual bool UpdateRoute(PlugIn_Route_Ex *proute);
+  virtual bool UpdateRoute(Route *route);
 
   /** Retrieve route from database */
-  virtual std::unique_ptr<::PlugIn_Route_Ex> GetRoute(const wxString &GUID);
+  virtual std::unique_ptr<HostApi121::Route> GetRoute(const wxString &guid);
 };
 
 #endif  //_PLUGIN_H_
