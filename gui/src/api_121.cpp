@@ -715,6 +715,15 @@ static bool IsAIS_CPAVisible(wxString ais_mmsi) {
     return false;
 }
 
+static void SetTrackVisibility(const wxString& track_GUID, bool viz) {
+  for (Track* ptrack : g_TrackList) {
+    if (ptrack->m_GUID == track_GUID) {
+      ptrack->SetVisible(viz);
+      break;
+    }
+  }
+}
+
 std::unique_ptr<HostApi> GetHostApi() {
   return std::make_unique<HostApi121>(HostApi121());
 }
@@ -897,3 +906,7 @@ void HostApi121::AisToggleTrack(wxString ais_mmsi) {
 int HostApi121::GetContextMenuMask() { return ::GetContextMenuMask(); }
 
 void HostApi121::SetContextMenuMask(int mask) { ::SetContextMenuMask(mask); }
+
+void HostApi121::SetTrackVisibiiity(const wxString& track_GUID, bool viz) {
+  ::SetTrackVisibility(track_GUID, viz);
+}

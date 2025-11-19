@@ -7314,8 +7314,10 @@ public:
   virtual int GetContextMenuMask();
   virtual void SetContextMenuMask(int mask);
 
-  // Extended plugin route, V3
+  // Enhanced Track support
+  virtual void SetTrackVisibiiity(const wxString &track_GUID, bool viz);
 
+  // Extended plugin route, V3
   /** Add route to database, updated version of AddPlugInRouteExV2. */
   virtual bool AddRoute(PlugIn_Route_Ex *proute, bool b_permanent = true);
 
