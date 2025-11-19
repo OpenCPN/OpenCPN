@@ -2679,21 +2679,20 @@ std::unique_ptr<PlugIn_Waypoint_Ex> GetWaypointEx_Plugin(const wxString& GUID) {
   return w;
 }
 
-std::unique_ptr<HostApi121::PlugIn_Route_Ex> GetRouteEx_PluginA(
-    const wxString& GUID) {
-  std::unique_ptr<HostApi121::PlugIn_Route_Ex> r;
+std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString& GUID) {
+  std::unique_ptr<PlugIn_Route_Ex> r;
   Route* route = g_pRouteMan->FindRouteByGUID(GUID);
   if (route == nullptr) return r;
 
-  r = std::unique_ptr<HostApi121::PlugIn_Route_Ex>(
-      new HostApi121::PlugIn_Route_Ex);
-  HostApi121::PlugIn_Route_Ex* dst_route = r.get();
+  r = std::unique_ptr<PlugIn_Route_Ex>(new PlugIn_Route_Ex);
+  PlugIn_Route_Ex* dst_route = r.get();
 
   // PlugIn_Waypoint *pwp;
-  // RoutePoint* src_wp;
+  RoutePoint* src_wp;
   for (RoutePoint* src_wp : *route->pRoutePointList) {
-    PlugIn_Waypoint_ExV2* dst_wp = new PlugIn_Waypoint_ExV2();
-    PlugInExV2FromRoutePoint(dst_wp, src_wp);
+    PlugIn_Waypoint_Ex* dst_wp = new PlugIn_Waypoint_Ex();
+    PlugInExFromRoutePoint(dst_wp, src_wp);
+
     dst_route->pWaypointList->Append(dst_wp);
   }
   dst_route->m_NameString = route->m_RouteNameString;
@@ -2707,9 +2706,8 @@ std::unique_ptr<HostApi121::PlugIn_Route_Ex> GetRouteEx_PluginA(
   return r;
 }
 
-std::unique_ptr<HostApi121::PlugIn_Route_Ex> HostApi121::GetRoute(
-    const wxString& GUID) {
-  return ::GetRouteEx_PluginA(GUID);
+std::unique_ptr<::PlugIn_Route_Ex> HostApi121::GetRoute(const wxString& GUID) {
+  return ::GetRouteEx_Plugin(GUID);
 }
 
 wxString GetActiveWaypointGUID(
