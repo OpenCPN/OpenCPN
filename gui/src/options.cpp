@@ -5507,7 +5507,11 @@ void options::CreatePanel_AIS(size_t parent, int border_size,
   pAlertGrid->Add(pStatic_Dummy2, 1, wxALL, group_item_spacing);
 
   m_pCheck_Ack_Timout = new wxCheckBox(
-      panelAIS, -1, _("Enable Target Alert Acknowledge timeout (min)"));
+      panelAIS, -1,
+      _("Suppress an acknowledged Target's Alert by a Timeout of: (min)"));
+  m_pCheck_Ack_Timout->SetToolTip(
+      _("Suppress AIS Alerts from a specific vessel for a Timeout period "
+        "(min), after the initial acknowledgement."));
   pAlertGrid->Add(m_pCheck_Ack_Timout, 1, wxALL, group_item_spacing);
 
   m_pText_ACK_Timeout = new wxTextCtrl(panelAIS, -1, "TEXT  ");
