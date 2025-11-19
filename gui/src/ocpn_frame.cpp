@@ -704,6 +704,14 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
                                 [&](wxCommandEvent) { Refresh(); });
   m_evt_drv_msg_listener.Init(CommDriverRegistry::GetInstance().evt_driver_msg,
                               [&](ObservedEvt &ev) { OnDriverMsg(ev); });
+  m_update_statusbar_listener.Init(
+      GuiEvents::GetInstance().gframe_update_status_bar,
+      [&](ObservedEvt &) { UpdateStatusBar(); });
+  m_center_aistarget_listener.Init(
+      GuiEvents::GetInstance().on_center_ais_target, [&](ObservedEvt &ev) {
+        auto ais_target = UnpackEvtPointer<AisTargetData>(ev);
+        CenterAisTarget(ais_target);
+      });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
@@ -744,6 +752,21 @@ void MyFrame::FreezeCharts() {
     if (cc && !cc->IsFrozen()) cc->Freeze();
   }
 #endif
+}
+void MyFrame::CenterAisTarget(
+    const std::shared_ptr<const AisTargetData> &ais_target) {
+  double scale = GetFocusCanvas()->GetVPScale();
+  if (1) {
+    JumpToPosition(GetFocusCanvas(), ais_target->Lat, ais_target->Lon, scale);
+  } else {
+    // Set a reasonable (1:5000) chart scale to see the target.
+    if (scale < 0.7) {  // Don't zoom if already close.
+      ChartCanvas *cc = gFrame->GetFocusCanvas();
+      double factor = cc->GetScaleValue() / 5000.0;
+      JumpToPosition(GetFocusCanvas(), ais_target->Lat, ais_target->Lon,
+                     scale * factor);
+    }
+  }
 }
 
 void MyFrame::ThawCharts() {

@@ -318,7 +318,8 @@ public:
   void JumpToPosition(double lat, double lon, double scale);
   void SetFirstAuto(bool b_auto) { m_bFirstAuto = b_auto; }
   void SetAbsoluteMinScale(double min_scale);
-  std::shared_ptr<PI_PointContext> GetCanvasContextAtPoint(int x, int y);
+  std::shared_ptr<HostApi121::PiPointContext> GetCanvasContextAtPoint(int x,
+                                                                      int y);
 
   /**
    * Convert latitude/longitude to canvas pixel coordinates (physical pixels)

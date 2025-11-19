@@ -900,6 +900,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ais_target_alert_dlg.cpp
     ${GUI_SRC_DIR}/ais_target_list_dlg.cpp
     ${GUI_SRC_DIR}/ais_target_query_dlg.cpp
+    ${GUI_SRC_DIR}/api_121.cpp
     ${GUI_SRC_DIR}/canvas_config.cpp
     ${GUI_SRC_DIR}/canvas_menu.cpp
     ${GUI_SRC_DIR}/canvas_options.cpp
