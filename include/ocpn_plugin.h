@@ -7323,7 +7323,8 @@ public:
   virtual bool UpdateRoute(PlugIn_Route_Ex *proute);
 
   /** Retrieve route from database */
-  virtual std::unique_ptr<::PlugIn_Route_Ex> GetRoute(const wxString &GUID);
+  virtual std::unique_ptr<HostApi121::PlugIn_Route_Ex> GetRoute(
+      const wxString &GUID);
 };
 
 #endif  //_PLUGIN_H_
