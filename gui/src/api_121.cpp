@@ -744,6 +744,35 @@ bool HostApi121::UpdateRoute(HostApi121::PlugIn_Route_Ex* proute) {
   return ::UpdatePlugInRouteExV3(proute);
 }
 
+std::unique_ptr<::PlugIn_Route_Ex> HostApi121::GetLegacyRoute(
+    const wxString& GUID) {
+  return ::GetRouteEx_Plugin(GUID);
+}
+
+std::unique_ptr<HostApi121::PlugIn_Route_Ex> HostApi121::GetRoute(
+    const wxString& guid) {
+  Route* route = g_pRouteMan->FindRouteByGUID(guid);
+  if (!route) return nullptr;
+
+  auto* dst_route = new PlugIn_Route_Ex;
+
+  // PlugIn_Waypoint *pwp;
+  for (RoutePoint* src_wp : *route->pRoutePointList) {
+    PlugIn_Waypoint_ExV2* dst_wp = new PlugIn_Waypoint_ExV2();
+    PlugInExV2FromRoutePoint(dst_wp, src_wp);
+    dst_route->pWaypointList->Append(dst_wp);
+  }
+  dst_route->m_NameString = route->m_RouteNameString;
+  dst_route->m_StartString = route->m_RouteStartString;
+  dst_route->m_EndString = route->m_RouteEndString;
+  dst_route->m_GUID = route->m_GUID;
+  dst_route->m_isActive = g_pRouteMan->GetpActiveRoute() == route;
+  dst_route->m_isVisible = route->IsVisible();
+  dst_route->m_Description = route->m_RouteDescription;
+
+  return std::unique_ptr<HostApi121::PlugIn_Route_Ex>(dst_route);
+}
+
 wxString HostApi121::DropMarkPI(double lat, double lon) {
   return ::DropMarkPI(lat, lon);
 }

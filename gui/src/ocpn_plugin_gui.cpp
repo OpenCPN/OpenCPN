@@ -2706,10 +2706,6 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString& GUID) {
   return r;
 }
 
-std::unique_ptr<::PlugIn_Route_Ex> HostApi121::GetRoute(const wxString& GUID) {
-  return ::GetRouteEx_Plugin(GUID);
-}
-
 wxString GetActiveWaypointGUID(
     void) {  // if no active waypoint, returns wxEmptyString
   RoutePoint* rp = g_pRouteMan->GetpActivePoint();

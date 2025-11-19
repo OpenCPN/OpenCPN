@@ -7317,13 +7317,17 @@ public:
   // Extended plugin route, V3
 
   /** Add route to database, updated version of AddPlugInRouteExV2. */
-  virtual bool AddRoute(PlugIn_Route_Ex *proute, bool b_permanent = true);
+  virtual bool AddRoute(PlugIn_Route_Ex *route, bool permanent = true);
 
   /** Update database route, updated version of UpdatePlugInRouteExV2 */
-  virtual bool UpdateRoute(PlugIn_Route_Ex *proute);
+  virtual bool UpdateRoute(PlugIn_Route_Ex *route);
 
-  /** Retrieve route from database */
-  virtual std::unique_ptr<::PlugIn_Route_Ex> GetRoute(const wxString &GUID);
+  /** Retrieve route from database in "old" format */
+  virtual std::unique_ptr<::PlugIn_Route_Ex> GetLegacyRoute(
+      const wxString &guid);
+
+  /** Retrieve route from database in "new" format */
+  virtual std::unique_ptr<PlugIn_Route_Ex> GetRoute(const wxString &guid);
 };
 
 #endif  //_PLUGIN_H_
