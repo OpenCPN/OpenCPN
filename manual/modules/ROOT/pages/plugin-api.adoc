@@ -56,10 +56,10 @@ virtual ~PlugIn_Waypoint();
 [source,cpp]
 ----
 // Good
-bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint);
+bool UpdateSingleWaypoint(const PlugIn_Waypoint& waypoint);
 
 // Bad
-bool UpdateSingleWaypoint(PlugIn_Waypoint pwaypoint);
+bool UpdateSingleWaypoint(PlugIn_Waypoint waypoint);
 ----
 * Passing by value may work initially, but becomes a serious problem in future releases when derived classes are added - passing them to a function expecting the base class will cause slicing. This would force developers to create new functions such as `UpdateSingleWaypointV2`, causing the plugin API to be bloated.
 * A key consideration is that new fields cannot be added to the base class after the plugin API has been published. Changing a class would break ABI compatibility.
