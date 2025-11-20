@@ -38,7 +38,7 @@ The plugin API serves as the contract between OpenCPN core and its plugins. Any 
 * Any of these changes could break binary compatibility with existing plugins.
 
 *Use virtual destructors in all API classes*
-
+Very little of the Open
 * Always include a virtual destructor in base classes:
 +
 [source,cpp]
@@ -76,53 +76,30 @@ ProcessWaypoint(myPoint);  // The scamax value is lost in the function!
 
 === API Evolution
 
-*Use versioned class names for API evolution*
+Up to API 1.20 (OpenCPN 5.12)  all API methods and types was in in global namespace. 
+Because of this various methods has been applied to make updated symbols unique, 
+usually by adding suffixes like `_ex`, `_exV2`, etc.
 
-* Instead of adding "_Ex" or similar suffixes (which don't scale well), use explicit version numbering:
-+
-[source,cpp]
-----
-// Good
-class PlugIn_WaypointV1 { ... };
-class PlugIn_WaypointV2 : public PlugIn_WaypointV1 { ... };
-class PlugIn_WaypointV3 : public PlugIn_WaypointV2 { ... };
+At the time of writing all these symbols are frozen and will not be changed.
 
-// Avoid
-class PlugIn_Waypoint { ... };
-class PlugIn_Waypoint_Ex { ... };
-class PlugIn_Waypoint_Ex_Ex { ... };  // Awkward naming!
-----
-* Clear versioning makes the evolution path obvious and reduces confusion
-* For the first version, you can omit the version suffix, but be prepared to introduce explicit versioning in future updates
-
-*Create subclasses for new fields*
-
-* When new fields need to be added in future plugin API versions, create a subclass rather than modifying the existing class:
-+
-[source,cpp]
-----
-class PlugIn_WaypointV2 : public PlugIn_Waypoint {
-public:
-  double scamax;
-  double m_PlannedSpeed;
-  // New fields here...
-};
-----
-* This allows for backward compatibility - older plugins continue working with the base class
-* Newer plugins can benefit from the extended functionality
-* Use dynamic casting to detect and utilize the extended classes:
-+
-[source,cpp]
-----
-PlugIn_WaypointV2* dst_v2 = dynamic_cast<PlugIn_WaypointV2*>(dst);
-if (dst_v2) {
-  // use extended fields
+From API 1.21 all api symbols are in  separate namespaces, one for each level. 
+As for 1.21 here is a class like
+```
+class HostApi121 : public HostApi {
+...
 }
-----
+```
+
+All methods, types , etc are inside this class and thus in a separate namespace. 
+For this reason there is no need to use suffixes and such to separate methods.
+`HostApi::Foo()`  is totally different from `HostApi122::Foo()` anyway.
+};
 
 === Memory Management
 
 *Clear ownership semantics*
 
 * Define clear ownership rules for every object passed through the API
-* Document whether the receiver takes ownership of passed objects
+* Whenever possible use `std::unique_ptr<>` or `std::shared_ptr<>` smart pointers to clarify ownership
+  for both compiler and human readers-
+* If smart pointers cannot be used: document whether the receiver takes ownership of passed objects
