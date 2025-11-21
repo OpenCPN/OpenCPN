@@ -9506,7 +9506,11 @@ bool OpenGLOptionsDlg::GetTextureCompressionCaching() const {
   return m_cbTextureCompressionCaching->GetValue();
 }
 
-bool OpenGLOptionsDlg::GetRebuildCache() const { return m_brebuild_cache; }
+bool OpenGLOptionsDlg::GetRebuildCache() {
+  bool res = m_brebuild_cache;
+  m_brebuild_cache = FALSE;
+  return res;
+}
 
 int OpenGLOptionsDlg::GetTextureMemorySize() const {
   return m_sTextureMemorySize->GetValue();

@@ -70,8 +70,6 @@
 
 extern GLuint g_raster_format;  ///< Global instance
 
-extern void BuildCompressedCache();  // FIXME (leamas) find a home
-
 extern glTextureManager *g_glTextureManager;  // FIXME (leamas) find a home
 
 class OCPN_GLCaps {
