@@ -7586,7 +7586,6 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
     }
   }
 
-#if 0
   if (pFindTrackSeg) {
     m_pSelectedTrack = NULL;
     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
@@ -7594,21 +7593,15 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
         pSelect->FindSelectionList(ctx, slat, slon, SELTYPE_TRACKSEGMENT);
 
     //  Choose the first visible track containing segment in the list
-    wxSelectableItemListNode *node = SelList.GetFirst();
-    while (node) {
-      SelectItem *pFindSel = node->GetData();
-
+    for (SelectItem *pFindSel : SelList) {
       Track *pt = (Track *)pFindSel->m_pData3;
       if (pt->IsVisible()) {
         m_pSelectedTrack = pt;
         break;
       }
-      node = node->GetNext();
     }
-
     if (m_pSelectedTrack) seltype |= SELTYPE_TRACKSEGMENT;
   }
-#endif
 
   if (0 == seltype) seltype |= SELTYPE_UNKNOWN;
 
@@ -7632,6 +7625,12 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
       rstruct->object_type =
           HostApi121::PiContextObjectType::kObjectRoutesegment;
       rstruct->object_ident = SelectedRoute->m_GUID.ToStdString();
+    }
+  } else if (seltype & SELTYPE_TRACKSEGMENT) {
+    if (m_pSelectedTrack) {
+      rstruct->object_type =
+          HostApi121::PiContextObjectType::kObjectTracksegment;
+      rstruct->object_ident = m_pSelectedTrack->m_GUID.ToStdString();
     }
   }
 

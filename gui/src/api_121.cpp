@@ -727,22 +727,6 @@ std::unique_ptr<HostApi> GetHostApi() {
   return std::make_unique<HostApi121>(HostApi121());
 }
 
-HostApi121::Route::Route() : PlugIn_Route_ExV2() {
-  m_PlannedSpeed = 0;
-  m_Colour = "";
-  m_style = wxPENSTYLE_SOLID;
-  m_PlannedDeparture = wxDateTime::Now();
-  m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
-}
-
-HostApi121::Route::~Route() {
-  if (pWaypointList) {
-    pWaypointList->DeleteContents(true);
-    delete pWaypointList;
-    pWaypointList = NULL;
-  }
-}
-
 bool HostApi121::AddRoute(HostApi121::Route* route, bool permanent) {
   return ::AddPlugInRouteExV3(route, permanent);
 }
