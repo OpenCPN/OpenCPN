@@ -82,6 +82,9 @@
 #define GL_ETC1_RGB8_OES 0x8D64
 #endif
 
+// Max number of jobs, more than 8 gets I/O bound
+constexpr auto MAXJOBS = 8;
+
 using JobList = std::list<JobTicket *>;
 
 extern GLuint g_raster_format;  // FIXME (leamas) Find a home
@@ -578,32 +581,6 @@ bool JobTicket::DoJob(const wxRect &rect) {
   return true;
 }
 
-//  On Windows, we will use a translator to convert SEH exceptions (e.g. access
-//  violations),
-//    into c++ standard exception handling method.
-//  This class and helper function facilitate the conversion.
-
-//  We only do this in the compression worker threads, as they are vulnerable
-//  due to possibly errant code in the chart database management class,
-//  especially on low memory systems where chart cahing is stressed heavily.
-
-#ifdef __WXMSW__
-class SE_Exception {
-private:
-  unsigned int nSE;
-
-public:
-  SE_Exception() {}
-  SE_Exception(unsigned int n) : nSE(n) {}
-  ~SE_Exception() {}
-  unsigned int getSeNumber() { return nSE; }
-};
-
-void my_translate(unsigned int code, _EXCEPTION_POINTERS *ep) {
-  throw SE_Exception();
-}
-#endif
-
 OCPN_CompressionThreadEvent::OCPN_CompressionThreadEvent(
     wxEventType commandType, int id)
     : wxEvent(id, commandType) {
@@ -658,9 +635,37 @@ CompressionPoolThread::CompressionPoolThread(JobTicket *ticket,
   Create();
 }
 
+//  On Windows, we will use a translator to convert SEH exceptions (e.g. access
+//  violations),
+//    into c++ standard exception handling method.
+//  This class and helper function facilitate the conversion.
+
+//  We only do this in the compression worker threads, as they are vulnerable
+//  due to possibly errant code in the chart database management class,
+//  especially on low memory systems where chart cahing is stressed heavily.
+
+#if defined(__MSVC__) || defined(__WXMSW__)
+class SE_Exception : public std::exception {
+public:
+  SE_Exception(unsigned int code, _EXCEPTION_POINTERS *ctx) noexcept
+      : code_(code), ctx_(ctx) {}
+  const char *what() const noexcept override { return "Structured exception"; }
+  unsigned int code() const noexcept { return code_; }
+  _EXCEPTION_POINTERS *context() const noexcept { return ctx_; }
+
+private:
+  unsigned int code_;
+  _EXCEPTION_POINTERS *ctx_;
+};
+
+static void seh_translate(unsigned int code, _EXCEPTION_POINTERS *ep) {
+  throw SE_Exception(code, ep);
+}
+#endif
+
 void *CompressionPoolThread::Entry() {
 #ifdef __MSVC__
-  _set_se_translator(my_translate);
+  _set_se_translator(seh_translate);  // thread-local
 
   //  On Windows, if anything in this thread produces a SEH exception (like
   //  access violation) we handle the exception locally, and simply alow the
@@ -686,7 +691,7 @@ void *CompressionPoolThread::Entry() {
 
   }  // try
 #ifdef __MSVC__
-  catch (SE_Exception e) {
+  catch (const SE_Exception &se) {
     if (m_pMessageTarget) {
       OCPN_CompressionThreadEvent Nevent(wxEVT_OCPN_COMPRESSIONTHREAD, 0);
       m_ticket->b_isaborted = true;
@@ -709,12 +714,10 @@ glTextureManager::glTextureManager() {
   int nCPU = wxMax(1, wxThread::GetCPUCount());
   if (g_nCPUCount > 0) nCPU = g_nCPUCount;
 
-  if (nCPU < 1)
-    // obviously there's at least one CPU!
-    nCPU = 1;
-
-  // m_max_jobs = wxMax(nCPU, 1);
-  m_max_jobs = wxMax(nCPU / 2, 1);
+  // obviously there's at least one CPU!
+  // We never use more than 8 because more
+  // than that can become I/O bound.
+  m_max_jobs = wxMin(wxMax(nCPU / 2, 1), 8);
 
   m_prevMemUsed = 0;
 
@@ -738,6 +741,7 @@ glTextureManager::glTextureManager() {
   m_timer.Connect(wxEVT_TIMER, wxTimerEventHandler(glTextureManager::OnTimer),
                   NULL, this);
   m_timer.Start(500);
+  m_bscheduleJobs = true;
 }
 
 glTextureManager::~glTextureManager() {
@@ -788,13 +792,14 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
       }
     }
 
+    int maxMsgLen = 0;
     if (bfound) {
       wxString msgx;
       if (1) {
         int bar_length = NBAR_LENGTH;
         if (m_bcompact) bar_length = 20;
 
-        msgx += "\n[";
+        msgx += "[";
         wxString block = wxString::Format("%c", 0x2588);
         float cutoff = -1.;
         if (event.nstat_max != 0)
@@ -819,13 +824,17 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
         msgx.Printf("\n %3d/%3d", event.nstat + 1, event.nstat_max);
 
       item->msgx = msgx;
+      maxMsgLen = wxMax(maxMsgLen, msgx.length());
     }
 
     // Ready to compose
     wxString msg;
     for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
-      item = *tnode;
-      msg += item->msgx + "\n";
+      msg += "\n" + (*tnode)->msgx;
+      msg.Pad(1 + maxMsgLen - (*tnode)->msgx.length());
+      // put next message on same line as the first
+      if (++tnode != progList.end()) msg += (*tnode)->msgx;
+      if (tnode == progList.end()) break;
     }
 
     if (m_skipout) m_progMsg = "Skipping, please wait...\n\n";
@@ -848,7 +857,36 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
           ticket->ident, GetRunningJobCount(), (unsigned long)todo_list.size());
   } else if (!ticket->b_inCompressAll) {
     //   Normal completion from here
-    glTextureDescriptor *ptd = ticket->pFact->GetpTD(ticket->m_rect);
+    glTextureDescriptor *ptd = NULL;
+
+#if defined(__MSVC__) || defined(__WXMSW__)
+    // protect against SEH exceptions in chart database code
+    // We try to salvage the situation by catching the exception here
+    // if this code generates an exeption, we simply abandon the compression
+    // and leave the uncompressed texture in place
+    // If SE_Exception ever happens it means there is a bug in the chart
+    // database or texture management code that needs to be fixed. But at least
+    // we won't crash. Users reporting the log message should be encouraged to
+    // report the circumstances so we can track down the bug.
+    wxString chartName("No Chart Found");
+    auto old_translator =
+        _set_se_translator(seh_translate);  // convert SEH to C++ exceptions
+    try {
+#endif
+
+      chartName = ticket->pFact->GetChartPath();
+      ptd = ticket->pFact->GetpTD(ticket->m_rect);
+
+#if defined(__MSVC__) || defined(__WXMSW__)
+    } catch (const SE_Exception &se) {
+      ptd = nullptr;
+      wxLogMessage(
+          "Texture compression thread caught SEH exception %u, chart %s",
+          se.code(), chartName.c_str());
+    }
+    _set_se_translator(old_translator);  // restore previous translator
+#endif
+
     if (ptd) {
       for (int i = 0; i < g_mipmap_max_level + 1; i++)
         ptd->comp_array[i] = ticket->comp_bits_array[i];
@@ -944,6 +982,8 @@ bool glTextureManager::ScheduleJob(glTexFactory *client, const wxRect &rect,
                                    int level, bool b_throttle_thread,
                                    bool b_nolimit, bool b_postZip,
                                    bool b_inplace) {
+  while (!m_bscheduleJobs) wxThread::Sleep(100);
+  if (!client) return false;
   wxString chart_path = client->GetChartPath();
   if (!b_nolimit) {
     if (todo_list.size() >= 50) {
@@ -1133,6 +1173,8 @@ void glTextureManager::ClearJobList() {
 
 void glTextureManager::ClearAllRasterTextures() {
   //     Delete all the TexFactory instances
+  EnableScheduler(false);
+  PurgeJobList();
   ChartPathHashTexfactType::iterator itt;
   for (itt = m_chart_texfactory_hash.begin();
        itt != m_chart_texfactory_hash.end(); ++itt) {
@@ -1144,6 +1186,7 @@ void glTextureManager::ClearAllRasterTextures() {
 
   if (g_tex_mem_used != 0)
     wxLogMessage("Texture memory use calculation error\n");
+  EnableScheduler(true);
 }
 
 bool glTextureManager::PurgeChartTextures(ChartBase *pc, bool b_purge_factory) {
@@ -1401,7 +1444,7 @@ void glTextureManager::BuildCompressedCache() {
       "gggggggggggggggggggggggggg top line ";
 #endif
 
-  for (int i = 0; i < m_max_jobs + 1; i++)
+  for (int i = 0; i < (m_max_jobs + 1) / 2; i++)
     msg0 += "\n                                             ";
 
   m_progDialog = new wxGenericProgressDialog();
@@ -1518,13 +1561,22 @@ void glTextureManager::BuildCompressedCache() {
   schedule:
 
     yield = 0;
-    ScheduleJob(tex_fact, wxRect(), 0, false, true, true, false);
-    while (!m_skip) {
-      ::wxYield();
-      int cnt = GetJobCount() - GetRunningJobCount();
-      if (!cnt) break;
-      wxThread::Sleep(1);
+#if defined(__MSVC__) || defined(__WXMSW__)
+    try {
+      _set_se_translator(seh_translate);  // thread-local
+#endif
+      ScheduleJob(tex_fact, wxRect(), 0, false, true, true, false);
+      while (!m_skip) {
+        ::wxYield();
+        int cnt = GetJobCount() - GetRunningJobCount();
+        if (!cnt) break;
+        wxThread::Sleep(1);
+      }
+#if defined(__MSVC__) || defined(__WXMSW__)
+    } catch (const SE_Exception &se) {
+      wxLogMessage("ScheduleJob caught SEH exception %u", se.code());
     }
+#endif
 
     if (m_skipout) {
       g_glTextureManager->PurgeJobList();

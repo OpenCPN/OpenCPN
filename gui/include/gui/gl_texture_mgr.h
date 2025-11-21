@@ -132,6 +132,11 @@ public:
   bool TextureCrunch(double factor);
   bool FactoryCrunch(double factor);
   void BuildCompressedCache();
+  bool EnableScheduler(bool flag) {
+    bool res = m_bscheduleJobs;
+    m_bscheduleJobs = flag;
+    return res;
+  }
 
   //    This is a hash table
   //    key is Chart full path
@@ -158,6 +163,7 @@ private:
   bool m_skip;
   bool m_skipout;
   bool m_bcompact;
+  bool m_bscheduleJobs;
 };
 
 class glTextureDescriptor;
