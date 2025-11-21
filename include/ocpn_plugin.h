@@ -7208,7 +7208,7 @@ public:
  * HostApi factory,
  * @return Last known HostApi instance.
  */
-std::unique_ptr<HostApi> GetHostApi();
+extern DECL_EXP std::unique_ptr<HostApi> GetHostApi();
 
 class HostApi121 : public HostApi {
 public:
@@ -7241,8 +7241,14 @@ public:
   // Extended plugin route
   class Route : public PlugIn_Route_ExV2 {
   public:
-    Route();
-    virtual ~Route();
+    Route()
+        : PlugIn_Route_ExV2(),
+          m_PlannedSpeed(0),
+          m_style(wxPENSTYLE_SOLID),
+          m_PlannedDeparture(wxDateTime::Now()),
+          m_TimeDisplayFormat("UTC") {}
+
+    ~Route() override = default;
 
     double m_PlannedSpeed;
     wxString m_Colour;
