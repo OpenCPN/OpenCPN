@@ -869,6 +869,9 @@ std::string DataLogger::GetFileDlgTypes() const {
 void DataLogger::Add(const Logline& ll) {
   if (!m_is_logging || !ll.navmsg) return;
   if (m_format == Format::kVdr && ll.navmsg->to_vdr().empty()) return;
+  if (m_format == Format::kVdr &&
+      ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
+    return;
   if (m_format == DataLogger::Format::kVdr)
     AddVdrLogline(ll, m_stream);
   else
