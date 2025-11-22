@@ -831,7 +831,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     wxString msg;
     for (auto tnode = progList.begin(); tnode != progList.end(); tnode++) {
       msg += "\n" + (*tnode)->msgx;
-      msg.Pad(1 + maxMsgLen - (*tnode)->msgx.length());
+      msg.Pad(2 + maxMsgLen - (*tnode)->msgx.length());
       // put next message on same line as the first
       if (++tnode != progList.end()) msg += (*tnode)->msgx;
       if (tnode == progList.end()) break;
