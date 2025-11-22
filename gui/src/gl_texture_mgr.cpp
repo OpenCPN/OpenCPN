@@ -872,9 +872,9 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
     auto old_translator =
         _set_se_translator(seh_translate);  // convert SEH to C++ exceptions
     try {
+      chartName = ticket->pFact->GetChartPath();
 #endif
 
-      chartName = ticket->pFact->GetChartPath();
       ptd = ticket->pFact->GetpTD(ticket->m_rect);
 
 #if defined(__MSVC__) || defined(__WXMSW__)
