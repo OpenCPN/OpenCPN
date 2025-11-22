@@ -753,6 +753,11 @@ std::unique_ptr<HostApi121::Route> HostApi121::GetRoute(const wxString& guid) {
   dst_route->m_isActive = g_pRouteMan->GetpActiveRoute() == route;
   dst_route->m_isVisible = route->IsVisible();
   dst_route->m_Description = route->m_RouteDescription;
+  dst_route->m_PlannedSpeed = route->m_PlannedSpeed;
+  dst_route->m_Colour = route->m_Colour;
+  dst_route->m_style = route->m_style;
+  dst_route->m_PlannedDeparture = route->m_PlannedDeparture;
+  dst_route->m_TimeDisplayFormat = route->m_TimeDisplayFormat;
 
   return dst_route;
 }
