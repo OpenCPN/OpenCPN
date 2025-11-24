@@ -8321,81 +8321,95 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       }
     }
 
-    //      Double tap with selected RoutePoint or Mark
+    //      Double tap with selected RoutePoint or Mark or Track or AISTarget
 
-    if (m_pRoutePointEditTarget) {
-      if (b_onRPtarget) {
-        ShowMarkPropertiesDialog(m_pRoutePointEditTarget);
-        return true;
+    // Get and honor the plugin API ContextMenuMask
+    std::unique_ptr<HostApi> host_api = GetHostApi();
+    auto *api_121 = dynamic_cast<HostApi121 *>(host_api.get());
+
+    api_121->SetContextMenuMask(api_121->kContextMenuDisableWaypoint);
+
+    if (!(api_121->GetContextMenuMask() &
+          api_121->kContextMenuDisableWaypoint)) {
+      if (m_pRoutePointEditTarget) {
+        if (b_onRPtarget) {
+          ShowMarkPropertiesDialog(m_pRoutePointEditTarget);
+          return true;
+        } else {
+          m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
+          m_pRoutePointEditTarget->m_bPtIsSelected = false;
+          if (g_btouch)
+            RoutePointGui(*m_pRoutePointEditTarget).EnableDragHandle(false);
+          wxRect wp_rect;
+          RoutePointGui(*m_pRoutePointEditTarget)
+              .CalculateDCRect(m_dc_route, this, &wp_rect);
+          m_pRoutePointEditTarget = NULL;  // cancel selection
+          RefreshRect(wp_rect, true);
+          return true;
+        }
       } else {
-        m_pRoutePointEditTarget->m_bRPIsBeingEdited = false;
-        m_pRoutePointEditTarget->m_bPtIsSelected = false;
-        if (g_btouch)
-          RoutePointGui(*m_pRoutePointEditTarget).EnableDragHandle(false);
-        wxRect wp_rect;
-        RoutePointGui(*m_pRoutePointEditTarget)
-            .CalculateDCRect(m_dc_route, this, &wp_rect);
-        m_pRoutePointEditTarget = NULL;  // cancel selection
-        RefreshRect(wp_rect, true);
-        return true;
-      }
-    } else {
-      auto node = rpSelList.begin();
-      if (node != rpSelList.end()) {
-        SelectItem *pFind = *node;
-        RoutePoint *frp = (RoutePoint *)pFind->m_pData1;
-        if (frp) {
-          wxArrayPtrVoid *proute_array =
-              g_pRouteMan->GetRouteArrayContaining(frp);
+        auto node = rpSelList.begin();
+        if (node != rpSelList.end()) {
+          SelectItem *pFind = *node;
+          RoutePoint *frp = (RoutePoint *)pFind->m_pData1;
+          if (frp) {
+            wxArrayPtrVoid *proute_array =
+                g_pRouteMan->GetRouteArrayContaining(frp);
 
-          // Use route array (if any) to determine actual visibility for this
-          // point
-          bool brp_viz = false;
-          if (proute_array) {
-            for (unsigned int ir = 0; ir < proute_array->GetCount(); ir++) {
-              Route *pr = (Route *)proute_array->Item(ir);
-              if (pr->IsVisible()) {
-                brp_viz = true;
-                break;
+            // Use route array (if any) to determine actual visibility for this
+            // point
+            bool brp_viz = false;
+            if (proute_array) {
+              for (unsigned int ir = 0; ir < proute_array->GetCount(); ir++) {
+                Route *pr = (Route *)proute_array->Item(ir);
+                if (pr->IsVisible()) {
+                  brp_viz = true;
+                  break;
+                }
               }
-            }
-            delete proute_array;
-            if (!brp_viz &&
-                frp->IsShared())  // is not visible as part of route, but still
-                                  // exists as a waypoint
-              brp_viz = frp->IsVisible();  // so treat as isolated point
-          } else
-            brp_viz = frp->IsVisible();  // isolated point
+              delete proute_array;
+              if (!brp_viz &&
+                  frp->IsShared())  // is not visible as part of route, but
+                                    // still exists as a waypoint
+                brp_viz = frp->IsVisible();  // so treat as isolated point
+            } else
+              brp_viz = frp->IsVisible();  // isolated point
 
-          if (brp_viz) {
-            ShowMarkPropertiesDialog(frp);
-            return true;
+            if (brp_viz) {
+              ShowMarkPropertiesDialog(frp);
+              return true;
+            }
           }
         }
       }
     }
-
     SelectItem *cursorItem;
-    cursorItem = pSelect->FindSelection(ctx, zlat, zlon, SELTYPE_ROUTESEGMENT);
 
-    if (cursorItem) {
-      Route *pr = (Route *)cursorItem->m_pData3;
-      if (pr->IsVisible()) {
-        ShowRoutePropertiesDialog(_("Route Properties"), pr);
-        return true;
+    if (!(api_121->GetContextMenuMask() & api_121->kContextMenuDisableRoute)) {
+      cursorItem =
+          pSelect->FindSelection(ctx, zlat, zlon, SELTYPE_ROUTESEGMENT);
+
+      if (cursorItem) {
+        Route *pr = (Route *)cursorItem->m_pData3;
+        if (pr->IsVisible()) {
+          ShowRoutePropertiesDialog(_("Route Properties"), pr);
+          return true;
+        }
       }
     }
 
-    cursorItem = pSelect->FindSelection(ctx, zlat, zlon, SELTYPE_TRACKSEGMENT);
+    if (!(api_121->GetContextMenuMask() & api_121->kContextMenuDisableTrack)) {
+      cursorItem =
+          pSelect->FindSelection(ctx, zlat, zlon, SELTYPE_TRACKSEGMENT);
 
-    if (cursorItem) {
-      Track *pt = (Track *)cursorItem->m_pData3;
-      if (pt->IsVisible()) {
-        ShowTrackPropertiesDialog(pt);
-        return true;
+      if (cursorItem) {
+        Track *pt = (Track *)cursorItem->m_pData3;
+        if (pt->IsVisible()) {
+          ShowTrackPropertiesDialog(pt);
+          return true;
+        }
       }
     }
-
     //  Tide and current points
     SelectItem *pFindCurrent = NULL;
     SelectItem *pFindTide = NULL;
