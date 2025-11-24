@@ -8327,8 +8327,6 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
     std::unique_ptr<HostApi> host_api = GetHostApi();
     auto *api_121 = dynamic_cast<HostApi121 *>(host_api.get());
 
-    api_121->SetContextMenuMask(api_121->kContextMenuDisableWaypoint);
-
     if (!(api_121->GetContextMenuMask() &
           api_121->kContextMenuDisableWaypoint)) {
       if (m_pRoutePointEditTarget) {
