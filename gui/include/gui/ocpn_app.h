@@ -63,6 +63,7 @@ public:
 
   void OnActivateApp(wxActivateEvent& event);
   bool OpenFile(const std::string& path);
+  void OnUnhandledException() override;
 
 #ifdef LINUX_CRASHRPT
   //! fatal exeption handling
