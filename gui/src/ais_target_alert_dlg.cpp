@@ -211,6 +211,11 @@ void AISTargetAlertDialog::CreateControls() {
   // The Ack button
   // Also used to close a DSC Alert
   wxString acktext = _("&Acknowledge");
+  if (g_bAIS_ACK_Timeout && g_AckTimeout_Mins > 0.0) {
+    wxString s;  // like: (»17´)
+    s.Printf(" (%c%.0f%c)", 0x00BB, g_AckTimeout_Mins, 0x2032);
+    acktext << s;
+  }
   bool show_ack_button = false;
   if (m_bjumpto && m_bcreateWP) {  // DSC Alert only
     acktext = _("&Close Alert");
