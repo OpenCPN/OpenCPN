@@ -508,7 +508,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 
   if (!IsShown() || !m_bsetup) return;
 
-  SetCurrent(*m_pcontext);
+  if (IsShown()) SetCurrent(*m_pcontext);
 
   if (!g_bopengl) {
     // Invoked immediately after user has disabled OpenGL.
