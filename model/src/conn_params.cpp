@@ -324,8 +324,9 @@ std::string ConnectionParams::GetStrippedDSPort() const {
     return t.ToStdString();
 
   } else if (Type == SOCKETCAN) {
-    std::string rv = "socketCAN-";
-    rv += socketCAN_port.ToStdString();
+    std::string rv;
+    if (!socketCAN_port.ToStdString().empty())
+      rv += "socketCAN-" + socketCAN_port.ToStdString();
     return rv;
   } else if (Type == INTERNAL_BT) {
     return Port.ToStdString();
