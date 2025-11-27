@@ -475,6 +475,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   VPoint.view_scale_ppm = 1;
   VPoint.Invalidate();
   m_nMeasureState = 0;
+  m_ignore_next_leftup = false;
 
   m_canvas_scale_factor = 1.;
 
@@ -9054,6 +9055,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
       if (m_routeState)  // creating route?
       {
+        if (m_ignore_next_leftup) {
+          m_ignore_next_leftup = false;
+          return false;
+        }
+
         if (m_bedge_pan) {
           m_bedge_pan = false;
           return false;
@@ -10293,16 +10299,11 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
       m_last_drag_time = tnow;
 
       if ((abs(last_drag.x - x) > 2) || (abs(last_drag.y - y) > 2)) {
-        if (!m_routeState) {  // Correct fault on wx32/gtk3, uncommanded
-                              // dragging on route create.
-                              //   github #2994
-          m_bChartDragging = true;
-          // printf("STM %d %d\n", last_drag.x - x, last_drag.y - y  );
-          StartTimedMovement();
-          m_pan_drag.x += last_drag.x - x;
-          m_pan_drag.y += last_drag.y - y;
-          last_drag.x = x, last_drag.y = y;
-        }
+        m_bChartDragging = true;
+        StartTimedMovement();
+        m_pan_drag.x += last_drag.x - x;
+        m_pan_drag.y += last_drag.y - y;
+        last_drag.x = x, last_drag.y = y;
       }
     } else if (!g_btouch) {
       if ((last_drag.x != x) || (last_drag.y != y)) {
@@ -10322,6 +10323,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     if (g_btouch) {
       if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
         // deactivate next LeftUp to ovoid creating an unexpected point
+        m_ignore_next_leftup = true;
         m_DoubleClickTimer->Start();
         singleClickEventIsValid = false;
       }

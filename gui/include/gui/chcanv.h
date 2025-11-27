@@ -1063,6 +1063,7 @@ private:
 
   wxPoint last_drag;
   wxPoint m_last_touch_down_pos;
+  bool m_ignore_next_leftup;
 
   wxMemoryDC *pmemdc;
 
