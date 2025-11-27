@@ -54,6 +54,9 @@ x Message contains errors and cannot be processed.
 
 | The message is blocked on input  and not processed in any way.
 
+SignalK messages with a context which does not match the own boat are handled
+as blocked on input by a user filter.
+
 === Interface - 4
 
 The interface used to receive or send message, actual formatting depends on
@@ -91,4 +94,4 @@ This format is also suitable for importing logs into spreadsheets
 like MS Excel or LibreOffice Calc.
 
 3. The CSV format is a simplified VDR format using | as field separator
-targetting traditional, command line post processing tools.
+targeting traditional, command line post processing tools.

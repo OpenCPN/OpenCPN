@@ -1009,8 +1009,11 @@ bool CommBridge::HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg) {
 bool CommBridge::HandleSignalK(const SignalKMsgPtr& sK_msg) {
   string str = sK_msg->raw_message;
 
-  //  Here we ignore messages involving contexts other than ownship
-  if (sK_msg->context_self != sK_msg->context) return false;
+  //  Ignore messages involving contexts other than ownship, but do log them
+  if (sK_msg->context_self != sK_msg->context) {
+    g_pMUX->LogInputMessage(sK_msg, true, false);
+    return false;
+  }
 
   g_ownshipMMSI_SK = sK_msg->context_self;
 
