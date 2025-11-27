@@ -103,6 +103,7 @@ static wxArrayString GetAvailableSocketCANInterfaces() {
 
   if ((intf = intf_open()) == NULL) {
     wxLogWarning("Error opening interface list");
+    return rv;
   }
 
   if (intf_loop(intf, print_intf, NULL) < 0) {
@@ -486,7 +487,7 @@ void ConnectionEditDialog::Init() {
       new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
 
   m_choiceCANSource->SetSelection(0);
-  m_choiceCANSource->Enable(TRUE);
+  m_choiceCANSource->Enable(choices.size() > 0);
   m_choiceCANSource->SetMaxSize(wxSize(column2width, -1));
   m_choiceCANSource->SetMinSize(wxSize(column2width, -1));
   fgSizer1C->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
@@ -1039,6 +1040,8 @@ void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
 void ConnectionEditDialog::ShowNMEACAN(bool visible) {
   m_stCANSource->Show(visible);
   m_choiceCANSource->Show(visible);
+  if (visible && m_btnOK && m_choiceCANSource->IsEmpty())
+    m_btnOK->Enable(false);
 }
 
 void ConnectionEditDialog::ShowNMEABT(bool visible) {

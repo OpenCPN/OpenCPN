@@ -484,6 +484,28 @@ void MyApp::InitRestListeners() {
   rest_reverse_listener.Init(m_rest_server.reverse_route, reverse_route);
 }
 
+void MyApp::OnUnhandledException() {
+  // Copied from src/common/appbase.cpp in wxWidgets source, just fix a
+  // #ifdef. We're called from an exception handler so we can re-throw the
+  // exception to recover its type
+  wxString what;
+  try {
+    throw;
+  } catch (std::exception &e) {
+#ifdef wxNO_RTTI
+    what.Printf("standard exception with message \"%s\"", e.what());
+#else
+    what.Printf("standard exception of type \"%s\" with message \"%s\"",
+                typeid(e).name(), e.what());
+#endif
+  } catch (...) {
+    what = "unknown exception";
+  }
+  wxMessageOutputBest().Printf(
+      "Unhandled %s; terminating %s.\n", what,
+      wxIsMainThread() ? "the application" : "the thread in which it happened");
+}
+
 bool MyApp::OpenFile(const std::string &path) {
   NavObjectCollection1 nav_objects;
   auto result = nav_objects.load_file(path.c_str());
