@@ -9340,6 +9340,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           return false;
         }
 
+        if (m_ignore_next_leftup) {
+          m_ignore_next_leftup = false;
+          return false;
+        }
+
         if (m_nMeasureState == 1) {
           m_pMeasureRoute = new Route();
           pRouteList->push_back(m_pMeasureRoute);
