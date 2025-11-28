@@ -133,7 +133,9 @@ void* StdSerialIo::Entry() {
     //  Handle pending output messages
     std::string qmsg;
     while (KeepGoing() && m_out_que.Get(qmsg)) {
-      qmsg += "\r\n";
+      if (qmsg.size() < 3) continue;
+      if (qmsg.find("\r\n", qmsg.size() - 2) == std::string::npos)
+        qmsg += "\r\n";
       bool failed_write = WriteComPortPhysical(qmsg.c_str()) == -1;
       if (!failed_write) {
         std::lock_guard lock(m_stats_mutex);
