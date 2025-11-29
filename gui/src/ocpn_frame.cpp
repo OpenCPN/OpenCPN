@@ -4584,7 +4584,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         GetPrimaryCanvas()->SetCanvasRangeMeters(range_set);
       }
 
-      // Set persistent Fullscreen mode
+      // Synchronize persistent Fullscreen mode
       g_Platform->SetFullscreen(g_bFullscreen);
 
       // Rebuild chart database, if necessary
@@ -4841,7 +4841,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       // if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
 
-      if (g_start_fullscreen) ToggleFullScreen();
+      if (g_start_fullscreen && !IsFullScreen()) ToggleFullScreen();
 
       UpdateStatusBar();
       SendSizeEvent();

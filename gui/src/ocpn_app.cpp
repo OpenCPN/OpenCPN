@@ -1330,6 +1330,7 @@ void MyApp::OnMainFrameReady() {
   /// wxTheApp->SetTopWindow(gFrame);
 
   gFrame->ShowFullScreen(true);
+  g_bFullscreen = true;
 
   // Cleanup the wallpaper frame.
   g_wallpaper->Destroy();
