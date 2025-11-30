@@ -32,15 +32,13 @@
 #include <wx/thread.h>
 #include <wx/timer.h>
 
-const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
-
-class JobTicket;
-class wxGenericProgressDialog;
-
 extern int g_mipmap_max_level;  ///< Global instance
 
-class ProgressInfoItem;
-using ProgressInfoList = std::list<ProgressInfoItem *>;
+const wxEventType wxEVT_OCPN_COMPRESSIONTHREAD = wxNewEventType();
+
+// Forward Declarations
+class CompressionPoolThread;
+class OCPN_CompressionThreadEvent;
 
 class ProgressInfoItem {
 public:
@@ -51,44 +49,28 @@ public:
   wxString msgx;
 };
 
-class CompressionPoolThread : public wxThread {
-public:
-  CompressionPoolThread(JobTicket *ticket, wxEvtHandler *message_target);
-  void *Entry();
+using ProgressInfoList = std::list<ProgressInfoItem *>;
 
-  wxEvtHandler *m_pMessageTarget;
-  JobTicket *m_ticket;
-};
-
-class OCPN_CompressionThreadEvent : public wxEvent {
-public:
-  OCPN_CompressionThreadEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
-  ~OCPN_CompressionThreadEvent();
-
-  // accessors
-  void SetTicket(JobTicket *ticket) { m_ticket = ticket; }
-  JobTicket *GetTicket(void) { return m_ticket; }
-
-  // required for sending with wxPostEvent()
-  wxEvent *Clone() const;
-
-  int type;
-  int nstat;
-  int nstat_max;
-
-private:
-  JobTicket *m_ticket;
-};
-
-class CompressionPoolThread;
+// class JobTicket;
 class JobTicket {
 public:
   JobTicket();
-  ~JobTicket() { free(level0_bits); }
+  ~JobTicket() {
+    free(level0_bits);
+    pFactCLose();
+  }
   bool DoJob();
   bool DoJob(const wxRect &rect);
-
-  glTexFactory *pFact;
+  void pFactOpen(glTexFactory *newFactory) {
+    pFact = newFactory;
+    newFactory->AddRef();
+  }
+  bool pFactCLose() {
+    if (pFact)
+      if (pFact->Release()) pFact = NULL;
+    return (pFact == NULL);
+  }
+  glTexFactory *pFact;  // unchanged type, now ref-counted
   wxRect m_rect;
   int level_min_request;
   int ident;
@@ -100,6 +82,7 @@ public:
   wxString m_ChartPath;
   bool b_abort;
   bool b_isaborted;
+  bool b_jobCompleted;
   bool bpost_zip_compress;
   bool binplace;
   unsigned char *compcomp_bits_array[10];
@@ -132,7 +115,12 @@ public:
   bool TextureCrunch(double factor);
   bool FactoryCrunch(double factor);
   void BuildCompressedCache();
-
+  bool EnableScheduler(bool flag) {
+    bool res = m_bscheduleJobs.load();
+    m_bscheduleJobs.store(flag);
+    return res;
+  }
+  void ShutDownScheduler();
   //    This is a hash table
   //    key is Chart full path
   //    Value is glTexFactory*
@@ -158,6 +146,45 @@ private:
   bool m_skip;
   bool m_skipout;
   bool m_bcompact;
+  std::atomic<bool> m_bscheduleJobs{0};
+  int m_progColumnWidth;
+  static wxMutex m_jobMutex;
+};
+
+// class CompressionPoolThread;
+class CompressionPoolThread : public wxThread {
+public:
+  CompressionPoolThread(JobTicket *ticket, wxEvtHandler *message_target);
+  void *Entry() override;
+
+  wxEvtHandler *m_pMessageTarget;
+  JobTicket *m_ticket;
+
+protected:
+  virtual void OnExit() override;
+
+private:
+  wxString &m_ChartPath() const { return m_ticket->m_ChartPath; };
+};
+
+class OCPN_CompressionThreadEvent : public wxEvent {
+public:
+  OCPN_CompressionThreadEvent(wxEventType commandType = wxEVT_NULL, int id = 0);
+  ~OCPN_CompressionThreadEvent();
+
+  // accessors
+  void SetTicket(JobTicket *ticket) { m_ticket = ticket; }
+  JobTicket *GetTicket(void) { return m_ticket; }
+
+  // required for sending with wxPostEvent()
+  wxEvent *Clone() const;
+
+  int type;
+  int nstat;
+  int nstat_max;
+
+private:
+  JobTicket *m_ticket;
 };
 
 class glTextureDescriptor;

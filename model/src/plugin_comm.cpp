@@ -152,8 +152,8 @@ void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v) {
   auto msg =
       std::make_shared<PluginMsg>(message_id.ToStdString(), out.ToStdString());
   SendMessageToAllPlugins(message_id, out);
-  wxLogDebug(message_id);
-  wxLogDebug(out);
+  // wxLogDebug(message_id);
+  // wxLogDebug(out);
   LogMessage(msg, "Json message ");
 }
 
