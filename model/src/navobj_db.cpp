@@ -166,6 +166,9 @@ bool CreateTables(sqlite3* db) {
             FOREIGN KEY (routepoint_guid) REFERENCES routepoints(guid) ON DELETE CASCADE
         );
 
+        CREATE INDEX IF NOT EXISTS idx_track_points
+        ON trk_points (track_guid);
+
         )";
 
   if (!executeSQL(db, create_tables_sql)) return false;
