@@ -544,7 +544,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
         g_monitor_info[g_current_monitor].width;
   }
 #endif
-  m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
   m_data_monitor->Hide();
   m_pStatusBar = NULL;
@@ -3194,16 +3193,16 @@ Track *MyFrame::TrackOff(bool do_add_point) {
   androidSetTrackTool(false);
 #endif
 
-  g_FlushNavobjChangesTimeout =
-      600;  // Revert to checking/flushing navob changes every 5 minutes
+  // Invalidate the rotate tiem
+  m_target_rotate_time = wxInvalidDateTime;
 
   return return_val;
 }
 
-bool MyFrame::ShouldRestartTrack() {
-  if (!g_pActiveTrack || !g_bTrackDaily) return false;
-  time_t now = wxDateTime::Now().GetTicks();
-  time_t today = wxDateTime::Today().GetTicks();
+void MyFrame::InitializeTrackRestart() {
+  if (!g_bTrackDaily) return;
+  if (m_target_rotate_time.IsValid()) return;
+
   int rotate_at = 0;
   switch (g_track_rotate_time_type) {
     case TIME_TYPE_LMT:
@@ -3222,16 +3221,22 @@ bool MyFrame::ShouldRestartTrack() {
     rotate_at -= 86400;
   else if (rotate_at < 0)
     rotate_at += 86400;
-  if (now >= m_last_track_rotation_ts + 86400 - 3600 &&
-      now - today >= rotate_at) {
-    if (m_last_track_rotation_ts == 0) {
-      if (now - today > rotate_at)
-        m_last_track_rotation_ts = today + rotate_at;
-      else
-        m_last_track_rotation_ts = today + rotate_at - 86400;
-      return false;
-    }
-    m_last_track_rotation_ts = now;
+
+  wxTimeSpan rotate_seconds = wxTimeSpan(0, 0, rotate_at);
+  m_target_rotate_time = wxDateTime::Today() + rotate_seconds;
+
+  // Avoid restarting immediately
+  if (wxDateTime::Now().IsLaterThan(m_target_rotate_time)) {
+    m_target_rotate_time += wxTimeSpan(24);  // tomorrow, same time.
+  }
+}
+
+bool MyFrame::ShouldRestartTrack() {
+  if (!g_pActiveTrack || !g_bTrackDaily) return false;
+  InitializeTrackRestart();
+
+  if (wxDateTime::Now().IsLaterThan(m_target_rotate_time)) {
+    m_target_rotate_time += wxTimeSpan(24);  // tomorrow, same time.
     return true;
   }
   return false;
