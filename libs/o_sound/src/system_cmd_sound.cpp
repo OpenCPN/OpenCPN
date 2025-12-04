@@ -50,7 +50,53 @@ static int do_play(const char* cmd, const char* path) {
 #else                  /* _WIN32, i. e. POSIX */
 #include <sys/wait.h>  // for WEXITSTATUS & friends
 
+/**
+ * @brief Validate file path to prevent command injection
+ * @param path File path to validate
+ * @return true if path is safe, false otherwise
+ */
+static bool is_safe_path(const char* path) {
+  if (!path || path[0] == '\0') {
+    return false;
+  }
+  
+  // Block dangerous shell metacharacters
+  const char* dangerous_chars = ";|&$`<>(){}[]!*?~^";
+  for (size_t i = 0; i < strlen(dangerous_chars); i++) {
+    if (strchr(path, dangerous_chars[i]) != NULL) {
+      wxLogWarning("Security: Path contains dangerous character: %c", dangerous_chars[i]);
+      return false;
+    }
+  }
+  
+  // Prevent path traversal
+  if (strstr(path, "..") != NULL) {
+    wxLogWarning("Security: Path contains '..' (path traversal attempt)");
+    return false;
+  }
+  
+  // Block newline injection
+  if (strchr(path, '\n') != NULL || strchr(path, '\r') != NULL) {
+    wxLogWarning("Security: Path contains newline character");
+    return false;
+  }
+  
+  // Path length limit
+  if (strlen(path) > 512) {
+    wxLogWarning("Security: Path too long (max 512 characters)");
+    return false;
+  }
+  
+  return true;
+}
+
 static int do_play(const char* cmd, const char* path) {
+  // Security: Validate input before executing
+  if (!is_safe_path(path)) {
+    wxLogWarning("Security: Invalid or unsafe or unsafe file path rejected: %s", path);
+    return -1;
+  }
+
   char buff[1024];
   snprintf(buff, sizeof(buff), cmd, path);
   wxLogDebug("Sound command: %s", buff);
