@@ -294,7 +294,8 @@ void toDMS(double a, char *bufp, int bufplen) {
   int n = (int)((a - (int)a) * 36000.0);
   int m = n / 600;
   int s = n % 600;
-  snprintf(bufp, bufplen, "%d%02d'%02d.%01d\"", (int)(neg ? -a : a), m, s / 10, s % 10);
+  snprintf(bufp, bufplen, "%d%02d'%02d.%01d\"", (int)(neg ? -a : a), m, s / 10,
+           s % 10);
 }
 
 /****************************************************************************/
