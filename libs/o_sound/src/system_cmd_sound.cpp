@@ -21,6 +21,21 @@
  * Implement system_cmd_sound.h -- Sound backend based on CLI tools.
  */
 
+// OS-specific path length limits
+#ifdef _WIN32
+  #ifndef MAX_PATH
+    #define MAX_PATH 260
+  #endif
+  #define MAX_SAFE_PATH MAX_PATH
+#else
+  #include <limits.h>
+  #ifdef PATH_MAX
+    #define MAX_SAFE_PATH PATH_MAX
+  #else
+    #define MAX_SAFE_PATH 4096  // POSIX minimum
+  #endif
+#endif
+
 
 #include <cstdlib>
 #include <thread>
@@ -82,8 +97,8 @@ static bool is_safe_path(const char* path) {
   }
   
   // Path length limit
-  if (strlen(path) > 512) {
-    wxLogWarning("Security: Path too long (max 512 characters)");
+  if (strlen(path) >= MAX_SAFE_PATH) {
+    wxLogWarning("Security: Path too long (max %d characters)", MAX_SAFE_PATH);
     return false;
   }
   
