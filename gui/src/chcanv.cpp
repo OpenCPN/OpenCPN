@@ -11392,8 +11392,8 @@ void ChartCanvas::RenderChartOutline(ocpnDC &dc, int dbIndex, ViewPort &vp) {
   }
 }
 
-static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
-                         const wxString &second) {
+static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point,
+                         const wxArrayString &legend) {
   wxFont *dFont = FontMgr::Get().GetFont(_("RouteLegInfoRollover"));
 
   int pointsize = dFont->GetPointSize();
@@ -11405,29 +11405,26 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
 
   dc.SetFont(*psRLI_font);
 
-  int w1, h1;
-  int w2 = 0;
-  int h2 = 0;
-  int h, w;
+  int h = 0;
+  int w = 0;
+  int hl, wl;
 
   int xp, yp;
   int hilite_offset = 3;
+
+  for (wxString line : legend) {
 #ifdef __WXMAC__
-  wxScreenDC sdc;
-  sdc.GetTextExtent(first, &w1, &h1, NULL, NULL, psRLI_font);
-  if (second.Len()) sdc.GetTextExtent(second, &w2, &h2, NULL, NULL, psRLI_font);
+    wxScreenDC sdc;
+    sdc.GetTextExtent(line, &wl, &hl, NULL, NULL, psRLI_font);
 #else
-  dc.GetTextExtent(first, &w1, &h1);
-  if (second.Len()) dc.GetTextExtent(second, &w2, &h2);
+    dc.GetTextExtent(line, &wl, &hl);
+    hl *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
+    wl *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
 #endif
-
-  h1 *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
-  h2 *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
-
-  w = wxMax(w1, w2) + (h1 / 2);  // Add a little right pad
-  w *= (OCPN_GetWinDIPScaleFactor() * 100.) / 100;
-
-  h = h1 + h2;
+    h += hl;
+    w = wxMax(w, wl);
+  }
+  w += (hl / 2);  // Add a little right pad
 
   xp = ref_point.x - w;
   yp = ref_point.y;
@@ -11438,8 +11435,10 @@ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
   dc.SetPen(wxPen(GetGlobalColor("UBLCK")));
   dc.SetTextForeground(GetGlobalColor("UBLCK"));
 
-  dc.DrawText(first, xp, yp);
-  if (second.Len()) dc.DrawText(second, xp, yp + h1);
+  for (wxString line : legend) {
+    dc.DrawText(line, xp, yp);
+    yp += hl;
+  }
 }
 
 void ChartCanvas::RenderShipToActive(ocpnDC &dc, bool Use_Opengl) {
@@ -11577,6 +11576,7 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
   }
 
   wxString routeInfo;
+  wxArrayString infoArray;
   double varBrg = 0;
   if (g_bShowTrue)
     routeInfo << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8), (int)brg,
@@ -11591,17 +11591,21 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
                                   (int)varBrg, 0x00B0);
   }
   routeInfo << " " << FormatDistanceAdaptive(dist);
+  infoArray.Add(routeInfo);
+  routeInfo.Clear();
 
   // To make it easier to use a route as a bearing on a charted object add for
   // the first leg also the reverse bearing.
   if (np == 1) {
-    routeInfo << "\nReverse: ";
+    routeInfo << "Reverse: ";
     if (g_bShowTrue)
       routeInfo << wxString::Format(wxString("%03d%c(T) ", wxConvUTF8),
                                     (int)(brg + 180.) % 360, 0x00B0);
     if (g_bShowMag)
       routeInfo << wxString::Format(wxString("%03d%c(M) ", wxConvUTF8),
                                     (int)(varBrg + 180.) % 360, 0x00B0);
+    infoArray.Add(routeInfo);
+    routeInfo.Clear();
   }
 
   wxString s0;
@@ -11614,7 +11618,10 @@ void ChartCanvas::RenderRouteLegs(ocpnDC &dc) {
   if (!g_btouch) disp_length += dist;  // Add in the to-be-created leg.
   s0 += FormatDistanceAdaptive(disp_length);
 
-  RouteLegInfo(dc, r_rband, routeInfo, s0);
+  infoArray.Add(s0);
+  routeInfo.Clear();
+
+  RouteLegInfo(dc, r_rband, infoArray);
 
   m_brepaint_piano = true;
 }
