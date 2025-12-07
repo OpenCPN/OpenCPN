@@ -634,6 +634,24 @@ static const std::vector<std::string>& GetNoShowVector() {
   return ChartDirectoryExcludedVector;
 }
 
+static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
+  auto window = GetCanvasByIndex(CanvasIndex);
+  auto oCanvas = dynamic_cast<ChartCanvas*>(window);
+  if (oCanvas) {
+    double scale = oCanvas->GetVP().view_scale_ppm;
+    int newref =
+        oCanvas->m_pQuilt->SelectRefChartByFamily((ChartFamilyEnum)Family);
+    if (newref >= 0) {
+      oCanvas->SelectQuiltRefdbChart(newref);
+      oCanvas->SetVPScale(scale);
+      oCanvas->DoCanvasUpdate();
+      oCanvas->ReloadVP();  // Pick up the new selections
+      return true;
+    }
+  }
+  return false;
+}
+
 static void CenterToAisTarget(wxString ais_mmsi) {
   long mmsi = 0;
   if (ais_mmsi.ToLong(&mmsi)) {
@@ -894,6 +912,10 @@ void HostApi121::ClearNoShowVector() { ::ClearNoShowVector(); }
 const std::vector<std::string>& HostApi121::GetNoShowVector() {
   return ::GetNoShowVector();
 }
+
+bool HostApi121::SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
+  return ::SelectChartFamily(CanvasIndex, Family);
+};
 
 // Enhanced AIS Target List support
 

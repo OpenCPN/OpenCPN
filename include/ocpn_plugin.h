@@ -7210,6 +7210,10 @@ public:
  */
 extern DECL_EXP std::unique_ptr<HostApi> GetHostApi();
 
+// To gain access to api121, do something like this:
+// auto host_api = std::move(GetHostApi());
+// auto api_121 = std::dynamic_pointer_cast<HostApi121>(host_api);
+
 class HostApi121 : public HostApi {
 public:
   HostApi121()
@@ -7317,6 +7321,7 @@ public:
   virtual void RemoveNoShowDirectory(std::string chart_dir);
   virtual void ClearNoShowVector();
   virtual const std::vector<std::string> &GetNoShowVector();
+  virtual bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family);
 
   // Enhanced AIS Target List support
   virtual void CenterToAisTarget(wxString ais_mmsi);

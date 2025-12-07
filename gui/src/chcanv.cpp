@@ -2776,10 +2776,29 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
       b_handled = true;
       break;
 
-    case WXK_F2:
-      TogglebFollow();
-      break;
+    case WXK_F2: {
+      // TogglebFollow();
+      if (event.ShiftDown()) {
+        double scale = GetVP().view_scale_ppm;
+        auto current_family = m_pQuilt->GetRefFamily();
+        auto target_family = CHART_FAMILY_UNKNOWN;
+        if (current_family == CHART_FAMILY_RASTER)
+          target_family = CHART_FAMILY_VECTOR;
+        else
+          target_family = CHART_FAMILY_RASTER;
 
+        std::shared_ptr<HostApi> host_api;
+        host_api = std::move(GetHostApi());
+        auto api_121 = std::dynamic_pointer_cast<HostApi121>(host_api);
+
+        if (api_121)
+          api_121->SelectChartFamily(m_canvasIndex,
+                                     (ChartFamilyEnumPI)target_family);
+
+      } else
+        TogglebFollow();
+      break;
+    }
     case WXK_F3: {
       SetShowENCText(!GetShowENCText());
       Refresh(true);

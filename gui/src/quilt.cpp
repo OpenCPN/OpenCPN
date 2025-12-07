@@ -1267,6 +1267,33 @@ const LLRegion &Quilt::GetTilesetRegion(int dbIndex) {
   return target_region;
 }
 
+int Quilt::SelectRefChartByFamily(ChartFamilyEnum family) {
+  // Get the full screen chart index array, and sort it
+  auto array = GetFullscreenIndexArray();
+  // Sort bu largest scale first.
+  std::sort(array.begin(), array.end(), CompareScalesStd);
+
+  // Walk the array, largest to smallest scale
+  int selIndex = -1;
+  for (int dbIndex : array) {
+    if (dbIndex >= 0) {
+      const ChartTableEntry &cte_candidate =
+          ChartData->GetChartTableEntry(dbIndex);
+
+      // Skip basemaps
+      wxFileName fn(cte_candidate.GetFullPath());
+      if (fn.GetPath().Lower().Contains("basemap")) continue;
+
+      //  Choose the appropriate reference chart index
+      if (cte_candidate.GetChartFamily() == family) {
+        selIndex = dbIndex;
+        break;
+      }
+    }
+  }
+  return selIndex;
+}
+
 bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
                                                      ViewPort &vp_in) {
   double zoom_test_val = .002;
