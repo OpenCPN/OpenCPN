@@ -2788,7 +2788,7 @@ void ChartCanvas::OnKeyDown(wxKeyEvent &event) {
           target_family = CHART_FAMILY_RASTER;
 
         std::shared_ptr<HostApi> host_api;
-        host_api = std::move(GetHostApi());
+        host_api = GetHostApi();
         auto api_121 = std::dynamic_pointer_cast<HostApi121>(host_api);
 
         if (api_121)
