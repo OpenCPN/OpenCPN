@@ -1331,7 +1331,13 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       }
     } else {
       if (reference_type != cte.GetChartType()) {
-        continue;
+        // If the chart identifies as a "basemap",
+        // then include its candidate region.
+        // The chart is a possible basemap if the chart path name
+        // contains the string "basemap", not case-sensitive
+
+        wxFileName fn(cte.GetFullPath());
+        if (!fn.GetPath().Lower().Contains("basemap")) continue;
       }
     }
 
@@ -1427,8 +1433,20 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     m_fullscreen_index_array.push_back(i);
 
+    // If the chart identifies as a "basemap",
+    // then include its candidate region.
+    // The chart is a possible basemap if the chart path name
+    // contains the string "basemap", not case-sensitive
+
+    bool guest_family_include = false;
     if (reference_family != cte.GetChartFamily()) {
-      if (cte.GetChartType() != CHART_TYPE_MBTILES) continue;
+      wxFileName fn(cte.GetFullPath());
+      if (fn.GetPath().Lower().Contains("basemap")) {
+        guest_family_include = true;
+      }
+
+      if ((cte.GetChartType() != CHART_TYPE_MBTILES) && !guest_family_include)
+        continue;
     }
 
     if (!m_bquiltanyproj && quilt_proj != cte.GetChartProjectionType())
