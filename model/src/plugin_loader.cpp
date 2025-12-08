@@ -636,7 +636,8 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_plugin_modification = plugin_modification;
       pic->m_enabled = enabled.Get(false);
 
-      if (safe_mode::get_mode()) {
+      if (safe_mode::get_mode() &&
+          !IsSystemPluginPath(file_name.ToStdString())) {
         pic->m_enabled = false;
         enabled.Set(false);
       }
