@@ -182,7 +182,7 @@ public:
 class GribRecord {
 public:
   /** Copy constructor performs a deep copy of the GribRecord. */
-  GribRecord(const GribRecord &rec);
+  GribRecord(const GribRecord& rec);
   GribRecord() { m_bfilled = false; }
 
   virtual ~GribRecord();
@@ -218,9 +218,10 @@ public:
    * @note For vector fields (e.g., wind, currents), use Interpolated2DRecord()
    *       instead to properly handle both components together
    */
-  static GribRecord *InterpolatedRecord(const GribRecord &rec1,
-                                        const GribRecord &rec2, double d,
+  static GribRecord* InterpolatedRecord(const GribRecord& rec1,
+                                        const GribRecord& rec2, double d,
                                         bool dir = false);
+
   /**
    * Creates temporally interpolated records for vector fields (wind, currents).
    *
@@ -246,14 +247,14 @@ public:
    *         - Any input record is invalid
    *         - Memory allocation fails
    */
-  static GribRecord *Interpolated2DRecord(GribRecord *&rety,
-                                          const GribRecord &rec1x,
-                                          const GribRecord &rec1y,
-                                          const GribRecord &rec2x,
-                                          const GribRecord &rec2y, double d);
+  static GribRecord* Interpolated2DRecord(GribRecord*& rety,
+                                          const GribRecord& rec1x,
+                                          const GribRecord& rec1y,
+                                          const GribRecord& rec2x,
+                                          const GribRecord& rec2y, double d);
 
-  static GribRecord *MagnitudeRecord(const GribRecord &rec1,
-                                     const GribRecord &rec2);
+  static GribRecord* MagnitudeRecord(const GribRecord& rec1,
+                                     const GribRecord& rec2);
 
   /**
    * Converts wind or current values from polar (direction/speed) to cartesian
@@ -268,11 +269,11 @@ public:
    * @note Modifies input records: pDIR becomes U component, pSPEED becomes V
    * component.
    */
-  static void Polar2UV(GribRecord *pDIR, GribRecord *pSPEED);
+  static void Polar2UV(GribRecord* pDIR, GribRecord* pSPEED);
 
   void multiplyAllData(double k);
-  void Substract(const GribRecord &rec, bool positive = true);
-  void Average(const GribRecord &rec);
+  void Substract(const GribRecord& rec, bool positive = true);
+  void Average(const GribRecord& rec);
 
   bool isOk() const { return ok; };
   bool isDataKnown() const { return knownData; };
@@ -505,7 +506,9 @@ public:
    * latitude/longitude point.
    *
    * Takes X and Y component records and interpolates both magnitude and angle
-   * using bilinear interpolation between grid points.
+   * using bilinear interpolation between grid points. It handles cases where
+   * the requested point might cross the date line by adjusting the longitude if
+   * needed.
    *
    * @param M [out] Vector magnitude at the interpolated point (preserves input
    * units). This is the speed or strength of the wind/current, typically
@@ -520,12 +523,14 @@ public:
    * @param py [in] Latitude in degrees of the interpolation point.
    * @param numericalInterpolation If true, uses bilinear interpolation; if
    * false, uses nearest neighbor interpolation.
+   * @return true if interpolation was successful, false if the point is outside
+   * map boundaries or if insufficient valid data points exist for interpolation
    *
    * @note The method expects the input components to follow meteorological
    * conventions where u is positive eastward and v is positive northward
    */
-  static bool getInterpolatedValues(double &M, double &A, const GribRecord *GRX,
-                                    const GribRecord *GRY, double px, double py,
+  static bool getInterpolatedValues(double& M, double& A, const GribRecord* GRX,
+                                    const GribRecord* GRY, double px, double py,
                                     bool numericalInterpolation = true);
 
   /**
@@ -559,7 +564,7 @@ public:
    * @param[out] x Pointer to store longitude in degrees
    * @param[out] y Pointer to store latitude in degrees
    */
-  void getXY(int i, int j, double *x, double *y) const {
+  void getXY(int i, int j, double* x, double* y) const {
     *x = getX(i);
     *y = getY(j);
   };
@@ -578,11 +583,11 @@ public:
 
   // Reference date Date (file creation date)
   time_t getRecordRefDate() const { return refDate; }
-  const char *getStrRecordRefDate() const { return strRefDate; }
+  const char* getStrRecordRefDate() const { return strRefDate; }
 
   // Date courante des prévisions
   time_t getRecordCurrentDate() const { return curDate; }
-  const char *getStrRecordCurDate() const { return strCurDate; }
+  const char* getStrRecordCurDate() const { return strCurDate; }
   void setRecordCurrentDate(time_t t);
   void print();
   bool isFilled() { return m_bfilled; }
@@ -596,13 +601,13 @@ private:
 
 protected:
   // private:
-  static bool GetInterpolatedParameters(const GribRecord &rec1,
-                                        const GribRecord &rec2, double &La1,
-                                        double &Lo1, double &La2, double &Lo2,
-                                        double &Di, double &Dj, int &im1,
-                                        int &jm1, int &im2, int &jm2, int &Ni,
-                                        int &Nj, int &rec1offi, int &rec1offj,
-                                        int &rec2offi, int &rec2offj);
+  static bool GetInterpolatedParameters(const GribRecord& rec1,
+                                        const GribRecord& rec2, double& La1,
+                                        double& Lo1, double& La2, double& Lo2,
+                                        double& Di, double& Dj, int& im1,
+                                        int& jm1, int& im2, int& jm2, int& Ni,
+                                        int& Nj, int& rec1offi, int& rec1offj,
+                                        int& rec2offi, int& rec2offj);
 
   /**
    * Unique identifier for this record.
@@ -719,7 +724,6 @@ protected:
    * Specifies when the forecast model was initialized.
    */
   zuint refyear, refmonth, refday, refhour, refminute;
-  // zuchar periodP1, periodP2;
   /**
    * Time range indicators for this forecast step.
    * Used to calculate the valid time period for this data.
@@ -761,9 +765,9 @@ protected:
   bool isAdjacentI;
   // SECTION 3: BIT MAP SECTION (BMS)
   zuint BMSsize;
-  zuchar *BMSbits;
+  zuchar* BMSbits;
   // SECTION 4: BINARY DATA SECTION (BDS)
-  double *data;
+  double* data;
   // SECTION 5: END SECTION (ES)
 
   time_t makeDate(zuint year, zuint month, zuint day, zuint hour, zuint min,
@@ -792,15 +796,9 @@ inline bool GribRecord::hasValue(int i, int j) const {
 //-----------------------------------------------------------------
 inline bool GribRecord::isPointInMap(double x, double y) const {
   return isXInMap(x) && isYInMap(y);
-  /*    if (Dj < 0)
-          return x>=Lo1 && y<=La1 && x<=Lo1+(Ni-1)*Di && y>=La1+(Nj-1)*Dj;
-      else
-          return x>=Lo1 && y>=La1 && x<=Lo1+(Ni-1)*Di && y<=La1+(Nj-1)*Dj;*/
 }
 //-----------------------------------------------------------------
 inline bool GribRecord::isXInMap(double x) const {
-  //    return x>=Lo1 && x<=Lo1+(Ni-1)*Di;
-  // printf ("%f %f %f\n", Lo1, Lo2, x);
   if (Di > 0) {
     double maxLo = Lo2;
     if (Lo2 + Di >= 360) /* grib that covers the whole world */
