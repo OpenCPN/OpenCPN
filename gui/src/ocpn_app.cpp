@@ -1614,7 +1614,7 @@ void MyApp::BuildMainFrame() {
 
   //  Give the user dialog on any blacklisted PlugIns
   g_pi_manager->ShowDeferredBlacklistMessages();
-  g_pi_manager->CallLateInit();
+  // g_pi_manager->CallLateInit();
 
   return;
 
