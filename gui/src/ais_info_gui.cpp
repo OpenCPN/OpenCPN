@@ -324,38 +324,43 @@ void AisInfoGui::ShowAisInfo(
   //    Honor the global flag
   if (!g_bAIS_CPA_Alert_Audio) m_bAIS_Audio_Alert_On = false;
 
-  if (m_bAIS_Audio_Alert_On) {
-    if (!m_AIS_Sound) {
-      m_AIS_Sound = o_sound::Factory();
-    }
-    if (!AIS_AlertPlaying()) {
-      m_bAIS_AlertPlaying = true;
-      wxString soundFile;
-      switch (audioType) {
-        case AISAUDIO_DSC:
-          if (g_bAIS_DSC_Alert_Audio) soundFile = g_DSC_sound_file;
-          break;
-        case AISAUDIO_SART:
-          if (g_bAIS_SART_Alert_Audio) soundFile = g_SART_sound_file;
-          break;
-        case AISAUDIO_CPA:
-        default:
-          if (g_bAIS_GCPA_Alert_Audio) soundFile = g_AIS_sound_file;
-          break;
+  // Ensure that an Alert dialog in visible before activating sound
+  auto alert_dlg_active_audio_check =
+      dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
+  if (alert_dlg_active_audio_check && alert_dlg_active_audio_check->IsShown()) {
+    if (m_bAIS_Audio_Alert_On) {
+      if (!m_AIS_Sound) {
+        m_AIS_Sound = o_sound::Factory();
       }
+      if (!AIS_AlertPlaying()) {
+        m_bAIS_AlertPlaying = true;
+        wxString soundFile;
+        switch (audioType) {
+          case AISAUDIO_DSC:
+            if (g_bAIS_DSC_Alert_Audio) soundFile = g_DSC_sound_file;
+            break;
+          case AISAUDIO_SART:
+            if (g_bAIS_SART_Alert_Audio) soundFile = g_SART_sound_file;
+            break;
+          case AISAUDIO_CPA:
+          default:
+            if (g_bAIS_GCPA_Alert_Audio) soundFile = g_AIS_sound_file;
+            break;
+        }
 
-      m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
-      if (m_AIS_Sound->IsOk()) {
-        m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-        if (!m_AIS_Sound->Play()) {
+        m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
+        if (m_AIS_Sound->IsOk()) {
+          m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
+          if (!m_AIS_Sound->Play()) {
+            delete m_AIS_Sound;
+            m_AIS_Sound = 0;
+            m_bAIS_AlertPlaying = false;
+          }
+        } else {
           delete m_AIS_Sound;
           m_AIS_Sound = 0;
           m_bAIS_AlertPlaying = false;
         }
-      } else {
-        delete m_AIS_Sound;
-        m_AIS_Sound = 0;
-        m_bAIS_AlertPlaying = false;
       }
     }
   }
