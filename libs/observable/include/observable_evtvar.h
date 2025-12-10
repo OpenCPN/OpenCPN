@@ -69,6 +69,12 @@
  *      ObsListener change_listener;
  *    }
  *  \endcode
+ *
+ *  @note: The Notify() method actually generates an evemt which is added
+ *  to the global event queue. If there is a need that listeners should
+ *  be able to process the event immediately, a std::this_thread::yield()
+ *  directly after the Notify() keeps the listener delay at a
+ *  minimum.
  */
 class EventVar : public Observable {
 public:
