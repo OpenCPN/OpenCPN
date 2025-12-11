@@ -1815,7 +1815,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
       if (!g_glTextureManager->GetRunningJobCount()) break;
       wxYield();
       wxSleep(1);
+      n_comploop++;
     }
+    if (stall >= end)
+      wxLogWarning("Compressor thread unwind deadlock detected...");
 
     wxString fmsg;
     fmsg.Printf("Finished compressor pool drain..Time: %d  Job Count: %d",
