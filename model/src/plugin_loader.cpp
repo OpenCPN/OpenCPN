@@ -497,6 +497,8 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled, bool keep_orphans) {
   evt_plugin_loadall_finalize.Notify(errors, "");
   load_errors.clear();
 
+  // Precess Notifications immediately, to pick up plugin chart type additions
+  wxYield();
   return any_dir_loaded;
 }
 
