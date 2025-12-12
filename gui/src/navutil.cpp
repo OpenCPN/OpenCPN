@@ -1357,8 +1357,8 @@ bool MyConfig::LoadLayers(wxString &path) {
 
           if (::wxFileExists(file_path)) {
             NavObjectCollection1 *pSet = new NavObjectCollection1;
-            if (pSet->load_file(file_path.fn_str()).status !=
-                pugi::xml_parse_status::status_ok) {
+            pugi::xml_parse_result result = pSet->load_file(file_path.fn_str());
+            if (!result) {
               wxLogMessage("Error loading GPX file " + file_path);
               wxMessageBox(
                   wxString::Format(
@@ -2749,9 +2749,13 @@ void ImportFileArray(const wxArrayString &file_array, bool islayer,
 
     if (::wxFileExists(path)) {
       NavObjectCollection1 *pSet = new NavObjectCollection1;
-      if (pSet->load_file(path.fn_str()).status !=
-          pugi::xml_parse_status::status_ok) {
+      pugi::xml_parse_result result = pSet->load_file(path.fn_str());
+      if (!result) {
         wxLogMessage("Error loading GPX file " + path);
+        wxMessageBox(
+            wxString::Format(_("Error loading GPX file %s, %s at character %d"),
+                             path, result.description(), result.offset),
+            _("Import GPX File"));
         pSet->reset();
         delete pSet;
         continue;
