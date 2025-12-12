@@ -1360,6 +1360,11 @@ bool MyConfig::LoadLayers(wxString &path) {
             if (pSet->load_file(file_path.fn_str()).status !=
                 pugi::xml_parse_status::status_ok) {
               wxLogMessage("Error loading GPX file " + file_path);
+              wxMessageBox(
+                  wxString::Format(
+                      _("Error loading GPX file %s, %s at character %d"),
+                      file_path, result.description(), result.offset),
+                  _("Import GPX File"));
               pSet->reset();
             }
             long nItems = pSet->LoadAllGPXObjectsAsLayer(
