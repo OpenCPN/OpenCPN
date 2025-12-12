@@ -496,7 +496,6 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled, bool keep_orphans) {
   auto errors = std::make_shared<std::vector<LoadError>>(load_errors);
   evt_plugin_loadall_finalize.Notify(errors, "");
   load_errors.clear();
-
   return any_dir_loaded;
 }
 
