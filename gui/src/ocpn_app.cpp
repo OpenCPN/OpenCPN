@@ -1250,10 +1250,6 @@ bool MyApp::OnInit() {
     SetTopWindow(gFrame);  // Set the main frame as the new top window.
     gFrame->Show();
     gFrame->Raise();
-
-    // Start delayed initialization chain after some milliseconds
-    gFrame->InitTimer.Start(50, wxTIMER_CONTINUOUS);
-
   } else {
     wxTheApp->CallAfter(&MyApp::OnMainFrameReady);
   }
@@ -1318,6 +1314,14 @@ bool MyApp::OnInit() {
     StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                      8000);
   }
+
+  // Ensure execution after all pending layout events
+  CallAfter([]() {
+    // Start delayed initialization chain after some milliseconds
+    wxLogMessage("InitTimer start");
+    gFrame->InitTimer.Start(10, wxTIMER_CONTINUOUS);
+  });
+
   return TRUE;
 }
 
@@ -1343,9 +1347,6 @@ void MyApp::OnMainFrameReady() {
   if (!DoNavMessage(vs)) {
     Exit();
   }
-
-  // Start delayed initialization chain after some milliseconds
-  gFrame->InitTimer.Start(50, wxTIMER_CONTINUOUS);
 }
 
 void MyApp::BuildMainFrame() {
@@ -1549,9 +1550,9 @@ void MyApp::BuildMainFrame() {
   else
     wxLogWarning("Cannot initiate plugin default jigsaw icon.");
 
-  /// AbstractPlatform::ShowBusySpinner();
+  AbstractPlatform::ShowBusySpinner();
   PluginLoader::GetInstance()->LoadAllPlugIns(true);
-  /// AbstractPlatform::HideBusySpinner();
+  AbstractPlatform::HideBusySpinner();
 
   // A Plugin (e.g. Squiddio) may have redefined some routepoint icons...
   // Reload all icons, to be sure.
