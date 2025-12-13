@@ -236,7 +236,7 @@ Quilt::Quilt(ChartCanvas *parent) {
   m_reference_type = CHART_TYPE_UNKNOWN;
   m_reference_family = CHART_FAMILY_UNKNOWN;
   m_quilt_proj = PROJECTION_UNKNOWN;
-
+  m_chart_familyFix = CHART_FAMILY_UNKNOWN;
   m_lost_refchart_dbIndex = -1;
 
   cnode = NULL;
@@ -1287,10 +1287,13 @@ int Quilt::SelectRefChartByFamily(ChartFamilyEnum family) {
       //  Choose the appropriate reference chart index
       if (cte_candidate.GetChartFamily() == family) {
         selIndex = dbIndex;
+        m_chart_familyFix = family;  // record the switch
         break;
       }
     }
   }
+  m_lost_refchart_dbIndex = -1;  // force clear lost chart logic
+
   return selIndex;
 }
 
@@ -1471,6 +1474,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       if (fn.GetPath().Lower().Contains("basemap")) {
         guest_family_include = true;
       }
+
+      if (m_lost_refchart_dbIndex == i) guest_family_include = true;
 
       if ((cte.GetChartType() != CHART_TYPE_MBTILES) && !guest_family_include)
         continue;
@@ -1706,21 +1711,21 @@ double Quilt::GetBestStartScale(int dbi_ref_hint, const ViewPort &vp_in) {
   double proposed_scale_onscreen = vp_in.chart_scale;
 
   if (m_pcandidate_array->GetCount()) {
-    m_refchart_dbIndex = tentative_ref_index;
+    SetReferenceChart(tentative_ref_index);
   } else {
     //    Need to choose some chart, find a quiltable candidate
     bool bfq = false;
     for (unsigned int i = 0; i < m_pcandidate_array->GetCount(); i++) {
       QuiltCandidate *qc = m_pcandidate_array->Item(i);
       if (IsChartQuiltableRef(qc->dbIndex)) {
-        m_refchart_dbIndex = qc->dbIndex;
+        SetReferenceChart(qc->dbIndex);
         bfq = true;
         break;
       }
     }
 
     if (!bfq)  // fallback to first chart in stack
-      m_refchart_dbIndex = m_parent->GetpCurrentStack()->GetDBIndex(0);
+      SetReferenceChart(m_parent->GetpCurrentStack()->GetDBIndex(0));
   }
 
   if (m_refchart_dbIndex >= 0) {
@@ -1843,23 +1848,29 @@ bool Quilt::Compose(const ViewPort &vp_in) {
     }
   }
 
-  if (!bf && m_pcandidate_array->GetCount() &&
-      (m_reference_type != CHART_TYPE_CM93COMP)) {
-    m_lost_refchart_dbIndex = m_refchart_dbIndex;  // save for later
-    int candidate_ref_index = GetNewRefChart();
-    if (m_refchart_dbIndex != candidate_ref_index) {
-      m_refchart_dbIndex = candidate_ref_index;
-      BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
-    }
-    //      There was no viable candidate of smaller scale than the "lost
-    //      chart", so choose the smallest scale chart in the candidate list.
-    else {
-      BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
-      if (m_pcandidate_array->GetCount()) {
-        m_refchart_dbIndex =
-            m_pcandidate_array->Item(m_pcandidate_array->GetCount() - 1)
-                ->dbIndex;
+  // Process "lost chart" logic by default
+  // However, if the chart family has been directly set
+  // by SelectRefChartByFamily(), then honor the selection always.
+  if (m_chart_familyFix == CHART_FAMILY_UNKNOWN) {
+    if (!bf && m_pcandidate_array->GetCount() &&
+        (m_reference_type != CHART_TYPE_CM93COMP)) {
+      m_lost_refchart_dbIndex = m_refchart_dbIndex;  // save for later
+      int candidate_ref_index = GetNewRefChart();
+      if (m_refchart_dbIndex != candidate_ref_index) {
+        m_refchart_dbIndex = candidate_ref_index;
         BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
+      }
+      //      There was no viable candidate of smaller scale than the "lost
+      //      chart", so choose the smallest scale chart in the candidate list.
+      else {
+        BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
+        if (m_pcandidate_array->GetCount()) {
+          m_refchart_dbIndex =
+              m_pcandidate_array->Item(m_pcandidate_array->GetCount() - 1)
+                  ->dbIndex;
+          BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex,
+                                                   vp_local);
+        }
       }
     }
   }
@@ -1889,7 +1900,6 @@ bool Quilt::Compose(const ViewPort &vp_in) {
       if (s57chart::IsCellOverlayType(cte.GetFullSystemPath())) {
         b_has_overlays = true;
         break;
-        ;
       }
     }
   }

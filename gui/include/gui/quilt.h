@@ -266,6 +266,7 @@ private:
   bool m_bquiltanyproj;
   ChartFamilyEnum m_preferred_family;
   ChartCanvas *m_parent;
+  ChartFamilyEnum m_chart_familyFix;
 };
 
 #endif  // _gui_quilt_h
