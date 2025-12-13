@@ -1554,9 +1554,7 @@ void MyApp::BuildMainFrame() {
   PluginLoader::GetInstance()->LoadAllPlugIns(true);
   AbstractPlatform::HideBusySpinner();
 
-  // A Plugin (e.g. Squiddio) may have redefined some routepoint icons...
-  // Reload all icons, to be sure.
-  /// if (pWayPointMan) WayPointmanGui(*pWayPointMan).ReloadRoutepointIcons();
+  if (g_kiosk_startup) g_pi_manager->CallLateInit();
 
   wxString perspective;
   pConfig->SetPath("/AUI");
