@@ -137,7 +137,6 @@ set(
   ${MODEL_HDR_DIR}/thread_ctrl.h
   ${MODEL_HDR_DIR}/track.h
   ${MODEL_HDR_DIR}/usb_watch_daemon.h
-  ${MODEL_HDR_DIR}/wx_instance_chk.h
 )
 
 set(MODEL_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -240,7 +239,6 @@ set(SRC
   ${MODEL_SRC_DIR}/thread_ctrl.cpp
   ${MODEL_SRC_DIR}/track.cpp
   ${MODEL_SRC_DIR}/usb_watch_factory.cpp
-  ${MODEL_SRC_DIR}/wx_instance_chk.cpp
 )
 
 if (QT_ANDROID)
