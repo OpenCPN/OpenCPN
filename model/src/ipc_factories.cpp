@@ -27,16 +27,16 @@
 #include <stdlib.h>
 
 #include "model/ipc_api.h"
-#include "model/wx_instance_chk.h"
+#include "model/std_instance_chk.h"
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #include "model/dbus_client.h"
 #include "model/dbus_server.h"
 #endif
 
-static InstanceCheck& GetWxInstanceChk() {
-  static WxInstanceCheck wx_check;
-  return wx_check;
+static InstanceCheck& GetStdInstanceChk() {
+  static StdInstanceCheck std_check;
+  return std_check;
 }
 
 #ifdef __ANDROID__
@@ -78,7 +78,7 @@ InstanceCheck& InstanceCheck::GetInstance() {
   if (UseDbus())
     return DbusServer::GetInstance();
   else
-    return GetWxInstanceChk();
+    return GetStdInstanceChk();
 }
 
 #else  // __linux__ nor __ANDROID__
@@ -92,6 +92,6 @@ LocalServerApi& LocalServerApi::GetInstance() {
 
 void LocalServerApi::ReleaseInstance() { IpcConnection::ReleaseInstance(); }
 
-InstanceCheck& InstanceCheck::GetInstance() { return GetWxInstanceChk(); }
+InstanceCheck& InstanceCheck::GetInstance() { return GetStdInstanceChk(); }
 
 #endif  // __linux__
