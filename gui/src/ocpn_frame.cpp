@@ -5453,16 +5453,18 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 }
 
-void MyFrame::ProcessQuitFlag() {
+bool MyFrame::ProcessQuitFlag() {
   //      Listen for quitflag to be set, requesting application close
   if (quitflag) {
-    wxLogMessage("Got quitflag from SIGNAL");
     FrameTimer1.Stop();
     FrameTenHzTimer.Stop();
 
-    Close();
-    return;
+    wxWindow *top = wxTheApp ? wxTheApp->GetTopWindow() : nullptr;
+    if (top) top->Close(true);
+
+    return true;
   }
+  return false;
 }
 
 void MyFrame::ProcessDeferredTrackOn() {
@@ -5625,7 +5627,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   ProcessUnitTest();
   g_tick++;
-  ProcessQuitFlag();
+  if (ProcessQuitFlag()) return;
 
   if (bDBUpdateInProgress) return;
 

@@ -381,7 +381,7 @@ public:
 
 private:
   void ProcessUnitTest();
-  void ProcessQuitFlag();
+  bool ProcessQuitFlag();
   void ProcessDeferredTrackOn();
   void SendFixToPlugins();
   void ProcessAnchorWatch();
