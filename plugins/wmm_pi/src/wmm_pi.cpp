@@ -756,6 +756,8 @@ void wmm_pi::SendBoatVariation() {
   wxString out;
   w.Write(v, out);
   SendPluginMessage(wxString(_T("WMM_VARIATION_BOAT")), out);
+  // Send boat variation as NMEA HDG for the Priority List.
+  SendBoatVarHDG(m_boatVariation.Decl);
 }
 
 void wmm_pi::SendCursorVariation() {
@@ -944,4 +946,35 @@ void wmm_pi::ShowPlotSettings() {
     SaveConfig();
   }
   delete dialog;
+}
+
+void wmm_pi::SendBoatVarHDG(double d_var) {
+  // We use the HDG NMEA sentence to send magnetic variation.
+  // The user can then select the desired variation
+  // via the priority of the source code. The not official Talker: WM
+  // is used to print source: WMM plugin in the Priority list.
+  wxString s_dir = d_var >= 0 ? "E" : "W";
+  d_var = fabs(d_var);  // Make it positive for NMEA sentence
+  wxString S = "$WMHDG";
+  S.Append(",");  // 1 Heading N/A
+  S.Append(",");  // 2 Deviation N/A
+  S.Append(",");  // 3 Dev Dir N/A
+  S.Append(",");  // 4 Var degrees
+  S.Append(wxString::Format("%.1f", d_var));
+  S.Append(",");    // 5 Var Dir
+  S.Append(s_dir);  // E/W
+  S.Append("*");
+  S.Append(wxString::Format("%02X", ComputeChecksum(S)));
+  S += "\r\n";
+
+  PushNMEABuffer(S);
+}
+
+unsigned char wmm_pi::ComputeChecksum(wxString sentence) const {
+  unsigned char calculated_checksum = 0;
+  for (wxString::const_iterator i = sentence.begin() + 1;
+       i != sentence.end() && *i != '*'; ++i)
+    calculated_checksum ^= static_cast<unsigned char>(*i);
+
+  return (calculated_checksum);
 }

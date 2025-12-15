@@ -139,6 +139,8 @@ static string GetPriorityKey(const NavMsgPtr& msg) {
     auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
     if (msg_0183) {
       string source = msg->source->to_string();
+      if (msg_0183->talker == "WM" && msg_0183->type == "HDG")
+        source = "WMM plugin";
       this_identifier = msg_0183->talker;
       this_identifier += msg_0183->type;
       key = source + ":" + this_address + ";" + this_identifier;
@@ -808,10 +810,13 @@ bool CommBridge::HandleN0183_HDG(const N0183MsgPtr& n0183_msg) {
   int valid_flag = 0;
 
   bool bHDM = false;
-  if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
-    gHdm = temp_data.gHdm;
-    m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
-    bHDM = true;
+  if (!std::isnan(temp_data.gHdm)) {
+    if (EvalPriority(n0183_msg, active_priority_heading,
+                     priority_map_heading)) {
+      gHdm = temp_data.gHdm;
+      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+      bHDM = true;
+    }
   }
 
   if (!std::isnan(temp_data.gVar)) {
