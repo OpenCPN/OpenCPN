@@ -52,7 +52,7 @@ public:
   void BuildMainFrame();
   void LoadChartDatabase();
 
-  void OnMainFrameReady();
+  void OnWallpaperStable();
   int OnExit() override;
 #ifndef __ANDROID__
   void OnInitCmdLine(wxCmdLineParser& parser) override;
