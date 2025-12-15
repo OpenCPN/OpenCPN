@@ -241,7 +241,13 @@ long g_maintoolbar_orient = 0L;
 
 std::vector<std::string> TideCurrentDataSet;
 
-unsigned g_canvasConfig = 0;
+unsigned g_canvasConfig = kUndefinedColor;
+unsigned g_dm_dropped = kUndefinedColor;
+unsigned g_dm_filtered = kUndefinedColor;
+unsigned g_dm_input = kUndefinedColor;
+unsigned g_dm_not_ok = kUndefinedColor;
+unsigned g_dm_ok = kUndefinedColor;
+unsigned g_dm_output = kUndefinedColor;
 
 wxString g_active_route;
 wxString g_AW1GUID;

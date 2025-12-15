@@ -23,16 +23,24 @@
  * Note: please keep variable definitions at one single line, extended
  * docs goes to the bottom. This is to make it possible to maintain the
  * sorted list.
+ *
+ * That is, please keep list sorted.
  */
 
 #ifndef CONFIG_VARS_H__
 #define CONFIG_VARS_H__
 
+#include <limits>
 #include <string>
 #include <vector>
 
 #include <wx/config.h>
 #include <wx/string.h>
+
+#undef max  // get rid of windows define blocking ::max
+
+constexpr unsigned kUndefinedColor =
+    std::numeric_limits<unsigned>::max();  // Undefined wxColour RGB
 
 extern bool g_allow_arb_system_plugin;
 extern bool g_always_send_rmb_rmc;  // See extended docs below
@@ -251,7 +259,14 @@ extern int g_AIS_alert_delay;
 extern long g_maintoolbar_orient;
 
 extern std::vector<std::string> TideCurrentDataSet;
+
 extern unsigned g_canvasConfig;
+extern unsigned g_dm_dropped;
+extern unsigned g_dm_filtered;
+extern unsigned g_dm_input;
+extern unsigned g_dm_not_ok;
+extern unsigned g_dm_ok;
+extern unsigned g_dm_output;
 
 extern wxString g_active_route;
 extern wxString g_android_Device_Model;

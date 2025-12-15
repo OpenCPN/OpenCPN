@@ -53,6 +53,7 @@
 #include "svg_button.h"
 #include "svg_icons.h"
 #include "tty_scroll.h"
+#include "user_colors_dlg.h"
 #include "filter_dlg.h"
 
 #pragma clang diagnostic push
@@ -605,7 +606,7 @@ public:
           break;
 
         case Id::kUserColors:
-          UserColorsDlg(parent);
+          UserColorsDlg(wxTheApp->GetTopWindow());
           break;
       }
     });
