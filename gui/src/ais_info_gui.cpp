@@ -221,8 +221,8 @@ void AisInfoGui::ShowAisInfo(
       //      icon from the taskbar. (on the next timer tick, probably)
 
 #ifndef __ANDROID__
-      if (gFrame->IsIconized() || !gFrame->IsActive())
-        gFrame->RequestUserAttention();
+//      if (gFrame->IsIconized() || !gFrame->IsActive())
+//        gFrame->RequestUserAttention();
 #endif
 
       if (!gFrame->IsIconized()) {
