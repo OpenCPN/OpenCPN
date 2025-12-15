@@ -694,3 +694,7 @@ void EditFilterDlg(wxWindow* parent) {
 
   EditOneFilterDlg(parent, dlg.GetStringSelection().ToStdString());
 };
+
+void UserColorsDlg(wxWindow* parent) {
+  // TBD
+}
