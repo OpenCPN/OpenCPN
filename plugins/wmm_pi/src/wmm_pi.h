@@ -189,6 +189,8 @@ private:
   void SendVariationAt(double lat, double lon, int year, int month, int day);
   void SendBoatVariation();
   void SendCursorVariation();
+  void SendBoatVarHDG(double d_var);  // send variation to NMEA handler
+  unsigned char ComputeChecksum(wxString sentence) const;
 
   MAGtype_GeoMagneticElements m_cursorVariation;
   MAGtype_GeoMagneticElements m_boatVariation;
