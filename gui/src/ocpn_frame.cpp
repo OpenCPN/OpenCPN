@@ -7441,8 +7441,10 @@ void RestoreSystemColors() {
     pcspec++;
     i++;
   }
-
-  pSetSysColors(i, (unsigned long *)&element[0], (unsigned long *)&rgbcolor[0]);
+  if (pSetSysColors) {
+    pSetSysColors(i, (unsigned long *)&element[0],
+                  (unsigned long *)&rgbcolor[0]);
+  }
 }
 
 #endif
