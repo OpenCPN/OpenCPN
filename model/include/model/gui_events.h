@@ -55,6 +55,12 @@ public:
    */
   EventVar on_center_ais_target;
 
+  /**
+   * Notified without arguments when the global variables housing the Data
+   * Monitor user defined colors are updated.
+   */
+  EventVar on_dm_colors_change;
+
 private:
   GuiEvents() = default;
 };

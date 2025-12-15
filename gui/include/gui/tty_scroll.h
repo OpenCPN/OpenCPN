@@ -65,6 +65,16 @@ public:
   wxColor operator()(NavmsgStatus ns);
 };
 
+class UserColorsByState : public ColorByState {
+public:
+  UserColorsByState() {};
+
+  wxColor operator()(NavmsgStatus ns);
+
+private:
+  StdColorsByState defaults;
+};
+
 /** Scrolled TTY-like window for logging, etc. */
 class TtyScroll : public wxScrolledWindow {
 public:
