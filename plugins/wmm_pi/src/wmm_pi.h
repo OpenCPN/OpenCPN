@@ -41,7 +41,7 @@
 #include "wxWTranslateCatalog.h"
 
 #define MY_API_VERSION_MAJOR 1
-#define MY_API_VERSION_MINOR 8
+#define MY_API_VERSION_MINOR 9
 
 #include "ocpn_plugin.h"
 #include "pi_ocpndc.h"
