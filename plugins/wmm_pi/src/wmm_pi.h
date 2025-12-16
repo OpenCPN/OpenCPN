@@ -94,7 +94,7 @@ public:
   void Cancel(wxCommandEvent &event) { EndDialog(wxID_CANCEL); }
 };
 
-class wmm_pi : public opencpn_plugin_18 {
+class wmm_pi : public wxEvtHandler, public opencpn_plugin_118 {
 public:
   wmm_pi(void *ppimgr);
 
@@ -189,7 +189,8 @@ private:
   void SendVariationAt(double lat, double lon, int year, int month, int day);
   void SendBoatVariation();
   void SendCursorVariation();
-  void SendBoatVarHDG(double d_var);  // send variation to NMEA handler
+  void SendBoatVarHVD(double d_var);  // send variation to NMEA handler
+  void SendPGN127258(double d_var);   // send variation via N2k
   unsigned char ComputeChecksum(wxString sentence) const;
 
   MAGtype_GeoMagneticElements m_cursorVariation;
@@ -199,6 +200,8 @@ private:
   wxFont *pFontSmall;
   double m_scale;
   wxString m_shareLocn;
+
+  DriverHandle m_handleN2k;
 };
 
 int WMM_setupMagneticModel(char *data, MAGtype_MagneticModel *MagneticModel);
