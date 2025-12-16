@@ -1587,7 +1587,6 @@ void options::Init() {
   k_charts = 0;
   k_vectorcharts = 0;
   k_plugins = 0;
-  k_tides = 0;
   m_pConfig = NULL;
 
   pSoundDeviceIndex = NULL;
@@ -7754,15 +7753,30 @@ void options::ApplyChanges(wxCommandEvent& event) {
   if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxOK);
 
   m_returnChanges |= GENERIC_CHANGED | k_vectorcharts | k_charts |
-                     m_groups_changed | k_plugins | k_tides;
+                     m_groups_changed | k_plugins;
 
   // Pick up all the entries in the Tide/current DataSelected control
-  // and update the global static array
-  TideCurrentDataSet.clear();
-  int nEntry = tcDataSelected->GetItemCount();
-  for (int i = 0; i < nEntry; i++) {
+  // and update the global static array if changed
+  // Get signature of existing array
+  wxString string_acc;
+  for (wxString entry : TideCurrentDataSet) {
+    string_acc += entry;
+  }
+  //  Get signature for options control
+  wxString string_acc_control;
+  for (int i = 0; i < tcDataSelected->GetItemCount(); i++) {
     wxString setName = tcDataSelected->GetItemText(i);
-    TideCurrentDataSet.push_back(setName.ToStdString());
+    string_acc_control += setName;
+  }
+  // Any change?
+  if (!string_acc.IsSameAs(string_acc_control)) {
+    TideCurrentDataSet.clear();
+    int nEntry = tcDataSelected->GetItemCount();
+    for (int i = 0; i < nEntry; i++) {
+      wxString setName = tcDataSelected->GetItemText(i);
+      TideCurrentDataSet.push_back(setName.ToStdString());
+    }
+    m_returnChanges |= TIDES_CHANGED;
   }
 
   if (g_canvasConfig != m_screenConfig) m_returnChanges |= CONFIG_CHANGED;

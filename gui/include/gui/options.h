@@ -443,7 +443,6 @@ public:
   wxTextCtrl *pSDefaultBoatSpeed;
 
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
-  int k_tides;
 
   // For the Display\Units page
   wxStaticText *itemStaticTextUserVar;
