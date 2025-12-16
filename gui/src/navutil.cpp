@@ -37,6 +37,8 @@
 #include <time.h>
 #include <locale>
 #include <list>
+#include <limits>
+#include <string>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -161,6 +163,20 @@ MyConfig::MyConfig(const wxString &LocalFileName)
     : wxFileConfig("", "", LocalFileName, "", wxCONFIG_USE_LOCAL_FILE) {}
 
 MyConfig::~MyConfig() {}
+
+unsigned MyConfig::ReadUnsigned(const wxString &key, unsigned default_val) {
+  wxString s;
+  unsigned long value = 0;
+  if (!Read(key, &s)) return default_val;
+  try {
+    value = std::stoul(s.ToStdString());
+  } catch (std::logic_error &) {
+    return default_val;
+  }
+  if (value < 0 || value > std::numeric_limits<unsigned>::max())
+    return default_val;
+  return static_cast<unsigned>(value);
+}
 
 int MyConfig::LoadMyConfig() {
   int display_width, display_height;
@@ -1168,7 +1184,15 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     }
   }
 
-  return (0);
+  SetPath("/DataMonitor");
+  g_dm_ok = ReadUnsigned("colors.ok", kUndefinedColor);
+  g_dm_dropped = ReadUnsigned("colors.dropped", kUndefinedColor);
+  g_dm_filtered = ReadUnsigned("colors.filtered", kUndefinedColor);
+  g_dm_input = ReadUnsigned("colors.input", kUndefinedColor);
+  g_dm_output = ReadUnsigned("colors.output", kUndefinedColor);
+  g_dm_not_ok = ReadUnsigned("colors.not-ok", kUndefinedColor);
+
+  return 0;
 }
 
 void MyConfig::LoadS57Config() {
@@ -2369,6 +2393,13 @@ void MyConfig::UpdateSettings() {
     p.Printf("Props%d", i);
     Write(p, g_MMSI_Props_Array[i]->Serialize());
   }
+  SetPath("/DataMonitor");
+  Write("colors.ok", g_dm_ok);
+  Write("colors.dropped", g_dm_dropped);
+  Write("colors.filtered", g_dm_filtered);
+  Write("colors.input", g_dm_input);
+  Write("colors.output", g_dm_output);
+  Write("colors.not-ok", g_dm_not_ok);
 
   SaveCanvasConfigs();
 
