@@ -62,6 +62,7 @@ public:
   bool DecodeTHS(std::string s, NavData& temp_data);
   bool DecodeHDT(std::string s, NavData& temp_data);
   bool DecodeHDG(std::string s, NavData& temp_data);
+  bool DecodeHVD(std::string s, NavData& temp_data);
   bool DecodeVTG(std::string s, NavData& temp_data);
   bool DecodeGSV(std::string s, NavData& temp_data);
   bool DecodeGGA(std::string s, NavData& temp_data);
@@ -76,6 +77,7 @@ public:
   bool DecodePGN129026(std::vector<unsigned char> v, NavData& temp_data);
   bool DecodePGN129029(std::vector<unsigned char> v, NavData& temp_data);
   bool DecodePGN127250(std::vector<unsigned char> v, NavData& temp_data);
+  bool DecodePGN127258(std::vector<unsigned char> v, NavData& temp_data);
   bool DecodePGN129540(std::vector<unsigned char> v, NavData& temp_data);
 
   // SignalK

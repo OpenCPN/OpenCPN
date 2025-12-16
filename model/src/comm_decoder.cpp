@@ -183,6 +183,30 @@ bool CommDecoder::DecodeHDG(std::string s, NavData& temp_data) {
   return true;
 }
 
+bool CommDecoder::DecodeHVD(std::string s, NavData& temp_data) {
+  wxString sentence(s.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+  m_NMEA0183 << sentence3;
+
+  if (!m_NMEA0183.PreParse()) return false;
+  if (!m_NMEA0183.Parse()) return false;
+
+  // Any device sending VAR=0.0 can be assumed to not really know
+  // what the actual variation is, so in this case we use WMM if
+  // available
+  if ((!std::isnan(m_NMEA0183.Hvd.MagneticVariationDegrees)) &&
+      0.0 != m_NMEA0183.Hvd.MagneticVariationDegrees) {
+    if (m_NMEA0183.Hvd.MagneticVariationDirection == East)
+      temp_data.gVar = m_NMEA0183.Hvd.MagneticVariationDegrees;
+    else if (m_NMEA0183.Hvd.MagneticVariationDirection == West)
+      temp_data.gVar = -m_NMEA0183.Hvd.MagneticVariationDegrees;
+
+    g_bVAR_Rx = true;
+  }
+
+  return true;
+}
+
 bool CommDecoder::DecodeVTG(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
@@ -354,6 +378,24 @@ bool CommDecoder::DecodePGN127250(std::vector<unsigned char> v,
 
     temp_data.gVar = Variation;
     temp_data.SID = SID;
+    return true;
+  }
+
+  return false;
+}
+
+bool CommDecoder::DecodePGN127258(std::vector<unsigned char> v,
+                                  NavData& temp_data) {
+  unsigned char SID;
+  tN2kMagneticVariation Source;
+  uint16_t DaysSince1970;
+  double Variation;
+  tN2kHeadingReference ref;
+
+  if (ParseN2kPGN127258(v, SID, Source, DaysSince1970, Variation)) {
+    temp_data.gVar = Variation;
+    temp_data.SID = SID;
+    g_bVAR_Rx = true;
     return true;
   }
 

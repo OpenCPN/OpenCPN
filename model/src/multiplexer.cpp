@@ -87,6 +87,8 @@ static std::string N2K_LogMessage_Detail(unsigned int pgn) {
       return "AIS static data class B part B";
     case 127250:
       return "Heading rapid";
+    case 127258:
+      return "Magnetic variation.";
     case 129540:
       return "GNSS Sats & DBoard: SAT Status";
     //>> Dashboard
@@ -114,8 +116,6 @@ static std::string N2K_LogMessage_Detail(unsigned int pgn) {
       return "Heading/Track control. " + not_used;
     case 127251:
       return "Rate of turn. " + not_used;
-    case 127258:
-      return "Magnetic variation. " + not_used;
     case 127488:
       return "Engine rapid param. " + not_used;
     case 127489:

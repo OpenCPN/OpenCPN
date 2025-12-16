@@ -147,6 +147,7 @@ private:
   ObsListener m_n2k_129025_lstnr;
   ObsListener m_n2k_129026_lstnr;
   ObsListener m_n2k_127250_lstnr;
+  ObsListener m_n2k_127258_lstnr;
   ObsListener m_n2k_129540_lstnr;
 
   ObsListener m_n0183_rmc_lstnr;
@@ -154,6 +155,7 @@ private:
   ObsListener m_n0183_hdt_lstnr;
   ObsListener m_n0183_hdg_lstnr;
   ObsListener m_n0183_hdm_lstnr;
+  ObsListener m_n0183_hvd_lstnr;
   ObsListener m_n0183_vtg_lstnr;
   ObsListener m_n0183_gsv_lstnr;
   ObsListener m_n0183_gga_lstnr;
@@ -194,6 +196,7 @@ private:
   bool HandleN2K_129025(const N2000MsgPtr& n2k_msg);
   bool HandleN2K_129026(const N2000MsgPtr& n2k_msg);
   bool HandleN2K_127250(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_127258(const N2000MsgPtr& n2k_msg);
   bool HandleN2K_129540(const N2000MsgPtr& n2k_msg);
 
   bool HandleN0183_RMC(const N0183MsgPtr& n0183_msg);
@@ -201,6 +204,7 @@ private:
   bool HandleN0183_HDT(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_HDG(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_HDM(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HVD(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_VTG(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_GSV(const N0183MsgPtr& n0183_msg);
 
