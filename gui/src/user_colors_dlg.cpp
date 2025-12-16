@@ -38,19 +38,20 @@
 #include "user_colors_dlg.h"
 #include "tty_scroll.h"
 
+static constexpr const char* const kDialogName = "DataMonitorColors";
+
 class UserColoursDlg : public wxFrame {
 public:
   UserColoursDlg(wxWindow* parent)
       : wxFrame(parent, wxID_ANY, _("Data Monitor: colours setup")),
         m_top_panel(nullptr) {
+    SetName(kDialogName);
     auto on_ok = [&] {
       m_top_panel->Apply();
       Destroy();
     };
     auto on_apply = [&] { m_top_panel->Apply(); };
     auto on_cancel = [&] { m_top_panel->Cancel(); };
-    auto buttons_panel = new wxPanel(this);
-    auto btn_panel_sizer = new wxBoxSizer(wxVERTICAL);
     auto buttons = new ButtonSizer(this, on_ok, on_apply, on_cancel);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     m_top_panel = new TopPanel(this);
@@ -62,6 +63,50 @@ public:
   }
 
 private:
+  class StoredConfig {
+  public:
+    StoredConfig() { Load(); }
+
+    void Load() {
+      dm_dropped = g_dm_dropped;
+      dm_filtered = g_dm_filtered;
+      dm_input = g_dm_input;
+      dm_not_ok = g_dm_not_ok;
+      dm_ok = g_dm_ok;
+      dm_output = g_dm_output;
+    }
+
+    void Save() {
+      g_dm_dropped = WorkValue(
+          dm_dropped, NavmsgStatus(NavmsgStatus::Accepted::kFilteredDropped));
+      g_dm_filtered = WorkValue(
+          dm_filtered, NavmsgStatus(NavmsgStatus::Accepted::kFilteredNoOutput));
+      g_dm_input =
+          WorkValue(dm_input, NavmsgStatus(NavmsgStatus::Direction::kInput));
+      g_dm_not_ok =
+          WorkValue(dm_not_ok, NavmsgStatus(NavmsgStatus::State::kMalformed));
+      g_dm_ok =
+          WorkValue(dm_ok, NavmsgStatus(NavmsgStatus::Direction::kHandled));
+      g_dm_output =
+          WorkValue(dm_output, NavmsgStatus(NavmsgStatus::Direction::kOutput));
+    }
+
+  private:
+    unsigned dm_dropped;
+    unsigned dm_filtered;
+    unsigned dm_input;
+    unsigned dm_not_ok;
+    unsigned dm_ok;
+    unsigned dm_output;
+
+    UserColorsByState default_colors;
+
+    unsigned WorkValue(unsigned stored_value, NavmsgStatus ns) {
+      if (stored_value == kUndefinedColor) return default_colors(ns).GetRGB();
+      return stored_value;
+    }
+  };
+
   class TopPanel : public wxPanel {
   public:
     TopPanel(wxWindow* parent) : wxPanel(parent) {
@@ -117,6 +162,7 @@ private:
     }
 
     void Cancel() {
+      m_stored_config.Save();
       m_msg_ok_pick->SetColour(wxColour(static_cast<unsigned long>(g_dm_ok)));
       m_msg_not_ok_pick->SetColour(
           wxColour(static_cast<unsigned long>(g_dm_not_ok)));
@@ -139,6 +185,7 @@ private:
     wxColourPickerCtrl* m_msg_input_pick;
 
     UserColorsByState m_colors;
+    StoredConfig m_stored_config;
   };
 
   using ButtonHandler = std::function<void()>;
@@ -177,7 +224,13 @@ private:
 };
 
 wxFrame* UserColorsDlg(wxWindow* parent) {
-  auto dialog = new UserColoursDlg(parent);
-  dialog->Show();
-  return dialog;
+  auto current_dlg = wxWindow::FindWindowByName(kDialogName);
+  if (current_dlg) {
+    current_dlg->Raise();
+    return nullptr;
+  } else {
+    auto dialog = new UserColoursDlg(parent);
+    dialog->Show();
+    return dialog;
+  }
 }
