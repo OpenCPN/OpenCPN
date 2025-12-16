@@ -33,7 +33,10 @@
 
 #include "model/config_vars.h"
 #include "model/gui_events.h"
+#include "model/navmsg_filter.h"
+
 #include "user_colors_dlg.h"
+#include "tty_scroll.h"
 
 class UserColoursDlg : public wxFrame {
 public:
@@ -63,30 +66,39 @@ private:
   public:
     TopPanel(wxWindow* parent) : wxPanel(parent) {
       auto grid = new wxGridSizer(2);
+
+      NavmsgStatus ns(NavmsgStatus::Direction::kHandled);
       grid->Add(new wxStaticText(this, wxID_ANY, _("Input - OK")));
-      m_msg_ok_pick = new wxColourPickerCtrl(this, wxID_ANY, *wxGREEN);
+      m_msg_ok_pick = new wxColourPickerCtrl(this, wxID_ANY, m_colors(ns));
       grid->Add(m_msg_ok_pick);
+
       grid->Add(new wxStaticText(this, wxID_ANY, _("Errors")));
-      m_msg_not_ok_pick = new wxColourPickerCtrl(this, wxID_ANY, *wxRED);
+      ns = NavmsgStatus(NavmsgStatus::State::kMalformed);
+      m_msg_not_ok_pick = new wxColourPickerCtrl(this, wxID_ANY, m_colors(ns));
       grid->Add(m_msg_not_ok_pick);
+
       grid->Add(new wxStaticText(this, wxID_ANY, _("Filtered, no output")));
+      ns = NavmsgStatus(NavmsgStatus::Accepted::kFilteredNoOutput);
       m_msg_filtered_pick =
-          new wxColourPickerCtrl(this, wxID_ANY, wxColour("CORAL"));
+          new wxColourPickerCtrl(this, wxID_ANY, m_colors(ns));
       grid->Add(m_msg_filtered_pick);
+
       grid->Add(new wxStaticText(this, wxID_ANY, _("Filtered, dropped")));
-      m_msg_dropped_pick =
-          new wxColourPickerCtrl(this, wxID_ANY, wxColour("MAROON"));
+      ns = NavmsgStatus(NavmsgStatus::Accepted::kFilteredDropped);
+      m_msg_dropped_pick = new wxColourPickerCtrl(this, wxID_ANY, m_colors(ns));
       grid->Add(m_msg_dropped_pick);
+
       grid->Add(new wxStaticText(this, wxID_ANY, _("Output")));
-      m_msg_output_pick = new wxColourPickerCtrl(this, wxID_ANY, *wxBLUE);
+      ns = NavmsgStatus(NavmsgStatus::Direction::kOutput);
+      m_msg_output_pick = new wxColourPickerCtrl(this, wxID_ANY, m_colors(ns));
       grid->Add(m_msg_output_pick);
+
       grid->Add(new wxStaticText(this, wxID_ANY, _("Input event")));
-      m_msg_input_pick =
-          new wxColourPickerCtrl(this, wxID_ANY, wxColour("ORANGE"));
+      ns = NavmsgStatus(NavmsgStatus::Direction::kInput);
+      m_msg_input_pick = new wxColourPickerCtrl(this, wxID_ANY, m_colors(ns));
       grid->Add(m_msg_input_pick);
 
       SetSizer(grid);
-      Cancel();
     }
 
     void Apply() {
@@ -125,6 +137,8 @@ private:
     wxColourPickerCtrl* m_msg_dropped_pick;
     wxColourPickerCtrl* m_msg_output_pick;
     wxColourPickerCtrl* m_msg_input_pick;
+
+    UserColorsByState m_colors;
   };
 
   using ButtonHandler = std::function<void()>;

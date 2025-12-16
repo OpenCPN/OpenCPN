@@ -189,6 +189,7 @@ public:
   int LoadMyConfigRaw(bool bAsTemplate = false);
 
 private:
+  unsigned ReadUnsigned(const wxString &key, unsigned default_val);
 };
 
 void SwitchInlandEcdisMode(bool Switch);
