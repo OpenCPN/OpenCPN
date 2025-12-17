@@ -101,6 +101,7 @@ extern unsigned gs_plib_flags;
 
 extern wxColour g_colourOwnshipRangeRingsColour;
 extern wxColour g_colourTrackLineColour;
+
 extern wxDateTime g_loglast_time;
 extern wxDateTime g_start_time;
 extern wxDateTime gTimeSource;
