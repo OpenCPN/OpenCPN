@@ -1011,6 +1011,7 @@ int Quilt::AdjustRefOnZoom(bool b_zin, ChartFamilyEnum family,
 int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen) {
   //  Reset "lost" chart logic
   m_lost_refchart_dbIndex = -1;
+  if (m_chart_familyFix != CHART_FAMILY_UNKNOWN) return m_refchart_dbIndex;
 
   int current_db_index = m_refchart_dbIndex;
   int current_family = m_reference_family;
@@ -1044,6 +1045,7 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen) {
 int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen) {
   //  Reset "lost" chart logic
   m_lost_refchart_dbIndex = -1;
+  if (m_chart_familyFix != CHART_FAMILY_UNKNOWN) return m_refchart_dbIndex;
 
   int current_db_index = m_refchart_dbIndex;
   int current_family = m_reference_family;
@@ -1268,6 +1270,8 @@ const LLRegion &Quilt::GetTilesetRegion(int dbIndex) {
 }
 
 int Quilt::SelectRefChartByFamily(ChartFamilyEnum family) {
+  if (m_chart_familyFix == family) return -1;  // No change required.
+
   // Get the full screen chart index array, and sort it
   auto array = GetFullscreenIndexArray();
   // Sort bu largest scale first.
