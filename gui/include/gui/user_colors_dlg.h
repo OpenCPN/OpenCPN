@@ -22,12 +22,12 @@
 #define UsEr_COlOrS_DlG_H
 
 /**
- * Run the dialog for user defined colors in the Data Monitor.
+ * Run the Data Monitor dialog for user defined colors.
  *
  * If the dialog does not exist it is created, otherwise it is made visible
  * by a Raise() call.
  *
- * The dialog is created as a child of the top frame and normally not
+ * The dialog is created as a child of given parent and normally not
  * that managed. It exists until user exits it at which point it is
  * destroyed.
  *
