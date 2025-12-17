@@ -17,7 +17,7 @@
 
 /**
  * \file
- * Implement filteer_colours_dlg.h
+ * Implement user_colors_dlg.h
  */
 
 #include <functional>
@@ -40,6 +40,7 @@
 
 static constexpr const char* const kDialogName = "DataMonitorColors";
 
+/** Dialog top frame */
 class UserColoursDlg : public wxFrame {
 public:
   UserColoursDlg(wxWindow* parent)
@@ -63,6 +64,9 @@ public:
   }
 
 private:
+  using ButtonHandler = std::function<void()>;
+
+  /** State used to support Cancel i.e. restore values to initial state. */
   class StoredConfig {
   public:
     StoredConfig() { Load(); }
@@ -107,6 +111,7 @@ private:
     }
   };
 
+  /** The six color pickers and a "Restore Defaults" button in a grid.  */
   class TopPanel : public wxPanel {
   public:
     TopPanel(wxWindow* parent) : wxPanel(parent) {
@@ -143,9 +148,15 @@ private:
       m_msg_input_pick = new wxColourPickerCtrl(this, wxID_ANY, m_colors(ns));
       grid->Add(m_msg_input_pick);
 
+      auto reset_btn = new wxButton(this, wxID_UNDO, _("Restore defaults"));
+      reset_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                      [&](wxCommandEvent&) { Reset(); });
+      grid->Add(reset_btn);
+
       SetSizer(grid);
     }
 
+    /** Update globals from GUI state. */
     void Apply() {
       g_dm_ok = static_cast<unsigned>(m_msg_ok_pick->GetColour().GetRGB());
       g_dm_not_ok =
@@ -161,6 +172,7 @@ private:
       GuiEvents::GetInstance().on_dm_colors_change.Notify();
     }
 
+    /** Update GUI state from globals. */
     void Cancel() {
       m_stored_config.Save();
       m_msg_ok_pick->SetColour(wxColour(static_cast<unsigned long>(g_dm_ok)));
@@ -176,6 +188,34 @@ private:
           wxColour(static_cast<unsigned long>(g_dm_input)));
     }
 
+    /** Reset GUI state to initial, hardcoded values */
+    void Reset() {
+      const static NavmsgStatus OkStatus =
+          NavmsgStatus(NavmsgStatus::Direction::kHandled);
+      const static NavmsgStatus NotOkStatus =
+          NavmsgStatus(NavmsgStatus::State::kMalformed);
+      const static NavmsgStatus NoOutputStatus =
+          NavmsgStatus(NavmsgStatus::Accepted::kFilteredNoOutput);
+      const static NavmsgStatus DroppedStatus =
+          NavmsgStatus(NavmsgStatus::Accepted::kFilteredDropped);
+      const static NavmsgStatus OutputStatus =
+          NavmsgStatus(NavmsgStatus::Direction::kOutput);
+      const static NavmsgStatus InputStatus =
+          NavmsgStatus(NavmsgStatus::Direction::kInput);
+
+      m_msg_ok_pick->SetColour(wxColour(m_std_colors(OkStatus).GetRGB()));
+      m_msg_not_ok_pick->SetColour(
+          wxColour(m_std_colors(NotOkStatus).GetRGB()));
+      m_msg_filtered_pick->SetColour(
+          wxColour(m_std_colors(NoOutputStatus).GetRGB()));
+      m_msg_dropped_pick->SetColour(
+          wxColour(m_std_colors(DroppedStatus).GetRGB()));
+      m_msg_output_pick->SetColour(
+          wxColour(m_std_colors(OutputStatus).GetRGB()));
+      m_msg_input_pick->SetColour(wxColour(m_std_colors(InputStatus).GetRGB()));
+      m_stored_config.Load();
+    }
+
   private:
     wxColourPickerCtrl* m_msg_ok_pick;
     wxColourPickerCtrl* m_msg_not_ok_pick;
@@ -185,11 +225,11 @@ private:
     wxColourPickerCtrl* m_msg_input_pick;
 
     UserColorsByState m_colors;
+    StdColorsByState m_std_colors;
     StoredConfig m_stored_config;
   };
 
-  using ButtonHandler = std::function<void()>;
-
+  /** The three Apply, Cancel and OK buttons. */
   class ButtonSizer : public wxStdDialogButtonSizer {
   public:
     ButtonSizer(wxWindow* parent, ButtonHandler on_ok, ButtonHandler on_apply,
