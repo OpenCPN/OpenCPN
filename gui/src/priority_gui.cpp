@@ -63,6 +63,9 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
                wxSize(480, 420), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
   m_selIndex = 0;
   m_selmap_index = 0;
+  SetMinSize(wxSize(480, 420));
+  SetMaxSize(
+      wxSize(wxMax(gFrame->GetSize().x, 480), wxMax(gFrame->GetSize().y, 420)));
 
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
