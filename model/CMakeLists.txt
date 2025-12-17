@@ -131,12 +131,12 @@ set(
   ${MODEL_HDR_DIR}/serial_io.h
   ${MODEL_HDR_DIR}/ser_ports.h
   ${MODEL_HDR_DIR}/std_icon.h
+  ${MODEL_HDR_DIR}/std_instance_chk.h
   ${MODEL_HDR_DIR}/svg_utils.h
   ${MODEL_HDR_DIR}/sys_events.h
   ${MODEL_HDR_DIR}/thread_ctrl.h
   ${MODEL_HDR_DIR}/track.h
   ${MODEL_HDR_DIR}/usb_watch_daemon.h
-  ${MODEL_HDR_DIR}/wx_instance_chk.h
 )
 
 set(MODEL_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -234,17 +234,12 @@ set(SRC
   ${MODEL_SRC_DIR}/semantic_vers.cpp
   ${MODEL_SRC_DIR}/ser_ports.cpp
   ${MODEL_SRC_DIR}/std_icon.cpp
+  ${MODEL_SRC_DIR}/std_instance_chk.cpp
   ${MODEL_SRC_DIR}/svg_utils.cpp
   ${MODEL_SRC_DIR}/thread_ctrl.cpp
   ${MODEL_SRC_DIR}/track.cpp
   ${MODEL_SRC_DIR}/usb_watch_factory.cpp
-  ${MODEL_SRC_DIR}/wx_instance_chk.cpp
 )
-
-if (NOT MSVC)
-  list(APPEND HDRS ${MODEL_HDR_DIR}/std_instance_chk.h )
-  list(APPEND SRC ${MODEL_SRC_DIR}/std_instance_chk.cpp)
-endif ()
 
 if (QT_ANDROID)
   list(APPEND HDRS ${MODEL_SRC_DIR}/android_serial_io.cpp)

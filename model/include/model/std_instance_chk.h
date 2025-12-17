@@ -24,9 +24,8 @@
 #ifndef STD_INSTANCE_CHECK_H_
 #define STD_INSTANCE_CHECK_H_
 
-#include <wx/snglinst.h>
-
 #include "model/instance_check.h"
+#include "std_filesystem.h"
 
 /**  InstanceCheck implementation based on <unistd.h> i. e. Linux/MacOS */
 class StdInstanceCheck : public InstanceCheck {
@@ -40,8 +39,12 @@ public:
   void CleanUp() override;
 
 private:
-  std::string m_path;
+  fs::path m_path;
   bool m_is_main_instance;
+  bool is_inited;
+  bool is_my_lock;
+
+  void Init();
 };
 
 #endif  // STD_INSTANCE_CHECK_H_
