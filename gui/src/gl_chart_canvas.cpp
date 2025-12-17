@@ -506,7 +506,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 #endif
 #endif
 
-  if (!IsShown() || !m_bsetup) return;
+  if (!IsShown()) return;
 
   SetCurrent(*m_pcontext);
 
@@ -520,14 +520,16 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
   // this is also necessary to update the context on some platforms
   // OnSize can be called with a different OpenGL context (when a plugin uses a
   // different GL context).
-  if (m_pcontext && IsShown()) {
+  if (m_bsetup && m_pcontext && IsShown()) {
     SetCurrent(*m_pcontext);
   }
 
   // SetSize(m_pParentCanvas->GetClientSize());
 
-  wxLogMessage("BuildFBO 3");
-  BuildFBO();
+  if (m_bsetup) {
+    wxLogMessage("BuildFBO 3");
+    BuildFBO();
+  }
 
   //  Set the shader viewport transform matrix
   ViewPort *vp = m_pParentCanvas->GetpVP();
