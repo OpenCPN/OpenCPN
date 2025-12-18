@@ -65,7 +65,10 @@ public:
       m_top_panel->Apply();
       Destroy();
     };
-    auto on_cancel = [&] { m_top_panel->Cancel(); };
+    auto on_cancel = [&] {
+      m_top_panel->Cancel();
+      Destroy();
+    };
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto buttons = new ButtonSizer(this, on_ok, on_apply, on_cancel);
     m_top_panel = new TopPanel(this);
