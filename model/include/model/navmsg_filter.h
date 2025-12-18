@@ -65,10 +65,19 @@ public:
   enum class Accepted { kOk, kFilteredNoOutput, kFilteredDropped, kNone };
   enum class State { kOk, kChecksumError, kMalformed, kTxError, kNone };
 
-  NavmsgStatus()
-      : direction(Direction::kInput),
-        status(State::kOk),
-        accepted(Accepted::kOk) {}
+  NavmsgStatus(Direction direction_, State status_, Accepted accepted_)
+      : direction(direction_), status(status_), accepted(accepted_) {}
+
+  NavmsgStatus(Direction direction)
+      : NavmsgStatus(direction, State::kOk, Accepted::kOk) {}
+
+  NavmsgStatus(State status)
+      : NavmsgStatus(Direction::kInput, status, Accepted::kOk) {}
+
+  NavmsgStatus(Accepted accepted)
+      : NavmsgStatus(Direction::kInput, State::kOk, accepted) {}
+
+  NavmsgStatus() : NavmsgStatus(Direction::kInput, State::kOk, Accepted::kOk) {}
 
   /** Return string representation of argument. */
   static std::string AcceptedToString(Accepted);
