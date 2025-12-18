@@ -273,6 +273,13 @@ Quilt::~Quilt() {
 }
 
 void Quilt::SetReferenceChart(int dbIndex) {
+  // if (dbIndex >= 0) {
+  // const ChartTableEntry &cte = ChartData->GetChartTableEntry(dbIndex);
+  // if (cte.GetChartFamily() != m_reference_family) {
+  // printf("************family switch\n");
+  //}
+  //}
+
   m_refchart_dbIndex = dbIndex;
   if (dbIndex >= 0) {
     m_zout_family = -1;
@@ -1011,7 +1018,6 @@ int Quilt::AdjustRefOnZoom(bool b_zin, ChartFamilyEnum family,
 int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen) {
   //  Reset "lost" chart logic
   m_lost_refchart_dbIndex = -1;
-  if (m_chart_familyFix != CHART_FAMILY_UNKNOWN) return m_refchart_dbIndex;
 
   int current_db_index = m_refchart_dbIndex;
   int current_family = m_reference_family;
@@ -1037,15 +1043,17 @@ int Quilt::AdjustRefOnZoomOut(double proposed_scale_onscreen) {
     m_zout_dbindex = current_db_index;
   }
 
-  SetReferenceChart(proposed_ref_index);
-
-  return proposed_ref_index;
+  if (proposed_ref_index < 0) {
+    return m_refchart_dbIndex;
+  } else {
+    SetReferenceChart(proposed_ref_index);
+    return proposed_ref_index;
+  }
 }
 
 int Quilt::AdjustRefOnZoomIn(double proposed_scale_onscreen) {
   //  Reset "lost" chart logic
   m_lost_refchart_dbIndex = -1;
-  if (m_chart_familyFix != CHART_FAMILY_UNKNOWN) return m_refchart_dbIndex;
 
   int current_db_index = m_refchart_dbIndex;
   int current_family = m_reference_family;
@@ -1270,8 +1278,6 @@ const LLRegion &Quilt::GetTilesetRegion(int dbIndex) {
 }
 
 int Quilt::SelectRefChartByFamily(ChartFamilyEnum family) {
-  if (m_chart_familyFix == family) return -1;  // No change required.
-
   // Get the full screen chart index array, and sort it
   auto array = GetFullscreenIndexArray();
   // Sort bu largest scale first.
@@ -1762,10 +1768,11 @@ ChartBase *Quilt::GetRefChart() {
 void Quilt::UnlockQuilt() {
   wxASSERT(m_bbusy == false);
   ChartData->UnLockCache();
+  ChartData->UnLockAllCacheCharts();
   // unlocked only charts owned by the Quilt
   for (unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++) {
     QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
-    ChartData->UnLockCacheChart(pqc->dbIndex);
+    // ChartData->UnLockCacheChart(pqc->dbIndex);
   }
 }
 
