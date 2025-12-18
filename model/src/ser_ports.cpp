@@ -340,6 +340,7 @@ static std::vector<struct device_data> enumerate_udev_ports(struct udev* udev) {
     }
     udev_device_unref(device);
   }
+  udev_enumerate_unref(enumerate);
   return items;
 }
 
@@ -353,6 +354,7 @@ static wxArrayString* EnumerateUdevSerialPorts() {
     if (item.info.size() > 0) port += std::string(" - ") + item.info;
     ports->Add(port);
   }
+  udev_unref(udev);
   return ports;
 }
 

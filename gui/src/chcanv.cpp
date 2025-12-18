@@ -755,6 +755,7 @@ ChartCanvas::~ChartCanvas() {
   delete m_pCurrentStack;
   delete m_Compass;
   delete m_Piano;
+  delete m_notification_button;
 }
 
 void ChartCanvas::SetupGridFont() {
