@@ -526,7 +526,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 
   // SetSize(m_pParentCanvas->GetClientSize());
 
-  wxLogMessage("BuildFBO 3");
+  wxLogDebug("BuildFBO 3");
   BuildFBO();
 
   //  Set the shader viewport transform matrix
@@ -970,7 +970,7 @@ void glChartCanvas::BuildFBO() {
 
   wxString msg;
   msg.Printf("OpenGL-> Framebuffer OK, size = %d", m_cache_tex_x);
-  wxLogMessage(msg);
+  wxLogDebug(msg);
 
   /* invalidate cache */
   Invalidate();

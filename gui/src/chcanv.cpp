@@ -2361,13 +2361,13 @@ void ChartCanvas::SetDisplaySizeMM(double size) {
       "Metrics:  m_display_size_mm: %g     g_Platform->getDisplaySize():  "
       "%d:%d   ",
       m_display_size_mm, sd.x, sd.y);
-  wxLogMessage(msg);
+  wxLogDebug(msg);
 
   int ssx, ssy;
   ssx = g_monitor_info[g_current_monitor].width;
   ssy = g_monitor_info[g_current_monitor].height;
   msg.Printf("monitor size: %d %d", ssx, ssy);
-  wxLogMessage(msg);
+  wxLogDebug(msg);
 
   m_focus_indicator_pix = /*std::round*/ wxRound(1 * GetPixPerMM());
 }
