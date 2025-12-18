@@ -100,7 +100,7 @@ RoutePoint::RoutePoint() {
   m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
   m_ScaMin = g_iWpt_ScaMin;
   m_bShowName = g_bShowWptName;
-  m_ScaMax = 0;
+  SetScaMax(g_iWpt_ScaMax);
   b_UseScamin = g_bUseWptScaMin;
 
   m_pos_on_screen = false;
@@ -244,7 +244,7 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
   m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
   m_ScaMin = g_iWpt_ScaMin;
-  m_ScaMax = 0;
+  SetScaMax(g_iWpt_ScaMax);
   b_UseScamin = g_bUseWptScaMin;
   m_bShowName = g_bShowWptName;
 
@@ -314,6 +314,8 @@ bool RoutePoint::IsVisibleSelectable(double scale_val, bool boverrideViz) {
     if (g_bOverruleScaMin)
       return true;
     else if (scale_val >= (double)(m_ScaMin + 1))
+      return false;
+    if (m_ScaMax > 0 && scale_val <= (double)m_ScaMax - 1.0)
       return false;
   }
   return true;
@@ -417,7 +419,7 @@ void RoutePoint::SetScaMin(long val) {
   if (val < SCAMIN_MIN)
     val = SCAMIN_MIN;  // prevent from waypoints hiding always with a nonlogic
                        // value
-  if (val < (long)m_ScaMax * 5) val = (long)m_ScaMax * 5;
+  if (m_ScaMax > 0 && val < (long)m_ScaMax) val = (long)m_ScaMax;
   m_ScaMin = val;
 }
 void RoutePoint::SetScaMin(wxString str) {
@@ -427,9 +429,11 @@ void RoutePoint::SetScaMin(wxString str) {
 }
 
 void RoutePoint::SetScaMax(long val) {
-  if (val > (int)m_ScaMin / 5)
-    m_ScaMax = (int)m_ScaMin /
-               5;  // prevent from waypoints hiding always with a nonlogic value
+  long max_allowed = m_ScaMin > 0 ? (long)m_ScaMin : 0;
+  m_ScaMax = val;
+  if (max_allowed > 0 && m_ScaMax > max_allowed) {
+    m_ScaMax = max_allowed;  // prevent from waypoints hiding always with a nonlogic value
+  }
 }
 void RoutePoint::SetScaMax(wxString str) {
   long val;

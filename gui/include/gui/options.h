@@ -554,6 +554,7 @@ public:
   OCPNIconCombo *pRoutepointDefaultIconChoice;
   wxCheckBox *pScaMinChckB, *pScaMinOverruleChckB;
   wxTextCtrl *m_pText_ScaMin;
+  wxTextCtrl *m_pText_ScaMax;
 
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;

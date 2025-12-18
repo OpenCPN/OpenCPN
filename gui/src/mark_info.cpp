@@ -476,6 +476,13 @@ void MarkInfoDlg::Create() {
                                  0);
   m_textScaMin = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY);
   gbSizerInnerExtProperties->Add(m_textScaMin, 0, wxALL | wxEXPAND, 5);
+  gbSizerInnerExtProperties->Add(0, 0, 1, wxEXPAND, 0);
+  m_staticTextScaMax = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
+                                        wxID_ANY, _("Show at scale < 1 :"));
+  gbSizerInnerExtProperties->Add(m_staticTextScaMax, 0,
+                                 wxALIGN_CENTRE_VERTICAL, 0);
+  m_textScaMax = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY);
+  gbSizerInnerExtProperties->Add(m_textScaMax, 0, wxALL | wxEXPAND, 5);
 
   m_checkBoxShowNameExt =
       new wxCheckBox(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "");
@@ -867,6 +874,7 @@ void MarkInfoDlg::SetRoutePoint(RoutePoint* pRP) {
     m_Description_save = m_pRoutePoint->m_MarkDescription;
     m_bUseScaMin_save = m_pRoutePoint->GetUseSca();
     m_iScaminVal_save = m_pRoutePoint->GetScaMin();
+    m_iScamaxVal_save = m_pRoutePoint->GetScaMax();
 
     if (m_pMyLinkList) delete m_pMyLinkList;
     m_pMyLinkList = new HyperlinkList();
@@ -1037,6 +1045,7 @@ void MarkInfoDlg::OnWptRangeRingsNoChange(wxCommandEvent& event) {
 void MarkInfoDlg::OnSelectScaMinExt(wxCommandEvent& event) {
   if (!m_pRoutePoint->m_bIsInLayer) {
     m_textScaMin->Enable(m_checkBoxScaMin->GetValue());
+    m_textScaMax->Enable(m_checkBoxScaMin->GetValue());
   }
 }
 
@@ -1314,6 +1323,7 @@ void MarkInfoDlg::DefautlBtnClicked(wxCommandEvent& event) {
           g_n_arrival_circle_radius = fromUsrDistance(value, -1);
       if (m_SaveDefaultDlg->ScaleCB->GetValue()) {
         g_iWpt_ScaMin = wxAtoi(m_textScaMin->GetValue());
+        g_iWpt_ScaMax = wxAtoi(m_textScaMax->GetValue());
         g_bUseWptScaMin = m_checkBoxScaMin->GetValue();
       }
       if (m_SaveDefaultDlg->NameCB->GetValue()) {
@@ -1335,6 +1345,7 @@ void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
     m_pRoutePoint->m_MarkDescription = m_Description_save;
     m_pRoutePoint->SetUseSca(m_bUseScaMin_save);
     m_pRoutePoint->SetScaMin(m_iScaminVal_save);
+    m_pRoutePoint->SetScaMax(m_iScamaxVal_save);
 
     m_pRoutePoint->m_HyperlinkList->clear();
 
@@ -1413,6 +1424,8 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     m_checkBoxScaMin->SetValue(m_pRoutePoint->GetUseSca());
     m_textScaMin->SetValue(
         wxString::Format("%i", (int)m_pRoutePoint->GetScaMin()));
+    m_textScaMax->SetValue(
+        wxString::Format("%i", (int)m_pRoutePoint->GetScaMax()));
     m_textCtrlGuid->SetValue(m_pRoutePoint->m_GUID);
     m_ChoiceWaypointRangeRingsNumber->SetSelection(
         m_pRoutePoint->GetWaypointRangeRingsNumber());
@@ -1542,6 +1555,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textArrivalRadius->SetEditable(false);
       m_checkBoxScaMin->Enable(false);
       m_textScaMin->SetEditable(false);
+      m_textScaMax->SetEditable(false);
       m_checkBoxShowNameExt->Enable(false);
       m_ChoiceWaypointRangeRingsNumber->Enable(false);
       m_textWaypointRangeRingsStep->SetEditable(false);
@@ -1566,6 +1580,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
       m_textArrivalRadius->SetEditable(true);
       m_checkBoxScaMin->Enable(true);
       m_textScaMin->SetEditable(true);
+      m_textScaMax->SetEditable(true);
       m_checkBoxShowNameExt->Enable(true);
       m_ChoiceWaypointRangeRingsNumber->Enable(true);
       m_textWaypointRangeRingsStep->SetEditable(true);
@@ -1660,6 +1675,7 @@ bool MarkInfoDlg::SaveChanges() {
     m_pRoutePoint->SetName(m_textName->GetValue());
     m_pRoutePoint->SetWaypointArrivalRadius(m_textArrivalRadius->GetValue());
     m_pRoutePoint->SetScaMin(m_textScaMin->GetValue());
+    m_pRoutePoint->SetScaMax(m_textScaMax->GetValue());
     m_pRoutePoint->SetUseSca(m_checkBoxScaMin->GetValue());
     m_pRoutePoint->m_MarkDescription = m_textDescription->GetValue();
     m_pRoutePoint->SetVisible(m_checkBoxVisible->GetValue());
@@ -1817,10 +1833,14 @@ SaveDefaultsDialog::SaveDefaultsDialog(MarkInfoDlg* parent)
   fgSizer1->Add(stArrivalR, 0, wxALL | wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL,
                 5);
 
-  s = (g_pMarkInfoDialog->m_checkBoxScaMin->GetValue()
-           ? _("Show only if") + " < " +
-                 g_pMarkInfoDialog->m_textScaMin->GetValue()
-           : _("Show always"));
+  if (g_pMarkInfoDialog->m_checkBoxScaMin->GetValue()) {
+    s = _("Show only at scales between ");
+    s += g_pMarkInfoDialog->m_textScaMax->GetValue();
+    s += _(" and ");
+    s += g_pMarkInfoDialog->m_textScaMin->GetValue();
+  } else {
+    s = _("Show always");
+  }
   ScaleCB = new wxCheckBox(this, wxID_ANY, _("Show only at scale"));
   fgSizer1->Add(ScaleCB, 0, wxALL, 5);
   stScale = new wxStaticText(this, wxID_ANY, "[" + s + "]", wxDefaultPosition,

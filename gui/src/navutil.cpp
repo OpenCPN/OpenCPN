@@ -1120,6 +1120,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   if (!Read("WaypointUseScaMin", &g_bUseWptScaMin)) g_bUseWptScaMin = false;
   if (!Read("WaypointScaMinValue", &g_iWpt_ScaMin)) g_iWpt_ScaMin = 2147483646;
+  if (!Read("WaypointScaMaxValue", &g_iWpt_ScaMax)) g_iWpt_ScaMax = 0;
   if (!Read("WaypointUseScaMinOverrule", &g_bOverruleScaMin))
     g_bOverruleScaMin = false;
   if (!Read("WaypointsShowName", &g_bShowWptName)) g_bShowWptName = true;
@@ -2357,6 +2358,7 @@ void MyConfig::UpdateSettings() {
         g_colourOwnshipRangeRingsColour.GetAsString(wxC2S_HTML_SYNTAX));
   Write("WaypointUseScaMin", g_bUseWptScaMin);
   Write("WaypointScaMinValue", g_iWpt_ScaMin);
+  Write("WaypointScaMaxValue", g_iWpt_ScaMax);
   Write("WaypointUseScaMinOverrule", g_bOverruleScaMin);
   Write("WaypointsShowName", g_bShowWptName);
   Write("UserIconsFirst", g_bUserIconsFirst);
