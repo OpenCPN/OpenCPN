@@ -5435,15 +5435,13 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   }
 
   if (b_update) {
-    // printf("                   gCog:  %g  %g\n", gCog, gCog - gCog_last);
-
     for (ChartCanvas *cc : g_canvasArray) {
       if (cc) {
         if (g_bopengl) {
           if (cc->GetUpMode() != NORTH_UP_MODE || cc->m_bFollow) {
             cc->DoCanvasUpdate();
           } else
-            cc->Refresh();
+            cc->Refresh(false);  // Process ownship motion at 10 Hz.
         }
       }
     }
@@ -5754,9 +5752,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
                   cc->Refresh(false);  // honor ownship state update
               } else
                 cc->Refresh(false);
-            } else {
-              // Pick up SOG=0, COG=NAN report at 10Hz.
-              if (std::isnan(gCog)) cc->Refresh(false);
             }
           }
         }
