@@ -60,14 +60,17 @@ public:
       : wxFrame(parent, wxID_ANY, _("Data Monitor: colours setup")),
         m_top_panel(nullptr) {
     wxWindow::SetName(kDialogName);
+    auto on_apply = [&] { m_top_panel->Apply(); };
     auto on_ok = [&] {
       m_top_panel->Apply();
       Destroy();
     };
-    auto on_apply = [&] { m_top_panel->Apply(); };
-    auto on_cancel = [&] { m_top_panel->Cancel(); };
-    auto buttons = new ButtonSizer(this, on_ok, on_apply, on_cancel);
+    auto on_cancel = [&] {
+      m_top_panel->Cancel();
+      Destroy();
+    };
     auto vbox = new wxBoxSizer(wxVERTICAL);
+    auto buttons = new ButtonSizer(this, on_ok, on_apply, on_cancel);
     m_top_panel = new TopPanel(this);
     vbox->Add(m_top_panel, wxSizerFlags(1).Border().Expand());
     vbox->Add(new wxStaticLine(this, wxID_ANY), wxSizerFlags(0).Expand());
@@ -124,35 +127,14 @@ private:
     explicit TopPanel(wxWindow* parent) : wxPanel(parent) {
       auto grid = new wxGridSizer(2);
 
-      NavmsgStatus ns(NavmsgStatus::Direction::kHandled);
-      grid->Add(new wxStaticText(this, wxID_ANY, _("Input - OK")));
-      m_msg_ok_pick = new ColorPicker(this, m_colors(ns));
-      grid->Add(m_msg_ok_pick);
-
-      grid->Add(new wxStaticText(this, wxID_ANY, _("Errors")));
-      ns = NavmsgStatus(NavmsgStatus::State::kMalformed);
-      m_msg_not_ok_pick = new ColorPicker(this, m_colors(ns));
-      grid->Add(m_msg_not_ok_pick);
-
-      grid->Add(new wxStaticText(this, wxID_ANY, _("Filtered, no output")));
-      ns = NavmsgStatus(NavmsgStatus::Accepted::kFilteredNoOutput);
-      m_msg_filtered_pick = new ColorPicker(this, m_colors(ns));
-      grid->Add(m_msg_filtered_pick);
-
-      grid->Add(new wxStaticText(this, wxID_ANY, _("Filtered, dropped")));
-      ns = NavmsgStatus(NavmsgStatus::Accepted::kFilteredDropped);
-      m_msg_dropped_pick = new ColorPicker(this, m_colors(ns));
-      grid->Add(m_msg_dropped_pick);
-
-      grid->Add(new wxStaticText(this, wxID_ANY, _("Output")));
-      ns = NavmsgStatus(NavmsgStatus::Direction::kOutput);
-      m_msg_output_pick = new ColorPicker(this, m_colors(ns));
-      grid->Add(m_msg_output_pick);
-
-      grid->Add(new wxStaticText(this, wxID_ANY, _("Input event")));
-      ns = NavmsgStatus(NavmsgStatus::Direction::kInput);
-      m_msg_input_pick = new ColorPicker(this, m_colors(ns));
-      grid->Add(m_msg_input_pick);
+      m_msg_ok_pick = AddGridRow(grid, _("Input - OK"), kOkStatus);
+      m_msg_not_ok_pick = AddGridRow(grid, _("Errors"), kNotOkStatus);
+      m_msg_filtered_pick =
+          AddGridRow(grid, _("Filtered, no output"), kNoOutputStatus);
+      m_msg_dropped_pick =
+          AddGridRow(grid, _("Filtered, dropped"), kDroppedStatus);
+      m_msg_output_pick = AddGridRow(grid, _("Output"), kOutputStatus);
+      m_msg_input_pick = AddGridRow(grid, _("Input event"), kInputStatus);
 
       auto reset_btn = new wxButton(this, wxID_UNDO, _("Restore defaults"));
       reset_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
@@ -219,6 +201,14 @@ private:
     UserColorsByState m_colors;
     StdColorsByState m_std_colors;
     StoredConfig m_stored_config;
+
+    ColorPicker* AddGridRow(wxGridSizer* grid, const char* label,
+                            NavmsgStatus ns) {
+      grid->Add(new wxStaticText(this, wxID_ANY, label));
+      auto picker = new ColorPicker(this, m_colors(ns));
+      grid->Add(picker);
+      return picker;
+    }
   };
 
   /** The three Apply, Cancel and OK buttons. */
