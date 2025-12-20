@@ -37,6 +37,8 @@
 #include <wx/msw/private.h>
 #endif
 
+#include "ocpn_plugin.h"
+
 #include "model/ais_target_data.h"
 #include "model/ocpn_types.h"
 #include "model/track.h"
@@ -56,6 +58,7 @@
 #include "observable_evtvar.h"
 #include "options.h"
 #include "pluginmanager.h"
+#include "s52_plib_utils.h"
 #include "s52s57.h"
 #include "s57registrar_mgr.h"
 #include "senc_manager.h"
@@ -139,7 +142,7 @@ void LoadS57();
  * overall application state, menus, toolbars, and child windows like chart
  * canvases.
  */
-class MyFrame : public wxFrame {
+class MyFrame : public wxFrame, public S52PlibUtils {
 public:
   MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size,
           RestServer& rest_server, wxAuiDefaultDockArt* pauidockart,
@@ -147,6 +150,7 @@ public:
 
   ~MyFrame();
 
+  wxFont* GetFont(wxFont* font, double scale) override;
   int GetApplicationMemoryUse(void);
 
   void OnEraseBackground(wxEraseEvent& event);
