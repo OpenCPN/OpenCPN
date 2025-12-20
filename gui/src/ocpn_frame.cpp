@@ -461,6 +461,12 @@ static bool isTransparentToolbarInOpenGLOK() {
 #endif
 }
 
+wxFont *MyFrame::GetFont(wxFont *font, double scale) {
+  return FindOrCreateFont_PlugIn(font->GetPointSize() / scale,
+                                 font->GetFamily(), font->GetStyle(),
+                                 font->GetWeight(), false, font->GetFaceName());
+}
+
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
@@ -610,6 +616,8 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   double dt = 2.0;                     // Time interval
   double process_noise_std = 1.0;      // Process noise standard deviation
   double measurement_noise_std = 0.5;  // Measurement noise standard deviation
+
+  SetUtils(this);
 
   m_ChartUpdatePeriod = 1;  // set the default (1 sec.) period
   initIXNetSystem();

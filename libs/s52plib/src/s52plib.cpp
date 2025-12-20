@@ -71,7 +71,7 @@ static const double mercator_k0 = 0.9996;
 #include "mygeom.h"
 #include "s52utils.h"
 #include "chartsymbols.h"
-#include "TexFont.h"
+//#include "TexFont.h"
 #include "line_clip.h"
 #include "poly_math.h"
 #include "LOD_reduce.h"
