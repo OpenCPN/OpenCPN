@@ -33,6 +33,10 @@ jobs:
             runner: ubuntu-latest
             cmake_generator: Unix Makefiles
             cmake_defines: -DOCPN_USE_GL:BOOL=OFF
+          - name: Ubuntu latest wxGTK 3 Address Sanitizer
+            runner: ubuntu-latest
+            cmake_generator: Unix Makefiles
+            cmake_defines: -DENABLE_SANITIZER=address
 
     env:
       wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}

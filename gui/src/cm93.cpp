@@ -804,7 +804,7 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
             if (a == 0x0a) break;
           }
 
-          if (!line.StartsWith((const wxChar *)";")) {
+          if (line[0] != ';') {
             wxStringTokenizer tkz(line, "|");
             if (tkz.CountTokens()) {
               //  6 attribute label
@@ -844,7 +844,7 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
             if (a == 0x0a) break;
           }
 
-          if (!line.StartsWith((const wxChar *)";")) {
+          if (line[0] != ';') {
             wxStringTokenizer tkz(line, "|\r\n");
             if (tkz.CountTokens() >= 3) {
               //  6 char class name

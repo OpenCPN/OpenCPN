@@ -27,6 +27,10 @@
  *
  */
 
+// Disable the maybe-uninitialized warning as it triggers in std::regex and
+// makes the build with sanitizers impossible
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 #include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <wx/wxprec.h>
