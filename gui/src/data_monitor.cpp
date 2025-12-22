@@ -53,6 +53,7 @@
 #include "svg_button.h"
 #include "svg_icons.h"
 #include "tty_scroll.h"
+#include "user_colors_dlg.h"
 #include "filter_dlg.h"
 
 #pragma clang diagnostic push
@@ -562,11 +563,13 @@ public:
     kEditActiveFilter,
     kLogSetup,
     kViewStdColors,
+    kUserColors
   };
 
   TheMenu(wxWindow* parent, DataLogger& logger)
       : m_parent(parent), m_logger(logger) {
     AppendCheckItem(static_cast<int>(Id::kViewStdColors), _("Use colors"));
+    Append(static_cast<int>(Id::kUserColors), _("Colors..."));
     Append(static_cast<int>(Id::kLogSetup), _("Logging..."));
     auto filters = new wxMenu("");
     AppendId(filters, Id::kNewFilter, _("Create new..."));
@@ -600,6 +603,10 @@ public:
 
         case Id::kDeleteFilter:
           RemoveFilterDlg(parent);
+          break;
+
+        case Id::kUserColors:
+          UserColorsDlg(wxTheApp->GetTopWindow());
           break;
       }
     });

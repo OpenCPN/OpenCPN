@@ -391,7 +391,10 @@ void PluginLoader::NotifySetupOptionsPlugin(const PlugInData* pd) {
         case 115:
         case 116:
         case 117:
-        case 118: {
+        case 118:
+        case 119:
+        case 120:
+        case 121: {
           if (pic->m_pplugin) {
             auto ppi = dynamic_cast<opencpn_plugin_19*>(pic->m_pplugin);
             if (ppi) {
@@ -493,7 +496,6 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled, bool keep_orphans) {
   auto errors = std::make_shared<std::vector<LoadError>>(load_errors);
   evt_plugin_loadall_finalize.Notify(errors, "");
   load_errors.clear();
-
   return any_dir_loaded;
 }
 
@@ -633,7 +635,8 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_plugin_modification = plugin_modification;
       pic->m_enabled = enabled.Get(false);
 
-      if (safe_mode::get_mode()) {
+      if (safe_mode::get_mode() &&
+          !IsSystemPluginPath(file_name.ToStdString())) {
         pic->m_enabled = false;
         enabled.Set(false);
       }

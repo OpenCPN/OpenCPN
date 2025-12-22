@@ -472,9 +472,9 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
         strncpy(psd->units_abbrv, known_units[unit_c].abbrv,
                 sizeof(psd->units_abbrv) - 1);
       } else {
-        strncpy(psd->units_conv, psd->unit, 40 - 1);
+        memcpy(psd->units_conv, psd->unit, 40 - 1);
         psd->units_conv[40 - 1] = '\0';
-        strncpy(psd->units_abbrv, psd->unit, 20 - 1);
+        memcpy(psd->units_abbrv, psd->unit, 20 - 1);
         psd->units_abbrv[20 - 1] = '\0';
       }
 

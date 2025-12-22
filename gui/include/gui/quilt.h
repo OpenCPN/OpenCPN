@@ -136,6 +136,7 @@ public:
     m_bquiltanyproj = g_bopengl;
   }
   void AdjustQuiltVP(ViewPort &vp_last, ViewPort &vp_proposed);
+  int SelectRefChartByFamily(ChartFamilyEnum family);
 
   LLRegion &GetFullQuiltRegion(void) { return m_covered_region; }
   OCPNRegion &GetFullQuiltRenderedRegion(void) { return m_rendered_region; }
@@ -265,6 +266,7 @@ private:
   bool m_bquiltanyproj;
   ChartFamilyEnum m_preferred_family;
   ChartCanvas *m_parent;
+  ChartFamilyEnum m_chart_familyFix;
 };
 
 #endif  // _gui_quilt_h

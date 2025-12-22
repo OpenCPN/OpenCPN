@@ -264,6 +264,8 @@ public:
   Track* TrackOff(bool do_add_point = false);
   void TrackDailyRestart(void);
   bool ShouldRestartTrack();
+  void InitializeTrackRestart();
+
   void ToggleColorScheme();
   void SetMenubarItemState(int item_id, bool state);
   void SetMasterToolbarItemState(int tool_id, bool state);
@@ -379,7 +381,7 @@ public:
 
 private:
   void ProcessUnitTest();
-  void ProcessQuitFlag();
+  bool ProcessQuitFlag();
   void ProcessDeferredTrackOn();
   void SendFixToPlugins();
   void ProcessAnchorWatch();
@@ -436,7 +438,8 @@ private:
   time_t m_fixtime;
   bool b_autofind;
 
-  time_t m_last_track_rotation_ts;
+  wxDateTime m_target_rotate_time;
+
   wxTimer ToolbarAnimateTimer;
   int m_nMasterToolCountShown;
   wxTimer m_recaptureTimer;

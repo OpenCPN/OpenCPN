@@ -358,7 +358,7 @@ public:
         m_icons(parent),
         m_on_edit_conn(on_edit_conn) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
-    SetTable(new wxGridStringTable(), false);
+    SetTable(new wxGridStringTable(), true);
     GetTable()->AppendCols(8);
     HideCol(7);
     if (IsAndroid()) {

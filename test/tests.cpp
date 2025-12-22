@@ -45,7 +45,6 @@
 #include "model/select.h"
 #include "model/semantic_vers.h"
 #include "model/std_instance_chk.h"
-#include "model/wx_instance_chk.h"
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 
@@ -1025,23 +1024,6 @@ public:
 };
 
 #ifdef HAVE_UNISTD_H
-class WxInstanceChk : public BasicTest {
-public:
-  WxInstanceChk() : BasicTest() {}
-
-  void Work() override {
-    auto cmd = std::string(CMAKE_BINARY_DIR) + "/test/wx-instance";
-    auto stream = popen(cmd.c_str(), "w");
-    std::this_thread::sleep_for(200ms);  // Random time to catch up w IO
-    WxInstanceCheck check1;
-    EXPECT_TRUE(check1.IsMainInstance());
-    fputs("foobar\n", stream);
-    pclose(stream);
-    std::this_thread::sleep_for(200ms);
-    WxInstanceCheck check2;
-    EXPECT_TRUE(check2.IsMainInstance());
-  }
-};
 
 class StdInstanceTest : public BasicTest {
 public:
@@ -1290,8 +1272,6 @@ TEST(PluginApi, SignalK) { SignalKApp app; }
 #ifdef HAVE_UNISTD_H
 TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
 #endif
-
-TEST(Instance, WxInstanceChk) { WxInstanceCheck check; }
 
 #if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
 TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }

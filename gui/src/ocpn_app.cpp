@@ -340,20 +340,20 @@ class WallpaperFrame : public wxFrame {
 public:
   WallpaperFrame()
       : wxFrame(nullptr, wxID_ANY, "Loading...", wxDefaultPosition,
-                wxSize(900, 600), wxSTAY_ON_TOP) {
+                wxSize(2000, 2000), wxSTAY_ON_TOP) {
     // Customize the wallpaper appearance
     SetBackgroundColour(wxColour(0, 0, 0));  // Black background
 
-    // Add a text message
-    wxStaticText *text =
-        new wxStaticText(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
-                         wxALIGN_CENTRE_HORIZONTAL);
-    text->SetForegroundColour(wxColour(255, 255, 255));
+    wxPanel *panel = new wxPanel(this, wxID_ANY);
 
+    // Set the background color of the panel
+    panel->SetBackgroundColour(wxColour(0, 0, 0));  // Example RGB
+
+    // Use a sizer for proper layout
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-    sizer->Add(text, 1, wxALIGN_CENTER);
-    SetSizerAndFit(sizer);
-
+    sizer->Add(panel, 1, wxEXPAND);
+    SetSizer(sizer);
+    Layout();
     Center();  // Center the wallpaper frame
   }
 };
@@ -1250,12 +1250,8 @@ bool MyApp::OnInit() {
     SetTopWindow(gFrame);  // Set the main frame as the new top window.
     gFrame->Show();
     gFrame->Raise();
-
-    // Start delayed initialization chain after some milliseconds
-    gFrame->InitTimer.Start(50, wxTIMER_CONTINUOUS);
-
   } else {
-    wxTheApp->CallAfter(&MyApp::OnMainFrameReady);
+    wxTheApp->CallAfter(&MyApp::OnWallpaperStable);
   }
 
   OCPNPlatform::Initialize_4();
@@ -1318,34 +1314,48 @@ bool MyApp::OnInit() {
     StartMDNSService(g_hostname.ToStdString(), "opencpn-object-control-service",
                      8000);
   }
+
+  if (!g_kiosk_startup) {
+    // Ensure execution after all pending layout events
+    CallAfter([]() {
+      // Start delayed initialization chain after some milliseconds
+      wxLogMessage("InitTimer start");
+      gFrame->InitTimer.Start(10, wxTIMER_CONTINUOUS);
+    });
+  }
+
   return TRUE;
 }
 
-void MyApp::OnMainFrameReady() {
+void MyApp::OnWallpaperStable() {
   BuildMainFrame();
-  gFrame->Hide();
+  // Ensure execution after all pending layout events
+  CallAfter([this]() {
+    // Hide the old frame and show the new one.
+    g_wallpaper->Show(false);
+    /// wxTheApp->SetTopWindow(gFrame);
+    gFrame->ShowFullScreen(true);
+    g_bFullscreen = true;
 
-  // Hide the old frame and show the new one.
-  g_wallpaper->Show(false);
-  /// wxTheApp->SetTopWindow(gFrame);
+    // Cleanup the wallpaper frame.
+    g_wallpaper->Destroy();
+    g_wallpaper = nullptr;
 
-  gFrame->ShowFullScreen(true);
-  g_bFullscreen = true;
+    SetTopWindow(gFrame);  // Set the main frame as the new top window.
+    gFrame->Raise();
 
-  // Cleanup the wallpaper frame.
-  g_wallpaper->Destroy();
-  g_wallpaper = nullptr;
+    wxString vs =
+        wxString("Version ") + VERSION_FULL + " Build " + VERSION_DATE;
+    if (!DoNavMessage(vs)) {
+      Exit();
+    }
 
-  SetTopWindow(gFrame);  // Set the main frame as the new top window.
-  gFrame->Raise();
-
-  wxString vs = wxString("Version ") + VERSION_FULL + " Build " + VERSION_DATE;
-  if (!DoNavMessage(vs)) {
-    Exit();
-  }
-
-  // Start delayed initialization chain after some milliseconds
-  gFrame->InitTimer.Start(50, wxTIMER_CONTINUOUS);
+    CallAfter([]() {  // nested...
+      // Start delayed initialization chain after some milliseconds
+      wxLogMessage("InitTimer start");
+      gFrame->InitTimer.Start(10, wxTIMER_CONTINUOUS);
+    });
+  });
 }
 
 void MyApp::BuildMainFrame() {
@@ -1549,13 +1559,11 @@ void MyApp::BuildMainFrame() {
   else
     wxLogWarning("Cannot initiate plugin default jigsaw icon.");
 
-  /// AbstractPlatform::ShowBusySpinner();
+  AbstractPlatform::ShowBusySpinner();
   PluginLoader::GetInstance()->LoadAllPlugIns(true);
-  /// AbstractPlatform::HideBusySpinner();
+  AbstractPlatform::HideBusySpinner();
 
-  // A Plugin (e.g. Squiddio) may have redefined some routepoint icons...
-  // Reload all icons, to be sure.
-  /// if (pWayPointMan) WayPointmanGui(*pWayPointMan).ReloadRoutepointIcons();
+  if (g_kiosk_startup) g_pi_manager->CallLateInit();
 
   wxString perspective;
   pConfig->SetPath("/AUI");
@@ -1614,7 +1622,7 @@ void MyApp::BuildMainFrame() {
 
   //  Give the user dialog on any blacklisted PlugIns
   g_pi_manager->ShowDeferredBlacklistMessages();
-  g_pi_manager->CallLateInit();
+  // g_pi_manager->CallLateInit();
 
   return;
 

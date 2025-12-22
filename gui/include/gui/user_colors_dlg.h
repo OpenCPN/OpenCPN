@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2023 Alec Leamas                                        *
+ *   Copyright (C) 2025  Alec Leamas                                       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -15,39 +15,24 @@
  *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
+#include <wx/frame.h>
+#include <wx/window.h>
+
+#ifndef UsEr_COlOrS_DlG_H
+#define UsEr_COlOrS_DlG_H
+
 /**
- * \file
+ * Run the Data Monitor dialog for user defined colors.
  *
- * Single instance check based on wxWidgets functions.
+ * If the dialog does not exist it is created, otherwise it is made visible
+ * by a Raise() call.
+ *
+ * The dialog is created as a child of given parent and normally not
+ * that managed. It exists until user exits it at which point it is
+ * destroyed.
+ *
+ * @return pointer do dialog if created, else nullptr.
  */
+extern wxFrame* UserColorsDlg(wxWindow* parent);
 
-#ifndef WX_INST_CHECK_
-#define WX_INST_CHECK_
-
-#include <wx/snglinst.h>
-
-#include "model/instance_check.h"
-
-/**  Thin wrapper for wxSingleInstanceChecker implementing InstanceCheck */
-class WxInstanceCheck : public InstanceCheck {
-public:
-  WxInstanceCheck();
-
-  ~WxInstanceCheck() {
-    if (m_checker) delete m_checker;
-  }
-
-  bool IsMainInstance() override;
-
-  void CleanUp() override;
-
-  void OnExit() override;
-
-private:
-  void Init();
-
-  wxSingleInstanceChecker* m_checker;
-  bool is_inited;
-};
-
-#endif  // WX_INST_CHECK_
+#endif  // UsEr_COlOrS_DlG_H

@@ -544,7 +544,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
         g_monitor_info[g_current_monitor].width;
   }
 #endif
-  m_last_track_rotation_ts = 0;
   m_ulLastNMEATicktime = 0;
   m_data_monitor->Hide();
   m_pStatusBar = NULL;
@@ -3197,16 +3196,16 @@ Track *MyFrame::TrackOff(bool do_add_point) {
   androidSetTrackTool(false);
 #endif
 
-  g_FlushNavobjChangesTimeout =
-      600;  // Revert to checking/flushing navob changes every 5 minutes
+  // Invalidate the rotate tiem
+  m_target_rotate_time = wxInvalidDateTime;
 
   return return_val;
 }
 
-bool MyFrame::ShouldRestartTrack() {
-  if (!g_pActiveTrack || !g_bTrackDaily) return false;
-  time_t now = wxDateTime::Now().GetTicks();
-  time_t today = wxDateTime::Today().GetTicks();
+void MyFrame::InitializeTrackRestart() {
+  if (!g_bTrackDaily) return;
+  if (m_target_rotate_time.IsValid()) return;
+
   int rotate_at = 0;
   switch (g_track_rotate_time_type) {
     case TIME_TYPE_LMT:
@@ -3225,16 +3224,22 @@ bool MyFrame::ShouldRestartTrack() {
     rotate_at -= 86400;
   else if (rotate_at < 0)
     rotate_at += 86400;
-  if (now >= m_last_track_rotation_ts + 86400 - 3600 &&
-      now - today >= rotate_at) {
-    if (m_last_track_rotation_ts == 0) {
-      if (now - today > rotate_at)
-        m_last_track_rotation_ts = today + rotate_at;
-      else
-        m_last_track_rotation_ts = today + rotate_at - 86400;
-      return false;
-    }
-    m_last_track_rotation_ts = now;
+
+  wxTimeSpan rotate_seconds = wxTimeSpan(0, 0, rotate_at);
+  m_target_rotate_time = wxDateTime::Today() + rotate_seconds;
+
+  // Avoid restarting immediately
+  if (wxDateTime::Now().IsLaterThan(m_target_rotate_time)) {
+    m_target_rotate_time += wxTimeSpan(24);  // tomorrow, same time.
+  }
+}
+
+bool MyFrame::ShouldRestartTrack() {
+  if (!g_pActiveTrack || !g_bTrackDaily) return false;
+  InitializeTrackRestart();
+
+  if (wxDateTime::Now().IsLaterThan(m_target_rotate_time)) {
+    m_target_rotate_time += wxTimeSpan(24);  // tomorrow, same time.
     return true;
   }
   return false;
@@ -4787,6 +4792,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       // Last call....
       wxLogMessage("OnInitTimer...Last Call");
 
+      if (!g_kiosk_startup) g_pi_manager->CallLateInit();
+
       RequestNewMasterToolbar();
 
       PositionIENCToolbar();
@@ -5431,15 +5438,13 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   }
 
   if (b_update) {
-    // printf("                   gCog:  %g  %g\n", gCog, gCog - gCog_last);
-
     for (ChartCanvas *cc : g_canvasArray) {
       if (cc) {
         if (g_bopengl) {
           if (cc->GetUpMode() != NORTH_UP_MODE || cc->m_bFollow) {
             cc->DoCanvasUpdate();
           } else
-            cc->Refresh();
+            cc->Refresh(false);  // Process ownship motion at 10 Hz.
         }
       }
     }
@@ -5449,16 +5454,18 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
   FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 }
 
-void MyFrame::ProcessQuitFlag() {
+bool MyFrame::ProcessQuitFlag() {
   //      Listen for quitflag to be set, requesting application close
   if (quitflag) {
-    wxLogMessage("Got quitflag from SIGNAL");
     FrameTimer1.Stop();
     FrameTenHzTimer.Stop();
 
-    Close();
-    return;
+    wxWindow *top = wxTheApp ? wxTheApp->GetTopWindow() : nullptr;
+    if (top) top->Close(true);
+
+    return true;
   }
+  return false;
 }
 
 void MyFrame::ProcessDeferredTrackOn() {
@@ -5621,7 +5628,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   ProcessUnitTest();
   g_tick++;
-  ProcessQuitFlag();
+  if (ProcessQuitFlag()) return;
 
   if (bDBUpdateInProgress) return;
 
@@ -5748,9 +5755,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
                   cc->Refresh(false);  // honor ownship state update
               } else
                 cc->Refresh(false);
-            } else {
-              // Pick up SOG=0, COG=NAN report at 10Hz.
-              if (std::isnan(gCog)) cc->Refresh(false);
             }
           }
         }
@@ -7435,8 +7439,10 @@ void RestoreSystemColors() {
     pcspec++;
     i++;
   }
-
-  pSetSysColors(i, (unsigned long *)&element[0], (unsigned long *)&rgbcolor[0]);
+  if (pSetSysColors) {
+    pSetSysColors(i, (unsigned long *)&element[0],
+                  (unsigned long *)&rgbcolor[0]);
+  }
 }
 
 #endif

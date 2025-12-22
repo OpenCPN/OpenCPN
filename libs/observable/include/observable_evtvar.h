@@ -46,9 +46,10 @@
  *   public:
  *     EventVar change;
  *
- *     void some_method() {
+ *     void SomeMethod() {
  *       ...
- *       change.Notify("new value")
+ *       change.Notify("new value");
+ *       wxYield();    // See note below
  *     }
  *  \endcode
  *
@@ -69,6 +70,11 @@
  *      ObsListener change_listener;
  *    }
  *  \endcode
+ *
+ *  @note: The Notify() method actually generates an event which is added
+ *  to the global event queue. If listeners should process the event
+ *  immediately, a wxYield() directly after the Notify() keeps the
+ *  listener delay at a minimum.
  */
 class EventVar : public Observable {
 public:

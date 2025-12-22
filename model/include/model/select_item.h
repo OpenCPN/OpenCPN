@@ -24,7 +24,7 @@
 #ifndef _SELECTITEM_H__
 #define _SELECTITEM_H__
 
-#include <vector>
+#include <list>
 
 class SelectItem {
 public:
@@ -46,6 +46,6 @@ public:
   int m_Data4;
 };
 
-using SelectableItemList = std::vector<SelectItem *>;
+using SelectableItemList = std::list<SelectItem *>;
 
 #endif

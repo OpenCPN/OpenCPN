@@ -44,7 +44,6 @@
 #include "model/select.h"
 #include "model/semantic_vers.h"
 #include "model/std_instance_chk.h"
-#include "model/wx_instance_chk.h"
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 

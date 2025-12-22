@@ -564,43 +564,44 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
     }
 
     case 5: {
-      n_msg5++;
-      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
+      if (bstr->GetBitCount() >= 424) {  // Dismiss a malformed message
+        n_msg5++;
+        if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
 
-      //          Get the AIS Version indicator
-      //          0 = station compliant with Recommendation ITU-R M.1371-1
-      //          1 = station compliant with Recommendation ITU-R M.1371-3
-      //          2-3 = station compliant with future editions
-      int AIS_version_indicator = bstr->GetInt(39, 2);
-      if (AIS_version_indicator < 4) {
-        ptd->IMO = bstr->GetInt(41, 30);
+        //          Get the AIS Version indicator
+        //          0 = station compliant with Recommendation ITU-R M.1371-1
+        //          1 = station compliant with Recommendation ITU-R M.1371-3
+        //          2-3 = station compliant with future editions
+        int AIS_version_indicator = bstr->GetInt(39, 2);
+        if (AIS_version_indicator < 4) {
+          ptd->IMO = bstr->GetInt(41, 30);
 
-        bstr->GetStr(71, 42, &ptd->CallSign[0], 7);
-        bstr->GetStr(113, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
-        ptd->b_nameValid = true;
-        if (!ptd->b_isDSCtarget) {
-          ptd->ShipType = (unsigned char)bstr->GetInt(233, 8);
+          bstr->GetStr(71, 42, &ptd->CallSign[0], 7);
+          bstr->GetStr(113, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
+          ptd->b_nameValid = true;
+          if (!ptd->b_isDSCtarget) {
+            ptd->ShipType = (unsigned char)bstr->GetInt(233, 8);
+          }
+
+          ptd->DimA = bstr->GetInt(241, 9);
+          ptd->DimB = bstr->GetInt(250, 9);
+          ptd->DimC = bstr->GetInt(259, 6);
+          ptd->DimD = bstr->GetInt(265, 6);
+
+          ptd->ETA_Mo = bstr->GetInt(275, 4);
+          ptd->ETA_Day = bstr->GetInt(279, 5);
+          ptd->ETA_Hr = bstr->GetInt(284, 5);
+          ptd->ETA_Min = bstr->GetInt(289, 6);
+
+          ptd->Draft = (double)(bstr->GetInt(295, 8)) / 10.0;
+
+          bstr->GetStr(303, 120, &ptd->Destination[0], DESTINATION_LEN - 1);
+
+          ptd->StaticReportTicks = now.GetTicks();
+
+          parse_result = true;
         }
-
-        ptd->DimA = bstr->GetInt(241, 9);
-        ptd->DimB = bstr->GetInt(250, 9);
-        ptd->DimC = bstr->GetInt(259, 6);
-        ptd->DimD = bstr->GetInt(265, 6);
-
-        ptd->ETA_Mo = bstr->GetInt(275, 4);
-        ptd->ETA_Day = bstr->GetInt(279, 5);
-        ptd->ETA_Hr = bstr->GetInt(284, 5);
-        ptd->ETA_Min = bstr->GetInt(289, 6);
-
-        ptd->Draft = (double)(bstr->GetInt(295, 8)) / 10.0;
-
-        bstr->GetStr(303, 120, &ptd->Destination[0], DESTINATION_LEN - 1);
-
-        ptd->StaticReportTicks = now.GetTicks();
-
-        parse_result = true;
       }
-
       break;
     }
 
