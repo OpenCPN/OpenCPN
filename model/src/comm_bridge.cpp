@@ -139,7 +139,7 @@ static string GetPriorityKey(const NavMsgPtr& msg) {
     auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
     if (msg_0183) {
       string source = msg->source->to_string();
-      if (msg_0183->talker == "WM" && msg_0183->type == "HDG")
+      if (msg_0183->talker == "WM" && msg_0183->type == "HVD")
         source = "WMM plugin";
       this_identifier = msg_0183->talker;
       this_identifier += msg_0183->type;
@@ -442,6 +442,11 @@ void CommBridge::InitCommListeners() {
                           [&](const ObservedEvt& ev) {
                             HandleN2K_127250(UnpackEvtPointer<Nmea2000Msg>(ev));
                           });
+  // Variation   PGN 127258
+  m_n2k_127258_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(127258)),
+                          [&](const ObservedEvt& ev) {
+                            HandleN2K_127258(UnpackEvtPointer<Nmea2000Msg>(ev));
+                          });
 
   // GNSS Satellites in View   PGN 129540
   m_n2k_129540_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(129540)),
@@ -474,6 +479,11 @@ void CommBridge::InitCommListeners() {
   // HDM
   m_n0183_hdm_lstnr.Init(Nmea0183Msg("HDM"), [&](const ObservedEvt& ev) {
     HandleN0183_HDM(UnpackEvtPointer<Nmea0183Msg>(ev));
+  });
+
+  // HVD
+  m_n0183_hvd_lstnr.Init(Nmea0183Msg("HVD"), [&](const ObservedEvt& ev) {
+    HandleN0183_HVD(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // VTG
@@ -680,6 +690,28 @@ bool CommBridge::HandleN2K_127250(const N2000MsgPtr& n2k_msg) {
   return true;
 }
 
+bool CommBridge::HandleN2K_127258(const N2000MsgPtr& n2k_msg) {
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  NavData temp_data;
+  ClearNavData(temp_data);
+
+  if (!m_decoder.DecodePGN127258(v, temp_data)) return false;
+
+  int valid_flag = 0;
+  if (!N2kIsNA(temp_data.gVar)) {
+    if (EvalPriority(n2k_msg, active_priority_variation,
+                     priority_map_variation)) {
+      gVar = GeodesicRadToDeg(temp_data.gVar);
+      valid_flag += VAR_UPDATE;
+      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+
+  SendBasicNavdata(valid_flag, m_log_callbacks);
+  return true;
+}
+
 bool CommBridge::HandleN2K_129540(const N2000MsgPtr& n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
@@ -847,6 +879,28 @@ bool CommBridge::HandleN0183_HDM(const N0183MsgPtr& n0183_msg) {
     MakeHDTFromHDM();
     valid_flag += HDT_UPDATE;
     m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+  }
+
+  SendBasicNavdata(valid_flag, m_log_callbacks);
+  return true;
+}
+
+bool CommBridge::HandleN0183_HVD(const N0183MsgPtr& n0183_msg) {
+  string str = n0183_msg->payload;
+  NavData temp_data;
+  ClearNavData(temp_data);
+
+  if (!m_decoder.DecodeHVD(str, temp_data)) return false;
+
+  int valid_flag = 0;
+
+  if (!std::isnan(temp_data.gVar)) {
+    if (EvalPriority(n0183_msg, active_priority_variation,
+                     priority_map_variation)) {
+      gVar = temp_data.gVar;
+      valid_flag += VAR_UPDATE;
+      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 
   SendBasicNavdata(valid_flag, m_log_callbacks);
