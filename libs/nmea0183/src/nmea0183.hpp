@@ -91,6 +91,7 @@
 #include "hdm.hpp"
 #include "hdg.hpp"
 #include "hdt.hpp"
+#include "hvd.hpp"
 #include "ths.hpp"
 #include "RMB.hpp"
 #include "RMC.HPP"
@@ -195,6 +196,7 @@ class NMEA0183
        HDM Hdm;
        HDG Hdg;
        HDT Hdt;
+       HVD Hvd;
        THS Ths;
        RMB Rmb;
        RMC Rmc;

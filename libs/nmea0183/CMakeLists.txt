@@ -34,6 +34,8 @@ SET(SRC
     src/hdg.cpp
     src/hdm.hpp
     src/hdm.cpp
+    src/hvd.hpp
+    src/hvd.cpp
     src/gll.hpp
     src/gll.cpp
     src/vtg.hpp
