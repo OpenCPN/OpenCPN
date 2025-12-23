@@ -1000,7 +1000,7 @@ void wmm_pi::SendPGN127258(double d_var) {
                   days_since_epoch, var_rad);
   std::shared_ptr<std::vector<uint8_t>> payload(new std::vector<uint8_t>(
       msg127285.Data, msg127285.Data + msg127285.DataLen));
-  WriteCommDriverN2K(m_handleN2k, 127258, 0xCC, 7, payload);
+  WriteCommDriverN2K(m_handleN2k, 127258, 0xFF, 7, payload);
 }
 
 unsigned char wmm_pi::ComputeChecksum(wxString sentence) const {
