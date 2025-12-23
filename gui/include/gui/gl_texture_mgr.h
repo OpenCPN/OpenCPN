@@ -57,7 +57,7 @@ public:
   JobTicket();
   ~JobTicket() {
     free(level0_bits);
-    pFactCLose();
+    pFactClose();
   }
   bool DoJob();
   bool DoJob(const wxRect &rect);
@@ -65,7 +65,7 @@ public:
     pFact = newFactory;
     newFactory->AddRef();
   }
-  bool pFactCLose() {
+  bool pFactClose() {
     if (pFact)
       if (pFact->Release()) pFact = NULL;
     return (pFact == NULL);

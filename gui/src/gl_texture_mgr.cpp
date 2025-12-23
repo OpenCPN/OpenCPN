@@ -851,7 +851,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
       ChartBase *pchart =
           ChartData->OpenChartFromDB(ticket->m_ChartPath, FULL_INIT);
       ChartData->DeleteCacheChart(pchart);
-      ticket->pFactCLose();
+      ticket->pFactClose();
     }
 
     for (auto tnode = progList.begin(); tnode != progList.end(); ++tnode) {
