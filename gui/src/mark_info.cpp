@@ -479,8 +479,8 @@ void MarkInfoDlg::Create() {
   gbSizerInnerExtProperties->Add(0, 0, 1, wxEXPAND, 0);
   m_staticTextScaMax = new wxStaticText(sbSizerExtProperties->GetStaticBox(),
                                         wxID_ANY, _("Show at scale < 1 :"));
-  gbSizerInnerExtProperties->Add(m_staticTextScaMax, 0,
-                                 wxALIGN_CENTRE_VERTICAL, 0);
+  gbSizerInnerExtProperties->Add(m_staticTextScaMax, 0, wxALIGN_CENTRE_VERTICAL,
+                                 0);
   m_textScaMax = new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY);
   gbSizerInnerExtProperties->Add(m_textScaMax, 0, wxALL | wxEXPAND, 5);
 

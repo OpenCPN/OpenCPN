@@ -315,8 +315,7 @@ bool RoutePoint::IsVisibleSelectable(double scale_val, bool boverrideViz) {
       return true;
     else if (scale_val >= (double)(m_ScaMin + 1))
       return false;
-    if (m_ScaMax > 0 && scale_val <= (double)m_ScaMax - 1.0)
-      return false;
+    if (m_ScaMax > 0 && scale_val <= (double)m_ScaMax - 1.0) return false;
   }
   return true;
 }
@@ -432,7 +431,8 @@ void RoutePoint::SetScaMax(long val) {
   long max_allowed = m_ScaMin > 0 ? (long)m_ScaMin : 0;
   m_ScaMax = val;
   if (max_allowed > 0 && m_ScaMax > max_allowed) {
-    m_ScaMax = max_allowed;  // prevent from waypoints hiding always with a nonlogic value
+    m_ScaMax = max_allowed;  // prevent from waypoints hiding always with a
+                             // nonlogic value
   }
 }
 void RoutePoint::SetScaMax(wxString str) {
