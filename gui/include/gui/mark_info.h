@@ -240,6 +240,7 @@ private:
   bool m_bIsVisible_save;
   bool m_bUseScaMin_save;
   int m_iScaminVal_save;
+  int m_iScamaxVal_save;
   bool m_bShowWaypointRangeRings_save;
   int m_iWaypointRangeRingsNumber_save;
   float m_fWaypointRangeRingsStep_save;
@@ -316,6 +317,7 @@ protected:
   wxStaticText* m_staticTextLongitude;
   wxStaticText* m_staticTextName;
   wxStaticText* m_staticTextScaMin;
+  wxStaticText* m_staticTextScaMax;
   wxStaticText* m_staticTextShowNameExt;
   wxStaticText* m_staticTextRR1;
   wxStaticText* m_staticTextRR2;
@@ -348,6 +350,7 @@ protected:
   TextField* m_textName;
   std::unique_ptr<RoutePointNameValidator> m_name_validator;
   wxTextCtrl* m_textScaMin;
+  wxTextCtrl* m_textScaMax;
   wxTextCtrl* m_textWaypointRangeRingsStep;
   /**
    * Text control for waypoint planned speed.

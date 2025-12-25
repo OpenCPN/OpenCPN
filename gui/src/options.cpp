@@ -2346,6 +2346,18 @@ void options::CreatePanel_Routes(size_t parent, int border_size,
   ScaMinSizer->Add(m_pText_ScaMin, 0, wxALL | wxALIGN_RIGHT,
                    group_item_spacing);
 
+  wxFlexGridSizer* ScaMaxSizer =
+      new wxFlexGridSizer(1, 2, group_item_spacing, group_item_spacing);
+  ScaMaxSizer->AddGrowableCol(1);
+  waypointSizer->Add(ScaMaxSizer, 0, wxLEFT | wxRIGHT | wxEXPAND, border_size);
+  wxStaticText* scaMaxLabel =
+      new wxStaticText(itemPanelRoutes, wxID_ANY,
+                       _("Show marks only at a chartscale smaller than 1 :"));
+  ScaMaxSizer->Add(scaMaxLabel, 0);
+  m_pText_ScaMax = new wxTextCtrl(itemPanelRoutes, -1, "TEXTTEXTTEXT");
+  ScaMaxSizer->Add(m_pText_ScaMax, 0, wxALL | wxALIGN_RIGHT,
+                   group_item_spacing);
+
   // Overrule the Scamin settings
   pScaMinOverruleChckB =
       new wxCheckBox(itemPanelRoutes, wxID_ANY,
@@ -6403,6 +6415,7 @@ void options::SetInitialSettings() {
 
   pScaMinChckB->SetValue(g_bUseWptScaMin);
   m_pText_ScaMin->SetValue(wxString::Format("%i", g_iWpt_ScaMin));
+  m_pText_ScaMax->SetValue(wxString::Format("%i", g_iWpt_ScaMax));
   pScaMinOverruleChckB->SetValue(g_bOverruleScaMin);
 
   OnRadarringSelect(eDummy);
@@ -7196,6 +7209,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
 
   g_bUseWptScaMin = pScaMinChckB->GetValue();
   g_iWpt_ScaMin = wxAtoi(m_pText_ScaMin->GetValue());
+  g_iWpt_ScaMax = wxAtoi(m_pText_ScaMax->GetValue());
   g_bOverruleScaMin = pScaMinOverruleChckB->GetValue();
 
   //  Any Font changes?

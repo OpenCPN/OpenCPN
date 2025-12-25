@@ -175,6 +175,7 @@ int g_iWaypointRangeRingsNumber = 0;
 int g_iWaypointRangeRingsStepUnits = 0;
 int g_iWindSpeedFormat = 0;
 int g_iWpt_ScaMin = 0;
+int g_iWpt_ScaMax = 0;
 int g_lastClientRecth = 0;
 int g_lastClientRectw = 0;
 int g_lastClientRectx = 0;
