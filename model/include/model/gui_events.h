@@ -61,6 +61,12 @@ public:
    */
   EventVar on_dm_colors_change;
 
+  /** Notified when list of routes is updated (no data in event) */
+  EventVar on_routes_update;
+
+  /** Notified when waypoint(s) is updated (no data in event) */
+  EventVar on_waypoint_update;
+
 private:
   GuiEvents() = default;
 };
