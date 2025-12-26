@@ -51,6 +51,7 @@
 #include "model/ais_decoder.h"
 #include "model/config_vars.h"
 #include "model/georef.h"
+#include "model/gui_events.h"
 #include "model/mdns_cache.h"
 #include "model/mdns_query.h"
 #include "model/navobj_db.h"
@@ -325,7 +326,7 @@ RouteManagerDialog::RouteManagerDialog(wxWindow *parent) {
   btnExportViz = NULL;
 
   Create();
-  routes_update_listener.Init(g_pRouteMan->on_routes_update,
+  routes_update_listener.Init(GuiEvents::GetInstance().on_routes_update,
                               [&](wxCommandEvent) { UpdateRouteListCtrl(); });
 }
 

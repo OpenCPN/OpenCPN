@@ -108,6 +108,7 @@
 #include "model/comm_n0183_output.h"
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
+#include "model/gui_events.h"
 #include "model/gui_vars.h"
 #include "model/instance_check.h"
 #include "model/local_api.h"
@@ -457,7 +458,7 @@ static void ActivateRoute(const std::string &guid) {
     point = route->GetPoint(2);
   }
   g_pRouteMan->ActivateRoute(route, point);
-  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+  GuiEvents::GetInstance().on_routes_update.Notify();
   route->m_bRtIsSelected = false;
 }
 
@@ -468,7 +469,7 @@ static void ReverseRoute(const std::string &guid) {
     return;
   }
   route->Reverse();
-  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+  GuiEvents::GetInstance().on_routes_update.Notify();
 }
 
 void MyApp::InitRestListeners() {
