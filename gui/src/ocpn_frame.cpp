@@ -707,7 +707,7 @@ MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
   m_recaptureTimer.SetOwner(this, RECAPTURE_TIMER);
   m_tick_idx = 0;
   assert(g_pRouteMan != 0 && "g_pRouteMan not available");
-  m_routes_update_listener.Init(g_pRouteMan->on_routes_update,
+  m_routes_update_listener.Init(GuiEvents::GetInstance().on_routes_update,
                                 [&](wxCommandEvent) { Refresh(); });
   m_evt_drv_msg_listener.Init(CommDriverRegistry::GetInstance().evt_driver_msg,
                               [&](ObservedEvt &ev) { OnDriverMsg(ev); });
