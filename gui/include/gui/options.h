@@ -798,7 +798,7 @@ public:
   bool GetLineSmoothing(void) const;
   bool GetSoftwareGL(void) const;
   bool GetTextureCompressionCaching(void) const;
-  bool GetRebuildCache(void) const;
+  bool GetRebuildCache(void);
   int GetTextureMemorySize(void) const;
 
 private:

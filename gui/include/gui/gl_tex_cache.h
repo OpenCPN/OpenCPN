@@ -105,10 +105,51 @@ public:
 
 #define MAX_TEX_LEVEL 10
 
+#ifdef _MSC_VER
+#ifdef new
+#define OCPN_PUSHED_DEBUG_NEW
+#pragma push_macro("new")
+#undef new
+#endif
+#endif
+
 class glTexFactory {
 public:
   glTexFactory(ChartBase *chart, int raster_format);
-  ~glTexFactory();
+
+  // Make class uncopyable
+  glTexFactory(const glTexFactory &) = delete;
+  glTexFactory &operator=(const glTexFactory &) = delete;
+
+  // Reference counting methods used by job manager
+  void AddRef() noexcept {
+    int prev = m_refCount.fetch_add(1, std::memory_order_relaxed);
+  }
+
+  bool Release() noexcept {
+    int prev = m_refCount.fetch_sub(1, std::memory_order_acq_rel);
+    wxASSERT(prev > 0);
+    if (prev == 1) {
+      delete this;
+      return true;  // let caller know we deleted the last reference
+    }
+    return false;
+  }
+
+  // Allocation overrides
+  // Standard form
+  static void *operator new(std::size_t sz) { return ::operator new(sz); }
+  // MSVC debug macro form: new(_NORMAL_BLOCK, file, line)
+  static void *operator new(std::size_t sz, int, const char *, int) {
+    return ::operator new(sz);
+  }
+
+  // Deallocation overrides
+  static void operator delete(void *p) noexcept { ::operator delete(p); }
+  // Matching debug delete signature (MSVC may pass extra args)
+  static void operator delete(void *p, int, const char *, int) noexcept {
+    ::operator delete(p);
+  }
 
   glTextureDescriptor *GetOrCreateTD(const wxRect &rect);
   bool BuildTexture(glTextureDescriptor *ptd, int base_level,
@@ -136,9 +177,7 @@ public:
   int GetLRUTime() { return m_LRUtime; }
   void FreeSome(long target);
   void FreeIfCached();
-
   glTextureDescriptor *GetpTD(wxRect &rect);
-
   void PrepareTiles(const ViewPort &vp, bool use_norm_vp, ChartBase *pChart);
   glTexTile **GetTiles(int &num) {
     num = m_ntex;
@@ -150,15 +189,12 @@ private:
   bool LoadCatalog(void);
   bool LoadHeader(void);
   bool WriteCatalogAndHeader();
-
   bool UpdateCachePrecomp(unsigned char *data, int data_size,
                           const wxRect &rect, int level,
                           ColorScheme color_scheme, bool write_catalog = true);
   bool UpdateCacheLevel(const wxRect &rect, int level, ColorScheme color_scheme,
                         unsigned char *data, int size);
-
   void DeleteSingleTexture(glTextureDescriptor *ptd);
-
   CatalogEntryValue *GetCacheEntryValue(int level, int x, int y,
                                         ColorScheme color_scheme);
   bool AddCacheEntryValue(const CatalogEntry &p);
@@ -168,7 +204,6 @@ private:
   void ArrayXY(wxRect *r, int index) const;
 
   int n_catalog_entries;
-
   CatalogEntryValue *m_cache[N_COLOR_SCHEMES][MAX_TEX_LEVEL];
 
   wxString m_ChartPath;
@@ -179,7 +214,6 @@ private:
   bool m_hdrOK;
   bool m_catalogOK;
   bool m_newCatalog;
-
   bool m_catalogCorrupted;
 
   wxFFile *m_fs;
@@ -196,13 +230,26 @@ private:
   int m_ny_tex;
 
   int m_LRUtime;
-
   glTextureDescriptor **m_td_array;
 
   double m_clat, m_clon;
   glTexTile **m_tiles;
   int m_prepared_projection_type;
   bool m_north;  // used for polar projection
+
+  // Allows gl_texture_mgr to manage the lifetime of glTexFactory
+  std::atomic<int> m_refCount{1};
+
+  // Destructor is private, use Release() instead and it will delete when ref
+  // count reaches zero
+  ~glTexFactory();
 };
+
+#ifdef _MSC_VER
+#ifdef OCPN_PUSHED_DEBUG_NEW
+#pragma pop_macro("new")
+#undef OCPN_PUSHED_DEBUG_NEW
+#endif
+#endif
 
 #endif

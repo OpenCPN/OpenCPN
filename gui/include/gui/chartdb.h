@@ -152,6 +152,7 @@ public:
   void LockCache() { m_b_locked = true; }
   void UnLockCache() { m_b_locked = false; }
   bool IsCacheLocked() { return m_b_locked; }
+  wxMutex *GetCacheMutex() { return &m_cache_mutex; }
   wxXmlDocument GetXMLDescription(int dbIndex, bool b_getGeom);
 
   bool LockCacheChart(int index);

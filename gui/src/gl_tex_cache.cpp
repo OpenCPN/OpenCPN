@@ -23,6 +23,7 @@
  */
 
 #include <stdint.h>
+#include <atomic>
 
 #include <wx/wxprec.h>
 #include <wx/tokenzr.h>
@@ -195,8 +196,10 @@ glTexFactory::glTexFactory(ChartBase *chart, int raster_format) {
 }
 
 glTexFactory::~glTexFactory() {
-  delete m_fs;
-
+  if (m_fs && m_fs->IsOpened()) {
+    m_fs->Close();
+    delete m_fs;
+  }
   PurgeBackgroundCompressionPool();
   DeleteAllTextures();
   DeleteAllDescriptors();
@@ -218,8 +221,13 @@ glTexFactory::~glTexFactory() {
 }
 
 glTextureDescriptor *glTexFactory::GetpTD(wxRect &rect) {
-  int array_index = ArrayIndex(rect.x, rect.y);
-  return m_td_array[array_index];
+  try {
+    int array_index = ArrayIndex(rect.x, rect.y);
+    return m_td_array[array_index];
+  } catch (...) {
+    wxLogMessage("Exception in glTexFactory::GetpTD");
+    return nullptr;
+  }
 }
 
 bool glTexFactory::OnTimer() {
@@ -540,89 +548,83 @@ bool glTexFactory::BuildTexture(glTextureDescriptor *ptd, int base_level,
   }
 
   int status = GetTextureLevel(ptd, rect, base_level, ptd->m_colorscheme);
-
-  bool b_use_mipmaps = COMPRESSED_BUFFER_OK == status
+  bool b_use_mipmaps = (status == COMPRESSED_BUFFER_OK)
                            ? b_use_compressed_mipmaps
                            : b_use_uncompressed_mipmaps;
 
   DeleteSingleTexture(ptd);
   CreateTexture(ptd->tex_name, b_use_mipmaps);
-  ptd->nGPU_compressed = COMPRESSED_BUFFER_OK == status
+  glBindTexture(GL_TEXTURE_2D, ptd->tex_name);
+
+  // Ensure correct unpack for 3-byte RGB rows at small mip levels.
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+  ptd->nGPU_compressed = (status == COMPRESSED_BUFFER_OK)
                              ? GPU_TEXTURE_COMPRESSED
                              : GPU_TEXTURE_UNCOMPRESSED;
 
-  if (COMPRESSED_BUFFER_OK == status) {
+  int highestUploadedLevel = -1;
+
+  if (status == COMPRESSED_BUFFER_OK) {
     int texture_level = 0;
-    for (int level = base_level; level < ptd->level_min; level++) {
+    for (int level = base_level; level < ptd->level_min; ++level) {
+      // Ensure comp_array[level] is populated
+      int levelStatus = GetTextureLevel(ptd, rect, level, ptd->m_colorscheme);
+      wxASSERT(levelStatus == COMPRESSED_BUFFER_OK && ptd->comp_array[level]);
+
       int size = TextureTileSize(level, true);
-      int status = GetTextureLevel(ptd, rect, level, ptd->m_colorscheme);
       int dim = TextureDim(level);
       glCompressedTexImage2D(GL_TEXTURE_2D, texture_level, g_raster_format, dim,
                              dim, 0, size, ptd->comp_array[level]);
-
       ptd->tex_mem_used += size;
       g_tex_mem_used += size;
-      texture_level++;
-
+      highestUploadedLevel = texture_level;
+      ++texture_level;
       if (!b_use_mipmaps) break;
     }
-
-    //   Free bitmap memory that has already been uploaded to the GPU
     ptd->FreeMap();
     ptd->FreeComp();
-  } else {  // COMPRESSED_BUFFER_OK == status
-    if (m_newCatalog) {
-      // it's an empty catalog or it's not used, odds it's going to be slow
-      BasePlatform::ShowBusySpinner();
-      busy_shown = true;
-      m_newCatalog = false;
+  } else {
+    int uc_base_level = base_level + (b_lowmem ? 1 : 0);
+    int texture_level = 0;
+    for (int level = uc_base_level; level < ptd->level_min + (b_lowmem ? 1 : 0);
+         ++level) {
+      int dim = TextureDim(level);
+      GetTextureLevel(ptd, rect, level, ptd->m_colorscheme);
+      wxASSERT(ptd->map_array[level]);
+      glTexImage2D(GL_TEXTURE_2D, texture_level, GL_RGB, dim, dim, 0,
+                   FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level]);
+      int size = TextureTileSize(level, false);
+      ptd->tex_mem_used += size;
+      g_tex_mem_used += size;
+      highestUploadedLevel = texture_level;
+      ++texture_level;
+      if (!b_use_mipmaps) break;
     }
+  }
 
-    //  This level has not been compressed yet, and is not in the cache
-#if 1  // perhaps we should eliminate this case
-       // and build compressed fxt1 textures one per tick
-    if (GL_COMPRESSED_RGB_FXT1_3DFX == g_raster_format &&
-        g_GLOptions.m_bTextureCompression) {
-      // this version avoids re-uploading the data
-      g_glTextureManager->ScheduleJob(this, rect, base_level, true, false, true,
-                                      true);
-      ptd->FreeMap();
-      ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
-      b_use_mipmaps = b_use_compressed_mipmaps;
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                      GL_LINEAR_MIPMAP_LINEAR);
-    } else
-#endif
-    {
-      int uc_base_level = base_level;
-      if (b_lowmem) uc_base_level++;
-      int texture_level = 0;
-      for (int level = uc_base_level; level < ptd->level_min + b_lowmem;
-           level++) {
-        int status = GetTextureLevel(ptd, rect, level, ptd->m_colorscheme);
-        int dim = TextureDim(level);
-        glTexImage2D(GL_TEXTURE_2D, texture_level, GL_RGB, dim, dim, 0,
-                     FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level]);
-        int size = TextureTileSize(level, false);
-        ptd->tex_mem_used += size;
-        g_tex_mem_used += size;
-        texture_level++;
-
-        if (!b_use_mipmaps) break;
-      }
-    }
+  // Adjust filtering and declared mipmap range to what we actually uploaded.
+  if (b_use_mipmaps && highestUploadedLevel > 0) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, highestUploadedLevel);
+  } else {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
   }
 
   ptd->level_min = base_level;
 
-  // free all mipmaps more than a level less than this
-  for (int i = 0; i < base_level - 1; i++) {
-    free(ptd->map_array[i]);
-    ptd->map_array[i] = 0;
+  for (int i = 0; i < base_level - 1; ++i) {
+    if (ptd->map_array[i]) {
+      free(ptd->map_array[i]);
+      ptd->map_array[i] = nullptr;
+    }
   }
 
   if (busy_shown) AbstractPlatform::HideBusySpinner();
-
   return true;
 }
 
