@@ -774,6 +774,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/about_frame.h
     ${GUI_HDR_DIR}/about_frame_impl.h
     ${GUI_HDR_DIR}/about.h
+    ${GUI_HDR_DIR}/abstract_canvas.h
     ${GUI_HDR_DIR}/ais.h
     ${GUI_HDR_DIR}/ais_info_gui.h
     ${GUI_HDR_DIR}/ais_target_alert_dlg.h

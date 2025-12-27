@@ -328,6 +328,10 @@ RouteManagerDialog::RouteManagerDialog(wxWindow *parent) {
   Create();
   routes_update_listener.Init(GuiEvents::GetInstance().on_routes_update,
                               [&](wxCommandEvent) { UpdateRouteListCtrl(); });
+  waypoint_update_listener.Init(GuiEvents::GetInstance().on_waypoint_update,
+                                [&](wxCommandEvent) {
+                                  if (IsShown()) UpdateWptListCtrl();
+                                });
 }
 
 void RouteManagerDialog::Create() {

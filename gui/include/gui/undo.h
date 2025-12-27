@@ -30,7 +30,7 @@
 #include <vector>
 #include <deque>
 
-#include "chcanv.h"
+#include "abstract_canvas.h"
 
 enum UndoType {
   Undo_CreateWaypoint,
@@ -57,7 +57,7 @@ public:
 
 class Undo {
 public:
-  Undo(ChartCanvas* parent);
+  Undo(AbstractCanvas* uh);
   ~Undo();
   bool AnythingToUndo();
   bool AnythingToRedo();
@@ -74,10 +74,10 @@ public:
                             UndoItemPointer selectable);
   bool AfterUndoableAction(UndoItemPointer after);
   bool CancelUndoableAction(bool noDataDelete = false);
-  ChartCanvas* GetParent() { return m_parent; }
+  AbstractCanvas* GetParent() { return m_canvas; }
 
 private:
-  ChartCanvas* m_parent;
+  AbstractCanvas* m_canvas;
   bool isInsideUndoableAction;
   UndoAction* candidate;
   unsigned int stackpointer;

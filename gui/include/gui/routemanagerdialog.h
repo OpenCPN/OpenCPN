@@ -238,6 +238,7 @@ private:
   int m_listIconSize;
 
   ObsListener routes_update_listener;
+  ObsListener waypoint_update_listener;
 };
 
 #endif  // _RouteManagerDialog_h_

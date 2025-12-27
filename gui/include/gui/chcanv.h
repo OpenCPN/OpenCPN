@@ -54,7 +54,6 @@
 #include "observable_evtvar.h"
 #include "observable.h"
 #include "ocp_cursor.h"
-#include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "ocpn_plugin.h"
 #include "piano.h"
@@ -63,6 +62,7 @@
 #include "s57_sector.h"
 #include "tc_win.h"
 #include "undo.h"
+#include "abstract_canvas.h"
 
 class canvasConfig;        // circular
 class CanvasMenuHandler;   // circular
@@ -71,7 +71,6 @@ class NotificationsList;   // circular
 class NotificationButton;  // circular
 class Quilt;               // circular
 class TCWin;               // circular
-class Undo;                // circular
 
 class ChartCanvas;                    // forward
 extern ChartCanvas *g_overlayCanvas;  ///< Global instance
@@ -154,12 +153,16 @@ extern void pupHandler_PasteTrack();  // forward
  * window events, translating them into appropriate chart operations like
  * panning, zooming, and object manipulation.
  */
-class ChartCanvas : public wxWindow {
+class ChartCanvas : public wxWindow, public AbstractCanvas {
   friend class glChartCanvas;
 
 public:
   ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log);
   ~ChartCanvas();
+
+  void RedoAppendWaypoint(Route *route) override;
+  void UndoAppendWaypoint(Route *route, bool no_route_left_to_redo) override;
+  int GetRouteState() const override { return m_routeState; }
 
   void SetupGlCanvas();
 

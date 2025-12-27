@@ -758,6 +758,30 @@ ChartCanvas::~ChartCanvas() {
   delete m_notification_button;
 }
 
+void ChartCanvas::UndoAppendWaypoint(Route *route, bool no_route_left_to_redo) {
+  gFrame->InvalidateAllGL();
+  if (no_route_left_to_redo) {
+    undo->InvalidateRedo();
+  }
+  if (m_routeState > 1) {
+    m_routeState--;
+    m_prev_pMousePoint = route->GetLastPoint();
+    m_prev_rlat = m_prev_pMousePoint->m_lat;
+    m_prev_rlon = m_prev_pMousePoint->m_lon;
+    route->m_lastMousePointIndex = route->GetnPoints();
+  }
+}
+
+void ChartCanvas::RedoAppendWaypoint(Route *route) {
+  if (m_routeState > 1) {
+    m_routeState++;
+    m_prev_pMousePoint = route->GetLastPoint();
+    m_prev_rlat = m_prev_pMousePoint->m_lat;
+    m_prev_rlon = m_prev_pMousePoint->m_lon;
+    route->m_lastMousePointIndex = route->GetnPoints();
+  }
+}
+
 void ChartCanvas::SetupGridFont() {
   wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
   double dpi_factor = 1. / g_BasePlatform->GetDisplayDIPMult(this);
