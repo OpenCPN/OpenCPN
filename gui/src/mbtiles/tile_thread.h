@@ -11,7 +11,6 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 
 #include "chartbase.h"
-#include "ocpn_frame.h"
 #include "ocpn_app.h"
 #include "tile_queue.h"
 
