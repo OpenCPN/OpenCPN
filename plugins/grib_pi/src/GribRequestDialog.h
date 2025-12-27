@@ -242,6 +242,11 @@ private:
   wxString WriteMail();
   int EstimateFileSize(double *size);
 
+  template <typename T>
+  static std::string FormatWithCommas(T value);
+
+  static wxString GetDownloadProgressText(long bytesTransferred,
+                                          long bytesTotal);
   /** Save the "download" configuration to disk. */
   void SaveConfig() override;
   /** Load the "download" configuration from disk and initialize the dialog
