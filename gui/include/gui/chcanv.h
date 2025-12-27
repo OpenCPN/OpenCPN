@@ -54,7 +54,6 @@
 #include "observable_evtvar.h"
 #include "observable.h"
 #include "ocp_cursor.h"
-#include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "ocpn_plugin.h"
 #include "piano.h"

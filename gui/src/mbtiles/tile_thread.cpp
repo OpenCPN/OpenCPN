@@ -5,6 +5,7 @@
 #include <wx/thread.h>
 
 #include "dychart.h"
+#include "ocpn_frame.h"
 #include "tile_thread.h"
 #include "tile_cache.h"
 
