@@ -32,7 +32,6 @@
 #include <wx/stattext.h>
 #include <wx/checkbox.h>
 
-#include "ocpn_frame.h"
 #include "model/rest_server.h"
 
 //    Constants for  Dialog

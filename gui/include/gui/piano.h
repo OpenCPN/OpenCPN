@@ -32,7 +32,6 @@
 #include <wx/gdicmn.h>
 #include <wx/timer.h>
 
-#include "ocpn_frame.h"
 #include "chcanv.h"
 
 WX_DECLARE_OBJARRAY(wxRect, RectArray);
