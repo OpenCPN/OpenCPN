@@ -23,7 +23,6 @@
  * Compass display state
  */
 
-#include "chcanv.h"
 #include "color_types.h"
 #include "ocpndc.h"
 

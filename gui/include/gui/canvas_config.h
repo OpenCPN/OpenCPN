@@ -31,8 +31,6 @@
 #include "wx/config.h"
 #include "wx/wxprec.h"
 
-#include "chcanv.h"
-
 class ChartCanvas;  // Circular
 
 /**

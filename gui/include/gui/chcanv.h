@@ -163,6 +163,7 @@ public:
   void RedoAppendWaypoint(Route *route) override;
   void UndoAppendWaypoint(Route *route, bool no_route_left_to_redo) override;
   int GetRouteState() const override { return m_routeState; }
+  int GetCanvasIndex() const override { return m_canvasIndex; }
 
   void SetupGlCanvas();
 

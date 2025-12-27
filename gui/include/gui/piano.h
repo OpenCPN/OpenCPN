@@ -32,8 +32,6 @@
 #include <wx/gdicmn.h>
 #include <wx/timer.h>
 
-#include "chcanv.h"
-
 WX_DECLARE_OBJARRAY(wxRect, RectArray);
 
 enum { PIANO_MODE_COMPOSITE = 0, PIANO_MODE_LEGACY };

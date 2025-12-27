@@ -31,7 +31,6 @@
 
 #include "model/route_point.h"
 
-#include "chcanv.h"
 #include "ocpndc.h"
 #include "send_to_gps_dlg.h"
 #include "viewport.h"

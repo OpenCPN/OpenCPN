@@ -27,7 +27,6 @@
 #include <cstdint>
 
 #include "canvas_options.h"
-#include "chcanv.h"
 
 //----------------------------------------------------------------------------
 //   constants

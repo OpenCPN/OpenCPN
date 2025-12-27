@@ -30,7 +30,6 @@
 
 #include "LLRegion.h"
 #include "ocpn_region.h"
-#include "chcanv.h"
 #include "viewport.h"
 #include "chartdb.h"
 #include "chartdbs.h"

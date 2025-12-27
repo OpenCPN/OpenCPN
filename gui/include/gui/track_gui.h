@@ -30,7 +30,6 @@
 #include "model/track.h"
 
 #include "bbox.h"
-#include "chcanv.h"
 #include "ocpndc.h"
 #include "viewport.h"
 
