@@ -342,19 +342,13 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
   const std::vector<uint8_t> acti_pkg = BufferToActisenseFormat(N2kMsg);
 
-  // Create the internal message for all N2K listeners
+  // Create the internal message  and notify upper layers
   std::vector<unsigned char> msg_payload;
   for (size_t i = 2; i < acti_pkg.size() - 2; i++)
     msg_payload.push_back(acti_pkg[i]);
   auto name = PayloadToName(load);
-  auto msg_all =
-      std::make_shared<const Nmea2000Msg>(1, msg_payload, GetAddress(name));
-  auto msg_internal =
-      std::make_shared<const Nmea2000Msg>(_pgn, msg_payload, GetAddress(name));
-
-  // Notify listeners
-  m_listener.Notify(std::move(msg_internal));
-  m_listener.Notify(std::move(msg_all));
+  m_listener.Notify(
+      std::make_shared<const Nmea2000Msg>(_pgn, msg_payload, GetAddress(name)));
 
   if (GetSecondaryThread()) {
     if (IsSecThreadActive()) {
