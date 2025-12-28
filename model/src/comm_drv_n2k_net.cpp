@@ -1919,15 +1919,11 @@ bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
   SendSentenceNetwork(out_data);
   m_driver_stats.tx_count += msg->payload.size();
 
-  // Create the internal message for all N2K listeners
+  // Create the internal message  and notify listener
   std::vector<unsigned char> msg_payload = PrepareLogPayload(msg, addr);
   auto msg_one =
       std::make_shared<const Nmea2000Msg>(msg->PGN.pgn, msg_payload, addr);
-  auto msg_all = std::make_shared<const Nmea2000Msg>(1, msg_payload, addr);
-
-  // Notify listeners
   m_listener.Notify(std::move(msg_one));
-  m_listener.Notify(std::move(msg_all));
 
   return true;
 };
