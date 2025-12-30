@@ -169,7 +169,7 @@ SET "CACHE_DIR=%OCPN_DIR%\cache"
 SET "DATA_DIR=%OCPN_DIR%\data"
 set "wxWidgetsURL=https://github.com/wxWidgets/wxWidgets"
 set "wxMajor=v3.2"
-set "wxMinor=8"
+set "wxMinor=9"
 set "wxVER=%wxMajor%.%wxMinor%"
 if [%VisualStudioVersion%]==[16.0] (
   set VCver=16
