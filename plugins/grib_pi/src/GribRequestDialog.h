@@ -243,7 +243,7 @@ private:
   int EstimateFileSize(double *size);
 
   template <typename T>
-  static std::string FormatWithCommas(T value);
+  static std::string FormatPerLocale(T value);
 
   static wxString GetDownloadProgressText(long bytesTransferred,
                                           long bytesTotal);

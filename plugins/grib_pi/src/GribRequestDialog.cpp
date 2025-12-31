@@ -515,9 +515,11 @@ size_t LengthSelToHours(int sel) {
 }
 
 template <typename T>
-std::string GribRequestSetting::FormatWithCommas(T value) {
+std::string GribRequestSetting::FormatPerLocale(T value) {
   std::stringstream ss;
-  ss << std::fixed << value;
+  // use the the user-preferred locale rather than the default "C" locale
+  ss.imbue(std::locale(""));
+  ss << value;  // Output for a US locale would be: 12,345,678 for integers
   return ss.str();
 }
 
@@ -525,12 +527,12 @@ wxString GribRequestSetting::GetDownloadProgressText(long transferredBytes,
                                                      long totalBytes) {
   if (totalBytes > 0) {
     return wxString::Format(_("Downloading... %s kB / %s kB (%li%%)"),
-                            FormatWithCommas(transferredBytes / 1024).c_str(),
-                            FormatWithCommas(totalBytes / 1024).c_str(),
+                            FormatPerLocale(transferredBytes / 1024).c_str(),
+                            FormatPerLocale(totalBytes / 1024).c_str(),
                             (int)((double)transferredBytes / totalBytes * 100));
   } else {
-    return wxString::Format(_("Downloading... %s / ???"),
-                            FormatWithCommas(transferredBytes / 1024).c_str());
+    return wxString::Format(_("Downloading... %s kB / ???"),
+                            FormatPerLocale(transferredBytes / 1024).c_str());
   }
 }
 
