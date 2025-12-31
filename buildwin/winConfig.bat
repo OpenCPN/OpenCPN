@@ -728,10 +728,12 @@ if exist "%wxSourceDir%\.git" (
   if not "[%gitcmd%]"=="[]" (
     pushd "%wxSourceDir%"
     "%gitcmd%" submodule update
-    "%gitcmd%" fetch --recurse-submodules
+    "%gitcmd%" fetch origin %wxVER% --recurse-submodules
     "%gitcmd%" checkout "%wxVER%" --recurse-submodules
     popd
   )
+) else (
+  @echo %wxSourceDir%\.git" not found, skipping git update
 )
 if not exist "%wxDir%" (
   @echo Error: %wxDir% not found...
@@ -752,7 +754,7 @@ if "[%ocpn_cmake%]"=="[1]" (
   if ERRORLEVEL 1 goto :buildErr
   rem If debug is required build it now
   if exist "%OCPN_DIR%\build\.Debug" (
-    cmake --build %wxBuildDir% --config=Debug -- /v:%wxVerb% /m:%NUMBER_OF_PROCESSORS% /p:UseMultiToolTask=true;BuildPassReferences=true;EnableClServerMode=true;wxVendor=14x;wxVersionString=32;wxToolKitDllNameSuffix=_vc_14x ^
+    cmake --build %wxBuildDir% --config=Debug -- /v:%wxVerb% /m:%NUMBER_OF_PROCESSORS% /p:UseMultiToolTask=true;BuildPassReferences=true;EnableClServerMode=true;wxVendor=14x;wxVersionString=32;wxToolKitDllNameSuffix=_vc14x ^
         /l:FileLogger,Microsoft.Build.Engine;logfile="%wxSourceDir%\MSBuild_Debug_WIN32.log"
     if ERRORLEVEL 1 (
       if not [%quiet%]==[Y] pause
@@ -760,7 +762,7 @@ if "[%ocpn_cmake%]"=="[1]" (
     )
   )
   rem Always build config RelWithDebInfo
-  cmake --build %wxBuildDir% --config=RelWithDebInfo -- /v:%wxVerb% /m:%NUMBER_OF_PROCESSORS% /p:UseMultiToolTask=true;BuildPassReferences=true;EnableClServerMode=true;wxVendor=14x;wxVersionString=32;wxToolKitDllNameSuffix=_vc_14x ^
+  cmake --build %wxBuildDir% --config=RelWithDebInfo -- /v:%wxVerb% /m:%NUMBER_OF_PROCESSORS% /p:UseMultiToolTask=true;BuildPassReferences=true;EnableClServerMode=true;wxVendor=14x;wxVersionString=32;wxToolKitDllNameSuffix=_vc14x ^
       /l:FileLogger,Microsoft.Build.Engine;logfile="%wxSourceDir%\MSBuild_RelWithDebInfo_WIN32.log"
   if ERRORLEVEL 1 (
     if not [%quiet%]==[Y] pause
@@ -783,7 +785,7 @@ if "[%ocpn_cmake%]"=="[1]" (
       -property:EnableClServerMode=true ^
       -property:BuildPassReferences=true ^
       -property:"Configuration=DLL Debug";Platform=Win32 ^
-      -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc_14x ^
+      -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
       -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxSourceDir%\MSBuild_DEBUG_WIN32.log"
     if errorlevel 1 (
       echo wxWidgets Debug build [101;93mNOT OK[0m
@@ -801,7 +803,7 @@ if "[%ocpn_cmake%]"=="[1]" (
     -property:EnableClServerMode=true ^
     -property:BuildPassReferences=true ^
     -property:"Configuration=DLL Release";Platform=Win32 ^
-    -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc_14x ^
+    -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
     -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxSourceDir%\MSBuild_RELEASE_WIN32.log"
   if errorlevel 1 (
     echo wxWidgets Release build [101;93mNOT OK[0m
