@@ -514,6 +514,28 @@ size_t LengthSelToHours(int sel) {
   }
 }
 
+template <typename T>
+std::string GribRequestSetting::FormatPerLocale(T value) {
+  std::stringstream ss;
+  // use the the user-preferred locale rather than the default "C" locale
+  ss.imbue(std::locale(""));
+  ss << value;  // Output for a US locale would be: 12,345,678 for integers
+  return ss.str();
+}
+
+wxString GribRequestSetting::GetDownloadProgressText(long transferredBytes,
+                                                     long totalBytes) {
+  if (totalBytes > 0) {
+    return wxString::Format(_("Downloading... %s kB / %s kB (%li%%)"),
+                            FormatPerLocale(transferredBytes / 1024).c_str(),
+                            FormatPerLocale(totalBytes / 1024).c_str(),
+                            (int)((double)transferredBytes / totalBytes * 100));
+  } else {
+    return wxString::Format(_("Downloading... %s kB / ???"),
+                            FormatPerLocale(transferredBytes / 1024).c_str());
+  }
+}
+
 void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
   // std::cout << "onDLEvent  " << ev.getDLEventCondition() << " "
   //           << ev.getDLEventStatus() << std::endl;
@@ -531,48 +553,26 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
       break;
 
     case OCPN_DL_EVENT_TYPE_PROGRESS:
-      if (ev.getTotal() != 0) {
-        switch (m_downloadType) {
-          case GribDownloadType::WORLD:
-            m_staticTextInfo->SetLabelText(
-                wxString::Format(_("Downloading... %li / %li"),
-                                 ev.getTransferred(), ev.getTotal()));
-            break;
-          case GribDownloadType::LOCAL:
-          case GribDownloadType::LOCAL_CATALOG:
-            m_stLocalDownloadInfo->SetLabelText(
-                wxString::Format(_("Downloading... %li / %li"),
-                                 ev.getTransferred(), ev.getTotal()));
-            break;
-          case GribDownloadType::XYGRIB:
-            // Update XyGrib progress gauge
-            m_xygribPanel->m_progress_gauge->SetValue(
-                100 * ev.getTransferred() / ev.getTotal());
-            // Update status text to display information on file size
-            m_xygribPanel->m_status_text->SetLabel(wxString::Format(
-                "%s (%ld kB / %ld kB)",
-                _("Downloading GRIB file").c_str().AsChar(),
-                ev.getTransferred() / 1024, ev.getTotal() / 1024));
-            break;
-          default:
-            break;
-        }
-      } else {
-        if (ev.getTransferred() > 0) {
-          switch (m_downloadType) {
-            case GribDownloadType::WORLD:
-              m_staticTextInfo->SetLabelText(wxString::Format(
-                  _("Downloading... %li / ???"), ev.getTransferred()));
-              break;
-            case GribDownloadType::LOCAL:
-            case GribDownloadType::LOCAL_CATALOG:
-              m_stLocalDownloadInfo->SetLabelText(wxString::Format(
-                  _("Downloading... %li / ???"), ev.getTransferred()));
-              break;
-            default:
-              break;
-          }
-        }
+      switch (m_downloadType) {
+        case GribDownloadType::WORLD:
+          m_staticTextInfo->SetLabelText(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        case GribDownloadType::LOCAL:
+        case GribDownloadType::LOCAL_CATALOG:
+          m_stLocalDownloadInfo->SetLabelText(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        case GribDownloadType::XYGRIB:
+          // Update XyGrib progress gauge
+          m_xygribPanel->m_progress_gauge->SetValue(100 * ev.getTransferred() /
+                                                    ev.getTotal());
+          // Update status text to display information on file size
+          m_xygribPanel->m_status_text->SetLabel(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        default:
+          break;
       }
       wxYieldIfNeeded();
       break;
