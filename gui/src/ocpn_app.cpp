@@ -736,6 +736,9 @@ bool MyApp::OnInit() {
   dc.DrawText("X", 0, 0);
 #endif
 
+  // Inititialize canvas config flag
+  g_canvasConfig = 0;
+
   // Instantiate the global OCPNPlatform class
   g_Platform = new OCPNPlatform;
   g_BasePlatform = g_Platform;
