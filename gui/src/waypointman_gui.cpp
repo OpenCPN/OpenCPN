@@ -93,46 +93,30 @@ void WayPointmanGui::ProcessUserIcons(ocpnStyle::Style *style,
         }
       }
       if (fn.GetExt().Lower() == "svg") {
-        unsigned int w, h;
-        SVGDocumentPixelSize(name, w, h);
-
         // This is to be a mark icon
-        // Make it a nominal max size
-        double bm_size_nom = wxMin(wxMax(w, h), floor(displayDPmm * 20));
-        // We want certain minimal size for the icons, 15px (approx 3mm) be it
-        bm_size_nom = wxMax(bm_size_nom, 15);
-
-        bm_size_nom /= OCPN_GetWinDIPScaleFactor();
-        bm_size_nom *= g_MarkScaleFactorExp;
+        // If needed size is adjusted to something between 3mm and 20mm
+        unsigned int w, h;
+        double IconScaleFactor = 1.0;
+        SVGDocumentPixelSize(name, w, h);
+        wxImage image = LoadSVG(name, w, h, &default_bm).ConvertToImage();
+        if (image.IsOk()) {
+          // Get the 'used' image size
+          wxRect rClip = CropImageOnAlpha(image);
+          int Clip_max = wxMax(rClip.GetWidth(), rClip.GetHeight());
+          if (Clip_max > (displayDPmm * 20))
+            IconScaleFactor = Clip_max / displayDPmm * 20;
+          int Clip_min = wxMin(rClip.GetWidth(), rClip.GetHeight());
+          if (Clip_min < (displayDPmm * 3))
+            IconScaleFactor = Clip_min / displayDPmm * 3;
+        }
+        IconScaleFactor *= g_MarkScaleFactorExp;
 
         MarkIcon *pmi = NULL;
-        double aspect =
-            1.0;  // Use default aspect ratio of 1 if width/height are missing.
-        if (w != 0 && h != 0) {
-          aspect = h / w;
-        }
-
-        // Make the rendered icon square, if necessary
-        if (fabs(aspect - 1.0) > .05) {
-          wxImage image =
-              LoadSVG(name, (int)bm_size_nom, (int)bm_size_nom, &default_bm)
-                  .ConvertToImage();
-
-          if (image.IsOk()) {
-            wxRect rClip = CropImageOnAlpha(image);
-            wxImage imageClip = image.GetSubImage(rClip);
-            imageClip.Rescale(bm_size_nom, bm_size_nom / aspect,
-                              wxIMAGE_QUALITY_BICUBIC);
-            pmi = ProcessIcon(imageClip, iconname, iconname, g_bUserIconsFirst);
-          }
-        } else {
-          const unsigned int bm_size = bm_size_nom;  // horizontal
-          wxImage iconSVG = LoadSVG(name, bm_size, bm_size, &default_bm, false)
-                                .ConvertToImage();
-          wxRect rClip = CropImageOnAlpha(iconSVG);
-          wxImage imageClip = iconSVG.GetSubImage(rClip);
-          pmi = ProcessIcon(iconSVG, iconname, iconname, g_bUserIconsFirst);
-        }
+        wxImage iconSVG =
+            LoadSVG(name, (int)(w * IconScaleFactor),
+                    (int)(h * IconScaleFactor), &default_bm, false)
+                .ConvertToImage();
+        pmi = ProcessIcon(iconSVG, iconname, iconname, g_bUserIconsFirst);
 
         if (pmi) pmi->preScaled = true;
       }
