@@ -194,6 +194,7 @@ extern int g_iWaypointRangeRingsNumber;
 extern int g_iWaypointRangeRingsStepUnits;
 extern int g_iWindSpeedFormat;
 extern int g_iWpt_ScaMin;
+extern int g_iWpt_ScaMax;
 extern int g_lastClientRecth;
 extern int g_lastClientRectw;
 extern int g_lastClientRectx;
