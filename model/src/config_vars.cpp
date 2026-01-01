@@ -237,6 +237,8 @@ int g_WplAction = 0;
 int n_NavMessageShown = 0;
 int sat_watchdog_timeout_ticks = 12;
 int g_AIS_alert_delay = 20;
+int g_console_window_x = -1;
+int g_console_window_y = -1;
 
 long g_maintoolbar_orient = 0L;
 

@@ -193,7 +193,6 @@ public:
 
   void RefreshCanvasOther(ChartCanvas* ccThis);
   void UpdateAllFonts(void);
-  void PositionConsole(void);
   void OnToolLeftClick(wxCommandEvent& event);
   void DoStackUp(ChartCanvas* cc);
   void DoStackDown(ChartCanvas* cc);
