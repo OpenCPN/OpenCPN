@@ -44,6 +44,7 @@
 #include "mbtiles.h"
 #include "pluginmanager.h"
 #include "shapefile_basemap.h"
+#include "chartdb_thread.h"
 
 #ifndef UINT32
 #define UINT32 unsigned int
@@ -52,6 +53,8 @@
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
+
+// WX_DECLARE_STRING_HASH_MAP(int, ChartCollisionsHashMap);
 
 ChartGroupArray *g_pGroupArray;
 
@@ -1064,7 +1067,68 @@ ChartDatabase::ChartDatabase() {
 
   m_ChartTableEntryDummy.Clear();
 
+  Bind(wxEVT_OCPN_CHARTTABLEENTRYTHREAD, &ChartDatabase::OnEvtThread, this);
+
   UpdateChartClassDescriptorArray();
+}
+
+#if 0
+//  Check for duplicates within this directory
+bool collision_found = false;
+ChartCollisionsHashMap::iterator it;
+for (it = collision_map.begin(); it != collision_map.end(); ++it) {
+  if (it->first.IsSameAs(file_name)) {
+    // Two files found with identical file name
+    // For now, just drop this ticket
+    // TODO Make an (expensive) test on file modification times
+    collision_found = true;
+    break;
+  }
+}
+#endif
+
+void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
+  // Capture the completed job tickets, checking for duplicates along the way
+
+  auto ticket = event.GetTicket();
+  wxFileName fn(ticket->m_ChartPath);
+
+  bool collision_found = false;
+  ChartCollisionsHashMap::iterator it;
+  for (it = m_full_collision_map.begin(); it != m_full_collision_map.end();
+       ++it) {
+    if (it->first.IsSameAs(fn.GetFullName())) {
+      // Two files found with identical file name
+      // For now, just drop this ticket
+      // TODO Make an (expensive) test on file modification times
+      collision_found = true;
+      break;
+    }
+  }
+
+  if (!collision_found) {
+    m_ticket_vector.push_back(event.GetTicket());
+    m_full_collision_map[fn.GetFullName()] = 1;
+  }
+
+  int remaining = --m_jobsRemaining;
+  if (remaining == 0) {
+    m_pool.Shutdown();
+
+    // Now m_ticket_vector is populated with verified tickets
+    // for all specified directories.
+
+    // Add the CTEs from the tickets to the active table
+    // NB: The active_chartTable was cleared by the Update() method
+    // before this point
+
+    // for (auto &ticket_valid : m_ticket_vector) {
+    // active_chartTable.Add(entry);
+    //}
+
+    // TODO Do not forget to clear m_ticket_vector after use, to release
+    // references to tickets.
+  }
 }
 
 void ChartDatabase::UpdateChartClassDescriptorArray() {
@@ -1504,6 +1568,9 @@ wxString findGshhgDirectory(const wxString &directory) {
 // ----------------------------------------------------------------------------
 bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
                            wxGenericProgressDialog *pprog) {
+  m_ticket_vector.clear();
+  m_full_collision_map.clear();
+
   m_dir_array = dir_array;
 
   bValid = false;  // database is not useable right now...
@@ -1562,13 +1629,14 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
     TraverseDirAndAddCharts(dir_info, pprog, dir_magic, lbForce);
 
     //  Update the dir_list entry, even if the magic values are the same
-
     dir_info.magic_number = dir_magic;
     dir_array.RemoveAt(j);
     dir_array.Insert(dir_info, j);
 
     m_chartDirs.Add(dir_info.fullpath);
   }  // for
+
+#if 0  //  TODO On thread pool processing
 
   for (unsigned int i = 0; i < active_chartTable.GetCount(); i++) {
     if (!active_chartTable[i].GetbValid()) {
@@ -1588,6 +1656,8 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 
   bValid = true;
   m_b_busy = false;
+#endif
+
   return true;
 }
 
@@ -1969,8 +2039,7 @@ one_file) find_unique = false;
 //  if target chart is already in table, mark it valid and skip chart processing
 // ----------------------------------------------------------------------------
 
-WX_DECLARE_STRING_HASH_MAP(int, ChartCollisionsHashMap);
-
+#if 0
 int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
                                          ChartClassDescriptor &chart_desc,
                                          wxGenericProgressDialog *pprog) {
@@ -2240,6 +2309,336 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   m_nentries = active_chartTable.GetCount();
 
   return nDirEntry;
+}
+#endif
+
+int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
+                                         ChartClassDescriptor &chart_desc,
+                                         wxGenericProgressDialog *pprog) {
+  //  TODO MOVE THIS....Check chart type
+  LoadS57();
+
+  wxString msg("Searching directory: ");
+  msg += dir_name_base;
+  msg += " for ";
+  msg += chart_desc.m_search_mask;
+  wxLogMessage(msg);
+
+  wxString dir_name = dir_name_base;
+
+#ifdef __ANDROID__
+  dir_name = wxString(dir_name_base.mb_str(wxConvUTF8));  // android
+#endif
+
+  if (!wxDir::Exists(dir_name)) return 0;
+
+  wxString filespec = chart_desc.m_search_mask.Upper();
+  wxString lowerFileSpec = chart_desc.m_search_mask.Lower();
+  wxString filespecXZ = filespec + ".xz";
+  wxString lowerFileSpecXZ = lowerFileSpec + ".xz";
+  wxString filename;
+
+  //    Count the files
+  wxArrayString FileList;
+  int gaf_flags = wxDIR_DEFAULT;  // as default, recurse into subdirs
+
+  //    Here is an optimization for MSW/cm93 especially
+  //    If this directory seems to be a cm93, and we are not explicitely looking
+  //    for cm93, then abort Otherwise, we will be looking thru entire cm93 tree
+  //    for non-existent .KAP files, etc.
+
+  bool b_found_cm93 = false;
+  bool b_cm93 = Check_CM93_Structure(dir_name);
+  if (b_cm93) {
+    if (filespec != "00300000.A")
+      return false;
+    else {
+      filespec = dir_name;
+      b_found_cm93 = true;
+    }
+  }
+
+  if (!b_found_cm93) {
+    wxDir dir(dir_name);
+    dir.GetAllFiles(dir_name, &FileList, filespec, gaf_flags);
+
+#ifdef __ANDROID__
+    if (!FileList.GetCount()) {
+      wxArrayString afl = androidTraverseDir(dir_name, filespec);
+      for (wxArrayString::const_iterator item = afl.begin(); item != afl.end();
+           item++)
+        FileList.Add(*item);
+    }
+#endif
+
+#ifndef __WXMSW__
+    if (filespec != lowerFileSpec) {
+      // add lowercase filespec files too
+      wxArrayString lowerFileList;
+      dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
+
+#ifdef __ANDROID__
+      if (!lowerFileList.GetCount()) {
+        wxArrayString afl = androidTraverseDir(dir_name, lowerFileSpec);
+        for (wxArrayString::const_iterator item = afl.begin();
+             item != afl.end(); item++)
+          lowerFileList.Add(*item);
+      }
+#endif
+
+      for (wxArrayString::const_iterator item = lowerFileList.begin();
+           item != lowerFileList.end(); item++)
+        FileList.Add(*item);
+    }
+#endif
+
+#ifdef OCPN_USE_LZMA
+    // add xz compressed files;
+    dir.GetAllFiles(dir_name, &FileList, filespecXZ, gaf_flags);
+    dir.GetAllFiles(dir_name, &FileList, lowerFileSpecXZ, gaf_flags);
+#endif
+
+    FileList.Sort();  // Sorted processing order makes the progress bar more
+                      // meaningful to the user.
+  } else {            // This is a cm93 dataset, specified as yada/yada/cm93
+    wxString dir_plus = dir_name;
+    dir_plus += wxFileName::GetPathSeparator();
+    FileList.Add(dir_plus);
+  }
+
+  int nFile = FileList.GetCount();
+
+  if (!nFile) return false;
+
+  int nDirEntry = 0;
+
+  //    Check to see if there are any charts in the DB which refer to this
+  //    directory If none at all, there is no need to scan the DB for fullpath
+  //    match of each potential addition and bthis_dir_in_dB is false.
+  bool bthis_dir_in_dB = IsChartDirUsed(dir_name);
+
+  if (pprog) pprog->SetTitle(_("OpenCPN Chart Add...."));
+
+  // build a hash table based on filename (without directory prefix) of
+  // the chart to fast detect identical charts
+  ChartCollisionsHashMap collision_map;
+  //  int nEntry = active_chartTable.GetCount();
+  //  for (int i = 0; i < nEntry; i++) {
+  //    wxString table_file_name = active_chartTable[i].GetFullSystemPath();
+  //    wxFileName table_file(table_file_name);
+  //    collision_map[table_file.GetFullName()] = i;
+  //  }
+
+  int nFileProgressQuantum = wxMax(nFile / 100, 2);
+  double rFileProgressRatio = 100.0 / wxMax(nFile, 1);
+
+  // Capture a vector of pending thread tickets for this directory
+  std::vector<std::shared_ptr<ChartTableEntryJobTicket>> ticket_vector;
+
+  for (int ifile = 0; ifile < nFile; ifile++) {
+    wxFileName file(FileList[ifile]);
+    wxString full_path = file.GetFullPath();
+    wxString file_name = file.GetFullName();
+    wxString utf8_path = full_path;
+
+#ifdef __ANDROID__
+    // The full path (full_name) is the broken Android files system
+    // interpretation, which does not display well onscreen. So, here we
+    // reconstruct a full path spec in UTF-8 encoding for later use in string
+    // displays. This utf-8 string will be used to construct the chart database
+    // entry if required.
+    wxFileName fnbase(dir_name_base);
+    int nDirs = fnbase.GetDirCount();
+
+    wxFileName file_target(FileList[ifile]);
+
+    for (int i = 0; i < nDirs + 1;
+         i++)  // strip off the erroneous intial directories
+      file_target.RemoveDir(0);
+
+    wxString leftover_path = file_target.GetFullPath();
+    utf8_path =
+        dir_name_base + leftover_path;  // reconstruct a fully utf-8 version
+#endif
+
+    //    Validate the file name again, considering MSW's semi-random treatment
+    //    of case....
+    // TODO...something fishy here - may need to normalize saved name?
+    if (!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) &&
+        !file_name.Matches(lowerFileSpecXZ) && !file_name.Matches(filespecXZ) &&
+        !b_found_cm93) {
+      // wxLogMessage("FileSpec test failed for:" + file_name);
+      continue;
+    }
+
+    if (pprog && ((ifile % nFileProgressQuantum) == 0))
+      pprog->Update(static_cast<int>(ifile * rFileProgressRatio), utf8_path);
+
+    ChartTableEntry *pnewChart = NULL;
+    bool bAddFinal = true;
+    int b_add_msg = 0;
+
+#if 0
+    // Check the collisions map looking for duplicates in directories already
+    // processed, and choosing the right one.
+//    ChartCollisionsHashMap::const_iterator collision_ptr =
+//        collision_map.find(file_name);
+//    bool collision = (collision_ptr != collision_map.end());
+//    bool file_path_is_same = false;
+//    bool file_time_is_same = false;
+//    ChartTableEntry *pEntry = NULL;
+//    wxString table_file_name;
+
+
+    //  Allow multiple cm93 chart sets #4217
+    if (b_found_cm93) collision = false;
+
+    if (collision) {
+      pEntry = &active_chartTable[collision_ptr->second];
+      table_file_name = pEntry->GetFullSystemPath();
+      file_path_is_same =
+          bthis_dir_in_dB && full_name.IsSameAs(table_file_name);
+
+      // If the chart full file paths are exactly the same, select the newer
+      // one.
+      if (file_path_is_same) {
+        b_add_msg++;
+
+        //    Check the file modification time
+        time_t t_oldFile = pEntry->GetFileTime();
+        time_t t_newFile = file.GetModificationTime().GetTicks();
+
+        if (t_newFile <= t_oldFile) {
+          file_time_is_same = true;
+          bAddFinal = false;
+          pEntry->SetValid(true);
+        } else {
+          bAddFinal = true;
+          pEntry->SetValid(false);
+        }
+      }
+    }
+#endif
+
+    //  Check for duplicates within this directory
+    bool collision_found = false;
+    ChartCollisionsHashMap::iterator it;
+    for (it = collision_map.begin(); it != collision_map.end(); ++it) {
+      if (it->first.IsSameAs(file_name)) {
+        // Two files found with identical file name
+        // For now, just drop this ticket
+        // TODO Make an (expensive) test on file modification times
+        collision_found = true;
+        break;
+      }
+    }
+
+    if (!collision_found) {
+      // Create a ticket for this chart
+      auto ticket = std::make_shared<ChartTableEntryJobTicket>();
+      ticket->m_ChartPath = full_path;
+      ticket->m_ChartPathUTF8 = full_path;
+      ticket->chart_desc = chart_desc;
+
+      ticket_vector.push_back(ticket);
+      collision_map[file_name] = ifile;
+    }
+
+  }  // the big loop
+
+#if 0  // Cannot happen
+      bool file_path_is_same = ticket_found->m_ChartPath.IsSameAs(ticket->m_ChartPath);
+      if (file_path_is_same) {
+        //    Check the file modification time
+        time_t t_oldFile = pEntry->GetFileTime();
+        time_t t_newFile = file.GetModificationTime().GetTicks();
+
+        if (t_newFile <= t_oldFile) {
+          file_time_is_same = true;
+          bAddFinal = false;
+          pEntry->SetValid(true);
+        } else {
+          bAddFinal = true;
+          pEntry->SetValid(false);
+        }
+      }
+#endif
+
+  // load the thread pool from the prepared array
+  m_jobsRemaining = ticket_vector.size();
+
+  // if needed, start N worker threads once
+  if (m_pool.GetWorkerCount() == 0) {
+    const int workerCount = 1;
+    for (int i = 0; i < workerCount; ++i) {
+      (new PoolWorkerThread(m_pool, this))->Run();
+      m_pool.AddWorker();
+    }
+  }
+
+  // Enqueue jobs
+  for (auto &ticket : ticket_vector) {
+    m_pool.Push(ticket);
+  }
+
+  // Tickets queued, wait for completion events
+  return nDirEntry;
+
+#if 0
+// Move this to after thread completion
+    if (!collision || !pnewChart) {
+      // Do nothing.
+    } else if (file_path_is_same) {
+      wxLogMessage(wxString::Format(
+          "   Replacing older chart file of same path: %s", msg_fn.c_str()));
+    } else if (!file_time_is_same) {
+      //  Look at the chart file name (without directory prefix) for a further
+      //  check for duplicates This catches the case in which the "same" chart
+      //  is in different locations, and one may be newer than the other.
+      b_add_msg++;
+
+      if (pnewChart->IsEarlierThan(*pEntry)) {
+        wxFileName table_file(table_file_name);
+        //    Make sure the compare file actually exists
+        if (table_file.IsFileReadable()) {
+          pEntry->SetValid(true);
+          bAddFinal = false;
+          wxLogMessage(
+              wxString::Format("   Retaining newer chart file of same name: %s",
+                               msg_fn.c_str()));
+        }
+      } else if (pnewChart->IsEqualTo(*pEntry)) {
+        //    The file names (without dir prefix) are identical,
+        //    and the mod times are identical
+        //    Presume that this is intentional, in order to facilitate
+        //    having the same chart in multiple groups.
+        //    So, add this chart.
+        bAddFinal = true;
+      } else {
+        pEntry->SetValid(false);
+        bAddFinal = true;
+        wxLogMessage(wxString::Format(
+            "   Replacing older chart file of same name: %s", msg_fn.c_str()));
+      }
+    }
+
+    if (bAddFinal) {
+
+      if (0 == b_add_msg) {
+        wxLogMessage(
+            wxString::Format("   Adding chart file: %s", msg_fn.c_str()));
+      }
+      collision_map[file_name] = active_chartTable.GetCount();
+      active_chartTable.Add(pnewChart);
+      nDirEntry++;
+    } else {
+      if (pnewChart) delete pnewChart;
+      //                    wxLogMessage(wxString::Format("   Not adding
+      //                    chart file: %s", msg_fn.c_str()));
+    }
+
+  m_nentries = active_chartTable.GetCount();
+#endif
 }
 
 bool ChartDatabase::AddChart(wxString &chartfilename,

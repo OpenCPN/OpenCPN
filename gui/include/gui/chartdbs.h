@@ -28,12 +28,15 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <atomic>
 
 #include <wx/progdlg.h>
+#include <wx/thread.h>
 
 #include "model/ocpn_types.h"
 #include "bbox.h"
 #include "LLRegion.h"
+#include "chartdb_thread.h"
 
 class ChartGroupArray;                 // forward
 extern ChartGroupArray *g_pGroupArray; /**< Global instance */
@@ -47,6 +50,7 @@ public:
 };
 
 WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
+WX_DECLARE_STRING_HASH_MAP(int, ChartCollisionsHashMap);
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -284,35 +288,25 @@ private:
   std::vector<std::vector<float>> m_reducedAuxPlyPointsVector;
 };
 
-enum { BUILTIN_DESCRIPTOR = 0, PLUGIN_DESCRIPTOR };
-
-class ChartClassDescriptor {
-public:
-  ChartClassDescriptor() {};
-  virtual ~ChartClassDescriptor() {}
-
-  ChartClassDescriptor(wxString classn, wxString mask, int type)
-      : m_class_name(classn), m_search_mask(mask), m_descriptor_type(type) {};
-
-  wxString m_class_name;
-  wxString m_search_mask;
-  int m_descriptor_type;
-};
-
 ///////////////////////////////////////////////////////////////////////
 // Chart Database
 ///////////////////////////////////////////////////////////////////////
 
 WX_DECLARE_OBJARRAY(ChartTableEntry, ChartTable);
 
+#define CTE_THREAD_MAX 1
+
 /**
  * Manages a database of charts, including reading, writing, and querying chart
  * information.
  */
-class ChartDatabase {
+class ChartDatabase : public wxEvtHandler {
 public:
   ChartDatabase();
   virtual ~ChartDatabase() {};
+
+  void OnEvtThread(OCPN_ChartTableEntryThreadEvent &event);
+  void OnAnyEvent(wxEvent &event);
 
   /**
    * Creates a new chart database from a list of directories.
@@ -382,14 +376,15 @@ public:
 
   bool IsBusy() { return m_b_busy; }
 
+  ChartTableEntry *CreateChartTableEntry(const wxString &filePath,
+                                         wxString &utf8Path,
+                                         ChartClassDescriptor &chart_desc);
+
 protected:
   virtual ChartBase *GetChart(const wxChar *theFilePath,
                               ChartClassDescriptor &chart_desc) const;
   int AddChartDirectory(const wxString &theDir, bool bshow_prog);
   void SetValid(bool valid) { bValid = valid; }
-  ChartTableEntry *CreateChartTableEntry(const wxString &filePath,
-                                         wxString &utf8Path,
-                                         ChartClassDescriptor &chart_desc);
 
   std::vector<ChartClassDescriptor> m_ChartClassDescriptorArray;
   ArrayOfCDI m_dir_array;
@@ -429,6 +424,10 @@ private:
   int m_nentries;
 
   LLBBox m_dummy_bbox;
+  std::atomic<int> m_jobsRemaining{0};
+  JobQueueCTE m_pool;
+  std::vector<std::shared_ptr<ChartTableEntryJobTicket>> m_ticket_vector;
+  ChartCollisionsHashMap m_full_collision_map;
 };
 
 //-------------------------------------------------------------------------------------------

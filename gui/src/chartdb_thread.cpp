@@ -30,13 +30,9 @@
 
 #include "config.h"
 
-#include "mipmap/mipmap.h"
-#include "model/base_platform.h"
-#include "model/config_vars.h"
-#include "model/gui_vars.h"
-
 #include "chartbase.h"
 #include "chartdb.h"
+#include "chartdbs.h"
 #include "chartimg.h"
 #include "chcanv.h"
 #include "dychart.h"
@@ -50,3 +46,22 @@
 #include "squish.h"
 #include "viewport.h"
 #include "chartdb_thread.h"
+
+wxDEFINE_EVENT(wxEVT_OCPN_CHARTTABLEENTRYTHREAD,
+               OCPN_ChartTableEntryThreadEvent);
+
+// Static globals
+extern ChartDB *ChartData;
+
+//  ChartTableEntryJobTicket implementation
+bool ChartTableEntryJobTicket::DoJob() {
+  ChartDatabase *db = dynamic_cast<ChartDatabase *>(ChartData);
+  ChartTableEntry *pnewChartTableEntry =
+      db->CreateChartTableEntry(m_ChartPath, m_ChartPath, chart_desc);
+  if (pnewChartTableEntry) {
+    std::shared_ptr<ChartTableEntry> safe_ptr(pnewChartTableEntry);
+    m_chart_table_entry = safe_ptr;  // class member
+  }
+
+  return true;
+}

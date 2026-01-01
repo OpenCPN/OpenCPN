@@ -4459,6 +4459,7 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
   // The Update() function may set gWorldMapLocation if at least one of the
   // directories contains GSHHS files.
   ChartData->Update(DirArray, b_force, pprog);
+#if 0
   ChartData->SaveBinary(ChartListFileName);
   wxLogMessage("Finished chart database Update");
   wxLogMessage("   ");
@@ -4482,7 +4483,6 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 
   delete pprog;
 
-  AbstractPlatform::HideBusySpinner();
 
   pConfig->UpdateChartDirs(DirArray);
 
@@ -4496,6 +4496,8 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
     if (g_COGAvgSec > 0) period_ms = g_COGAvgSec * 1000;
     FrameCOGTimer.Start(period_ms, wxTIMER_CONTINUOUS);
   }
+#endif
+  AbstractPlatform::HideBusySpinner();
   return true;
 }
 
