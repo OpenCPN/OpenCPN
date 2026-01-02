@@ -37,6 +37,7 @@
 #include "gui_lib.h"
 #include "mark_info.h"
 #include "navutil.h"
+#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 #include "print_dialog.h"
 #include "routemanagerdialog.h"

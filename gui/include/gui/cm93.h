@@ -27,7 +27,6 @@
 #include <wx/listctrl.h>
 #include <wx/spinctrl.h>
 
-#include "chcanv.h"
 #include "model/cutil.h"  // for types
 #include "ocpn_region.h"
 #include "poly_math.h"

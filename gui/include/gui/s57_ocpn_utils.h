@@ -26,7 +26,6 @@
 #define S57_OCPN_UTILS_H_GUARD_
 
 #include "chartimg.h"
-#include "chcanv.h"
 #include "ocpn_region.h"
 #include "ocpndc.h"
 #include "s57chart.h"

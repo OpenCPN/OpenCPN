@@ -14,14 +14,15 @@ SET(SRC
     src/DepthFont.cpp
     src/mygeom.cpp
     src/color_types.h
+    src/s52_plib_utils.h
+    src/s52_plib_utils.cpp
 )
 if (OCPN_USE_GL)
     SET(SRC ${SRC} src/Cs52_shaders.cpp)
 endif()
 
 if (NOT wxWidgets_INCLUDE_DIRS)
-    include(SimpleWxConfig)
-    SimpleWxConfig()
+  message(ERROR "required wxWidgets setup not done")
 endif ()
 
 add_library(S52PLIB STATIC ${SRC})
@@ -33,12 +34,6 @@ endif ()
 
 target_include_directories(S52PLIB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# Fixme (#3527) Dependency on main opencpn
-target_include_directories(
-  S52PLIB PRIVATE
-  ${PROJECT_SOURCE_DIR}/model/include
-  ${PROJECT_SOURCE_DIR}/include
-)
 if (QT_ANDROID)
   target_include_directories(S52PLIB PRIVATE ${CMAKE_SOURCE_DIR}/android)
 endif ()

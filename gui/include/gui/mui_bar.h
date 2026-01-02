@@ -27,8 +27,6 @@
 #include <cstdint>
 
 #include "canvas_options.h"
-#include "chcanv.h"
-#include "ocpn_frame.h"
 
 //----------------------------------------------------------------------------
 //   constants

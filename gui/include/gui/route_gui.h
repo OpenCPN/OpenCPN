@@ -33,7 +33,6 @@
 #include "model/route.h"
 
 #include "bbox.h"
-#include "chcanv.h"
 #include "ocpndc.h"
 #include "send_to_gps_dlg.h"
 #include "viewport.h"

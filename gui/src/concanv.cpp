@@ -44,7 +44,7 @@
 #include "font_mgr.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
+#include "ocpn_frame.h"  //FIXME (dave)  Only needed for colorscheme stuff
 #include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "styles.h"
