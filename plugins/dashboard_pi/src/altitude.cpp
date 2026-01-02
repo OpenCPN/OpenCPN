@@ -1,12 +1,12 @@
 /******************************************************************************
- * $Id: altitude.cpp, v0.2 $
+ * $Id: altitude.cpp, v0.3 $
  *
  * Project:  OpenCPN
  * Purpose:  Dashboard Plugin, display altitude trace
  * Author:   derived from Jean-Eudes Onfray's depth.cpp by Andreas Merz
  *
  * Comment:  since not every vessel is always on sea level, I found it
- *           sometimes intersting to observe the GPS altitude information.
+ *           sometimes interesting to observe the GPS altitude information.
  *           It can be extracted from the GGA nmea message.
  *
  ***************************************************************************
@@ -94,7 +94,7 @@ void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
   if (st == OCPN_DBP_STC_ALTI) {
     m_Altitude = std::isnan(data) ? 0.0 : data;
     // m_Altitude = m_Altitude*10.0 +1000;       // inject fake testdata
-    // printf("Altitude = %3.3f\n", m_Altitude); // debug output
+    // printf("Altitude = %3.3f  # %6d\n", m_Altitude, ++m_cntValid);  // debug
 
     // save FLOPS by just accumulating the FIFO changes
     m_meanAltitude += (m_Altitude - m_ArrayAltitude[0]) / ALTITUDE_RECORD_COUNT;
@@ -106,7 +106,7 @@ void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
     }
     m_ArrayAltitude[ALTITUDE_RECORD_COUNT - 1] = m_Altitude;
     m_AltitudeUnit = unit;
-  } else if (st == OCPN_DBP_STC_ATMP) {
+  } else if (st == OCPN_DBP_STC_ATMP) {  // Air Temperature
     if (!std::isnan(data)) {
       m_Temp = wxString::Format(_T("%.1f"), data) + DEGREE_SIGN + unit;
     } else {
@@ -230,9 +230,11 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   }
 
   // calculate 1st and 2nd Moments
-  double varAltitude =
-      m_sum2Altitude / (ALTITUDE_RECORD_COUNT - 1);  // estimator for variance
+  double varAltitude = m_sum2Altitude / ALTITUDE_RECORD_COUNT;
   varAltitude -= m_meanAltitude * m_meanAltitude;
+  // estimator bias correction
+  varAltitude *= (ALTITUDE_RECORD_COUNT / (ALTITUDE_RECORD_COUNT - 1));
+  // printf("varAltitude = %5.3f\n", varAltitude);  // debug output
   if (varAltitude < 0.0) varAltitude = 0.0;  // avoid nan when calling sqrt().
 
   // do AGC to adjust scaling
