@@ -286,6 +286,7 @@ static void LaunchLocalHelp() {
 #endif
 }
 
+// Helper to create menu label + hotkey string when registering menus
 static wxString _menuText(wxString name, wxString shortcut) {
   wxString menutext;
   menutext << name;
@@ -530,7 +531,7 @@ static NmeaLog *GetDataMonitor() {
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
                  RestServer &rest_server, wxAuiDefaultDockArt *pauidockart,
                  OpenFileFunc open_gpx_file)
-    : wxFrame(nullptr, -1, title, pos, size, kFrameStyle, kTopLevelWindowName),
+    : AbstractTopFrame(nullptr, title, pos, size, kFrameStyle),
       m_connections_dlg(nullptr),
       m_data_monitor(new DataMonitor(this)),
       m_pauidockart(pauidockart),
@@ -4535,6 +4536,18 @@ void MyFrame::ToggleQuiltMode(ChartCanvas *cc) {
   }
 }
 
+void MyFrame::DoStackDown(AbstractChartCanvas *arg) {
+  auto *cc = dynamic_cast<ChartCanvas *>(arg);
+  assert(cc);
+  DoStackDelta(cc, -1);
+}
+
+void MyFrame::DoStackUp(AbstractChartCanvas *arg) {
+  auto *cc = dynamic_cast<ChartCanvas *>(arg);
+  assert(cc);
+  DoStackDelta(cc, 1);
+}
+
 void MyFrame::DoStackDown(ChartCanvas *cc) { DoStackDelta(cc, -1); }
 
 void MyFrame::DoStackUp(ChartCanvas *cc) { DoStackDelta(cc, 1); }
@@ -7166,7 +7179,6 @@ void SetSystemColors(ColorScheme cs) {  //---------------
 }
 
 //      Console supporting printf functionality for Windows GUI app
-
 #ifdef __WXMSW__
 static const WORD MAX_CONSOLE_LINES =
     500;  // maximum mumber of lines the output console should have

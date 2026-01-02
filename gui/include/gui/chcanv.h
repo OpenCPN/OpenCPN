@@ -39,6 +39,7 @@
 #include "model/route_point.h"
 #include "model/select_item.h"
 
+#include "abstract_chart_canv.h"
 #include "bbox.h"
 #include "canvas_menu.h"
 #include "chartdb.h"
@@ -47,6 +48,7 @@
 #include "compass.h"
 #include "emboss_data.h"
 #include "gshhs.h"
+#include "gl_chart_canvas.h"
 #include "gui_lib.h"
 #include "idx_entry.h"
 #include "mui_bar.h"
@@ -168,12 +170,34 @@ extern void pupHandler_PasteTrack();  // forward
  * window events, translating them into appropriate chart operations like
  * panning, zooming, and object manipulation.
  */
-class ChartCanvas : public wxWindow {
+class ChartCanvas : public AbstractChartCanvas {
   friend class glChartCanvas;
 
 public:
   ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log);
   ~ChartCanvas();
+
+  virtual void ReloadVP(bool b_adjust = true) override;
+
+  /** Return ViewPort scale factor, in physical pixels per meter. */
+  float GetVPScale() override { return GetVP().view_scale_ppm; }
+
+  bool Show(bool show = true) override { return wxWindow::Show(show); }
+  double GetCanvasRangeMeters() override;
+  int GetENCDisplayCategory() override { return m_encDisplayCategory; }
+  void SetCanvasRangeMeters(double range) override;
+  wxBitmap *GetScratchBitmap() const override { return pscratch_bm; }
+  void ResetGridFont() override { m_pgridFont = nullptr; }
+  void ResetGlGridFont() override;
+  void EnablePaint(bool b_enable) override;
+  bool CanAccelerateGlPanning() override;
+  void SetupGlCompression() override;
+
+  void TriggerDeferredFocus() override;
+  void Refresh(bool eraseBackground = true,
+               const wxRect *rect = nullptr) override;
+  wxWindow *GetWindow() override { return this; }
+  double GetScaleValue() override { return m_scaleValue; }
 
   void SetupGlCanvas();
 
@@ -182,11 +206,9 @@ public:
   void OnKeyUp(wxKeyEvent &event);
   void OnKeyChar(wxKeyEvent &event);
   void OnPaint(wxPaintEvent &event);
+  void OnToolLeftClick(wxCommandEvent &event);
   void PaintCleanup();
   void Scroll(int dx, int dy);
-  void ResetGridFont() { m_pgridFont = nullptr; }
-
-  void OnToolLeftClick(wxCommandEvent &event);
 
   bool MouseEventOverlayWindows(wxMouseEvent &event);
   bool MouseEventChartBar(wxMouseEvent &event);
@@ -237,13 +259,7 @@ public:
 
   bool SetUserOwnship();
 
-  double GetCanvasRangeMeters();
-  void SetCanvasRangeMeters(double range);
-
-  void EnablePaint(bool b_enable);
   bool SetCursor(const wxCursor &c) override;
-  void Refresh(bool eraseBackground = true,
-               const wxRect *rect = nullptr) override;
   void Update() override;
 
   void LostMouseCapture(wxMouseCaptureLostEvent &event);
@@ -298,7 +314,6 @@ public:
   bool SetViewPoint(double lat, double lon, double scale_ppm, double skew,
                     double rotation, int projection = 0, bool b_adjust = true,
                     bool b_refresh = true);
-  void ReloadVP(bool b_adjust = true);
   void LoadVP(ViewPort &vp, bool b_adjust = true);
 
   ChartStack *GetpCurrentStack() { return m_pCurrentStack; }
@@ -311,7 +326,6 @@ public:
 
   void UpdateCanvasS52PLIBConfig();
 
-  void TriggerDeferredFocus();
   void OnDeferredFocusTimerEvent(wxTimerEvent &event);
   void OnRouteFinishTimerEvent(wxTimerEvent &event);
 
@@ -483,8 +497,6 @@ public:
   //    Accessors
   int GetCanvasWidth() { return m_canvas_width; }
   int GetCanvasHeight() { return m_canvas_height; }
-  /** Return the ViewPort scale factor, in physical pixels per meter. */
-  float GetVPScale() { return GetVP().view_scale_ppm; }
   /** Return the ViewPort chart scale denominator (e.g., 50000 for a 1:50000
    * scale). */
   float GetVPChartScale() { return GetVP().chart_scale; }
@@ -602,7 +614,6 @@ public:
   void ToggleCanvasQuiltMode(void);
 
   wxString GetScaleText() { return m_scaleText; }
-  double GetScaleValue() { return m_scaleValue; }
   bool GetShowAIS() { return m_bShowAIS; }
   void SetShowAIS(bool show);
   bool GetAttenAIS() { return m_bShowAISScaled; }
@@ -627,7 +638,6 @@ public:
   bool GetShowENCLights() { return m_encShowLights; }
   void SetShowENCLights(bool show);
 
-  int GetENCDisplayCategory() { return m_encDisplayCategory; }
   void SetENCDisplayCategory(int category);
 
   bool GetShowENCAnchor() { return m_encShowAnchor; }
@@ -760,7 +770,6 @@ public:
   wxCursor *pCursorCross;
   wxCursor *pPlugIn_Cursor;
   TCWin *pCwin;
-  wxBitmap *pscratch_bm;
   bool m_brepaint_piano;
   /**
    * The longitude in degrees corresponding to the most recently processed
@@ -826,7 +835,7 @@ public:
   bool m_bAppendingRoute;
   int m_nMeasureState;
   Route *m_pMeasureRoute;
-  MyFrame *parent_frame;
+  wxWindow *parent_frame;
   CanvasMenuHandler *m_canvasMenu;
   int GetMinAvailableGshhgQuality() {
     return pWorldBackgroundChart->GetMinAvailableQuality();
@@ -914,6 +923,7 @@ private:
   wxPoint m_menuPos;
   bool m_inLongPress;
 
+  wxBitmap *pscratch_bm;
   ViewPort VPoint;
   void PositionConsole(void);
   wxWindow *m_nmea_log;
