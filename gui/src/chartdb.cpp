@@ -61,6 +61,7 @@
 
 #include "s57chart.h"
 #include "cm93.h"
+#include "user_colors.h"
 
 extern ColorScheme GetColorScheme();  // library dependency
 
@@ -1288,7 +1289,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
         wxLogMessage(wxString::Format("Initializing Chart %s", msg_fn.c_str()));
 
         ir = Ch->Init(ChartFullPath, init_flag);  // using the passed flag
-        Ch->SetColorScheme(/*pParent->*/ GetColorScheme());
+        Ch->SetColorScheme(user_colors::GetColorScheme());
       } else {
         wxLogMessage(wxString::Format("   No PLIB, Skipping vector chart  %s",
                                       msg_fn.c_str()));

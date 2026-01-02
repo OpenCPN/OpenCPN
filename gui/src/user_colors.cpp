@@ -6,7 +6,11 @@
 #include "color_handler.h"
 #include "s52plib.h"
 
+ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+
 namespace user_colors {
+
+ColorScheme GetColorScheme() { return global_color_scheme; }
 
 static const char *const usercolors[] = {
     //======================================================================

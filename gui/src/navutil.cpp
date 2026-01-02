@@ -103,6 +103,7 @@
 #include "s52utils.h"
 #include "snd_config.h"
 #include "styles.h"
+#include "user_colors.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
@@ -2136,7 +2137,8 @@ void MyConfig::UpdateSettings() {
 
   //    Various Options
   SetPath("/Settings/GlobalState");
-  if (!g_bInlandEcdis) Write("nColorScheme", (int)gFrame->GetColorScheme());
+  if (!g_bInlandEcdis)
+    Write("nColorScheme", (int)user_colors::GetColorScheme());
 
   Write("FrameWinX", g_nframewin_x);
   Write("FrameWinY", g_nframewin_y);
