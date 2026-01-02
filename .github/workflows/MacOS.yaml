@@ -48,6 +48,7 @@ jobs:
       wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
       pkg_mod: ${{ matrix.pkg_mod }}
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.MACOSX_DEPLOYMENT_TARGET }}
+      DEPS_BUNDLE_REPO: https://dl.cloudsmith.io/public/nohal/opencpn-dependencies/raw/versions/OpenCPN-5.12.4
 
     # Use bash as shell
     defaults:
