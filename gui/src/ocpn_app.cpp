@@ -172,6 +172,7 @@
 #include "thumbwin.h"
 #include "track_prop_dlg.h"
 #include "udev_rule_mgr.h"
+#include "user_colors.h"
 #include "wiz_ui.h"
 
 #ifdef ocpnUSE_GL
@@ -1366,7 +1367,7 @@ void MyApp::BuildMainFrame() {
   int cx, cy, cw, ch;
   ::wxClientDisplayRect(&cx, &cy, &cw, &ch);
 
-  InitializeUserColors();
+  user_colors::Initialize();
 
   if ((g_nframewin_x > 100) && (g_nframewin_y > 100) && (g_nframewin_x <= cw) &&
       (g_nframewin_y <= ch))
@@ -1827,7 +1828,7 @@ int MyApp::OnExit() {
 
   navutil::DeinitGlobals();
 
-  DeInitializeUserColors();
+  user_colors::DeInitialize();
 
   delete pLayerList;
 
