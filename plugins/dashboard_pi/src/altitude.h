@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: altitude.h, v0.1 $
+ * $Id: altitude.h, v0.3 $
  *
  * Project:  OpenCPN
  * Purpose:  Dashboard Plugin, display altitude trace
@@ -66,6 +66,7 @@ protected:
   double m_Altitude;             // the actual measurement value
   double m_meanAltitude = 0.0;   // moving average
   double m_sum2Altitude = 0.0;   // squared sum moving average
+  int m_cntValid = 0;            // number of valid FIFO entries
   int m_Attenuation = 1;         // 1 2 5
   int m_Decade = 1;              // 1 10 100 1000 ..
   wxString m_AltitudeUnit;
