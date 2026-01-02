@@ -712,7 +712,7 @@ static void AISSetMetrics() {
   AIS_scale_factor = g_current_monitor_dip_px_ratio;
   // Adapt for possible scaled display (Win)
   double DPIscale = 1.0;
-  DPIscale = g_Platform->GetDisplayDIPMult(gFrame);
+  DPIscale = g_Platform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
 
   //  Set the onscreen size of the symbol
   //  Compensate for various display resolutions
@@ -1750,8 +1750,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
 
         int w, h;
         dc.GetTextExtent("W", &w, &h);
-        h *= g_Platform->GetDisplayDIPMult(gFrame);
-        w *= g_Platform->GetDisplayDIPMult(gFrame);
+        h *= g_Platform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
+        w *= g_Platform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
 
         if ((td->COG > 90) && (td->COG < 180))
           dc.DrawText(tgt_name, TargetPoint.x + w, TargetPoint.y - h);

@@ -40,7 +40,6 @@
 #include "model/config_vars.h"
 
 #include "peer_client_dlg.h"
-#include "ocpn_frame.h"
 #include "font_mgr.h"
 #include "gui_lib.h"
 

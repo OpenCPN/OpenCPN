@@ -121,7 +121,6 @@ bool ShowNavWarning();
 
 bool isSingleChart(ChartBase* chart);
 
-wxColour GetGlobalColor(wxString colorName);
 wxColour GetDialogColor(DialogColor color);
 
 // Helper to create menu label + hotkey string when registering menus

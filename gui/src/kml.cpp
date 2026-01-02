@@ -50,7 +50,6 @@
 
 #include "kml.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "tinyxml.h"
 
 int Kml::seqCounter = 0;
