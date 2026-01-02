@@ -38,7 +38,6 @@
 #include "color_handler.h"
 #include "dychart.h"
 #include "ocpndc.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "piano.h"

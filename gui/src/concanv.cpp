@@ -30,8 +30,8 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
+#include <wx/app.h>
 #include <wx/datetime.h>
-
 #include "gl_headers.h"  // Must be before anything using GL
 
 #include "model/config_vars.h"
@@ -40,6 +40,7 @@
 #include "model/route.h"
 #include "model/routeman.h"
 
+#include "color_handler.h"
 #include "concanv.h"
 #include "font_mgr.h"
 #include "gui_lib.h"
@@ -928,7 +929,8 @@ void AnnunText::CalculateMinSize() {
   if (m_pvalueFont)
     GetTextExtent("123.4567", &wv, &hv, NULL, NULL, m_pvalueFont);
 
-  double pdifactor = g_BasePlatform->GetDisplayDIPMult(gFrame);
+  double pdifactor =
+      g_BasePlatform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
   wl *= pdifactor;
   hl *= pdifactor;
   wv *= pdifactor;
@@ -1157,7 +1159,7 @@ void CDI::OnPaint(wxPaintEvent& event) {
 
 #if defined(__WXMSW__) || defined(__WXMAC__) || defined(__ANDROID__)
 APConsole::APConsole(wxWindow* parent) {
-  m_con_frame = new ConsoleCanvasFrame(gFrame);
+  m_con_frame = new ConsoleCanvasFrame(wxTheApp->GetTopWindow());
 }
 APConsole::~APConsole() {}
 void APConsole::SetColorScheme(ColorScheme cs) {

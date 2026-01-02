@@ -40,7 +40,6 @@
 #include "font_mgr.h"
 #include "ocpn_plugin.h"
 #include "color_handler.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 
 #ifdef ocpnUSE_GL
