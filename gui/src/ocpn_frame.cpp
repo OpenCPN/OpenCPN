@@ -724,7 +724,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
   // Enable native fullscreen on macOS
   EnableFullScreenView();
 #endif
-  int is_day = GetColorScheme() == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
+  int is_day = user_colors::GetColorScheme() == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
   GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 }
 
@@ -893,10 +893,6 @@ void MyFrame::OnMaximize(wxMaximizeEvent &event) {
   event.Skip();
 #endif
 }
-
-ColorScheme GetColorScheme() { return global_color_scheme; }
-
-ColorScheme MyFrame::GetColorScheme() { return global_color_scheme; }
 
 void MyFrame::ReloadAllVP() {
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -2992,7 +2988,7 @@ void MyFrame::ToggleChartBar(ChartCanvas *cc) {
 
 void MyFrame::ToggleColorScheme() {
   static bool lastIsNight;
-  ColorScheme s = GetColorScheme();
+  ColorScheme s = user_colors::GetColorScheme();
   int is = (int)s;
   is++;
   if (lastIsNight && is == 3)  // Back from step 3

@@ -101,9 +101,6 @@
 #include "gl_chart_canvas.h"
 #endif
 
-// FIXME (leamas) find new home
-ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
-
 //------------------------------------------------------------------------------
 //    ViewPort Implementation
 //------------------------------------------------------------------------------
