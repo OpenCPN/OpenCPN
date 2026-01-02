@@ -774,6 +774,8 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/about_frame.h
     ${GUI_HDR_DIR}/about_frame_impl.h
     ${GUI_HDR_DIR}/about.h
+    ${GUI_HDR_DIR}/abstract_chart.h
+    ${GUI_HDR_DIR}/abstract_chart_canv.h
     ${GUI_HDR_DIR}/ais.h
     ${GUI_HDR_DIR}/ais_info_gui.h
     ${GUI_HDR_DIR}/ais_target_alert_dlg.h
@@ -1011,6 +1013,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/udev_rule_mgr.cpp
     ${GUI_SRC_DIR}/undo.cpp
     ${GUI_SRC_DIR}/tooltip.cpp
+    ${GUI_SRC_DIR}/top_frame.cpp
     ${GUI_SRC_DIR}/update_mgr.cpp
     ${GUI_SRC_DIR}/user_colors_dlg.cpp
     ${GUI_SRC_DIR}/user_colors.cpp

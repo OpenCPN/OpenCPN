@@ -485,6 +485,8 @@ glChartCanvas::~glChartCanvas() {
 #endif
 }
 
+int glChartCanvas::GetCanvasIndex() { return m_pParentCanvas->m_canvasIndex; }
+
 void glChartCanvas::FlushFBO() {
   if (m_bsetup) BuildFBO();
 }

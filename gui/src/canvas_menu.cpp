@@ -44,6 +44,7 @@
 #include "model/georef.h"
 #include "model/gui_vars.h"
 #include "model/mdns_cache.h"
+#include "model/navobj_db.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
 #include "model/route.h"
@@ -60,7 +61,6 @@
 #include "go_to_position_dlg.h"
 #include "kml.h"
 #include "mark_info.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "peer_client_dlg.h"
 #include "pluginmanager.h"
@@ -76,10 +76,11 @@
 #include "send_to_peer_dlg.h"
 #include "styles.h"
 #include "tcmgr.h"
+#include "top_frame.h"
 #include "track_gui.h"
 #include "track_prop_dlg.h"
 #include "undo.h"
-#include "model/navobj_db.h"
+#include "user_colors.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -210,7 +211,7 @@ CanvasMenuHandler::CanvasMenuHandler(ChartCanvas *parentCanvas,
     m_scaledFont = *qFont;
   }
 
-  m_DIPFactor = g_Platform->GetDisplayDIPMult(gFrame);
+  m_DIPFactor = g_Platform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
 }
 
 CanvasMenuHandler::~CanvasMenuHandler() {}
@@ -670,13 +671,15 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         } else {
           bool enable_list = true;
 #ifdef __ANDROID__
-          double char_x = gFrame->GetSize().x / gFrame->GetCharWidth();
-          double char_y = gFrame->GetSize().y / gFrame->GetCharWidth();
+          double char_x = wxTheApp->GetTopWindow()->GetSize().x /
+                          wxTheApp->GetTopWindow()->GetCharWidth();
+          double char_y = wxTheApp->GetTopWindow()->GetSize().y /
+                          wxTheApp->GetTopWindow()->GetCharWidth();
           double char_min = wxMin(char_x, char_y);
           if (char_min < 100) enable_list = false;
           // Another filter for phones, especially
-          double size_x = gFrame->GetSize().x / g_androidDPmm;
-          double size_y = gFrame->GetSize().y / g_androidDPmm;
+          double size_x = wxTheApp->GetTopWindow()->GetSize().x / g_androidDPmm;
+          double size_y = wxTheApp->GetTopWindow()->GetSize().y / g_androidDPmm;
           if (wxMin(size_x, size_y) < 100)  // it is a phone..
             enable_list = false;
 #endif
@@ -1142,7 +1145,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       vLon = zlon;
       parent->ClearbFollow();
 
-      parent->parent_frame->DoChartUpdate();
+      top_frame::Get()->DoChartUpdate();
 
       parent->SelectChartFromStack(0, false, CHART_TYPE_DONTCARE,
                                    CHART_FAMILY_RASTER);
@@ -1171,7 +1174,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
     case ID_DEF_MENU_MOVE_BOAT_HERE:
       gLat = zlat;
       gLon = zlon;
-      gFrame->UpdateStatusBar();
+      top_frame::Get()->UpdateStatusBar();
       break;
 
     case ID_DEF_MENU_GOTO_HERE: {
@@ -1225,8 +1228,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       parent->undo->BeforeUndoableAction(Undo_CreateWaypoint, pWP,
                                          Undo_HasParent, NULL);
       parent->undo->AfterUndoableAction(NULL);
-      gFrame->RefreshAllCanvas(false);
-      gFrame->InvalidateAllGL();
+      top_frame::Get()->RefreshAllCanvas(false);
+      top_frame::Get()->InvalidateAllGL();
       g_FlushNavobjChanges = true;
       break;
     }
@@ -1290,7 +1293,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
 
     case ID_DEF_MENU_TOGGLE_FULL:
-      gFrame->ToggleFullScreen();
+      top_frame::Get()->ToggleFullScreen();
       break;
 
     case ID_DEF_MENU_GOTOPOSITION:
@@ -1343,9 +1346,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
               pRouteManagerDialog->UpdateWptListCtrl();
           }
         }
-
-        gFrame->RefreshAllCanvas(false);
-        gFrame->InvalidateAllGL();
+        top_frame::Get()->RefreshAllCanvas(false);
+        top_frame::Get()->InvalidateAllGL();
       }
       break;
     }
@@ -1418,7 +1420,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
     case ID_DEF_MENU_CM93OFFSET_DIALOG: {
       if (NULL == g_pCM93OffsetDialog) {
-        g_pCM93OffsetDialog = new CM93OffsetDialog(parent->parent_frame);
+        g_pCM93OffsetDialog = new CM93OffsetDialog(wxTheApp->GetTopWindow());
       }
 
       cm93compchart *pch = NULL;
@@ -1515,8 +1517,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           pRoutePropDialog->SetRouteAndUpdate(m_pSelectedRoute);
           // pNew->UpdateProperties();
         }
-        gFrame->InvalidateAllGL();
-        gFrame->RefreshAllCanvas();
+        top_frame::Get()->InvalidateAllGL();
+        top_frame::Get()->RefreshAllCanvas();
       }
       break;
     }
@@ -1542,8 +1544,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           m_pSelectedRoute->RenameRoutePoints();
         }
 
-        gFrame->InvalidateAllGL();
-        gFrame->RefreshAllCanvas();
+        top_frame::Get()->InvalidateAllGL();
+        top_frame::Get()->RefreshAllCanvas();
       }
 
       break;
@@ -1573,8 +1575,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
         parent->undo->InvalidateUndo();
 
-        gFrame->InvalidateAllGL();
-        gFrame->RefreshAllCanvas();
+        top_frame::Get()->InvalidateAllGL();
+        top_frame::Get()->RefreshAllCanvas();
       }
       break;
     }
@@ -1840,8 +1842,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           }
         }
 
-        gFrame->InvalidateAllGL();
-        gFrame->RefreshAllCanvas(true);
+        top_frame::Get()->InvalidateAllGL();
+        top_frame::Get()->RefreshAllCanvas(true);
       }
 
       break;
@@ -1851,8 +1853,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         if (m_pSelectedRoute->m_bIsInLayer) break;
         g_pRouteMan->RemovePointFromRoute(m_pFoundRoutePoint, m_pSelectedRoute,
                                           parent->m_routeState);
-        gFrame->InvalidateAllGL();
-        gFrame->RefreshAllCanvas();
+        top_frame::Get()->InvalidateAllGL();
+        top_frame::Get()->RefreshAllCanvas();
       }
       break;
 
@@ -1897,7 +1899,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       if (dlg_return == wxID_YES) {
         if (m_pSelectedTrack == g_pActiveTrack)
-          m_pSelectedTrack = parent->parent_frame->TrackOff();
+          m_pSelectedTrack = top_frame::Get()->TrackOff();
         g_pAIS->DeletePersistentTrack(m_pSelectedTrack);
         // pConfig->DeleteConfigTrack(m_pSelectedTrack);
         NavObj_dB::GetInstance().DeleteTrack(m_pSelectedTrack);
@@ -1914,8 +1916,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
           pRouteManagerDialog->UpdateTrkListCtrl();
           pRouteManagerDialog->UpdateRouteListCtrl();
         }
-        gFrame->InvalidateAllGL();
-        gFrame->RefreshAllCanvas();
+        top_frame::Get()->InvalidateAllGL();
+        top_frame::Get()->RefreshAllCanvas();
       }
       break;
     }
@@ -1939,13 +1941,13 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
 
     case ID_RC_MENU_SCALE_IN:
-      parent->parent_frame->DoStackDown(parent);
+      top_frame::Get()->DoStackDown(parent);
       parent->GetCanvasPointPix(zlat, zlon, &r);
       parent->WarpPointer(r.x, r.y);
       break;
 
     case ID_RC_MENU_SCALE_OUT:
-      parent->parent_frame->DoStackUp(parent);
+      top_frame::Get()->DoStackUp(parent);
       parent->GetCanvasPointPix(zlat, zlon, &r);
       parent->WarpPointer(r.x, r.y);
       break;

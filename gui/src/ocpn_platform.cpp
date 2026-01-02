@@ -74,16 +74,17 @@
 
 #include "about_frame_impl.h"
 #include "about.h"
+#include "displays.h"
 #include "font_mgr.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "options.h"
 #include "s52s57.h"
 #include "snd_config.h"
 #include "std_filesystem.h"
 #include "styles.h"
+#include "top_frame.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -221,14 +222,14 @@ void catch_signals(int signo) {
     case SIGHUP:
       if (!s_inhup) {
         s_inhup++;  // incase SIGHUP is closely followed by SIGTERM
-        gFrame->FastClose();
+        top_frame::Get()->FastClose();
       }
       break;
 
     case SIGTERM:
       if (!s_inhup) {
         s_inhup++;  // incase SIGHUP is closely followed by SIGTERM
-        gFrame->FastClose();
+        top_frame::Get()->FastClose();
       }
 
       break;
@@ -562,7 +563,7 @@ void OCPNPlatform::Initialize_3() {
   }
 #endif
 
-  gFrame->SetGPSCompassScale();
+  top_frame::Get()->SetGPSCompassScale();
 
   // Force a few items for Android, to ensure that UI is useable if config got
   // scrambled
@@ -728,13 +729,13 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
       root, "GL_ARB_vertex_buffer_object");  // TODO: Or the old way where we
                                              // enable it without querying the
                                              // extension is right?
-  gFrame->Show();
+  top_frame::Get()->Show();
   return true;
 #else
   // The original codepath doing direct probing in the main OpenCPN process, now
   // only for Android Investigate OpenGL capabilities
-  gFrame->Show();
-  glTestCanvas *tcanvas = new glTestCanvas(gFrame);
+  top_frame::Get()->Show();
+  glTestCanvas *tcanvas = new glTestCanvas(wxTheApp->GetTopWindow());
   tcanvas->Show();
   wxYield();
   wxGLContext *pctx = new wxGLContext(tcanvas);
@@ -1940,7 +1941,7 @@ double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
   rv = wxMin(rv, 3.0);  //  Clamp at 3.0
   rv = wxMax(rv, 0.5);  //  and at 0.5
 
-  rv /= g_BasePlatform->GetDisplayDIPMult(gFrame);
+  rv /= g_BasePlatform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
 
 #endif
 
@@ -1999,10 +2000,11 @@ double OCPNPlatform::GetCompassScaleFactor(int GUIScaleFactor) {
 
 #if defined(__WXOSX__) || defined(__WXGTK3__)
   // Support scaled HDPI displays.
-  if (gFrame) rv *= gFrame->GetContentScaleFactor();
+
+  if (top_frame::Get()) rv *= top_frame::Get()->GetContentScaleFactor();
 #endif
 
-  rv /= g_BasePlatform->GetDisplayDIPMult(gFrame);
+  rv /= g_BasePlatform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
 
 #endif
 
