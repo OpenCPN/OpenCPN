@@ -58,12 +58,12 @@
 #include "font_mgr.h"
 #include "line_clip.h"
 #include "navutil.h"  // for Select
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "styles.h"
+#include "top_frame.h"
+#include "user_colors.h"
 
-extern MyFrame *gFrame;
 extern OCPNPlatform *g_Platform;
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
@@ -434,7 +434,7 @@ static void TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius) {
 static void AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius,
                          AisTargetData *td) {
   // Apply any specific monitor scaling. e.g. MacOS
-  radius *= gFrame->GetPrimaryCanvas()->GetContentScaleFactor();
+  radius *= top_frame::Get()->GetContentScaleFactor();
 
   //    Constants?
   wxPen pen_save = dc.GetPen();
@@ -906,10 +906,10 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   float sin_theta = sinf(theta), cos_theta = cosf(theta);
 
   wxDash dash_long[2];
-  dash_long[0] = (int)(1.0 * gFrame->GetPrimaryCanvas()
-                                 ->GetPixPerMM());  // Long dash  <---------+
-  dash_long[1] =
-      (int)(0.5 * gFrame->GetPrimaryCanvas()->GetPixPerMM());  // Short gap |
+  // Long dash  <---------+
+  dash_long[0] = (int)(1.0 * top_frame::Get()->GetPixPerMM());
+  // Short gap |
+  dash_long[1] = (int)(0.5 * top_frame::Get()->GetPixPerMM());
 
   int targetscale = 100;
   int idxCC = 0;

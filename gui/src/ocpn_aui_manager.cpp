@@ -27,7 +27,6 @@
 
 #include "ocpn_aui_manager.h"
 #include "ocpn_plugin.h"
-#include "ocpn_frame.h"
 
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>

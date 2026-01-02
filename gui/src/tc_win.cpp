@@ -46,13 +46,13 @@
 #include "navutil.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "rollover_win.h"
 #include "tc_data_factory.h"
 #include "tcmgr.h"
 #include "tide_time.h"
 #include "timers.h"
+#include "user_colors.h"
 
 extern ColorScheme global_color_scheme;  // library dependence
 
