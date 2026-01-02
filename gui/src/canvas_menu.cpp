@@ -430,8 +430,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   }
 
   int nChartStack = 0;
-  if (parent->GetpCurrentStack())
-    nChartStack = parent->GetpCurrentStack()->nEntry;
+if (parent->GetpCurrentStack())
+nChartStack = parent->GetpCurrentStack()->nEntry;
 
   if (!parent->GetVP().b_quilt) {
     if (nChartStack > 1) {
@@ -1941,6 +1941,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       break;
 
     case ID_RC_MENU_SCALE_IN:
+
       top_frame::Get()->DoStackDown(parent);
       parent->GetCanvasPointPix(zlat, zlon, &r);
       parent->WarpPointer(r.x, r.y);

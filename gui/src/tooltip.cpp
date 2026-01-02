@@ -17,17 +17,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include "model/config_vars.h"
+
 #include "tooltip.h"
 #include "chcanv.h"
 #include "color_handler.h"
 #include "font_mgr.h"
 #include "ocpn_platform.h"
-#include "ocpn_frame.h"
 #include "navutil.h"
-
-extern OCPNPlatform *g_Platform;
-extern MyFrame *gFrame;
-extern bool g_btouch;
+#include "top_frame.h"
 
 // Define timer event ID
 #define TOOLTIP_TIMER_ID 10002
@@ -252,7 +250,7 @@ void Tooltip::ShowTooltip(int delay_ms) {
     SetBitmap();
     Show();
 #ifndef __WXOSX__
-    if (gFrame) gFrame->Raise();
+    if (top_frame::Get()) top_frame::Get()->Raise();
 #endif
   }
 }
@@ -283,7 +281,7 @@ void Tooltip::OnTimer(wxTimerEvent &event) {
       SetBitmap();
       Show();
 #ifndef __WXOSX__
-      if (gFrame) gFrame->Raise();
+      if (top_frame::Get()) top_frame::Get()->Raise();
 #endif
     }
   }

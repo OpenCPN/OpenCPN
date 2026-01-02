@@ -44,7 +44,6 @@
 #include "priority_gui.h"
 
 #include "model/comm_bridge.h"
-#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 
 class PriorityEntry : public wxTreeItemData {

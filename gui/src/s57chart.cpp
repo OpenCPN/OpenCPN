@@ -84,6 +84,8 @@
 #include "s57class_registrar.h"
 #include "senc_manager.h"
 #include "setjmp.h"
+#include "top_frame.h"
+#include "user_colors.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
@@ -95,6 +97,8 @@
 #endif
 
 #define S57_THUMB_SIZE 200
+
+#include <wx/arrimpl.cpp>
 
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
@@ -3129,7 +3133,6 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
   return ret_code;
 }
 
-#include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY_PTR(float *, MyFloatPtrArray);
 static int depth = 0;  // Tracks re-entry depth
 static bool isProcessing = false;

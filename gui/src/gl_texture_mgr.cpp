@@ -72,10 +72,10 @@
 #include "gui_lib.h"
 #include "lz4.h"
 #include "lz4hc.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "quilt.h"
 #include "squish.h"
+#include "top_frame.h"
 #include "viewport.h"
 
 #ifndef GL_ETC1_RGB8_OES
@@ -861,7 +861,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
       // We need to force a refresh to replace the uncompressed texture
       // This frees video memory and is also really required if we had
       // gone up a mipmap level
-      gFrame->InvalidateAllGL();
+      top_frame::Get()->InvalidateAllGL();
       ptd->compdata_ticks = 10;
     }
 
@@ -1407,7 +1407,7 @@ void glTextureManager::BuildCompressedCache() {
   wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
   int fontSize = qFont->GetPointSize();
   wxFont *sFont;
-  wxSize csz = gFrame->GetClientSize();
+  wxSize csz = wxTheApp->GetTopWindow()->GetClientSize();
   if (csz.x < 500 || csz.y < 500)
     sFont = FontMgr::Get().FindOrCreateFont(
         10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);

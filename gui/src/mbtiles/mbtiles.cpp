@@ -48,7 +48,7 @@
 #include "chcanv.h"
 #include "gl_chart_canvas.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
+#include "top_frame.h"
 
 #ifdef ocpnUSE_GL
 #include "shaders.h"
@@ -988,9 +988,7 @@ bool ChartMbTiles::RenderRegionViewOnGL(const wxGLContext& glc,
 
 bool ChartMbTiles::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
                                         const OCPNRegion& Region) {
-  gFrame->GetPrimaryCanvas()->SetAlertString(
-      _("MBTile requires OpenGL to be enabled"));
-
+  top_frame::Get()->SetAlertString(_("MBTile requires OpenGL to be enabled"));
   return true;
 }
 

@@ -734,10 +734,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged(
   if (selected_row >= 0 && selected_row < m_dvlcWaypoints->GetItemCount()) {
     RoutePoint* prp = m_pRoute->GetPoint(selected_row + 1);
     if (prp) {
-      if (gFrame->GetFocusCanvas()) {
-        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat, prp->m_lon,
-                               gFrame->GetFocusCanvas()->GetVPScale());
-      }
+      top_frame::Get()->JumpToPosition(prp->m_lat, prp->m_lon);
 #ifdef __WXMSW__
       if (m_dvlcWaypoints) m_dvlcWaypoints->SetFocus();
 #endif
