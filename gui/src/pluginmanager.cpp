@@ -141,7 +141,6 @@
 #include "navutil.h"
 #include "observable_confvar.h"
 #include "observable_globvar.h"
-#include "ocpn_app.h"
 #include "ocpn_aui_manager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
