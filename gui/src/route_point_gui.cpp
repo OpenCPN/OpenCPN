@@ -160,7 +160,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
 
   bool bDrawHL = false;
 
-  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+  if (m_point.m_bBlink && (g_blinker_tick & 1)) bDrawHL = true;
 
   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
     dc.DrawBitmap(*pbm, r.x - sx2, r.y - sy2, true);
@@ -376,7 +376,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 
   bool bDrawHL = false;
 
-  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+  if (m_point.m_bBlink && (g_blinker_tick & 1)) bDrawHL = true;
 
   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
     int glw, glh;
