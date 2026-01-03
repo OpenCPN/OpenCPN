@@ -1436,10 +1436,6 @@ void MyApp::BuildMainFrame() {
     new_frame_size.Set(800, 400);
 #endif
 
-  //  For Windows and GTK, provide the expected application Minimize/Close bar
-  long app_style = wxDEFAULT_FRAME_STYLE;
-  app_style |= wxWANTS_CHARS;
-
   // Create the main frame window
 
   // Strip the commit SHA number from the string to be shown in frame title.
@@ -1462,7 +1458,7 @@ void MyApp::BuildMainFrame() {
   g_pauimgr->SetArtProvider(dockart);
 
   gFrame = new MyFrame(NULL, myframe_window_title, position, new_frame_size,
-                       app_style, dockart);
+                       m_rest_server, dockart);
 
   //  Initialize the Plugin Manager
   g_pi_manager = new PlugInManager(gFrame);

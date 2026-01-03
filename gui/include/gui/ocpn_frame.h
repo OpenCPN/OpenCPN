@@ -41,6 +41,7 @@
 #include "model/ocpn_types.h"
 #include "model/track.h"
 #include "model/comm_appmsg_bus.h"
+#include "model/rest_server.h"
 
 #include "bbox.h"
 #include "chartbase.h"
@@ -139,7 +140,8 @@ void LoadS57();
 class MyFrame : public wxFrame {
 public:
   MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
-          const wxSize& size, long style, wxAuiDefaultDockArt* pauidockart);
+          const wxSize& size, RestServer& rest_server,
+          wxAuiDefaultDockArt* pauidockart);
 
   ~MyFrame();
 
@@ -463,6 +465,7 @@ private:
   unsigned int last_canvasConfig;
   DataMonitor* m_data_monitor;
   wxAuiDefaultDockArt* m_pauidockart;
+  RestServer& m_rest_server;
 
   void CenterAisTarget(const std::shared_ptr<const AisTargetData>& ais_target);
 
