@@ -250,6 +250,16 @@ static void SelectNextLowerPriority(const PriorityMap& map,
 
 // CommBridge implementation
 
+CommBridge& CommBridge::GetInstance() {
+  static bool is_initialized = false;
+  static CommBridge the_instance;
+  if (!is_initialized) {
+    the_instance.Initialize();
+    is_initialized = true;
+  }
+  return the_instance;
+}
+
 CommBridge::CommBridge()
     : wxEvtHandler(),
       // every 60 minutes, reduced after first position Rx

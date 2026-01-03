@@ -38,6 +38,7 @@
 #include "o_sound/o_sound.h"
 
 #include "model/ais_decoder.h"
+#include "model/comm_bridge.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/gui_vars.h"
 #include "model/idents.h"
@@ -58,7 +59,6 @@
 #include "gl_chart_canvas.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_app.h"
 #include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
@@ -2613,30 +2613,27 @@ int GetGlobalWatchdogTimoutSeconds() { return gps_watchdog_timeout_ticks; }
 
 /** Comm Priority query support methods  */
 std::vector<std::string> GetPriorityMaps() {
-  MyApp& app = wxGetApp();
-  return (app.m_comm_bridge.GetPriorityMaps());
+  return (CommBridge::GetInstance().GetPriorityMaps());
 }
 
 void UpdateAndApplyPriorityMaps(std::vector<std::string> map) {
-  MyApp& app = wxGetApp();
-  app.m_comm_bridge.UpdateAndApplyMaps(map);
+  CommBridge::GetInstance().UpdateAndApplyMaps(map);
 }
 
 std::vector<std::string> GetActivePriorityIdentifiers() {
   std::vector<std::string> result;
 
-  MyApp& app = wxGetApp();
+  auto& comm_bridge = CommBridge::GetInstance();
 
-  std::string id =
-      app.m_comm_bridge.GetPriorityContainer("position").active_source;
+  std::string id = comm_bridge.GetPriorityContainer("position").active_source;
   result.push_back(id);
-  id = app.m_comm_bridge.GetPriorityContainer("velocity").active_source;
+  id = comm_bridge.GetPriorityContainer("velocity").active_source;
   result.push_back(id);
-  id = app.m_comm_bridge.GetPriorityContainer("heading").active_source;
+  id = comm_bridge.GetPriorityContainer("heading").active_source;
   result.push_back(id);
-  id = app.m_comm_bridge.GetPriorityContainer("variation").active_source;
+  id = comm_bridge.GetPriorityContainer("variation").active_source;
   result.push_back(id);
-  id = app.m_comm_bridge.GetPriorityContainer("satellites").active_source;
+  id = comm_bridge.GetPriorityContainer("satellites").active_source;
   result.push_back(id);
 
   return result;

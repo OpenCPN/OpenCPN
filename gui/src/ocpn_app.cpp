@@ -1298,9 +1298,6 @@ bool MyApp::OnInit() {
   }
   /// CheckDongleAccess(gFrame);
 
-  // Initialize the CommBridge
-  m_comm_bridge.Initialize();
-
   std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
 
   // If network connection is available, start the server and mDNS client

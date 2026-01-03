@@ -77,7 +77,6 @@ public:
 #endif
 
   InstanceCheck& m_checker;
-  CommBridge m_comm_bridge;
 
   RestServer m_rest_server;
   UsbWatchDaemon& m_usb_watcher;

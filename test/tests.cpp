@@ -838,8 +838,7 @@ public:
     auto& msgbus = NavMsgBus::GetInstance();
     std::string path(TESTDATA);
     path += kSEP + inputfile;
-    CommBridge comm_bridge;
-    comm_bridge.Initialize();
+    auto& comm_bridge = CommBridge::GetInstance();
     auto driver = make_unique<FileCommDriver>(inputfile + ".log", path, msgbus);
     CommDriverRegistry::GetInstance().Activate(std::move(driver));
     ProcessPendingEvents();
@@ -878,8 +877,7 @@ public:
     const char* const GPGGA_2 =
         "$GPGGA,092212,5755.043,N,01344.585,E,1,06,1.9,3.5,M,39.4,M,,*4C";
     auto& msgbus = NavMsgBus::GetInstance();
-    CommBridge comm_bridge;
-    comm_bridge.Initialize();
+    auto& comm_bridge = CommBridge::GetInstance();
 
     auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
     auto m1 = std::make_shared<const Nmea0183Msg>(
@@ -904,8 +902,7 @@ public:
     const char* AISVDO_1 = "!AIVDO,1,1,,,B3uBrjP0;h=Koh`Bp1tEowrUsP06,0*31";
     int MMSI = 123456;
     auto& msgbus = NavMsgBus::GetInstance();
-    CommBridge comm_bridge;
-    comm_bridge.Initialize();
+    auto& comm_bridge = CommBridge::GetInstance();
 
     auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
     auto m = std::make_shared<const Nmea0183Msg>(
@@ -970,8 +967,7 @@ public:
     const char* AISVDM_1 = "!AIVDM,1,1,,A,1535SB002qOg@MVLTi@b;H8V08;?,0*47";
     int MMSI = 338781000;
     auto& msgbus = NavMsgBus::GetInstance();
-    CommBridge comm_bridge;
-    comm_bridge.Initialize();
+    auto& comm_bridge = CommBridge::GetInstance();
 
     auto addr1 = std::make_shared<NavAddr>(NavAddr0183("interface1"));
     auto m = std::make_shared<const Nmea0183Msg>(
