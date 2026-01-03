@@ -1106,6 +1106,8 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     }
   }
 
+  //  Consider TODO #1 here:  Looking for more duokucates acress directories
+
   if (!collision_found) {
     m_ticket_vector.push_back(event.GetTicket());
     m_full_collision_map[fn.GetFullName()] = 1;
@@ -1122,12 +1124,40 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     // NB: The active_chartTable was cleared by the Update() method
     // before this point
 
-    // for (auto &ticket_valid : m_ticket_vector) {
-    // active_chartTable.Add(entry);
-    //}
+    for (auto &ticket_valid : m_ticket_vector) {
+      active_chartTable.push_back(ticket_valid->m_chart_table_entry);
+    }
+    // Release references to tickets
+    m_ticket_vector.clear();
 
-    // TODO Do not forget to clear m_ticket_vector after use, to release
-    // references to tickets.
+    // TODo #2 goes here
+#if 1
+    //  TODO #2     After all thread events finished
+    // Scrub CTE list, remove any anvalid entries
+    for (auto &cte : active_chartTable) {
+      if (!cte->GetbValid()) {
+        // active_chartTable.RemoveAt(i);
+        // i--;  // entry is gone, recheck this index for next entry
+      }
+    }
+
+    //    And once more, setting the Entry index field
+    active_chartTable_pathindex.clear();
+    int i = 0;
+    for (auto cte : active_chartTable) {
+      active_chartTable_pathindex[cte->GetFullSystemPath()] = i;
+      cte->SetEntryOffset(i);
+      i++;
+    }
+
+    m_nentries = active_chartTable.size();
+    bValid = true;
+    m_b_busy = false;
+#endif
+
+    // TODO #3 goes here
+    pConfig->UpdateChartDirs(m_dir_array);
+    gFrame->FinalizeChartDBUpdate();
   }
 }
 
@@ -1175,19 +1205,22 @@ void ChartDatabase::UpdateChartClassDescriptorArray() {
   }
 }
 
-const ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const {
-  if (index < GetChartTableEntries())
-    return active_chartTable[index];
-  else
-    return m_ChartTableEntryDummy;
+ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const {
+  // if (index < GetChartTableEntries())
+  return *active_chartTable[index];
+  // TODO fix
+  // else
+  // return m_ChartTableEntryDummy;
 }
 
+#if 0
 ChartTableEntry *ChartDatabase::GetpChartTableEntry(int index) const {
   if (index < GetChartTableEntries())
-    return &active_chartTable[index];
+    return (active_chartTable[index])->get();
   else
     return (ChartTableEntry *)&m_ChartTableEntryDummy;
 }
+#endif
 
 bool ChartDatabase::CompareChartDirArray(ArrayOfCDI &test_array) {
   //  Compare the parameter "test_array" with this.m_dir_array
@@ -1275,23 +1308,24 @@ bool ChartDatabase::Read(const wxString &filePath) {
   }
 
   entries = cth.GetTableEntries();
-  active_chartTable.Alloc(entries);
+  // active_chartTable.Alloc(entries);
   active_chartTable_pathindex.clear();
   while (entries-- && entry.Read(this, ifs)) {
     active_chartTable_pathindex[entry.GetFullSystemPath()] = ind++;
-    active_chartTable.Add(entry);
+    auto sharedPtr = std::make_shared<ChartTableEntry>(entry);
+    active_chartTable.push_back(sharedPtr);
   }
 
   entry.Clear();
   bValid = true;
   entry.SetAvailable(true);
 
-  m_nentries = active_chartTable.GetCount();
+  m_nentries = active_chartTable.size();
   return true;
 
 read_error:
   bValid = false;
-  m_nentries = active_chartTable.GetCount();
+  m_nentries = active_chartTable.size();
   return false;
 }
 
@@ -1307,7 +1341,7 @@ bool ChartDatabase::Write(const wxString &filePath) {
   wxFFileOutputStream ofs(filePath);
   if (!ofs.Ok()) return false;
 
-  ChartTableHeader cth(m_chartDirs.GetCount(), active_chartTable.GetCount());
+  ChartTableHeader cth(m_chartDirs.GetCount(), active_chartTable.size());
   cth.Write(ofs);
 
   for (int iDir = 0; iDir < cth.GetDirEntries(); iDir++) {
@@ -1322,8 +1356,10 @@ bool ChartDatabase::Write(const wxString &filePath) {
     ofs.Write(s, dirlen);
   }
 
-  for (UINT32 iTable = 0; iTable < active_chartTable.size(); iTable++)
-    active_chartTable[iTable].Write(this, ofs);
+  for (UINT32 iTable = 0; iTable < active_chartTable.size(); iTable++) {
+    auto &cte = GetChartTableEntry(iTable);
+    cte.Write(this, ofs);
+  }
 
   //      Explicitly set the version
   m_dbversion = DB_VERSION_CURRENT;
@@ -1508,7 +1544,7 @@ bool ChartDatabase::Create(ArrayOfCDI &dir_array,
   bValid = false;
 
   m_chartDirs.Clear();
-  active_chartTable.Clear();
+  active_chartTable.clear();
   active_chartTable_pathindex.clear();
 
   Update(dir_array, true, pprog);  // force the update the reload everything
@@ -1577,18 +1613,20 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_b_busy = true;
 
   //  Mark all charts provisionally invalid
-  for (unsigned int i = 0; i < active_chartTable.GetCount(); i++)
-    active_chartTable[i].SetValid(false);
+  for (unsigned int i = 0; i < active_chartTable.size(); i++) {
+    auto &cte = GetChartTableEntry(i);
+    cte.SetValid(false);
+  }
 
   m_chartDirs.Clear();
 
-  if (bForce) active_chartTable.Clear();
+  if (bForce) active_chartTable.clear();
 
   bool lbForce = bForce;
 
   //    Do a dB Version upgrade if the current one is obsolete
   if (s_dbVersion != DB_VERSION_CURRENT) {
-    active_chartTable.Clear();
+    active_chartTable.clear();
     lbForce = true;
     s_dbVersion = DB_VERSION_CURRENT;  // Update the static indicator
     m_dbversion = DB_VERSION_CURRENT;  // and the member
@@ -1636,28 +1674,6 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
     m_chartDirs.Add(dir_info.fullpath);
   }  // for
 
-#if 0  //  TODO On thread pool processing
-
-  for (unsigned int i = 0; i < active_chartTable.GetCount(); i++) {
-    if (!active_chartTable[i].GetbValid()) {
-      active_chartTable.RemoveAt(i);
-      i--;  // entry is gone, recheck this index for next entry
-    }
-  }
-
-  //    And once more, setting the Entry index field
-  active_chartTable_pathindex.clear();
-  for (unsigned int i = 0; i < active_chartTable.GetCount(); i++) {
-    active_chartTable_pathindex[active_chartTable[i].GetFullSystemPath()] = i;
-    active_chartTable[i].SetEntryOffset(i);
-  }
-
-  m_nentries = active_chartTable.GetCount();
-
-  bValid = true;
-  m_b_busy = false;
-#endif
-
   return true;
 }
 
@@ -1691,8 +1707,8 @@ int ChartDatabase::FinddbIndex(wxString PathToFind) {
 int ChartDatabase::DisableChart(wxString &PathToDisable) {
   int index = FinddbIndex(PathToDisable);
   if (index != -1) {
-    ChartTableEntry *pentry = &active_chartTable[index];
-    pentry->Disable();
+    auto &entry = GetChartTableEntry(index);
+    entry.Disable();
     return 1;
   }
   return 0;
@@ -1755,14 +1771,16 @@ int ChartDatabase::TraverseDirAndAddCharts(ChartDirInfo &dir_info,
 
     if (pprog) pprog->SetTitle(_("OpenCPN Chart Scan...."));
 
-    int nEntries = active_chartTable.GetCount();
+    int nEntries = active_chartTable.size();
 
     for (int ic = 0; ic < nEntries; ic++) {
-      wxFileName fn(active_chartTable[ic].GetFullSystemPath());
+      auto &cte = GetChartTableEntry(ic);
+      wxFileName fn(cte.GetFullSystemPath());
 
       while (fn.GetDirCount() >= dir_path_count) {
         if (fn.GetPath() == dir_path) {
-          active_chartTable[ic].SetValid(true);
+          auto &cte_a = GetChartTableEntry(ic);
+          cte_a.SetValid(true);
           //                             if(pprog)
           //                                  pprog->Update((ic * 100)
           //                                  /nEntries, fn.GetFullPath());
@@ -1854,8 +1872,9 @@ bool ChartDatabase::IsChartDirUsed(const wxString &theDir) {
     dir.RemoveLast();
 
   dir.Append("*");
-  for (UINT32 i = 0; i < active_chartTable.GetCount(); i++) {
-    if (active_chartTable[i].GetpsFullPath()->Matches(dir)) return true;
+  for (UINT32 i = 0; i < active_chartTable.size(); i++) {
+    auto &cte_u = GetChartTableEntry(i);
+    if (cte_u.GetpsFullPath()->Matches(dir)) return true;
   }
   return false;
 }
@@ -2415,7 +2434,7 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   //    Check to see if there are any charts in the DB which refer to this
   //    directory If none at all, there is no need to scan the DB for fullpath
   //    match of each potential addition and bthis_dir_in_dB is false.
-  bool bthis_dir_in_dB = IsChartDirUsed(dir_name);
+  // bool bthis_dir_in_dB = IsChartDirUsed(dir_name);
 
   if (pprog) pprog->SetTitle(_("OpenCPN Chart Add...."));
 
@@ -2585,7 +2604,8 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   return nDirEntry;
 
 #if 0
-// Move this to after thread completion
+// TODO #1 Move this to after thread completion.
+
     if (!collision || !pnewChart) {
       // Do nothing.
     } else if (file_path_is_same) {
@@ -2623,6 +2643,9 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     }
 
     if (bAddFinal) {
+#endif
+
+#if 0
 
       if (0 == b_add_msg) {
         wxLogMessage(
@@ -2675,9 +2698,10 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
   } else  // traverse the existing database looking for duplicates, and choosing
           // the right one
   {
-    int nEntry = active_chartTable.GetCount();
+    int nEntry = active_chartTable.size();
     for (int i = 0; i < nEntry; i++) {
-      wxString *ptable_file_name = active_chartTable[isearch].GetpsFullPath();
+      auto &cte_a = GetChartTableEntry(i);
+      wxString *ptable_file_name = cte_a.GetpsFullPath();
 
       //    If the chart full file paths are exactly the same, select the newer
       //    one
@@ -2685,15 +2709,16 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
         b_add_msg++;
 
         //    Check the file modification time
-        time_t t_oldFile = active_chartTable[isearch].GetFileTime();
+        auto &cte_search = GetChartTableEntry(isearch);
+        time_t t_oldFile = cte_search.GetFileTime();
         time_t t_newFile = file.GetModificationTime().GetTicks();
 
         if (t_newFile <= t_oldFile) {
           bAddFinal = false;
-          active_chartTable[isearch].SetValid(true);
+          cte_search.SetValid(true);
         } else {
           bAddFinal = true;
-          active_chartTable[isearch].SetValid(false);
+          cte_search.SetValid(false);
           wxLogMessage(
               wxString::Format("   Replacing older chart file of same path: %s",
                                msg_fn.c_str()));
@@ -2710,6 +2735,8 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
       if (table_file.GetFullName() == file_name) {
         b_add_msg++;
 
+        // TODO fix this...
+#if 0
         if (pnewChart->IsEarlierThan(active_chartTable[isearch])) {
           //    Make sure the compare file actually exists
           if (table_file.IsFileReadable()) {
@@ -2735,7 +2762,7 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
               wxString::Format("   Replacing older chart file of same name: %s",
                                msg_fn.c_str()));
         }
-
+#endif
         break;
       }
 
@@ -2752,7 +2779,8 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
           wxString::Format("   Adding chart file: %s", msg_fn.c_str()));
     }
 
-    active_chartTable.Add(pnewChart);
+    // TODO Fix
+    // active_chartTable.push_back(pnewChart);
 
     rv = true;
   } else {
@@ -2762,7 +2790,7 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
     rv = false;
   }
 
-  m_nentries = active_chartTable.GetCount();
+  m_nentries = active_chartTable.size();
 
   return rv;
 }
@@ -2803,16 +2831,20 @@ bool ChartDatabase::AddSingleChart(wxString &ChartFullPath,
 
   //  remove duplicates marked in AddChart()
 
-  for (unsigned int i = 0; i < active_chartTable.GetCount(); i++) {
-    if (!active_chartTable[i].GetbValid()) {
-      active_chartTable.RemoveAt(i);
+  for (unsigned int i = 0; i < active_chartTable.size(); i++) {
+    auto &cte_r = GetChartTableEntry(i);
+    if (!cte_r.GetbValid()) {
+      // TODO fix this
+      // active_chartTable.RemoveAt(i);
       i--;  // entry is gone, recheck this index for next entry
     }
   }
 
   //    Update the Entry index fields
-  for (unsigned int i = 0; i < active_chartTable.GetCount(); i++)
-    active_chartTable[i].SetEntryOffset(i);
+  for (unsigned int i = 0; i < active_chartTable.size(); i++) {
+    auto &cte_ef = GetChartTableEntry(i);
+    cte_ef.SetEntryOffset(i);
+  }
 
   //  Get a new magic number
   wxString new_magic;
@@ -2855,12 +2887,15 @@ bool ChartDatabase::AddSingleChart(wxString &ChartFullPath,
     m_chartDirs.Add(cdi.fullpath);
   }
 
-  m_nentries = active_chartTable.GetCount();
+  m_nentries = active_chartTable.size();
 
   return rv;
 }
 
 bool ChartDatabase::RemoveSingleChart(wxString &ChartFullPath) {
+  // TODO fix this
+  return false;
+#if 0
   bool rv = false;
 
   //  Walk the chart table, looking for the target
@@ -2908,6 +2943,7 @@ bool ChartDatabase::RemoveSingleChart(wxString &ChartFullPath) {
   m_nentries = active_chartTable.GetCount();
 
   return rv;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -2959,12 +2995,13 @@ bool ChartDatabase::GetCentroidOfLargestScaleChart(double *clat, double *clon,
   int cur_max_i = -1;
   int cur_max_scale = 0;
 
-  int nEntry = active_chartTable.GetCount();
+  int nEntry = active_chartTable.size();
 
   for (int i = 0; i < nEntry; i++) {
-    if (GetChartFamily(active_chartTable[i].GetChartType()) == family) {
-      if (active_chartTable[i].GetScale() > cur_max_scale) {
-        cur_max_scale = active_chartTable[i].GetScale();
+    auto &cte_fam = GetChartTableEntry(i);
+    if (GetChartFamily(cte_fam.GetChartType()) == family) {
+      if (cte_fam.GetScale() > cur_max_scale) {
+        cur_max_scale = cte_fam.GetScale();
         cur_max_i = i;
       }
     }
@@ -2973,12 +3010,9 @@ bool ChartDatabase::GetCentroidOfLargestScaleChart(double *clat, double *clon,
   if (cur_max_i == -1)
     return false;  // nothing found
   else {
-    *clat = (active_chartTable[cur_max_i].GetLatMax() +
-             active_chartTable[cur_max_i].GetLatMin()) /
-            2.;
-    *clon = (active_chartTable[cur_max_i].GetLonMin() +
-             active_chartTable[cur_max_i].GetLonMax()) /
-            2.;
+    auto &cte_sel = GetChartTableEntry(cur_max_i);
+    *clat = (cte_sel.GetLatMax() + cte_sel.GetLatMin()) / 2.;
+    *clon = (cte_sel.GetLonMin() + cte_sel.GetLonMax()) / 2.;
   }
   return true;
 }
@@ -2987,9 +3021,10 @@ bool ChartDatabase::GetCentroidOfLargestScaleChart(double *clat, double *clon,
 //    Get DBChart Projection
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartProj(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
-    return active_chartTable[dbIndex].GetChartProjectionType();
-  else
+  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+    auto &cte = GetChartTableEntry(dbIndex);
+    return cte.GetChartProjectionType();
+  } else
     return PROJECTION_UNKNOWN;
 }
 
@@ -2997,9 +3032,10 @@ int ChartDatabase::GetDBChartProj(int dbIndex) {
 //    Get DBChart Family
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartFamily(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
-    return active_chartTable[dbIndex].GetChartFamily();
-  else
+  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+    auto &cte = GetChartTableEntry(dbIndex);
+    return cte.GetChartFamily();
+  } else
     return CHART_FAMILY_UNKNOWN;
 }
 
@@ -3008,7 +3044,8 @@ int ChartDatabase::GetDBChartFamily(int dbIndex) {
 //-------------------------------------------------------------------
 wxString ChartDatabase::GetDBChartFileName(int dbIndex) {
   if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
-    return wxString(active_chartTable[dbIndex].GetFullSystemPath());
+    auto &cte = GetChartTableEntry(dbIndex);
+    return wxString(cte.GetFullSystemPath());
   } else
     return "";
 }
@@ -3017,9 +3054,10 @@ wxString ChartDatabase::GetDBChartFileName(int dbIndex) {
 //    Get DBChart Type
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartType(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
-    return active_chartTable[dbIndex].GetChartType();
-  else
+  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+    auto &cte = GetChartTableEntry(dbIndex);
+    return cte.GetChartType();
+  } else
     return 0;
 }
 
@@ -3027,9 +3065,10 @@ int ChartDatabase::GetDBChartType(int dbIndex) {
 //    Get DBChart Skew
 //-------------------------------------------------------------------
 float ChartDatabase::GetDBChartSkew(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
-    return active_chartTable[dbIndex].GetChartSkew();
-  else
+  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+    auto &cte = GetChartTableEntry(dbIndex);
+    return cte.GetChartSkew();
+  } else
     return 0.;
 }
 
@@ -3037,9 +3076,10 @@ float ChartDatabase::GetDBChartSkew(int dbIndex) {
 //    Get DBChart Scale
 //-------------------------------------------------------------------
 int ChartDatabase::GetDBChartScale(int dbIndex) {
-  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size()))
-    return active_chartTable[dbIndex].GetScale();
-  else
+  if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
+    auto &cte = GetChartTableEntry(dbIndex);
+    return cte.GetScale();
+  } else
     return 1;
 }
 
@@ -3048,7 +3088,7 @@ int ChartDatabase::GetDBChartScale(int dbIndex) {
 //-------------------------------------------------------------------
 bool ChartDatabase::GetDBBoundingBox(int dbIndex, LLBBox &box) {
   if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
-    const ChartTableEntry &entry = GetChartTableEntry(dbIndex);
+    auto &entry = GetChartTableEntry(dbIndex);
     box.Set(entry.GetLatMin(), entry.GetLonMin(), entry.GetLatMax(),
             entry.GetLonMax());
   }
@@ -3058,7 +3098,7 @@ bool ChartDatabase::GetDBBoundingBox(int dbIndex, LLBBox &box) {
 
 const LLBBox &ChartDatabase::GetDBBoundingBox(int dbIndex) {
   if ((bValid) && (dbIndex >= 0)) {
-    const ChartTableEntry &entry = GetChartTableEntry(dbIndex);
+    auto &entry = GetChartTableEntry(dbIndex);
     return entry.GetBBox();
   } else {
     return m_dummy_bbox;
@@ -3118,8 +3158,8 @@ int ChartDatabase::GetnAuxPlyEntries(int dbIndex) {
 //-------------------------------------------------------------------
 std::vector<float> ChartDatabase::GetReducedPlyPoints(int dbIndex) {
   if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
-    ChartTableEntry *pentry = GetpChartTableEntry(dbIndex);
-    if (pentry) return pentry->GetReducedPlyPoints();
+    ChartTableEntry &cte = GetChartTableEntry(dbIndex);
+    return cte.GetReducedPlyPoints();
   }
 
   std::vector<float> dummy;
@@ -3132,8 +3172,8 @@ std::vector<float> ChartDatabase::GetReducedPlyPoints(int dbIndex) {
 std::vector<float> ChartDatabase::GetReducedAuxPlyPoints(int dbIndex,
                                                          int iTable) {
   if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
-    ChartTableEntry *pentry = GetpChartTableEntry(dbIndex);
-    if (pentry) return pentry->GetReducedAuxPlyPoints(iTable);
+    auto &cte = GetChartTableEntry(dbIndex);
+    return cte.GetReducedAuxPlyPoints(iTable);
   }
 
   std::vector<float> dummy;
@@ -3142,12 +3182,12 @@ std::vector<float> ChartDatabase::GetReducedAuxPlyPoints(int dbIndex,
 
 bool ChartDatabase::IsChartAvailable(int dbIndex) {
   if ((bValid) && (dbIndex >= 0) && (dbIndex < (int)active_chartTable.size())) {
-    ChartTableEntry *pentry = GetpChartTableEntry(dbIndex);
+    auto &cte = GetChartTableEntry(dbIndex);
 
     //      If not PLugIn chart, assume always available
-    if (pentry->GetChartType() != CHART_TYPE_PLUGIN) return true;
+    if (cte.GetChartType() != CHART_TYPE_PLUGIN) return true;
 
-    wxString *path = pentry->GetpsFullPath();
+    wxString *path = cte.GetpsFullPath();
     wxFileName fn(*path);
     wxString ext = fn.GetExt();
     ext.Prepend("*.");
@@ -3180,12 +3220,12 @@ bool ChartDatabase::IsChartAvailable(int dbIndex) {
 void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray) {
   wxString separator(wxFileName::GetPathSeparator());
 
-  for (unsigned int ic = 0; ic < active_chartTable.GetCount(); ic++) {
-    ChartTableEntry *pcte = &active_chartTable[ic];
+  for (unsigned int ic = 0; ic < active_chartTable.size(); ic++) {
+    auto &cte = GetChartTableEntry(ic);
 
-    pcte->ClearGroupArray();
+    cte.ClearGroupArray();
 
-    wxString *chart_full_path = pcte->GetpsFullPath();
+    wxString *chart_full_path = cte.GetpsFullPath();
 
     for (unsigned int igroup = 0; igroup < pGroupArray->GetCount(); igroup++) {
       ChartGroup *pGroup = pGroupArray->Item(igroup);
@@ -3219,7 +3259,7 @@ void ChartDatabase::ApplyGroupArray(ChartGroupArray *pGroupArray) {
             }
           }
 
-          if (b_add) pcte->AddIntToGroupArray(igroup + 1);
+          if (b_add) cte.AddIntToGroupArray(igroup + 1);
         }
       }
     }

@@ -52,7 +52,7 @@
 // significant difference with Windows MSVC compiler builds.
 
 #ifndef __ANDROID__
-#define GetChartTableEntry(i) GetChartTable()[i]
+// #define GetChartTableEntry(i) GetChartTable()[i]
 #endif
 
 // Calculating the chart coverage region with extremely complicated shape is
@@ -359,8 +359,8 @@ bool Quilt::IsChartInQuilt(wxString &full_path) {
   for (unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++) {
     QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
     if ((pqc->b_include) && (!pqc->b_eclipsed)) {
-      ChartTableEntry *pcte = ChartData->GetpChartTableEntry(pqc->dbIndex);
-      if (pcte->GetpsFullPath()->IsSameAs(full_path)) return true;
+      auto &cte = ChartData->GetChartTableEntry(pqc->dbIndex);
+      if (cte.GetpsFullPath()->IsSameAs(full_path)) return true;
     }
   }
   return false;
@@ -1569,21 +1569,21 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
           //    Extended to also check for "identical" charts, having exact same
           //    EditionDate
           bool b_noadd = false;
-          ChartTableEntry *pn = ChartData->GetpChartTableEntry(i);
+          auto &cte_n = ChartData->GetChartTableEntry(i);
           for (unsigned int id = 0; id < m_extended_stack_array.size(); id++) {
             if (m_extended_stack_array[id] != -1) {
-              ChartTableEntry *pm =
-                  ChartData->GetpChartTableEntry(m_extended_stack_array[id]);
+              auto &cte_m =
+                  ChartData->GetChartTableEntry(m_extended_stack_array[id]);
               bool bsameTime = false;
-              if (pm->GetFileTime() && pn->GetFileTime()) {
-                if (labs(pm->GetFileTime() - pn->GetFileTime()) < 60)
+              if (cte_m.GetFileTime() && cte_n.GetFileTime()) {
+                if (labs(cte_m.GetFileTime() - cte_n.GetFileTime()) < 60)
                   bsameTime = true;
               }
-              if (pm->GetChartEditionDate() == pn->GetChartEditionDate())
+              if (cte_m.GetChartEditionDate() == cte_n.GetChartEditionDate())
                 bsameTime = true;
 
               if (bsameTime) {
-                if (pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
+                if (cte_n.GetpFileName()->IsSameAs(*(cte_m.GetpFileName())))
                   b_noadd = true;
               }
             }

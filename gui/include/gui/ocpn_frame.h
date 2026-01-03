@@ -330,6 +330,8 @@ public:
   int m_BellsToPlay;
   wxTimer BellsTimer;
 
+  wxGenericProgressDialog* Updateprog = nullptr;
+
   //      PlugIn support
   int GetNextToolbarToolId() { return m_next_available_plugin_tool_id; }
   void RequestNewToolbarArgEvent(wxCommandEvent& WXUNUSED(event)) {
@@ -344,6 +346,7 @@ public:
   bool UpdateChartDatabaseInplace(ArrayOfCDI& DirArray, bool b_force,
                                   bool b_prog,
                                   const wxString& ChartListFileName);
+  void FinalizeChartDBUpdate();
 
   bool m_bdefer_resize;
   wxSize m_defer_size;
@@ -445,6 +448,7 @@ private:
   wxTimer m_recaptureTimer;
 
   std::unique_ptr<LoadErrorsDlgCtrl> m_load_errors_dlg_ctrl;
+  wxString m_gshhg_chart_loc;
 
 private:
   ObservableListener listener_basic_navdata;

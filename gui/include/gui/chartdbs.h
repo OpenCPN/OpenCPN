@@ -339,10 +339,11 @@ public:
 
   void UpdateChartClassDescriptorArray(void);
 
+  inline std::vector<std::shared_ptr<ChartTableEntry>> &GetChartTable() {
+    return active_chartTable;
+  }
   int GetChartTableEntries() const { return active_chartTable.size(); }
-  const ChartTableEntry &GetChartTableEntry(int index) const;
-  ChartTableEntry *GetpChartTableEntry(int index) const;
-  inline ChartTable &GetChartTable() { return active_chartTable; }
+  ChartTableEntry &GetChartTableEntry(int index) const;
 
   bool IsValid() const { return bValid; }
   int DisableChart(wxString &PathToDisable);
@@ -368,7 +369,6 @@ public:
   wxString GetDBChartFileName(int dbIndex);
   void ApplyGroupArray(ChartGroupArray *pGroupArray);
   bool IsChartAvailable(int dbIndex);
-  ChartTable active_chartTable;
   std::map<wxString, int> active_chartTable_pathindex;
 
   std::vector<float> GetReducedPlyPoints(int dbIndex);
@@ -379,6 +379,8 @@ public:
   ChartTableEntry *CreateChartTableEntry(const wxString &filePath,
                                          wxString &utf8Path,
                                          ChartClassDescriptor &chart_desc);
+
+  std::vector<std::shared_ptr<ChartTableEntry>> active_chartTable;
 
 protected:
   virtual ChartBase *GetChart(const wxChar *theFilePath,
