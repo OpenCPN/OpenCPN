@@ -49,7 +49,6 @@
 #include "chcanv.h"
 #include "concanv.h"
 #include "navutil.h"
-#include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
