@@ -127,7 +127,6 @@
 #include "mui_bar.h"
 #include "N2KParser.h"
 #include "navutil.h"
-#include "ocpn_app.h"
 #include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
@@ -530,15 +529,15 @@ static NmeaLog *GetDataMonitor() {
   return dynamic_cast<NmeaLog *>(w);
 }
 
-// My frame constructor
-MyFrame::MyFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,
-                 const wxSize &size, RestServer &rest_server,
-                 wxAuiDefaultDockArt *pauidockart)
-    : wxFrame(frame, -1, title, pos, size, kFrameStyle, kTopLevelWindowName),
+MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
+                 RestServer &rest_server, wxAuiDefaultDockArt *pauidockart,
+                 OpenFileFunc open_gpx_file)
+    : wxFrame(nullptr, -1, title, pos, size, kFrameStyle, kTopLevelWindowName),
       m_connections_dlg(nullptr),
       m_data_monitor(new DataMonitor(this)),
       m_pauidockart(pauidockart),
-      m_rest_server(rest_server) {
+      m_rest_server(rest_server),
+      m_open_gpx_file(open_gpx_file) {
   g_current_monitor = wxDisplay::GetFromWindow(this);
 #ifdef __WXOSX__
   // On retina displays there is a difference between the physical size of the
@@ -4915,8 +4914,8 @@ void MyFrame::InitApiListeners() {
   m_on_raise_listener.Init(server.on_raise, [&](ObservedEvt) { Raise(); });
   m_on_quit_listener.Init(server.on_quit, [&](ObservedEvt) { FastClose(); });
   server.SetGetRestApiEndpointCb([&] { return m_rest_server.GetEndpoint(); });
-  server.open_file_cb = [](const std::string &path) {
-    return wxGetApp().OpenFile(path);
+  server.open_file_cb = [&](const std::string &path) {
+    return m_open_gpx_file(path);
   };
 }
 

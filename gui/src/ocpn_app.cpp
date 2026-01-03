@@ -1457,8 +1457,9 @@ void MyApp::BuildMainFrame() {
   auto dockart = new wxAuiDefaultDockArt;
   g_pauimgr->SetArtProvider(dockart);
 
-  gFrame = new MyFrame(NULL, myframe_window_title, position, new_frame_size,
-                       m_rest_server, dockart);
+  gFrame = new MyFrame(myframe_window_title, position, new_frame_size,
+                       m_rest_server, dockart,
+                       [&](const std::string &path) { return OpenFile(path); });
 
   //  Initialize the Plugin Manager
   g_pi_manager = new PlugInManager(gFrame);

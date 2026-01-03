@@ -102,6 +102,8 @@
 
 #define MAX_COG_AVERAGE_SECONDS 60
 #define MAX_COGSOG_FILTER_SECONDS 60
+
+using OpenFileFunc = std::function<bool(const std::string& path)>;
 //----------------------------------------------------------------------------
 // fwd class declarations
 //----------------------------------------------------------------------------
@@ -139,9 +141,9 @@ void LoadS57();
  */
 class MyFrame : public wxFrame {
 public:
-  MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
-          const wxSize& size, RestServer& rest_server,
-          wxAuiDefaultDockArt* pauidockart);
+  MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size,
+          RestServer& rest_server, wxAuiDefaultDockArt* pauidockart,
+          OpenFileFunc open_gpx_file);
 
   ~MyFrame();
 
@@ -466,6 +468,7 @@ private:
   DataMonitor* m_data_monitor;
   wxAuiDefaultDockArt* m_pauidockart;
   RestServer& m_rest_server;
+  OpenFileFunc m_open_gpx_file;
 
   void CenterAisTarget(const std::shared_ptr<const AisTargetData>& ais_target);
 
