@@ -181,8 +181,7 @@ public:
     params.socketCAN_port = "vcan0";
     params.Type = SOCKETCAN;
     auto driver = CommDriverN2KSocketCAN::Create(&params, msgbus);
-    CommBridge comm_bridge;
-    comm_bridge.Initialize();
+    auto& comm_bridge = CommBridge::GetInstance();
     CommDriverRegistry::GetInstance().Activate(std::move(driver));
     ProcessPendingEvents();
 
@@ -211,7 +210,7 @@ public:
     params.socketCAN_port = "vcan0";
     params.Type = SOCKETCAN;
     driver = CommDriverN2KSocketCAN::Create(&params, msgbus);
-    comm_bridge.Initialize();
+    CommBridge::GetInstance();
     CommDriverRegistry::GetInstance().Activate(std::move(driver));
     return true;
   }
@@ -227,7 +226,6 @@ public:
 
 private:
   std::unique_ptr<CommDriverN2KSocketCAN> driver;
-  CommBridge comm_bridge;
   ConnectionParams params;
 };
 

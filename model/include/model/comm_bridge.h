@@ -88,7 +88,10 @@ struct BridgeLogCallbacks {
  */
 class CommBridge : public wxEvtHandler {
 public:
-  CommBridge();
+  static CommBridge& GetInstance();
+
+  CommBridge(const CommBridge&) = delete;
+  CommBridge& operator=(const CommBridge&) = delete;
 
   ~CommBridge() override;
 
@@ -129,6 +132,8 @@ public:
   bool SaveConfig() const;
 
 private:
+  CommBridge();
+
   PriorityContainer active_priority_position;
   PriorityContainer active_priority_velocity;
   PriorityContainer active_priority_heading;

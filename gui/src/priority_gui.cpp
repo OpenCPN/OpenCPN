@@ -44,7 +44,6 @@
 #include "priority_gui.h"
 
 #include "model/comm_bridge.h"
-#include "ocpn_app.h"
 #include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 
@@ -135,8 +134,7 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
                       this);
 
   // Get the current status
-  MyApp& app = wxGetApp();
-  m_map = app.m_comm_bridge.GetPriorityMaps();
+  m_map = CommBridge::GetInstance().GetPriorityMaps();
 
   Populate();
 
@@ -181,8 +179,8 @@ void PriorityDlg::AddLeaves(const std::vector<std::string>& map_list,
   if (map_list.size() < (size_t)map_index) return;
 
   // Get the current Priority container for this branch
-  MyApp& app = wxGetApp();
-  PriorityContainer pc = app.m_comm_bridge.GetPriorityContainer(map_name);
+  PriorityContainer pc =
+      CommBridge::GetInstance().GetPriorityContainer(map_name);
 
   wxString priority_string(map_list[map_index].c_str());
   wxStringTokenizer tk(priority_string, "|");
@@ -368,18 +366,16 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir) {
   }
 
   // Update the priority mechanism
-  MyApp& app = wxGetApp();
-  app.m_comm_bridge.UpdateAndApplyMaps(m_map);
+  CommBridge::GetInstance().UpdateAndApplyMaps(m_map);
 
   // And reload the tree GUI
-  m_map = app.m_comm_bridge.GetPriorityMaps();
+  m_map = CommBridge::GetInstance().GetPriorityMaps();
   Populate();
 }
 
 void PriorityDlg::OnRefreshClick(wxCommandEvent& event) {
   // Reload the tree GUI
-  MyApp& app = wxGetApp();
-  m_map = app.m_comm_bridge.GetPriorityMaps();
+  m_map = CommBridge::GetInstance().GetPriorityMaps();
   Populate();
 }
 
@@ -393,11 +389,10 @@ void PriorityDlg::OnClearClick(wxCommandEvent& event) {
   m_selmap_index = m_selIndex = 0;
 
   // Update the priority mechanism
-  MyApp& app = wxGetApp();
-  app.m_comm_bridge.UpdateAndApplyMaps(m_map);
+  CommBridge::GetInstance().UpdateAndApplyMaps(m_map);
 
   // And reload the tree GUI
-  m_map = app.m_comm_bridge.GetPriorityMaps();
+  m_map = CommBridge::GetInstance().GetPriorityMaps();
   Populate();
 }
 

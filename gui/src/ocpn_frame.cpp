@@ -62,6 +62,7 @@
 #include "model/ais_target_data.h"
 #include "model/autopilot_output.h"
 #include "model/cmdline.h"
+#include "model/comm_bridge.h"
 #include "model/comm_drv_factory.h"  //FIXME(dave) this one goes away
 #include "model/comm_drv_registry.h"
 #include "model/comm_n0183_output.h"
@@ -126,10 +127,10 @@
 #include "N2KParser.h"
 #include "navutil.h"
 #include "ocpn_app.h"
-#include "ocpn_plugin.h"
 #include "ocpn_aui_manager.h"
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
+#include "ocpn_plugin.h"
 #include "o_senc.h"
 #include "options.h"
 #include "pluginmanager.h"
@@ -1749,8 +1750,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     g_pi_manager = NULL;
   }
 
-  MyApp &app = wxGetApp();
-  app.m_comm_bridge.SaveConfig();
+  CommBridge::GetInstance().SaveConfig();
 
   delete pConfig;  // All done
   pConfig = NULL;
