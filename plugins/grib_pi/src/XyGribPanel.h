@@ -66,6 +66,7 @@ public:
   wxCheckBox* m_precipitation_cbox;
   wxCheckBox* m_waveheight_cbox;
   wxCheckBox* m_windwave_cbox;
+  wxCheckBox* m_swellwave_cbox;
   wxButton* m_download_button;
   wxGauge* m_progress_gauge;
   wxStaticText* m_status_text;
