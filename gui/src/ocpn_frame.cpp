@@ -4471,7 +4471,8 @@ void MyFrame::FinalizeChartDBUpdate() {
   wxLogMessage("Finished chart database Update");
   wxLogMessage("   ");
 
-  delete Updateprog;
+  Updateprog->Destroy();
+  Updateprog = nullptr;
 
   // The Update() function may set gWorldMapLocation if at least one of the
   // directories contains GSHHS files.  Make sure GSHHS is still accessible

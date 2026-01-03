@@ -1088,8 +1088,21 @@ for (it = collision_map.begin(); it != collision_map.end(); ++it) {
 #endif
 
 void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
-  // Capture the completed job tickets, checking for duplicates along the way
+  // Update progress dialog, if present
+  if (m_pprog && (m_jobsRemaining > 1)) {
+    m_progcount++;
+    double ratio = 100. * (double)m_progcount / m_ticketcount;
+    int val = ratio;
+    if (((m_progcount % m_nFileProgressQuantum) == 0)) {
+      if (val != m_progint) {
+        m_progint = val;
+        printf("%d %d\n", m_progcount, val);
+        m_pprog->Update(val);
+      }
+    }
+  }
 
+  // Capture the completed job tickets, checking for duplicates along the way
   auto ticket = event.GetTicket();
   wxFileName fn(ticket->m_ChartPath);
 
@@ -1158,6 +1171,7 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     // TODO #3 goes here
     pConfig->UpdateChartDirs(m_dir_array);
     gFrame->FinalizeChartDBUpdate();
+    m_pprog = nullptr;
   }
 }
 
@@ -1673,6 +1687,13 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 
     m_chartDirs.Add(dir_info.fullpath);
   }  // for
+
+  // Initialize progress dialog
+  m_progcount = 0;
+  m_progint = 0;
+  m_ticketcount = m_jobsRemaining;
+  m_pprog = pprog;
+  m_nFileProgressQuantum = wxMax(m_ticketcount / 10, 2);
 
   return true;
 }
@@ -2490,8 +2511,8 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
       continue;
     }
 
-    if (pprog && ((ifile % nFileProgressQuantum) == 0))
-      pprog->Update(static_cast<int>(ifile * rFileProgressRatio), utf8_path);
+    // if (pprog && ((ifile % nFileProgressQuantum) == 0))
+    //   pprog->Update(static_cast<int>(ifile * rFileProgressRatio), utf8_path);
 
     ChartTableEntry *pnewChart = NULL;
     bool bAddFinal = true;

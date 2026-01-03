@@ -430,6 +430,11 @@ private:
   JobQueueCTE m_pool;
   std::vector<std::shared_ptr<ChartTableEntryJobTicket>> m_ticket_vector;
   ChartCollisionsHashMap m_full_collision_map;
+  int m_progcount;
+  int m_ticketcount;
+  wxGenericProgressDialog *m_pprog;
+  int m_progint;
+  int m_nFileProgressQuantum;
 };
 
 //-------------------------------------------------------------------------------------------

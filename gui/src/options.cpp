@@ -7921,7 +7921,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 
 void options::OnButtonRebuildChartDb(wxCommandEvent& event) {
   gFrame->UpdateChartDatabaseInplace(*m_pWorkDirList, true,
-                                     false,  // no progressdialog
+                                     true,  // no progressdialog
                                      ChartListFileName);
 }
 
