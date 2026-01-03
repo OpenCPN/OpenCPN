@@ -91,6 +91,7 @@
 #include "model/std_icon.h"
 #include "model/sys_events.h"
 #include "model/track.h"
+#include "model/usb_watch_daemon.h"
 
 #include "ais_info_gui.h"
 #include "dialog_alert.h"
@@ -4873,7 +4874,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
   wxLog::FlushActive();
 
   RefreshAllCanvas(true);
-  wxGetApp().m_usb_watcher.Start();
+  UsbWatchDaemon::GetInstance().Start();
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
