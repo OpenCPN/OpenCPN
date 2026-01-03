@@ -1,6 +1,7 @@
 
 #include <mutex>
 
+#include <wx/app.h>
 #include <wx/thread.h>
 
 #include "dychart.h"
@@ -60,7 +61,7 @@ void MbtTilesThread::Run() {
     // Only request a refresh of the display when there is no more tiles in
     // the queue.
     if (m_tile_queue.GetSize() == 0) {
-      wxGetApp().GetTopWindow()->GetEventHandler()->CallAfter(
+      wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(
           &MyFrame::RefreshAllCanvas, true);
     }
     // Check if the thread has been requested to be destroyed
