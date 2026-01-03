@@ -588,8 +588,6 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
 
   //      Set up some assorted member variables
   m_bTimeIsSet = false;
-  nBlinkerTick = 0;
-
   m_bdefer_resize = false;
 
   //    Clear the NMEA Filter tables
@@ -5668,7 +5666,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   bool bnew_view = false;
   if (!g_btenhertz) bnew_view = DoChartUpdate();
 
-  nBlinkerTick++;
+  g_blinker_tick++;
 
   if (g_always_send_rmb_rmc) SendNoRouteRmbRmc(*g_pRouteMan);
 

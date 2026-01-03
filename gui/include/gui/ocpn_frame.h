@@ -317,7 +317,6 @@ public:
 
   wxStatusBar* m_pStatusBar;
   wxMenuBar* m_pMenuBar;
-  int nBlinkerTick;
   bool m_bTimeIsSet;
 
   wxTimer InitTimer;
