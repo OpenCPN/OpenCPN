@@ -171,6 +171,8 @@ int __cdecl printf2(const char *format, ...) {
 extern ColorScheme global_color_scheme;  // library dependence
 extern wxColor GetDimColor(wxColor c);   // library dependence
 
+arrayofCanvasPtr g_canvasArray; /**< Global instance */
+
 static bool g_bSmoothRecenter = true;
 static bool bDrawCurrentValues;
 /**

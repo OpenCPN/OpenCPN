@@ -86,9 +86,7 @@ using JobList = std::list<JobTicket *>;
 
 extern GLuint g_raster_format;  // FIXME (leamas) Find a home
 
-extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find a home
-                                        //
-glTextureManager *g_glTextureManager;   ///< Global instance
+glTextureManager *g_glTextureManager;  ///< Global instance
 
 static bool bthread_debug;
 

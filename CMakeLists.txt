@@ -982,6 +982,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/route_validator.cpp
     ${GUI_SRC_DIR}/route_prop_dlg.cpp
     ${GUI_SRC_DIR}/route_prop_dlg_impl.cpp
+    ${GUI_SRC_DIR}/s57_load.cpp
     ${GUI_SRC_DIR}/s57obj.cpp
     ${GUI_SRC_DIR}/s57chart.cpp
     ${GUI_SRC_DIR}/s57_query_dlg.cpp

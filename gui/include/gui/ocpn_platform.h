@@ -60,6 +60,10 @@
 #include "chartdbs.h"
 #include "navutil.h"
 
+#ifdef ocpnUSE_GL
+#include "gl_chart_canvas.h"
+#endif
+
 class OCPNPlatform;              // forward
 extern OCPNPlatform *g_Platform; /**< Global instance. */
 
@@ -71,6 +75,10 @@ extern struct sigaction sa_all_old;  // global instance
 #endif
 
 extern wxArrayString g_locale_catalog_array; /**< Global instance */
+
+#ifdef ocpnUSE_GL
+extern OCPN_GLCaps *GL_Caps; /**< Global instance */
+#endif
 
 void catch_signals(int signo);
 

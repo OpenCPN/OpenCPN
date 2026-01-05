@@ -103,9 +103,6 @@
 //      Define a constant GPS signal watchdog timeout value
 #define GPS_TIMEOUT_SECONDS 10
 
-#define MAX_COG_AVERAGE_SECONDS 60
-#define MAX_COGSOG_FILTER_SECONDS 60
-
 using OpenFileFunc = std::function<bool(const std::string& path)>;
 //----------------------------------------------------------------------------
 // fwd class declarations
@@ -119,8 +116,6 @@ class options;  // circular
 // FIXME (leamas) to have utility functions in top window is a realy bad idea.
 bool ShowNavWarning();
 
-bool isSingleChart(ChartBase* chart);
-
 wxColour GetDialogColor(DialogColor color);
 
 // Helper to create menu label + hotkey string when registering menus
@@ -133,8 +128,6 @@ double AnchorDistFix(double const d, double const AnchorPointMinDist,
 bool TestGLCanvas(wxString prog_dir);
 bool ReloadLocale();
 void ApplyLocale(void);
-
-void LoadS57();
 
 /**
  * Main application frame. Top-level window frame for OpenCPN that manages
@@ -352,7 +345,7 @@ public:
 
   bool m_bdefer_resize;
   wxSize m_defer_size;
-  double COGTable[MAX_COG_AVERAGE_SECONDS];
+  double COGTable[kMaxCogAverageSeconds];
 
   void FastClose();
   void SetChartUpdatePeriod();
@@ -423,8 +416,8 @@ private:
   //      Plugin Support
   int m_next_available_plugin_tool_id;
 
-  double COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
-  double SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
+  double COGFilterTable[kMaxCogsogFilterSeconds];
+  double SOGFilterTable[kMaxCogsogFilterSeconds];
 
   int m_ChartUpdatePeriod;
   bool m_last_bGPSValid;

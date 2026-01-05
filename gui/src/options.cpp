@@ -114,6 +114,7 @@
 #include "options.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "s57_load.h"
 #include "styles.h"
 #include "model/svg_utils.h"
 #include "usb_devices.h"
@@ -192,8 +193,6 @@ extern ocpnGLOptions g_GLOptions;
 extern int g_Android_SDK_Version;
 extern MigrateAssistantDialog* g_migrateDialog;
 #endif
-
-extern arrayofCanvasPtr g_canvasArray;  // In ocpn_frame FIXME (leamas)
 
 static wxString GetOCPNKnownLanguage(const wxString lang_canonical,
                                      wxString& lang_dir);
@@ -7335,7 +7334,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
 
   long update_val = 1;
   pCOGUPUpdateSecs->GetValue().ToLong(&update_val);
-  g_COGAvgSec = wxMin(static_cast<int>(update_val), MAX_COG_AVERAGE_SECONDS);
+  g_COGAvgSec = wxMin(static_cast<int>(update_val), kMaxCogAverageSeconds);
 
   // TODO if (g_bCourseUp != pCBCourseUp->GetValue()) gFrame->ToggleCourseUp();
 
