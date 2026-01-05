@@ -88,6 +88,7 @@ RoutePoint::RoutePoint() {
   m_MarkName = "";
 
   m_bIsInLayer = false;
+  m_bAllowLayerReuse = false;
   m_LayerID = 0;
 
   m_WaypointArrivalRadius = g_n_arrival_circle_radius;
@@ -148,6 +149,7 @@ RoutePoint::RoutePoint(RoutePoint *orig) {
   SetPlannedSpeed(orig->GetPlannedSpeed());
 
   m_bIsInLayer = orig->m_bIsInLayer;
+  m_bAllowLayerReuse = orig->m_bAllowLayerReuse;
   m_GUID = pWayPointMan->CreateGUID(this);
 
   m_SelectNode = NULL;
@@ -233,6 +235,7 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   if (bAddToList && NULL != pWayPointMan) pWayPointMan->AddRoutePoint(this);
 
   m_bIsInLayer = false;
+  m_bAllowLayerReuse = false;
   m_LayerID = 0;
 
   SetWaypointArrivalRadius(g_n_arrival_circle_radius);

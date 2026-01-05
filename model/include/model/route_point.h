@@ -469,6 +469,10 @@ public:
    */
   bool m_bIsInLayer;
   /**
+   * Allow using a layer waypoint directly in a route (no cloning).
+   */
+  bool m_bAllowLayerReuse;
+  /**
    * Layer identifier if the waypoint belongs to a layer.
    */
   int m_LayerID;
