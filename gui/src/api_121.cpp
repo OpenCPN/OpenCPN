@@ -45,8 +45,6 @@
 #include "chcanv.h"
 #include "ocpn_plugin.h"
 
-extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
-
 // translate O route class to PlugIn_Waypoint_ExV2
 static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
                                      /* const*/ RoutePoint* src) {

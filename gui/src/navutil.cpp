@@ -89,6 +89,7 @@
 #include "cm93.h"
 #include "config.h"
 #include "config_mgr.h"
+#include "displays.h"
 #include "dychart.h"
 #include "font_mgr.h"
 #include "layer.h"
@@ -101,6 +102,7 @@
 #include "ocpn_platform.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "s57_load.h"
 #include "snd_config.h"
 #include "styles.h"
 #include "user_colors.h"
@@ -317,13 +319,13 @@ int MyConfig::LoadMyConfig() {
     g_MarkScaleFactorExp =
         g_Platform->GetMarkScaleFactorExp(g_ChartScaleFactor);
 
-    g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
+    g_COGFilterSec = wxMin(g_COGFilterSec, kMaxCogsogFilterSeconds);
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
 
     if (!g_bShowTrue && !g_bShowMag) g_bShowTrue = true;
     g_COGAvgSec =
-        wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);  // Bound the array size
+        wxMin(g_COGAvgSec, kMaxCogAverageSeconds);  // Bound the array size
 
     if (g_bInlandEcdis) g_bLookAhead = 1;
 

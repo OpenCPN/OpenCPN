@@ -63,6 +63,8 @@
 #include "tc_win.h"
 #include "undo.h"
 
+WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
+
 class canvasConfig;        // circular
 class CanvasMenuHandler;   // circular
 class MyFrame;             // circular
@@ -72,11 +74,10 @@ class Quilt;               // circular
 class TCWin;               // circular
 class Undo;                // circular
 
-class ChartCanvas;                    // forward
-extern ChartCanvas *g_overlayCanvas;  ///< Global instance
-extern ChartCanvas *g_focusCanvas;    ///< Global instance
-
-WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
+class ChartCanvas;                      // forward
+extern ChartCanvas *g_overlayCanvas;    ///< Global instance
+extern ChartCanvas *g_focusCanvas;      ///< Global instance
+extern arrayofCanvasPtr g_canvasArray;  ///< Global instance
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
