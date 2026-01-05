@@ -8589,7 +8589,19 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         RoutePoint *pNearbyPoint =
             pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
         if (pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) &&
-            !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
+            pNearbyPoint->IsVisible()) {
+          bool use_nearby = true;
+          bool allow_layer_reuse = false;
+          if (pNearbyPoint->m_bIsInLayer) {
+            int layer_answer = OCPNMessageBox(
+                this, _("Duplicate layer waypoint?"),
+                _("OpenCPN Route Create"),
+                (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+            if (layer_answer == wxID_NO)
+              allow_layer_reuse = true;
+            else if (layer_answer != wxID_YES)
+              use_nearby = false;
+          }
           wxArrayPtrVoid *proute_array =
               g_pRouteMan->GetRouteArrayContaining(pNearbyPoint);
 
@@ -8613,7 +8625,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           } else
             brp_viz = pNearbyPoint->IsVisible();  // isolated point
 
-          if (brp_viz) {
+          if (brp_viz && use_nearby) {
             wxString msg = _("Use nearby waypoint?");
             // Don't add a mark without name to the route. Name it if needed
             const bool noname(pNearbyPoint->GetName() == "");
@@ -8641,6 +8653,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   pNearbyPoint->SetName("WPXX");
               }
               pMousePoint = pNearbyPoint;
+              if (allow_layer_reuse) pMousePoint->m_bAllowLayerReuse = true;
 
               // Using existing waypoint, so nothing to delete for undo.
               if (m_routeState > 1)
@@ -8820,6 +8833,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (m_pMouseRoute)
           m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
 
+        if (allow_layer_reuse && pMousePoint)
+          pMousePoint->m_bAllowLayerReuse = false;
         m_routeState++;
 
         if (appending ||
@@ -9208,7 +9223,19 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         RoutePoint *pNearbyPoint =
             pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
         if (pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) &&
-            !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
+            pNearbyPoint->IsVisible()) {
+          bool use_nearby = true;
+          bool allow_layer_reuse = false;
+          if (pNearbyPoint->m_bIsInLayer) {
+            int layer_answer = OCPNMessageBox(
+                this, _("Duplicate layer waypoint?"),
+                _("OpenCPN Route Create"),
+                (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+            if (layer_answer == wxID_NO)
+              allow_layer_reuse = true;
+            else if (layer_answer != wxID_YES)
+              use_nearby = false;
+          }
           int dlg_return;
 #ifndef __WXOSX__
           m_FinishRouteOnKillFocus =
@@ -9220,8 +9247,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 #else
           dlg_return = wxID_YES;
 #endif
-          if (dlg_return == wxID_YES) {
+          if (dlg_return == wxID_YES && use_nearby) {
             pMousePoint = pNearbyPoint;
+            if (allow_layer_reuse) pMousePoint->m_bAllowLayerReuse = true;
 
             // Using existing waypoint, so nothing to delete for undo.
             if (m_routeState > 1)
@@ -9390,6 +9418,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           }
         }
 
+        if (allow_layer_reuse && pMousePoint)
+          pMousePoint->m_bAllowLayerReuse = false;
         m_prev_rlat = rlat;
         m_prev_rlon = rlon;
         m_prev_pMousePoint = pMousePoint;
@@ -9676,8 +9706,19 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             RoutePoint *pNearbyPoint = pWayPointMan->GetOtherNearbyWaypoint(
                 m_pRoutePointEditTarget->m_lat, m_pRoutePointEditTarget->m_lon,
                 nearby_radius_meters, m_pRoutePointEditTarget->m_GUID);
-            if (pNearbyPoint && !pNearbyPoint->m_bIsInLayer &&
-                pWayPointMan->IsReallyVisible(pNearbyPoint)) {
+            if (pNearbyPoint && pWayPointMan->IsReallyVisible(pNearbyPoint)) {
+              bool use_nearby = true;
+              bool allow_layer_reuse = false;
+              if (pNearbyPoint->m_bIsInLayer) {
+                int layer_answer = OCPNMessageBox(
+                    this, _("Duplicate layer waypoint?"),
+                    _("OpenCPN RoutePoint change"),
+                    (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                if (layer_answer == wxID_NO)
+                  allow_layer_reuse = true;
+                else if (layer_answer != wxID_YES)
+                  use_nearby = false;
+              }
               bool duplicate =
                   false;  // ensure we won't create duplicate point in routes
               if (m_pEditRouteArray && !pNearbyPoint->m_bIsolatedMark) {
@@ -9702,7 +9743,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               // polygon route
               if (m_pEditRouteArray->GetCount() == 1) duplicate = false;
 
-              if (!duplicate) {
+              if (!duplicate && use_nearby) {
                 int dlg_return;
                 dlg_return =
                     OCPNMessageBox(this,
@@ -9780,6 +9821,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 }
                 if (dlg_return == wxID_YES) {
                   pMousePoint = pNearbyPoint;
+                  if (allow_layer_reuse) pMousePoint->m_bAllowLayerReuse = true;
                   if (pMousePoint->m_bIsolatedMark) {
                     pMousePoint->SetShared(true);
                   }
@@ -9790,6 +9832,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               }
             }
           }
+          if (allow_layer_reuse && pMousePoint)
+            pMousePoint->m_bAllowLayerReuse = false;
           if (!pMousePoint)
             pSelect->UpdateSelectableRouteSegments(m_pRoutePointEditTarget);
 
@@ -9949,8 +9993,19 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             RoutePoint *pNearbyPoint = pWayPointMan->GetOtherNearbyWaypoint(
                 m_pRoutePointEditTarget->m_lat, m_pRoutePointEditTarget->m_lon,
                 nearby_radius_meters, m_pRoutePointEditTarget->m_GUID);
-            if (pNearbyPoint && !pNearbyPoint->m_bIsInLayer &&
-                pWayPointMan->IsReallyVisible(pNearbyPoint)) {
+            if (pNearbyPoint && pWayPointMan->IsReallyVisible(pNearbyPoint)) {
+              bool use_nearby = true;
+              bool allow_layer_reuse = false;
+              if (pNearbyPoint->m_bIsInLayer) {
+                int layer_answer = OCPNMessageBox(
+                    this, _("Duplicate layer waypoint?"),
+                    _("OpenCPN RoutePoint change"),
+                    (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                if (layer_answer == wxID_NO)
+                  allow_layer_reuse = true;
+                else if (layer_answer != wxID_YES)
+                  use_nearby = false;
+              }
               bool duplicate = false;  // don't create duplicate point in routes
               if (m_pEditRouteArray && !pNearbyPoint->m_bIsolatedMark) {
                 for (unsigned int ir = 0; ir < m_pEditRouteArray->GetCount();
@@ -9974,7 +10029,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               // polygon route
               if (m_pEditRouteArray->GetCount() == 1) duplicate = false;
 
-              if (!duplicate) {
+              if (!duplicate && use_nearby) {
                 int dlg_return;
                 dlg_return =
                     OCPNMessageBox(this,
@@ -10051,6 +10106,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 }
                 if (dlg_return == wxID_YES) {
                   pMousePoint = pNearbyPoint;
+                  if (allow_layer_reuse) pMousePoint->m_bAllowLayerReuse = true;
                   if (pMousePoint->m_bIsolatedMark) {
                     pMousePoint->SetShared(true);
                   }
@@ -10061,6 +10117,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               }
             }
           }
+          if (allow_layer_reuse && pMousePoint)
+            pMousePoint->m_bAllowLayerReuse = false;
           if (!pMousePoint)
             pSelect->UpdateSelectableRouteSegments(m_pRoutePointEditTarget);
 
