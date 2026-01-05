@@ -170,7 +170,7 @@ void Route::AddPointAndSegment(RoutePoint *pNewPoint, bool b_rename_in_sequence,
                                bool b_deferBoxCalc) {
   int npoints = GetnPoints();
   RoutePoint *newpoint = pNewPoint;
-  if (newpoint->m_bIsInLayer) {
+  if (newpoint->m_bIsInLayer && !newpoint->m_bAllowLayerReuse) {
     newpoint = new RoutePoint(pNewPoint->m_lat, pNewPoint->m_lon,
                               pNewPoint->GetIconName(), pNewPoint->GetName(),
                               "", false);
