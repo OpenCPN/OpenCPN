@@ -8589,7 +8589,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         RoutePoint *pNearbyPoint =
             pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
         if (pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) &&
-            !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
+            pNearbyPoint->IsVisible()) {
           wxArrayPtrVoid *proute_array =
               g_pRouteMan->GetRouteArrayContaining(pNearbyPoint);
 
@@ -9208,7 +9208,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         RoutePoint *pNearbyPoint =
             pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
         if (pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) &&
-            !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
+            pNearbyPoint->IsVisible()) {
           int dlg_return;
 #ifndef __WXOSX__
           m_FinishRouteOnKillFocus =
@@ -9676,8 +9676,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             RoutePoint *pNearbyPoint = pWayPointMan->GetOtherNearbyWaypoint(
                 m_pRoutePointEditTarget->m_lat, m_pRoutePointEditTarget->m_lon,
                 nearby_radius_meters, m_pRoutePointEditTarget->m_GUID);
-            if (pNearbyPoint && !pNearbyPoint->m_bIsInLayer &&
-                pWayPointMan->IsReallyVisible(pNearbyPoint)) {
+            if (pNearbyPoint && pWayPointMan->IsReallyVisible(pNearbyPoint)) {
               bool duplicate =
                   false;  // ensure we won't create duplicate point in routes
               if (m_pEditRouteArray && !pNearbyPoint->m_bIsolatedMark) {
@@ -9949,8 +9948,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             RoutePoint *pNearbyPoint = pWayPointMan->GetOtherNearbyWaypoint(
                 m_pRoutePointEditTarget->m_lat, m_pRoutePointEditTarget->m_lon,
                 nearby_radius_meters, m_pRoutePointEditTarget->m_GUID);
-            if (pNearbyPoint && !pNearbyPoint->m_bIsInLayer &&
-                pWayPointMan->IsReallyVisible(pNearbyPoint)) {
+            if (pNearbyPoint && pWayPointMan->IsReallyVisible(pNearbyPoint)) {
               bool duplicate = false;  // don't create duplicate point in routes
               if (m_pEditRouteArray && !pNearbyPoint->m_bIsolatedMark) {
                 for (unsigned int ir = 0; ir < m_pEditRouteArray->GetCount();
