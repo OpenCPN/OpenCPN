@@ -379,7 +379,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
 ///////////////////////////////////////////////////////////////////////
 
 ChartTableEntry::~ChartTableEntry() {
-  free(pFullPath);
+  // free(pFullPath);
   free(pPlyTable);
 
   for (int i = 0; i < nAuxPlyEntries; i++) free(pAuxPlyTable[i]);
@@ -1143,8 +1143,9 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     // Release references to tickets
     m_ticket_vector.clear();
 
+    FinalizeChartUpdate();
+#if 0
     // TODo #2 goes here
-#if 1
     //  TODO #2     After all thread events finished
     // Scrub CTE list, remove any anvalid entries
     for (auto &cte : active_chartTable) {
@@ -1166,13 +1167,57 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     m_nentries = active_chartTable.size();
     bValid = true;
     m_b_busy = false;
-#endif
 
     // TODO #3 goes here
     pConfig->UpdateChartDirs(m_dir_array);
     gFrame->FinalizeChartDBUpdate();
     m_pprog = nullptr;
+#endif
   }
+}
+
+void ChartDatabase::FinalizeChartUpdate() {
+  // Scrub CTE list, remove any anvalid entries,
+  //  as tagged by directory removal
+  active_chartTable.erase(
+      std::remove_if(active_chartTable.begin(), active_chartTable.end(),
+                     [](const auto &cte) { return !cte->GetbValid(); }),
+      active_chartTable.end());
+
+#if 0
+    for (size_t i=0; i < active_chartTable.size(); i++) {
+    auto cte = active_chartTable[i]; //GetChartTableEntry(i);
+    if (!cte->GetbValid()) {
+      // Fast O(0) removal
+      // Swap the element with the back element,
+      // except in the case when we're the last element.
+      if (i + 1 != active_chartTable.size())
+        std::swap(active_chartTable[i], active_chartTable.back());
+
+      //Pop the back of the container, deleting our old element.
+      active_chartTable.pop_back();
+      i--;  // entry is gone, recheck this index for next entry
+    }
+  }
+#endif
+
+  //    And once more, setting the Entry index field
+  active_chartTable_pathindex.clear();
+  int i = 0;
+  for (auto cte : active_chartTable) {
+    active_chartTable_pathindex[cte->GetFullSystemPath()] = i;
+    cte->SetEntryOffset(i);
+    i++;
+  }
+
+  m_nentries = active_chartTable.size();
+  bValid = true;
+  m_b_busy = false;
+
+  // TODO #3 goes here
+  pConfig->UpdateChartDirs(m_dir_array);
+  gFrame->FinalizeChartDBUpdate();
+  m_pprog = nullptr;
 }
 
 void ChartDatabase::UpdateChartClassDescriptorArray() {
@@ -1620,6 +1665,7 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
                            wxGenericProgressDialog *pprog) {
   m_ticket_vector.clear();
   m_full_collision_map.clear();
+  m_jobsRemaining = 0;
 
   m_dir_array = dir_array;
 
@@ -1687,6 +1733,12 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 
     m_chartDirs.Add(dir_info.fullpath);
   }  // for
+
+  // Special case, if chart dir list is truly empty
+  if (m_chartDirs.IsEmpty()) {
+    FinalizeChartUpdate();
+    return true;
+  }
 
   // Initialize progress dialog
   m_progcount = 0;
@@ -2469,9 +2521,6 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   //    collision_map[table_file.GetFullName()] = i;
   //  }
 
-  int nFileProgressQuantum = wxMax(nFile / 100, 2);
-  double rFileProgressRatio = 100.0 / wxMax(nFile, 1);
-
   // Capture a vector of pending thread tickets for this directory
   std::vector<std::shared_ptr<ChartTableEntryJobTicket>> ticket_vector;
 
@@ -2605,7 +2654,12 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
 #endif
 
   // load the thread pool from the prepared array
-  m_jobsRemaining = ticket_vector.size();
+  m_jobsRemaining += ticket_vector.size();
+
+  // Enqueue jobs
+  for (auto &ticket : ticket_vector) {
+    m_pool.Push(ticket);
+  }
 
   // if needed, start N worker threads once
   if (m_pool.GetWorkerCount() == 0) {
@@ -2614,11 +2668,6 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
       (new PoolWorkerThread(m_pool, this))->Run();
       m_pool.AddWorker();
     }
-  }
-
-  // Enqueue jobs
-  for (auto &ticket : ticket_vector) {
-    m_pool.Push(ticket);
   }
 
   // Tickets queued, wait for completion events

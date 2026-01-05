@@ -909,7 +909,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/catalog_mgr.cpp
     ${GUI_SRC_DIR}/cat_settings.cpp
     ${GUI_SRC_DIR}/chartdb.cpp
-    ${GUI_HDR_DIR}/chartdb_thread.cpp
+    ${GUI_SRC_DIR}/chartdb_thread.cpp
     ${GUI_SRC_DIR}/chartdbs.cpp
     ${GUI_SRC_DIR}/chartimg.cpp
     ${GUI_SRC_DIR}/chcanv.cpp

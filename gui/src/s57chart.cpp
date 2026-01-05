@@ -102,6 +102,8 @@ WX_DEFINE_LIST(ListOfPI_S57Obj);
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
 
+static wxCriticalSection GDALcriticalSection;
+
 static int s_bInS57;  // Exclusion flag to prvent recursion in this class init
                       // call. Init() is not reentrant due to static
                       // wxProgressDialog callback....
@@ -2514,7 +2516,7 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
   if (s_bInS57) {
     //          printf("s57chart::Init() recursion..., retry\n");
     //          wxLogMessage("Recursion");
-    return INIT_FAIL_NOERROR;
+    // return INIT_FAIL_NOERROR;
   }
 
   s_bInS57++;
@@ -3129,17 +3131,11 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY_PTR(float *, MyFloatPtrArray);
+static int depth = 0;  // Tracks re-entry depth
+static bool isProcessing = false;
 
 //    Read the .000 ENC file and create required Chartbase data structures
 bool s57chart::CreateHeaderDataFromENC() {
-  if (!InitENCMinimal(m_TempFilePath)) {
-    wxString msg("   Cannot initialize ENC file ");
-    msg.Append(m_TempFilePath);
-    wxLogMessage(msg);
-
-    return false;
-  }
-
   OGRFeature *pFeat;
   int catcov;
   float LatMax, LatMin, LonMax, LonMin;
@@ -3151,78 +3147,101 @@ bool s57chart::CreateHeaderDataFromENC() {
   m_pCOVRTablePoints = NULL;
   m_pCOVRTable = NULL;
 
+  if (!InitENCMinimal(m_TempFilePath)) {
+    wxString msg("   Cannot initialize ENC file ");
+    msg.Append(m_TempFilePath);
+    wxLogMessage(msg);
+
+    return false;
+  }
+
   //  Create arrays to hold geometry objects temporarily
   MyFloatPtrArray *pAuxPtrArray = new MyFloatPtrArray;
   std::vector<int> auxCntArray, noCovrCntArray;
-
   MyFloatPtrArray *pNoCovrPtrArray = new MyFloatPtrArray;
 
-  // Get the first M_COVR object
-  pFeat = GetChartFirstM_COVR(catcov);
+  {
+    wxCriticalSectionLocker enter(GDALcriticalSection);
+    if (isProcessing) int yyp = 4;
+    isProcessing = true;
 
-  while (pFeat) {
-    //    Get the next M_COVR feature, and create possible additional entries
-    //    for COVR
-    OGRPolygon *poly = (OGRPolygon *)(pFeat->GetGeometryRef());
-    OGRLinearRing *xring = poly->getExteriorRing();
+    depth++;
+    // Print thread ID and current depth
+    // printf("Enter [Thread %ld] (Depth: %d)\n",
+    // (long)wxThread::GetCurrentId(), depth);
 
-    int npt = xring->getNumPoints();
-    int usedpts = 0;
+    // Get the first M_COVR object
+    pFeat = GetChartFirstM_COVR(catcov);
 
-    float *pf = NULL;
-    float *pfr = NULL;
+    while (pFeat) {
+      //    Get the next M_COVR feature, and create possible additional entries
+      //    for COVR
+      OGRPolygon *poly = (OGRPolygon *)(pFeat->GetGeometryRef());
+      OGRLinearRing *xring = poly->getExteriorRing();
 
-    if (npt >= 3) {
-      // pf = (float *) malloc( 2 * sizeof(float) );
+      int npt = xring->getNumPoints();
+      int usedpts = 0;
 
-      OGRPoint last_p;
-      OGRPoint p;
-      for (int i = 0; i < npt; i++) {
-        xring->getPoint(i, &p);
-        if (i >
-            3) {  // We need at least 3 points, so make sure the first 3 pass
-          float xdelta =
-              fmax(last_p.getX(), p.getX()) - fmin(last_p.getX(), p.getX());
-          float ydelta =
-              fmax(last_p.getY(), p.getY()) - fmin(last_p.getY(), p.getY());
-          if (xdelta < 0.001 &&
-              ydelta < 0.001) {  // Magic number, 0.001 degrees ~= 111 meters on
-                                 // the equator...
-            continue;
+      float *pf = NULL;
+      float *pfr = NULL;
+
+      if (npt >= 3) {
+        // pf = (float *) malloc( 2 * sizeof(float) );
+
+        OGRPoint last_p;
+        OGRPoint p;
+        for (int i = 0; i < npt; i++) {
+          xring->getPoint(i, &p);
+          if (i >
+              3) {  // We need at least 3 points, so make sure the first 3 pass
+            float xdelta =
+                fmax(last_p.getX(), p.getX()) - fmin(last_p.getX(), p.getX());
+            float ydelta =
+                fmax(last_p.getY(), p.getY()) - fmin(last_p.getY(), p.getY());
+            if (xdelta < 0.001 &&
+                ydelta < 0.001) {  // Magic number, 0.001 degrees ~= 111 meters
+                                   // on the equator...
+              continue;
+            }
           }
+          last_p = p;
+          usedpts++;
+          pf = (float *)realloc(pf, 2 * usedpts * sizeof(float));
+          pfr = &pf[2 * (usedpts - 1)];
+
+          if (catcov == 1) {
+            LatMax = fmax(LatMax, p.getY());
+            LatMin = fmin(LatMin, p.getY());
+            LonMax = fmax(LonMax, p.getX());
+            LonMin = fmin(LonMin, p.getX());
+          }
+
+          pfr[0] = p.getY();  // lat
+          pfr[1] = p.getX();  // lon
         }
-        last_p = p;
-        usedpts++;
-        pf = (float *)realloc(pf, 2 * usedpts * sizeof(float));
-        pfr = &pf[2 * (usedpts - 1)];
 
         if (catcov == 1) {
-          LatMax = fmax(LatMax, p.getY());
-          LatMin = fmin(LatMin, p.getY());
-          LonMax = fmax(LonMax, p.getX());
-          LonMin = fmin(LonMin, p.getX());
+          pAuxPtrArray->Add(pf);
+          auxCntArray.push_back(usedpts);
+        } else if (catcov == 2) {
+          pNoCovrPtrArray->Add(pf);
+          noCovrCntArray.push_back(usedpts);
         }
-
-        pfr[0] = p.getY();  // lat
-        pfr[1] = p.getX();  // lon
       }
 
-      if (catcov == 1) {
-        pAuxPtrArray->Add(pf);
-        auxCntArray.push_back(usedpts);
-      } else if (catcov == 2) {
-        pNoCovrPtrArray->Add(pf);
-        noCovrCntArray.push_back(usedpts);
-      }
-    }
+      delete pFeat;
+      pFeat = GetChartNextM_COVR(catcov);
+      DEBUG_LOG << "used " << usedpts << " points";
 
-    delete pFeat;
-    pFeat = GetChartNextM_COVR(catcov);
-    DEBUG_LOG << "used " << usedpts << " points";
-  }  // while
+    }  // while
+    // printf("     Leave [Thread %ld] (Depth: %d)\n",
+    // (long)wxThread::GetCurrentId(), depth);
+    depth--;
+    isProcessing = false;
+
+  }  // CriticalSection
 
   //    Allocate the storage
-
   m_nCOVREntries = auxCntArray.size();
 
   //    Create new COVR entries
@@ -3322,9 +3341,9 @@ bool s57chart::CreateHeaderDataFromENC() {
   //    Set the chart scale
   m_Chart_Scale = GetENCScale();
 
-  wxString nice_name;
-  GetChartNameFromTXT(m_TempFilePath, nice_name);
-  m_Name = nice_name;
+  // wxString nice_name;
+  // GetChartNameFromTXT(m_TempFilePath, nice_name);
+  // m_Name = nice_name;
 
   return true;
 }
@@ -6109,8 +6128,11 @@ OGRFeature *s57chart::GetChartFirstM_COVR(int &catcov) {
     g_poRegistrar->SelectClass("M_COVR");
 
     //      Build a new feature definition for this class
-    OGRFeatureDefn *poDefn = S57GenerateObjectClassDefn(
-        g_poRegistrar, g_poRegistrar->GetOBJL(), pENCReader->GetOptionFlags());
+    //    OGRFeatureDefn *poDefn = S57GenerateObjectClassDefn(
+    //        g_poRegistrar, g_poRegistrar->GetOBJL(),
+    //        pENCReader->GetOptionFlags());
+    //  Expedited version, hard coded index 302 from registrar data files
+    OGRFeatureDefn *poDefn = S57GenerateObjectClassDefnM_COVR(302);
 
     //      Add this feature definition to the reader
     pENCReader->AddFeatureDefn(poDefn);

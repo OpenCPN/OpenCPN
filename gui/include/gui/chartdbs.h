@@ -323,6 +323,7 @@ public:
    */
   bool Update(ArrayOfCDI &dir_array, bool bForce,
               wxGenericProgressDialog *pprog);
+  void FinalizeChartUpdate();
 
   bool Read(const wxString &filePath);
   bool Write(const wxString &filePath);

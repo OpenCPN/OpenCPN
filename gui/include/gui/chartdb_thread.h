@@ -181,7 +181,10 @@ protected:
     std::shared_ptr<ChartTableEntryJobTicket> job;
 
     while (m_queue.Pop(job)) {
-      if (!job->DoJob()) job->b_isaborted = true;
+      if (!job->DoJob()) {
+        job->b_isaborted = true;
+        printf("job aborted\n");
+      }
 
       auto* evt =
           new OCPN_ChartTableEntryThreadEvent(wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
@@ -189,6 +192,7 @@ protected:
       wxQueueEvent(m_target, evt);
     }
 
+    printf("thread exit\n");
     return 0;
   }
 
