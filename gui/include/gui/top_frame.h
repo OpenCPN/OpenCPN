@@ -42,6 +42,11 @@
 #include "abstract_chart_canv.h"
 #include "undo_defs.h"
 
+#include "abstract_chart.h"
+#include "abstract_chart_canv.h"
+#include "s52s57.h"  // enum _Discat, should be moved
+#include "undo_defs.h"
+
 class AbstractTopFrame : public wxFrame {
 public:
   AbstractTopFrame(wxFrame *frame, const wxString &title, const wxPoint &pos,

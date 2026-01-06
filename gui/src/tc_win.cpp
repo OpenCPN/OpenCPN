@@ -38,6 +38,7 @@
 #include "model/config_vars.h"
 #include "model/gui_vars.h"
 
+#include "abstract_chart_canv.h"
 #include "chcanv.h"
 #include "dychart.h"
 #include "font_mgr.h"
@@ -254,6 +255,9 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   // Initialize the station text now that fonts are available
   InitializeStationText();
 }
+
+TCWin::TCWin(AbstractChartCanvas *parent, int x, int y, void *pvIDX)
+    : TCWin(dynamic_cast<ChartCanvas *>(parent), x, y, pvIDX) {}
 
 TCWin::~TCWin() {
   m_TimeIndicatorTimer.Stop();

@@ -97,7 +97,6 @@
 #include "nmea0183.h"
 #include "observable_globvar.h"
 #include "ocpndc.h"
-#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 #include "ocpn_platform.h"
 #include "s52plib.h"
@@ -105,6 +104,7 @@
 #include "s57_load.h"
 #include "snd_config.h"
 #include "styles.h"
+#include "top_frame.h"
 #include "user_colors.h"
 
 #ifdef ocpnUSE_GL
@@ -2862,7 +2862,7 @@ void SwitchInlandEcdisMode(bool Switch) {
     g_iSpeedFormat = 2;     // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
     if (ps52plib) ps52plib->SetDisplayCategory(STANDARD);
     g_bDrawAISSize = false;
-    if (gFrame) gFrame->RequestNewToolbars(true);
+    if (top_frame::Get()) top_frame::Get()->RequestNewToolbars(true);
   } else {
     wxLogMessage("Switch InlandEcdis mode Off");
     // reread the settings overruled by inlandEcdis
@@ -2880,7 +2880,7 @@ void SwitchInlandEcdisMode(bool Switch) {
       pConfig->Read("bDrawAISSize", &g_bDrawAISSize);
       pConfig->Read("bDrawAISRealtime", &g_bDrawAISRealtime);
     }
-    if (gFrame) gFrame->RequestNewToolbars(true);
+    if (top_frame::Get()) top_frame::Get()->RequestNewToolbars(true);
   }
 }
 

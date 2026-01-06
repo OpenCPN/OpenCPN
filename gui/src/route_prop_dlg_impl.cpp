@@ -37,13 +37,13 @@
 #include "gui_lib.h"
 #include "mark_info.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 #include "print_dialog.h"
 #include "routemanagerdialog.h"
 #include "route_printout.h"
 #include "route_prop_dlg_impl.h"
 #include "tcmgr.h"
+#include "top_frame.h"
 
 #define UTCINPUT 0  //!< Format date/time in UTC.
 #define LTINPUT \
@@ -840,7 +840,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
         m_pRoute->UpdateSegmentDistances();
         ;
 
-        gFrame->InvalidateAllGL();
+        top_frame::Get()->InvalidateAllGL();
 
         m_dvlcWaypoints->SelectRow(pos - list->begin());
 
@@ -864,7 +864,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
 
         g_pRouteMan->RemovePointFromRoute(pRP, m_pRoute, 0);
 
-        gFrame->InvalidateAllGL();
+        top_frame::Get()->InvalidateAllGL();
         UpdatePoints();
       }
       break;
@@ -1096,7 +1096,7 @@ bool RoutePropDlgImpl::IsThisRouteExtendable() {
   } else {
     if (pEditRouteArray->GetCount() == 0) {
       int nearby_radius_meters =
-          (int)(8. / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale());
+          (int)(8. / top_frame::Get()->GetCanvasTrueScale());
       double rlat = pLastPoint->m_lat;
       double rlon = pLastPoint->m_lon;
 

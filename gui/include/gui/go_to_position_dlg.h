@@ -29,6 +29,7 @@
 
 #include "model/ocpn_types.h"
 #include "color_types.h"
+#include "abstract_chart_canv.h"
 
 class ChartCanvas;
 
@@ -76,7 +77,7 @@ public:
               const wxSize& size = SYMBOL_GOTOPOS_SIZE,
               long style = SYMBOL_GOTOPOS_STYLE);
 
-  void SetCanvas(ChartCanvas* canvas) { m_hostCanvas = canvas; }
+  void SetCanvas(AbstractChartCanvas* canvas) { m_hostCanvas = canvas; }
   void SetColorScheme(ColorScheme cs);
 
   void CreateControls();
@@ -96,7 +97,9 @@ public:
 
   double m_lat_save;
   double m_lon_save;
-  ChartCanvas* m_hostCanvas;
+
+private:
+  AbstractChartCanvas* m_hostCanvas;
 };
 
 #endif

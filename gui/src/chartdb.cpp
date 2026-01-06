@@ -21,30 +21,40 @@
  * Implement chartdb.h -- chart database management
  */
 
+#include "chartdb.h"
+
+#include <stdio.h>
+#include <math.h>
+
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
-#include <wx/stopwatch.h>
-#include <wx/regex.h>
-#include <wx/tokenzr.h>
 #include <wx/dir.h>
+#include <wx/progdlg.h>
+#include <wx/regex.h>
+#include <wx/stopwatch.h>
+#include <wx/tokenzr.h>
 
 #include <model/base_platform.h>
 #include <model/ocpn_utils.h>
 
-#include "dychart.h"
-#include "config.h"
-#include "chartdb.h"
-#include "chartimg.h"
-#include "thumbwin.h"
-#include "mbtiles.h"
 #include "canvas_config.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "cm93.h"
+#include "config.h"
 #include "config_mgr.h"
+#include "dychart.h"
+#include "mbtiles.h"
+#include "s57chart.h"
 #include "s57_load.h"
+#include "thumbwin.h"
+#include "user_colors.h"
+
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
@@ -52,17 +62,6 @@
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
 #endif
-
-#include <stdio.h>
-#include <math.h>
-
-#include <wx/progdlg.h>
-
-#include "chcanv.h"
-
-#include "s57chart.h"
-#include "cm93.h"
-#include "user_colors.h"
 
 extern ColorScheme GetColorScheme();  // library dependency
 

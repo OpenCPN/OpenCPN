@@ -193,9 +193,7 @@ double AnchorDistFix(double const d, double const AnchorPointMinDist,
       return AnchorPointMaxDist;
     else
       return d;
-
-  else
-    // if ( d < 0.0 )
+  else  //  d < 0.0
     if (d > -AnchorPointMinDist)
       return -AnchorPointMinDist;
     else if (d < -AnchorPointMaxDist)
