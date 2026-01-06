@@ -37,7 +37,7 @@
 #include "chcanv.h"
 #include "mark_info.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
+#include "top_frame.h"
 
 GoToPositionDialog* pGoToPositionDialog;
 
@@ -181,8 +181,10 @@ void GoToPositionDialog::OnGoToPosOkClick(wxCommandEvent& event) {
   if (lat > 80.0 || lat < -80.0) goto noGo;
   if (lon > 180.0 || lon < -180.0) goto noGo;
 
-  if (m_hostCanvas)
-    gFrame->JumpToPosition(m_hostCanvas, lat, lon, m_hostCanvas->GetVPScale());
+  if (m_hostCanvas) {
+    top_frame::Get()->JumpToPosition(m_hostCanvas, lat, lon,
+                                     m_hostCanvas->GetVPScale());
+  }
   Hide();
   event.Skip();
   return;

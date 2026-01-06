@@ -45,10 +45,10 @@
 #include "font_mgr.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "styles.h"
+#include "top_frame.h"
 
 enum eMenuItems { ID_NAVLEG = 1, ID_NAVROUTE, ID_NAVHIGHWAY } menuItems;
 
@@ -434,7 +434,7 @@ void ConsoleCanvasWin::RefreshConsoleData() {
 void ConsoleCanvasWin::ShowWithFreshFonts() {
   Hide();
   UpdateFonts();
-  gFrame->PositionConsole();
+  top_frame::Get()->PositionConsole();
   Show();
 }
 
@@ -844,7 +844,7 @@ void ConsoleCanvasFrame::ShowWithFreshFonts() {
   Hide();
   Move(0, 0);
   UpdateFonts();
-  gFrame->PositionConsole();
+  top_frame::Get()->PositionConsole();
   Show();
 }
 

@@ -71,7 +71,6 @@
 #include "mygeom.h"
 #include "navutil.h"  // for LogMessageOnce
 #include "ocpndc.h"
-#include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "ocpn_platform.h"
 #include "ogr_s57.h"
@@ -4128,7 +4127,7 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   //    Create a hash map of VE_Element pointers as a chart class member
   int n_ve_elements = VEs.size();
 
-  double scale = gFrame->GetBestVPScale(this);
+  double scale = top_frame::Get()->GetBestVPScale(this);
   int nativescale = GetNativeScale();
 
   for (int i = 0; i < n_ve_elements; i++) {
