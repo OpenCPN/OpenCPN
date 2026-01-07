@@ -8629,18 +8629,31 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
             m_FinishRouteOnKillFocus = true;
             if (dlg_return == wxID_YES) {
+              wxString wp_name;
               if (noname) {
                 if (m_pMouseRoute) {
                   int last_wp_num = m_pMouseRoute->GetnPoints();
                   // AP-ECRMB will truncate to 6 characters
                   wxString guid_short = m_pMouseRoute->GetGUID().Left(2);
-                  wxString wp_name = wxString::Format(
-                      "M%002i-%s", last_wp_num + 1, guid_short);
-                  pNearbyPoint->SetName(wp_name);
-                } else
-                  pNearbyPoint->SetName("WPXX");
+                  wp_name = wxString::Format("M%002i-%s", last_wp_num + 1,
+                                             guid_short);
+                } else {
+                  wp_name = "WPXX";
+                }
               }
-              pMousePoint = pNearbyPoint;
+              if (pNearbyPoint->m_bIsInLayer) {
+                pMousePoint = new RoutePoint(pNearbyPoint);
+                pMousePoint->m_bIsInLayer = false;
+                pMousePoint->m_LayerID = 0;
+                pMousePoint->SetIconName(g_default_routepoint_icon);
+                if (noname && !wp_name.IsEmpty()) pMousePoint->SetName(wp_name);
+                pSelect->AddSelectableRoutePoint(pMousePoint->m_lat,
+                                                 pMousePoint->m_lon,
+                                                 pMousePoint);
+              } else {
+                if (noname && !wp_name.IsEmpty()) pNearbyPoint->SetName(wp_name);
+                pMousePoint = pNearbyPoint;
+              }
 
               // Using existing waypoint, so nothing to delete for undo.
               if (m_routeState > 1)
@@ -9221,7 +9234,16 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           dlg_return = wxID_YES;
 #endif
           if (dlg_return == wxID_YES) {
-            pMousePoint = pNearbyPoint;
+            if (pNearbyPoint->m_bIsInLayer) {
+              pMousePoint = new RoutePoint(pNearbyPoint);
+              pMousePoint->m_bIsInLayer = false;
+              pMousePoint->m_LayerID = 0;
+              pMousePoint->SetIconName(g_default_routepoint_icon);
+              pSelect->AddSelectableRoutePoint(pMousePoint->m_lat,
+                                               pMousePoint->m_lon, pMousePoint);
+            } else {
+              pMousePoint = pNearbyPoint;
+            }
 
             // Using existing waypoint, so nothing to delete for undo.
             if (m_routeState > 1)
