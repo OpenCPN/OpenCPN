@@ -111,15 +111,20 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
       AddPoint(psourceroute->GetPoint(i), false);
     } else {
       RoutePoint *psourcepoint = psourceroute->GetPoint(i);
-      const wxString &icon_name = psourcepoint->m_bIsInLayer
-                                      ? g_default_routepoint_icon
-                                      : psourcepoint->GetIconName();
-      RoutePoint *ptargetpoint =
-          new RoutePoint(psourcepoint->m_lat, psourcepoint->m_lon, icon_name,
-                         psourcepoint->GetName(), "", true);
-      ptargetpoint->m_bShowName =
-          psourcepoint->m_bShowName;  // do not change new wpt's name visibility
-      AddPoint(ptargetpoint, false);
+      RoutePoint *ptargetpoint = psourcepoint;
+      if (psourcepoint &&
+          (psourcepoint->m_bIsInLayer || psourcepoint->m_LayerID != 0)) {
+        ptargetpoint =
+            DuplicateRoutePointForRoute(psourcepoint, psourcepoint->GetName());
+      } else {
+        ptargetpoint = new RoutePoint(psourcepoint->m_lat, psourcepoint->m_lon,
+                                      psourcepoint->GetIconName(),
+                                      psourcepoint->GetName(), "", true);
+      }
+      if (ptargetpoint) {
+        ptargetpoint->m_bShowName = psourcepoint->m_bShowName;
+        AddPoint(ptargetpoint, false);
+      }
     }
   }
 
@@ -173,12 +178,12 @@ void Route::AddPointAndSegment(RoutePoint *pNewPoint, bool b_rename_in_sequence,
                                bool b_deferBoxCalc) {
   int npoints = GetnPoints();
   RoutePoint *newpoint = pNewPoint;
-  if (newpoint->m_bIsInLayer) {
-    newpoint = new RoutePoint(pNewPoint->m_lat, pNewPoint->m_lon,
-                              g_default_routepoint_icon, pNewPoint->GetName(),
-                              "", false);
-    newpoint->m_bShowName =
-        pNewPoint->m_bShowName;  // do not change new wpt's name visibility
+  if (newpoint && (newpoint->m_bIsInLayer || newpoint->m_LayerID != 0)) {
+    newpoint = DuplicateRoutePointForRoute(pNewPoint, pNewPoint->GetName());
+    if (newpoint) {
+      newpoint->m_bShowName =
+          pNewPoint->m_bShowName;  // do not change new wpt's name visibility
+    }
   }
   AddPoint(newpoint, false);
   if (npoints != 0) {
@@ -197,18 +202,18 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
   {
     bool add = false;
     RoutePoint *newpoint = pNewPoint;
-    if (pNewPoint->m_bIsInLayer) {
-      newpoint = new RoutePoint(pNewPoint->m_lat, pNewPoint->m_lon,
-                                g_default_routepoint_icon, pNewPoint->GetName(),
-                                "", false);
-      newpoint->m_bShowName = pNewPoint->m_bShowName;
+    if (newpoint && (newpoint->m_bIsInLayer || newpoint->m_LayerID != 0)) {
+      newpoint = DuplicateRoutePointForRoute(pNewPoint, pNewPoint->GetName());
+      if (newpoint) newpoint->m_bShowName = pNewPoint->m_bShowName;
     }
 
-    if (newpoint->m_bIsolatedMark) {
+    if (newpoint && newpoint->m_bIsolatedMark) {
       newpoint->SetShared(true);
     }
-    newpoint->m_bIsolatedMark = false;  // definitely no longer isolated
-    newpoint->m_bIsInRoute = true;
+    if (newpoint) {
+      newpoint->m_bIsolatedMark = false;  // definitely no longer isolated
+      newpoint->m_bIsInRoute = true;
+    }
 
     if (insert_after >= GetnPoints() - 1) {
       wxLogMessage("Error insert after last point");
@@ -216,8 +221,10 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
     }
 
     auto pos = pRoutePointList->begin() + insert_after + 1;
-    newpoint->SetNameShown(false);
-    pRoutePointList->insert(pos, newpoint);
+    if (newpoint) {
+      newpoint->SetNameShown(false);
+      pRoutePointList->insert(pos, newpoint);
+    }
     if (bRenamePoints) RenameRoutePoints();
     m_lastMousePointIndex = GetnPoints();
     FinalizeForRendering();

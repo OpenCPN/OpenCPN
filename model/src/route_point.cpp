@@ -28,6 +28,7 @@
 #include <wx/tokenzr.h>
 
 #include "model/base_platform.h"
+#include "model/config_vars.h"
 #include "model/cutil.h"
 #include "model/georef.h"
 #include "model/navutil_base.h"
@@ -553,4 +554,18 @@ bool RoutePoint::SetETD(const wxString &ts) {
     return TRUE;
   }
   return FALSE;
+}
+
+RoutePoint *DuplicateRoutePointForRoute(const RoutePoint *source,
+                                        const wxString &name_override) {
+  if (!source) return nullptr;
+
+  RoutePoint *duplicate = new RoutePoint(const_cast<RoutePoint *>(source));
+  duplicate->m_bIsInLayer = false;
+  duplicate->m_LayerID = 0;
+  duplicate->SetIconName(g_default_routepoint_icon);
+  duplicate->ReLoadIcon();
+  if (!name_override.IsEmpty()) duplicate->SetName(name_override);
+
+  return duplicate;
 }

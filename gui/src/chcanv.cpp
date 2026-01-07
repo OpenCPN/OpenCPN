@@ -8641,14 +8641,13 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   wp_name = "WPXX";
                 }
               }
-              if (pNearbyPoint->m_bIsInLayer) {
-                pMousePoint = new RoutePoint(pNearbyPoint);
-                pMousePoint->m_bIsInLayer = false;
-                pMousePoint->m_LayerID = 0;
-                pMousePoint->SetIconName(g_default_routepoint_icon);
-                if (noname && !wp_name.IsEmpty()) pMousePoint->SetName(wp_name);
-                pSelect->AddSelectableRoutePoint(
-                    pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
+              if (pNearbyPoint->m_bIsInLayer || pNearbyPoint->m_LayerID != 0) {
+                pMousePoint =
+                    DuplicateRoutePointForRoute(pNearbyPoint, wp_name);
+                if (pMousePoint) {
+                  pSelect->AddSelectableRoutePoint(
+                      pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
+                }
               } else {
                 if (noname && !wp_name.IsEmpty())
                   pNearbyPoint->SetName(wp_name);
@@ -9234,13 +9233,13 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           dlg_return = wxID_YES;
 #endif
           if (dlg_return == wxID_YES) {
-            if (pNearbyPoint->m_bIsInLayer) {
-              pMousePoint = new RoutePoint(pNearbyPoint);
-              pMousePoint->m_bIsInLayer = false;
-              pMousePoint->m_LayerID = 0;
-              pMousePoint->SetIconName(g_default_routepoint_icon);
-              pSelect->AddSelectableRoutePoint(pMousePoint->m_lat,
-                                               pMousePoint->m_lon, pMousePoint);
+            if (pNearbyPoint->m_bIsInLayer || pNearbyPoint->m_LayerID != 0) {
+              pMousePoint =
+                  DuplicateRoutePointForRoute(pNearbyPoint, wxEmptyString);
+              if (pMousePoint) {
+                pSelect->AddSelectableRoutePoint(
+                    pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
+              }
             } else {
               pMousePoint = pNearbyPoint;
             }

@@ -158,6 +158,13 @@ public:
   void SetWaypointRangeRingsStepUnits(int i_WaypointRangeRingsStepUnits) {
     m_iWaypointRangeRingsStepUnits = i_WaypointRangeRingsStepUnits;
   };
+
+  /**
+   * Creates a duplicate for use in routes, detaching layer metadata and
+   * applying the default routepoint icon.
+   */
+  friend RoutePoint *DuplicateRoutePointForRoute(const RoutePoint *source,
+                                                 const wxString &name_override);
   void SetWaypointRangeRingsColour(wxColour wxc_WaypointRangeRingsColour) {
     m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour;
   };
