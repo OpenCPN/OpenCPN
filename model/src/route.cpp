@@ -111,12 +111,12 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
       AddPoint(psourceroute->GetPoint(i), false);
     } else {
       RoutePoint *psourcepoint = psourceroute->GetPoint(i);
-      const wxString &icon_name =
-          psourcepoint->m_bIsInLayer ? g_default_routepoint_icon
-                                     : psourcepoint->GetIconName();
-      RoutePoint *ptargetpoint = new RoutePoint(
-          psourcepoint->m_lat, psourcepoint->m_lon, icon_name,
-          psourcepoint->GetName(), "", true);
+      const wxString &icon_name = psourcepoint->m_bIsInLayer
+                                      ? g_default_routepoint_icon
+                                      : psourcepoint->GetIconName();
+      RoutePoint *ptargetpoint =
+          new RoutePoint(psourcepoint->m_lat, psourcepoint->m_lon, icon_name,
+                         psourcepoint->GetName(), "", true);
       ptargetpoint->m_bShowName =
           psourcepoint->m_bShowName;  // do not change new wpt's name visibility
       AddPoint(ptargetpoint, false);
@@ -199,8 +199,8 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
     RoutePoint *newpoint = pNewPoint;
     if (pNewPoint->m_bIsInLayer) {
       newpoint = new RoutePoint(pNewPoint->m_lat, pNewPoint->m_lon,
-                                g_default_routepoint_icon,
-                                pNewPoint->GetName(), "", false);
+                                g_default_routepoint_icon, pNewPoint->GetName(),
+                                "", false);
       newpoint->m_bShowName = pNewPoint->m_bShowName;
     }
 

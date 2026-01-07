@@ -8647,11 +8647,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 pMousePoint->m_LayerID = 0;
                 pMousePoint->SetIconName(g_default_routepoint_icon);
                 if (noname && !wp_name.IsEmpty()) pMousePoint->SetName(wp_name);
-                pSelect->AddSelectableRoutePoint(pMousePoint->m_lat,
-                                                 pMousePoint->m_lon,
-                                                 pMousePoint);
+                pSelect->AddSelectableRoutePoint(
+                    pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
               } else {
-                if (noname && !wp_name.IsEmpty()) pNearbyPoint->SetName(wp_name);
+                if (noname && !wp_name.IsEmpty())
+                  pNearbyPoint->SetName(wp_name);
                 pMousePoint = pNearbyPoint;
               }
 
