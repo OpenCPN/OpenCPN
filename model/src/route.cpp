@@ -114,8 +114,8 @@ void Route::CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
       RoutePoint *ptargetpoint = psourcepoint;
       if (psourcepoint &&
           (psourcepoint->m_bIsInLayer || psourcepoint->m_LayerID != 0)) {
-        ptargetpoint =
-            DuplicateRoutePointForRoute(psourcepoint, psourcepoint->GetName());
+        ptargetpoint = DuplicateRoutePointForRoute(
+            psourcepoint, psourcepoint->GetName(), true);
       } else {
         ptargetpoint = new RoutePoint(psourcepoint->m_lat, psourcepoint->m_lon,
                                       psourcepoint->GetIconName(),
