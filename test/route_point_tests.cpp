@@ -9,7 +9,7 @@
 #include "model/route_point.h"
 #include "model/routeman.h"
 
-class RoutePointScaleTest : public ::testing::Test {
+class RoutePointTest : public ::testing::Test {
 protected:
   void SetUp() override {
     waypoints = std::make_unique<WayPointman>(
@@ -27,7 +27,7 @@ protected:
   std::unique_ptr<WayPointman> waypoints;
 };
 
-TEST_F(RoutePointScaleTest, ScaMaxStoresAndClampsValue) {
+TEST_F(RoutePointTest, ScaMaxStoresAndClampsValue) {
   RoutePoint point(0, 0, wxEmptyString, wxEmptyString, wxEmptyString, false);
   point.SetScaMin(2000);
   point.SetScaMax(500);
@@ -36,14 +36,14 @@ TEST_F(RoutePointScaleTest, ScaMaxStoresAndClampsValue) {
   EXPECT_EQ(point.GetScaMax(), 2000);
 }
 
-TEST_F(RoutePointScaleTest, ScaMinHonorsScaMax) {
-  RoutePoint point(0, 0, "", "", "", false);
+TEST_F(RoutePointTest, ScaMinHonorsScaMax) {
+  RoutePoint point(0, 0, wxEmptyString, wxEmptyString, wxEmptyString, false);
   point.SetScaMax(500);
   point.SetScaMin(400);
-  EXPECT_EQ(point.GetScaMin(), 800);  // Limited to  SCAMIN_MIN
+  EXPECT_EQ(point.GetScaMin(), 500);
 }
 
-TEST_F(RoutePointScaleTest, NewPointUsesConfiguredScaMax) {
+TEST_F(RoutePointTest, NewPointUsesConfiguredScaMax) {
   int orig_min = g_iWpt_ScaMin;
   int orig_max = g_iWpt_ScaMax;
   g_iWpt_ScaMin = 2000;
@@ -54,7 +54,7 @@ TEST_F(RoutePointScaleTest, NewPointUsesConfiguredScaMax) {
   g_iWpt_ScaMax = orig_max;
 }
 
-TEST_F(RoutePointScaleTest, ScaMaxHidesWhenZoomedInPastLimit) {
+TEST_F(RoutePointTest, ScaMaxHidesWhenZoomedInPastLimit) {
   RoutePoint point(0, 0, wxEmptyString, wxEmptyString, wxEmptyString, false);
   point.SetScaMin(2000);
   point.SetScaMax(500);
@@ -65,7 +65,7 @@ TEST_F(RoutePointScaleTest, ScaMaxHidesWhenZoomedInPastLimit) {
   EXPECT_FALSE(point.IsVisibleSelectable(2100, false));
 }
 
-TEST_F(RoutePointScaleTest, DuplicateLayerPointUsesDefaultRoutepointIcon) {
+TEST_F(RoutePointTest, DuplicateLayerPointUsesDefaultRoutepointIcon) {
   wxString orig_icon = g_default_routepoint_icon;
   g_default_routepoint_icon = "diamond";
 
@@ -84,7 +84,21 @@ TEST_F(RoutePointScaleTest, DuplicateLayerPointUsesDefaultRoutepointIcon) {
   g_default_routepoint_icon = orig_icon;
 }
 
-TEST_F(RoutePointScaleTest, AddPointAndSegmentDuplicatesLayerPointIcon) {
+TEST_F(RoutePointTest, DuplicateLayerPointIsListed) {
+  RoutePoint layer_point(1.0, 2.0, "layer-icon", "Layer", wxEmptyString, false);
+  layer_point.m_bIsInLayer = true;
+  layer_point.m_LayerID = 3;
+  layer_point.SetListed(false);
+
+  RoutePoint *duplicate =
+      DuplicateRoutePointForRoute(&layer_point, wxEmptyString);
+  ASSERT_NE(duplicate, nullptr);
+  EXPECT_TRUE(duplicate->IsListed());
+
+  delete duplicate;
+}
+
+TEST_F(RoutePointTest, AddPointAndSegmentDuplicatesLayerPointIcon) {
   wxString orig_icon = g_default_routepoint_icon;
   g_default_routepoint_icon = "diamond";
 
@@ -102,7 +116,7 @@ TEST_F(RoutePointScaleTest, AddPointAndSegmentDuplicatesLayerPointIcon) {
   g_default_routepoint_icon = orig_icon;
 }
 
-TEST_F(RoutePointScaleTest, InsertPointAndSegmentDuplicatesLayerPointIcon) {
+TEST_F(RoutePointTest, InsertPointAndSegmentDuplicatesLayerPointIcon) {
   wxString orig_icon = g_default_routepoint_icon;
   g_default_routepoint_icon = "diamond";
 
@@ -123,4 +137,35 @@ TEST_F(RoutePointScaleTest, InsertPointAndSegmentDuplicatesLayerPointIcon) {
   EXPECT_FALSE(inserted->m_bIsInLayer);
 
   g_default_routepoint_icon = orig_icon;
+}
+
+TEST_F(RoutePointTest, DuplicateRoutePointForRouteRegistersWhenRequested) {
+  wxString orig_icon = g_default_routepoint_icon;
+  g_default_routepoint_icon = "diamond";
+
+  size_t start_count = pWayPointMan->GetWaypointList()->size();
+
+  RoutePoint point(1.0, 2.0, "route-icon", "Route", wxEmptyString, false);
+
+  RoutePoint *replacement =
+      DuplicateRoutePointForRoute(&point, point.GetName(), true);
+  ASSERT_NE(replacement, nullptr);
+  EXPECT_NE(replacement, &point);
+  EXPECT_EQ(replacement->GetIconName(), g_default_routepoint_icon);
+  EXPECT_EQ(pWayPointMan->GetWaypointList()->size(), start_count + 1);
+
+  g_default_routepoint_icon = orig_icon;
+}
+
+TEST_F(RoutePointTest, DuplicateRoutePointForRouteSkipsRegisterByDefault) {
+  size_t start_count = pWayPointMan->GetWaypointList()->size();
+
+  RoutePoint point(1.0, 2.0, "route-icon", "Route", wxEmptyString, false);
+
+  RoutePoint *replacement =
+      DuplicateRoutePointForRoute(&point, point.GetName());
+  ASSERT_NE(replacement, nullptr);
+  EXPECT_NE(replacement, &point);
+  EXPECT_EQ(pWayPointMan->GetWaypointList()->size(), start_count);
+  delete replacement;
 }

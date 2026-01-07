@@ -51,6 +51,12 @@ extern int g_LayerIdx; /**< Global instance */
 
 extern wxRect g_blink_rect; /**< Global instance */
 
+class RoutePoint;
+
+RoutePoint *DuplicateRoutePointForRoute(const RoutePoint *source,
+                                        const wxString &name_override,
+                                        bool register_with_wp_man = false);
+
 /**
  * Represents a waypoint or mark within the navigation system.
  *
@@ -163,8 +169,9 @@ public:
    * Creates a duplicate for use in routes, detaching layer metadata and
    * applying the default routepoint icon.
    */
-  friend RoutePoint *DuplicateRoutePointForRoute(const RoutePoint *source,
-                                                 const wxString &name_override);
+  friend RoutePoint *DuplicateRoutePointForRoute(
+      const RoutePoint *source, const wxString &name_override,
+      bool register_with_wp_man);
   void SetWaypointRangeRingsColour(wxColour wxc_WaypointRangeRingsColour) {
     m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour;
   };
