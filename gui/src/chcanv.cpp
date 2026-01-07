@@ -9799,13 +9799,23 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   }
                 }
                 if (dlg_return == wxID_YES) {
-                  pMousePoint = pNearbyPoint;
-                  if (pMousePoint->m_bIsolatedMark) {
-                    pMousePoint->SetShared(true);
+                  RoutePoint *replacement = pNearbyPoint;
+                  if (pNearbyPoint->m_bIsInLayer ||
+                      pNearbyPoint->m_LayerID != 0) {
+                    replacement = DuplicateRoutePointForRoute(
+                        pNearbyPoint, pNearbyPoint->GetName());
+                    if (replacement)
+                      replacement->m_bShowName = pNearbyPoint->m_bShowName;
                   }
-                  pMousePoint->m_bIsolatedMark =
-                      false;  // definitely no longer isolated
-                  pMousePoint->m_bIsInRoute = true;
+                  pMousePoint = replacement;
+                  if (pMousePoint) {
+                    if (pMousePoint->m_bIsolatedMark) {
+                      pMousePoint->SetShared(true);
+                    }
+                    pMousePoint->m_bIsolatedMark =
+                        false;  // definitely no longer isolated
+                    pMousePoint->m_bIsInRoute = true;
+                  }
                 }
               }
             }
