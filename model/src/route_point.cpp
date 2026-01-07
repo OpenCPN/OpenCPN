@@ -557,15 +557,20 @@ bool RoutePoint::SetETD(const wxString &ts) {
 }
 
 RoutePoint *DuplicateRoutePointForRoute(const RoutePoint *source,
-                                        const wxString &name_override) {
+                                        const wxString &name_override,
+                                        bool register_with_wp_man) {
   if (!source) return nullptr;
 
   RoutePoint *duplicate = new RoutePoint(const_cast<RoutePoint *>(source));
   duplicate->m_bIsInLayer = false;
   duplicate->m_LayerID = 0;
+  duplicate->SetListed(true);
   duplicate->SetIconName(g_default_routepoint_icon);
   duplicate->ReLoadIcon();
   if (!name_override.IsEmpty()) duplicate->SetName(name_override);
+  if (register_with_wp_man && pWayPointMan) {
+    pWayPointMan->AddRoutePoint(duplicate);
+  }
 
   return duplicate;
 }
