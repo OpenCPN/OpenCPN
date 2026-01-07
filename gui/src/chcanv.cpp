@@ -9276,8 +9276,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 #endif
           if (dlg_return == wxID_YES) {
             if (pNearbyPoint->m_bIsInLayer || pNearbyPoint->m_LayerID != 0) {
-              pMousePoint = DuplicateRoutePointForRoute(
-                  pNearbyPoint, wxEmptyString, true);
+              pMousePoint = DuplicateRoutePointForRoute(pNearbyPoint,
+                                                        wxEmptyString, true);
               if (pMousePoint) {
                 pSelect->AddSelectableRoutePoint(
                     pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
@@ -9848,7 +9848,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   }
                 }
                 if (dlg_return == wxID_YES) {
-                  if (pNearbyPoint->m_bIsInLayer || pNearbyPoint->m_LayerID != 0)
+                  if (pNearbyPoint->m_bIsInLayer ||
+                      pNearbyPoint->m_LayerID != 0)
                     pMousePoint = DuplicateRoutePointForRoute(
                         pNearbyPoint, pNearbyPoint->GetName(), true);
                   else
