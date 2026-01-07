@@ -169,9 +169,9 @@ public:
    * Creates a duplicate for use in routes, detaching layer metadata and
    * applying the default routepoint icon.
    */
-  friend RoutePoint *DuplicateRoutePointForRoute(
-      const RoutePoint *source, const wxString &name_override,
-      bool register_with_wp_man);
+  friend RoutePoint *DuplicateRoutePointForRoute(const RoutePoint *source,
+                                                 const wxString &name_override,
+                                                 bool register_with_wp_man);
   void SetWaypointRangeRingsColour(wxColour wxc_WaypointRangeRingsColour) {
     m_wxcWaypointRangeRingsColour = wxc_WaypointRangeRingsColour;
   };
