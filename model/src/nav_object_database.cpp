@@ -137,7 +137,8 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
           } else if (ext_name == "opencpn:link_layer_guid") {
             // Optional link to a layer waypoint GUID.
             // Stored on cloned routepoints to allow syncing with layer changes.
-            link_layer_guid = wxString::FromUTF8(ext_child.first_child().value());
+            link_layer_guid =
+                wxString::FromUTF8(ext_child.first_child().value());
           } else if (ext_name == "opencpn:viz") {
             b_propviz = true;
             wxString s = wxString::FromUTF8(ext_child.first_child().value());
@@ -238,9 +239,9 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
   if (!link_layer_guid.IsEmpty()) pWP->m_LinkedLayerGUID = link_layer_guid;
   pWP->m_bLayerGuidIsPersistent = layer_guid_is_persistent;
 
-    if (!b_layer && !pWP->m_LinkedLayerGUID.IsEmpty()) {
-      RoutePoint *linked_layer =
-          pWayPointMan->FindRoutePointByGUID(pWP->m_LinkedLayerGUID);
+  if (!b_layer && !pWP->m_LinkedLayerGUID.IsEmpty()) {
+    RoutePoint *linked_layer =
+        pWayPointMan->FindRoutePointByGUID(pWP->m_LinkedLayerGUID);
     if (linked_layer && linked_layer->m_bIsInLayer &&
         linked_layer->m_bLayerGuidIsPersistent) {
       pSelect->DeleteSelectableRoutePoint(pWP);
@@ -258,8 +259,7 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
       pWP->m_fWaypointRangeRingsStep = linked_layer->m_fWaypointRangeRingsStep;
       pWP->m_iWaypointRangeRingsStepUnits =
           linked_layer->m_iWaypointRangeRingsStepUnits;
-      pWP->SetShowWaypointRangeRings(
-          linked_layer->m_bShowWaypointRangeRings);
+      pWP->SetShowWaypointRangeRings(linked_layer->m_bShowWaypointRangeRings);
       pWP->m_wxcWaypointRangeRingsColour =
           linked_layer->m_wxcWaypointRangeRingsColour;
       pWP->SetScaMin(linked_layer->GetScaMin());
@@ -789,15 +789,15 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
       child.append_child(pugi::node_pcdata).set_value("1");
     }
 
-  if ((flags & OUT_SHARED) && pr->IsShared()) {
-    child = child_ext.append_child("opencpn:shared");
-    child.append_child(pugi::node_pcdata).set_value("1");
-  }
-  if ((flags & OUT_GUID) && !pr->m_LinkedLayerGUID.IsEmpty()) {
-    child = child_ext.append_child("opencpn:link_layer_guid");
-    child.append_child(pugi::node_pcdata)
-        .set_value(pr->m_LinkedLayerGUID.mb_str());
-  }
+    if ((flags & OUT_SHARED) && pr->IsShared()) {
+      child = child_ext.append_child("opencpn:shared");
+      child.append_child(pugi::node_pcdata).set_value("1");
+    }
+    if ((flags & OUT_GUID) && !pr->m_LinkedLayerGUID.IsEmpty()) {
+      child = child_ext.append_child("opencpn:link_layer_guid");
+      child.append_child(pugi::node_pcdata)
+          .set_value(pr->m_LinkedLayerGUID.mb_str());
+    }
     if (flags & OUT_ARRIVAL_RADIUS) {
       child = child_ext.append_child("opencpn:arrival_radius");
       s.Printf("%.3f", pr->GetWaypointArrivalRadius());

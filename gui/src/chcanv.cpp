@@ -8634,13 +8634,15 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               if (pNearbyPoint->m_bIsInLayer &&
                   pNearbyPoint->m_bLayerGuidIsPersistent) {
                 m_FinishRouteOnKillFocus = false;
-                int layer_answer = OCPNMessageBox(
-                    this,
-                    _("Link layer waypoint?\n\n"
-                      "Yes: link to the layer waypoint (route point updates when the layer updates).\n"
-                      "No: keep a copy in the route (won't follow layer changes)."),
-                    _("OpenCPN Route Create"),
-                    (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                int layer_answer =
+                    OCPNMessageBox(this,
+                                   _("Link layer waypoint?\n\n"
+                                     "Yes: link to the layer waypoint (route "
+                                     "point updates when the layer updates).\n"
+                                     "No: keep a copy in the route (won't "
+                                     "follow layer changes)."),
+                                   _("OpenCPN Route Create"),
+                                   (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                 m_FinishRouteOnKillFocus = true;
                 if (layer_answer == wxID_CANCEL)
                   use_nearby = false;
@@ -8682,62 +8684,68 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   undo->BeforeUndoableAction(Undo_AppendWaypoint, pMousePoint,
                                              Undo_HasParent, NULL);
 
-                tail =
-                    g_pRouteMan->FindVisibleRouteContainingWaypoint(pMousePoint);
+                tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(
+                    pMousePoint);
                 bool procede = false;
                 if (tail) {
                   procede = true;
                   // if (pMousePoint == tail->GetLastPoint()) procede = false;
-                  if (m_routeState > 1 && m_pMouseRoute && tail == m_pMouseRoute)
+                  if (m_routeState > 1 && m_pMouseRoute &&
+                      tail == m_pMouseRoute)
                     procede = false;
                 }
 
                 if (procede) {
-                int dlg_return;
-                m_FinishRouteOnKillFocus = false;
-                if (m_routeState == 1) {  // first point in new route, preceeding
-                                          // route to be added?  touch case
+                  int dlg_return;
+                  m_FinishRouteOnKillFocus = false;
+                  if (m_routeState ==
+                      1) {  // first point in new route, preceeding
+                            // route to be added?  touch case
 
-                  wxString dmsg =
-                      _("Insert first part of this route in the new route?");
-                  if (tail->GetIndexOf(pMousePoint) ==
-                      tail->GetnPoints())  // Starting on last point of another
-                                           // route?
-                    dmsg = _("Insert this route in the new route?");
+                    wxString dmsg =
+                        _("Insert first part of this route in the new route?");
+                    if (tail->GetIndexOf(pMousePoint) ==
+                        tail->GetnPoints())  // Starting on last point of
+                                             // another route?
+                      dmsg = _("Insert this route in the new route?");
 
-                  if (tail->GetIndexOf(pMousePoint) != 1) {  // Anything to do?
-                    dlg_return =
-                        OCPNMessageBox(this, dmsg, _("OpenCPN Route Create"),
-                                       (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                    m_FinishRouteOnKillFocus = true;
+                    if (tail->GetIndexOf(pMousePoint) !=
+                        1) {  // Anything to do?
+                      dlg_return = OCPNMessageBox(
+                          this, dmsg, _("OpenCPN Route Create"),
+                          (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                      m_FinishRouteOnKillFocus = true;
 
-                    if (dlg_return == wxID_YES) {
-                      inserting = true;  // part of the other route will be
-                                         // preceeding the new route
+                      if (dlg_return == wxID_YES) {
+                        inserting = true;  // part of the other route will be
+                                           // preceeding the new route
+                      }
                     }
-                  }
-                } else {
-                  wxString dmsg =
-                      _("Append last part of this route to the new route?");
-                  if (tail->GetIndexOf(pMousePoint) == 1)
-                    dmsg = _(
-                        "Append this route to the new route?");  // Picking the
-                                                                 // first point of
-                                                                 // another route?
+                  } else {
+                    wxString dmsg =
+                        _("Append last part of this route to the new route?");
+                    if (tail->GetIndexOf(pMousePoint) == 1)
+                      dmsg = _(
+                          "Append this route to the new route?");  // Picking
+                                                                   // the first
+                                                                   // point of
+                                                                   // another
+                                                                   // route?
 
-                  if (tail->GetLastPoint() != pMousePoint) {  // Anything to do?
-                    dlg_return =
-                        OCPNMessageBox(this, dmsg, _("OpenCPN Route Create"),
-                                       (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
-                    m_FinishRouteOnKillFocus = true;
+                    if (tail->GetLastPoint() !=
+                        pMousePoint) {  // Anything to do?
+                      dlg_return = OCPNMessageBox(
+                          this, dmsg, _("OpenCPN Route Create"),
+                          (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                      m_FinishRouteOnKillFocus = true;
 
-                    if (dlg_return == wxID_YES) {
-                      appending = true;  // part of the other route will be
-                                         // appended to the new route
+                      if (dlg_return == wxID_YES) {
+                        appending = true;  // part of the other route will be
+                                           // appended to the new route
+                      }
                     }
                   }
                 }
-              }
 
                 // check all other routes to see if this point appears in any
                 // other route If it appears in NO other route, then it should e
@@ -9260,13 +9268,15 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             if (pNearbyPoint->m_bIsInLayer &&
                 pNearbyPoint->m_bLayerGuidIsPersistent) {
               m_FinishRouteOnKillFocus = false;
-                int layer_answer = OCPNMessageBox(
-                    this,
-                    _("Link layer waypoint?\n\n"
-                      "Yes: link to the layer waypoint (route point updates when the layer updates).\n"
-                      "No: keep a copy in the route (won't follow layer changes)."),
-                    _("OpenCPN Route Create"),
-                    (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+              int layer_answer =
+                  OCPNMessageBox(this,
+                                 _("Link layer waypoint?\n\n"
+                                   "Yes: link to the layer waypoint (route "
+                                   "point updates when the layer updates).\n"
+                                   "No: keep a copy in the route (won't follow "
+                                   "layer changes)."),
+                                 _("OpenCPN Route Create"),
+                                 (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
               m_FinishRouteOnKillFocus = true;
               if (layer_answer == wxID_CANCEL)
                 use_nearby = false;
@@ -9276,27 +9286,28 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             if (!use_nearby) {
               // fall through to create a new point
             } else {
-                if (pNearbyPoint->m_bIsInLayer) {
-                  RoutePoint *clone = new RoutePoint(pNearbyPoint);
-                  clone->m_bIsInLayer = false;
-                  clone->m_LayerID = 0;
-                  clone->m_bAllowLayerReuse = false;
-                  clone->m_bLayerGuidIsPersistent = false;
-                  clone->m_LinkedLayerGUID =
-                      link_layer_point ? pNearbyPoint->m_GUID : wxString();
-                  if (pWayPointMan) pWayPointMan->AddRoutePoint(clone);
-                  pMousePoint = clone;
-                  pSelect->AddSelectableRoutePoint(
-                      pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
-                } else {
-                  pMousePoint = pNearbyPoint;
-                }
+              if (pNearbyPoint->m_bIsInLayer) {
+                RoutePoint *clone = new RoutePoint(pNearbyPoint);
+                clone->m_bIsInLayer = false;
+                clone->m_LayerID = 0;
+                clone->m_bAllowLayerReuse = false;
+                clone->m_bLayerGuidIsPersistent = false;
+                clone->m_LinkedLayerGUID =
+                    link_layer_point ? pNearbyPoint->m_GUID : wxString();
+                if (pWayPointMan) pWayPointMan->AddRoutePoint(clone);
+                pMousePoint = clone;
+                pSelect->AddSelectableRoutePoint(
+                    pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
+              } else {
+                pMousePoint = pNearbyPoint;
+              }
 
               // Using existing waypoint, so nothing to delete for undo.
               if (m_routeState > 1)
                 undo->BeforeUndoableAction(Undo_AppendWaypoint, pMousePoint,
                                            Undo_HasParent, NULL);
-              tail = g_pRouteMan->FindVisibleRouteContainingWaypoint(pMousePoint);
+              tail =
+                  g_pRouteMan->FindVisibleRouteContainingWaypoint(pMousePoint);
 
               bool procede = false;
               if (tail) {
@@ -9309,8 +9320,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
               if (procede) {
                 int dlg_return;
                 m_FinishRouteOnKillFocus = false;
-                if (m_routeState == 1) {  // first point in new route, preceeding
-                                          // route to be added?  touch case
+                if (m_routeState ==
+                    1) {  // first point in new route, preceeding
+                          // route to be added?  touch case
 
                   wxString dmsg =
                       _("Insert first part of this route in the new route?");
@@ -9320,9 +9332,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                     dmsg = _("Insert this route in the new route?");
 
                   if (tail->GetIndexOf(pMousePoint) != 1) {  // Anything to do?
-                    dlg_return =
-                        OCPNMessageBox(this, dmsg, _("OpenCPN Route Create"),
-                                       (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                    dlg_return = OCPNMessageBox(
+                        this, dmsg, _("OpenCPN Route Create"),
+                        (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                     m_FinishRouteOnKillFocus = true;
 
                     if (dlg_return == wxID_YES) {
@@ -9336,13 +9348,14 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   if (tail->GetIndexOf(pMousePoint) == 1)
                     dmsg = _(
                         "Append this route to the new route?");  // Picking the
-                                                                   // first point of
-                                                                   // another route?
+                                                                 // first point
+                                                                 // of another
+                                                                 // route?
 
                   if (tail->GetLastPoint() != pMousePoint) {  // Anything to do?
-                    dlg_return =
-                        OCPNMessageBox(this, dmsg, _("OpenCPN Route Create"),
-                                       (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
+                    dlg_return = OCPNMessageBox(
+                        this, dmsg, _("OpenCPN Route Create"),
+                        (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                     m_FinishRouteOnKillFocus = true;
 
                     if (dlg_return == wxID_YES) {
@@ -9353,8 +9366,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 }
               }
 
-              // check all other routes to see if this point appears in any other
-              // route If it appears in NO other route, then it should e
+              // check all other routes to see if this point appears in any
+              // other route If it appears in NO other route, then it should e
               // considered an isolated mark
               if (!FindRouteContainingWaypoint(pMousePoint))
                 pMousePoint->SetShared(true);
@@ -9868,8 +9881,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         int layer_answer = OCPNMessageBox(
                             this,
                             _("Link layer waypoint?\n\n"
-                              "Yes: link to the layer waypoint (route point updates when the layer updates).\n"
-                              "No: keep a copy in the route (won't follow layer changes)."),
+                              "Yes: link to the layer waypoint (route point "
+                              "updates when the layer updates).\n"
+                              "No: keep a copy in the route (won't follow "
+                              "layer changes)."),
                             _("OpenCPN RoutePoint change"),
                             (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                         if (layer_answer == wxID_CANCEL) {
@@ -9885,9 +9900,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                       pMousePoint = NULL;
                     } else {
                       pMousePoint->m_LinkedLayerGUID =
-                          link_layer_point ? pNearbyPoint->m_GUID
-                                           : wxString();
-                      if (pWayPointMan) pWayPointMan->AddRoutePoint(pMousePoint);
+                          link_layer_point ? pNearbyPoint->m_GUID : wxString();
+                      if (pWayPointMan)
+                        pWayPointMan->AddRoutePoint(pMousePoint);
                       pSelect->AddSelectableRoutePoint(
                           pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
                     }
@@ -10183,8 +10198,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         int layer_answer = OCPNMessageBox(
                             this,
                             _("Link layer waypoint?\n\n"
-                              "Yes: link to the layer waypoint (route point updates when the layer updates).\n"
-                              "No: keep a copy in the route (won't follow layer changes)."),
+                              "Yes: link to the layer waypoint (route point "
+                              "updates when the layer updates).\n"
+                              "No: keep a copy in the route (won't follow "
+                              "layer changes)."),
                             _("OpenCPN RoutePoint change"),
                             (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
                         if (layer_answer == wxID_CANCEL) {
@@ -10200,9 +10217,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                       pMousePoint = NULL;
                     } else {
                       pMousePoint->m_LinkedLayerGUID =
-                          link_layer_point ? pNearbyPoint->m_GUID
-                                           : wxString();
-                      if (pWayPointMan) pWayPointMan->AddRoutePoint(pMousePoint);
+                          link_layer_point ? pNearbyPoint->m_GUID : wxString();
+                      if (pWayPointMan)
+                        pWayPointMan->AddRoutePoint(pMousePoint);
                       pSelect->AddSelectableRoutePoint(
                           pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
                     }

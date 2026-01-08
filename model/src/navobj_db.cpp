@@ -1461,9 +1461,8 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
     int iso = point->m_bIsolatedMark;
     sqlite3_bind_int(stmt, 23, iso);  // point->m_bIsolatedMark);
 
-    sqlite3_bind_text(stmt, 24,
-                      point->m_LinkedLayerGUID.ToStdString().c_str(), -1,
-                      SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 24, point->m_LinkedLayerGUID.ToStdString().c_str(),
+                      -1, SQLITE_TRANSIENT);
     sqlite3_bind_text(stmt, 25, point->m_GUID.ToStdString().c_str(), -1,
                       SQLITE_TRANSIENT);
 
@@ -1744,8 +1743,7 @@ bool NavObj_dB::LoadAllRoutes() {
       const unsigned char* linked_guid_text = sqlite3_column_text(stmtp, col++);
       std::string linked_layer_guid;
       if (linked_guid_text)
-        linked_layer_guid =
-            reinterpret_cast<const char*>(linked_guid_text);
+        linked_layer_guid = reinterpret_cast<const char*>(linked_guid_text);
       std::string point_created_at =
           reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
 
@@ -1766,11 +1764,9 @@ bool NavObj_dB::LoadAllRoutes() {
         existing_point = resolve_linked_clone(linked_layer_guid);
       }
       if (!existing_point && !linked_layer_guid.empty()) {
-        existing_point =
-            pWayPointMan->FindRoutePointByGUID(linked_layer_guid);
-        if (existing_point &&
-            (!existing_point->m_bIsInLayer ||
-             !existing_point->m_bLayerGuidIsPersistent)) {
+        existing_point = pWayPointMan->FindRoutePointByGUID(linked_layer_guid);
+        if (existing_point && (!existing_point->m_bIsInLayer ||
+                               !existing_point->m_bLayerGuidIsPersistent)) {
           existing_point = NULL;
         }
       }
@@ -2039,8 +2035,7 @@ bool NavObj_dB::LoadAllPoints() {
     const unsigned char* linked_guid_text = sqlite3_column_text(stmtp, col++);
     std::string linked_layer_guid;
     if (linked_guid_text)
-      linked_layer_guid =
-          reinterpret_cast<const char*>(linked_guid_text);
+      linked_layer_guid = reinterpret_cast<const char*>(linked_guid_text);
     std::string point_created_at =
         reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
 
