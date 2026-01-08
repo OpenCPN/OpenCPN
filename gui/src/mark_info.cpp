@@ -64,6 +64,8 @@
 #include "tc_win.h"
 #include "ui_utils.h"
 
+#include "model/navobj_db.h"
+
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #include <QtWidgets/QScroller>
@@ -1381,6 +1383,14 @@ void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
 
 void MarkInfoDlg::OnMarkInfoOKClick(wxCommandEvent& event) {
   if (m_pRoutePoint) {
+    if (!m_pRoutePoint->m_bIsInLayer &&
+        !m_pRoutePoint->m_LinkedLayerGUID.IsEmpty()) {
+      bool should_unlink = PromptUnlinkLinkedLayer();
+      if (!should_unlink) {
+        return;
+      }
+      m_pRoutePoint->UpdateFromLinkedLayer();
+    }
     m_pRoutePoint->m_wxcWaypointRangeRingsColour = m_PickColor->GetColour();
 
     OnPositionCtlUpdated(event);
@@ -1406,6 +1416,38 @@ void MarkInfoDlg::OnMarkInfoOKClick(wxCommandEvent& event) {
 #endif
 
   event.Skip();
+}
+
+bool MarkInfoDlg::PromptUnlinkLinkedLayer() {
+  if (!m_pRoutePoint) return false;
+  if (m_pRoutePoint->m_bIsInLayer) return false;
+  if (m_pRoutePoint->m_LinkedLayerGUID.IsEmpty()) return true;
+
+  int answer = OCPNMessageBox(
+      this,
+      _("This waypoint is linked to a layer.\n\n"
+        "Do you want to unlink it to allow editing?\n\n"
+        "Yes: unlink and allow edits.\n"
+        "No: keep linked and discard edits."),
+      _("Linked layer waypoint"),
+      (long)wxYES_NO | wxNO_DEFAULT);
+  if (answer != wxID_YES) return false;
+
+  m_pRoutePoint->m_LinkedLayerGUID = wxEmptyString;
+  if (m_pRoutePoint->m_bIsInRoute) {
+    wxArrayPtrVoid *routes =
+        g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
+    if (routes) {
+      for (unsigned int ir = 0; ir < routes->GetCount(); ir++) {
+        Route *pr = (Route *)routes->Item(ir);
+        NavObj_dB::GetInstance().UpdateRoute(pr);
+      }
+      delete routes;
+    }
+  } else {
+    NavObj_dB::GetInstance().UpdateRoutePoint(m_pRoutePoint);
+  }
+  return true;
 }
 
 bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
@@ -1539,8 +1581,10 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
 
     if (positionOnly) return true;
 
+    bool disable_edits = m_pRoutePoint->m_bIsInLayer;
+
     // Layer or not?
-    if (m_pRoutePoint->m_bIsInLayer) {
+    if (disable_edits) {
       m_staticTextLayer->Enable();
       m_staticTextLayer->Show(true);
       m_textName->SetEditable(false);
