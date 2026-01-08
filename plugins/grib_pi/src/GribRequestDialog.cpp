@@ -34,6 +34,8 @@
 #include "grib_pi.h"
 
 #include <unordered_map>
+#include <regex>
+#include <string>
 
 #define RESOLUTIONS 4
 
@@ -1862,30 +1864,45 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
     return;
   }
 
+  std::string mailto =
+      (m_pMailTo->GetCurrentSelection() == SAILDOCS
+           ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
+           : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')))
+          .ToStdString();
+  std::string mailfrom = m_pSenderAddress->GetValue().ToStdString();
+
+  std::regex mailregex("^([a-z0-9+_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$");
+
+  if ((!mailto.empty() && !std::regex_match(mailto, mailregex)) ||
+      (!mailfrom.empty() && !std::regex_match(mailfrom, mailregex))) {
+    OCPNMessageBox_PlugIn(
+        this,
+        _("Sender or recipient e-mail address seems invalid.\nPlease correct "
+          "it in the configuration file."),
+        _("Error"), wxOK | wxICON_ERROR);
+    return;
+  }
+
 #ifdef __WXMAC__
   // macOS, at least Big Sur, requires the body to be URLEncoded, otherwise the
   // invocation of the mail application via sh/open in wxEmail fails due to
   // "invalid characters" in "filename" regardless of quotation used (which is
   // weird, but real)
-  wxMailMessage *message = new wxMailMessage(
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? _T("grib-request")
-          : wxT("gribauto"),  // requested subject
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
-          : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
-      EncodeURL(WriteMail()),  // message image
-      m_pSenderAddress->GetValue());
+  wxMailMessage *message =
+      new wxMailMessage((m_pMailTo->GetCurrentSelection() == SAILDOCS)
+                            ? _T("grib-request")
+                            : wxT("gribauto"),  // requested subject
+                        mailto,
+                        EncodeURL(WriteMail()),  // message image
+                        mailfrom);
 #else
-  wxMailMessage *message = new wxMailMessage(
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? _T("grib-request")
-          : wxT("gribauto"),  // requested subject
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
-          : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
-      WriteMail(),  // message image
-      m_pSenderAddress->GetValue());
+  wxMailMessage *message =
+      new wxMailMessage((m_pMailTo->GetCurrentSelection() == SAILDOCS)
+                            ? _T("grib-request")
+                            : wxT("gribauto"),  // requested subject
+                        mailto,
+                        WriteMail(),  // message image
+                        mailfrom);
 #endif
 
   wxEmail mail;
