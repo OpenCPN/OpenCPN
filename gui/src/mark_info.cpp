@@ -556,6 +556,17 @@ void MarkInfoDlg::Create() {
   m_textCtrlGuid->SetEditable(false);
   gbSizerInnerExtProperties2->Add(m_textCtrlGuid, 0, wxALL | wxEXPAND, 5);
 
+  m_staticTextLinkedGuid = new wxStaticText(
+      sbSizerExtProperties->GetStaticBox(), wxID_ANY, _("Linked Layer GUID"),
+      wxDefaultPosition, wxDefaultSize, 0);
+  gbSizerInnerExtProperties2->Add(m_staticTextLinkedGuid, 0,
+                                  wxALIGN_CENTRE_VERTICAL, 0);
+  m_textCtrlLinkedGuid =
+      new wxTextCtrl(sbSizerExtProperties->GetStaticBox(), wxID_ANY, "",
+                     wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+  m_textCtrlLinkedGuid->SetEditable(false);
+  gbSizerInnerExtProperties2->Add(m_textCtrlLinkedGuid, 0, wxALL | wxEXPAND, 5);
+
   wxFlexGridSizer* gbSizerInnerExtProperties1 = new wxFlexGridSizer(3, 0, 0);
   gbSizerInnerExtProperties1->AddGrowableCol(1);
 
@@ -1423,23 +1434,22 @@ bool MarkInfoDlg::PromptUnlinkLinkedLayer() {
   if (m_pRoutePoint->m_bIsInLayer) return false;
   if (m_pRoutePoint->m_LinkedLayerGUID.IsEmpty()) return true;
 
-  int answer = OCPNMessageBox(
-      this,
-      _("This waypoint is linked to a layer.\n\n"
-        "Do you want to unlink it to allow editing?\n\n"
-        "Yes: unlink and allow edits.\n"
-        "No: keep linked and discard edits."),
-      _("Linked layer waypoint"),
-      (long)wxYES_NO | wxNO_DEFAULT);
+  int answer =
+      OCPNMessageBox(this,
+                     _("This waypoint is linked to a layer.\n\n"
+                       "Do you want to unlink it to allow editing?\n\n"
+                       "Yes: unlink and allow edits.\n"
+                       "No: keep linked and discard edits."),
+                     _("Linked layer waypoint"), (long)wxYES_NO | wxNO_DEFAULT);
   if (answer != wxID_YES) return false;
 
   m_pRoutePoint->m_LinkedLayerGUID = wxEmptyString;
   if (m_pRoutePoint->m_bIsInRoute) {
-    wxArrayPtrVoid *routes =
+    wxArrayPtrVoid* routes =
         g_pRouteMan->GetRouteArrayContaining(m_pRoutePoint);
     if (routes) {
       for (unsigned int ir = 0; ir < routes->GetCount(); ir++) {
-        Route *pr = (Route *)routes->Item(ir);
+        Route* pr = (Route*)routes->Item(ir);
         NavObj_dB::GetInstance().UpdateRoute(pr);
       }
       delete routes;
@@ -1468,6 +1478,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
     m_textScaMax->SetValue(
         wxString::Format("%i", (int)m_pRoutePoint->GetScaMax()));
     m_textCtrlGuid->SetValue(m_pRoutePoint->m_GUID);
+    m_textCtrlLinkedGuid->SetValue(m_pRoutePoint->m_LinkedLayerGUID);
     m_ChoiceWaypointRangeRingsNumber->SetSelection(
         m_pRoutePoint->GetWaypointRangeRingsNumber());
     wxString buf;

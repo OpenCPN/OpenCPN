@@ -308,6 +308,7 @@ protected:
   wxStaticText* m_staticTextEditEnabled;
   wxStaticText* m_staticTextGpx;
   wxStaticText* m_staticTextGuid;
+  wxStaticText* m_staticTextLinkedGuid;
   wxStaticText* m_staticTextTideStation;
   wxStaticText* m_staticTextIcon;
   wxStaticText* m_staticTextLatitude;
@@ -331,6 +332,7 @@ protected:
   wxTextCtrl* m_textCtrlExtDescription;
   wxTextCtrl* m_textCtrlGpx;
   wxTextCtrl* m_textCtrlGuid;
+  wxTextCtrl* m_textCtrlLinkedGuid;
   wxScrolledWindow* m_scrolledWindowLinks;
   wxHyperlinkCtrl* m_hyperlink17;
   wxMenu* m_menuLink;

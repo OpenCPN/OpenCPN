@@ -601,8 +601,7 @@ bool RoutePoint::UpdateFromLinkedLayer() {
   SetWaypointArrivalRadius(linked_layer->GetWaypointArrivalRadius());
   m_iWaypointRangeRingsNumber = linked_layer->m_iWaypointRangeRingsNumber;
   m_fWaypointRangeRingsStep = linked_layer->m_fWaypointRangeRingsStep;
-  m_iWaypointRangeRingsStepUnits =
-      linked_layer->m_iWaypointRangeRingsStepUnits;
+  m_iWaypointRangeRingsStepUnits = linked_layer->m_iWaypointRangeRingsStepUnits;
   SetShowWaypointRangeRings(linked_layer->m_bShowWaypointRangeRings);
   m_wxcWaypointRangeRingsColour = linked_layer->m_wxcWaypointRangeRingsColour;
   SetScaMin(linked_layer->GetScaMin());
