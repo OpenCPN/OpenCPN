@@ -176,6 +176,8 @@ void Route::AddPointAndSegment(RoutePoint *pNewPoint, bool b_rename_in_sequence,
                               "", false);
     newpoint->m_bShowName =
         pNewPoint->m_bShowName;  // do not change new wpt's name visibility
+    if (pNewPoint->m_bLayerGuidIsPersistent)
+      newpoint->m_LinkedLayerGUID = pNewPoint->m_GUID;
   }
   AddPoint(newpoint, false);
   if (npoints != 0) {

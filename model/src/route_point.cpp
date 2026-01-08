@@ -31,6 +31,7 @@
 #include "model/cutil.h"
 #include "model/georef.h"
 #include "model/navutil_base.h"
+#include "model/navobj_db.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/route_point.h"
@@ -49,6 +50,23 @@ std::function<void(unsigned, const unsigned *)> RoutePoint::delete_gl_textures =
 
 RoutePoint::RoutePoint() {
   m_pbmIcon = NULL;
+  m_bPreScaled = false;
+  m_IconScaleFactor = 1.0;
+  m_iTextTextureWidth = 0;
+  m_iTextTextureHeight = 0;
+  m_wpBBox_view_scale_ppm = -1;
+  m_wpBBox_rotation = 0.0;
+  m_screen_pos = wxPoint2DDouble(0.0, 0.0);
+  m_dragIconTextureWidth = 0;
+  m_dragIconTextureHeight = 0;
+  m_drag_line_length_man = 0;
+  m_drag_icon_offset = 0;
+  m_dragHandleLat = 0.0;
+  m_dragHandleLon = 0.0;
+  m_routeprop_course = 0.0;
+  m_routeprop_distance = 0.0;
+  m_NameExtents = wxSize(0, 0);
+  m_FontColor = wxColour();
 
   //  Nice defaults
   m_seg_len = 0.0;
@@ -89,7 +107,9 @@ RoutePoint::RoutePoint() {
 
   m_bIsInLayer = false;
   m_bAllowLayerReuse = false;
+  m_bLayerGuidIsPersistent = false;
   m_LayerID = 0;
+  m_LinkedLayerGUID = wxEmptyString;
 
   m_WaypointArrivalRadius = g_n_arrival_circle_radius;
 
@@ -115,6 +135,26 @@ RoutePoint::RoutePoint() {
 
 // Copy Constructor
 RoutePoint::RoutePoint(RoutePoint *orig) {
+  m_pbmIcon = NULL;
+  m_bPreScaled = false;
+  m_IconScaleFactor = 1.0;
+  m_iTextTexture = 0;
+  m_iTextTextureWidth = 0;
+  m_iTextTextureHeight = 0;
+  m_wpBBox_view_scale_ppm = -1;
+  m_wpBBox_rotation = 0.0;
+  m_pos_on_screen = false;
+  m_screen_pos = wxPoint2DDouble(0.0, 0.0);
+  m_dragIconTextureWidth = 0;
+  m_dragIconTextureHeight = 0;
+  m_drag_line_length_man = 0;
+  m_drag_icon_offset = 0;
+  m_dragHandleLat = 0.0;
+  m_dragHandleLon = 0.0;
+  m_routeprop_course = 0.0;
+  m_routeprop_distance = 0.0;
+  m_NameExtents = wxSize(0, 0);
+  m_FontColor = wxColour();
   m_MarkName = orig->GetName();
   m_lat = orig->m_lat;
   m_lon = orig->m_lon;
@@ -135,6 +175,8 @@ RoutePoint::RoutePoint(RoutePoint *orig) {
   SetShared(orig->IsShared());
   m_bIsVisible = orig->m_bIsVisible;
   m_bIsListed = orig->m_bIsListed;
+  m_FontColor = orig->m_FontColor;
+  m_NameExtents = orig->m_NameExtents;
   CurrentRect_in_DC = orig->CurrentRect_in_DC;
   m_NameLocationOffsetX = orig->m_NameLocationOffsetX;
   m_NameLocationOffsetY = orig->m_NameLocationOffsetY;
@@ -150,6 +192,8 @@ RoutePoint::RoutePoint(RoutePoint *orig) {
 
   m_bIsInLayer = orig->m_bIsInLayer;
   m_bAllowLayerReuse = orig->m_bAllowLayerReuse;
+  m_bLayerGuidIsPersistent = orig->m_bLayerGuidIsPersistent;
+  m_LinkedLayerGUID = orig->m_LinkedLayerGUID;
   m_GUID = pWayPointMan->CreateGUID(this);
 
   m_SelectNode = NULL;
@@ -164,7 +208,7 @@ RoutePoint::RoutePoint(RoutePoint *orig) {
   m_ScaMin = orig->m_ScaMin;
   m_ScaMax = orig->m_ScaMax;
   b_UseScamin = orig->b_UseScamin;
-  m_IconIsDirty = orig->m_IconIsDirty;
+  m_IconIsDirty = true;
 
   m_bDrawDragHandle = false;
   m_dragIconTexture = 0;
@@ -174,6 +218,27 @@ RoutePoint::RoutePoint(RoutePoint *orig) {
 RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
                        const wxString &name, const wxString &pGUID,
                        bool bAddToList) {
+  m_pbmIcon = NULL;
+  m_bPreScaled = false;
+  m_IconScaleFactor = 1.0;
+  m_iTextTexture = 0;
+  m_iTextTextureWidth = 0;
+  m_iTextTextureHeight = 0;
+  m_wpBBox_view_scale_ppm = -1;
+  m_wpBBox_rotation = 0.0;
+  m_screen_pos = wxPoint2DDouble(0.0, 0.0);
+  m_dragIconTexture = 0;
+  m_dragIconTextureWidth = 0;
+  m_dragIconTextureHeight = 0;
+  m_drag_line_length_man = 0;
+  m_drag_icon_offset = 0;
+  m_dragHandleLat = 0.0;
+  m_dragHandleLon = 0.0;
+  m_routeprop_course = 0.0;
+  m_routeprop_distance = 0.0;
+  m_NameExtents = wxSize(0, 0);
+  m_FontColor = wxColour();
+
   //  Establish points
   m_lat = lat;
   m_lon = lon;
@@ -190,6 +255,7 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
 
   m_seg_etd = wxInvalidDateTime;
   m_manual_etd = false;
+  m_seg_eta = wxInvalidDateTime;
 
   m_bPtIsSelected = false;
   m_bRPIsBeingEdited = false;
@@ -207,17 +273,13 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_NameLocationOffsetY = 8;
   m_pMarkFont = NULL;
   m_btemp = false;
-  m_bPreScaled = false;
 
   m_SelectNode = NULL;
   m_ManagerNode = NULL;
-  m_IconScaleFactor = 1.0;
   m_ScaMin = MAX_INT_VAL;
   m_ScaMax = 0;
   m_HyperlinkList = new HyperlinkList;
   m_IconIsDirty = true;
-
-  m_iTextTexture = 0;
 
   if (!pGUID.IsEmpty())
     m_GUID = pGUID;
@@ -236,7 +298,9 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
 
   m_bIsInLayer = false;
   m_bAllowLayerReuse = false;
+  m_bLayerGuidIsPersistent = false;
   m_LayerID = 0;
+  m_LinkedLayerGUID = wxEmptyString;
 
   SetWaypointArrivalRadius(g_n_arrival_circle_radius);
 
@@ -514,6 +578,59 @@ wxDateTime RoutePoint::GetManualETD() {
     return m_seg_etd;
   }
   return wxInvalidDateTime;
+}
+
+bool RoutePoint::UpdateFromLinkedLayer() {
+  if (m_LinkedLayerGUID.IsEmpty()) return false;
+
+  RoutePoint *linked_layer =
+      pWayPointMan->FindRoutePointByGUID(m_LinkedLayerGUID);
+  if (!linked_layer || !linked_layer->m_bIsInLayer ||
+      !linked_layer->m_bLayerGuidIsPersistent)
+    return false;
+
+  pSelect->DeleteSelectableRoutePoint(this);
+  m_lat = linked_layer->m_lat;
+  m_lon = linked_layer->m_lon;
+  SetIconName(linked_layer->GetIconName());
+  m_MarkDescription = linked_layer->m_MarkDescription;
+  SetName(linked_layer->GetName());
+  m_TideStation = linked_layer->m_TideStation;
+  SetPlannedSpeed(linked_layer->GetPlannedSpeed());
+  SetETD(linked_layer->GetETD());
+  SetWaypointArrivalRadius(linked_layer->GetWaypointArrivalRadius());
+  m_iWaypointRangeRingsNumber = linked_layer->m_iWaypointRangeRingsNumber;
+  m_fWaypointRangeRingsStep = linked_layer->m_fWaypointRangeRingsStep;
+  m_iWaypointRangeRingsStepUnits =
+      linked_layer->m_iWaypointRangeRingsStepUnits;
+  SetShowWaypointRangeRings(linked_layer->m_bShowWaypointRangeRings);
+  m_wxcWaypointRangeRingsColour = linked_layer->m_wxcWaypointRangeRingsColour;
+  SetScaMin(linked_layer->GetScaMin());
+  SetScaMax(linked_layer->GetScaMax());
+  SetUseSca(linked_layer->GetUseSca());
+  SetVisible(linked_layer->IsVisible());
+  SetNameShown(linked_layer->IsNameShown());
+  SetShared(linked_layer->IsShared());
+  m_bIsolatedMark = linked_layer->m_bIsolatedMark;
+  pSelect->AddSelectableRoutePoint(m_lat, m_lon, this);
+
+  if (m_bIsInRoute) {
+    pSelect->UpdateSelectableRouteSegments(this);
+    wxArrayPtrVoid *routes = g_pRouteMan->GetRouteArrayContaining(this);
+    if (routes) {
+      for (unsigned int ir = 0; ir < routes->GetCount(); ir++) {
+        Route *pr = (Route *)routes->Item(ir);
+        pr->FinalizeForRendering();
+        pr->UpdateSegmentDistances();
+        NavObj_dB::GetInstance().UpdateRoute(pr);
+      }
+      delete routes;
+    }
+  } else {
+    NavObj_dB::GetInstance().UpdateRoutePoint(this);
+  }
+
+  return true;
 }
 
 wxDateTime RoutePoint::GetETA() {
