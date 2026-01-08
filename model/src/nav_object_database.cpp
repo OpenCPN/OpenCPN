@@ -17,6 +17,8 @@
 
 #include <wx/string.h>
 
+#include <set>
+
 #include "model/navobj_db.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
@@ -50,6 +52,8 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
   wxString etd;
   wxString TypeString;
   wxString GuidString = GUID;  // default
+  bool layer_guid_is_persistent = false;
+  wxString link_layer_guid;
   wxString TimeString;
   wxDateTime dt;
   RoutePoint *pWP;
@@ -129,6 +133,11 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
           wxString ext_name = wxString::FromUTF8(ext_child.name());
           if (ext_name == "opencpn:guid") {
             GuidString = wxString::FromUTF8(ext_child.first_child().value());
+            if (b_layer) layer_guid_is_persistent = true;
+          } else if (ext_name == "opencpn:link_layer_guid") {
+            // Optional link to a layer waypoint GUID.
+            // Stored on cloned routepoints to allow syncing with layer changes.
+            link_layer_guid = wxString::FromUTF8(ext_child.first_child().value());
           } else if (ext_name == "opencpn:viz") {
             b_propviz = true;
             wxString s = wxString::FromUTF8(ext_child.first_child().value());
@@ -197,7 +206,10 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
   // Create waypoint
 
   if (b_layer) {
-    if (GuidString.IsEmpty()) GuidString = pWayPointMan->CreateGUID(NULL);
+    if (GuidString.IsEmpty())
+      GuidString = pWayPointMan->CreateGUID(NULL);
+    else
+      layer_guid_is_persistent = true;
   }
 
   pWP = new RoutePoint(rlat, rlon, SymString, NameString, GuidString,
@@ -223,6 +235,43 @@ RoutePoint *GPXLoadWaypoint1(pugi::xml_node &wpt_node, wxString def_symbol_name,
   pWP->SetUseSca(l_bWaypointUseScale);
   pWP->SetPlannedSpeed(plan_speed);
   pWP->SetETD(etd);
+  if (!link_layer_guid.IsEmpty()) pWP->m_LinkedLayerGUID = link_layer_guid;
+  pWP->m_bLayerGuidIsPersistent = layer_guid_is_persistent;
+
+    if (!b_layer && !pWP->m_LinkedLayerGUID.IsEmpty()) {
+      RoutePoint *linked_layer =
+          pWayPointMan->FindRoutePointByGUID(pWP->m_LinkedLayerGUID);
+    if (linked_layer && linked_layer->m_bIsInLayer &&
+        linked_layer->m_bLayerGuidIsPersistent) {
+      pSelect->DeleteSelectableRoutePoint(pWP);
+      pWP->m_lat = linked_layer->m_lat;
+      pWP->m_lon = linked_layer->m_lon;
+      pWP->SetIconName(linked_layer->GetIconName());
+      pWP->m_MarkDescription = linked_layer->m_MarkDescription;
+      pWP->SetName(linked_layer->GetName());
+      pWP->m_TideStation = linked_layer->m_TideStation;
+      pWP->SetPlannedSpeed(linked_layer->GetPlannedSpeed());
+      pWP->SetETD(linked_layer->GetETD());
+      pWP->SetWaypointArrivalRadius(linked_layer->GetWaypointArrivalRadius());
+      pWP->m_iWaypointRangeRingsNumber =
+          linked_layer->m_iWaypointRangeRingsNumber;
+      pWP->m_fWaypointRangeRingsStep = linked_layer->m_fWaypointRangeRingsStep;
+      pWP->m_iWaypointRangeRingsStepUnits =
+          linked_layer->m_iWaypointRangeRingsStepUnits;
+      pWP->SetShowWaypointRangeRings(
+          linked_layer->m_bShowWaypointRangeRings);
+      pWP->m_wxcWaypointRangeRingsColour =
+          linked_layer->m_wxcWaypointRangeRingsColour;
+      pWP->SetScaMin(linked_layer->GetScaMin());
+      pWP->SetScaMax(linked_layer->GetScaMax());
+      pWP->SetUseSca(linked_layer->GetUseSca());
+      pWP->SetVisible(linked_layer->IsVisible());
+      pWP->SetNameShown(linked_layer->IsNameShown());
+      pWP->SetShared(linked_layer->IsShared());
+      pWP->m_bIsolatedMark = linked_layer->m_bIsolatedMark;
+      pSelect->AddSelectableRoutePoint(pWP->m_lat, pWP->m_lon, pWP);
+    }
+  }
 
   pWP->m_bShowNameData = bviz_name;
   if (b_propvizname)
@@ -740,10 +789,15 @@ static bool GPXCreateWpt(pugi::xml_node node, RoutePoint *pr,
       child.append_child(pugi::node_pcdata).set_value("1");
     }
 
-    if ((flags & OUT_SHARED) && pr->IsShared()) {
-      child = child_ext.append_child("opencpn:shared");
-      child.append_child(pugi::node_pcdata).set_value("1");
-    }
+  if ((flags & OUT_SHARED) && pr->IsShared()) {
+    child = child_ext.append_child("opencpn:shared");
+    child.append_child(pugi::node_pcdata).set_value("1");
+  }
+  if ((flags & OUT_GUID) && !pr->m_LinkedLayerGUID.IsEmpty()) {
+    child = child_ext.append_child("opencpn:link_layer_guid");
+    child.append_child(pugi::node_pcdata)
+        .set_value(pr->m_LinkedLayerGUID.mb_str());
+  }
     if (flags & OUT_ARRIVAL_RADIUS) {
       child = child_ext.append_child("opencpn:arrival_radius");
       s.Printf("%.3f", pr->GetWaypointArrivalRadius());
@@ -1443,6 +1497,7 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id,
                                                    wxCheckBoxState b_namesviz) {
   if (!pWayPointMan) return 0;
 
+  std::set<wxString> to_sync;
   int n_obj = 0;
   pugi::xml_node objects = this->child("gpx");
 
@@ -1458,6 +1513,7 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id,
       pWp->m_bIsolatedMark = true;  // This is an isolated mark
       pWayPointMan->AddRoutePoint(pWp);
       pSelect->AddSelectableRoutePoint(pWp->m_lat, pWp->m_lon, pWp);
+      if (pWp->m_bLayerGuidIsPersistent) to_sync.insert(pWp->m_GUID);
       n_obj++;
     } else {
       if (!strcmp(object.name(), "trk")) {
@@ -1470,6 +1526,61 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id,
             GPXLoadRoute1(object, true, true, b_layerviz, layer_id, false);
         n_obj++;
         InsertRouteA(pRoute, this);
+      }
+    }
+  }
+
+  if (!to_sync.empty()) {
+    for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
+      if (rp->m_bIsInLayer) continue;
+      if (rp->m_LinkedLayerGUID.IsEmpty()) continue;
+      if (to_sync.find(rp->m_LinkedLayerGUID) == to_sync.end()) continue;
+
+      RoutePoint *linked_layer =
+          pWayPointMan->FindRoutePointByGUID(rp->m_LinkedLayerGUID);
+      if (!linked_layer || !linked_layer->m_bIsInLayer) continue;
+
+      pSelect->DeleteSelectableRoutePoint(rp);
+      rp->m_lat = linked_layer->m_lat;
+      rp->m_lon = linked_layer->m_lon;
+      rp->SetIconName(linked_layer->GetIconName());
+      rp->m_MarkDescription = linked_layer->m_MarkDescription;
+      rp->SetName(linked_layer->GetName());
+      rp->m_TideStation = linked_layer->m_TideStation;
+      rp->SetPlannedSpeed(linked_layer->GetPlannedSpeed());
+      rp->SetETD(linked_layer->GetETD());
+      rp->SetWaypointArrivalRadius(linked_layer->GetWaypointArrivalRadius());
+      rp->m_iWaypointRangeRingsNumber =
+          linked_layer->m_iWaypointRangeRingsNumber;
+      rp->m_fWaypointRangeRingsStep = linked_layer->m_fWaypointRangeRingsStep;
+      rp->m_iWaypointRangeRingsStepUnits =
+          linked_layer->m_iWaypointRangeRingsStepUnits;
+      rp->SetShowWaypointRangeRings(linked_layer->m_bShowWaypointRangeRings);
+      rp->m_wxcWaypointRangeRingsColour =
+          linked_layer->m_wxcWaypointRangeRingsColour;
+      rp->SetScaMin(linked_layer->GetScaMin());
+      rp->SetScaMax(linked_layer->GetScaMax());
+      rp->SetUseSca(linked_layer->GetUseSca());
+      rp->SetVisible(linked_layer->IsVisible());
+      rp->SetNameShown(linked_layer->IsNameShown());
+      rp->SetShared(linked_layer->IsShared());
+      rp->m_bIsolatedMark = linked_layer->m_bIsolatedMark;
+      pSelect->AddSelectableRoutePoint(rp->m_lat, rp->m_lon, rp);
+
+      if (rp->m_bIsInRoute) {
+        pSelect->UpdateSelectableRouteSegments(rp);
+        wxArrayPtrVoid *routes = g_pRouteMan->GetRouteArrayContaining(rp);
+        if (routes) {
+          for (unsigned int ir = 0; ir < routes->GetCount(); ir++) {
+            Route *pr = (Route *)routes->Item(ir);
+            pr->FinalizeForRendering();
+            pr->UpdateSegmentDistances();
+            NavObj_dB::GetInstance().UpdateRoute(pr);
+          }
+          delete routes;
+        }
+      } else {
+        NavObj_dB::GetInstance().UpdateRoutePoint(rp);
       }
     }
   }
