@@ -20,6 +20,10 @@
  * \file
  * \implements \ref GribRequestDialog.h
  */
+// Disable the maybe-uninitialized warning as it triggers in std::regex and
+// makes the build with sanitizers impossible
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 #include "wx/wx.h"
 #include <wx/utils.h>
 #include <sstream>
