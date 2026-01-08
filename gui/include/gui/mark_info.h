@@ -430,6 +430,7 @@ public:
   void InitialFocus();
   void RecalculateSize();
   RoutePoint* GetRoutePoint() { return m_pRoutePoint; }
+  bool PromptUnlinkLinkedLayer();
   void SetColorScheme(ColorScheme cs);
   void SetRoutePoint(RoutePoint* pRP);
   void ClearData();
