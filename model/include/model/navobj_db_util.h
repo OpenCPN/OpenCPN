@@ -31,3 +31,5 @@ void setUserVersion(sqlite3* db, int v);
 
 bool needsMigration_0_1(sqlite3* db);
 std::string SchemaUpdate_0_1(sqlite3* db, wxFrame* frame);
+bool needsMigration_1_2(sqlite3* db);
+std::string SchemaUpdate_1_2(sqlite3* db, wxFrame* frame);
