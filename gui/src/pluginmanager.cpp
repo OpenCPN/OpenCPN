@@ -143,7 +143,6 @@
 #include "observable_globvar.h"
 #include "ocpn_aui_manager.h"
 #include "ocpndc.h"
-#include "ocpn_frame.h"
 #include "ocpn_pixel.h"
 #include "ocpn_platform.h"
 #include "ocpn_region.h"
@@ -156,7 +155,9 @@
 #include "styles.h"
 #include "model/svg_utils.h"
 #include "toolbar.h"
+#include "top_frame.h"
 #include "update_mgr.h"
+#include "user_colors.h"
 #include "waypointman_gui.h"
 
 #ifdef __ANDROID__
@@ -678,8 +679,8 @@ static ViewPort CreateCompatibleViewport(const PlugIn_ViewPort& pivp) {
   vp.b_quilt = pivp.b_quilt;
   vp.m_projection_type = pivp.m_projection_type;
 
-  if (gFrame->GetPrimaryCanvas())
-    vp.ref_scale = gFrame->GetPrimaryCanvas()->GetVP().ref_scale;
+  if (top_frame::Get()->GetAbstractPrimaryCanvas())
+    vp.ref_scale = top_frame::Get()->GetCanvasRefScale();
   else
     vp.ref_scale = vp.chart_scale;
 
@@ -784,8 +785,8 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
       //  Reload all plugins, which will bring in the action results.
       LoadAllPlugIns(false);
       plugin_list_panel->ReloadPluginPanels();
-      OCPNMessageBox(gFrame, message, _("Un-Installation complete"),
-                     wxICON_INFORMATION | wxOK);
+      OCPNMessageBox(wxTheApp->GetTopWindow(), message,
+                     _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
       break;
     }
 
@@ -866,18 +867,17 @@ static void OnLoadPlugin(const PlugInContainer* pic) {
   }
 }
 
-PlugInManager::PlugInManager(MyFrame* parent) {
+PlugInManager::PlugInManager(AbstractTopFrame* parent) {
 #if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
   m_pCurlThread = NULL;
   m_pCurl = 0;
 #endif
-  pParent = parent;
   s_ppim = this;
 
-  MyFrame* pFrame = GetParentFrame();
-  if (pFrame) {
+  AbstractTopFrame* parent_frame = GetParentFrame();
+  if (parent_frame) {
     m_plugin_menu_item_id_next = CanvasMenuHandler::GetNextContextMenuId();
-    m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
+    m_plugin_tool_id_next = top_frame::Get()->GetNextToolbarToolId();
   }
 
 #ifdef __ANDROID__
@@ -886,11 +886,11 @@ PlugInManager::PlugInManager(MyFrame* parent) {
   //  even if stubs.
   //
   //  Here is where we do that....
-  if (pFrame) {
+  if (parent_frame) {
     wxArrayString as;
     as.Add("Item0");
     wxRadioBox* box =
-        new wxRadioBox(pFrame, -1, "", wxPoint(0, 0), wxSize(-1, -1), as);
+        new wxRadioBox(parent_frame, -1, "", wxPoint(0, 0), wxSize(-1, -1), as);
     delete box;
   }
 
@@ -1084,7 +1084,7 @@ void PlugInManager::HandlePluginHandlerEvents() {
                                       EVT_DOWNLOAD_FAILED);
   Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) {
     wxString message = _("Please check system log for more info.");
-    OCPNMessageBox(gFrame, message, _("Installation error"),
+    OCPNMessageBox(wxTheApp->GetTopWindow(), message, _("Installation error"),
                    wxICON_ERROR | wxOK | wxCENTRE);
   });
 
@@ -1093,7 +1093,8 @@ void PlugInManager::HandlePluginHandlerEvents() {
   Bind(EVT_DOWNLOAD_OK, [&](wxCommandEvent& ev) {
     wxString message(ev.GetString());
     message += _(" successfully installed from cache");
-    OCPNMessageBox(gFrame, message, _("Installation complete"),
+    OCPNMessageBox(wxTheApp->GetTopWindow(), message,
+                   _("Installation complete"),
                    wxICON_INFORMATION | wxOK | wxCENTRE);
   });
 }
@@ -1142,8 +1143,8 @@ void PlugInManager::OnPluginActivate(const PlugInContainer* pic) {
   if (g_bopengl) {
     if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
         (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
-      if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
-        gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
+      if (top_frame::Get()->GetWxGlCanvas()) {
+        top_frame::Get()->SendGlJsonConfigMsg();
         SendS52ConfigToAllPlugIns(true);
       }
     }
@@ -1236,8 +1237,7 @@ void PlugInManager::FinalizePluginLoadall() {
   // Inform Plugins of OpenGL configuration, if enabled
 #ifdef ocpnUSE_GL
   if (g_bopengl) {
-    if (gFrame->GetPrimaryCanvas()->GetglCanvas())
-      gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
+    top_frame::Get()->SendGlJsonConfigMsg();
   }
 #endif
 
@@ -1701,7 +1701,7 @@ void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs) {
 }
 
 void PlugInManager::PrepareAllPluginContextMenus() {
-  int canvasIndex = gFrame->GetCanvasIndexUnderMouse();
+  int canvasIndex = top_frame::Get()->GetCanvasIndexUnderMouse();
   if (canvasIndex < 0) return;
 
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
@@ -1934,7 +1934,7 @@ void PlugInManager::RemoveToolbarTool(int tool_id) {
       }
     }
   }
-  pParent->RequestNewToolbars();
+  m_parent->RequestNewToolbars();
 }
 
 void PlugInManager::SetToolbarToolViz(int item, bool viz) {
@@ -1943,7 +1943,7 @@ void PlugInManager::SetToolbarToolViz(int item, bool viz) {
     {
       if (pttc->id == item) {
         pttc->b_viz = viz;
-        pParent->RequestNewToolbars();  //      Apply the change
+        m_parent->RequestNewToolbars();  //      Apply the change
         break;
       }
     }
@@ -1956,7 +1956,7 @@ void PlugInManager::SetToolbarItemState(int item, bool toggle) {
     {
       if (pttc->id == item) {
         pttc->b_toggle = toggle;
-        pParent->SetMasterToolbarItemState(item, toggle);
+        m_parent->SetMasterToolbarItemState(item, toggle);
         break;
       }
     }
@@ -1996,8 +1996,8 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap* bitmap,
         pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
         pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
 
-        pParent->SetToolbarItemBitmaps(item, pttc->bitmap_day,
-                                       pttc->bitmap_Rollover_day);
+        m_parent->SetToolbarItemBitmaps(item, pttc->bitmap_day,
+                                        pttc->bitmap_Rollover_day);
         break;
       }
     }
@@ -2014,9 +2014,9 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxString SVGfile,
         pttc->pluginNormalIconSVG = SVGfile;
         pttc->pluginRolloverIconSVG = SVGfileRollover;
         pttc->pluginToggledIconSVG = SVGfileToggled;
-        pParent->SetToolbarItemSVG(item, pttc->pluginNormalIconSVG,
-                                   pttc->pluginRolloverIconSVG,
-                                   pttc->pluginToggledIconSVG);
+        m_parent->SetToolbarItemSVG(item, pttc->pluginNormalIconSVG,
+                                    pttc->pluginRolloverIconSVG,
+                                    pttc->pluginToggledIconSVG);
         break;
       }
     }
@@ -2434,7 +2434,7 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
   m_PluginListPanel->ReloadPluginPanels();
   wxString ws(_("Plugin"));
   ws += metadata.name + _(" successfully imported");
-  OCPNMessageBox(gFrame, ws, _("Installation complete"),
+  OCPNMessageBox(wxTheApp->GetTopWindow(), ws, _("Installation complete"),
                  wxICON_INFORMATION | wxOK | wxCENTRE);
 }
 
@@ -2816,9 +2816,9 @@ PluginPanel::PluginPanel(wxPanel* parent, const std::string& name)
                       2);
   auto uninstall = [&](wxCommandEvent ev) {
     auto n = m_pName->GetLabel().ToStdString();
-    int result =
-        OCPNMessageBox(gFrame, std::string(_("Uninstall plugin ")) + n + "?",
-                       _("Un-Installation"), wxICON_QUESTION | wxOK | wxCANCEL);
+    int result = OCPNMessageBox(
+        wxTheApp->GetTopWindow(), std::string(_("Uninstall plugin ")) + n + "?",
+        _("Un-Installation"), wxICON_QUESTION | wxOK | wxCANCEL);
     if (result != wxID_OK) return;
     PluginHandler::GetInstance()->ClearInstallData(n);
     m_PluginListPanel->ReloadPluginPanels();

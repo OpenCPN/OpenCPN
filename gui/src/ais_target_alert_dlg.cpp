@@ -45,9 +45,9 @@
 #include "chcanv.h"
 #include "font_mgr.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
+#include "top_frame.h"
 #include "user_colors.h"
 
 #ifdef __ANDROID__
@@ -377,11 +377,11 @@ void AISTargetAlertDialog::OnIdCreateWPClick(wxCommandEvent &event) {
 
       if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
         pRouteManagerDialog->UpdateWptListCtrl();
-      if (gFrame->GetPrimaryCanvas()) {
-        gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction(
-            Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
-        gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction(NULL);
-        gFrame->InvalidateAllGL();
+      if (top_frame::Get()->GetAbstractPrimaryCanvas()) {
+        top_frame::Get()->BeforeUndoableAction(Undo_CreateWaypoint, pWP,
+                                               Undo_HasParent, NULL);
+        top_frame::Get()->AfterUndoableAction(NULL);
+        top_frame::Get()->InvalidateAllGL();
       }
       Refresh(false);
     }
@@ -399,9 +399,10 @@ void AISTargetAlertDialog::OnIdSilenceClick(wxCommandEvent &event) {
 void AISTargetAlertDialog::OnIdJumptoClick(wxCommandEvent &event) {
   if (m_pdecoder) {
     auto td = m_pdecoder->Get_Target_Data_From_MMSI(Get_Dialog_MMSI());
-    if (td)
-      gFrame->JumpToPosition(gFrame->GetFocusCanvas(), td->Lat, td->Lon,
-                             gFrame->GetFocusCanvas()->GetVPScale());
+    if (td) {
+      top_frame::Get()->JumpToPosition(
+          top_frame::Get()->GetAbstractFocusCanvas(), td->Lat, td->Lon);
+    }
   }
 }
 

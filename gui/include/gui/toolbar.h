@@ -32,6 +32,7 @@
 #include <wx/tbarbase.h>
 #include <wx/menuitem.h>
 
+#include "abstract_chart_canv.h"
 #include "ocpndc.h"
 #include "tooltip.h"
 #include "styles.h"

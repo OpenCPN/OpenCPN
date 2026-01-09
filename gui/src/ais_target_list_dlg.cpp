@@ -36,11 +36,11 @@
 #include "ais.h"
 #include "ais_target_list_dlg.h"
 #include "chcanv.h"
-#include "ocpn_frame.h"
 #include "ocpn_list_ctrl.h"
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
 #include "styles.h"
+#include "top_frame.h"
 
 AISTargetListDialog *g_pAISTargetList;  // Global instance
 
@@ -370,7 +370,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
       pane.Float();
       pane.Dockable(false);
 
-      wxSize screen_size = gFrame->GetClientSize();
+      wxSize screen_size = top_frame::Get()->GetClientSize();
       pane.FloatingSize(screen_size.x * 8 / 10, screen_size.y * 8 / 10);
       pane.FloatingPosition(screen_size.x * 1 / 10, screen_size.y * 1 / 10);
       m_pAuiManager->Update();
@@ -459,7 +459,7 @@ void AISTargetListDialog::RecalculateSize() {
   esize.x = GetCharWidth() * 110;
   esize.y = GetCharHeight() * 40;
 
-  wxSize dsize = gFrame->GetClientSize();
+  wxSize dsize = top_frame::Get()->GetClientSize();
   esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
   esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
   SetClientSize(esize);
@@ -474,7 +474,7 @@ void AISTargetListDialog::RecalculateSize() {
 
     if (pane.IsOk()) {
       pane.FloatingSize(fsize.x, fsize.y);
-      wxPoint pos = gFrame->GetScreenPosition();
+      wxPoint pos = top_frame::Get()->GetScreenPosition();
       pane.FloatingPosition(pos.x + (dsize.x - fsize.x) / 2,
                             pos.y + (dsize.y - fsize.y) / 2);
     }
@@ -982,9 +982,9 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
-    gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction(
-        Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
-    gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction(NULL);
+    top_frame::Get()->BeforeUndoableAction(Undo_CreateWaypoint, pWP,
+                                           Undo_HasParent, NULL);
+    top_frame::Get()->AfterUndoableAction(NULL);
     Refresh(false);
   }
 }
@@ -1130,19 +1130,21 @@ void AISTargetListDialog::CenterToTarget(bool close) {
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
 
   if (pAISTarget) {
-    double scale = gFrame->GetFocusCanvas()->GetVPScale();
+    double scale = top_frame::Get()->GetAbstractFocusCanvas()->GetVPScale();
     if (!close) {
-      gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                             pAISTarget->Lon, scale);
+      top_frame::Get()->JumpToPosition(
+          top_frame::Get()->GetAbstractFocusCanvas(), pAISTarget->Lat,
+          pAISTarget->Lon, scale);
     } else {
       // Set a resonable (1:5000) chart scale to see the target.
       double factor = 1.;
       if (scale < 0.7) {  // Don't zoom if already close.
-        ChartCanvas *cc = gFrame->GetFocusCanvas();
-        factor = cc->GetScaleValue() / 5000.0;
+        AbstractChartCanvas *acc = top_frame::Get()->GetAbstractFocusCanvas();
+        factor = acc->GetScaleValue() / 5000.0;
       }
-      gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                             pAISTarget->Lon, scale * factor);
+      top_frame::Get()->JumpToPosition(
+          top_frame::Get()->GetAbstractFocusCanvas(), pAISTarget->Lat,
+          pAISTarget->Lon, scale * factor);
       DoTargetQuery(pAISTarget->MMSI);
       // Close AIS target list
       Shutdown();
