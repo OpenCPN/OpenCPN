@@ -34,8 +34,8 @@
 #include "model/ocpn_types.h"
 #include "bbox.h"
 #include "LLRegion.h"
-
 #include "chartdb_thread.h"
+#include "ocpn_plugin.h"
 
 enum { BUILTIN_DESCRIPTOR = 0, PLUGIN_DESCRIPTOR };
 
@@ -44,12 +44,17 @@ public:
   ChartClassDescriptor() {};
   virtual ~ChartClassDescriptor() {}
 
-  ChartClassDescriptor(wxString classn, wxString mask, int type)
-      : m_class_name(classn), m_search_mask(mask), m_descriptor_type(type) {};
+  ChartClassDescriptor(wxString classn, wxString mask, opencpn_plugin *plugin,
+                       int type)
+      : m_class_name(classn),
+        m_search_mask(mask),
+        m_descriptor_type(type),
+        m_plugin(plugin) {};
 
   wxString m_class_name;
   wxString m_search_mask;
   int m_descriptor_type;
+  opencpn_plugin *m_plugin;
 };
 
 #endif

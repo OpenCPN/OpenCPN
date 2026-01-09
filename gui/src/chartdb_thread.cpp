@@ -55,6 +55,7 @@ extern ChartDB *ChartData;
 
 //  ChartTableEntryJobTicket implementation
 bool ChartTableEntryJobTicket::DoJob() {
+  printf("DoJob\n");
   ChartDatabase *db = dynamic_cast<ChartDatabase *>(ChartData);
   ChartTableEntry *pnewChartTableEntry =
       db->CreateChartTableEntry(m_ChartPath, m_ChartPath, chart_desc);

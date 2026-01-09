@@ -42,7 +42,11 @@ class ChartTableEntryPoolThread;
 #if 1
 class ChartTableEntryJobTicket {
 public:
-  ChartTableEntryJobTicket() { pthread = nullptr; }
+  ChartTableEntryJobTicket() {
+    pthread = nullptr;
+    b_thread_safe = true;
+    m_provider_type = 0;
+  }
   ~ChartTableEntryJobTicket() {}
 
   bool DoJob();
@@ -55,6 +59,9 @@ public:
   std::shared_ptr<struct ChartTableEntry> m_chart_table_entry;
 
   bool b_isaborted;
+  bool b_thread_safe;
+  int m_provider_type;
+  wxString provider_class_name;
 };
 #endif
 
@@ -186,6 +193,7 @@ protected:
         printf("job aborted\n");
       }
 
+      printf("..Queue event\n");
       auto* evt =
           new OCPN_ChartTableEntryThreadEvent(wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
       evt->SetTicket(job);

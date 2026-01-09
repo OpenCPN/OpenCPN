@@ -1104,8 +1104,20 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
 
   // Capture the completed job tickets, checking for duplicates along the way
   auto ticket = event.GetTicket();
-  wxFileName fn(ticket->m_ChartPath);
 
+  //  look for and process incomplete tickets
+  if (!ticket->b_thread_safe) {
+    ChartClassDescriptor tmpDescriptor(ticket->provider_class_name, "", nullptr,
+                                       PLUGIN_DESCRIPTOR);
+    ChartTableEntry *pnewChartTableEntry = CreateChartTableEntry(
+        ticket->m_ChartPath, ticket->m_ChartPath, tmpDescriptor);
+    if (pnewChartTableEntry) {
+      std::shared_ptr<ChartTableEntry> safe_ptr(pnewChartTableEntry);
+      ticket->m_chart_table_entry = safe_ptr;  // class member
+    }
+  }
+
+  wxFileName fn(ticket->m_ChartPath);
   bool collision_found = false;
   ChartCollisionsHashMap::iterator it;
   for (it = m_full_collision_map.begin(); it != m_full_collision_map.end();
@@ -1122,7 +1134,7 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
   //  Consider TODO #1 here:  Looking for more duokucates acress directories
 
   if (!collision_found) {
-    m_ticket_vector.push_back(event.GetTicket());
+    m_ticket_vector.push_back(ticket);
     m_full_collision_map[fn.GetFullName()] = 1;
   }
 
@@ -1223,17 +1235,17 @@ void ChartDatabase::FinalizeChartUpdate() {
 void ChartDatabase::UpdateChartClassDescriptorArray() {
   if (m_ChartClassDescriptorArray.empty()) {
     m_ChartClassDescriptorArray.push_back(
-        ChartClassDescriptor("ChartKAP", "*.kap", BUILTIN_DESCRIPTOR));
+        ChartClassDescriptor("ChartKAP", "*.kap", nullptr, BUILTIN_DESCRIPTOR));
     m_ChartClassDescriptorArray.push_back(
-        ChartClassDescriptor("ChartGEO", "*.geo", BUILTIN_DESCRIPTOR));
+        ChartClassDescriptor("ChartGEO", "*.geo", nullptr, BUILTIN_DESCRIPTOR));
     m_ChartClassDescriptorArray.push_back(
-        ChartClassDescriptor("s57chart", "*.000", BUILTIN_DESCRIPTOR));
+        ChartClassDescriptor("s57chart", "*.000", nullptr, BUILTIN_DESCRIPTOR));
     m_ChartClassDescriptorArray.push_back(
-        ChartClassDescriptor("s57chart", "*.s57", BUILTIN_DESCRIPTOR));
+        ChartClassDescriptor("s57chart", "*.s57", nullptr, BUILTIN_DESCRIPTOR));
     m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(
-        "cm93compchart", "00300000.a", BUILTIN_DESCRIPTOR));
-    m_ChartClassDescriptorArray.push_back(
-        ChartClassDescriptor("ChartMbTiles", "*.mbtiles", BUILTIN_DESCRIPTOR));
+        "cm93compchart", "00300000.a", nullptr, BUILTIN_DESCRIPTOR));
+    m_ChartClassDescriptorArray.push_back(ChartClassDescriptor(
+        "ChartMbTiles", "*.mbtiles", nullptr, BUILTIN_DESCRIPTOR));
   }
   //    If the PlugIn Manager exists, get the array of dynamically loadable
   //    chart class names
@@ -1255,9 +1267,12 @@ void ChartDatabase::UpdateChartClassDescriptorArray() {
       if (cpiw) {
         wxString mask = cpiw->GetFileSearchMask();
 
+        // Get the plugin (ptr) that provides this chart class
+        auto plugin_t = g_pi_manager->GetProvidingPlugin(class_name);
+        opencpn_plugin *plugin = dynamic_cast<opencpn_plugin *>(plugin_t);
         // Create a new descriptor and add it to the database
         m_ChartClassDescriptorArray.push_back(
-            ChartClassDescriptor(class_name, mask, PLUGIN_DESCRIPTOR));
+            ChartClassDescriptor(class_name, mask, plugin, PLUGIN_DESCRIPTOR));
         delete cpiw;
       }
     }
@@ -2653,18 +2668,47 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
       }
 #endif
 
-  // load the thread pool from the prepared array
-  m_jobsRemaining += ticket_vector.size();
+  // Built-in chart types are all thread-safe
+  // Check plugin charts
+  if (chart_desc.m_descriptor_type == PLUGIN_DESCRIPTOR) {
+    // Check plugin charts API.  API >- 118 are known to be thread-safe
+    opencpn_plugin *plugin = chart_desc.m_plugin;
+    opencpn_plugin_118 *provider_plugin118 = dynamic_cast<opencpn_plugin_118 *>(
+        dynamic_cast<opencpn_plugin *>(plugin));
 
+    if (!provider_plugin118) {
+      // old plugin, charts not thread-safe
+      // So arrange to process the tickets in the main app thread,
+      // during the event handler
+      for (auto &ticket : ticket_vector) {
+        ticket->b_thread_safe = false;
+        ticket->m_provider_type = 1;
+        ticket->provider_class_name = chart_desc.m_class_name;
+
+        auto *evt = new OCPN_ChartTableEntryThreadEvent(
+            wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
+        evt->SetTicket(ticket);
+        m_jobsRemaining++;
+        wxQueueEvent(this, evt);
+      }
+      return nDirEntry;
+    }
+  }
+
+  // Chart directory is known thread-safe
+  // load the thread pool from the prepared array
   // Enqueue jobs
   for (auto &ticket : ticket_vector) {
     m_pool.Push(ticket);
+    m_jobsRemaining++;
   }
 
   // if needed, start N worker threads once
-  if (m_pool.GetWorkerCount() == 0) {
-    const int workerCount = 1;
-    for (int i = 0; i < workerCount; ++i) {
+  const int workerCount = 1;
+
+  if (m_pool.GetWorkerCount() < workerCount) {
+    int threads_needed = workerCount - m_pool.GetWorkerCount();
+    for (int i = 0; i < threads_needed; ++i) {
       (new PoolWorkerThread(m_pool, this))->Run();
       m_pool.AddWorker();
     }
@@ -2672,66 +2716,6 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
 
   // Tickets queued, wait for completion events
   return nDirEntry;
-
-#if 0
-// TODO #1 Move this to after thread completion.
-
-    if (!collision || !pnewChart) {
-      // Do nothing.
-    } else if (file_path_is_same) {
-      wxLogMessage(wxString::Format(
-          "   Replacing older chart file of same path: %s", msg_fn.c_str()));
-    } else if (!file_time_is_same) {
-      //  Look at the chart file name (without directory prefix) for a further
-      //  check for duplicates This catches the case in which the "same" chart
-      //  is in different locations, and one may be newer than the other.
-      b_add_msg++;
-
-      if (pnewChart->IsEarlierThan(*pEntry)) {
-        wxFileName table_file(table_file_name);
-        //    Make sure the compare file actually exists
-        if (table_file.IsFileReadable()) {
-          pEntry->SetValid(true);
-          bAddFinal = false;
-          wxLogMessage(
-              wxString::Format("   Retaining newer chart file of same name: %s",
-                               msg_fn.c_str()));
-        }
-      } else if (pnewChart->IsEqualTo(*pEntry)) {
-        //    The file names (without dir prefix) are identical,
-        //    and the mod times are identical
-        //    Presume that this is intentional, in order to facilitate
-        //    having the same chart in multiple groups.
-        //    So, add this chart.
-        bAddFinal = true;
-      } else {
-        pEntry->SetValid(false);
-        bAddFinal = true;
-        wxLogMessage(wxString::Format(
-            "   Replacing older chart file of same name: %s", msg_fn.c_str()));
-      }
-    }
-
-    if (bAddFinal) {
-#endif
-
-#if 0
-
-      if (0 == b_add_msg) {
-        wxLogMessage(
-            wxString::Format("   Adding chart file: %s", msg_fn.c_str()));
-      }
-      collision_map[file_name] = active_chartTable.GetCount();
-      active_chartTable.Add(pnewChart);
-      nDirEntry++;
-    } else {
-      if (pnewChart) delete pnewChart;
-      //                    wxLogMessage(wxString::Format("   Not adding
-      //                    chart file: %s", msg_fn.c_str()));
-    }
-
-  m_nentries = active_chartTable.GetCount();
-#endif
 }
 
 bool ChartDatabase::AddChart(wxString &chartfilename,
@@ -3033,6 +3017,7 @@ ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath,
 ChartTableEntry *ChartDatabase::CreateChartTableEntry(
     const wxString &filePath, wxString &utf8Path,
     ChartClassDescriptor &chart_desc) {
+  printf("CreateCTE\n");
   wxString msg_fn(filePath);
   msg_fn.Replace("%", "%%");
   wxLogMessage(wxString::Format("Loading chart data for %s", msg_fn.c_str()));
@@ -3045,7 +3030,9 @@ ChartTableEntry *ChartDatabase::CreateChartTableEntry(
   }
 
   InitReturn rc = pch->Init(filePath, HEADER_ONLY);
+  printf("Back from Init\n");
   if (rc != INIT_OK) {
+    printf("   ###ERROR\n");
     delete pch;
     wxLogMessage(
         wxString::Format("   ...initialization failed for %s", msg_fn.c_str()));
