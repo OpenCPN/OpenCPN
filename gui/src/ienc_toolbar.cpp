@@ -42,12 +42,13 @@
 #include "model/svg_utils.h"
 
 #include "chcanv.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "pluginmanager.h"
 #include "s52plib.h"
 #include "s52s57.h"
 #include "toolbar.h"
+#include "top_frame.h"
+#include "user_colors.h"
 
 iENCToolbar *g_iENCToolbar;
 
@@ -133,7 +134,7 @@ void iENCToolbar::LoadToolBitmaps() {
 void iENCToolbar::OnToolLeftClick(wxCommandEvent &event) {
   int itemId = event.GetId();
 
-  ChartCanvas *cc = gFrame->GetPrimaryCanvas();
+  AbstractChartCanvas *acc = top_frame::Get()->GetAbstractPrimaryCanvas();
 
   enum _DisCat nset = STANDARD;
   double range;
@@ -163,52 +164,52 @@ void iENCToolbar::OnToolLeftClick(wxCommandEvent &event) {
           break;
       }
 
-      gFrame->SetENCDisplayCategory(cc, nset);
+      top_frame::Get()->SetENCDisplayCategory(acc, nset);
 
       break;
 
     case ID_RMINUS:
-      range = cc->GetCanvasRangeMeters();
+      range = acc->GetCanvasRangeMeters();
       range = wxRound(range * 10) / 10.;
 
-      if (range > 8000.) cc->SetCanvasRangeMeters(8000.);
+      if (range > 8000.) acc->SetCanvasRangeMeters(8000.);
       if (range > 4000.)
-        cc->SetCanvasRangeMeters(4000.);
+        acc->SetCanvasRangeMeters(4000.);
       else if (range > 2000.)
-        cc->SetCanvasRangeMeters(2000.);
+        acc->SetCanvasRangeMeters(2000.);
       else if (range > 1600.)
-        cc->SetCanvasRangeMeters(1600.);
+        acc->SetCanvasRangeMeters(1600.);
       else if (range > 1200.)
-        cc->SetCanvasRangeMeters(1200.);
+        acc->SetCanvasRangeMeters(1200.);
       else if (range > 800.)
-        cc->SetCanvasRangeMeters(800.);
+        acc->SetCanvasRangeMeters(800.);
       else if (range > 500.)
-        cc->SetCanvasRangeMeters(500.);
+        acc->SetCanvasRangeMeters(500.);
       else if (range > 300.)
-        cc->SetCanvasRangeMeters(300.);
+        acc->SetCanvasRangeMeters(300.);
 
       break;
 
     case ID_RPLUS:
-      range = cc->GetCanvasRangeMeters();
+      range = acc->GetCanvasRangeMeters();
       range = wxRound(range * 10) / 10.;
 
       if (range < 300.)
-        cc->SetCanvasRangeMeters(300.);
+        acc->SetCanvasRangeMeters(300.);
       else if (range < 500.)
-        cc->SetCanvasRangeMeters(500.);
+        acc->SetCanvasRangeMeters(500.);
       else if (range < 800.)
-        cc->SetCanvasRangeMeters(800.);
+        acc->SetCanvasRangeMeters(800.);
       else if (range < 1200.)
-        cc->SetCanvasRangeMeters(1200.);
+        acc->SetCanvasRangeMeters(1200.);
       else if (range < 1600.)
-        cc->SetCanvasRangeMeters(1600.);
+        acc->SetCanvasRangeMeters(1600.);
       else if (range < 2000.)
-        cc->SetCanvasRangeMeters(2000.);
+        acc->SetCanvasRangeMeters(2000.);
       else if (range < 4000.)
-        cc->SetCanvasRangeMeters(4000.);
+        acc->SetCanvasRangeMeters(4000.);
       else if (range < 8000.)
-        cc->SetCanvasRangeMeters(8000.);
+        acc->SetCanvasRangeMeters(8000.);
 
       break;
 
@@ -277,15 +278,16 @@ void iENCToolbar::SetRangeToolBitmap() {
 }
 
 void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
-  ChartCanvas *cc = gFrame->GetPrimaryCanvas();
-  if (!cc) return;
+  AbstractChartCanvas *acc = top_frame::Get()->GetAbstractPrimaryCanvas();
+  if (!acc) return;
 
   bool bRefresh = false;
   //  Keep the Density tool in sync
   if (ps52plib) {
     int nset = 1;
 
-    switch (gFrame->GetPrimaryCanvas()->GetENCDisplayCategory()) {
+    auto acc = top_frame::Get()->GetAbstractPrimaryCanvas();
+    switch (acc->GetENCDisplayCategory()) {
       case (DISPLAYBASE):
         nset = 0;
         break;
@@ -315,8 +317,8 @@ void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
 
   // Keep the Range annunciator updated
 
-  if (cc) {
-    double range = cc->GetCanvasRangeMeters();
+  if (acc) {
+    double range = acc->GetCanvasRangeMeters();
 
     if (range != m_range) {
       m_range = range;

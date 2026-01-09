@@ -94,6 +94,7 @@
 #include "model/own_ship.h"
 #include "model/routeman.h"
 #include "model/ser_ports.h"
+#include "model/svg_utils.h"
 
 #include "ais.h"
 #include "chart_ctx_factory.h"
@@ -103,20 +104,20 @@
 #include "config_mgr.h"
 #include "conn_params_panel.h"
 #include "connections_dlg.h"
+#include "displays.h"
 #include "dychart.h"
 #include "font_mgr.h"
 #include "mark_info.h"
 #include "navutil.h"
 #include "observable_evtvar.h"
 #include "observable_globvar.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "options.h"
 #include "s52plib.h"
 #include "s52utils.h"
 #include "s57_load.h"
 #include "styles.h"
-#include "model/svg_utils.h"
+#include "top_frame.h"
 #include "usb_devices.h"
 #include "waypointman_gui.h"
 
@@ -1468,6 +1469,7 @@ EVT_CHOICE(ID_OPWAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect)
 EVT_CHAR_HOOK(options::OnCharHook)
 
 END_EVENT_TABLE()
+
 options::options(wxWindow* parent, OptionsCallbacks callbacks, wxWindowID id,
                  const wxString& caption, const wxPoint& pos,
                  const wxSize& size, long style)
@@ -5840,7 +5842,7 @@ void options::OnResetFont(wxCommandEvent& event) {
         m_textSample->Refresh();
       }
       // Force immediate update of UI elements
-      gFrame->UpdateAllFonts();
+      top_frame::Get()->UpdateAllFonts();
       m_bfontChanged = true;
       OnFontChoice(event);
     }
@@ -6125,7 +6127,8 @@ void options::CreateControls() {
   }
 
   wxString ConnTab = _("Connections");
-  if (g_Platform->GetDisplayDIPMult(gFrame) < 1) ConnTab = _("Connect");
+  if (g_Platform->GetDisplayDIPMult(wxTheApp->GetTopWindow()) < 1)
+    ConnTab = _("Connect");
 
   m_pageConnections = CreatePanel(ConnTab);
   CreatePanel_NMEA(m_pageConnections, border_size, group_item_spacing);
@@ -6140,7 +6143,8 @@ void options::CreateControls() {
   CreatePanel_Routes(m_pageShips, border_size, group_item_spacing);
 
   wxString UITab = _("User Interface");
-  if (g_Platform->GetDisplayDIPMult(gFrame) < 1) UITab = _("User");
+  if (g_Platform->GetDisplayDIPMult(wxTheApp->GetTopWindow()) < 1)
+    UITab = _("User");
 
   m_pageUI = CreatePanel(UITab);
   CreatePanel_UI(m_pageUI, border_size, group_item_spacing);
@@ -6940,12 +6944,12 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
   OpenGLOptionsDlg dlg(this);
 
   if (dlg.ShowModal() == wxID_OK) {
-    if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
-      g_GLOptions.m_bUseAcceleratedPanning = g_bGLexpert
-                                                 ? dlg.GetAcceleratedPanning()
-                                                 : gFrame->GetPrimaryCanvas()
-                                                       ->GetglCanvas()
-                                                       ->CanAcceleratePanning();
+    if (top_frame::Get()->GetWxGlCanvas()) {
+      g_GLOptions.m_bUseAcceleratedPanning =
+          g_bGLexpert ? dlg.GetAcceleratedPanning()
+                      : top_frame::Get()
+                            ->GetAbstractPrimaryCanvas()
+                            ->CanAccelerateGlPanning();
     }
 
     g_bSoftwareGL = dlg.GetSoftwareGL();
@@ -6968,9 +6972,9 @@ void options::OnOpenGLOptions(wxCommandEvent& event) {
       // new g_GLoptions setting is needed in callees
       g_GLOptions.m_bTextureCompression = dlg.GetTextureCompression();
 
-      if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
+      if (top_frame::Get()->GetWxGlCanvas()) {
         ::wxBeginBusyCursor();
-        gFrame->GetPrimaryCanvas()->GetglCanvas()->SetupCompression();
+        top_frame::Get()->GetAbstractPrimaryCanvas()->SetupGlCompression();
         g_glTextureManager->ClearAllRasterTextures();
         ::wxEndBusyCursor();
       }
@@ -7141,12 +7145,12 @@ void options::OnApplyClick(wxCommandEvent& event) {
       (m_returnChanges & NEED_NEW_OPTIONS)) {
     m_callbacks.prepare_close(this, m_returnChanges);
     if (!(m_returnChanges & FONT_CHANGED_SAFE))
-      gFrame->ScheduleReconfigAndSettingsReload(true, true);
+      top_frame::Get()->ScheduleReconfigAndSettingsReload(true, true);
   } else {
     //  If we had a config change,
     //  then schedule a re-entry to the settings dialog
     if ((m_returnChanges & CONFIG_CHANGED)) {
-      gFrame->ScheduleReconfigAndSettingsReload(true, false);
+      top_frame::Get()->ScheduleReconfigAndSettingsReload(true, false);
     }
   }
 }
@@ -7220,12 +7224,12 @@ void options::ApplyChanges(wxCommandEvent& event) {
   //  Any Font changes?
   if (m_bfontChanged) {
 #ifdef ocpnUSE_GL
-    if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
-      gFrame->GetPrimaryCanvas()->GetglCanvas()->ResetGridFont();
+    if (top_frame::Get()->GetWxGlCanvas()) {
+      top_frame::Get()->GetAbstractPrimaryCanvas()->ResetGridFont();
     }
 #endif
-    if (gFrame->GetPrimaryCanvas()) {
-      gFrame->GetPrimaryCanvas()->ResetGridFont();
+    if (top_frame::Get()->GetAbstractPrimaryCanvas()) {
+      top_frame::Get()->GetAbstractPrimaryCanvas()->ResetGridFont();
     }
 
     m_returnChanges |= FONT_CHANGED;
@@ -7752,7 +7756,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
       m_returnChanges |= STYLE_CHANGED;
     }
     wxSizeEvent nullEvent;
-    gFrame->OnSize(nullEvent);
+    top_frame::Get()->OnSize(nullEvent);
   }
 #endif
   if (g_bInlandEcdis != pInlandEcdis->GetValue()) {  // InlandEcdis changed
@@ -7812,7 +7816,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   m_returnChanges &= ~(CHANGE_CHARTS | FORCE_UPDATE | SCAN_UPDATE);
   k_charts = 0;
 
-  gFrame->RefreshAllCanvas();
+  top_frame::Get()->RefreshAllCanvas();
 
   // Some layout changes requiring a new options instance?
   if (m_bneedNew) m_returnChanges |= NEED_NEW_OPTIONS;
@@ -7838,18 +7842,19 @@ void options::OnXidOkClick(wxCommandEvent& event) {
 
   //  If we had a config change, then do it now
   if ((m_returnChanges & CONFIG_CHANGED) || (m_returnChanges & GL_CHANGED))
-    gFrame->ScheduleReconfigAndSettingsReload(false, false);
+    top_frame::Get()->ScheduleReconfigAndSettingsReload(false, false);
 
   // Special case for "Dialog" font edit
   if ((m_returnChanges & FONT_CHANGED) &&
       !(m_returnChanges & FONT_CHANGED_SAFE))
-    gFrame->ScheduleDeleteSettingsDialog();
+    top_frame::Get()->ScheduleDeleteSettingsDialog();
 
   // And for locale change
-  if (m_returnChanges & LOCALE_CHANGED) gFrame->ScheduleDeleteSettingsDialog();
+  if (m_returnChanges & LOCALE_CHANGED)
+    top_frame::Get()->ScheduleDeleteSettingsDialog();
 
   // Also for FORCE_RELOAD
-  if (m_returnChanges & FORCE_RELOAD) gFrame->ScheduleReloadCharts();
+  if (m_returnChanges & FORCE_RELOAD) top_frame::Get()->ScheduleReloadCharts();
 
   Finish();
   Hide();
@@ -7940,16 +7945,16 @@ void options::OnButtonRebuildChartDb(wxCommandEvent& event) {
 }
 
 void options::OnButtonParseENC(wxCommandEvent& event) {
-  gFrame->GetPrimaryCanvas()->EnablePaint(false);
+  top_frame::Get()->GetAbstractPrimaryCanvas()->EnablePaint(false);
 
   extern void ParseAllENC(wxWindow * parent);
 
   ParseAllENC(g_pOptions);
 
   ViewPort vp;
-  gFrame->ChartsRefresh();
+  top_frame::Get()->ChartsRefresh();
 
-  gFrame->GetPrimaryCanvas()->EnablePaint(true);
+  top_frame::Get()->GetAbstractPrimaryCanvas()->EnablePaint(true);
 }
 
 #ifdef OCPN_USE_LZMA
@@ -8132,8 +8137,9 @@ void options::OnButtonmigrateClick(wxCommandEvent& event) {
 
   // Run the chart migration assistant
   g_migrateDialog =
-      new MigrateAssistantDialog(gFrame, true);  // skip Folder scan
-  g_migrateDialog->SetSize(gFrame->GetSize());
+      // skip Folder scan
+      new MigrateAssistantDialog(wxTheApp->GetTopWindow(), true);
+  g_migrateDialog->SetSize(top_frame::Get()->GetSize());
   g_migrateDialog->Centre();
   g_migrateDialog->Raise();
   g_migrateDialog->ShowModal();
@@ -8203,7 +8209,7 @@ They can be decompressed again using unxz or 7 zip programs."),
 
   //    Make sure the dialog is big enough to be readable
   wxSize sz = prog1.GetSize();
-  sz.x = gFrame->GetClientSize().x * 8 / 10;
+  sz.x = top_frame::Get()->GetClientSize().x * 8 / 10;
   prog1.SetSize(sz);
 
   wxArrayString charts;
@@ -8316,7 +8322,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
   androidEnableOptionItems(true);
 #endif
 
-  gFrame->ThawCharts();
+  top_frame::Get()->ThawCharts();
   Hide();
 }
 
@@ -8379,7 +8385,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
       wxFont* psfont = new wxFont(font);
       wxColor color = font_data.GetColour();
       FontMgr::Get().SetFont(sel_text_element, psfont, color);
-      gFrame->UpdateAllFonts();
+      top_frame::Get()->UpdateAllFonts();
       m_bfontChanged = true;
       OnFontChoice(event);
     }
@@ -8423,7 +8429,7 @@ void options::OnChooseFont(wxCommandEvent& event) {
       wxFont* psfont = new wxFont(font);
       wxColor color = font_data.GetColour();
       FontMgr::Get().SetFont(sel_text_element, psfont, color);
-      gFrame->UpdateAllFonts();
+      top_frame::Get()->UpdateAllFonts();
       m_bfontChanged = true;
       OnFontChoice(event);
     }
@@ -8468,7 +8474,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
 
   FontMgr::Get().SetFont(sel_text_element, pif, cn);
 
-  gFrame->UpdateAllFonts();
+  top_frame::Get()->UpdateAllFonts();
   m_bfontChanged = true;
 
   androidEnableRotation();
@@ -8488,7 +8494,7 @@ void options::OnChooseFontColor(wxCommandEvent& event) {
     wxColor color = colour_data.GetColour();
     FontMgr::Get().SetFont(sel_text_element, pif, color);
 
-    gFrame->UpdateAllFonts();
+    top_frame::Get()->UpdateAllFonts();
     m_bfontChanged = true;
     OnFontChoice(event);
   }
@@ -8707,7 +8713,7 @@ void options::DoOnPageChange(size_t page) {
 #endif
   } else if (m_pagePlugins == i) {  // 7 is the index of "Plugins" page
     m_bVisitPlugins = TRUE;
-    gFrame->FreezeCharts();
+    top_frame::Get()->FreezeCharts();
 
     // load the disabled plugins finally because the user might want to enable
     // them
@@ -9572,12 +9578,9 @@ void OpenGLOptionsDlg::Populate() {
   m_cbLineSmoothing->SetValue(g_GLOptions.m_GLLineSmoothing);
 
 #if defined(__UNIX__) && !defined(__ANDROID__) && !defined(__WXOSX__)
-  if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
-    if (gFrame->GetPrimaryCanvas()
-            ->GetglCanvas()
-            ->GetVersionString()
-            .Upper()
-            .Find("MESA") != wxNOT_FOUND)
+  if (top_frame::Get()->GetWxGlCanvas()) {
+    if (top_frame::Get()->GetGlVersionString().Upper().Find("MESA") !=
+        wxNOT_FOUND)
       m_cbSoftwareGL->SetValue(g_bSoftwareGL);
   }
 #else
@@ -9588,8 +9591,10 @@ void OpenGLOptionsDlg::Populate() {
   SetFont(*dialogFont);
 
   if (g_bGLexpert) {
-    if (gFrame->GetPrimaryCanvas()->GetglCanvas()) {
-      if (gFrame->GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning()) {
+    if (top_frame::Get()->GetWxGlCanvas()) {
+      if (top_frame::Get()
+              ->GetAbstractPrimaryCanvas()
+              ->CanAccelerateGlPanning()) {
         m_cbUseAcceleratedPanning->Enable();
         m_cbUseAcceleratedPanning->SetValue(
             g_GLOptions.m_bUseAcceleratedPanning);

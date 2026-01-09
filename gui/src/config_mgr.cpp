@@ -57,7 +57,6 @@
 #include "font_mgr.h"
 #include "layer.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_gl_options.h"
 #include "ocpn_platform.h"
 #include "ocpn_plugin.h"

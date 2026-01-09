@@ -62,6 +62,7 @@
 #include "ocpndc.h"
 #include "ocpn_plugin.h"
 #include "s57chart.h"  // for Object list
+#include "top_frame.h"
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
@@ -171,7 +172,7 @@ class BlacklistUI;
 
 class PlugInManager : public wxEvtHandler {
 public:
-  PlugInManager(MyFrame* parent);
+  PlugInManager(AbstractTopFrame* parent);
   virtual ~PlugInManager();
 
   bool RenderAllCanvasOverlayPlugIns(ocpnDC& dc, const ViewPort& vp,
@@ -270,7 +271,7 @@ public:
                                  ListOfPI_S57Obj* rule_list);
 
   wxString GetLastError();
-  MyFrame* GetParentFrame() { return pParent; }
+  AbstractTopFrame* GetParentFrame() { return m_parent; }
 
   void DimeWindow(wxWindow* win);
   pluginUtilHandler* GetUtilHandler() { return m_utilHandler; }
@@ -314,7 +315,7 @@ private:
   void HandlePluginLoaderEvents();
   void HandlePluginHandlerEvents();
 
-  MyFrame* pParent;
+  AbstractTopFrame* m_parent;
   std::unique_ptr<BlacklistUI> m_blacklist_ui;
 
   wxString m_last_error_string;

@@ -44,11 +44,12 @@
 #include "font_mgr.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "pluginmanager.h"
 #include "s52plib.h"
 #include "styles.h"
+#include "top_frame.h"
+#include "user_colors.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -220,14 +221,15 @@ void ocpnFloatingToolbarDialog::FadeTimerEvent(wxTimerEvent &event) {
       if (m_bAutoHideToolbar && (m_nAutoHideToolbar > 0) /*&& !m_bsubmerged*/) {
         // Double check the mouse position
         wxPoint mp =
-            gFrame->GetPrimaryCanvas()->ScreenToClient(::wxGetMousePosition());
+            top_frame::Get()->GetAbstractPrimaryCanvas()->ScreenToClient(
+                ::wxGetMousePosition());
         // in the toolbar?
         wxRect r = GetToolbarRect();
         if (r.Contains(mp)) return;
 
         wxCommandEvent event;
         event.SetId(ID_MASTERTOGGLE);
-        gFrame->OnToolLeftClick(event);
+        top_frame::Get()->OnToolLeftClick(event);
       }
     }
   }
@@ -513,7 +515,7 @@ void ocpnFloatingToolbarDialog::RefreshToolbar() {
   if (m_ptoolbar) {
     if (m_ptoolbar->IsDirty()) {
       Realize();
-      gFrame->GetPrimaryCanvas()->Refresh();
+      top_frame::Get()->GetAbstractPrimaryCanvas()->Refresh();
     }
   }
 }
@@ -662,7 +664,6 @@ void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
     coords[7] = y1;
 
     m_callbacks.render_gl_textures(gldc, coords, uv);
-
     glDisable(g_texture_rectangle_format);
     glBindTexture(g_texture_rectangle_format, 0);
     glDisable(GL_BLEND);
@@ -678,7 +679,7 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick(wxCommandEvent &event) {
 
   m_pparent->GetEventHandler()->AddPendingEvent(event);
 #ifndef __WXQT__
-  gFrame->Raise();
+  wxTheApp->GetTopWindow()->Raise();
 #endif
 }
 
@@ -1022,8 +1023,8 @@ void ocpnToolBarSimple::KillTooltip() {
   TooltipManager::Get().HideTooltip();
   m_tooltip_timer.Stop();
 
-  gFrame->Raise();
-  gFrame->GetFocusCanvas()->TriggerDeferredFocus();
+  wxTheApp->GetTopWindow()->Raise();
+  top_frame::Get()->GetAbstractFocusCanvas()->TriggerDeferredFocus();
 }
 
 void ocpnToolBarSimple::HideTooltip() {
@@ -1205,8 +1206,9 @@ wxBitmap &ocpnToolBarSimple::CreateBitmap(double display_scale) {
 }
 
 void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent &event) {
-  if (!gFrame)  // In case gFrame was already destroyed, but the toolbar still
-                // exists (Which should not happen, ever.)
+  if (!top_frame::Get())  // In case gFrame was already destroyed, but the
+                          // toolbar still exists (Which should not happen,
+                          // ever.)
     return;
 
   if (m_btooltip_show /*&& IsShown()*/) {
@@ -1219,15 +1221,16 @@ void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent &event) {
         pos_in_toolbar.x += m_last_ro_tool->m_width + 2;
 
         wxPoint screenPosition =
-            gFrame->GetPrimaryCanvas()->ClientToScreen(pos_in_toolbar);
+            top_frame::Get()->GetAbstractPrimaryCanvas()->ClientToScreen(
+                pos_in_toolbar);
 
         // Show tooltip using new system
         TooltipManager::Get().ShowTooltipAtPosition(
-            gFrame->GetPrimaryCanvas(), s, screenPosition,
-            m_last_ro_tool->m_btooltip_hiviz);
+            top_frame::Get()->GetAbstractPrimaryCanvas()->GetWindow(), s,
+            screenPosition, m_last_ro_tool->m_btooltip_hiviz);
 
 #ifndef __WXOSX__
-        gFrame->Raise();
+        wxTheApp->GetTopWindow()->Raise();
 #endif
 
 #ifndef __ANDROID__
@@ -1754,7 +1757,7 @@ void ocpnToolBarSimple::ToggleTool(int id, bool toggle) {
   if (tool && tool->CanBeToggled() && tool->Toggle(toggle)) {
     DoToggleTool(tool, toggle);
     InvalidateBitmaps();
-    gFrame->GetPrimaryCanvas()->Refresh(true);
+    top_frame::Get()->GetAbstractPrimaryCanvas()->Refresh(true);
   }
 }
 
@@ -1946,7 +1949,7 @@ bool ocpnToolBarSimple::OnLeftClick(int id, bool toggleDown) {
   // and SetExtraLong() for backwards compatibility
   event.SetExtraLong((long)toggleDown);
 
-  gFrame->GetEventHandler()->AddPendingEvent(event);
+  top_frame::Get()->GetEventHandler()->AddPendingEvent(event);
 
   return true;
 }
@@ -1969,7 +1972,7 @@ void ocpnToolBarSimple::OnRightClick(int id, long WXUNUSED(x),
         event.SetEventObject(this);
         event.SetInt(id);
 
-        gFrame->GetEventHandler()->AddPendingEvent(event);
+        top_frame::Get()->GetEventHandler()->AddPendingEvent(event);
       }
     }
   }

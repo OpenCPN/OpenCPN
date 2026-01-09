@@ -207,8 +207,8 @@ wxFileConfig* GetOCPNConfigObject() {
 wxWindow* GetOCPNCanvasWindow() {
   wxWindow* pret = NULL;
   if (s_ppim) {
-    MyFrame* pFrame = s_ppim->GetParentFrame();
-    pret = (wxWindow*)pFrame->GetPrimaryCanvas();
+    AbstractTopFrame* pFrame = s_ppim->GetParentFrame();
+    pret = (wxWindow*)pFrame->GetAbstractPrimaryCanvas();
   }
   return pret;
 }

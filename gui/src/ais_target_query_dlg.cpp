@@ -40,9 +40,9 @@
 #include "chcanv.h"
 #include "font_mgr.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
+#include "top_frame.h"
 
 #define xID_OK 10009
 #define xID_WPT_CREATE 10010
@@ -119,9 +119,9 @@ void AISTargetQueryDialog::OnIdWptCreateClick(wxCommandEvent &event) {
 
       if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
         pRouteManagerDialog->UpdateWptListCtrl();
-      gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction(
-          Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
-      gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction(NULL);
+      top_frame::Get()->BeforeUndoableAction(Undo_CreateWaypoint, pWP,
+                                             Undo_HasParent, NULL);
+      top_frame::Get()->AfterUndoableAction(NULL);
       Refresh(false);
     }
   }
