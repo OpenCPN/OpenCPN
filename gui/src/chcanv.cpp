@@ -8442,6 +8442,32 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           pSelectTC->FindSelection(ctx, zlat, zlon, SELTYPE_CURRENTPOINT);
       if (pFindCurrent) {
         m_pIDXCandidate = FindBestCurrentObject(zlat, zlon);
+        // Check for plugin graphic override
+        auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+        for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+          PlugInContainer *pic = plugin_array->Item(i);
+          if (pic->m_enabled && pic->m_init_state &&
+              (pic->m_cap_flag & WANTS_TIDECURRENT_CLICK)) {
+            if (ptcmgr) {
+              TCClickInfo info;
+              if (m_pIDXCandidate) {
+                info.point_type = CURRENT_STATION;
+                info.index = m_pIDXCandidate->IDX_rec_num;
+                info.name = m_pIDXCandidate->IDX_station_name;
+                info.tz_offset_minutes = m_pIDXCandidate->station_tz_offset;
+                info.getTide = [](time_t t, int idx, float &value, float &dir) {
+                  return ptcmgr->GetTideOrCurrent(t, idx, value, dir);
+                };
+                auto plugin =
+                    dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);
+                if (plugin) plugin->OnTideCurrentClick(info);
+                return true;
+              }
+            }
+          }
+        }
+
+        // Default action
         DrawTCWindow(x, y, (void *)m_pIDXCandidate);
         Refresh(false);
         return true;
@@ -8452,6 +8478,32 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
       pFindTide = pSelectTC->FindSelection(ctx, zlat, zlon, SELTYPE_TIDEPOINT);
       if (pFindTide) {
         m_pIDXCandidate = (IDX_entry *)pFindTide->m_pData1;
+        // Check for plugin graphic override
+        auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+        for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+          PlugInContainer *pic = plugin_array->Item(i);
+          if (pic->m_enabled && pic->m_init_state &&
+              (pic->m_cap_flag & WANTS_TIDECURRENT_CLICK)) {
+            if (ptcmgr) {
+              TCClickInfo info;
+              if (m_pIDXCandidate) {
+                info.point_type = TIDE_STATION;
+                info.index = m_pIDXCandidate->IDX_rec_num;
+                info.name = m_pIDXCandidate->IDX_station_name;
+                info.tz_offset_minutes = m_pIDXCandidate->station_tz_offset;
+                info.getTide = [](time_t t, int idx, float &value, float &dir) {
+                  return ptcmgr->GetTideOrCurrent(t, idx, value, dir);
+                };
+                auto plugin =
+                    dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);
+                if (plugin) plugin->OnTideCurrentClick(info);
+                return true;
+              }
+            }
+          }
+        }
+
+        // Default action
         DrawTCWindow(x, y, (void *)m_pIDXCandidate);
         Refresh(false);
         return true;

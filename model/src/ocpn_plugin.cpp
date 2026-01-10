@@ -305,6 +305,8 @@ opencpn_plugin_121::opencpn_plugin_121(void* pmgr) : opencpn_plugin_120(pmgr) {}
 
 void opencpn_plugin_121::UpdateFollowState(int canvas_index, bool state) {}
 
+void opencpn_plugin_121::OnTideCurrentClick(TCClickInfo info) {}
+
 DateTimeFormatOptions::DateTimeFormatOptions()
     : format_string("$weekday_short_date_time"),
       time_zone(""),
