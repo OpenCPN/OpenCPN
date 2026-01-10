@@ -154,7 +154,9 @@ public:
 ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
                                                      wxPoint position,
                                                      long orient,
-                                                     float size_factor) {
+                                                     float size_factor,
+                                                     ToolbarDlgCallbacks tdc)
+    : m_callbacks(tdc) {
   m_pparent = parent;
   m_ptoolbar = NULL;
 
@@ -659,9 +661,7 @@ void ocpnFloatingToolbarDialog::DrawGL(ocpnDC &gldc, double displayScale) {
     coords[6] = x0;
     coords[7] = y1;
 
-    auto canvas = gFrame->GetPrimaryCanvas();
-    canvas->GetglCanvas()->RenderTextures(gldc, coords, uv, 4,
-                                          canvas->GetpVP());
+    m_callbacks.render_gl_textures(gldc, coords, uv);
 
     glDisable(g_texture_rectangle_format);
     glBindTexture(g_texture_rectangle_format, 0);
