@@ -377,6 +377,10 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
+struct ToolbarDlgCallbacks {
+  std::function<void(ocpnDC &, float *, float *)> render_gl_textures;
+};
+
 //----------------------------------------------------------------------------------------------------------
 //    ocpnFloatingToolbarDialog Specification
 //----------------------------------------------------------------------------------------------------------
@@ -390,7 +394,7 @@ private:
 class ocpnFloatingToolbarDialog : public wxEvtHandler {
 public:
   ocpnFloatingToolbarDialog(wxWindow *parent, wxPoint position, long orient,
-                            float size_factor);
+                            float size_factor, ToolbarDlgCallbacks callbacks);
   ~ocpnFloatingToolbarDialog();
 
   void OnClose(wxCloseEvent &event);
@@ -509,6 +513,7 @@ private:
 
   wxWindow *m_pparent;
   wxBoxSizer *m_topSizer;
+  ToolbarDlgCallbacks m_callbacks;
 
   long m_orient;
   wxTimer m_fade_timer;

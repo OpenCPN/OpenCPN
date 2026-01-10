@@ -43,7 +43,7 @@ extern iENCToolbar *g_iENCToolbar;  ///< Global instance
 class iENCToolbar : public ocpnFloatingToolbarDialog {
 public:
   iENCToolbar(wxWindow *parent, wxPoint position, long orient,
-              float size_factor);
+              float size_factor, ToolbarDlgCallbacks callbacks);
   ~iENCToolbar();
 
   void LoadToolBitmaps();

@@ -277,8 +277,8 @@ public:
 
   void ActivateAISMOBRoute(const AisTargetData* ptarget);
   void UpdateAISMOBRoute(const AisTargetData* ptarget);
+  wxStatusBar* GetFrameStatusBar() { return m_pStatusBar; }
 
-  wxStatusBar* m_pStatusBar;
   wxMenuBar* m_pMenuBar;
   bool m_bTimeIsSet;
 
@@ -426,6 +426,9 @@ private:
   ObsListener m_update_statusbar_listener;
   ObsListener m_center_aistarget_listener;
 
+  ToolbarDlgCallbacks m_toolbar_callbacks;
+
+  wxStatusBar* m_pStatusBar;
   ConnectionsDlg* m_connections_dlg;
   bool m_need_new_options;
   wxArrayString pathArray;

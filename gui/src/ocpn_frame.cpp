@@ -334,7 +334,7 @@ static void DoHelpDialog() {
 //              Fwd Refs
 //------------------------------------------------------------------------------
 
-void BuildiENCToolbar(bool bnew) {
+void BuildiENCToolbar(bool bnew, ToolbarDlgCallbacks callbacks) {
   if (g_bInlandEcdis) {
     if (bnew) {
       if (g_iENCToolbar) {
@@ -373,9 +373,8 @@ void BuildiENCToolbar(bool bnew) {
 
       double tool_scale_factor =
           g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
-
-      g_iENCToolbar =
-          new iENCToolbar(gFrame, posn, wxTB_HORIZONTAL, tool_scale_factor);
+      g_iENCToolbar = new iENCToolbar(gFrame, posn, wxTB_HORIZONTAL,
+                                      tool_scale_factor, callbacks);
       g_iENCToolbar->SetColorScheme(global_color_scheme);
       g_iENCToolbar->EnableSubmerge(false);
     }
@@ -561,6 +560,15 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
   InitTimer.SetOwner(this, INIT_TIMER);
   m_iInitCount = 0;
   m_initializing = false;
+  m_toolbar_callbacks.render_gl_textures =
+#ifdef ocpnUSE_GL
+      [&](ocpnDC &dc, float *coords, float *uv) {
+        GetPrimaryCanvas()->GetglCanvas()->RenderTextures(
+            dc, coords, uv, 4, &GetPrimaryCanvas()->GetVP());
+      };
+#else
+      [&](ocpnDC &dc, float *coords, float *uv) {};
+#endif
 
   //      Redirect the global heartbeat timer to this frame
   FrameTimer1.SetOwner(this, FRAME_TIMER_1);
@@ -1281,7 +1289,7 @@ void MyFrame::RequestNewToolbars(bool bforcenew) {
     return;
   }
 
-  BuildiENCToolbar(bforcenew);
+  BuildiENCToolbar(bforcenew, m_toolbar_callbacks);
   PositionIENCToolbar();
 
 #ifdef __ANDROID__
@@ -4694,7 +4702,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       // -1),
       //                         wxSize(sx, sy));
 
-      BuildiENCToolbar(true);
+      BuildiENCToolbar(true, m_toolbar_callbacks);
 
       break;
     }
@@ -6813,7 +6821,8 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
     toolbarParent = GetPrimaryCanvas();
 #endif
     g_MainToolbar = new ocpnFloatingToolbarDialog(
-        toolbarParent, wxPoint(-1, -1), orient, g_toolbar_scalefactor);
+        toolbarParent, wxPoint(-1, -1), orient, g_toolbar_scalefactor,
+        m_toolbar_callbacks);
     g_MainToolbar->SetBackGroundColorString("GREY3");
     g_MainToolbar->SetToolbarHideMethod(TOOLBAR_HIDE_TO_FIRST_TOOL);
     g_MainToolbar->SetToolConfigString(g_toolbarConfig);

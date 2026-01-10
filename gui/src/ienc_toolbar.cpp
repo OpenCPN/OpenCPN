@@ -55,9 +55,9 @@ iENCToolbar *g_iENCToolbar;
 //          iENCToolbar Implementation
 //---------------------------------------------------------------------------------------
 
-iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint position, long orient,
-                         float size_factor)
-    : ocpnFloatingToolbarDialog(parent, position, orient, size_factor) {
+iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint pos, long orient,
+                         float size_factor, ToolbarDlgCallbacks callbacks)
+    : ocpnFloatingToolbarDialog(parent, pos, orient, size_factor, callbacks) {
   LoadToolBitmaps();
 
   wxSize a = m_bmMinimum.GetSize();

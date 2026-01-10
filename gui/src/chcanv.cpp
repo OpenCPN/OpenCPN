@@ -4341,7 +4341,7 @@ void ChartCanvas::OnCursorTrackTimerEvent(wxTimerEvent &event) {
 }
 
 void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
-  if (!parent_frame->m_pStatusBar) return;
+  if (!parent_frame->GetFrameStatusBar()) return;
 
   wxString s1;
   s1 += " ";
