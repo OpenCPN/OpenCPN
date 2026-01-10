@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,13 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ *  OCPN Alert Dialog Base Class implementation
  */
 
-// For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
 #include "gl_headers.h"
@@ -36,6 +34,8 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/gui_vars.h"
+#include "model/navobj_db.h"
 #include "model/ocpn_types.h"
 #include "model/ocpn_types.h"
 #include "model/route_point.h"
@@ -48,27 +48,12 @@
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
-#include "model/navobj_db.h"
+#include "user_colors.h"
 
 #ifdef __ANDROID__
 #include <QDebug>
 #include "androidUTIL.h"
 #endif
-
-extern ColorScheme global_color_scheme;
-extern bool g_bopengl;
-extern MyFrame *gFrame;
-extern int g_ais_alert_dialog_y;
-extern wxString g_default_wp_icon;
-extern MyConfig *pConfig;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern OCPNPlatform *g_Platform;
-
-//---------------------------------------------------------------------------------------------------------------------
-//
-//      OCPN Alert Dialog Base Class implementation
-//
-//---------------------------------------------------------------------------------------------------------------------
 
 IMPLEMENT_CLASS(OCPN_AlertDialog, wxDialog)
 
