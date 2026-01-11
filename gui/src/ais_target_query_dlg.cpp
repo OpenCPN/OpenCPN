@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dialog handling AIS target tracking.
  */
 
 #include <wx/wxprec.h>
@@ -31,6 +30,7 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/navobj_db.h"
 #include "model/route_point.h"
 #include "model/select.h"
 #include "model/track.h"
@@ -43,21 +43,13 @@
 #include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
-#include "model/navobj_db.h"
-
-extern AISTargetQueryDialog *g_pais_query_dialog_active;
-extern ColorScheme global_color_scheme;
-extern wxString g_default_wp_icon;
-extern MyConfig *pConfig;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern std::vector<Track *> g_TrackList;
-extern OCPNPlatform *g_Platform;
-extern MyFrame *gFrame;
 
 #define xID_OK 10009
 #define xID_WPT_CREATE 10010
 #define xID_TRK_CREATE 10011
+
 IMPLEMENT_CLASS(AISTargetQueryDialog, wxDialog)
+
 // AISTargetQueryDialog event table definition
 BEGIN_EVENT_TABLE(AISTargetQueryDialog, wxFrame)
 EVT_BUTTON(xID_OK, AISTargetQueryDialog::OnIdOKClick)
