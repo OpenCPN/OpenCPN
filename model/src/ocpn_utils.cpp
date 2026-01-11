@@ -183,4 +183,25 @@ std::string printable(const std::string& str) {
   return ss.str();
 }
 
+double AnchorDistFix(double const d, double const AnchorPointMinDist,
+                     double const AnchorPointMaxDist)  //  pjotrc 2010.02.22
+{
+  if (d >= 0.0)
+    if (d < AnchorPointMinDist)
+      return AnchorPointMinDist;
+    else if (d > AnchorPointMaxDist)
+      return AnchorPointMaxDist;
+    else
+      return d;
+
+  else
+    // if ( d < 0.0 )
+    if (d > -AnchorPointMinDist)
+      return -AnchorPointMinDist;
+    else if (d < -AnchorPointMaxDist)
+      return -AnchorPointMaxDist;
+    else
+      return d;
+}
+
 }  // namespace ocpn

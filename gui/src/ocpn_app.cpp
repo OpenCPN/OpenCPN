@@ -1520,7 +1520,7 @@ void MyApp::BuildMainFrame() {
   //      establish GPS timeout value as multiple of frame timer
   //      This will override any nonsense or unset value from the config file
   if ((gps_watchdog_timeout_ticks > 60) || (gps_watchdog_timeout_ticks <= 0))
-    gps_watchdog_timeout_ticks = (GPS_TIMEOUT_SECONDS * 1000) / TIMER_GFRAME_1;
+    gps_watchdog_timeout_ticks = (kGpsTimeoutSeconds * 1000) / TIMER_GFRAME_1;
 
   wxString dogmsg;
   dogmsg.Printf("GPS Watchdog Timeout is: %d sec.", gps_watchdog_timeout_ticks);

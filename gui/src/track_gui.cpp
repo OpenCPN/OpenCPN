@@ -36,11 +36,10 @@
 #include "model/routeman.h"
 
 #include "color_handler.h"
+#include "gl_chart_canvas.h"
 #include "navutil.h"
 #include "track_gui.h"
-#include "gl_chart_canvas.h"
-
-extern wxColor GetDimColor(wxColor c);  // ocpn_frame: FIXME (leamas) new home
+#include "user_colors.h"
 
 extern ocpnGLOptions g_GLOptions;  // FIXME (leamas) Fix GL dependency mess
 
@@ -160,7 +159,7 @@ void TrackGui::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP,
   if (m_track.IsRunning())
     basic_colour = GetGlobalColor("URED");
   else
-    basic_colour = GetDimColor(g_colourTrackLineColour);
+    basic_colour = user_colors::GetDimColor(g_colourTrackLineColour);
 
   wxPenStyle style = wxPENSTYLE_SOLID;
   int width = g_pRouteMan->GetTrackPen()->GetWidth();
@@ -215,7 +214,8 @@ void TrackGui::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP,
         //  Save for base track
         wxPen psave = dc.GetPen();
 
-        wxColor trackLine_dim_colour = GetDimColor(g_colourTrackLineColour);
+        wxColor trackLine_dim_colour =
+            user_colors::GetDimColor(g_colourTrackLineColour);
         wxColour hilt(trackLine_dim_colour.Red(), trackLine_dim_colour.Green(),
                       trackLine_dim_colour.Blue(), 128);
         wxPen HiPen(hilt, hilite_width, wxPENSTYLE_SOLID);

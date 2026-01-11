@@ -84,6 +84,7 @@
 #include "model/navutil_base.h"
 #include "model/notification_manager.h"
 #include "model/own_ship.h"
+#include "model/ocpn_utils.h"
 #include "model/plugin_comm.h"
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
@@ -283,6 +284,15 @@ static void LaunchLocalHelp() {
 
   wxLaunchDefaultBrowser(wxString("file:///") + help_try);
 #endif
+}
+
+static wxString _menuText(wxString name, wxString shortcut) {
+  wxString menutext;
+  menutext << name;
+#ifndef __ANDROID__
+  menutext << "\t" << shortcut;
+#endif
+  return menutext;
 }
 
 static void DoHelpDialog() {
@@ -3491,15 +3501,6 @@ void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
   if (bnewtoolbar) UpdateAllToolbars(global_color_scheme);
 }
 
-wxString _menuText(wxString name, wxString shortcut) {
-  wxString menutext;
-  menutext << name;
-#ifndef __ANDROID__
-  menutext << "\t" << shortcut;
-#endif
-  return menutext;
-}
-
 void MyFrame::BuildMenuBar() {
   /*
    * Menu Bar - add or remove it if necessary, and update the state of the menu
@@ -5478,7 +5479,7 @@ void MyFrame::ProcessAnchorWatch() {
                             pAnchorWatchPoint1->m_lon, gLat, gLon, &brg, &dist);
     double d = g_nAWMax;
     (pAnchorWatchPoint1->GetName()).ToDouble(&d);
-    d = AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
+    d = ocpn::AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
     bool toofar = false;
     bool tooclose = false;
     if (d >= 0.0) toofar = (dist * 1852. > d);
@@ -5499,7 +5500,7 @@ void MyFrame::ProcessAnchorWatch() {
 
     double d = g_nAWMax;
     (pAnchorWatchPoint2->GetName()).ToDouble(&d);
-    d = AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
+    d = ocpn::AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
     bool toofar = false;
     bool tooclose = false;
     if (d >= 0) toofar = (dist * 1852. > d);
@@ -7149,46 +7150,6 @@ void SetSystemColors(ColorScheme cs) {  //---------------
 #endif
 }
 
-wxColor GetDimColor(wxColor c) {
-  if ((global_color_scheme == GLOBAL_COLOR_SCHEME_DAY) ||
-      (global_color_scheme == GLOBAL_COLOR_SCHEME_RGB))
-    return c;
-
-  float factor = 1.0;
-  if (global_color_scheme == GLOBAL_COLOR_SCHEME_DUSK) factor = 0.5;
-  if (global_color_scheme == GLOBAL_COLOR_SCHEME_NIGHT) factor = 0.25;
-
-  wxImage::RGBValue rgb(c.Red(), c.Green(), c.Blue());
-  wxImage::HSVValue hsv = wxImage::RGBtoHSV(rgb);
-  hsv.value = hsv.value * factor;
-  wxImage::RGBValue nrgb = wxImage::HSVtoRGB(hsv);
-
-  return wxColor(nrgb.red, nrgb.green, nrgb.blue);
-}
-
-//               A helper function to check for proper parameters of anchor
-//               watch
-//
-double AnchorDistFix(double const d, double const AnchorPointMinDist,
-                     double const AnchorPointMaxDist)  //  pjotrc 2010.02.22
-{
-  if (d >= 0.0)
-    if (d < AnchorPointMinDist)
-      return AnchorPointMinDist;
-    else if (d > AnchorPointMaxDist)
-      return AnchorPointMaxDist;
-    else
-      return d;
-
-  else
-    // if ( d < 0.0 )
-    if (d > -AnchorPointMinDist)
-      return -AnchorPointMinDist;
-    else if (d < -AnchorPointMaxDist)
-      return -AnchorPointMaxDist;
-    else
-      return d;
-}
 //      Console supporting printf functionality for Windows GUI app
 
 #ifdef __WXMSW__
@@ -7274,17 +7235,6 @@ bool TestGLCanvas(wxString prog_dir) {
 #endif
 }
 #endif
-
-bool ReloadLocale() {
-  bool ret = false;
-
-#if wxUSE_XLOCALE
-  ret =
-      (!g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang)
-            .IsEmpty());
-#endif
-  return ret;
-}
 
 void ApplyLocale() {
   FontMgr::Get().SetLocale(g_locale);

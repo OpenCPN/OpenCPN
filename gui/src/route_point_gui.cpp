@@ -49,6 +49,7 @@
 #include "styles.h"
 #include "viewport.h"
 #include "waypointman_gui.h"
+#include "user_colors.h"
 
 void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
                          bool boverride_viz) {
@@ -592,8 +593,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
         sqrt(pow((double)(r.x - r1.x), 2) + pow((double)(r.y - r1.y), 2));
     int pix_radius = (int)lpp;
 
-    extern wxColor GetDimColor(wxColor c);
-    wxColor ring_dim_color = GetDimColor(m_point.m_wxcWaypointRangeRingsColour);
+    wxColor ring_dim_color =
+        user_colors::GetDimColor(m_point.m_wxcWaypointRangeRingsColour);
 
     // 0.5 mm nominal, but not less than 1 pixel
     double platform_pen_width =

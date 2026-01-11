@@ -80,6 +80,8 @@ extern wxArrayString g_locale_catalog_array; /**< Global instance */
 extern OCPN_GLCaps *GL_Caps; /**< Global instance */
 #endif
 
+constexpr int kGpsTimeoutSeconds = 10;  ///< Default GPS timeout
+
 void catch_signals(int signo);
 
 //--------------------------------------------------------------------------
