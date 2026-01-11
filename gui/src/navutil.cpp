@@ -737,6 +737,9 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("RoutePropPosX", &g_route_prop_x);
   Read("RoutePropPosY", &g_route_prop_y);
 
+  Read("ConsolePosX", &g_console_window_x);
+  Read("ConsolePosY", &g_console_window_y);
+
   Read("AllowArbitrarySystemPlugins", &g_allow_arb_system_plugin);
 
   read_int = -1;
@@ -2159,6 +2162,9 @@ void MyConfig::UpdateSettings() {
   Write("RoutePropSizeY", g_route_prop_sy);
   Write("RoutePropPosX", g_route_prop_x);
   Write("RoutePropPosY", g_route_prop_y);
+
+  Write("ConsolePosX", g_console_window_x);
+  Write("ConsolePosY", g_console_window_y);
 
   // Sounds
   SetPath("/Settings/Audio");

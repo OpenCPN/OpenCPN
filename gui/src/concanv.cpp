@@ -23,7 +23,6 @@
 
 #include <stdlib.h>
 #include <time.h>
-
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -50,6 +49,9 @@
 #include "ocpn_plugin.h"
 #include "styles.h"
 
+extern MyFrame* gFrame;
+extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
+
 enum eMenuItems { ID_NAVLEG = 1, ID_NAVROUTE, ID_NAVHIGHWAY } menuItems;
 
 APConsole* console;  ///< Global instance
@@ -64,6 +66,7 @@ EVT_CONTEXT_MENU(ConsoleCanvasWin::OnContextMenu)
 EVT_MENU(ID_NAVLEG, ConsoleCanvasWin::OnContextMenuSelection)
 EVT_MENU(ID_NAVROUTE, ConsoleCanvasWin::OnContextMenuSelection)
 EVT_MENU(ID_NAVHIGHWAY, ConsoleCanvasWin::OnContextMenuSelection)
+EVT_MOUSE_EVENTS(ConsoleCanvasWin::OnMouseEvent)
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -177,6 +180,21 @@ void ConsoleCanvasWin::OnShow(wxShowEvent& event) {
   m_pitemBoxSizerLeg->SetSizeHints(this);
 }
 
+void ConsoleCanvasWin::OnMouseEvent(wxMouseEvent& event) {
+  if (event.LeftDown()) {
+    m_dragStartPos = event.GetPosition();
+  } else if (event.Dragging()) {
+    // We will start dragging if we've moved beyond a couple of pixels
+    int tolerance = 2;
+    int dx = event.GetPosition().x - m_dragStartPos.x;
+    int dy = event.GetPosition().y - m_dragStartPos.y;
+    if (abs(dx) <= tolerance && abs(dy) <= tolerance) return;
+    g_console_window_x = GetPosition().x + dx;
+    g_console_window_y = GetPosition().y + dy;
+    PositionConsole();
+  }
+}
+
 void ConsoleCanvasWin::LegRoute() {
   if (g_bShowRouteTotal)
     pThisLegText->SetLabel(_("Route"));
@@ -243,6 +261,67 @@ void ConsoleCanvasWin::ToggleShowHighway() {
   }
   m_pitemBoxSizerLeg->SetSizeHints(this);
   Layout();
+}
+
+void ConsoleCanvasWin::PositionConsole() {
+  if (NULL == gFrame->GetPrimaryCanvas()) return;
+  //    Reposition console based on its size and chartcanvas size
+  int ccx, ccy, ccsx, ccsy, consx, consy;
+  wxPoint ClientOrg;
+  ChartCanvas* consoleHost = gFrame->GetPrimaryCanvas();
+
+  if (g_canvasConfig > 0) consoleHost = g_canvasArray[1];
+
+  if (consoleHost) {
+    consoleHost->GetSize(&ccsx, &ccsy);
+    consoleHost->GetPosition(&ccx, &ccy);
+  } else {
+    gFrame->GetPrimaryCanvas()->GetSize(&ccsx, &ccsy);
+    gFrame->GetPrimaryCanvas()->GetPosition(&ccx, &ccy);
+    consoleHost = gFrame->GetPrimaryCanvas();
+  }
+
+  int yTopOffset = 60;
+  int yBottomOffset = 0;
+  if (consoleHost) {
+    if (consoleHost->GetCompass()) {
+      wxRect compass_rect = consoleHost->GetCompass()->GetRect();
+      // Compass is normal upper right position.
+      if (compass_rect.y < 100)
+        yTopOffset = compass_rect.y + compass_rect.height;
+    }
+    if (consoleHost->GetMUIBar()) {
+      wxRect mui_rect = consoleHost->GetMUIBarRect();
+      yBottomOffset = ccsy - mui_rect.y;
+    }
+  }
+
+  if (((g_console_window_x) || (g_console_window_y))) {
+    // reject movement outside of gFrame
+    g_console_window_x = wxMin(g_console_window_x, (ccsx - GetSize().x));
+    g_console_window_x = wxMax(g_console_window_x, 0);
+    g_console_window_y = wxMin(g_console_window_y, ccsy - GetSize().y);
+    g_console_window_y = wxMax(g_console_window_y, 0);
+    Move(g_console_window_x, g_console_window_y);
+  } else {
+    // default pos right border below compass
+    wxSize csz = GetSize();
+    consx = csz.x;
+    consy = csz.y;
+    int yAvail = ccsy - (yTopOffset + yBottomOffset);
+    int yFinal = 30;
+    if (consy < yAvail) {
+      yFinal = (yAvail - consy) / 2;
+      yFinal += yTopOffset;
+    } else if (pCDI->IsShown()) {
+      int cdi_height = pCDI->GetSize().y;
+      int consy_no_cdi = consy - cdi_height;
+      yFinal = (yAvail - consy_no_cdi) / 2;
+      yFinal += yTopOffset;
+      ToggleShowHighway();
+    }
+    Move(ccsx - consx - 2, yFinal);
+  }
 }
 
 void ConsoleCanvasWin::ToggleRouteTotalDisplay() {
@@ -434,7 +513,7 @@ void ConsoleCanvasWin::RefreshConsoleData() {
 void ConsoleCanvasWin::ShowWithFreshFonts() {
   Hide();
   UpdateFonts();
-  gFrame->PositionConsole();
+  PositionConsole();
   Show();
 }
 
@@ -462,6 +541,7 @@ EVT_CONTEXT_MENU(ConsoleCanvasFrame::OnContextMenu)
 EVT_MENU(ID_NAVLEG, ConsoleCanvasFrame::OnContextMenuSelection)
 EVT_MENU(ID_NAVROUTE, ConsoleCanvasFrame::OnContextMenuSelection)
 EVT_MENU(ID_NAVHIGHWAY, ConsoleCanvasFrame::OnContextMenuSelection)
+EVT_MOUSE_EVENTS(ConsoleCanvasFrame::OnMouseEvent)
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
@@ -577,6 +657,22 @@ void ConsoleCanvasFrame::OnShow(wxShowEvent& event) {
   m_pitemBoxSizerLeg->SetSizeHints(this);
 }
 
+void ConsoleCanvasFrame::OnMouseEvent(wxMouseEvent& event) {
+  if (event.LeftDown()) {
+    m_dragStartPos = event.GetPosition();
+  } else if (event.Dragging()) {
+    // We will start dragging if we've moved beyond a couple of pixels
+    int tolerance = 2;
+    int dx = event.GetPosition().x - m_dragStartPos.x;
+    int dy = event.GetPosition().y - m_dragStartPos.y;
+    if (abs(dx) <= tolerance && abs(dy) <= tolerance) return;
+    g_console_window_x = GetPosition().x + dx;
+    g_console_window_y = GetPosition().y + dy;
+    gFrame->ScreenToClient(&g_console_window_x, &g_console_window_y);
+    PositionConsole();
+  }
+}
+
 void ConsoleCanvasFrame::LegRoute() {
   if (g_bShowRouteTotal)
     pThisLegText->SetLabel(_("Route"));
@@ -651,6 +747,46 @@ void ConsoleCanvasFrame::ToggleShowHighway() {
   }
   m_pitemBoxSizerLeg->SetSizeHints(this);
   Layout();
+}
+
+void ConsoleCanvasFrame::PositionConsole() {
+  if (NULL == gFrame->GetPrimaryCanvas()) return;
+  //    Reposition console based on its size and chartcanvas size
+  int ccx, ccy, ccsx, ccsy, consx, consy;
+  wxPoint ClientOrg;
+  ChartCanvas* consoleHost = gFrame->GetPrimaryCanvas();
+  if (g_canvasConfig > 0) consoleHost = g_canvasArray[1];
+
+  if (consoleHost) {
+    consoleHost = gFrame->GetPrimaryCanvas();
+  }
+  gFrame->GetClientSize(&ccsx, &ccsy);
+  ClientOrg = gFrame->GetClientAreaOrigin();
+  ccx = ClientOrg.x;
+  ccy = ClientOrg.y;
+
+  if ((g_console_window_x) && (g_console_window_y)) {
+    // reject movement outside of gFrame
+    g_console_window_x = wxMin(g_console_window_x, (ccsx - GetSize().x));
+    g_console_window_x = wxMax(g_console_window_x, 0);
+    g_console_window_y = wxMin(g_console_window_y, ccsy - GetSize().y);
+    g_console_window_y = wxMax(g_console_window_y, 0);
+    Move(gFrame->ClientToScreen(
+        wxPoint(g_console_window_x, g_console_window_y)));
+  } else {
+    // default pos right border below compass
+    int yOffset = 60;
+    if (consoleHost) {
+      if (consoleHost->GetCompass()) {
+        wxRect compass_rect = consoleHost->GetCompass()->GetRect();
+        // Compass is normal upper right position.
+        if (compass_rect.y < 100)
+          yOffset = compass_rect.y + compass_rect.height + 45;
+      }
+    }
+    Move(gFrame->ClientToScreen(
+        wxPoint(ccx + ccsx - GetSize().x - 2, ccy + yOffset)));
+  }
 }
 
 void ConsoleCanvasFrame::ToggleRouteTotalDisplay() {
@@ -844,7 +980,7 @@ void ConsoleCanvasFrame::ShowWithFreshFonts() {
   Hide();
   Move(0, 0);
   UpdateFonts();
-  gFrame->PositionConsole();
+  PositionConsole();
   Show();
 }
 
@@ -1174,6 +1310,7 @@ void APConsole::Show(bool bshow) { m_con_frame->Show(bshow); }
 CDI* APConsole::GetCDI() { return m_con_frame->pCDI; }
 wxSize APConsole::GetSize() { return m_con_frame->GetSize(); }
 void APConsole::ToggleShowHighway() { m_con_frame->ToggleShowHighway(); }
+void APConsole::PositionConsole() { m_con_frame->PositionConsole(); }
 void APConsole::Move(wxPoint p) { m_con_frame->Move(p); }
 
 #else
@@ -1194,6 +1331,7 @@ void APConsole::Show(bool bshow) { m_con_win->Show(bshow); }
 CDI* APConsole::GetCDI() { return m_con_win->pCDI; }
 wxSize APConsole::GetSize() { return m_con_win->GetSize(); }
 void APConsole::ToggleShowHighway() { m_con_win->ToggleShowHighway(); }
+void APConsole::PositionConsole() { m_con_win->PositionConsole(); }
 void APConsole::Move(wxPoint p) { m_con_win->Move(p); }
 
 #endif

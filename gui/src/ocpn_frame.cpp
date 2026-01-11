@@ -1263,7 +1263,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       g_pRouteMan->GetDlgContext().show_with_fresh_fonts();
     }
   }
-  PositionConsole();
+  console->PositionConsole();
 }
 
 void MyFrame::RequestNewToolbars(bool bforcenew) {
@@ -1874,7 +1874,7 @@ void MyFrame::OnMove(wxMoveEvent &event) {
 
   UpdateGPSCompassStatusBoxes();
 
-  if (console && console->IsShown()) PositionConsole();
+  if (console && console->IsShown()) console->PositionConsole();
 
   //  If global toolbar is shown, reposition it...
   // if (g_MainToolbar) {
@@ -1895,7 +1895,7 @@ void MyFrame::OnMove(wxMoveEvent &event) {
 void MyFrame::ProcessCanvasResize() {
   UpdateGPSCompassStatusBoxes(true);
 
-  if (console && console->IsShown()) PositionConsole();
+  if (console && console->IsShown()) console->PositionConsole();
 
   PositionIENCToolbar();
 
@@ -2113,7 +2113,7 @@ void MyFrame::ODoSetSize() {
 
   UpdateGPSCompassStatusBoxes(true);
 
-  if (console) PositionConsole();
+  if (console) console->PositionConsole();
 
   // .. for each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -2173,97 +2173,11 @@ void MyFrame::ODoSetSize() {
   if (g_pauimgr) g_pauimgr->Update();
 }
 
-void MyFrame::PositionConsole() {
-#if defined(__WXMSW__) || defined(__WXMAC__)
-  if (NULL == GetPrimaryCanvas()) return;
-  //    Reposition console based on its size and chartcanvas size
-  int ccx, ccy, ccsx, ccsy, consx, consy;
-  ChartCanvas *consoleHost = GetPrimaryCanvas();
-  if (g_canvasConfig > 0) consoleHost = g_canvasArray[1];
-
-  if (consoleHost) {
-    consoleHost->GetSize(&ccsx, &ccsy);
-    consoleHost->GetPosition(&ccx, &ccy);
-  } else {
-    GetPrimaryCanvas()->GetSize(&ccsx, &ccsy);
-    GetPrimaryCanvas()->GetPosition(&ccx, &ccy);
-    consoleHost = GetPrimaryCanvas();
-  }
-
-  int yOffset = 60;
-  if (consoleHost) {
-    if (consoleHost->GetCompass()) {
-      wxRect compass_rect = consoleHost->GetCompass()->GetRect();
-      // Compass is normal upper right position.
-      if (compass_rect.y < 100)
-        yOffset = compass_rect.y + compass_rect.height + 45;
-    }
-  }
-
-  wxSize csz = console->GetSize();
-  consx = csz.x;
-  consy = csz.y;
-
-  wxPoint screen_pos =
-      ClientToScreen(wxPoint(ccx + ccsx - consx - 2, ccy + yOffset));
-  console->Move(screen_pos);
-#else
-  if (NULL == GetPrimaryCanvas()) return;
-  //    Reposition console based on its size and chartcanvas size
-  int ccx, ccy, ccsx, ccsy, consx, consy;
-  ChartCanvas *consoleHost = GetPrimaryCanvas();
-  if (g_canvasConfig > 0) consoleHost = g_canvasArray[1];
-
-  if (consoleHost) {
-    consoleHost->GetSize(&ccsx, &ccsy);
-    consoleHost->GetPosition(&ccx, &ccy);
-  } else {
-    GetPrimaryCanvas()->GetSize(&ccsx, &ccsy);
-    GetPrimaryCanvas()->GetPosition(&ccx, &ccy);
-    consoleHost = GetPrimaryCanvas();
-  }
-
-  int yTopOffset = 60;
-  int yBottomOffset = 0;
-  if (consoleHost) {
-    if (consoleHost->GetCompass()) {
-      wxRect compass_rect = consoleHost->GetCompass()->GetRect();
-      // Compass is normal upper right position.
-      if (compass_rect.y < 100)
-        yTopOffset = compass_rect.y + compass_rect.height;
-    }
-    if (consoleHost->GetMUIBar()) {
-      wxRect mui_rect = consoleHost->GetMUIBarRect();
-      yBottomOffset = ccsy - mui_rect.y;
-    }
-  }
-
-  wxSize csz = console->GetSize();
-  consx = csz.x;
-  consy = csz.y;
-  int yAvail = ccsy - (yTopOffset + yBottomOffset);
-  int yFinal = 30;
-  if (consy < yAvail) {
-    yFinal = (yAvail - consy) / 2;
-    yFinal += yTopOffset;
-  } else if (console->GetCDI()->IsShown()) {
-    int cdi_height = console->GetCDI()->GetSize().y;
-    int consy_no_cdi = consy - cdi_height;
-    yFinal = (yAvail - consy_no_cdi) / 2;
-    yFinal += yTopOffset;
-    console->ToggleShowHighway();
-  }
-
-  wxPoint in_canvas_pos = wxPoint(ccsx - consx - 2, yFinal);
-  console->Move(in_canvas_pos);
-#endif
-}
-
 void MyFrame::UpdateAllFonts() {
   if (console) {
     console->UpdateFonts();
     //    Reposition console
-    PositionConsole();
+    console->PositionConsole();
   }
 
   //  Close and destroy any persistent dialogs, so that new fonts will be

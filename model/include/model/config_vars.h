@@ -256,6 +256,8 @@ extern int g_WplAction;
 extern int n_NavMessageShown;
 extern int sat_watchdog_timeout_ticks;
 extern int g_AIS_alert_delay;
+extern int g_console_window_x;
+extern int g_console_window_y;
 
 extern long g_maintoolbar_orient;
 
