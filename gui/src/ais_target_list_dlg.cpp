@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,8 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 #include "gl_headers.h"  // Must be included before anything using GL stuff
 
@@ -36,6 +29,7 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/navobj_db.h"
 #include "model/route_point.h"
 #include "model/select.h"
 
@@ -47,16 +41,8 @@
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
 #include "styles.h"
-#include "model/navobj_db.h"
 
-extern ocpnStyle::StyleManager *g_StyleManager;
-extern MyConfig *pConfig;
-extern AISTargetListDialog *g_pAISTargetList;
-extern MyFrame *gFrame;
-extern wxString g_default_wp_icon;
-extern RouteManagerDialog *pRouteManagerDialog;
-
-AISTargetListDialog *g_pAISTargetList;
+AISTargetListDialog *g_pAISTargetList;  // Global instance
 
 static int g_AisTargetList_count;
 static AisDecoder *s_p_sort_decoder;
