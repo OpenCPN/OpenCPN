@@ -70,8 +70,6 @@
 
 #define TIMER_GFRAME_1 999
 
-#define ID_CM93ZOOMG 102
-
 // Command identifiers for wxCommandEvents coming from the outside world.
 // Removed from enum to facilitate constant definition
 //
@@ -84,25 +82,6 @@
 #define ID_CMD_SOUND_FINISHED 306
 // NOLINTEND
 
-#ifdef __ANDROID__
-#define STAT_FIELD_COUNT 2
-#define STAT_FIELD_TICK -1
-#define STAT_FIELD_SOGCOG 0
-#define STAT_FIELD_CURSOR_LL -1
-#define STAT_FIELD_CURSOR_BRGRNG -1
-#define STAT_FIELD_SCALE 1
-#else
-#define STAT_FIELD_COUNT 5
-#define STAT_FIELD_TICK 0
-#define STAT_FIELD_SOGCOG 1
-#define STAT_FIELD_CURSOR_LL 2
-#define STAT_FIELD_CURSOR_BRGRNG 3
-#define STAT_FIELD_SCALE 4
-#endif
-
-//      Define a constant GPS signal watchdog timeout value
-#define GPS_TIMEOUT_SECONDS 10
-
 using OpenFileFunc = std::function<bool(const std::string& path)>;
 //----------------------------------------------------------------------------
 // fwd class declarations
@@ -113,20 +92,10 @@ extern MyFrame* gFrame; /**< Global instance */
 
 class options;  // circular
 
-// FIXME (leamas) to have utility functions in top window is a realy bad idea.
+// FIXME (leamas) to have utility functions in top window is a really bad idea.
 bool ShowNavWarning();
 
-wxColour GetDialogColor(DialogColor color);
-
-// Helper to create menu label + hotkey string when registering menus
-wxString _menuText(wxString name, wxString shortcut);
-
-// The point for anchor watch should really be a class...
-double AnchorDistFix(double const d, double const AnchorPointMinDist,
-                     double const AnchorPointMaxDist);  //  pjotrc 2010.02.22
-
-bool TestGLCanvas(wxString prog_dir);
-bool ReloadLocale();
+// §bool TestGLCanvas(wxString prog_dir);
 void ApplyLocale(void);
 
 /**

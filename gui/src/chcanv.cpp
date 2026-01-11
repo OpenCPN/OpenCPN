@@ -61,6 +61,7 @@
 #include "model/select.h"
 #include "model/select_item.h"
 #include "model/track.h"
+#include "model/ocpn_utils.h"
 
 #include "ais.h"
 #include "ais_target_alert_dlg.h"
@@ -116,6 +117,7 @@
 #include "track_gui.h"
 #include "track_prop_dlg.h"
 #include "undo.h"
+#include "user_colors.h"
 
 #include "s57_ocpn_utils.h"
 
@@ -164,12 +166,6 @@ int __cdecl printf2(const char *format, ...) {
 
 //    Profiling support
 // #include "/usr/include/valgrind/callgrind.h"
-
-// ----------------------------------------------------------------------------
-// Useful Prototypes
-// ----------------------------------------------------------------------------
-extern ColorScheme global_color_scheme;  // library dependence
-extern wxColor GetDimColor(wxColor c);   // library dependence
 
 arrayofCanvasPtr g_canvasArray; /**< Global instance */
 
@@ -6149,7 +6145,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                       pow((double)(lGPSPoint.m_y - r.y), 2));
     int pix_radius = (int)lpp;
 
-    wxColor rangeringcolour = GetDimColor(g_colourOwnshipRangeRingsColour);
+    wxColor rangeringcolour =
+        user_colors::GetDimColor(g_colourOwnshipRangeRingsColour);
 
     wxPen ppPen1(rangeringcolour, g_cog_predictor_width);
 
@@ -13260,7 +13257,7 @@ double ChartCanvas::GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint) {
 
   if (pAnchorWatchPoint) {
     (pAnchorWatchPoint->GetName()).ToDouble(&d1);
-    d1 = AnchorDistFix(d1, AnchorPointMinDist, g_nAWMax);
+    d1 = ocpn::AnchorDistFix(d1, AnchorPointMinDist, g_nAWMax);
     dabs = fabs(d1 / 1852.);
     ll_gc_ll(pAnchorWatchPoint->m_lat, pAnchorWatchPoint->m_lon, 0, dabs,
              &tlat1, &tlon1);

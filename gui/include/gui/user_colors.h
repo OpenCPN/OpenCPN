@@ -13,6 +13,8 @@ wxColorHashMap* GetMapByScheme(const std::string& scheme_name);
 
 ColorScheme GetColorScheme();
 
+wxColor GetDimColor(wxColor c);
+
 };  // namespace user_colors
 
 #endif  // UseR_ColoRs_h

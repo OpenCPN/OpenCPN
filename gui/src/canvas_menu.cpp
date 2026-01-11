@@ -172,6 +172,16 @@ enum {
   ID_DEF_MENU_LAST
 };
 
+// Helper to create menu label + hotkey string when registering menus
+static wxString _menuText(wxString name, wxString shortcut) {
+  wxString menutext;
+  menutext << name;
+#ifndef __ANDROID__
+  menutext << "\t" << shortcut;
+#endif
+  return menutext;
+}
+
 //------------------------------------------------------------------------------
 //    CanvasMenuHandler Implementation
 //------------------------------------------------------------------------------

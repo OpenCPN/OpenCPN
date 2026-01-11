@@ -334,4 +334,21 @@ wxColorHashMap *GetMapByScheme(const std::string &scheme_name) {
   return nullptr;
 }
 
+wxColor GetDimColor(wxColor c) {
+  if ((global_color_scheme == GLOBAL_COLOR_SCHEME_DAY) ||
+      (global_color_scheme == GLOBAL_COLOR_SCHEME_RGB))
+    return c;
+
+  float factor = 1.0;
+  if (global_color_scheme == GLOBAL_COLOR_SCHEME_DUSK) factor = 0.5;
+  if (global_color_scheme == GLOBAL_COLOR_SCHEME_NIGHT) factor = 0.25;
+
+  wxImage::RGBValue rgb(c.Red(), c.Green(), c.Blue());
+  wxImage::HSVValue hsv = wxImage::RGBtoHSV(rgb);
+  hsv.value = hsv.value * factor;
+  wxImage::RGBValue nrgb = wxImage::HSVtoRGB(hsv);
+
+  return wxColor(nrgb.red, nrgb.green, nrgb.blue);
+}
+
 }  // namespace user_colors

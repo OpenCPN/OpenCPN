@@ -31,6 +31,7 @@
 #include <wx/wxprec.h>
 
 #include "model/config_vars.h"
+#include "model/idents.h"
 
 #include "detail_slider.h"
 #include "chartdb.h"

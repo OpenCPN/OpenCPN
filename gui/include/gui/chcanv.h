@@ -65,6 +65,20 @@
 
 WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 
+#ifdef __ANDROID__
+#define STAT_FIELD_TICK -1
+#define STAT_FIELD_SOGCOG 0
+#define STAT_FIELD_CURSOR_LL -1
+#define STAT_FIELD_CURSOR_BRGRNG -1
+#define STAT_FIELD_SCALE 1
+#else
+#define STAT_FIELD_TICK 0
+#define STAT_FIELD_SOGCOG 1
+#define STAT_FIELD_CURSOR_LL 2
+#define STAT_FIELD_CURSOR_BRGRNG 3
+#define STAT_FIELD_SCALE 4
+#endif
+
 class canvasConfig;        // circular
 class CanvasMenuHandler;   // circular
 class MyFrame;             // circular

@@ -231,6 +231,17 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   SendJSONMessageToAllPlugins("AIS", jMsg);
 }
 
+static bool ReloadLocale() {
+  bool ret = false;
+
+#if wxUSE_XLOCALE
+  ret =
+      (!g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang)
+            .IsEmpty());
+#endif
+  return ret;
+}
+
 static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
   return (*p1)->Key().compare((*p2)->Key());
 }

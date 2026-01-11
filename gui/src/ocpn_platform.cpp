@@ -65,6 +65,7 @@
 #include "model/conn_params.h"
 #include "model/cutil.h"
 #include "model/gui_vars.h"
+#include "model/idents.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
 #include "model/plugin_cache.h"
@@ -145,6 +146,12 @@ static const char *const DEFAULT_XDG_DATA_DIRS =
 static const char PATH_SEP = ';';
 #else
 static const char PATH_SEP = ':';
+#endif
+
+#ifdef __ANDROID__
+constexpr int kStatFieldCount = 2;
+#else
+constexpr int kStatFieldCount = 5;
 #endif
 
 static bool checkIfFlatpacked() {
@@ -1154,7 +1161,7 @@ void OCPNPlatform::SetDefaultOptions() {
   g_bPreserveScaleOnX = true;
   g_nAWDefault = 50;
   g_nAWMax = 1852;
-  gps_watchdog_timeout_ticks = GPS_TIMEOUT_SECONDS;
+  gps_watchdog_timeout_ticks = kGpsTimeoutSeconds;
   g_n_ownship_min_mm = 8;
   g_bShowMuiZoomButtons = true;
   g_bresponsive = false;
@@ -1662,7 +1669,7 @@ int OCPNPlatform::GetStatusBarFieldCount() {
   return count;
 
 #else
-  return STAT_FIELD_COUNT;  // default
+  return kStatFieldCount;  // default
 #endif
 }
 
