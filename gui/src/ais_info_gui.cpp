@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  AIS info GUI parts.
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
@@ -19,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * AIS info GUI parts.
+ */
 
 #include <memory>
 
@@ -43,6 +41,8 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/gui_vars.h"
+#include "model/navobj_db.h"
 #include "model/route_point.h"
 
 #include "ais_info_gui.h"
@@ -53,7 +53,6 @@
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
 #include "undo.h"
-#include "model/navobj_db.h"
 
 wxDEFINE_EVENT(EVT_AIS_DEL_TRACK, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_INFO, ObservedEvt);
@@ -62,17 +61,7 @@ wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern bool g_bquiting;
-extern int g_iSoundDeviceIndex;
-extern OCPNPlatform *g_Platform;
-extern Route *pAISMOBRoute;
-extern wxString g_CmdSoundString;
-extern MyConfig *pConfig;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern MyFrame *gFrame;
-
-AisInfoGui *g_pAISGUI;
+AisInfoGui *g_pAISGUI;  // global instance
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
