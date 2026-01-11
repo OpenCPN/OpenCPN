@@ -19,48 +19,33 @@
 /**
  * \file
  *
- * Framework for Undo features
+ * Undo features argument  definitions
  */
 
-#ifndef UNDO_H
-#define UNDO_H
+#ifndef UnDO_DefS_h
+#define UnDO_DefS_h
 
-#include <wx/string.h>
-
-#include <vector>
-#include <deque>
-
-#include "undo_defs.h"
-#include "chcanv.h"
-
-class Undo {
-public:
-  Undo(ChartCanvas* parent);
-  ~Undo();
-  bool AnythingToUndo();
-  bool AnythingToRedo();
-  void InvalidateRedo();
-  void InvalidateUndo();
-  void Invalidate();
-  bool InUndoableAction() { return isInsideUndoableAction; }
-  UndoAction* GetNextUndoableAction();
-  UndoAction* GetNextRedoableAction();
-  bool UndoLastAction();
-  bool RedoNextAction();
-  bool BeforeUndoableAction(UndoType type, UndoItemPointer before,
-                            UndoBeforePointerType beforeType,
-                            UndoItemPointer selectable);
-  bool AfterUndoableAction(UndoItemPointer after);
-  bool CancelUndoableAction(bool noDataDelete = false);
-  ChartCanvas* GetParent() { return m_parent; }
-
-private:
-  ChartCanvas* m_parent;
-  bool isInsideUndoableAction;
-  UndoAction* candidate;
-  unsigned int stackpointer;
-  unsigned int depthSetting;
-  std::deque<UndoAction*> undoStack;
+enum UndoType {
+  Undo_CreateWaypoint,
+  Undo_DeleteWaypoint,
+  Undo_AppendWaypoint,
+  Undo_MoveWaypoint
 };
 
-#endif
+enum UndoBeforePointerType { Undo_IsOrphanded, Undo_NeedsCopy, Undo_HasParent };
+
+typedef void* UndoItemPointer;
+
+class UndoAction {
+public:
+  ~UndoAction();
+  wxString Description();
+
+  UndoType type;
+  std::vector<UndoItemPointer> before;
+  std::vector<UndoBeforePointerType> beforeType;
+  std::vector<UndoItemPointer> after;
+  std::vector<UndoItemPointer> selectable;
+};
+
+#endif  // UnDO_DefS_h
