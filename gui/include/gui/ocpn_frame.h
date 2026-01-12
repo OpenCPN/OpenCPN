@@ -95,7 +95,6 @@ class options;  // circular
 // FIXME (leamas) to have utility functions in top window is a really bad idea.
 bool ShowNavWarning();
 
-// §bool TestGLCanvas(wxString prog_dir);
 void ApplyLocale(void);
 
 /**
