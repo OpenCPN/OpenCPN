@@ -905,6 +905,10 @@ void ChartTableEntry::ReEnable() {
     LatMin -= (float)1000.;
   }
 }
+bool ChartTableEntry::IsBasemap() const {
+  wxFileName fn(GetFullPath());
+  return (fn.GetPath().Lower().Contains("basemap"));
+}
 
 std::vector<float> ChartTableEntry::GetReducedPlyPoints() {
   if (m_reducedPlyPoints.size()) return m_reducedPlyPoints;

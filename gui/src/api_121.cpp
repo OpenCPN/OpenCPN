@@ -635,12 +635,108 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
   auto window = GetCanvasByIndex(CanvasIndex);
   auto oCanvas = dynamic_cast<ChartCanvas*>(window);
   if (oCanvas) {
-    double scale = oCanvas->GetVP().view_scale_ppm;
-    int newref =
-        oCanvas->m_pQuilt->SelectRefChartByFamily((ChartFamilyEnum)Family);
-    if (newref >= 0) {
-      oCanvas->SelectQuiltRefdbChart(newref);
-      oCanvas->SetVPScale(scale);
+    // Chose the "best" chart in the new family
+    // Strategy: Chose a chart from the new family that is the same native scale
+    // as the current refernce chart.
+    // If this chart is not present in the new family. chose the next larger
+    // scale chart.
+    // If there are no larger scale charts available in the new family,
+    // chose the next smaller scale chart.
+    int ref_index = oCanvas->GetQuiltReferenceChartIndex();
+    const ChartTableEntry& cte_ref = ChartData->GetChartTableEntry(ref_index);
+
+    // No action needed if ref chart is already same as target
+    //  unless the ref chart is a basemep
+    if (cte_ref.GetChartFamily() == Family) {
+      if (!cte_ref.IsBasemap()) return false;
+    }
+
+    int target_scale = cte_ref.GetScale();
+
+    int target_index = -1;
+    for (auto index : oCanvas->GetQuiltExtendedStackdbIndexArray()) {
+      const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+      if (cte.GetChartFamily() != Family) continue;
+
+      if (cte.GetScale() == target_scale) {
+        target_index = index;
+        break;
+      }
+    }
+
+    if (target_index < 0) {
+      // Find the largest scale chart that is lower than the reference chart
+      for (auto index : oCanvas->GetQuiltExtendedStackdbIndexArray()) {
+        const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+        if (cte.GetChartFamily() != Family) continue;
+        if (cte.GetScale() <= target_scale) {
+          target_index = index;
+        }
+      }
+    }
+
+    if (target_index < 0) {
+      // Find the largest scale chart that is higher than the reference chart
+      for (auto index : oCanvas->GetQuiltExtendedStackdbIndexArray()) {
+        const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+        if (cte.GetChartFamily() != Family) continue;
+        if (cte.GetScale() > target_scale) {
+          target_index = index;
+          break;
+        }
+      }
+    }
+
+    if (target_index >= 0) {
+      // Found a suitable scale chart in the new family
+
+      if (oCanvas->IsChartQuiltableRef(target_index)) {
+        //            if( ChartData ) ChartData->PurgeCache();
+
+        //  If the chart is a vector chart, and of very large scale,
+        //  then we had better set the new scale directly to avoid excessive
+        //  underzoom on, eg, Inland ENCs
+        bool set_scale = false;
+        if (CHART_TYPE_S57 == ChartData->GetDBChartType(target_index)) {
+          if (ChartData->GetDBChartScale(target_index) < 5000) {
+            set_scale = true;
+          }
+        }
+
+        if (!set_scale) {
+          oCanvas->SelectQuiltRefdbChart(target_index, true);  // autoscale
+        } else {
+          oCanvas->SelectQuiltRefdbChart(target_index, false);  // no autoscale
+
+          //  Adjust scale so that the selected chart is underzoomed/overzoomed
+          //  by a controlled amount
+          ChartBase* pc = ChartData->OpenChartFromDB(target_index, FULL_INIT);
+          if (pc) {
+            double proposed_scale_onscreen =
+                oCanvas->GetCanvasScaleFactor() / oCanvas->GetVPScale();
+
+            if (g_bPreserveScaleOnX) {
+              proposed_scale_onscreen = wxMin(
+                  proposed_scale_onscreen,
+                  100 * pc->GetNormalScaleMax(oCanvas->GetCanvasScaleFactor(),
+                                              oCanvas->GetCanvasWidth()));
+            } else {
+              proposed_scale_onscreen = wxMin(
+                  proposed_scale_onscreen,
+                  20 * pc->GetNormalScaleMax(oCanvas->GetCanvasScaleFactor(),
+                                             oCanvas->GetCanvasWidth()));
+
+              proposed_scale_onscreen =
+                  wxMax(proposed_scale_onscreen,
+                        pc->GetNormalScaleMin(oCanvas->GetCanvasScaleFactor(),
+                                              g_b_overzoom_x));
+            }
+
+            oCanvas->SetVPScale(oCanvas->GetCanvasScaleFactor() /
+                                proposed_scale_onscreen);
+          }
+        }
+      }
       oCanvas->DoCanvasUpdate();
       oCanvas->ReloadVP();  // Pick up the new selections
       return true;

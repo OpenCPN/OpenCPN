@@ -244,6 +244,7 @@ struct ChartTableEntry {
   bool Scale_eq(int b) const { return abs(Scale - b) <= rounding; }
   bool Scale_ge(int b) const { return Scale_eq(b) || Scale > b; }
   bool Scale_gt(int b) const { return Scale > b && !Scale_eq(b); }
+  bool IsBasemap() const;
 
 private:
   int EntryOffset;
