@@ -1468,10 +1468,10 @@ EVT_CHOICE(ID_OPWAYPOINTRANGERINGS, options::OnWaypointRangeRingSelect)
 EVT_CHAR_HOOK(options::OnCharHook)
 
 END_EVENT_TABLE()
-
-options::options(wxWindow* parent, wxWindowID id, const wxString& caption,
-                 const wxPoint& pos, const wxSize& size, long style)
-    : pTrackRotateTime(0) {
+options::options(wxWindow* parent, OptionsCallbacks callbacks, wxWindowID id,
+                 const wxString& caption, const wxPoint& pos,
+                 const wxSize& size, long style)
+    : pTrackRotateTime(0), m_callbacks(callbacks) {
   Init();
 
   pParent = parent;
@@ -7139,7 +7139,7 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //  or other major layout changes
   if ((m_returnChanges & FONT_CHANGED) ||
       (m_returnChanges & NEED_NEW_OPTIONS)) {
-    gFrame->PrepareOptionsClose(this, m_returnChanges);
+    m_callbacks.prepare_close(this, m_returnChanges);
     if (!(m_returnChanges & FONT_CHANGED_SAFE))
       gFrame->ScheduleReconfigAndSettingsReload(true, true);
   } else {
@@ -7803,7 +7803,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   if (g_canvasConfig != m_screenConfig) m_returnChanges |= CONFIG_CHANGED;
   g_canvasConfig = m_screenConfig;
 
-  gFrame->ProcessOptionsDialog(m_returnChanges, m_pWorkDirList);
+  m_callbacks.process_dialog(m_returnChanges, m_pWorkDirList);
   m_CurrentDirList =
       *m_pWorkDirList;  // Perform a deep copy back to main database.
 
@@ -7834,7 +7834,7 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   ApplyChanges(event);
 
   // Complete processing
-  gFrame->PrepareOptionsClose(this, m_returnChanges);
+  m_callbacks.prepare_close(this, m_returnChanges);
 
   //  If we had a config change, then do it now
   if ((m_returnChanges & CONFIG_CHANGED) || (m_returnChanges & GL_CHANGED))
@@ -8333,7 +8333,7 @@ void options::OnClose(wxCloseEvent& event) {
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
 
-  gFrame->PrepareOptionsClose(this, m_returnChanges);
+  m_callbacks.prepare_close(this, m_returnChanges);
   Hide();
 }
 

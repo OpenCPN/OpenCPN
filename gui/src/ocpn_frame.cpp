@@ -3990,8 +3990,15 @@ void MyFrame::DoOptionsDialog() {
 #ifdef __WXOSX__
     optionsParent = GetPrimaryCanvas();
 #endif
-    g_options = new options(optionsParent, -1, _("Options"), wxPoint(-1, -1),
-                            wxSize(sx, sy));
+    OptionsCallbacks callbacks;
+    callbacks.prepare_close = [&](options *me, int changes) {
+      PrepareOptionsClose(me, changes);
+    };
+    callbacks.process_dialog = [&](int changes, ArrayOfCDI *workdir_list) {
+      ProcessOptionsDialog(changes, workdir_list);
+    };
+    g_options = new options(optionsParent, callbacks, -1, _("Options"),
+                            wxPoint(-1, -1), wxSize(sx, sy));
 
     AbstractPlatform::HideBusySpinner();
   }

@@ -29,6 +29,7 @@
 #include <windows.h>
 #endif
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -268,9 +269,16 @@ private:
   Uncopyable &operator=(const Uncopyable &);
 };
 
+struct OptionsCallbacks {
+  std::function<void(options *, int)> prepare_close;
+  std::function<void(int, ArrayOfCDI *)> process_dialog;
+  OptionsCallbacks() : prepare_close(nullptr), process_dialog(nullptr) {}
+};
+
 class options : public wxDialog {
 public:
-  explicit options(wxWindow *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
+  explicit options(wxWindow *parent, OptionsCallbacks callbacks,
+                   wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                    const wxString &caption = SYMBOL_OPTIONS_TITLE,
                    const wxPoint &pos = SYMBOL_OPTIONS_POSITION,
                    const wxSize &size = SYMBOL_OPTIONS_SIZE,
@@ -666,6 +674,8 @@ private:
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
+
+  OptionsCallbacks m_callbacks;
   int m_returnChanges;
   wxListCtrl *tcDataSelected;
   std::vector<int> marinersStdXref;
