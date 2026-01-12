@@ -330,7 +330,6 @@ public:
   bool CheckAndAddPlugInTool();
   bool AddDefaultPositionPlugInTools();
 
-  void NotifyChildrenResize(void);
   void UpdateCanvasConfigDescriptors();
   void ScheduleSettingsDialog();
   void ScheduleSettingsDialogNew();

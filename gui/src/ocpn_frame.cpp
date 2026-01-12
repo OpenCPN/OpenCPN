@@ -1088,8 +1088,6 @@ void MyFrame::CancelAllMouseRoute() {
   }
 }
 
-void MyFrame::NotifyChildrenResize() {}
-
 void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   //  Clear the cache, and thus close all charts to avoid memory leaks
   if (ChartData) ChartData->PurgeCache();
@@ -7080,8 +7078,6 @@ bool MyFrame::AddDefaultPositionPlugInTools() {
  * Global color management routines
  *
  *************************************************************************/
-
-wxColour GetGlobalColor(wxString colorName);  // -> color_handler
 
 #ifdef __WXMSW__
 
