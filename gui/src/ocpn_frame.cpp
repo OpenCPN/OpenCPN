@@ -7209,31 +7209,6 @@ void RedirectIOToConsole()
   // ios::sync_with_stdio();
 }
 
-// #endif
-#endif
-
-#ifdef __WXMSW__
-bool TestGLCanvas(wxString prog_dir) {
-#ifdef __MSVC__
-  wxString test_app = prog_dir;
-  test_app += "ocpn_gltest1.exe";
-
-  if (::wxFileExists(test_app)) {
-    long proc_return = ::wxExecute(test_app, wxEXEC_SYNC);
-    printf("OpenGL Test Process returned %0X\n", proc_return);
-    if (proc_return == 0)
-      printf("GLCanvas OK\n");
-    else
-      printf("GLCanvas failed to start, disabling OpenGL.\n");
-
-    return (proc_return == 0);
-  } else
-    return true;
-#else
-  /* until we can get the source to ocpn_gltest1 assume true for mingw */
-  return true;
-#endif
-}
 #endif
 
 void ApplyLocale() {
