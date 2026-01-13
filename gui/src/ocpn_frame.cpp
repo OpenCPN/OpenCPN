@@ -843,7 +843,7 @@ void MyFrame::RebuildChartDatabase() {
         wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
             wxPD_REMAINING_TIME);
 
-    ChartData->Create(ChartDirArray, pprog);
+    ChartData->Create(ChartDirArray, nullptr);
     ChartData->SaveBinary(ChartListFileName);
 
     delete pprog;
@@ -4471,7 +4471,7 @@ void MyFrame::FinalizeChartDBUpdate() {
   wxLogMessage("Finished chart database Update");
   wxLogMessage("   ");
 
-  Updateprog->Destroy();
+  if (Updateprog) Updateprog->Destroy();
   Updateprog = nullptr;
 
   // The Update() function may set gWorldMapLocation if at least one of the

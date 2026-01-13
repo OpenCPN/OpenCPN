@@ -1728,6 +1728,7 @@ void MyApp::LoadChartDatabase() {
   if (g_NeedDBUpdate == 0 &&
       !ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
     g_NeedDBUpdate = 1;
+    g_restore_dbindex = 0;
   }
 
   //  Verify any saved chart database startup index
