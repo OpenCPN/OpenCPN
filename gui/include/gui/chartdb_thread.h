@@ -193,14 +193,14 @@ protected:
         printf("job aborted\n");
       }
 
-      printf("..Queue event\n");
+      // printf("..Queue event\n");
       auto* evt =
           new OCPN_ChartTableEntryThreadEvent(wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
       evt->SetTicket(job);
       wxQueueEvent(m_target, evt);
     }
 
-    printf("thread exit\n");
+    // printf("thread exit\n");
     return 0;
   }
 

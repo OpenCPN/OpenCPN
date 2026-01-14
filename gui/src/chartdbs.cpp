@@ -1096,7 +1096,7 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     if (((m_progcount % m_nFileProgressQuantum) == 0)) {
       if (val != m_progint) {
         m_progint = val;
-        printf("%d %d\n", m_progcount, val);
+        // printf("%d %d\n", m_progcount, val);
         m_pprog->Update(val);
       }
     }
@@ -1131,7 +1131,7 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     }
   }
 
-  //  Consider TODO #1 here:  Looking for more duokucates acress directories
+  //  Consider TODO #1 here:  Looking for more duolicates acress directories
 
   if (!collision_found) {
     m_ticket_vector.push_back(ticket);
@@ -1150,41 +1150,13 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     // before this point
 
     for (auto &ticket_valid : m_ticket_vector) {
-      active_chartTable.push_back(ticket_valid->m_chart_table_entry);
+      if (ticket_valid->m_chart_table_entry)
+        active_chartTable.push_back(ticket_valid->m_chart_table_entry);
     }
     // Release references to tickets
     m_ticket_vector.clear();
 
     FinalizeChartUpdate();
-#if 0
-    // TODo #2 goes here
-    //  TODO #2     After all thread events finished
-    // Scrub CTE list, remove any anvalid entries
-    for (auto &cte : active_chartTable) {
-      if (!cte->GetbValid()) {
-        // active_chartTable.RemoveAt(i);
-        // i--;  // entry is gone, recheck this index for next entry
-      }
-    }
-
-    //    And once more, setting the Entry index field
-    active_chartTable_pathindex.clear();
-    int i = 0;
-    for (auto cte : active_chartTable) {
-      active_chartTable_pathindex[cte->GetFullSystemPath()] = i;
-      cte->SetEntryOffset(i);
-      i++;
-    }
-
-    m_nentries = active_chartTable.size();
-    bValid = true;
-    m_b_busy = false;
-
-    // TODO #3 goes here
-    pConfig->UpdateChartDirs(m_dir_array);
-    gFrame->FinalizeChartDBUpdate();
-    m_pprog = nullptr;
-#endif
   }
 }
 
@@ -1195,23 +1167,6 @@ void ChartDatabase::FinalizeChartUpdate() {
       std::remove_if(active_chartTable.begin(), active_chartTable.end(),
                      [](const auto &cte) { return !cte->GetbValid(); }),
       active_chartTable.end());
-
-#if 0
-    for (size_t i=0; i < active_chartTable.size(); i++) {
-    auto cte = active_chartTable[i]; //GetChartTableEntry(i);
-    if (!cte->GetbValid()) {
-      // Fast O(0) removal
-      // Swap the element with the back element,
-      // except in the case when we're the last element.
-      if (i + 1 != active_chartTable.size())
-        std::swap(active_chartTable[i], active_chartTable.back());
-
-      //Pop the back of the container, deleting our old element.
-      active_chartTable.pop_back();
-      i--;  // entry is gone, recheck this index for next entry
-    }
-  }
-#endif
 
   //    And once more, setting the Entry index field
   active_chartTable_pathindex.clear();
@@ -1226,10 +1181,37 @@ void ChartDatabase::FinalizeChartUpdate() {
   bValid = true;
   m_b_busy = false;
 
-  // TODO #3 goes here
-  pConfig->UpdateChartDirs(m_dir_array);
-  gFrame->FinalizeChartDBUpdate();
+  // Finalize the dB on disk
+
+  ChartData->SaveBinary(ChartListFileName);
+  wxLogMessage("Finished chart database Update");
+  wxLogMessage("   ");
+
+  if (m_pprog) m_pprog->Destroy();
   m_pprog = nullptr;
+
+  // The Update() function may set gWorldMapLocation if at least one of the
+  // directories contains GSHHS files.  Make sure GSHHS is still accessible
+  if (gWorldMapLocation.empty()) {  // Last resort. User might have deleted all
+                                    // GSHHG data, but we still might have the
+                                    // default dataset distributed with OpenCPN
+                                    // or from the package repository...
+    gWorldMapLocation = gDefaultWorldMapLocation;
+    m_gshhg_chart_loc = wxEmptyString;
+  }
+
+  // Update canvas and "Crossesland" machinery
+  if (gWorldMapLocation != m_gshhg_chart_loc) {
+    // ..For each canvas...
+    // TODO Move this where?
+    // for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    //  ChartCanvas *cc = g_canvasArray.Item(i);
+    //  if (cc) cc->ResetWorldBackgroundChart();
+    // }
+
+    // Reset the GSHHS singleton which is used to detect land crossing.
+    gshhsCrossesLandReset();
+  }
 }
 
 void ChartDatabase::UpdateChartClassDescriptorArray() {
@@ -1672,12 +1654,62 @@ wxString findGshhgDirectory(const wxString &directory) {
   return traverser.GetGshhsDir();
 }
 
+bool ChartDatabase::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
+                                               bool b_force, bool b_prog) {
+// ..For each canvas...
+#if 0
+for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+  ChartCanvas *cc = g_canvasArray.Item(i);
+  if (cc) {
+    cc->InvalidateQuilt();
+    cc->SetQuiltRefChart(-1);
+    cc->m_singleChart = NULL;
+  }
+}
+#endif
+
+  AbstractPlatform::ShowBusySpinner();
+
+  if (b_prog) {
+    wxString longmsg = _("OpenCPN Chart Update");
+    longmsg +=
+        ".................................................................."
+        "........";
+
+    m_pprog = new wxGenericProgressDialog();
+
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    m_pprog->SetFont(*qFont);
+
+    m_pprog->Create(_("OpenCPN Chart Update"), longmsg, 100, nullptr,
+                    wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
+                        wxPD_REMAINING_TIME);
+
+    DimeControl(m_pprog);
+    m_pprog->Show();
+  }
+
+  wxLogMessage("   ");
+  wxLogMessage("Starting chart database Update...");
+
+  // The Update() function may set gWorldMapLocation if at least one of the
+  // directories contains GSHHS files.  Save current situation...
+  m_gshhg_chart_loc = gWorldMapLocation;
+  gWorldMapLocation = wxEmptyString;
+
+  Update(DirArray, b_force, m_pprog);
+
+  AbstractPlatform::HideBusySpinner();
+  return true;
+}
+
 // ----------------------------------------------------------------------------
 // Update existing ChartTable Database by directory search
 //    resulting in valid pChartTable in (this)
 // ----------------------------------------------------------------------------
 bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
                            wxGenericProgressDialog *pprog) {
+  m_pprog = pprog;
   m_ticket_vector.clear();
   m_full_collision_map.clear();
   m_jobsRemaining = 0;
@@ -1750,7 +1782,7 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   }  // for
 
   // Special case, if chart dir list is truly empty
-  if (m_chartDirs.IsEmpty()) {
+  if (m_chartDirs.IsEmpty() || !m_jobsRemaining) {
     FinalizeChartUpdate();
     return true;
   }
@@ -1759,8 +1791,18 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_progcount = 0;
   m_progint = 0;
   m_ticketcount = m_jobsRemaining;
-  m_pprog = pprog;
   m_nFileProgressQuantum = wxMax(m_ticketcount / 10, 2);
+
+  // Start up the queued threads
+  const int workerCount = 4;
+
+  if (m_pool.GetWorkerCount() < workerCount) {
+    int threads_needed = workerCount - m_pool.GetWorkerCount();
+    for (int i = 0; i < threads_needed; ++i) {
+      (new PoolWorkerThread(m_pool, this))->Run();
+      m_pool.AddWorker();
+    }
+  }
 
   return true;
 }
@@ -2422,9 +2464,6 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
 int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
                                          ChartClassDescriptor &chart_desc,
                                          wxGenericProgressDialog *pprog) {
-  //  TODO MOVE THIS....Check chart type
-  LoadS57();
-
   wxString msg("Searching directory: ");
   msg += dir_name_base;
   msg += " for ";
@@ -2701,17 +2740,6 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
   for (auto &ticket : ticket_vector) {
     m_pool.Push(ticket);
     m_jobsRemaining++;
-  }
-
-  // if needed, start N worker threads once
-  const int workerCount = 1;
-
-  if (m_pool.GetWorkerCount() < workerCount) {
-    int threads_needed = workerCount - m_pool.GetWorkerCount();
-    for (int i = 0; i < threads_needed; ++i) {
-      (new PoolWorkerThread(m_pool, this))->Run();
-      m_pool.AddWorker();
-    }
   }
 
   // Tickets queued, wait for completion events
@@ -3017,7 +3045,7 @@ ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath,
 ChartTableEntry *ChartDatabase::CreateChartTableEntry(
     const wxString &filePath, wxString &utf8Path,
     ChartClassDescriptor &chart_desc) {
-  printf("CreateCTE\n");
+  // printf("CreateCTE\n");
   wxString msg_fn(filePath);
   msg_fn.Replace("%", "%%");
   wxLogMessage(wxString::Format("Loading chart data for %s", msg_fn.c_str()));
@@ -3030,9 +3058,9 @@ ChartTableEntry *ChartDatabase::CreateChartTableEntry(
   }
 
   InitReturn rc = pch->Init(filePath, HEADER_ONLY);
-  printf("Back from Init\n");
+  // printf("Back from Init\n");
   if (rc != INIT_OK) {
-    printf("   ###ERROR\n");
+    // printf("   ###ERROR\n");
     delete pch;
     wxLogMessage(
         wxString::Format("   ...initialization failed for %s", msg_fn.c_str()));

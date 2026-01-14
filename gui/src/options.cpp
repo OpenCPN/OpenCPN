@@ -2576,7 +2576,8 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
   pUpdateCheckBox = new wxCheckBox(chartPanelWin, ID_UPDCHECKBOX,
                                    _("Force Full Database Rebuild"));
-  itemFlexGridSizerUpdate->Add(pUpdateCheckBox, 1, wxALL, 5);
+  // itemFlexGridSizerUpdate->Add(pUpdateCheckBox, 1, wxALL, 5);
+  pUpdateCheckBox->Hide();
 
   pRebuildChartDatabase = new wxButton(chartPanelWin, ID_REBUILDBUTTON,
                                        _("Rebuild Chart Database"));
@@ -7250,6 +7251,8 @@ void options::ApplyChanges(wxCommandEvent& event) {
 
   m_returnChanges |= k_scan;
 
+  pConfig->UpdateChartDirs(*m_pWorkDirList);
+
   // Chart Groups
 
   if (groupsPanel->modified) {
@@ -7920,9 +7923,7 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 }
 
 void options::OnButtonRebuildChartDb(wxCommandEvent& event) {
-  gFrame->UpdateChartDatabaseInplace(*m_pWorkDirList, true,
-                                     true,  // no progressdialog
-                                     ChartListFileName);
+  ChartData->UpdateChartDatabaseInplace(*m_pWorkDirList, true, true);
 }
 
 void options::OnButtonParseENC(wxCommandEvent& event) {

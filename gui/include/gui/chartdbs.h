@@ -339,6 +339,8 @@ public:
   wxString GetMagicNumberCached(wxString dir);
 
   void UpdateChartClassDescriptorArray(void);
+  bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
+                                  bool b_prog);
 
   inline std::vector<std::shared_ptr<ChartTableEntry>> &GetChartTable() {
     return active_chartTable;
@@ -436,6 +438,7 @@ private:
   wxGenericProgressDialog *m_pprog;
   int m_progint;
   int m_nFileProgressQuantum;
+  wxString m_gshhg_chart_loc;
 };
 
 //-------------------------------------------------------------------------------------------

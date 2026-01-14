@@ -2518,7 +2518,6 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
-      /// LoadS57();
       androidDisableFullScreen();
       g_MainToolbar->HideTooltip();
       DoAndroidPreferences();
@@ -2957,6 +2956,7 @@ void MyFrame::DoSettingsNew() {
 }
 
 void MyFrame::DoSettings() {
+  LoadS57();
   DoOptionsDialog();
 
   //              Apply various system settings
