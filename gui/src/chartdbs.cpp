@@ -42,6 +42,7 @@
 #include "flex_hash.h"
 #include "LOD_reduce.h"
 #include "mbtiles.h"
+#include "navutil.h"
 #include "pluginmanager.h"
 #include "shapefile_basemap.h"
 #include "chartdb_thread.h"
@@ -1672,7 +1673,7 @@ for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
 }
 #endif
 
-  AbstractPlatform::ShowBusySpinner();
+  // AbstractPlatform::ShowBusySpinner();
 
   if (b_prog) {
     wxString longmsg = _("OpenCPN Chart Update");
@@ -1703,7 +1704,7 @@ for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
 
   Update(DirArray, b_force, m_pprog);
 
-  AbstractPlatform::HideBusySpinner();
+  // AbstractPlatform::HideBusySpinner();
   return true;
 }
 
