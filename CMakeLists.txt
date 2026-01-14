@@ -365,10 +365,10 @@ if (NOT WIN32 AND NOT APPLE)
     )
   endif ()
   if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    #if (CMAKE_BUILD_TYPE MATCHES "Debug")
       string(APPEND CMAKE_CXX_FLAGS_DEBUG " -O0")
       add_compile_options("-O0")
-    endif ()
+    #endif ()
   endif ()
   add_definitions(" -DPREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\"")
   # profiling with gprof ADD_COMPILE_OPTIONS( -pg )
@@ -787,6 +787,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/chartbase.h
     ${GUI_HDR_DIR}/chart_ctx_factory.h
     ${GUI_HDR_DIR}/chartdb.h
+    ${GUI_HDR_DIR}/chartdb_thread.h
     ${GUI_HDR_DIR}/chartdbs.h
     ${GUI_HDR_DIR}/chartimg.h
     ${GUI_HDR_DIR}/chcanv.h
@@ -909,6 +910,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/catalog_mgr.cpp
     ${GUI_SRC_DIR}/cat_settings.cpp
     ${GUI_SRC_DIR}/chartdb.cpp
+    ${GUI_SRC_DIR}/chartdb_thread.cpp
     ${GUI_SRC_DIR}/chartdbs.cpp
     ${GUI_SRC_DIR}/chartimg.cpp
     ${GUI_SRC_DIR}/chcanv.cpp

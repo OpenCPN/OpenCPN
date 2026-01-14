@@ -148,15 +148,15 @@ void ChartStack::AddChart(int db_add) {
   //    and skip the test in this case
   for (int id = 0; id < j - 1; id++) {
     if (GetDBIndex(id) != -1) {
-      ChartTableEntry *pm = ChartData->GetpChartTableEntry(GetDBIndex(id));
+      auto &pm = ChartData->GetChartTableEntry(GetDBIndex(id));
 
       for (int jd = id + 1; jd < j; jd++) {
         if (GetDBIndex(jd) != -1) {
-          ChartTableEntry *pn = ChartData->GetpChartTableEntry(GetDBIndex(jd));
-          if (pm->GetFileTime() && pn->GetFileTime()) {
-            if (labs(pm->GetFileTime() - pn->GetFileTime()) <
+          auto &pn = ChartData->GetChartTableEntry(GetDBIndex(jd));
+          if (pm.GetFileTime() && pn.GetFileTime()) {
+            if (labs(pm.GetFileTime() - pn.GetFileTime()) <
                 60) {  // simple test
-              if (pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
+              if (pn.GetpFileName()->IsSameAs(*(pm.GetpFileName())))
                 SetDBIndex(jd, -1);  // mark to remove
             }
           }

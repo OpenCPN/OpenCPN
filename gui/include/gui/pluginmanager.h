@@ -260,6 +260,7 @@ public:
   void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxArrayString GetPlugInChartClassNameArray(void);
+  opencpn_plugin* GetProvidingPlugin(const wxString& ChartClassName);
 
   ListOfPI_S57Obj* GetPlugInObjRuleListAtLatLon(ChartPlugInWrapper* target,
                                                 float zlat, float zlon,

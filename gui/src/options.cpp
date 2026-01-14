@@ -1435,6 +1435,7 @@ EVT_CHECKBOX(ID_DEBUGCHECKBOX1, options::OnDebugcheckbox1Click)
 EVT_BUTTON(ID_BUTTONADD, options::OnButtonaddClick)
 EVT_BUTTON(ID_BUTTONDELETE, options::OnButtondeleteClick)
 EVT_BUTTON(ID_PARSEENCBUTTON, options::OnButtonParseENC)
+EVT_BUTTON(ID_REBUILDBUTTON, options::OnButtonRebuildChartDb)
 EVT_BUTTON(ID_BUTTONCOMPRESS, options::OnButtoncompressClick)
 EVT_BUTTON(ID_BUTTONMIGRATE, options::OnButtonmigrateClick)
 EVT_BUTTON(ID_TCDATAADD, options::OnInsertTideDataLocation)
@@ -2586,7 +2587,12 @@ void options::CreatePanel_ChartsLoad(size_t parent, int border_size,
 
   pUpdateCheckBox = new wxCheckBox(chartPanelWin, ID_UPDCHECKBOX,
                                    _("Force Full Database Rebuild"));
-  itemFlexGridSizerUpdate->Add(pUpdateCheckBox, 1, wxALL, 5);
+  // itemFlexGridSizerUpdate->Add(pUpdateCheckBox, 1, wxALL, 5);
+  pUpdateCheckBox->Hide();
+
+  pRebuildChartDatabase = new wxButton(chartPanelWin, ID_REBUILDBUTTON,
+                                       _("Rebuild Chart Database"));
+  itemFlexGridSizerUpdate->Add(pRebuildChartDatabase, 1, wxALL, 5);
 
   pParseENCButton = new wxButton(chartPanelWin, ID_PARSEENCBUTTON,
                                  _("Prepare all ENC Charts"));
@@ -7258,6 +7264,8 @@ void options::ApplyChanges(wxCommandEvent& event) {
 
   m_returnChanges |= k_scan;
 
+  pConfig->UpdateChartDirs(*m_pWorkDirList);
+
   // Chart Groups
 
   if (groupsPanel->modified) {
@@ -7925,6 +7933,10 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
   pScanCheckBox->Disable();
 
   event.Skip();
+}
+
+void options::OnButtonRebuildChartDb(wxCommandEvent& event) {
+  ChartData->UpdateChartDatabaseInplace(*m_pWorkDirList, true, true);
 }
 
 void options::OnButtonParseENC(wxCommandEvent& event) {

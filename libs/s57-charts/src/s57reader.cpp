@@ -302,7 +302,7 @@ void S57Reader::Rewind()
 int S57Reader::Ingest(CallBackFunction pcallback) {
   DDFRecord *poRecord;
 
-  CPLSetConfigOption("CPL_DEBUG", "S57");
+ // CPLSetConfigOption("CPL_DEBUG", "S57");
 
   if (poModule == NULL || bFileIngested) return 0;
 

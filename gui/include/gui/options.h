@@ -198,6 +198,7 @@ enum {
   ID_TRACKHILITE,
   ID_TRANSTOOLBARCHECKBOX,
   ID_UPDCHECKBOX,
+  ID_REBUILDBUTTON,
   ID_PARSEENCBUTTON,
   ID_VECTORCHECKBOX1,
   ID_ZTCCHECKBOX,
@@ -313,6 +314,7 @@ public:
   void OnButtonaddClick(wxCommandEvent &event);
   void OnButtondeleteClick(wxCommandEvent &event);
   void OnButtonParseENC(wxCommandEvent &event);
+  void OnButtonRebuildChartDb(wxCommandEvent &event);
   void OnButtoncompressClick(wxCommandEvent &event);
   void OnButtonmigrateClick(wxCommandEvent &event);
   void OnButtonEcdisHelp(wxCommandEvent &event);
@@ -490,7 +492,7 @@ public:
 
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
-  wxButton *pParseENCButton;
+  wxButton *pParseENCButton, *pRebuildChartDatabase;
   wxButton *m_removeBtn, *m_compressBtn;
   wxButton *m_migrateBtn;
   int k_charts;

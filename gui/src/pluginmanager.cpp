@@ -2117,6 +2117,29 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray() {
   return array;
 }
 
+opencpn_plugin* PlugInManager::GetProvidingPlugin(
+    const wxString& ChartClassName) {
+  opencpn_plugin* plugin = nullptr;
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
+    PlugInContainer* pic = plugin_array->Item(i);
+    if (pic && pic->m_enabled && pic->m_init_state &&
+        ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
+         (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))) {
+      wxArrayString carray = pic->m_pplugin->GetDynamicChartClassNameArray();
+
+      for (unsigned int j = 0; j < carray.GetCount(); j++) {
+        if (carray[j].IsSameAs(ChartClassName)) {
+          plugin = pic->m_pplugin;
+          break;
+        }
+      }
+      if (plugin) break;
+    }
+  }
+  return plugin;
+}
+
 //-------------------------------------------------------------------------------
 //    PluginListPanel & PluginPanel Implementation
 //-------------------------------------------------------------------------------

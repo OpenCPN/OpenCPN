@@ -837,7 +837,7 @@ void MyFrame::RebuildChartDatabase() {
         wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
             wxPD_REMAINING_TIME);
 
-    ChartData->Create(ChartDirArray, pprog);
+    ChartData->Create(ChartDirArray, nullptr);
     ChartData->SaveBinary(ChartListFileName);
 
     delete pprog;
@@ -2497,7 +2497,6 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
-      /// LoadS57();
       androidDisableFullScreen();
       g_MainToolbar->HideTooltip();
       DoAndroidPreferences();
@@ -2936,6 +2935,7 @@ void MyFrame::DoSettingsNew() {
 }
 
 void MyFrame::DoSettings() {
+  LoadS57();
   DoOptionsDialog();
 
   //              Apply various system settings
@@ -4279,8 +4279,8 @@ bool MyFrame::CheckGroup(int igroup) {
   for (const auto &elem : pGroup->m_element_array) {
     for (unsigned int ic = 0;
          ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
-      ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
-      wxString chart_full_path(pcte->GetpFullPath(), wxConvUTF8);
+      auto cte = ChartData->GetChartTableEntry(ic);
+      wxString chart_full_path(cte.GetpFullPath(), wxConvUTF8);
 
       if (chart_full_path.StartsWith(elem.m_element_name)) return true;
     }
@@ -4305,8 +4305,8 @@ bool MyFrame::ScrubGroupArray() {
 
       for (unsigned int ic = 0;
            ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
-        ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
-        wxString chart_full_path = pcte->GetFullSystemPath();
+        auto cte = ChartData->GetChartTableEntry(ic);
+        wxString chart_full_path = cte.GetFullSystemPath();
 
         if (chart_full_path.StartsWith(element_root)) {
           b_chart_in_element = true;
@@ -4411,45 +4411,60 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 
   AbstractPlatform::ShowBusySpinner();
 
-  wxGenericProgressDialog *pprog = nullptr;
   if (b_prog) {
     wxString longmsg = _("OpenCPN Chart Update");
     longmsg +=
         ".................................................................."
         "........";
 
-    pprog = new wxGenericProgressDialog();
+    Updateprog = new wxGenericProgressDialog();
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    pprog->SetFont(*qFont);
+    Updateprog->SetFont(*qFont);
 
-    pprog->Create(_("OpenCPN Chart Update"), longmsg, 100, gFrame,
-                  wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
-                      wxPD_REMAINING_TIME);
+    Updateprog->Create(_("OpenCPN Chart Update"), longmsg, 100, gFrame,
+                       wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
+                           wxPD_REMAINING_TIME);
 
-    DimeControl(pprog);
-    pprog->Show();
+    DimeControl(Updateprog);
+    Updateprog->Show();
   }
 
   wxLogMessage("   ");
   wxLogMessage("Starting chart database Update...");
-  wxString gshhg_chart_loc = gWorldMapLocation;
-  gWorldMapLocation = wxEmptyString;
+
   // The Update() function may set gWorldMapLocation if at least one of the
-  // directories contains GSHHS files.
-  ChartData->Update(DirArray, b_force, pprog);
+  // directories contains GSHHS files.  Save current situation...
+  m_gshhg_chart_loc = gWorldMapLocation;
+  gWorldMapLocation = wxEmptyString;
+
+  ChartData->Update(DirArray, b_force, Updateprog);
+
+  AbstractPlatform::HideBusySpinner();
+  return true;
+}
+
+void MyFrame::FinalizeChartDBUpdate() {
+  // Finalize updade after all thread events received, and CTE list rebuilt.
   ChartData->SaveBinary(ChartListFileName);
   wxLogMessage("Finished chart database Update");
   wxLogMessage("   ");
+
+  if (Updateprog) Updateprog->Destroy();
+  Updateprog = nullptr;
+
+  // The Update() function may set gWorldMapLocation if at least one of the
+  // directories contains GSHHS files.  Make sure GSHHS is still accessible
   if (gWorldMapLocation.empty()) {  // Last resort. User might have deleted all
                                     // GSHHG data, but we still might have the
                                     // default dataset distributed with OpenCPN
                                     // or from the package repository...
     gWorldMapLocation = gDefaultWorldMapLocation;
-    gshhg_chart_loc = wxEmptyString;
+    m_gshhg_chart_loc = wxEmptyString;
   }
 
-  if (gWorldMapLocation != gshhg_chart_loc) {
+  // Update canvas and "Crossesland" machinery
+  if (gWorldMapLocation != m_gshhg_chart_loc) {
     // ..For each canvas...
     for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
       ChartCanvas *cc = g_canvasArray.Item(i);
@@ -4459,23 +4474,18 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
     gshhsCrossesLandReset();
   }
 
-  delete pprog;
-
-  AbstractPlatform::HideBusySpinner();
-
-  pConfig->UpdateChartDirs(DirArray);
-
   // Restart timers, if necessary
-  if (b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
-  if (b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
+  bool b_run = FrameTimer1.IsRunning();
+  if (!b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
+  if (!b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 
-  if (b_runCOGTimer) {
+  bool b_runCOGTimer = FrameCOGTimer.IsRunning();
+  if (!b_runCOGTimer) {
     //    Restart the COG rotation timer, max frequency is 10 hz.
     int period_ms = 100;
     if (g_COGAvgSec > 0) period_ms = g_COGAvgSec * 1000;
     FrameCOGTimer.Start(period_ms, wxTIMER_CONTINUOUS);
   }
-  return true;
 }
 
 void MyFrame::ToggleQuiltMode(ChartCanvas *cc) {
