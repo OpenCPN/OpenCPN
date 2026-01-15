@@ -1340,6 +1340,7 @@ no_compression:
 void glChartCanvas::OnPaint(wxPaintEvent &event) {
   wxPaintDC dc(this);
   if (!m_pcontext) return;
+  if (ChartData->IsBusy()) return;
 
   Show(g_bopengl);
   if (!g_bopengl) {

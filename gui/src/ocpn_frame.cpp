@@ -4279,7 +4279,7 @@ bool MyFrame::CheckGroup(int igroup) {
   for (const auto &elem : pGroup->m_element_array) {
     for (unsigned int ic = 0;
          ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
-      auto cte = ChartData->GetChartTableEntry(ic);
+      auto &cte = ChartData->GetChartTableEntry(ic);
       wxString chart_full_path(cte.GetpFullPath(), wxConvUTF8);
 
       if (chart_full_path.StartsWith(elem.m_element_name)) return true;
@@ -4305,7 +4305,7 @@ bool MyFrame::ScrubGroupArray() {
 
       for (unsigned int ic = 0;
            ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
-        auto cte = ChartData->GetChartTableEntry(ic);
+        auto &cte = ChartData->GetChartTableEntry(ic);
         wxString chart_full_path = cte.GetFullSystemPath();
 
         if (chart_full_path.StartsWith(element_root)) {
