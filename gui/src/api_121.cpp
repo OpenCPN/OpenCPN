@@ -643,6 +643,7 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
     // If there are no larger scale charts available in the new family,
     // chose the next smaller scale chart.
     int ref_index = oCanvas->GetQuiltReferenceChartIndex();
+    if (ref_index == -1) return false;  // No chart loaded yet
     const ChartTableEntry& cte_ref = ChartData->GetChartTableEntry(ref_index);
 
     // No action needed if ref chart is already same as target
