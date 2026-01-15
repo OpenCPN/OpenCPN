@@ -765,8 +765,8 @@ void AISTargetListDialog::CreateControls() {
       new wxTextCtrl(winr, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
   m_pFindTargetName->SetMinSize(wxSize(15 * GetCharWidth(), -1));
   m_pFindTargetName->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(AISTargetListDialog::OnEditFindTarget), NULL, this);
+      wxEVT_TEXT, wxCommandEventHandler(AISTargetListDialog::OnEditFindTarget),
+      NULL, this);
   bsRouteButtonsInner->Add(m_pFindTargetName, 0, wxALL, 2);
 
   m_pCBAutosort =
@@ -1057,7 +1057,10 @@ void AISTargetListDialog::OnCopyMMSI(wxCommandEvent &event) {
 
 void AISTargetListDialog::OnEditFindTarget(wxCommandEvent &event) {
   wxString name = m_pFindTargetName->GetValue().MakeUpper();
-  if (name.size() < 2 || name == " ") return;
+  if (name.size() < 2 || name == " ") {
+    event.StopPropagation();  // Don't send the key upstream
+    return;
+  }
   if (m_pdecoder) {
     bool found = false;
     long item_sel = 0;
