@@ -379,6 +379,7 @@ public:
   std::vector<float> GetReducedAuxPlyPoints(int dbIndex, int iTable);
 
   bool IsBusy() { return m_b_busy; }
+  void SetBusy(bool _busy) { m_b_busy = _busy; }
 
   ChartTableEntry *CreateChartTableEntry(const wxString &filePath,
                                          wxString &utf8Path,

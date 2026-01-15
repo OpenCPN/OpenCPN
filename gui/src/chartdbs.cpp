@@ -1068,7 +1068,7 @@ WX_DEFINE_OBJARRAY(ChartTable);
 
 ChartDatabase::ChartDatabase() {
   bValid = false;
-  m_b_busy = false;
+  SetBusy(false);
 
   m_ChartTableEntryDummy.Clear();
 
@@ -1184,10 +1184,10 @@ void ChartDatabase::FinalizeChartUpdate() {
 
   m_nentries = active_chartTable.size();
   bValid = true;
-  m_b_busy = false;
+  SetBusy(false);
+  ChartData->SetBusy(false);
 
   // Finalize the dB on disk
-
   ChartData->SaveBinary(ChartListFileName);
   wxLogMessage("Finished chart database Update");
   wxLogMessage("   ");
@@ -1722,7 +1722,8 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_dir_array = dir_array;
 
   bValid = false;  // database is not useable right now...
-  m_b_busy = true;
+  SetBusy(true);
+  ChartData->SetBusy(true);
 
   //  Mark all charts provisionally invalid
   for (unsigned int i = 0; i < active_chartTable.size(); i++) {
@@ -1797,6 +1798,7 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_progint = 0;
   m_ticketcount = m_jobsRemaining;
   m_nFileProgressQuantum = wxMax(m_ticketcount / 10, 2);
+  if (pprog) pprog->Update(0, _("Processing charts."));
 
   // Start up the queued threads
   const int workerCount = 4;
@@ -1962,12 +1964,11 @@ bool ChartDatabase::DetectDirChange(const wxString &dir_path,
   FlexHash hash(sizeof nacc);
   hash.Reset();
 
+  if (pprog) pprog->Update(0, prog_label);
+
   // Traverse the list of files, getting their interesting stuff to add to
   // accumulator
   for (int ifile = 0; ifile < n_files; ifile++) {
-    if (pprog && (ifile % (n_files / 60 + 1)) == 0)
-      pprog->Update(wxMin((ifile * 100) / n_files, 100), prog_label);
-
     wxFileName file(FileList[ifile]);
 
     // NOTE. Do not ever try to optimize this code by combining `wxString`
