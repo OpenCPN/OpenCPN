@@ -257,10 +257,10 @@ OGRFeatureDefn *S57GenerateObjectClassDefn(S57ClassRegistrar *poCR, int nOBJL,
   return poFDefn;
 }
 
-/************************************************************************/
-/*                     S57GenerateObjectClassDefn()                     */
-/*                      Expedited for COVR only
-/************************************************************************/
+/*************************************************************************/
+/*                     S57GenerateObjectClassDefn()                      */
+/*                      Expedited for COVR only                          */
+/*************************************************************************/
 
 OGRFeatureDefn *S57GenerateObjectClassDefnM_COVR( int nOBJL )
 
