@@ -274,11 +274,11 @@ Quilt::~Quilt() {
 
 void Quilt::SetReferenceChart(int dbIndex) {
   // if (dbIndex >= 0) {
-  // const ChartTableEntry &cte = ChartData->GetChartTableEntry(dbIndex);
-  // if (cte.GetChartFamily() != m_reference_family) {
-  // printf("************family switch\n");
-  //}
-  //}
+  //   const ChartTableEntry &cte = ChartData->GetChartTableEntry(dbIndex);
+  //   if (cte.GetChartFamily() != m_reference_family) {
+  //     printf("************family switch\n");
+  //   }
+  // }
 
   m_refchart_dbIndex = dbIndex;
   if (dbIndex >= 0) {
@@ -1873,14 +1873,22 @@ bool Quilt::Compose(const ViewPort &vp_in) {
       }
       //      There was no viable candidate of smaller scale than the "lost
       //      chart", so choose the smallest scale chart in the candidate list.
+      //      Exception: if the smallest scale chart in the candidate list
+      //      is a different family, then do not change the reference chart
       else {
         BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex, vp_local);
         if (m_pcandidate_array->GetCount()) {
-          m_refchart_dbIndex =
+          int alternate_index =
               m_pcandidate_array->Item(m_pcandidate_array->GetCount() - 1)
                   ->dbIndex;
-          BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex,
-                                                   vp_local);
+          const ChartTableEntry &cte_alt =
+              ChartData->GetChartTableEntry(alternate_index);
+
+          if (GetRefFamily() == cte_alt.GetChartFamily()) {
+            m_refchart_dbIndex = alternate_index;
+            BuildExtendedChartStackAndCandidateArray(m_refchart_dbIndex,
+                                                     vp_local);
+          }
         }
       }
     }
