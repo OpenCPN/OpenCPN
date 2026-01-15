@@ -424,7 +424,7 @@ private:
   ObsListener m_evt_drv_msg_listener;
   ObsListener m_update_statusbar_listener;
   ObsListener m_center_aistarget_listener;
-
+  ObsListener m_reload_charts_listener;
   ToolbarDlgCallbacks m_toolbar_callbacks;
 
   wxStatusBar* m_pStatusBar;

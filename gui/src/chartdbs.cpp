@@ -37,6 +37,8 @@
 #include <wx/regex.h>
 #include <wx/tokenzr.h>
 
+#include "model/gui_events.h"
+
 #include "chartbase.h"
 #include "chartdbs.h"
 #include "flex_hash.h"
@@ -54,8 +56,6 @@
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
-
-// WX_DECLARE_STRING_HASH_MAP(int, ChartCollisionsHashMap);
 
 ChartGroupArray *g_pGroupArray;
 
@@ -1217,6 +1217,9 @@ void ChartDatabase::FinalizeChartUpdate() {
     // Reset the GSHHS singleton which is used to detect land crossing.
     gshhsCrossesLandReset();
   }
+
+  // Signal a full chart reload
+  GuiEvents::GetInstance().on_reload_charts.Notify();
 }
 
 void ChartDatabase::UpdateChartClassDescriptorArray() {

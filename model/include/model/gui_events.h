@@ -67,6 +67,9 @@ public:
   /** Notified when waypoint(s) is updated (no data in event) */
   EventVar on_waypoint_update;
 
+  /** Notified when Chart canvases need a full reload, no argsuments */
+  EventVar on_reload_charts;
+
 private:
   GuiEvents() = default;
 };

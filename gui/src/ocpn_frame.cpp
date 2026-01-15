@@ -723,6 +723,9 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
         auto ais_target = UnpackEvtPointer<AisTargetData>(ev);
         CenterAisTarget(ais_target);
       });
+  m_reload_charts_listener.Init(
+      GuiEvents::GetInstance().on_reload_charts,
+      [&](ObservedEvt &ev) { ScheduleReloadCharts(); });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
