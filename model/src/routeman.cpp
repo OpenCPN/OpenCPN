@@ -368,13 +368,16 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     v["WP_arrived"] = pActivePoint->GetName();
   }
   int n_index_active = pActiveRoute->GetIndexOf(pActivePoint);
+  if (n_index_active < 0) return false;
   int step = 1;
   while (n_index_active == pActiveRoute->GetIndexOf(pActivePoint)) {
-    if ((n_index_active + step) <= pActiveRoute->GetnPoints()) {
+    int candidate = n_index_active + step;
+    if (candidate < pActiveRoute->GetnPoints()) {
+      int candidate_point = candidate + 1;  // GetPoint expects 1-based
       pActiveRouteSegmentBeginPoint = pActivePoint;
       pActiveRoute->m_pRouteActivePoint =
-          pActiveRoute->GetPoint(n_index_active + step);
-      pActivePoint = pActiveRoute->GetPoint(n_index_active + step);
+          pActiveRoute->GetPoint(candidate_point);
+      pActivePoint = pActiveRoute->GetPoint(candidate_point);
       step++;
       result = true;
     } else {

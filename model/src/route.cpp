@@ -323,7 +323,7 @@ RoutePoint *Route::GetLastPoint() {
 int Route::GetIndexOf(RoutePoint *prp) {
   auto pos = std::find(pRoutePointList->begin(), pRoutePointList->end(), prp);
 
-  if (pos == pRoutePointList->end()) return 0;
+  if (pos == pRoutePointList->end()) return -1;
   return static_cast<int>(pos - pRoutePointList->begin());
 }
 

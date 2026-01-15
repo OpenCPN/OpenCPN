@@ -718,7 +718,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
           if (m_pSelectedRoute->IsActive()) {
             int indexActive = m_pSelectedRoute->GetIndexOf(
                 m_pSelectedRoute->m_pRouteActivePoint);
-            if ((indexActive + 1) <= m_pSelectedRoute->GetnPoints()) {
+            if (indexActive < m_pSelectedRoute->GetnPoints() - 1) {
               MenuAppend1(menuRoute, ID_RT_MENU_ACTNXTPOINT,
                           _("Activate Next Waypoint"));
             }
@@ -735,7 +735,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
           if (m_pSelectedRoute->IsActive()) {
             int indexActive = m_pSelectedRoute->GetIndexOf(
                 m_pSelectedRoute->m_pRouteActivePoint);
-            if ((indexActive + 1) <= m_pSelectedRoute->GetnPoints()) {
+            if (indexActive < m_pSelectedRoute->GetnPoints() - 1) {
               MenuAppend1(menuRoute, ID_RT_MENU_ACTNXTPOINT,
                           _("Activate Next Waypoint"));
             }
@@ -749,8 +749,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
         MenuAppend1(menuRoute, ID_RT_MENU_APPEND, _("Append Waypoint"));
         if (!(seltype & SELTYPE_ROUTEPOINT) && m_pSelectedRoute) {
           m_SelectedIdx = m_pSelectedRoute->GetIndexOf(m_pFoundRoutePoint);
-          if (m_SelectedIdx > 1 &&
-              m_SelectedIdx < m_pSelectedRoute->GetnPoints() - 1)
+          if (m_SelectedIdx >= 1 &&
+              m_SelectedIdx < m_pSelectedRoute->GetnPoints() - 2)
             MenuAppend1(menuRoute, ID_RT_MENU_SPLIT_LEG, _("Split around Leg"));
         }
         MenuAppend1(menuRoute, ID_RT_MENU_COPY, _("Copy as KML") + "...");
@@ -849,7 +849,7 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
           if (m_pSelectedRoute->m_pRouteActivePoint == m_pFoundRoutePoint) {
             int indexActive = m_pSelectedRoute->GetIndexOf(
                 m_pSelectedRoute->m_pRouteActivePoint);
-            if ((indexActive + 1) <= m_pSelectedRoute->GetnPoints())
+            if (indexActive < m_pSelectedRoute->GetnPoints() - 1)
               MenuAppend1(menuWaypoint, ID_RT_MENU_ACTNXTPOINT,
                           _("Activate Next Waypoint"));
           }
@@ -859,8 +859,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
                       _("Remove from Route"));
 
           m_SelectedIdx = m_pSelectedRoute->GetIndexOf(m_pFoundRoutePoint);
-          if (m_SelectedIdx > 1 &&
-              m_SelectedIdx < m_pSelectedRoute->GetnPoints())
+          if (m_SelectedIdx >= 1 &&
+              m_SelectedIdx < m_pSelectedRoute->GetnPoints() - 1)
             MenuAppend1(menuWaypoint, ID_RT_MENU_SPLIT_WPT,
                         _("Split Route at Waypoint"));
         }
