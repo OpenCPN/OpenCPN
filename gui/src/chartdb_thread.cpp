@@ -21,30 +21,10 @@
  * Implement threaded chart database creation
  */
 
-#include <stdint.h>
-
-#include <wx/wxprec.h>
-#include <wx/tokenzr.h>
-#include <wx/filename.h>
 #include <wx/wx.h>
 
-#include "config.h"
-
-#include "chartbase.h"
 #include "chartdb.h"
 #include "chartdbs.h"
-#include "chartimg.h"
-#include "chcanv.h"
-#include "dychart.h"
-#include "gl_chart_canvas.h"
-#include "gl_tex_cache.h"
-#include "gl_texture_descr.h"
-#include "lz4.h"
-#include "lz4hc.h"
-#include "ocpn_platform.h"
-#include "quilt.h"
-#include "squish.h"
-#include "viewport.h"
 #include "chartdb_thread.h"
 
 wxDEFINE_EVENT(wxEVT_OCPN_CHARTTABLEENTRYTHREAD,
