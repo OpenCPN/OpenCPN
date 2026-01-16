@@ -38,15 +38,14 @@
 #include "model/routeman.h"
 #include "model/select.h"
 
-#include "chcanv.h"
+#include "abstract_chart_canv.h"
 #include "mark_info.h"
 #include "navutil.h"
 #include "routemanagerdialog.h"
-#include "styles.h"
 #include "top_frame.h"
 #include "undo.h"
 
-Undo::Undo(ChartCanvas* parent) {
+Undo::Undo(AbstractChartCanvas* parent) {
   m_parent = parent;
   depthSetting = 10;
   stackpointer = 0;
@@ -86,7 +85,7 @@ wxString UndoAction::Description() {
   return descr;
 }
 
-void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doUndoMoveWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   double lat, lon;
   RoutePoint* currentPoint = (RoutePoint*)action->after[0];
   wxRealPoint* lastPoint = (wxRealPoint*)action->before[0];
@@ -118,7 +117,7 @@ void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
   }
 }
 
-void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doUndoDeleteWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
   NavObj_dB::GetInstance().InsertRoutePoint(point);
@@ -130,7 +129,7 @@ void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
     pRouteManagerDialog->UpdateWptListCtrl();
 }
 
-void doRedoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doRedoDeleteWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   NavObj_dB::GetInstance().DeleteRoutePoint(point);
   pSelect->DeleteSelectablePoint(point, SELTYPE_ROUTEPOINT);
@@ -139,7 +138,7 @@ void doRedoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
     pRouteManagerDialog->UpdateWptListCtrl();
 }
 
-void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doUndoAppendWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   Route* route = (Route*)action->after[0];
 
@@ -157,7 +156,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   }
 
   if (noRouteLeftToRedo) {
-    cc->undo->InvalidateRedo();
+    cc->InvalidateRedo();
   }
 
   if (RouteManagerDialog::getInstanceFlag()) {
@@ -174,7 +173,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   }
 }
 
-void doRedoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doRedoAppendWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   Route* route = (Route*)action->after[0];
 

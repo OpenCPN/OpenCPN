@@ -88,7 +88,6 @@ class NotificationsList;   // circular
 class NotificationButton;  // circular
 class Quilt;               // circular
 class TCWin;               // circular
-class Undo;                // circular
 
 class ChartCanvas;                      // forward
 extern ChartCanvas *g_overlayCanvas;    ///< Global instance
