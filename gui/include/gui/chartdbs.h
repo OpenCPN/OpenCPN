@@ -434,6 +434,8 @@ private:
   std::atomic<int> m_jobsRemaining{0};
   JobQueueCTE m_pool;
   std::vector<std::shared_ptr<ChartTableEntryJobTicket>> m_ticket_vector;
+  std::vector<std::shared_ptr<ChartTableEntryJobTicket>>
+      m_deferred_ticket_vector;
   ChartCollisionsHashMap m_full_collision_map;
   int m_progcount;
   int m_ticketcount;

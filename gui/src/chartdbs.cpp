@@ -1093,6 +1093,9 @@ for (it = collision_map.begin(); it != collision_map.end(); ++it) {
 #endif
 
 void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
+  // Capture the completed job tickets
+  auto ticket = event.GetTicket();
+
   // Update progress dialog, if present
   if (m_pprog && (m_jobsRemaining > 1)) {
     m_progcount++;
@@ -1107,10 +1110,8 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     }
   }
 
-  // Capture the completed job tickets, checking for duplicates along the way
-  auto ticket = event.GetTicket();
-
   //  look for and process incomplete tickets
+#if 0
   if (!ticket->b_thread_safe) {
     ChartClassDescriptor tmpDescriptor(ticket->provider_class_name, "", nullptr,
                                        PLUGIN_DESCRIPTOR);
@@ -1121,31 +1122,48 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
       ticket->m_chart_table_entry = safe_ptr;  // class member
     }
   }
+#endif
 
-  wxFileName fn(ticket->m_ChartPath);
-  bool collision_found = false;
-  ChartCollisionsHashMap::iterator it;
-  for (it = m_full_collision_map.begin(); it != m_full_collision_map.end();
-       ++it) {
-    if (it->first.IsSameAs(fn.GetFullName())) {
-      // Two files found with identical file name
-      // For now, just drop this ticket
-      // TODO Make an (expensive) test on file modification times
-      collision_found = true;
-      break;
+  if (ticket) {
+    wxFileName fn(ticket->m_ChartPath);
+    bool collision_found = false;
+    ChartCollisionsHashMap::iterator it;
+    for (it = m_full_collision_map.begin(); it != m_full_collision_map.end();
+         ++it) {
+      if (it->first.IsSameAs(fn.GetFullName())) {
+        // Two files found with identical file name
+        // For now, just drop this ticket
+        // TODO Make an (expensive) test on file modification times
+        collision_found = true;
+        break;
+      }
     }
-  }
 
-  //  Consider TODO #1 here:  Looking for more duolicates acress directories
+    //  Consider TODO #1 here:  Looking for more duolicates acress directories
 
-  if (!collision_found) {
-    m_ticket_vector.push_back(ticket);
-    m_full_collision_map[fn.GetFullName()] = 1;
+    if (!collision_found) {
+      m_ticket_vector.push_back(ticket);
+      m_full_collision_map[fn.GetFullName()] = 1;
+    }
   }
 
   int remaining = --m_jobsRemaining;
   if (remaining == 0) {
     m_pool.Shutdown();
+
+    // Process the deferred tickets
+    for (auto &ticket_d : m_deferred_ticket_vector) {
+      ChartClassDescriptor tmpDescriptor(ticket_d->provider_class_name, "",
+                                         nullptr, PLUGIN_DESCRIPTOR);
+      ChartTableEntry *pnewChartTableEntry = CreateChartTableEntry(
+          ticket_d->m_ChartPath, ticket_d->m_ChartPath, tmpDescriptor);
+      if (pnewChartTableEntry) {
+        std::shared_ptr<ChartTableEntry> safe_ptr(pnewChartTableEntry);
+        ticket_d->m_chart_table_entry = safe_ptr;  // class member
+        m_ticket_vector.push_back(ticket_d);
+      }
+    }
+    m_deferred_ticket_vector.clear();
 
     // Now m_ticket_vector is populated with verified tickets
     // for all specified directories.
@@ -1217,6 +1235,9 @@ void ChartDatabase::FinalizeChartUpdate() {
     // Reset the GSHHS singleton which is used to detect land crossing.
     gshhsCrossesLandReset();
   }
+
+  // Purge all charts from cache, and delete.
+  ChartData->PurgeCache();
 
   // Signal a full chart reload
   GuiEvents::GetInstance().on_reload_charts.Notify();
@@ -1664,18 +1685,6 @@ wxString findGshhgDirectory(const wxString &directory) {
 
 bool ChartDatabase::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
                                                bool b_force, bool b_prog) {
-// ..For each canvas...
-#if 0
-for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-  ChartCanvas *cc = g_canvasArray.Item(i);
-  if (cc) {
-    cc->InvalidateQuilt();
-    cc->SetQuiltRefChart(-1);
-    cc->m_singleChart = NULL;
-  }
-}
-#endif
-
   // AbstractPlatform::ShowBusySpinner();
 
   if (b_prog) {
@@ -1721,7 +1730,7 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_ticket_vector.clear();
   m_full_collision_map.clear();
   m_jobsRemaining = 0;
-
+  m_deferred_ticket_vector.clear();
   m_dir_array = dir_array;
 
   bValid = false;  // database is not useable right now...
@@ -1792,7 +1801,15 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 
   // Special case, if chart dir list is truly empty
   if (m_chartDirs.IsEmpty() || !m_jobsRemaining) {
-    FinalizeChartUpdate();
+    if (m_deferred_ticket_vector.size()) {
+      auto *evt =
+          new OCPN_ChartTableEntryThreadEvent(wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
+      evt->SetTicket(nullptr);  // dummy event to get one pass of event handler
+      m_jobsRemaining = 1;
+      wxQueueEvent(this, evt);
+    } else {
+      FinalizeChartUpdate();
+    }
     return true;
   }
 
@@ -2727,17 +2744,12 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     if (!provider_plugin118) {
       // old plugin, charts not thread-safe
       // So arrange to process the tickets in the main app thread,
-      // during the event handler
+      // during the event handler, at the end of the queue processing
       for (auto &ticket : ticket_vector) {
         ticket->b_thread_safe = false;
         ticket->m_provider_type = 1;
         ticket->provider_class_name = chart_desc.m_class_name;
-
-        auto *evt = new OCPN_ChartTableEntryThreadEvent(
-            wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
-        evt->SetTicket(ticket);
-        m_jobsRemaining++;
-        wxQueueEvent(this, evt);
+        m_deferred_ticket_vector.push_back(ticket);
       }
       return nDirEntry;
     }
