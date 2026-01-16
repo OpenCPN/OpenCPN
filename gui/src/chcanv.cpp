@@ -91,6 +91,7 @@
 #include "ocpn_aui_manager.h"
 #include "ocpndc.h"
 #include "ocpn_frame.h"
+#include "top_frame.h"
 #include "ocpn_pixel.h"
 #include "ocpn_region.h"
 #include "options.h"
@@ -169,7 +170,7 @@ int __cdecl printf2(const char *format, ...) {
 // Useful Prototypes
 // ----------------------------------------------------------------------------
 extern ColorScheme global_color_scheme;  // library dependence
-extern wxColor GetDimColor(wxColor c);   // library dependence
+#include "user_colors.h"                 // for GetDimColor
 
 arrayofCanvasPtr g_canvasArray; /**< Global instance */
 
@@ -249,9 +250,10 @@ END_EVENT_TABLE()
 
 // Define a constructor for my canvas
 ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
-    : wxWindow(frame, wxID_ANY, wxPoint(20, 20), wxSize(5, 5), wxNO_BORDER),
+    : AbstractChartCanvas(frame, wxPoint(20, 20), wxSize(5, 5), wxNO_BORDER),
       m_nmea_log(nmea_log) {
-  parent_frame = (MyFrame *)frame;  // save a pointer to parent
+  parent_frame =
+      static_cast<AbstractTopFrame *>(frame);  // save a pointer to parent
   m_canvasIndex = canvasIndex;
 
   pscratch_bm = NULL;
@@ -767,6 +769,18 @@ void ChartCanvas::SetupGridFont() {
   m_pgridFont = FontMgr::Get().FindOrCreateFont(
       gridFontSize, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
       FALSE, wxString("Arial"));
+}
+
+void ChartCanvas::ResetGlGridFont() { m_pgridFont = nullptr; }
+
+bool ChartCanvas::CanAccelerateGlPanning() {
+  auto tf = top_frame::Get();
+  return tf ? tf->CanAccelerateGlPanning() : false;
+}
+
+void ChartCanvas::SetupGlCompression() {
+  auto tf = top_frame::Get();
+  if (tf) tf->SetupGlCompression();
 }
 
 void ChartCanvas::RebuildCursors() {
@@ -1420,8 +1434,8 @@ bool ChartCanvas::CheckGroup(int igroup) {
   for (const auto &elem : pGroup->m_element_array) {
     for (unsigned int ic = 0;
          ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
-      ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
-      wxString chart_full_path(pcte->GetpFullPath(), wxConvUTF8);
+      const ChartTableEntry &cte = ChartData->GetChartTableEntry(ic);
+      wxString chart_full_path(cte.GetpFullPath(), wxConvUTF8);
 
       if (chart_full_path.StartsWith(elem.m_element_name)) return true;
     }
@@ -4339,7 +4353,8 @@ void ChartCanvas::OnCursorTrackTimerEvent(wxTimerEvent &event) {
 }
 
 void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
-  if (!parent_frame->m_pStatusBar) return;
+  wxStatusBar *status_bar = parent_frame->GetStatusBar();
+  if (!status_bar) return;
 
   wxString s1;
   s1 += " ";
@@ -4348,7 +4363,7 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   s1 += toSDMM(2, cursor_lon);
 
   if (STAT_FIELD_CURSOR_LL >= 0)
-    parent_frame->SetStatusText(s1, STAT_FIELD_CURSOR_LL);
+    status_bar->SetStatusText(s1, STAT_FIELD_CURSOR_LL);
 
   if (STAT_FIELD_CURSOR_BRGRNG < 0) return;
 
@@ -4407,7 +4422,7 @@ void ChartCanvas::SetCursorStatus(double cursor_lat, double cursor_lon) {
   }
   // END OF - LIVE ETA OPTION
 
-  parent_frame->SetStatusText(s, STAT_FIELD_CURSOR_BRGRNG);
+  status_bar->SetStatusText(s, STAT_FIELD_CURSOR_BRGRNG);
 }
 
 // CUSTOMIZATION - FORMAT MINUTES
@@ -5824,14 +5839,16 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
     m_scaleText = text;
     if (m_muiBar) m_muiBar->UpdateDynamicValues();
 
-    if (m_bShowScaleInStatusBar && parent_frame->GetStatusBar() &&
-        (parent_frame->GetStatusBar()->GetFieldsCount() > STAT_FIELD_SCALE)) {
+    auto tf = top_frame::Get();
+    wxStatusBar *status_bar = tf ? tf->GetStatusBar() : nullptr;
+    if (m_bShowScaleInStatusBar && status_bar &&
+        (status_bar->GetFieldsCount() > STAT_FIELD_SCALE)) {
       // Check to see if the text will fit in the StatusBar field...
       bool b_noshow = false;
       {
         int w = 0;
         int h;
-        wxClientDC dc(parent_frame->GetStatusBar());
+        wxClientDC dc(status_bar);
         if (dc.IsOk()) {
           wxFont *templateFont = FontMgr::Get().GetFont(_("StatusBar"), 0);
           dc.SetFont(*templateFont);
@@ -5840,7 +5857,7 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
           // If text is too long for the allocated field, try to reduce the text
           // string a bit.
           wxRect rect;
-          parent_frame->GetStatusBar()->GetFieldRect(STAT_FIELD_SCALE, rect);
+          status_bar->GetFieldRect(STAT_FIELD_SCALE, rect);
           if (w && w > rect.width) {
             text.Printf("%s (%1.1fx)", _("Scale"), m_displayed_scale_factor);
           }
@@ -5854,7 +5871,8 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
         }
       }
 
-      if (!b_noshow) parent_frame->SetStatusText(text, STAT_FIELD_SCALE);
+      if (!b_noshow && status_bar)
+        status_bar->SetStatusText(text, STAT_FIELD_SCALE);
     }
   }
 
@@ -6144,7 +6162,8 @@ void ChartCanvas::ShipIndicatorsDraw(ocpnDC &dc, int img_height,
                       pow((double)(lGPSPoint.m_y - r.y), 2));
     int pix_radius = (int)lpp;
 
-    wxColor rangeringcolour = GetDimColor(g_colourOwnshipRangeRingsColour);
+    wxColor rangeringcolour =
+        user_colors::GetDimColor(g_colourOwnshipRangeRingsColour);
 
     wxPen ppPen1(rangeringcolour, g_cog_predictor_width);
 
@@ -7005,8 +7024,10 @@ void ChartCanvas::ToggleCPAWarn() {
     mess = _("OFF");
   }
   // Print to status bar if available.
-  if (STAT_FIELD_SCALE >= 4 && parent_frame->GetStatusBar()) {
-    parent_frame->SetStatusText(_("CPA alarm ") + mess, STAT_FIELD_SCALE);
+  auto tf2 = top_frame::Get();
+  wxStatusBar *status_bar2 = tf2 ? tf2->GetStatusBar() : nullptr;
+  if (STAT_FIELD_SCALE >= 4 && status_bar2) {
+    status_bar2->SetStatusText(_("CPA alarm ") + mess, STAT_FIELD_SCALE);
   } else {
     if (!g_AisFirstTimeUse) {
       OCPNMessageBox(this, _("CPA Alarm is switched") + " " + mess.MakeLower(),
@@ -13281,7 +13302,7 @@ double ChartCanvas::GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint) {
 
   if (pAnchorWatchPoint) {
     (pAnchorWatchPoint->GetName()).ToDouble(&d1);
-    d1 = AnchorDistFix(d1, AnchorPointMinDist, g_nAWMax);
+    d1 = ocpn::AnchorDistFix(d1, AnchorPointMinDist, g_nAWMax);
     dabs = fabs(d1 / 1852.);
     ll_gc_ll(pAnchorWatchPoint->m_lat, pAnchorWatchPoint->m_lon, 0, dabs,
              &tlat1, &tlon1);
