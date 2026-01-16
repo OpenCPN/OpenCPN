@@ -2365,7 +2365,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_MENU_ROUTE_NEW: {
       if (GetFocusCanvas()) {
-        if (0 == GetFocusCanvas()->m_routeState) {
+        if (0 == GetFocusCanvas()->GetRouteState()) {
           GetFocusCanvas()->StartRoute();
         } else {
           GetFocusCanvas()->FinishRoute();
