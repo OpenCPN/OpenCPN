@@ -60,6 +60,7 @@
 #include "ocpn_plugin.h"
 #include "piano.h"
 #include "quilt.h"
+#include "top_frame.h"
 #include "rollover_win.h"
 #include "s57_sector.h"
 #include "tc_win.h"
@@ -835,7 +836,7 @@ public:
   bool m_bAppendingRoute;
   int m_nMeasureState;
   Route *m_pMeasureRoute;
-  wxWindow *parent_frame;
+  AbstractTopFrame *parent_frame;
   CanvasMenuHandler *m_canvasMenu;
   int GetMinAvailableGshhgQuality() {
     return pWorldBackgroundChart->GetMinAvailableQuality();
