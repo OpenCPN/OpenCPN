@@ -173,7 +173,10 @@ public:
   double GetPixPerMM() override { return GetPrimaryCanvas()->GetPixPerMM(); }
 
   double GetContentScaleFactor() override {
-    return GetPrimaryCanvas()->GetContentScaleFactor();
+    if (GetPrimaryCanvas())
+      return GetPrimaryCanvas()->GetContentScaleFactor();
+    else
+      return 1.0;
   }
 
   void RequestNewToolbars(bool bforcenew = false) override;

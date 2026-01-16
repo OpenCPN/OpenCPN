@@ -873,9 +873,8 @@ PlugInManager::PlugInManager(AbstractTopFrame* parent) {
   m_pCurl = 0;
 #endif
   s_ppim = this;
-
-  AbstractTopFrame* parent_frame = GetParentFrame();
-  if (parent_frame) {
+  m_parent = parent;
+  if (m_parent) {
     m_plugin_menu_item_id_next = CanvasMenuHandler::GetNextContextMenuId();
     m_plugin_tool_id_next = top_frame::Get()->GetNextToolbarToolId();
   }

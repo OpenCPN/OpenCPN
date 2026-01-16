@@ -563,8 +563,6 @@ void OCPNPlatform::Initialize_3() {
   }
 #endif
 
-  top_frame::Get()->SetGPSCompassScale();
-
   // Force a few items for Android, to ensure that UI is useable if config got
   // scrambled
   if (bAndroid) {

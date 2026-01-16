@@ -1476,6 +1476,8 @@ void MyApp::BuildMainFrame() {
 
   gFrame->CreateCanvasLayout();
 
+  gFrame->SetGPSCompassScale();
+
   // gFrame->RequestNewMasterToolbar( true );
 
   gFrame->SetChartUpdatePeriod();  // Reasonable default

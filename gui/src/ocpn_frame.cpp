@@ -1084,6 +1084,7 @@ ChartCanvas *MyFrame::GetPrimaryCanvas() {
   else
     return NULL;
 }
+
 void MyFrame::CancelAllMouseRoute() {
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
