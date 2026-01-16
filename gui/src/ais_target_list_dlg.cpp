@@ -41,8 +41,10 @@
 #include "routemanagerdialog.h"
 #include "styles.h"
 #include "top_frame.h"
+#include "ocpn_frame.h"
 
 AISTargetListDialog *g_pAISTargetList;  // Global instance
+extern MyFrame *gFrame;                 /**< Global instance */
 
 static int g_AisTargetList_count;
 static AisDecoder *s_p_sort_decoder;
@@ -445,11 +447,26 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
   Connect(wxEVT_CONTEXT_MENU,
           wxCommandEventHandler(AISTargetListDialog::OnRightClickContext), NULL,
           this);
+  Bind(wxEVT_SHOW, &AISTargetListDialog::OnShow, this);
 }
 
 AISTargetListDialog::~AISTargetListDialog() {
   Disconnect_decoder();
   g_pAISTargetList = NULL;
+}
+
+void AISTargetListDialog::OnShow(wxShowEvent &e) {
+  if (e.IsShown()) {
+    if (!m_menuGuard) {
+      m_menuGuard = new MenuBarScopeGuard(
+          gFrame);  // wxDynamicCast(wxGetTopLevelParent(this), wxFrame));
+    }
+  } else {
+    delete m_menuGuard;
+    m_menuGuard = nullptr;
+  }
+
+  e.Skip();  // important
 }
 
 void AISTargetListDialog::RecalculateSize() {
@@ -826,6 +843,10 @@ void AISTargetListDialog::CreateControls() {
 void AISTargetListDialog::OnClose(wxCloseEvent &event) {
   Disconnect_decoder();
   Hide();
+  if (m_menuGuard) {
+    delete m_menuGuard;
+    m_menuGuard = nullptr;
+  }
   g_pAISTargetList = NULL;
 }
 
@@ -850,6 +871,11 @@ void AISTargetListDialog::Shutdown() {
     Disconnect_decoder();
     pane.Show(false);
     m_pAuiManager->Update();
+    if (m_menuGuard) {
+      delete m_menuGuard;
+      m_menuGuard = nullptr;
+    }
+
 #ifdef __ANDROID__
     GetParent()->Refresh(true);
 #endif
@@ -863,7 +889,7 @@ void AISTargetListDialog::UpdateButtons() {
                                             wxLIST_STATE_SELECTED);
   bool enable = (item != -1);
 
-  m_pButtonInfo->Enable(enable);
+  m_pButtonInfo->Enable(true);
 
   if (m_pdecoder && item != -1) {
     auto pAISTargetSel =
@@ -1175,6 +1201,14 @@ std::shared_ptr<AisTargetData> AISTargetListDialog::GetpTarget(
         m_pMMSI_array->Item(list_item));
   else
     return NULL;
+}
+
+void AISTargetListDialog::ShowList() {
+  if (!m_menuGuard) {
+    m_menuGuard = new MenuBarScopeGuard(
+        gFrame);  // wxDynamicCast(wxGetTopLevelParent(this), wxFrame));
+  }
+  UpdateAISTargetList();
 }
 
 void AISTargetListDialog::UpdateAISTargetList() {

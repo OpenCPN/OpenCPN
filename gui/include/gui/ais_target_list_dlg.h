@@ -50,6 +50,30 @@ extern AISTargetListDialog *g_pAISTargetList;  ///< Global instance
 
 WX_DEFINE_SORTED_ARRAY_INT(int, ArrayOfMMSI);
 
+class MenuBarScopeGuard {
+public:
+  MenuBarScopeGuard(wxFrame *frame)
+      : m_frame(frame), m_menuBar(frame->GetMenuBar()) {
+    // #ifdef __WXMSW__
+    if (m_menuBar) m_frame->SetMenuBar(nullptr);
+    // if (m_menuBar) {
+    // wxMenuBar *empty = new wxMenuBar;
+    // m_frame->SetMenuBar(empty);
+    //}
+    // #endif
+  }
+
+  ~MenuBarScopeGuard() {
+    // #ifdef __WXMSW__
+    if (m_menuBar && !m_frame->GetMenuBar()) m_frame->SetMenuBar(m_menuBar);
+    // #endif
+  }
+
+private:
+  wxFrame *m_frame;
+  wxMenuBar *m_menuBar;
+};
+
 /**
  * Dialog for displaying a list of AIS targets. Shows a list of AIS targets,
  * allowing users to view and interact with multiple AIS targets.
@@ -65,10 +89,11 @@ public:
   void Shutdown(void);
   void OnClose(wxCloseEvent &event);
   void Disconnect_decoder();
+  void ShowList();
+  void UpdateAISTargetList();  // Rebuild AIS target list
 
   void RecalculateSize(void);
   void SetColorScheme();
-  void UpdateAISTargetList();  // Rebuild AIS target list
   void UpdateNVAISTargetList();
   void CopyMMSItoClipBoard(int);
   void CenterToTarget(bool);
@@ -123,6 +148,9 @@ private:
   wxCheckBox *m_pCBAutosort;
 
   bool m_bautosort_force;
+
+  void OnShow(wxShowEvent &e);
+  MenuBarScopeGuard *m_menuGuard = nullptr;
 
   DECLARE_EVENT_TABLE()
 };
