@@ -43,7 +43,7 @@
 #include "model/notification_manager.h"
 #include "model/svg_utils.h"
 
-#include "chcanv.h"
+#include "abstract_chart_canv.h"
 #include "color_handler.h"
 #include "gl_chart_canvas.h"
 #include "gui_lib.h"
@@ -384,7 +384,7 @@ extern bool g_btenhertz;
 #define GL_RGBA8 0x8058
 #endif
 
-NotificationButton::NotificationButton(ChartCanvas* parent) {
+NotificationButton::NotificationButton(AbstractChartCanvas* parent) {
   m_parent = parent;
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();

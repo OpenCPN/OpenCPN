@@ -81,13 +81,10 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 #define STAT_FIELD_SCALE 4
 #endif
 
-class canvasConfig;        // circular
-class CanvasMenuHandler;   // circular
-class MyFrame;             // circular
-class NotificationsList;   // circular
-class NotificationButton;  // circular
-class Quilt;               // circular
-class TCWin;               // circular
+class canvasConfig;       // circular
+class CanvasMenuHandler;  // circular
+class Quilt;              // circular
+class TCWin;              // circular
 
 class ChartCanvas;                      // forward
 extern ChartCanvas *g_overlayCanvas;    ///< Global instance
