@@ -11259,7 +11259,7 @@ void ChartCanvas::ShowAISTargetList() {
     g_pAISTargetList = new AISTargetListDialog(parent_frame, g_pauimgr, g_pAIS);
   }
 
-  g_pAISTargetList->ShowList();
+  g_pAISTargetList->UpdateAISTargetList();
 }
 
 void ChartCanvas::RenderAllChartOutlines(ocpnDC &dc, ViewPort &vp) {
