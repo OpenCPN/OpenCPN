@@ -67,8 +67,8 @@ public:
   /** Notified when waypoint(s) is updated (no data in event) */
   EventVar on_waypoint_update;
 
-  /** Notified when Chart canvases need a full reload, no argsuments */
-  EventVar on_reload_charts;
+  /** Notified when chartdbs async operations complete, to finalize settings */
+  EventVar on_finalize_chartdbs;
 
 private:
   GuiEvents() = default;

@@ -416,6 +416,7 @@ private:
                 bool bthis_dir_in_dB);
 
   bool Check_CM93_Structure(wxString dir_name);
+  bool ScrubGroupArray();
 
   bool bValid;
   wxArrayString m_chartDirs;

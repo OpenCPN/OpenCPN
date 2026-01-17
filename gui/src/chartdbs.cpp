@@ -1200,6 +1200,10 @@ void ChartDatabase::FinalizeChartUpdate() {
     i++;
   }
 
+  // Touch up the group structures, as necessary
+  ScrubGroupArray();
+  ChartData->ApplyGroupArray(g_pGroupArray);
+
   m_nentries = active_chartTable.size();
   bValid = true;
   SetBusy(false);
@@ -1240,7 +1244,53 @@ void ChartDatabase::FinalizeChartUpdate() {
   ChartData->PurgeCache();
 
   // Signal a full chart reload
-  GuiEvents::GetInstance().on_reload_charts.Notify();
+  GuiEvents::GetInstance().on_finalize_chartdbs.Notify();
+}
+
+bool ChartDatabase::ScrubGroupArray() {
+  //    For each group,
+  //    make sure that each group element (dir or chart) references at least
+  //    oneitem in the database. If not, remove the element.
+
+  bool b_change = false;
+  unsigned int igroup = 0;
+  while (igroup < g_pGroupArray->GetCount()) {
+    bool b_chart_in_element = false;
+    ChartGroup *pGroup = g_pGroupArray->Item(igroup);
+
+    for (unsigned int j = 0; j < pGroup->m_element_array.size(); j++) {
+      const wxString &element_root = pGroup->m_element_array[j].m_element_name;
+
+      for (unsigned int ic = 0;
+           ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
+        auto &cte = ChartData->GetChartTableEntry(ic);
+        wxString chart_full_path = cte.GetFullSystemPath();
+
+        if (chart_full_path.StartsWith(element_root)) {
+          b_chart_in_element = true;
+          break;
+        }
+      }
+
+      // Explicit check to avoid removing a group containing only GSHHS
+      if (!b_chart_in_element) {
+        wxString test_string = "GSHH";
+        if (element_root.Upper().Contains(test_string))
+          b_chart_in_element = true;
+      }
+
+      if (!b_chart_in_element)  // delete the element
+      {
+        pGroup->m_element_array.erase(pGroup->m_element_array.begin() + j);
+        j--;
+        b_change = true;
+      }
+    }
+
+    igroup++;  // next group
+  }
+
+  return b_change;
 }
 
 void ChartDatabase::UpdateChartClassDescriptorArray() {

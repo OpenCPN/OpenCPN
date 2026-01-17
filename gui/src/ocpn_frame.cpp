@@ -725,8 +725,8 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
         CenterAisTarget(ais_target);
       });
   m_reload_charts_listener.Init(
-      GuiEvents::GetInstance().on_reload_charts,
-      [&](ObservedEvt &ev) { ScheduleReloadCharts(); });
+      GuiEvents::GetInstance().on_finalize_chartdbs,
+      [&](ObservedEvt &ev) { FinalizeChartDBUpdate(); });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
@@ -4093,20 +4093,6 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
         _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
   }
 
-  bool b_groupchange = false;
-  if (((rr & VISIT_CHARTS) &&
-       ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) ||
-      (rr & GROUPS_CHANGED)) {
-    b_groupchange = ScrubGroupArray();
-    ChartData->ApplyGroupArray(g_pGroupArray);
-    RefreshGroupIndices();
-  }
-
-  if (rr & GROUPS_CHANGED || b_groupchange) {
-    pConfig->DestroyConfigGroups();
-    pConfig->CreateConfigGroups(g_pGroupArray);
-  }
-
   if (rr & TIDES_CHANGED) {
     LoadHarmonics();
   }
@@ -4282,7 +4268,7 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
 
-  if (rr & FORCE_RELOAD) ScheduleReloadCharts();
+  // if (rr & FORCE_RELOAD) ScheduleReloadCharts();
 
   return;
 }
@@ -4464,47 +4450,14 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 }
 
 void MyFrame::FinalizeChartDBUpdate() {
-  // Finalize updade after all thread events received, and CTE list rebuilt.
-  ChartData->SaveBinary(ChartListFileName);
-  wxLogMessage("Finished chart database Update");
-  wxLogMessage("   ");
+  // Finalize chartdbs update after all async events finished.
+  RefreshGroupIndices();
 
-  if (Updateprog) Updateprog->Destroy();
-  Updateprog = nullptr;
+  pConfig->DestroyConfigGroups();
+  pConfig->CreateConfigGroups(g_pGroupArray);
+  pConfig->UpdateSettings();
 
-  // The Update() function may set gWorldMapLocation if at least one of the
-  // directories contains GSHHS files.  Make sure GSHHS is still accessible
-  if (gWorldMapLocation.empty()) {  // Last resort. User might have deleted all
-                                    // GSHHG data, but we still might have the
-                                    // default dataset distributed with OpenCPN
-                                    // or from the package repository...
-    gWorldMapLocation = gDefaultWorldMapLocation;
-    m_gshhg_chart_loc = wxEmptyString;
-  }
-
-  // Update canvas and "Crossesland" machinery
-  if (gWorldMapLocation != m_gshhg_chart_loc) {
-    // ..For each canvas...
-    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-      ChartCanvas *cc = g_canvasArray.Item(i);
-      if (cc) cc->ResetWorldBackgroundChart();
-    }
-    // Reset the GSHHS singleton which is used to detect land crossing.
-    gshhsCrossesLandReset();
-  }
-
-  // Restart timers, if necessary
-  bool b_run = FrameTimer1.IsRunning();
-  if (!b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
-  if (!b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
-
-  bool b_runCOGTimer = FrameCOGTimer.IsRunning();
-  if (!b_runCOGTimer) {
-    //    Restart the COG rotation timer, max frequency is 10 hz.
-    int period_ms = 100;
-    if (g_COGAvgSec > 0) period_ms = g_COGAvgSec * 1000;
-    FrameCOGTimer.Start(period_ms, wxTIMER_CONTINUOUS);
-  }
+  ScheduleReloadCharts();
 }
 
 void MyFrame::ToggleQuiltMode(ChartCanvas *cc) {
