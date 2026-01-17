@@ -482,15 +482,15 @@ static void RouteAppendWaypoint(int canvas_index, wxString route_guid) {
   if (!parent) return;
 
   parent->m_pMouseRoute = route;
-  parent->m_routeState = route->GetnPoints() + 1;
+  parent->SetRouteState(route->GetnPoints() + 1);
   parent->m_pMouseRoute->m_lastMousePointIndex = route->GetnPoints();
   parent->m_pMouseRoute->SetHiLite(50);
 
   auto pLast = route->GetLastPoint();
 
-  parent->m_prev_rlat = pLast->m_lat;
-  parent->m_prev_rlon = pLast->m_lon;
-  parent->m_prev_pMousePoint = pLast;
+  parent->SetPrevRlat(pLast->m_lat);
+  parent->SetPrevRlon(pLast->m_lon);
+  parent->SetPrevMousePoint(pLast);
 
   parent->m_bAppendingRoute = true;
 }
