@@ -29,6 +29,9 @@ cmake \
   -DOCPN_TARGET_TUPLE:STRING="Android-armhf;16;armhf" \
   -DOCPN_BUILD_SAMPLE=ON \
   -Dtool_base="$HOME/android-sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64"\
+  -DCMAKE_SYSTEM_NAME=Android \
+  -DCMAKE_SYSTEM_VERSION=26 \
+  -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a \
   ..
 
 #  This step should not be necessary, but works in CCI to prove the build
