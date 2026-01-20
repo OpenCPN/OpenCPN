@@ -32,7 +32,7 @@ set(CMAKE_EXECUTE_PROCESS_COMMAND_ECHO STDOUT)
 cmake_path(GET patch FILENAME patch_name)
 
 execute_process(
-  COMMAND ${GIT_EXECUTABLE} --git-dir= apply -p1 --ignore-whitespace "${patch}"
+  COMMAND ${GIT_EXECUTABLE} apply -p1 --ignore-whitespace "${patch}"
   RESULT_VARIABLE ret
   ERROR_VARIABLE err
   TIMEOUT 5
@@ -41,7 +41,7 @@ execute_process(
 
 if (NOT ret EQUAL 0)
   execute_process(
-    COMMAND ${GIT_EXECUTABLE} --git-dir=
+    COMMAND ${GIT_EXECUTABLE} 
         apply -p1 --ignore-whitespace --check -R "${patch}"
     RESULT_VARIABLE ret1
     ERROR_VARIABLE err1
