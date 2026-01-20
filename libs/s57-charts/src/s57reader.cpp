@@ -2363,7 +2363,11 @@ int S57Reader::ApplyUpdates(DDFModule *poUpdateModule, int iUpdate)
     }
 
     else if (EQUAL(pszKey, "DSID")) {
-      /* ignore */;
+      /* Check for canceled cell */;
+      char *u = (char *)(poRecord->GetStringSubfield("DSID", 0, "EDTN", 0));
+      if (!strncmp(u, "0", 1)) {
+        return BAD_UPDATE;
+      }
     }
 
     else {
@@ -2419,7 +2423,10 @@ int S57Reader::FindAndApplyUpdates(const char *pszPath)
 
     if (bSuccess) {
       int update_ret = ApplyUpdates(&oUpdateModule, iUpdate);
-      if (update_ret) ret_code = update_ret;
+      if (update_ret) {
+        ret_code = update_ret;
+        bSuccess = false;     // Stop the loop
+      }
     }
   }
 

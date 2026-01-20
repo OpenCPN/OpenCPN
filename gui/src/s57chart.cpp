@@ -6116,9 +6116,8 @@ bool s57chart::InitENCMinimal(const wxString &FullPath) {
   S57Reader *pENCReader = m_pENCDS->GetModule(0);
   pENCReader->SetClassBased(g_poRegistrar);
 
-  pENCReader->Ingest();
-
-  return true;
+  int rc = pENCReader->Ingest();
+  return (rc == 0);  // true;
 }
 
 OGRFeature *s57chart::GetChartFirstM_COVR(int &catcov) {
