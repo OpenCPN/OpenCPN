@@ -8483,7 +8483,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 info.name = m_pIDXCandidate->IDX_station_name;
                 info.tz_offset_minutes = m_pIDXCandidate->station_tz_offset;
                 info.getTide = [](time_t t, int idx, float &value, float &dir) {
-                  return ptcmgr->GetTideOrCurrent(t, idx, value, dir);
+                  return ptcmgr->GetTideOrCurrentMeters(t, idx, value, dir);
                 };
                 auto plugin =
                     dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);

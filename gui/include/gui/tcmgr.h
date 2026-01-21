@@ -97,6 +97,7 @@ public:
   bool IsReady() { return bTCMReady; }
 
   bool GetTideOrCurrent(time_t t, int idx, float &value, float &dir);
+  bool GetTideOrCurrentMeters(time_t t, int idx, float &value, float &dir);
   bool GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float &dir,
                           bool &bnew_val);
   bool GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now,
