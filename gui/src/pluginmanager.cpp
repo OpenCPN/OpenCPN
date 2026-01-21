@@ -885,11 +885,11 @@ PlugInManager::PlugInManager(AbstractTopFrame* parent) {
   //  even if stubs.
   //
   //  Here is where we do that....
-  if (parent_frame) {
+  if (parent) {
     wxArrayString as;
     as.Add("Item0");
     wxRadioBox* box =
-        new wxRadioBox(parent_frame, -1, "", wxPoint(0, 0), wxSize(-1, -1), as);
+        new wxRadioBox(parent, -1, "", wxPoint(0, 0), wxSize(-1, -1), as);
     delete box;
   }
 
