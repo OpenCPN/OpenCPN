@@ -87,6 +87,7 @@
 #include "model/comm_drv_factory.h"
 #include "model/comm_util.h"
 #include "model/config_vars.h"
+#include "model/gui_events.h"
 #include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
@@ -1498,6 +1499,10 @@ options::options(wxWindow* parent, OptionsCallbacks callbacks, wxWindowID id,
   };
   m_persist_active_route_chkbox->Bind(wxEVT_CHECKBOX, action);
   m_persist_active_route_chkbox->SetValue(g_persist_active_route);
+
+  m_OnChartDb_finalize_listener.Init(
+      GuiEvents::GetInstance().on_finalize_chartdbs,
+      [&](ObservedEvt& ev) { OptionsFinalizeChartDBUpdate(); });
 }
 
 options::~options() {
@@ -1527,6 +1532,11 @@ options::~options() {
 bool options::SendIdleEvents(wxIdleEvent& event) {
   if (IsShown()) return wxDialog::SendIdleEvents(event);
   return false;
+}
+
+void options::OptionsFinalizeChartDBUpdate() {
+  m_CurrentDirList =
+      *m_pWorkDirList;  // Perform a deep copy back to main database.
 }
 
 void options::RecalculateSize(int hint_x, int hint_y) {
@@ -7807,9 +7817,9 @@ void options::ApplyChanges(wxCommandEvent& event) {
   if (g_canvasConfig != m_screenConfig) m_returnChanges |= CONFIG_CHANGED;
   g_canvasConfig = m_screenConfig;
 
+  UpdateWorkArrayFromDisplayPanel();
+
   m_callbacks.process_dialog(m_returnChanges, m_pWorkDirList);
-  m_CurrentDirList =
-      *m_pWorkDirList;  // Perform a deep copy back to main database.
 
   //  We can clear a few flag bits on "Apply", so they won't be recognised at
   //  the "Close" click. Their actions have already been accomplished once...

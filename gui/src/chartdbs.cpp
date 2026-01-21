@@ -1243,6 +1243,9 @@ void ChartDatabase::FinalizeChartUpdate() {
   // Purge all charts from cache, and delete.
   ChartData->PurgeCache();
 
+  //  Signal Options dialog that update is finished
+  GuiEvents::GetInstance().options_on_finalize_chartdbs.Notify();
+
   // Signal a full chart reload
   GuiEvents::GetInstance().on_finalize_chartdbs.Notify();
 }

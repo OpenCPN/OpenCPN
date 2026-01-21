@@ -392,6 +392,7 @@ public:
   }
 
   wxArrayString *GetSerialArray() { return m_pSerialArray; }
+  void OptionsFinalizeChartDBUpdate();
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -711,7 +712,7 @@ private:
 
   wxSize m_sliderSize;
   bool m_bneedNew;
-
+  ObsListener m_OnChartDb_finalize_listener;
   std::shared_ptr<ConnectionsDlg> comm_dialog;
 
   DECLARE_EVENT_TABLE()
