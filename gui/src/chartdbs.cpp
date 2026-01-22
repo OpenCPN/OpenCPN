@@ -36,6 +36,7 @@
 #include <wx/progdlg.h>
 #include <wx/regex.h>
 #include <wx/tokenzr.h>
+#include <wx/evtloop.h>
 
 #include "model/gui_events.h"
 
@@ -1063,6 +1064,7 @@ std::vector<float> ChartTableEntry::GetReducedAuxPlyPoints(int iTable) {
 ///////////////////////////////////////////////////////////////////////
 // ChartDatabase
 ///////////////////////////////////////////////////////////////////////
+const int ID_DBS_PROGRESS_UPDATE = wxNewId();
 
 WX_DEFINE_OBJARRAY(ChartTable);
 
@@ -1073,6 +1075,8 @@ ChartDatabase::ChartDatabase() {
   m_ChartTableEntryDummy.Clear();
 
   Bind(wxEVT_OCPN_CHARTTABLEENTRYTHREAD, &ChartDatabase::OnEvtThread, this);
+  Bind(wxEVT_COMMAND_MENU_SELECTED, &ChartDatabase::OnDBSProgressUpdate, this,
+       ID_DBS_PROGRESS_UPDATE);
 
   UpdateChartClassDescriptorArray();
 }
@@ -1092,65 +1096,170 @@ for (it = collision_map.begin(); it != collision_map.end(); ++it) {
 }
 #endif
 
+void ChartDatabase::OnDBSProgressUpdate(wxCommandEvent &evt) {
+  int value = evt.GetInt();  // retrieve progress value
+  printf("Prog...%d\n", value);
+  if (m_pprog) {
+    // Update dialog safely
+    m_pprog->Update(value);
+  }
+}
+
+static int in_event;
 void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
+  if (in_event) int yyp = 4;
+
+  in_event++;
   // Capture the completed job tickets
+  printf("Thread...\n");
   auto ticket = event.GetTicket();
+  if (!ticket) {
+    in_event--;
+    return;
+  }
 
   // Update progress dialog, if present
-  if (m_pprog && (m_jobsRemaining > 1)) {
-    m_progcount++;
-    double ratio = 100. * (double)m_progcount / m_ticketcount;
-    int val = ratio;
-    if (((m_progcount % m_nFileProgressQuantum) == 0)) {
-      if (val != m_progint) {
-        m_progint = val;
-        // printf("%d %d\n", m_progcount, val);
-        m_pprog->Update(val);
-      }
-    }
-  }
-
-  //  look for and process incomplete tickets
-#if 0
-  if (!ticket->b_thread_safe) {
-    ChartClassDescriptor tmpDescriptor(ticket->provider_class_name, "", nullptr,
-                                       PLUGIN_DESCRIPTOR);
-    ChartTableEntry *pnewChartTableEntry = CreateChartTableEntry(
-        ticket->m_ChartPath, ticket->m_ChartPath, tmpDescriptor);
-    if (pnewChartTableEntry) {
-      std::shared_ptr<ChartTableEntry> safe_ptr(pnewChartTableEntry);
-      ticket->m_chart_table_entry = safe_ptr;  // class member
-    }
-  }
+  if (1 /*ticket->b_thread_safe*/) {
+    if (m_pprog && (m_jobsRemaining > 1)) {
+      m_progcount++;
+      double ratio = 100. * (double)m_progcount / m_ticketcount;
+      int val = ratio;
+      if (((m_progcount % m_nFileProgressQuantum) == 0)) {
+        if (val != m_progint) {
+          m_progint = val;
+          printf("%d %d\n", m_progcount, val);
+#ifdef x__WXMSW__
+          // On Windows, Update may pump messages even without
+          // CAN_ABORT/ELAPSED_TIME
+          wxEventLoopBase *loop = wxEventLoopBase::GetActive();
+          if (loop) {
+            // Temporarily deactivate the active loop to prevent re-entrancy
+            wxEventLoopActivator noLoop(nullptr);
+            m_pprog->Update(val);
+          }
+#else
+          m_pprog->Update(val);
 #endif
-
-  if (ticket) {
-    wxFileName fn(ticket->m_ChartPath);
-    bool collision_found = false;
-    ChartCollisionsHashMap::iterator it;
-    for (it = m_full_collision_map.begin(); it != m_full_collision_map.end();
-         ++it) {
-      if (it->first.IsSameAs(fn.GetFullName())) {
-        // Two files found with identical file name
-        // For now, just drop this ticket
-        // TODO Make an (expensive) test on file modification times
-        collision_found = true;
-        break;
+        }
       }
     }
+  }
 
-    //  Consider TODO #1 here:  Looking for more duolicates acress directories
-
-    if (!collision_found) {
-      m_ticket_vector.push_back(ticket);
-      m_full_collision_map[fn.GetFullName()] = 1;
+  if (!ticket->m_ticket_type) {  // TICKET_TYPE_NORMAL
+    bool collision_found = false;
+    if (ticket->b_thread_safe) {
+      wxFileName fn(ticket->m_ChartPath);
+      ChartCollisionsHashMap::iterator it;
+      for (it = m_full_collision_map.begin(); it != m_full_collision_map.end();
+           ++it) {
+        if (it->first.IsSameAs(fn.GetFullName())) {
+          // Two files found with identical file name
+          // For now, just drop this ticket
+          // TODO Make an (expensive) test on file modification times
+          collision_found = true;
+          break;
+        }
+      }
+      if (!collision_found) {
+        m_full_collision_map[fn.GetFullName()] = 1;
+      }
+      //  Consider TODO #1 here:  Looking for more duolicates acress directories
     }
+
+    m_ticket_vector.push_back(ticket);
   }
 
   int remaining = --m_jobsRemaining;
+  printf("  Remaining  %d\n", remaining);
+
   if (remaining == 0) {
     m_pool.Shutdown();
+    m_pool_deferred.Shutdown();
+    printf("#######################################\n");
+    size_t a = m_ticket_vector.size();
 
+    if (m_deferred_ticket_vector.size()) {
+      // Process the deferred charts in a single thread pool
+      // load the thread pool from the prepared array
+      // Enqueue jobs
+      for (auto &ticket_d : m_deferred_ticket_vector) {
+        m_pool_deferred.Push(ticket_d);
+        m_jobsRemaining++;
+      }
+      m_deferred_ticket_vector.clear();
+
+      // Initialize progress dialog
+      m_progcount = 0;
+      m_progint = 0;
+      m_ticketcount = m_jobsRemaining;
+      m_nFileProgressQuantum = 1;  // wxMax(m_ticketcount / 10, 2);
+      if (m_pprog) m_pprog->Update(0, _("Processing charts."));
+
+      // Start up the queued thread, if necessary
+      printf("Starting deferred thread\n");
+      if (m_jobsRemaining) {
+        const int workerCount = 1;
+        if (m_pool_deferred.GetWorkerCount() < workerCount) {
+          int threads_needed = workerCount - m_pool_deferred.GetWorkerCount();
+          for (int i = 0; i < threads_needed; ++i) {
+            (new PoolWorkerThread(m_pool_deferred, this))->Run();
+            m_pool_deferred.AddWorker();
+          }
+        }
+      }
+      in_event--;
+      return;  // Let the thread run
+    }
+
+#if 0
+    if (m_deferred_ticket_vector.size()) {
+      m_progcount = 0;
+      m_nFileProgressQuantum = wxMax(m_deferred_ticket_vector.size() / 5, 2);
+      if (m_pprog) {
+        wxCommandEvent *prog_evt = new wxCommandEvent(
+            wxEVT_COMMAND_MENU_SELECTED, ID_DBS_PROGRESS_UPDATE);
+        prog_evt->SetInt(0);  // send progress value
+        wxQueueEvent(this, prog_evt);
+      }
+
+      for (auto &ticket_d : m_deferred_ticket_vector) {
+        // auto ticket_deferred = m_deferred_ticket_vector.back();
+        // m_deferred_ticket_vector.pop_back();
+        // ChartClassDescriptor tmpDescriptor(ticket_d->provider_class_name, "",
+        //                                    nullptr, PLUGIN_DESCRIPTOR);
+        // ChartTableEntry *pnewChartTableEntry = CreateChartTableEntry(
+        //     ticket_d->m_ChartPath, ticket_d->m_ChartPath, tmpDescriptor);
+
+        auto *evt = new OCPN_ChartTableEntryThreadEvent(
+            wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
+        evt->SetTicket(
+            ticket_d);  // dummy event to get one pass of event handler
+        wxQueueEvent(this, evt);
+
+        if (m_pprog) {
+          m_progcount++;
+          double ratio =
+              100. * (double)m_progcount / m_deferred_ticket_vector.size();
+          int val = ratio;
+          if (((m_progcount % m_nFileProgressQuantum) == 0)) {
+            if (val != m_progint) {
+              m_progint = val;
+              wxCommandEvent *prog_evt = new wxCommandEvent(
+                  wxEVT_COMMAND_MENU_SELECTED, ID_DBS_PROGRESS_UPDATE);
+              prog_evt->SetInt(val);  // send progress value
+              wxQueueEvent(this, prog_evt);
+              // printf("          %d %d\n", m_progcount, val);
+            }
+          }
+        }
+      }
+      m_jobsRemaining = m_deferred_ticket_vector.size();
+      m_deferred_ticket_vector.clear();
+      return;
+    }
+    size_t b = m_ticket_vector.size();
+
+#if 0
     // Process the deferred tickets
     for (auto &ticket_d : m_deferred_ticket_vector) {
       ChartClassDescriptor tmpDescriptor(ticket_d->provider_class_name, "",
@@ -1164,6 +1273,8 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
       }
     }
     m_deferred_ticket_vector.clear();
+#endif
+#endif
 
     // Now m_ticket_vector is populated with verified tickets
     // for all specified directories.
@@ -1176,20 +1287,27 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
       if (ticket_valid->m_chart_table_entry)
         active_chartTable.push_back(ticket_valid->m_chart_table_entry);
     }
+    size_t c = m_ticket_vector.size();
+    size_t d = active_chartTable.size();
+
     // Release references to tickets
     m_ticket_vector.clear();
 
     FinalizeChartUpdate();
-  }
+    in_event--;
+  } else
+    in_event--;
 }
 
 void ChartDatabase::FinalizeChartUpdate() {
-  // Scrub CTE list, remove any anvalid entries,
+  // Scrub CTE list, remove any invalid entries,
   //  as tagged by directory removal
   active_chartTable.erase(
       std::remove_if(active_chartTable.begin(), active_chartTable.end(),
                      [](const auto &cte) { return !cte->GetbValid(); }),
       active_chartTable.end());
+
+  size_t d = active_chartTable.size();
 
   //    And once more, setting the Entry index field
   active_chartTable_pathindex.clear();
@@ -1199,10 +1317,6 @@ void ChartDatabase::FinalizeChartUpdate() {
     cte->SetEntryOffset(i);
     i++;
   }
-
-  // Touch up the group structures, as necessary
-  ScrubGroupArray();
-  ChartData->ApplyGroupArray(g_pGroupArray);
 
   m_nentries = active_chartTable.size();
   bValid = true;
@@ -1737,10 +1851,11 @@ wxString findGshhgDirectory(const wxString &directory) {
 }
 
 bool ChartDatabase::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
-                                               bool b_force, bool b_prog) {
+                                               bool b_force,
+                                               wxGenericProgressDialog *_prog) {
   // AbstractPlatform::ShowBusySpinner();
 
-  if (b_prog) {
+  if (0) {
     wxString longmsg = _("OpenCPN Chart Update");
     longmsg +=
         ".................................................................."
@@ -1758,6 +1873,7 @@ bool ChartDatabase::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
     DimeControl(m_pprog);
     m_pprog->Show();
   }
+  m_pprog = _prog;
 
   wxLogMessage("   ");
   wxLogMessage("Starting chart database Update...");
@@ -1854,17 +1970,34 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 
   // Special case, if chart dir list is truly empty
   if (m_chartDirs.IsEmpty() || !m_jobsRemaining) {
-    if (m_deferred_ticket_vector.size()) {
+    if (!m_deferred_ticket_vector.size()) {
+      FinalizeChartUpdate();
+      return true;
+    } else {
       auto *evt =
           new OCPN_ChartTableEntryThreadEvent(wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
-      evt->SetTicket(nullptr);  // dummy event to get one pass of event handler
+      auto ticket_deferred = m_deferred_ticket_vector.back();
+      ticket_deferred->m_ticket_type = 1;  // Mark as a dummy ticket.;
+                                           // to trigger an event
+      m_jobsRemaining = 1;
+      evt->SetTicket(ticket_deferred);
+      wxQueueEvent(this, evt);
+    }
+  }
+
+  // Start deferred ticket processing
+#if 0
+  if (m_deferred_ticket_vector.size()) {
+      auto *evt =
+          new OCPN_ChartTableEntryThreadEvent(wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
+      auto ticket_deferred = m_deferred_ticket_vector.back();
+      m_deferred_ticket_vector.pop_back();
+      ticket_deferred->b_thread_safe = false;
+      evt->SetTicket(ticket_deferred);  // dummy event to get one pass of event handler
       m_jobsRemaining = 1;
       wxQueueEvent(this, evt);
-    } else {
-      FinalizeChartUpdate();
-    }
-    return true;
   }
+#endif
 
   // Initialize progress dialog
   m_progcount = 0;
@@ -1873,14 +2006,15 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_nFileProgressQuantum = wxMax(m_ticketcount / 10, 2);
   if (pprog) pprog->Update(0, _("Processing charts."));
 
-  // Start up the queued threads
-  const int workerCount = 4;
-
-  if (m_pool.GetWorkerCount() < workerCount) {
-    int threads_needed = workerCount - m_pool.GetWorkerCount();
-    for (int i = 0; i < threads_needed; ++i) {
-      (new PoolWorkerThread(m_pool, this))->Run();
-      m_pool.AddWorker();
+  // Start up the queued threads, if necessary
+  if (m_jobsRemaining) {
+    const int workerCount = 4;
+    if (m_pool.GetWorkerCount() < workerCount) {
+      int threads_needed = workerCount - m_pool.GetWorkerCount();
+      for (int i = 0; i < threads_needed; ++i) {
+        (new PoolWorkerThread(m_pool, this))->Run();
+        m_pool.AddWorker();
+      }
     }
   }
 
@@ -2788,13 +2922,14 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
 
   // Built-in chart types are all thread-safe
   // Check plugin charts
-  if (chart_desc.m_descriptor_type == PLUGIN_DESCRIPTOR) {
+  bool is_kap = false;  // chart_desc.m_class_name.IsSameAs("ChartKAP");
+  if (chart_desc.m_descriptor_type == PLUGIN_DESCRIPTOR || is_kap) {
     // Check plugin charts API.  API >- 118 are known to be thread-safe
     opencpn_plugin *plugin = chart_desc.m_plugin;
     opencpn_plugin_118 *provider_plugin118 = dynamic_cast<opencpn_plugin_118 *>(
         dynamic_cast<opencpn_plugin *>(plugin));
 
-    if (!provider_plugin118) {
+    if (!provider_plugin118 || is_kap) {
       // old plugin, charts not thread-safe
       // So arrange to process the tickets in the main app thread,
       // during the event handler, at the end of the queue processing

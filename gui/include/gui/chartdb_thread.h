@@ -46,6 +46,7 @@ public:
     pthread = nullptr;
     b_thread_safe = true;
     m_provider_type = 0;
+    m_ticket_type = 0;
   }
   ~ChartTableEntryJobTicket() {}
 
@@ -61,6 +62,7 @@ public:
   bool b_isaborted;
   bool b_thread_safe;
   int m_provider_type;
+  int m_ticket_type;
   wxString provider_class_name;
 };
 #endif
@@ -181,7 +183,9 @@ private:
 class PoolWorkerThread : public wxThread {
 public:
   PoolWorkerThread(JobQueueCTE& queue, wxEvtHandler* target)
-      : wxThread(wxTHREAD_DETACHED), m_queue(queue), m_target(target) {}
+      : wxThread(wxTHREAD_DETACHED), m_queue(queue), m_target(target) {
+    printf("New thread\n");
+  }
 
 protected:
   ExitCode Entry() override {
@@ -200,7 +204,7 @@ protected:
       wxQueueEvent(m_target, evt);
     }
 
-    // printf("thread exit\n");
+    printf("####thread exit\n");
     return 0;
   }
 
