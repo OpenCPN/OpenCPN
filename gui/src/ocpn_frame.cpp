@@ -4188,14 +4188,19 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
 
   //  The zoom-scale factor may have changed
   //  so, trigger a recalculation of the reference chart
-  bool ztc = g_bEnableZoomToCursor;  // record the present state
-  g_bEnableZoomToCursor =
-      false;  // since we don't want to pan to an unknown cursor position
 
   //  This is needed to recognise changes in zoom-scale factors
-  if (!GetPrimaryCanvas()->IsFrozen())
-    GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
-  g_bEnableZoomToCursor = ztc;
+  // Do not call if chartdbs update is underway.
+  if ((rr & VISIT_CHARTS) &&
+      ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) {
+  } else {
+    bool ztc = g_bEnableZoomToCursor;  // record the present state
+    g_bEnableZoomToCursor = false;     // since we don't want to pan
+                                       // to an unknown cursor position
+    if (!GetPrimaryCanvas()->IsFrozen())
+      GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
+    g_bEnableZoomToCursor = ztc;
+  }
 
   //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
   if (g_last_ChartScaleFactor != g_ChartScaleFactor) {
