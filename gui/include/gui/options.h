@@ -639,6 +639,8 @@ public:
   /** Notified with a OCPN_Sound* pointer when sound has completed. */
   EventVar m_on_sound_done;
   ObsListener m_sound_done_listener;
+  wxGenericProgressDialog *m_pCBDSprog;
+  void DoDBSUpdate(bool force_full);
 
 private:
   void Init(void);

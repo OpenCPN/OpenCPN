@@ -7819,6 +7819,22 @@ void options::ApplyChanges(wxCommandEvent& event) {
 
   UpdateWorkArrayFromDisplayPanel();
 
+  //  Start a chartdbs update directly, if required
+  if ((m_returnChanges & VISIT_CHARTS) &&
+      ((m_returnChanges & CHANGE_CHARTS) || (m_returnChanges & SCAN_UPDATE))) {
+    DoDBSUpdate((m_returnChanges & FORCE_UPDATE) == FORCE_UPDATE);
+  } else {
+    bool b_groupchange = ChartData->ScrubGroupArray();
+    ChartData->ApplyGroupArray(g_pGroupArray);
+    if (b_groupchange ||
+        ((m_returnChanges & GROUPS_CHANGED) == GROUPS_CHANGED)) {
+      pConfig->DestroyConfigGroups();
+      pConfig->CreateConfigGroups(g_pGroupArray);
+    }
+    if ((m_returnChanges & GROUPS_CHANGED) == GROUPS_CHANGED)
+      ChartData->ApplyGroupArray(g_pGroupArray);
+  }
+
   m_callbacks.process_dialog(m_returnChanges, m_pWorkDirList);
 
   //  We can clear a few flag bits on "Apply", so they won't be recognised at
@@ -7950,8 +7966,31 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
   event.Skip();
 }
 
+void options::DoDBSUpdate(bool force_full) {
+  wxString longmsg = _("OpenCPN Chart Update");
+  longmsg +=
+      ".................................................................."
+      "........";
+
+  m_pCBDSprog = new wxGenericProgressDialog();
+
+  wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
+  m_pCBDSprog->SetFont(*qFont);
+
+  //
+  m_pCBDSprog->Create(_("OpenCPN Chart Update"), longmsg, 100, nullptr,
+                      wxPD_SMOOTH);
+
+  DimeControl(m_pCBDSprog);
+  m_pCBDSprog->Show();
+
+  ChartData->PurgeCache();
+  ChartData->UpdateChartDatabaseInplace(*m_pWorkDirList, force_full,
+                                        m_pCBDSprog);
+}
+
 void options::OnButtonRebuildChartDb(wxCommandEvent& event) {
-  ChartData->UpdateChartDatabaseInplace(*m_pWorkDirList, true, true);
+  DoDBSUpdate(true);  // Force full update
 }
 
 void options::OnButtonParseENC(wxCommandEvent& event) {

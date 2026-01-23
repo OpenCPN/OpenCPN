@@ -341,7 +341,7 @@ public:
 
   void UpdateChartClassDescriptorArray(void);
   bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
-                                  bool b_prog);
+                                  wxGenericProgressDialog *_prog);
 
   inline std::vector<std::shared_ptr<ChartTableEntry>> &GetChartTable() {
     return active_chartTable;
@@ -380,12 +380,14 @@ public:
 
   bool IsBusy() { return m_b_busy; }
   void SetBusy(bool _busy) { m_b_busy = _busy; }
+  bool ScrubGroupArray();
 
   ChartTableEntry *CreateChartTableEntry(const wxString &filePath,
                                          wxString &utf8Path,
                                          ChartClassDescriptor &chart_desc);
 
   std::vector<std::shared_ptr<ChartTableEntry>> active_chartTable;
+  void OnDBSProgressUpdate(wxCommandEvent &evt);
 
 protected:
   virtual ChartBase *GetChart(const wxChar *theFilePath,
@@ -416,7 +418,6 @@ private:
                 bool bthis_dir_in_dB);
 
   bool Check_CM93_Structure(wxString dir_name);
-  bool ScrubGroupArray();
 
   bool bValid;
   wxArrayString m_chartDirs;
@@ -434,6 +435,7 @@ private:
   LLBBox m_dummy_bbox;
   std::atomic<int> m_jobsRemaining{0};
   JobQueueCTE m_pool;
+  JobQueueCTE m_pool_deferred;
   std::vector<std::shared_ptr<ChartTableEntryJobTicket>> m_ticket_vector;
   std::vector<std::shared_ptr<ChartTableEntryJobTicket>>
       m_deferred_ticket_vector;

@@ -4075,6 +4075,7 @@ void MyFrame::DoOptionsDialog() {
 void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   bool b_need_refresh = false;  // Do we need a full reload?
 
+#if 0
   if ((rr & VISIT_CHARTS) &&
       ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) {
     if (pNewDirArray) {
@@ -4085,6 +4086,7 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
       b_need_refresh = true;
     }
   }
+#endif
 
   if (rr & STYLE_CHANGED) {
     OCPNMessageBox(
@@ -4092,6 +4094,10 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
         _("Please restart OpenCPN to activate language or style changes."),
         _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
   }
+
+  bool charts_updating =
+      (rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & SCAN_UPDATE));
+  if (!charts_updating) RefreshGroupIndices();
 
   if (rr & TIDES_CHANGED) {
     LoadHarmonics();
@@ -4186,14 +4192,12 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     if (cc) cc->ApplyGlobalSettings();
   }
 
+#if 0
   //  The zoom-scale factor may have changed
   //  so, trigger a recalculation of the reference chart
-
   //  This is needed to recognise changes in zoom-scale factors
   // Do not call if chartdbs update is underway.
-  if ((rr & VISIT_CHARTS) &&
-      ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) {
-  } else {
+  if (!charts_updating) {
     bool ztc = g_bEnableZoomToCursor;  // record the present state
     g_bEnableZoomToCursor = false;     // since we don't want to pan
                                        // to an unknown cursor position
@@ -4201,6 +4205,7 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
       GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
     g_bEnableZoomToCursor = ztc;
   }
+#endif
 
   //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
   if (g_last_ChartScaleFactor != g_ChartScaleFactor) {
@@ -4272,8 +4277,6 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
 
   // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
-
-  // if (rr & FORCE_RELOAD) ScheduleReloadCharts();
 
   return;
 }
@@ -4456,10 +4459,14 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 
 void MyFrame::FinalizeChartDBUpdate() {
   // Finalize chartdbs update after all async events finished.
+  bool b_groupchange = ScrubGroupArray();
+  ChartData->ApplyGroupArray(g_pGroupArray);
   RefreshGroupIndices();
 
-  pConfig->DestroyConfigGroups();
-  pConfig->CreateConfigGroups(g_pGroupArray);
+  if (b_groupchange) {
+    pConfig->DestroyConfigGroups();
+    pConfig->CreateConfigGroups(g_pGroupArray);
+  }
   pConfig->UpdateSettings();
 
   ScheduleReloadCharts();
