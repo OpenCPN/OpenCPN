@@ -4223,7 +4223,7 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     ChartCanvas *cc = g_canvasArray.Item(i);
     if (cc) {
       cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
-      cc->UpdateCanvasControlBar();
+      if (!charts_updating) cc->UpdateCanvasControlBar();
     }
   }
   UpdateGPSCompassStatusBoxes();
