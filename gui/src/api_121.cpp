@@ -34,6 +34,7 @@
 
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
+#include "model/comm_navmsg_bus.h"
 #include "model/gui_events.h"
 #include "model/gui_vars.h"
 #include "model/navobj_db.h"
@@ -831,7 +832,9 @@ static void SetTrackVisibility(const wxString& track_GUID, bool viz) {
 }
 
 std::unique_ptr<HostApi> GetHostApi() {
-  return std::make_unique<HostApi121>(HostApi121());
+  auto support = dynamic_cast<Api121Support*>(wxTheApp);
+  assert(support);
+  return std::make_unique<HostApi121>(HostApi121(*support));
 }
 
 bool HostApi121::AddRoute(HostApi121::Route* route, bool permanent) {
@@ -1029,4 +1032,17 @@ void HostApi121::SetContextMenuMask(int mask) { ::SetContextMenuMask(mask); }
 
 void HostApi121::SetTrackVisibiiity(const wxString& track_GUID, bool viz) {
   ::SetTrackVisibility(track_GUID, viz);
+}
+
+const std::set<std::string>& HostApi121::GetActiveMessages() {
+  return NavMsgBus::GetInstance().GetActiveMessages();
+}
+
+void HostApi121::RegisterNewMsgTypeCallback(const std::string& plugin_name,
+                                            std::function<void()> callback) {
+  auto& msg_types_callbacks = m_api_support.GetMsgTypeCallbacks();
+  if (callback)
+    msg_types_callbacks[plugin_name] = callback;
+  else
+    msg_types_callbacks.erase(plugin_name);
 }
