@@ -909,8 +909,10 @@ public:
         Nmea0183Msg("AIVDO", AISVDO_1, addr1));
     msgbus.Notify(m);
     ProcessPendingEvents();
-    EXPECT_NEAR(gLat, 57.985758, 0.0001);
-    EXPECT_NEAR(gLon, 11.740108, 0.0001);
+    CallAfter([] {
+      EXPECT_NEAR(gLat, 57.985758, 0.0001);
+      EXPECT_NEAR(gLon, 11.740108, 0.0001);
+    });
   }
 };
 
