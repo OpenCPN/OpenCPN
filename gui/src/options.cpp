@@ -1537,6 +1537,8 @@ bool options::SendIdleEvents(wxIdleEvent& event) {
 void options::OptionsFinalizeChartDBUpdate() {
   m_CurrentDirList =
       *m_pWorkDirList;  // Perform a deep copy back to main database.
+  // Re-enable RNC texture caching
+  g_GLOptions.m_bTextureCompressionCaching = m_bTextureCacheingSave;
 }
 
 void options::RecalculateSize(int hint_x, int hint_y) {
@@ -7985,6 +7987,11 @@ void options::DoDBSUpdate(bool force_full) {
   m_pCBDSprog->Show();
 
   ChartData->PurgeCache();
+
+  // Disable texture compression cacheing
+  m_bTextureCacheingSave = g_GLOptions.m_bTextureCompressionCaching;
+  g_GLOptions.m_bTextureCompressionCaching = false;
+
   ChartData->UpdateChartDatabaseInplace(*m_pWorkDirList, force_full,
                                         m_pCBDSprog);
 }

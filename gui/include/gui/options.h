@@ -641,6 +641,7 @@ public:
   ObsListener m_sound_done_listener;
   wxGenericProgressDialog *m_pCBDSprog;
   void DoDBSUpdate(bool force_full);
+  bool m_bTextureCacheingSave;
 
 private:
   void Init(void);
