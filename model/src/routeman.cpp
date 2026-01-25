@@ -989,10 +989,14 @@ WayPointman::~WayPointman() {
 
   if (pmarkicon_image_list) pmarkicon_image_list->RemoveAll();
   delete pmarkicon_image_list;
-  m_pLegacyIconArray->Clear();
-  delete m_pLegacyIconArray;
-  m_pExtendedIconArray->Clear();
-  delete m_pExtendedIconArray;
+  if (m_pLegacyIconArray) {
+    m_pLegacyIconArray->Clear();
+    delete m_pLegacyIconArray;
+  }
+  if (m_pExtendedIconArray) {
+    m_pExtendedIconArray->Clear();
+    delete m_pExtendedIconArray;
+  }
 }
 
 bool WayPointman::AddRoutePoint(RoutePoint *prp) {
