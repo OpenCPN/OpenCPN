@@ -655,7 +655,7 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
     int target_scale = cte_ref.GetScale();
 
     int target_index = -1;
-    for (auto index : oCanvas->GetQuiltExtendedStackdbIndexArray()) {
+    for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
       const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
       if (cte.GetChartFamily() != Family) continue;
 
@@ -667,7 +667,7 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
 
     if (target_index < 0) {
       // Find the largest scale chart that is lower than the reference chart
-      for (auto index : oCanvas->GetQuiltExtendedStackdbIndexArray()) {
+      for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
         const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
         if (cte.GetChartFamily() != Family) continue;
         if (cte.GetScale() <= target_scale) {
@@ -678,7 +678,7 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
 
     if (target_index < 0) {
       // Find the largest scale chart that is higher than the reference chart
-      for (auto index : oCanvas->GetQuiltExtendedStackdbIndexArray()) {
+      for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
         const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
         if (cte.GetChartFamily() != Family) continue;
         if (cte.GetScale() > target_scale) {
@@ -689,58 +689,16 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
     }
 
     if (target_index >= 0) {
-      // Found a suitable scale chart in the new family
-
+      // Found a suitable chart in the new family
       if (oCanvas->IsChartQuiltableRef(target_index)) {
-        //            if( ChartData ) ChartData->PurgeCache();
+        oCanvas->SelectQuiltRefdbChart(target_index, false);  // no autoscale
 
-        //  If the chart is a vector chart, and of very large scale,
-        //  then we had better set the new scale directly to avoid excessive
-        //  underzoom on, eg, Inland ENCs
-        bool set_scale = false;
-        if (CHART_TYPE_S57 == ChartData->GetDBChartType(target_index)) {
-          if (ChartData->GetDBChartScale(target_index) < 5000) {
-            set_scale = true;
-          }
-        }
-
-        if (!set_scale) {
-          oCanvas->SelectQuiltRefdbChart(target_index, true);  // autoscale
-        } else {
-          oCanvas->SelectQuiltRefdbChart(target_index, false);  // no autoscale
-
-          //  Adjust scale so that the selected chart is underzoomed/overzoomed
-          //  by a controlled amount
-          ChartBase* pc = ChartData->OpenChartFromDB(target_index, FULL_INIT);
-          if (pc) {
-            double proposed_scale_onscreen =
-                oCanvas->GetCanvasScaleFactor() / oCanvas->GetVPScale();
-
-            if (g_bPreserveScaleOnX) {
-              proposed_scale_onscreen = wxMin(
-                  proposed_scale_onscreen,
-                  100 * pc->GetNormalScaleMax(oCanvas->GetCanvasScaleFactor(),
-                                              oCanvas->GetCanvasWidth()));
-            } else {
-              proposed_scale_onscreen = wxMin(
-                  proposed_scale_onscreen,
-                  20 * pc->GetNormalScaleMax(oCanvas->GetCanvasScaleFactor(),
-                                             oCanvas->GetCanvasWidth()));
-
-              proposed_scale_onscreen =
-                  wxMax(proposed_scale_onscreen,
-                        pc->GetNormalScaleMin(oCanvas->GetCanvasScaleFactor(),
-                                              g_b_overzoom_x));
-            }
-
-            oCanvas->SetVPScale(oCanvas->GetCanvasScaleFactor() /
-                                proposed_scale_onscreen);
-          }
-        }
+        // Induce a recomposition of the quilt
+        oCanvas->ZoomCanvasSimple(.9999);
+        oCanvas->DoCanvasUpdate();
+        oCanvas->ReloadVP();
+        return true;
       }
-      oCanvas->DoCanvasUpdate();
-      oCanvas->ReloadVP();  // Pick up the new selections
-      return true;
     }
   }
   return false;
