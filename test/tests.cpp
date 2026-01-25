@@ -1184,7 +1184,7 @@ TEST(Navmsg2000, to_string) {
   auto id = static_cast<uint64_t>(1234);
   auto msg =
       std::make_shared<Nmea2000Msg>(id, payload, shared_navaddr_none2000);
-  EXPECT_EQ(string("n2000-    PGN: 6385516 [  ]"), msg->to_string());
+  EXPECT_EQ(string("n2000  pgn: 6385516 [  ]"), msg->to_string());
 }
 
 TEST(FileDriver, Registration) {
@@ -1211,7 +1211,7 @@ TEST(FileDriver, output) {
   std::ifstream f("test-output.txt");
   stringstream ss;
   ss << f.rdbuf();
-  EXPECT_EQ(ss.str(), string("n2000-    PGN: 6385516 [  ]"));
+  EXPECT_EQ(ss.str(), string("n2000  pgn: 6385516 [  ]"));
 }
 
 #if 0
