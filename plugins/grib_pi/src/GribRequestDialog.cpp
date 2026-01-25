@@ -571,8 +571,10 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
           break;
         case GribDownloadType::XYGRIB:
           // Update XyGrib progress gauge
-          m_xygribPanel->m_progress_gauge->SetValue(100 * ev.getTransferred() /
-                                                    ev.getTotal());
+          if (ev.getTotal()) {
+            m_xygribPanel->m_progress_gauge->SetValue(
+                100 * ev.getTransferred() / ev.getTotal());
+          }
           // Update status text to display information on file size
           m_xygribPanel->m_status_text->SetLabel(
               GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
