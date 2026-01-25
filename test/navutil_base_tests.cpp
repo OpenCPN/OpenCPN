@@ -32,7 +32,7 @@ TEST(NavUtils, fromDMM) {
   };
 
   for (const auto& test_case : test_cases) {
-    double result = fromDMM(wxString::FromUTF8(test_case.input));
+    double result = fromDMM(wxString::FromUTF8(test_case.input.c_str()));
     ASSERT_NEAR(result, test_case.expected, 1e-4)
         << "Input: " << test_case.input;
   }

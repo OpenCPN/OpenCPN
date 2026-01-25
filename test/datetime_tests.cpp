@@ -229,7 +229,8 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
                                    .SetFormatString("%A, %B %d, %Y %H:%M:%S")
                                    .SetTimezone("Local Time");
   wxString result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-  EXPECT_TRUE(result.StartsWith("Wednesday, February 22, 2023 07:45:57"))
+  std::string s = result.ToStdString();
+  EXPECT_TRUE(s.find("Wednesday, February 22, 2023 07:45:57") == 0)
       << "Actual date/time: " << result;
   // Check for timezone abbreviation since we set it to EST
   EXPECT_TRUE(result.Contains(" EST") || result.Contains("LOC"))
@@ -265,8 +266,9 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
              .SetFormatString("$hour_minutes_seconds")
              .SetTimezone("Local Time");
   result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-  EXPECT_TRUE(result.Contains("07:45:57 AM EST") ||
-              result.Contains("07:45:57 AM LOC"))
+  std::string str = result.ToStdString();
+  EXPECT_TRUE(str.find("07:45:57 AM EST") != std::string::npos ||
+              str.find("07:45:57 AM LOC") != std::string::npos)
       << "Actual date/time: '" << result << "'";
 }
 
