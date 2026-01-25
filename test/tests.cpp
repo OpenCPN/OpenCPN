@@ -1069,6 +1069,7 @@ public:
     std::string server_cmd(CMAKE_BINARY_DIR);
     server_cmd += "/test/cli-server";
     stream = popen(server_cmd.c_str(), "r");
+    EXPECT_TRUE(stream != NULL) << strerror(errno);
     std::this_thread::sleep_for(25ms);  // Need some time to start server
     char buff[1024];
     char* line = fgets(buff, sizeof(buff), stream);  // initial line, throw.
@@ -1244,7 +1245,8 @@ TEST(PluginApi, SignalK) { SignalKApp app; }
 TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
 #endif
 
-#if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+// #if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+#ifdef __unix__
 TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
 
 TEST(IpcClient, Raise) { CliRaise run_test; }
@@ -1253,7 +1255,7 @@ TEST(IpcClient, Open) { IpcOpen run_test; }
 
 TEST(Plugin, Basic) { PluginMsgApp app; }
 
-#endif
+#endif  // __unix__
 
 TEST(FormatTime, Basic) {
   wxTimeSpan span(0, 0, 7200, 0);
