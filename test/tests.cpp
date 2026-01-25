@@ -1216,29 +1216,6 @@ TEST(FileDriver, output) {
   EXPECT_EQ(ss.str(), string("n2000  pgn: 6385516 [  ]"));
 }
 
-#if 0
-// FIXME (comm_drv_file, see FIXME there)
-TEST(FileDriver, input) {
-  wxLog::SetActiveTarget(&defaultLog);
-  auto driver = std::make_shared<FileCommDriver>("test-output.txt");
-  std::string s("payload data");
-  auto payload = std::vector<unsigned char>(s.begin(), s.end());
-  auto id = static_cast<uint64_t>(1234);
-  Nmea2000Msg msg(id, payload, shared_navaddr_none);
-  remove("test-output.txt");
-  driver->SendMessage(std::make_shared<Nmea2000Msg>(msg),
-                      std::make_shared<NavAddr>());
-
-  SillyListener listener;
-  auto indriver = std::make_shared<FileCommDriver>("/tmp/foo.txt",
-                                                   "test-output.txt", listener);
-  indriver->Activate();
-  EXPECT_EQ(s_result2, string("nmea2000"));
-  EXPECT_EQ(s_result3, string("1234"));
-  EXPECT_EQ(s_result, string("payload data"));
-}
-#endif
-
 TEST(Listeners, vector) { ListenerCliApp app; };
 
 TEST(Guernsey, play_log) { GuernseyApp app; }
