@@ -7294,9 +7294,14 @@ void options::ApplyChanges(wxCommandEvent& event) {
   // Handle Settings Tab
   if (m_pConfig) {
     g_bShowStatusBar = pShowStatusBar->GetValue();
+
 #ifndef __WXOSX__
+    bool bmenu_shown = g_bShowMenuBar;
+    if (pShowMenuBar->GetValue() != bmenu_shown)
+      m_returnChanges |= MENU_CHANGED;
     g_bShowMenuBar = pShowMenuBar->GetValue();
 #endif
+
     g_bShowCompassWin = pShowCompassWin->GetValue();
   }
 

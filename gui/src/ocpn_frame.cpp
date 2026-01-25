@@ -4231,6 +4231,8 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   SetAllToolbarScale();
   RequestNewToolbars();
 
+  if ((rr & MENU_CHANGED) == MENU_CHANGED) BuildMenuBar();
+
   //  Rebuild cursors
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);

@@ -100,6 +100,7 @@
 #define CONFIG_CHANGED 1 << 16
 #define FONT_CHANGED_SAFE 1 << 17
 #define FORCE_RELOAD 1 << 18
+#define MENU_CHANGED 1 << 19
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
