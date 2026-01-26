@@ -757,6 +757,16 @@ void AISTargetListDialog::CreateControls() {
       wxCommandEventHandler(AISTargetListDialog::OnCopyMMSI), NULL, this);
   bsRouteButtonsInner->Add(m_pButtonCopyMMSI, 0, wxEXPAND | wxALL, 2);
 
+  bool enable_find = true;
+#ifdef __WXMSW__
+  // Check for app MenuBar.  Disable "find" funtion if present.
+  auto *frame = wxDynamicCast(wxTheApp->GetTopWindow(), wxFrame);
+  if (frame) {
+    wxMenuBar *mb = frame->GetMenuBar();
+    if (mb != nullptr) enable_find = false;
+  }
+#endif
+
   m_pStaticTextFind = new wxStaticText(winr, wxID_ANY, _("Find target name"),
                                        wxDefaultPosition, wxDefaultSize, 0);
   bsRouteButtonsInner->Add(m_pStaticTextFind, 0, wxALL, 2);
@@ -764,10 +774,19 @@ void AISTargetListDialog::CreateControls() {
   m_pFindTargetName =
       new wxTextCtrl(winr, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
   m_pFindTargetName->SetMinSize(wxSize(15 * GetCharWidth(), -1));
-  m_pFindTargetName->Connect(
-      wxEVT_TEXT, wxCommandEventHandler(AISTargetListDialog::OnEditFindTarget),
-      NULL, this);
   bsRouteButtonsInner->Add(m_pFindTargetName, 0, wxALL, 2);
+  if (enable_find) {
+    m_pFindTargetName->Enable();
+    m_pFindTargetName->Connect(
+        wxEVT_TEXT,
+        wxCommandEventHandler(AISTargetListDialog::OnEditFindTarget), NULL,
+        this);
+  } else {
+    m_pFindTargetName->Disable();
+    m_pFindTargetName->SetDefaultStyle(wxTextAttr(wxNullColour, *wxLIGHT_GREY));
+    m_pStaticTextFind->SetToolTip(
+        _("Disable OpenCPN MenuBar to search for AIS targets"));
+  }
 
   m_pCBAutosort =
       new wxCheckBox(winr, wxID_ANY, _("AutoSort"), wxDefaultPosition,
