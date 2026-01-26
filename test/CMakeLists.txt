@@ -7,6 +7,28 @@ message(STATUS "Building tests")
 
 enable_testing ()
 
+add_executable(check_locales  ${CMAKE_SOURCE_DIR}/test/check_locales.cpp)
+target_link_libraries(check_locales PRIVATE ${wxWidgets_LIBRARIES})
+if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+  target_link_libraries(check_locales PRIVATE -fsanitize=${ENABLE_SANITIZER})
+endif ()
+target_include_directories(check_locales PRIVATE ${wxWidgets_INCLUDE_DIRS})
+
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/locales
+  COMMAND check_locales
+  WORKING_DIRECTORY  ${CMAKE_BINARY_DIR}
+  VERBATIM
+  COMMENT "Running check_locales"
+)
+
+add_custom_target(config_locales
+  DEPENDS ${CMAKE_BINARY_DIR}/locales
+  COMMAND cmake -D LOCALES=${CMAKE_BINARY_DIR}/locales
+      -D HEADER_DIR=${CMAKE_BINARY_DIR}/include
+      -P ${CMAKE_SOURCE_DIR}/test/check_locales.cmake
+)
+
 add_library(win32_libs INTERFACE)
 if (MSVC)
   target_link_libraries(win32_libs
@@ -18,7 +40,13 @@ endif ()
 
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
-set(SRC tests.cpp filter_tests.cpp navutil_base_tests.cpp route_point_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+set(SRC
+  tests.cpp filter_tests.cpp
+  navutil_base_tests.cpp
+  route_point_tests.cpp
+  ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+)
+
 if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)
   list(APPEND SRC datetime_tests.cpp)
 endif ()
@@ -36,6 +64,8 @@ if (CURL)
 endif ()
 
 add_executable(tests ${SRC})
+
+
 if (DEFINED ENV{FLATPAK_ID})
   target_compile_definitions(tests PRIVATE OCPN_FLATPAK)
 endif ()
@@ -55,6 +85,7 @@ target_compile_definitions(tests
     FILTER_DIR="${CMAKE_SOURCE_DIR}/data/filters"
     UNIT_TESTS
 )
+add_dependencies(tests config_locales)
 
 target_link_libraries(tests PRIVATE ocpn::model-src ocpn::gtest win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")

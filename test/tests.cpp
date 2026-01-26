@@ -48,6 +48,10 @@
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 
+#if wxCHECK_VERSION(3, 1, 6)
+#include "locale_conf.h"
+#endif
+
 // Macos up to 10.13
 #if (defined(OCPN_GHC_FILESYSTEM) || \
      (defined(__clang_major__) && (__clang_major__ < 15)))
