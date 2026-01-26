@@ -1859,12 +1859,13 @@ void glChartCanvas::GridDraw() {
     double dpi_factor = g_BasePlatform->GetDisplayDIPMult(this);
     wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
     wxFont font = *dFont;
-    int font_size = wxMax(10, dFont->GetPointSize());
-    font.SetPointSize(font_size * m_displayScale);
+    double dip_scale = 1. / dpi_factor;
+    int font_size = wxMax(10, dFont->GetPointSize() * dip_scale);
+    font.SetPointSize(font_size);
     font.SetWeight(wxFONTWEIGHT_NORMAL);
 
     m_gridfont.SetContentScaleFactor(OCPN_GetDisplayContentScaleFactor());
-    m_gridfont.Build(font, 1, dpi_factor);
+    m_gridfont.Build(font, m_displayScale, dpi_factor);
   }
   m_gridfont.SetColor(GridColor);
 
