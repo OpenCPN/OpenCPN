@@ -48,6 +48,8 @@
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 
+#include "test_config.h"
+
 // Macos up to 10.13
 #if (defined(OCPN_GHC_FILESYSTEM) || \
      (defined(__clang_major__) && (__clang_major__ < 15)))
