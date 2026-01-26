@@ -1202,6 +1202,7 @@ void OCPNPlatform::SetDefaultOptions() {
   }
 
 #ifdef __WXMSW__
+  g_bShowMenuBar = false;
   //  Enable some default PlugIns, and their default options
   if (pConfig) {
     pConfig->SetPath("/PlugIns/chartdldr_pi.dll");
