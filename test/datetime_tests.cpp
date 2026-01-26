@@ -49,6 +49,8 @@
 
 #if wxCHECK_VERSION(3, 1, 6)
 
+#include "test_config.h"
+
 class DateTimeFormatTest : public ::testing::Test {
 protected:
   void SetUp() override {
@@ -95,7 +97,7 @@ protected:
 
   std::string original_tz;
 };
-#if 0
+
 TEST_F(DateTimeFormatTest, LMTTimeZoneOneHourEast) {
   wxDateTime testDate(22, wxDateTime::Jan, 2023, 7, 0, 0);
   testDate.MakeFromTimezone(wxDateTime::UTC);
@@ -201,7 +203,6 @@ TEST_F(DateTimeFormatTest, ShowTimezoneFalse) {
       << "Actual result: '" << result << "'";
 }
 
-#endif  // 0
 TEST_F(DateTimeFormatTest, ShowTimezoneDefault) {
   wxDateTime testDate(22, wxDateTime::Jan, 2023, 12, 45, 57);
   testDate.MakeFromTimezone(wxDateTime::UTC);
@@ -213,7 +214,7 @@ TEST_F(DateTimeFormatTest, ShowTimezoneDefault) {
   EXPECT_EQ(result, "2023-01-22 12:45:57 UTC");
 }
 
-#ifndef OCPN_DISTRO_BUILD
+#ifdef HAS_EN_US
 // Test with Local Time in EST timezone
 TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
   wxDateTime testDate(22, wxDateTime::Feb, 2023, 12, 45, 57);
@@ -277,6 +278,9 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
       << "Actual date/time: '" << result << "'";
 }
 
+#endif  // HAS_EN_US
+
+#ifdef HAS_SV_SE
 // Test with Local Time in CET timezone with Swedish locale (Västeuropa,
 // sommartid)
 TEST_F(DateTimeFormatTest, LocalTimezoneCETSwedish) {
