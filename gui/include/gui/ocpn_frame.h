@@ -94,8 +94,6 @@ using OpenFileFunc = std::function<bool(const std::string& path)>;
 class MyFrame;          // forward
 extern MyFrame* gFrame; /**< Global instance */
 
-class options;  // circular
-
 // FIXME (leamas) to have utility functions in top window is a really bad idea.
 bool ShowNavWarning();
 
