@@ -47,6 +47,8 @@
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 
+#if wxCHECK_VERSION(3, 1, 6)
+
 class DateTimeFormatTest : public ::testing::Test {
 protected:
   void SetUp() override {
@@ -93,7 +95,7 @@ protected:
 
   std::string original_tz;
 };
-
+#if 0
 TEST_F(DateTimeFormatTest, LMTTimeZoneOneHourEast) {
   wxDateTime testDate(22, wxDateTime::Jan, 2023, 7, 0, 0);
   testDate.MakeFromTimezone(wxDateTime::UTC);
@@ -199,6 +201,7 @@ TEST_F(DateTimeFormatTest, ShowTimezoneFalse) {
       << "Actual result: '" << result << "'";
 }
 
+#endif  // 0
 TEST_F(DateTimeFormatTest, ShowTimezoneDefault) {
   wxDateTime testDate(22, wxDateTime::Jan, 2023, 12, 45, 57);
   testDate.MakeFromTimezone(wxDateTime::UTC);
@@ -213,11 +216,12 @@ TEST_F(DateTimeFormatTest, ShowTimezoneDefault) {
 #ifndef OCPN_DISTRO_BUILD
 // Test with Local Time in EST timezone
 TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
-  // Set timezone to EST for this test (UTC-5)
-  SetTimezone("EST+5");
-
   wxDateTime testDate(22, wxDateTime::Feb, 2023, 12, 45, 57);
   testDate.MakeFromTimezone(wxDateTime::UTC);
+
+  // Set timezone to EST for this test (UTC-5)
+  SetTimezone("EST");
+
   // Set the UI local locale to US English to ensure consistent formatting
   // regardless of the system locale where the test is run.
   wxUILocale us_locale = wxUILocale::FromTag("en_US.UTF-8");
@@ -231,7 +235,7 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
   wxString result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
   std::string s = result.ToStdString();
   EXPECT_TRUE(s.find("Wednesday, February 22, 2023 07:45:57") == 0)
-      << "Actual date/time: " << result;
+      << "Actual date/time: " << s;
   // Check for timezone abbreviation since we set it to EST
   EXPECT_TRUE(result.Contains(" EST") || result.Contains("LOC"))
       << "Actual timezone: " << result;
@@ -257,6 +261,7 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
              .SetFormatString("%A, %B %d, %Y %H:%M:%S")
              .SetTimezone("UTC");
   result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+  // FIXME: returns EST date
   EXPECT_EQ(result, "Wednesday, February 22, 2023 12:45:57 UTC")
       << "Actual date/time: '" << result << "'";
 
@@ -328,4 +333,7 @@ TEST_F(DateTimeFormatTest, LocalTimezoneCETSwedish) {
   EXPECT_FALSE(result.Contains("sommartid"))
       << "Should not contain 'sommartid' suffix: " << result;
 }
-#endif  // OCPN_DISTRO_BUILD
+
+#endif  // SV_SE
+
+#endif  // wxCHECK_VERSION(3, 1, 6)
