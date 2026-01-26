@@ -1859,8 +1859,8 @@ void glChartCanvas::GridDraw() {
     double dpi_factor = g_BasePlatform->GetDisplayDIPMult(this);
     wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
     wxFont font = *dFont;
-    double dip_scale = 1. / dpi_factor;
-    int font_size = wxMax(10, dFont->GetPointSize() * dip_scale);
+    double dpi_scale = 1. / dpi_factor;
+    int font_size = wxMax(10, dFont->GetPointSize() * dpi_scale);
     font.SetPointSize(font_size);
     font.SetWeight(wxFONTWEIGHT_NORMAL);
 
