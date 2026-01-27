@@ -38,7 +38,6 @@
 
 #include "dialog_input.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "printout_base.h"
 #include "printtable.h"
 #include "ui_utils.h"

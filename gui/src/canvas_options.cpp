@@ -36,6 +36,7 @@
 #include "canvas_options.h"
 #include "gui_lib.h"
 #include "s52plib.h"
+#include "chartclassdescriptor.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

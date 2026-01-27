@@ -52,13 +52,13 @@
 #include "mygeom.h"
 #include "navutil.h"  // for LogMessageOnce
 #include "ocpndc.h"
-#include "ocpn_frame.h"
 #include "ocpn_pixel.h"  // for ocpnUSE_DIBSECTION
 #include "ocpn_platform.h"
 #include "pluginmanager.h"  // for PlugInManager
 #include "s52plib.h"
 #include "s52s57.h"
 #include "s57chart.h"
+#include "top_frame.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
@@ -2236,7 +2236,7 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
   int iObj = 0;
   S57Obj *obj;
 
-  double scale = gFrame->GetBestVPScale(this);
+  double scale = top_frame::Get()->GetBestVPScale(this);
   int nativescale = GetNativeScale();
 
   while (iObj < m_CIB.m_nfeature_records) {
@@ -5210,7 +5210,7 @@ bool cm93compchart::DoRenderRegionViewOnGL(const wxGLContext &glc,
   //    Render the cm93 cell's M_COVR outlines if called for
   if (m_cell_index_special_outline) {
 #ifdef ocpnUSE_GL
-    glChartCanvas *glc = gFrame->GetPrimaryCanvas()->GetglCanvas();
+    wxGLCanvas *glc = top_frame::Get()->GetWxGlCanvas();
     ocpnDC dc(*glc);
 #else
     ocpnDC dc;
@@ -6350,7 +6350,7 @@ void CM93OffsetDialog::OnClose(wxCloseEvent &event) {
 
     if (m_pparent) {
       m_pparent->Refresh(true);
-      gFrame->InvalidateAllGL();
+      top_frame::Get()->InvalidateAllGL();
     }
   }
 
@@ -6396,7 +6396,7 @@ void CM93OffsetDialog::UpdateOffsets() {
 
     if (m_pparent) {
       m_pparent->Refresh(true);
-      gFrame->InvalidateAllGL();
+      top_frame::Get()->InvalidateAllGL();
     }
   }
 }
@@ -6436,7 +6436,7 @@ void CM93OffsetDialog::OnCellSelected(wxListEvent &event) {
 
     if (m_pparent) {
       m_pparent->Refresh(true);
-      gFrame->InvalidateAllGL();
+      top_frame::Get()->InvalidateAllGL();
     }
   }
 }

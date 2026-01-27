@@ -52,16 +52,15 @@
 #include "wx/tokenzr.h"
 #include <wx/mstream.h>
 
+#include "s52plib.h"
 #include "gdal/ogr_geometry.h"
-
-#include "model/cutil.h"
 
 #include "vector2D.h"
 
 #include "s52s57.h"
+#include "s52plib.h"
 
 #include "mygeom.h"
-#include "model/georef.h"
 #include "LOD_reduce.h"
 
 #include <stdio.h>
@@ -75,6 +74,9 @@
 #ifdef __WXMSW__
 #include <windows.h>
 #endif
+
+static constexpr double kMercatorK0 = 0.9996;
+static constexpr double kRadiansPerDegree = M_PI / 180.0;
 
 static const double CM93_semimajor_axis_meters =
     6378388.0;  // CM93 semimajor axis
@@ -226,7 +228,7 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
   m_feature_ref_lat = ymin + (ymax - ymin) / 2;
   m_feature_ref_lon = xmin + (xmax - xmin) / 2;
 
-  toSM(m_feature_ref_lat, m_feature_ref_lon, ref_lat, ref_lon,
+  toSM_plib(m_feature_ref_lat, m_feature_ref_lon, ref_lat, ref_lon,
        &m_feature_easting, &m_feature_northing);
 
   //  Build the array of contour point counts
@@ -254,7 +256,7 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
 
     //  Calculate SM from feature reference point
     double easting, northing;
-    toSM(p.getY(), p.getX(), m_feature_ref_lat, m_feature_ref_lon, &easting,
+    toSM_plib(p.getY(), p.getX(), m_feature_ref_lat, m_feature_ref_lon, &easting,
          &northing);
     *pp++ = easting;   // x
     *pp++ = northing;  // y
@@ -267,7 +269,7 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
       poly->getInteriorRing(i - 1)->getPoint(j, &p);
 
       double easting, northing;
-      toSM(p.getY(), p.getX(), m_feature_ref_lat, m_feature_ref_lon, &easting,
+      toSM_plib(p.getY(), p.getX(), m_feature_ref_lat, m_feature_ref_lon, &easting,
            &northing);
       *pp++ = easting;   // x
       *pp++ = northing;  // y
@@ -281,7 +283,7 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
 
   m_bstripify = true;
 
-  earthAxis = CM93_semimajor_axis_meters * mercator_k0;
+  earthAxis = CM93_semimajor_axis_meters * kMercatorK0;
 
   m_bcm93 = false;
 
@@ -688,7 +690,7 @@ int PolyTessGeo::BuildTessGLU() {
     if (m_b_senc_sm) {
       //  Calculate SM from chart common reference point
       double easting, northing;
-      toSM(ty, tx, m_ref_lat, m_ref_lon, &easting, &northing);
+      toSM_plib(ty, tx, m_ref_lat, m_ref_lon, &easting, &northing);
       *vro++ = easting;   // x
       *vro++ = northing;  // y
     } else {
@@ -1085,9 +1087,9 @@ int PolyTessGeo::BuildTess(void) {
 
               //    quickly convert to lat/lon
               double lat = (2.0 * atan(exp(valy / CM93_semimajor_axis_meters)) -
-                            PI / 2.) /
-                           DEGREE;
-              double lon = (valx / (DEGREE * CM93_semimajor_axis_meters));
+                            M_PI / 2.) /
+                           kRadiansPerDegree;
+              double lon = (valx / (kRadiansPerDegree * CM93_semimajor_axis_meters));
 
               sxmax = wxMax(lon, sxmax);
               sxmin = wxMin(lon, sxmin);
@@ -1109,9 +1111,9 @@ int PolyTessGeo::BuildTess(void) {
 
           // Compute the final LLbbox for this TriPrim chain
           double minlat, minlon, maxlat, maxlon;
-          fromSM(sxmin, symin, m_feature_ref_lat, m_feature_ref_lon, &minlat,
+          fromSM_plib(sxmin, symin, m_feature_ref_lat, m_feature_ref_lon, &minlat,
                  &minlon);
-          fromSM(sxmax, symax, m_feature_ref_lat, m_feature_ref_lon, &maxlat,
+          fromSM_plib(sxmax, symax, m_feature_ref_lat, m_feature_ref_lon, &maxlat,
                  &maxlon);
 
           pTPG->tri_box.Set(minlat, minlon, maxlat, maxlon);
@@ -1169,9 +1171,9 @@ int PolyTessGeo::BuildTess(void) {
 
           //    quickly convert to lat/lon
           double lat =
-              (2.0 * atan(exp(valy / CM93_semimajor_axis_meters)) - PI / 2.) /
-              DEGREE;
-          double lon = (valx / (DEGREE * CM93_semimajor_axis_meters));
+              (2.0 * atan(exp(valy / CM93_semimajor_axis_meters)) - M_PI / 2.) /
+              kRadiansPerDegree;
+          double lon = (valx / (kRadiansPerDegree * CM93_semimajor_axis_meters));
 
           sxmax = wxMax(lon, sxmax);
           sxmin = wxMin(lon, sxmin);
@@ -1188,7 +1190,7 @@ int PolyTessGeo::BuildTess(void) {
 
         if (m_b_senc_sm) {
           double easting, northing;
-          toSM(yd, xd, m_ref_lat, m_ref_lon, &easting, &northing);
+          toSM_plib(yd, xd, m_ref_lat, m_ref_lon, &easting, &northing);
           *vbo_run++ = easting;
           *vbo_run++ = northing;
         } else {
@@ -1261,7 +1263,7 @@ int PolyTessGeo::BuildTess(void) {
     if (m_b_senc_sm) {
       //  Calculate SM from chart common reference point
       double easting, northing;
-      toSM(ty, tx, 0 /*ref_lat*/, 0 /*ref_lon*/, &easting, &northing);
+      toSM_plib(ty, tx, 0 /*ref_lat*/, 0 /*ref_lon*/, &easting, &northing);
       *vro++ = easting;   // x
       *vro++ = northing;  // y
     } else {
@@ -1352,9 +1354,9 @@ void endCallback(void *polyData) {
 
           //    Convert to lat/lon
           double lat =
-              (2.0 * atan(exp(valy / CM93_semimajor_axis_meters)) - PI / 2.) /
-              DEGREE;
-          double lon = (valx / (DEGREE * CM93_semimajor_axis_meters));
+              (2.0 * atan(exp(valy / CM93_semimajor_axis_meters)) - M_PI / 2.) /
+              kRadiansPerDegree;
+          double lon = (valx / (kRadiansPerDegree * CM93_semimajor_axis_meters));
 
           sxmax = wxMax(lon, sxmax);
           sxmin = wxMin(lon, sxmin);
@@ -1379,9 +1381,9 @@ void endCallback(void *polyData) {
         pTPG->tri_box.Set(symin, sxmin, symax, sxmax);
       else {
         double minlat, minlon, maxlat, maxlon;
-        fromSM(sxmin, symin, pThis->m_ref_lat, pThis->m_ref_lon, &minlat,
+        fromSM_plib(sxmin, symin, pThis->m_ref_lat, pThis->m_ref_lon, &minlat,
                &minlon);
-        fromSM(sxmax, symax, pThis->m_ref_lat, pThis->m_ref_lon, &maxlat,
+        fromSM_plib(sxmax, symax, pThis->m_ref_lat, pThis->m_ref_lon, &maxlat,
                &maxlon);
         pTPG->tri_box.Set(minlat, minlon, maxlat, maxlon);
       }

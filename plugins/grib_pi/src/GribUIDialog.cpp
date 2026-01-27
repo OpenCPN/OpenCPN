@@ -1123,6 +1123,7 @@ void GRIBUICtrlBar::createRequestDialog() {
   pPlugIn->SetDialogFont(pReq_Dialog);
   pPlugIn->SetDialogFont(pReq_Dialog->m_sScrolledDialog);
   pReq_Dialog->OnVpUnderMouseChange(m_vpMouse);
+  pReq_Dialog->OnVpWithFocusChange(m_vpMouse);
   pReq_Dialog->SetRequestDialogSize();
   if (::wxIsBusy()) ::wxEndBusyCursor();
 }

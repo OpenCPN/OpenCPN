@@ -79,6 +79,7 @@
 #include "navutil.h"
 #include "nmea0183.h"
 #include "model/nmea_ctx_factory.h"
+#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "options.h"

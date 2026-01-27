@@ -56,7 +56,6 @@
 
 #include "dychart.h"
 #include "gui_lib.h"
-#include "ocpn_frame.h"
 #include "print_dialog.h"
 #include "printtable.h"
 

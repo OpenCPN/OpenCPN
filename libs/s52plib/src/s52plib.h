@@ -189,10 +189,14 @@ typedef struct {
   wxFont *key;
 } TexFontCache;
 
+void toSM_plib(double lat, double lon, double lat0, double lon0, double *x,
+          double *y);
+
+void fromSM_plib(double x, double y, double lat0, double lon0, double *lat,
+            double *lon) ;
 //-----------------------------------------------------------------------------
 //    s52plib definition
 //-----------------------------------------------------------------------------
-
 class s52plib {
 public:
   s52plib(const wxString &PLib, bool b_forceLegacy = false);

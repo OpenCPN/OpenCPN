@@ -37,14 +37,19 @@
 #include <wx/timer.h>
 #include <wx/list.h>
 
+#include "abstract_chart_canv.h"
 #include "chcanv.h"
 #include "idx_entry.h"
 #include "rollover_win.h"
+#include "top_frame.h"
 
 class TCWin : public wxFrame {
 public:
   TCWin(ChartCanvas *parent, int x, int y, void *pvIDX);
-  ~TCWin();
+
+  TCWin(AbstractChartCanvas *parent, int x, int y, void *pvIDX);
+
+  virtual ~TCWin();
 
   void OnSize(wxSizeEvent &event);
   void OnPaint(wxPaintEvent &event);

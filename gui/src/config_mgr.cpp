@@ -57,13 +57,13 @@
 #include "font_mgr.h"
 #include "layer.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_gl_options.h"
 #include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "user_colors.h"
 
 extern s52plib *ps52plib;  // In a library...
 
@@ -738,7 +738,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   //    Various Options
   if (!g_bInlandEcdis)
-    conf->Write("nColorScheme", (int)gFrame->GetColorScheme());
+    conf->Write("nColorScheme", (int)user_colors::GetColorScheme());
 
   //    AIS
   conf->SetPath("/Settings/AIS");

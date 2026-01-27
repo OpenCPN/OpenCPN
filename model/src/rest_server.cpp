@@ -37,12 +37,12 @@
 
 #include "model/config_vars.h"
 #include "model/comm_navmsg_bus.h"
+#include "model/gui_events.h"
 #include "model/logger.h"
 #include "model/nav_object_database.h"
 #include "model/ocpn_utils.h"
 #include "model/pincode.h"
 #include "model/rest_server.h"
-#include "model/routeman.h"
 
 #include "mongoose.h"
 #include "observable_evt.h"
@@ -666,7 +666,7 @@ void RestServer::HandleRoute(pugi::xml_node object,
       UpdateReturnStatus(RestServerResult::NoError);
       if (evt_data.activate)
         activate_route.Notify(route->GetGUID().ToStdString());
-      if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+      GuiEvents::GetInstance().on_routes_update.Notify();
     } else {
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     }

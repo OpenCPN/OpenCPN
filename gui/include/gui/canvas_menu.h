@@ -37,10 +37,6 @@
 
 class ChartCanvas;  // circular
 
-//----------------------------------------------------------------------------
-//    Forward Declarations
-//----------------------------------------------------------------------------
-
 /**
  * Handles context menu events for the chart canvas. Manages the creation and
  * handling of context menus that appear when right-clicking on the chart

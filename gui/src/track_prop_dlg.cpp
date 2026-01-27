@@ -38,14 +38,15 @@
 #include "model/track.h"
 
 #include "chcanv.h"
+#include "displays.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "pluginmanager.h"
 #include "print_dialog.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
+#include "top_frame.h"
 #include "track_printout.h"
 #include "track_prop_dlg.h"
 
@@ -1441,10 +1442,7 @@ void TrackPropDlg::OnTrackPropListClick(wxListEvent& event) {
         m_nSelected = selected_no + 1;
         m_sdbBtmBtnsSizerSplit->Enable(true);
       }
-      if (gFrame->GetFocusCanvas()) {
-        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat, prp->m_lon,
-                               gFrame->GetFocusCanvas()->GetVPScale());
-      }
+      top_frame::Get()->JumpToPosition(prp->m_lat, prp->m_lon);
 #ifdef __WXMSW__
       if (m_lcPoints) m_lcPoints->SetFocus();
 #endif
@@ -1760,8 +1758,8 @@ void TrackPropDlg::OnOKBtnClick(wxCommandEvent& event) {
     pRouteManagerDialog->UpdateTrkListCtrl();
 
   Hide();
-  gFrame->InvalidateAllGL();
-  gFrame->RefreshAllCanvas(false);
+  top_frame::Get()->InvalidateAllGL();
+  top_frame::Get()->RefreshAllCanvas(false);
 
   event.Skip();
 }
@@ -1773,8 +1771,8 @@ void TrackPropDlg::OnCancelBtnClick(wxCommandEvent& event) {
   if (b_found_track) m_pTrack->ClearHighlights();
 
   Hide();
-  gFrame->InvalidateAllGL();
-  gFrame->RefreshAllCanvas(false);
+  top_frame::Get()->InvalidateAllGL();
+  top_frame::Get()->RefreshAllCanvas(false);
 
   event.Skip();
 }

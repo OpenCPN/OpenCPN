@@ -44,7 +44,6 @@
 #include "priority_gui.h"
 
 #include "model/comm_bridge.h"
-#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 
 class PriorityEntry : public wxTreeItemData {
@@ -63,8 +62,9 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
   m_selIndex = 0;
   m_selmap_index = 0;
   SetMinSize(wxSize(480, 420));
+  auto top_frame_size = wxTheApp->GetTopWindow()->GetSize();
   SetMaxSize(
-      wxSize(wxMax(gFrame->GetSize().x, 480), wxMax(gFrame->GetSize().y, 420)));
+      wxSize(wxMax(top_frame_size.x, 480), wxMax(top_frame_size.y, 420)));
 
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);

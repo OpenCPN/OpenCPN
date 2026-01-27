@@ -61,6 +61,18 @@ public:
    */
   EventVar on_dm_colors_change;
 
+  /** Notified when list of routes is updated (no data in event) */
+  EventVar on_routes_update;
+
+  /** Notified when waypoint(s) is updated (no data in event) */
+  EventVar on_waypoint_update;
+
+  /** Notified when chartdbs async operations complete, to reload charts */
+  EventVar on_finalize_chartdbs;
+
+  /** Notified when chartdbs async operations complete, to finalize settings */
+  EventVar options_on_finalize_chartdbs;
+
 private:
   GuiEvents() = default;
 };

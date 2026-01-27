@@ -27,7 +27,6 @@
 
 #include "ocpn_aui_manager.h"
 #include "ocpn_plugin.h"
-#include "ocpn_frame.h"
 
 #ifdef __WXMSW__
 #include <wx/msw/wrapwin.h>
@@ -158,8 +157,6 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event) {
 
         //  Tell MyFrame that the sash is moving, so that he
         //  may disable any top-level windows and so avoid mouse focus problems.
-        auto pmf = dynamic_cast<MyFrame*>(m_frame);
-        if (pmf) pmf->NotifyChildrenResize();
 
         wxRect rect(m_frame->ClientToScreen(pos), m_actionPart->rect.GetSize());
         wxScreenDC dc;

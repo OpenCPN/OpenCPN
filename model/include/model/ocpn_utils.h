@@ -95,6 +95,13 @@ bool N0183CheckSumOk(const std::string& sentence);
 /** Return copy of str with non-printable chars replaced by hex like "<0D>" */
 std::string printable(const std::string& str);
 
+/**
+ * Return  constrained value of d so that
+ * AnchorPointMinDist < abs(d) < AnchorPointMaxDist
+ */
+double AnchorDistFix(double const d, double const AnchorPointMinDist,
+                     double const AnchorPointMaxDist);  //  pjotrc 2010.02.22
+
 }  // namespace ocpn
 
 #endif  //  OCPN_UTILS_H_

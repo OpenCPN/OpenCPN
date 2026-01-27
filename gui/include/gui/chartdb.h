@@ -164,6 +164,7 @@ public:
   void PurgeCacheUnusedCharts(double factor);
 
   bool IsBusy() { return m_b_busy; }
+  void SetBusy(bool _busy) { m_b_busy = _busy; }
   bool CheckExclusiveTileGroup(int canvasIndex);
   bool CheckAnyCanvasExclusiveTileGroup();
 

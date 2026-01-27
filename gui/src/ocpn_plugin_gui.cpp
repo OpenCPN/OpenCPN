@@ -73,11 +73,11 @@
 #include "toolbar.h"
 #include "waypointman_gui.h"
 
-extern PlugInManager* s_ppim;  // FIXME (leamas) another name for global mgr
-
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale* plocale_def_lang;
 #endif
+
+extern PlugInManager* s_ppim;  // FIXME (leamas) another name for global mgr
 
 extern options* g_pOptions;  // FIXME (leamas) merge to g_options
 
@@ -207,8 +207,8 @@ wxFileConfig* GetOCPNConfigObject() {
 wxWindow* GetOCPNCanvasWindow() {
   wxWindow* pret = NULL;
   if (s_ppim) {
-    MyFrame* pFrame = s_ppim->GetParentFrame();
-    pret = (wxWindow*)pFrame->GetPrimaryCanvas();
+    AbstractTopFrame* pFrame = s_ppim->GetParentFrame();
+    pret = (wxWindow*)pFrame->GetAbstractPrimaryCanvas();
   }
   return pret;
 }
