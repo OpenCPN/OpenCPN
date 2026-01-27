@@ -74,7 +74,6 @@ extern PlugInManager* g_pi_manager; /**< Global instance */
 class PluginListPanel;    // forward
 class PluginPanel;        // forward
 class pluginUtilHandler;  // forward in .cpp file
-class MyFrame;            // circular
 
 PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
 
