@@ -34,6 +34,7 @@
 
 #include "model/ocpn_types.h"
 #include "bbox.h"
+#include "abstract_chart.h"
 #include "color_types.h"
 #include "LLRegion.h"
 #include "viewport.h"
@@ -122,7 +123,7 @@ public:
  * functionality for all chart types in OpenCPN. Provides methods for
  * initialization, rendering, and querying chart properties and data.
  */
-class ChartBase {
+class ChartBase : public AbstractChart {
 public:
   ChartBase();
   virtual ~ChartBase() = 0;

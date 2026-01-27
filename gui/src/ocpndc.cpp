@@ -47,7 +47,6 @@
 #include "chcanv.h"
 #include "dychart.h"
 #include "linmath.h"
-#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 
 #ifdef ocpnUSE_GL

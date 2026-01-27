@@ -40,13 +40,10 @@
 #include "model/notification_manager.h"
 #include "model/own_ship.h"
 #include "model/route.h"
-#include "model/routeman.h"
 #include "model/track.h"
 
 #include "chcanv.h"
 #include "ocpn_plugin.h"
-
-extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
 
 // translate O route class to PlugIn_Waypoint_ExV2
 static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
@@ -222,7 +219,7 @@ static bool AddPlugInRouteExV3(HostApi121::Route* proute, bool b_permanent) {
     NavObj_dB::GetInstance().InsertRoute(route);
   }
 
-  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+  GuiEvents::GetInstance().on_routes_update.Notify();
 
   return true;
 }
@@ -638,15 +635,107 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
   auto window = GetCanvasByIndex(CanvasIndex);
   auto oCanvas = dynamic_cast<ChartCanvas*>(window);
   if (oCanvas) {
-    double scale = oCanvas->GetVP().view_scale_ppm;
-    int newref =
-        oCanvas->m_pQuilt->SelectRefChartByFamily((ChartFamilyEnum)Family);
-    if (newref >= 0) {
-      oCanvas->SelectQuiltRefdbChart(newref);
-      oCanvas->SetVPScale(scale);
-      oCanvas->DoCanvasUpdate();
-      oCanvas->ReloadVP();  // Pick up the new selections
-      return true;
+    // Chose the "best" chart in the new family
+    // Strategy: Chose a chart from the new family that is the same native scale
+    // as the current refernce chart.
+    // If this chart is not present in the new family. chose the next larger
+    // scale chart.
+    // If there are no larger scale charts available in the new family,
+    // chose the next smaller scale chart.
+    int ref_index = oCanvas->GetQuiltReferenceChartIndex();
+    if (ref_index == -1) return false;  // No chart loaded yet
+    const ChartTableEntry& cte_ref = ChartData->GetChartTableEntry(ref_index);
+
+    // No action needed if ref chart is already same as target
+    //  unless the ref chart is a basemep
+    if (cte_ref.GetChartFamily() == Family) {
+      if (!cte_ref.IsBasemap()) return false;
+    }
+
+    // Special case for switching to ENC
+    int index_smallest_nobasemap = -1;
+    if (Family == PI_CHART_FAMILY_VECTOR) {
+      // Find the smallest scale chart that is not a basemap
+      for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
+        const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+        if ((cte.GetChartFamily() == Family) && !cte.IsBasemap())
+          index_smallest_nobasemap = index;
+      }
+      if (index_smallest_nobasemap < 0) {
+        // There is no ENC except basemap
+        // So choose the smallest scale basemap as reference
+        int index_smallest_basemap = -1;
+        int scale_smallest_basemap = 1;
+        for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
+          const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+          if ((cte.GetChartFamily() == Family) && cte.IsBasemap()) {
+            if (cte.GetScale() > scale_smallest_basemap) {
+              scale_smallest_basemap = cte.GetScale();
+              index_smallest_basemap = index;
+            }
+          }
+        }
+        if (index_smallest_basemap >= 0) {
+          const ChartTableEntry& cte =
+              ChartData->GetChartTableEntry(index_smallest_basemap);
+          oCanvas->SelectQuiltRefdbChart(index_smallest_basemap, false);
+          // Induce a recomposition of the quilt
+          oCanvas->ZoomCanvasSimple(.9999);
+          oCanvas->DoCanvasUpdate();
+          oCanvas->ReloadVP();
+          return true;
+        }
+      }
+    }
+
+    int target_scale = cte_ref.GetScale();
+
+    int target_index = -1;
+    for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
+      const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+      if (cte.GetChartFamily() != Family) continue;
+
+      if (cte.GetScale() == target_scale) {
+        target_index = index;
+        break;
+      }
+    }
+
+    if (target_index < 0) {
+      // Find the largest scale chart that is lower than the reference chart
+      for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
+        const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+        if (cte.GetChartFamily() != Family) continue;
+        if (cte.GetScale() <= target_scale) {
+          target_index = index;
+        }
+      }
+    }
+
+    if (target_index < 0) {
+      // Find the largest scale chart that is higher than the reference chart
+      for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
+        const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+        if (cte.GetChartFamily() != Family) continue;
+        if (cte.GetScale() > target_scale) {
+          target_index = index;
+          break;
+        }
+      }
+    }
+
+    if (target_index >= 0) {
+      const ChartTableEntry& cte = ChartData->GetChartTableEntry(target_index);
+      // Found a suitable chart in the new family
+      if (oCanvas->IsChartQuiltableRef(target_index)) {
+        oCanvas->SelectQuiltRefdbChart(target_index, false);  // no autoscale
+
+        // Induce a recomposition of the quilt
+        oCanvas->ZoomCanvasSimple(.9999);
+        oCanvas->DoCanvasUpdate();
+        oCanvas->ReloadVP();
+        return true;
+      }
     }
   }
   return false;
@@ -677,7 +766,7 @@ static void AisTargetCreateWpt(wxString ais_mmsi) {
       pSelect->AddSelectableRoutePoint(pAISTarget->Lat, pAISTarget->Lon, pWP);
       NavObj_dB::GetInstance().InsertRoutePoint(pWP);
 
-      if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+      GuiEvents::GetInstance().on_routes_update.Notify();
     }
   }
 }  // same as AISTargetListDialog::OnTargetCreateWpt

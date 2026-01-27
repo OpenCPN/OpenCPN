@@ -108,6 +108,7 @@
 #include "model/comm_n0183_output.h"
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
+#include "model/gui_events.h"
 #include "model/gui_vars.h"
 #include "model/instance_check.h"
 #include "model/local_api.h"
@@ -171,6 +172,7 @@
 #include "thumbwin.h"
 #include "track_prop_dlg.h"
 #include "udev_rule_mgr.h"
+#include "user_colors.h"
 #include "wiz_ui.h"
 
 #ifdef ocpnUSE_GL
@@ -457,7 +459,7 @@ static void ActivateRoute(const std::string &guid) {
     point = route->GetPoint(2);
   }
   g_pRouteMan->ActivateRoute(route, point);
-  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+  GuiEvents::GetInstance().on_routes_update.Notify();
   route->m_bRtIsSelected = false;
 }
 
@@ -468,7 +470,7 @@ static void ReverseRoute(const std::string &guid) {
     return;
   }
   route->Reverse();
-  if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+  GuiEvents::GetInstance().on_routes_update.Notify();
 }
 
 void MyApp::InitRestListeners() {
@@ -1365,7 +1367,7 @@ void MyApp::BuildMainFrame() {
   int cx, cy, cw, ch;
   ::wxClientDisplayRect(&cx, &cy, &cw, &ch);
 
-  InitializeUserColors();
+  user_colors::Initialize();
 
   if ((g_nframewin_x > 100) && (g_nframewin_y > 100) && (g_nframewin_x <= cw) &&
       (g_nframewin_y <= ch))
@@ -1474,6 +1476,8 @@ void MyApp::BuildMainFrame() {
 
   gFrame->CreateCanvasLayout();
 
+  gFrame->SetGPSCompassScale();
+
   // gFrame->RequestNewMasterToolbar( true );
 
   gFrame->SetChartUpdatePeriod();  // Reasonable default
@@ -1518,7 +1522,7 @@ void MyApp::BuildMainFrame() {
   //      establish GPS timeout value as multiple of frame timer
   //      This will override any nonsense or unset value from the config file
   if ((gps_watchdog_timeout_ticks > 60) || (gps_watchdog_timeout_ticks <= 0))
-    gps_watchdog_timeout_ticks = (GPS_TIMEOUT_SECONDS * 1000) / TIMER_GFRAME_1;
+    gps_watchdog_timeout_ticks = (kGpsTimeoutSeconds * 1000) / TIMER_GFRAME_1;
 
   wxString dogmsg;
   dogmsg.Printf("GPS Watchdog Timeout is: %d sec.", gps_watchdog_timeout_ticks);
@@ -1725,6 +1729,7 @@ void MyApp::LoadChartDatabase() {
   if (g_NeedDBUpdate == 0 &&
       !ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
     g_NeedDBUpdate = 1;
+    g_restore_dbindex = 0;
   }
 
   //  Verify any saved chart database startup index
@@ -1826,7 +1831,7 @@ int MyApp::OnExit() {
 
   navutil::DeinitGlobals();
 
-  DeInitializeUserColors();
+  user_colors::DeInitialize();
 
   delete pLayerList;
 

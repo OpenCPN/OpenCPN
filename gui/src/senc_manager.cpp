@@ -27,14 +27,16 @@
 #include "wx/wx.h"
 #endif
 
+#include "senc_manager.h"
+
 #include "model/config_vars.h"
 
 #include "s57chart.h"
 #include "o_senc.h"
 #include "chartbase.h"
 #include "chcanv.h"
-#include "ocpn_frame.h"
 #include "s57class_registrar.h"
+#include "top_frame.h"
 
 SENCThreadManager *g_SencThreadManager;
 
@@ -152,9 +154,7 @@ void SENCThreadManager::StartTopJob() {
   if (nRunning) {
     wxString count;
     count.Printf("  %ld", ticket_list.size());
-    if (gFrame->GetPrimaryCanvas())
-      gFrame->GetPrimaryCanvas()->SetAlertString(_("Preparing vector chart  ") +
-                                                 count);
+    top_frame::Get()->SetAlertString(_("Preparing vector chart ") + count);
   }
 }
 
@@ -184,12 +184,9 @@ void SENCThreadManager::FinishJob(SENCJobTicket *ticket) {
   if (nRunning) {
     wxString count;
     count.Printf("  %ld", ticket_list.size());
-    if (gFrame->GetPrimaryCanvas())
-      gFrame->GetPrimaryCanvas()->SetAlertString(_("Preparing vector chart  ") +
-                                                 count);
+    top_frame::Get()->SetAlertString(_("Preparing vector chart ") + count);
   } else {
-    if (gFrame->GetPrimaryCanvas())
-      gFrame->GetPrimaryCanvas()->SetAlertString("");
+    top_frame::Get()->SetAlertString("");
   }
 #endif
 }
@@ -245,7 +242,8 @@ void SENCThreadManager::OnEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
     default:
       break;
   }
-  if (gFrame) gFrame->GetEventHandler()->AddPendingEvent(Sevent);
+  if (top_frame::Get())
+    top_frame::Get()->GetEventHandler()->AddPendingEvent(Sevent);
 }
 
 //----------------------------------------------------------------------------------

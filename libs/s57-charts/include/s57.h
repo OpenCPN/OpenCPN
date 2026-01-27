@@ -282,6 +282,7 @@ void CPL_DLL S57GenerateStandardAttributes(OGRFeatureDefn *, int);
 OGRFeatureDefn CPL_DLL *S57GenerateGeomFeatureDefn(OGRwkbGeometryType, int);
 OGRFeatureDefn CPL_DLL *S57GenerateObjectClassDefn(S57ClassRegistrar *, int,
                                                    int);
+OGRFeatureDefn CPL_DLL *S57GenerateObjectClassDefnM_COVR(int);
 OGRFeatureDefn CPL_DLL *S57GenerateVectorPrimitiveFeatureDefn(int, int);
 
 #endif /* ndef _S57_H_INCLUDED */

@@ -78,6 +78,7 @@ float g_compass_scalefactor = 0;
 float g_toolbar_scalefactor = 0;
 
 int g_canvas_context_menu_disable_mask = 0;
+int g_blinker_tick = 0;
 int g_ChartUpdatePeriod = 0;
 int g_click_stop = 0;
 int g_FlushNavobjChangesTimeout = 0;

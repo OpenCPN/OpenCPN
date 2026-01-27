@@ -31,13 +31,14 @@
 #include <wx/wxprec.h>
 
 #include "model/config_vars.h"
+#include "model/idents.h"
 
 #include "detail_slider.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "options.h"
+#include "top_frame.h"
 
 PopUpDSlide* pPopupDetailSlider;
 
@@ -177,7 +178,7 @@ void PopUpDSlide::OnChangeValue(wxScrollEvent& event)
     g_chart_zoom_modifier_vector = m_p_DetailSlider->GetValue();
   }
 
-  gFrame->ProcessOptionsDialog(S52_CHANGED | FORCE_UPDATE, NULL);
+  top_frame::Get()->ProcessOptionsDialog(S52_CHANGED | FORCE_UPDATE);
 
   ::wxEndBusyCursor();
 }

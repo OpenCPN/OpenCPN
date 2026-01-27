@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  AIS info GUI parts.
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
@@ -19,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * AIS info GUI parts.
+ */
 
 #include <memory>
 
@@ -43,17 +41,18 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/gui_vars.h"
+#include "model/navobj_db.h"
 #include "model/route_point.h"
 
 #include "ais_info_gui.h"
 #include "ais_target_alert_dlg.h"
 #include "chcanv.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
+#include "top_frame.h"
 #include "undo.h"
-#include "model/navobj_db.h"
 
 wxDEFINE_EVENT(EVT_AIS_DEL_TRACK, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_INFO, ObservedEvt);
@@ -62,17 +61,7 @@ wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern bool g_bquiting;
-extern int g_iSoundDeviceIndex;
-extern OCPNPlatform *g_Platform;
-extern Route *pAISMOBRoute;
-extern wxString g_CmdSoundString;
-extern MyConfig *pConfig;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern MyFrame *gFrame;
-
-AisInfoGui *g_pAISGUI;
+AisInfoGui *g_pAISGUI;  // global instance
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
@@ -86,12 +75,12 @@ static void OnNewAisWaypoint(RoutePoint *pWP) {
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
-  if (gFrame->GetPrimaryCanvas()) {
-    gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction(
-        Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
-    gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction(NULL);
-    gFrame->RefreshAllCanvas(false);
-    gFrame->InvalidateAllGL();
+  if (top_frame::Get()->GetAbstractPrimaryCanvas()) {
+    top_frame::Get()->BeforeUndoableAction(Undo_CreateWaypoint, pWP,
+                                           Undo_HasParent, NULL);
+    top_frame::Get()->AfterUndoableAction(NULL);
+    top_frame::Get()->RefreshAllCanvas(false);
+    top_frame::Get()->InvalidateAllGL();
   }
 }
 
@@ -119,7 +108,8 @@ AisInfoGui::AisInfoGui() {
   });
 
   ais_touch_listener.Listen(g_pAIS->touch_state, this, EVT_AIS_TOUCH);
-  Bind(EVT_AIS_TOUCH, [&](wxCommandEvent ev) { gFrame->TouchAISActive(); });
+  Bind(EVT_AIS_TOUCH,
+       [&](wxCommandEvent ev) { top_frame::Get()->TouchAISActive(); });
 
   ais_wp_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_WP);
   Bind(EVT_AIS_WP, [&](wxCommandEvent ev) {
@@ -225,10 +215,11 @@ void AisInfoGui::ShowAisInfo(
 //        gFrame->RequestUserAttention();
 #endif
 
-      if (!gFrame->IsIconized()) {
+      if (!top_frame::Get()->IsIconized()) {
         AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
-        pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS, b_jumpto,
-                                b_createWP, b_ack, -1, _("AIS Alert"));
+        pAISAlertDialog->Create(palert_target->MMSI, wxTheApp->GetTopWindow(),
+                                g_pAIS, b_jumpto, b_createWP, b_ack, -1,
+                                _("AIS Alert"));
 
         g_pais_alert_dialog_active = pAISAlertDialog;
 
@@ -371,9 +362,9 @@ void AisInfoGui::ShowAisInfo(
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       if (palert_target->MMSI == g_MMSI_Props_Array[i]->MMSI) {
         if (pAISMOBRoute)
-          gFrame->UpdateAISMOBRoute(palert_target.get());
+          top_frame::Get()->UpdateAISMOBRoute(palert_target.get());
         else
-          gFrame->ActivateAISMOBRoute(palert_target.get());
+          top_frame::Get()->ActivateAISMOBRoute(palert_target.get());
         break;
       }
     }

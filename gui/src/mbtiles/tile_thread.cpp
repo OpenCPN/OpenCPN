@@ -7,6 +7,7 @@
 #include "dychart.h"
 #include "tile_thread.h"
 #include "tile_cache.h"
+#include "top_frame.h"
 
 #ifdef __WXMSW__
 void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS* ep) {
@@ -62,7 +63,7 @@ void MbtTilesThread::Run() {
     // the queue.
     if (m_tile_queue.GetSize() == 0) {
       wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(
-          &MyFrame::RefreshAllCanvas, true);
+          &AbstractTopFrame::RefreshAllCanvas, true);
     }
     // Check if the thread has been requested to be destroyed
   } while (!m_exit_thread);

@@ -20,6 +20,14 @@ The codebase evolves, and what was once standard may now be outdated. Refer to t
 
 === C++ Practices
 
+==== General
+
+Use modern C++ idioms in preference to old-style C. The ["C++ Core Guidelines"](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+by Bjarne Stroustrup, the creator of C++, and others, provides a solid set of best practises. 
+[Clang-tidy](https://clang.llvm.org/extra/clang-tidy/checks/list.html) provides `cppcoreguidelines-*` rulesets, 
+and MSVC provides [CppCoreCheck](https://learn.microsoft.com/en-us/cpp/code-quality/using-the-cpp-core-guidelines-checkers?view=msvc-170) 
+tools to automatically check compliance. 
+
 Use C++ standard library components over wxWidgets and old style C equivalents:
 
 [options="header"]

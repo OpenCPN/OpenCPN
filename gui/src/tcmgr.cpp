@@ -785,6 +785,27 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float &dir) {
   return (true);  // Got it!
 }
 
+bool TCMgr::GetTideOrCurrentMeters(time_t t, int idx, float &tcvalue,
+                                   float &dir) {
+  float val_from_index;
+  bool bret = GetTideOrCurrent(t, idx, val_from_index, dir);
+  if (!bret) return false;
+
+  //    Load up this location data
+  IDX_entry *pIDX = m_Combined_IDX_array[idx];  // point to the index entry
+  Station_Data *pmsd = pIDX->pref_sta_data;
+  if (pmsd) {
+    // Convert from station units to meters
+    int unit_c = TCDataFactory::findunit(pmsd->unit);
+    if (unit_c >= 0) {
+      val_from_index *= TCDataFactory::known_units[unit_c].conv_factor;
+    }
+    tcvalue = val_from_index;
+    return true;
+  } else
+    return false;
+}
+
 extern wxDateTime gTimeSource;
 
 bool TCMgr::GetTideOrCurrent15(time_t t_d, int idx, float &tcvalue, float &dir,

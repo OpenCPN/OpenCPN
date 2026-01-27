@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,8 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 #include "gl_headers.h"  // Must be included before anything using GL stuff
 
@@ -36,27 +29,20 @@
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/navobj_db.h"
 #include "model/route_point.h"
 #include "model/select.h"
 
 #include "ais.h"
 #include "ais_target_list_dlg.h"
 #include "chcanv.h"
-#include "ocpn_frame.h"
 #include "ocpn_list_ctrl.h"
 #include "ocpn_platform.h"
 #include "routemanagerdialog.h"
 #include "styles.h"
-#include "model/navobj_db.h"
+#include "top_frame.h"
 
-extern ocpnStyle::StyleManager *g_StyleManager;
-extern MyConfig *pConfig;
-extern AISTargetListDialog *g_pAISTargetList;
-extern MyFrame *gFrame;
-extern wxString g_default_wp_icon;
-extern RouteManagerDialog *pRouteManagerDialog;
-
-AISTargetListDialog *g_pAISTargetList;
+AISTargetListDialog *g_pAISTargetList;  // Global instance
 
 static int g_AisTargetList_count;
 static AisDecoder *s_p_sort_decoder;
@@ -384,7 +370,7 @@ AISTargetListDialog::AISTargetListDialog(wxWindow *parent, wxAuiManager *auimgr,
       pane.Float();
       pane.Dockable(false);
 
-      wxSize screen_size = gFrame->GetClientSize();
+      wxSize screen_size = top_frame::Get()->GetClientSize();
       pane.FloatingSize(screen_size.x * 8 / 10, screen_size.y * 8 / 10);
       pane.FloatingPosition(screen_size.x * 1 / 10, screen_size.y * 1 / 10);
       m_pAuiManager->Update();
@@ -473,7 +459,7 @@ void AISTargetListDialog::RecalculateSize() {
   esize.x = GetCharWidth() * 110;
   esize.y = GetCharHeight() * 40;
 
-  wxSize dsize = gFrame->GetClientSize();
+  wxSize dsize = top_frame::Get()->GetClientSize();
   esize.y = wxMin(esize.y, dsize.y - (4 * GetCharHeight()));
   esize.x = wxMin(esize.x, dsize.x - (2 * GetCharHeight()));
   SetClientSize(esize);
@@ -488,7 +474,7 @@ void AISTargetListDialog::RecalculateSize() {
 
     if (pane.IsOk()) {
       pane.FloatingSize(fsize.x, fsize.y);
-      wxPoint pos = gFrame->GetScreenPosition();
+      wxPoint pos = top_frame::Get()->GetScreenPosition();
       pane.FloatingPosition(pos.x + (dsize.x - fsize.x) / 2,
                             pos.y + (dsize.y - fsize.y) / 2);
     }
@@ -771,6 +757,16 @@ void AISTargetListDialog::CreateControls() {
       wxCommandEventHandler(AISTargetListDialog::OnCopyMMSI), NULL, this);
   bsRouteButtonsInner->Add(m_pButtonCopyMMSI, 0, wxEXPAND | wxALL, 2);
 
+  bool enable_find = true;
+#ifdef __WXMSW__
+  // Check for app MenuBar.  Disable "find" funtion if present.
+  auto *frame = wxDynamicCast(wxTheApp->GetTopWindow(), wxFrame);
+  if (frame) {
+    wxMenuBar *mb = frame->GetMenuBar();
+    if (mb != nullptr) enable_find = false;
+  }
+#endif
+
   m_pStaticTextFind = new wxStaticText(winr, wxID_ANY, _("Find target name"),
                                        wxDefaultPosition, wxDefaultSize, 0);
   bsRouteButtonsInner->Add(m_pStaticTextFind, 0, wxALL, 2);
@@ -778,10 +774,19 @@ void AISTargetListDialog::CreateControls() {
   m_pFindTargetName =
       new wxTextCtrl(winr, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
   m_pFindTargetName->SetMinSize(wxSize(15 * GetCharWidth(), -1));
-  m_pFindTargetName->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(AISTargetListDialog::OnEditFindTarget), NULL, this);
   bsRouteButtonsInner->Add(m_pFindTargetName, 0, wxALL, 2);
+  if (enable_find) {
+    m_pFindTargetName->Enable();
+    m_pFindTargetName->Connect(
+        wxEVT_TEXT,
+        wxCommandEventHandler(AISTargetListDialog::OnEditFindTarget), NULL,
+        this);
+  } else {
+    m_pFindTargetName->Disable();
+    m_pFindTargetName->SetDefaultStyle(wxTextAttr(wxNullColour, *wxLIGHT_GREY));
+    m_pStaticTextFind->SetToolTip(
+        _("Disable OpenCPN MenuBar to search for AIS targets"));
+  }
 
   m_pCBAutosort =
       new wxCheckBox(winr, wxID_ANY, _("AutoSort"), wxDefaultPosition,
@@ -996,9 +1001,9 @@ void AISTargetListDialog::OnTargetCreateWpt(wxCommandEvent &event) {
 
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
-    gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction(
-        Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
-    gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction(NULL);
+    top_frame::Get()->BeforeUndoableAction(Undo_CreateWaypoint, pWP,
+                                           Undo_HasParent, NULL);
+    top_frame::Get()->AfterUndoableAction(NULL);
     Refresh(false);
   }
 }
@@ -1071,7 +1076,10 @@ void AISTargetListDialog::OnCopyMMSI(wxCommandEvent &event) {
 
 void AISTargetListDialog::OnEditFindTarget(wxCommandEvent &event) {
   wxString name = m_pFindTargetName->GetValue().MakeUpper();
-  if (name.size() < 2 || name == " ") return;
+  if (name.size() < 2 || name == " ") {
+    event.StopPropagation();  // Don't send the key upstream
+    return;
+  }
   if (m_pdecoder) {
     bool found = false;
     long item_sel = 0;
@@ -1144,19 +1152,21 @@ void AISTargetListDialog::CenterToTarget(bool close) {
         m_pdecoder->Get_Target_Data_From_MMSI(m_pMMSI_array->Item(selItemID));
 
   if (pAISTarget) {
-    double scale = gFrame->GetFocusCanvas()->GetVPScale();
+    double scale = top_frame::Get()->GetAbstractFocusCanvas()->GetVPScale();
     if (!close) {
-      gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                             pAISTarget->Lon, scale);
+      top_frame::Get()->JumpToPosition(
+          top_frame::Get()->GetAbstractFocusCanvas(), pAISTarget->Lat,
+          pAISTarget->Lon, scale);
     } else {
       // Set a resonable (1:5000) chart scale to see the target.
       double factor = 1.;
       if (scale < 0.7) {  // Don't zoom if already close.
-        ChartCanvas *cc = gFrame->GetFocusCanvas();
-        factor = cc->GetScaleValue() / 5000.0;
+        AbstractChartCanvas *acc = top_frame::Get()->GetAbstractFocusCanvas();
+        factor = acc->GetScaleValue() / 5000.0;
       }
-      gFrame->JumpToPosition(gFrame->GetFocusCanvas(), pAISTarget->Lat,
-                             pAISTarget->Lon, scale * factor);
+      top_frame::Get()->JumpToPosition(
+          top_frame::Get()->GetAbstractFocusCanvas(), pAISTarget->Lat,
+          pAISTarget->Lon, scale * factor);
       DoTargetQuery(pAISTarget->MMSI);
       // Close AIS target list
       Shutdown();

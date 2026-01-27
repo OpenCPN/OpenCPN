@@ -139,7 +139,7 @@ public:
 
   void Init();
   void SetContext(wxGLContext *pcontext) { m_pcontext = pcontext; }
-  int GetCanvasIndex() { return m_pParentCanvas->m_canvasIndex; }
+  int GetCanvasIndex();
 
   int GetGLCanvasWidth() { return m_glcanvas_width; }
   int GetGLCanvasHeight() { return m_glcanvas_height; }

@@ -396,9 +396,9 @@ int OGRS57DataSource::OpenMin(const char *pszFilename, int bTestOpen)
 
   papszReaderOptions =
       CSLSetNameValue(papszReaderOptions, S57O_LNAM_REFS, "ON");
-  if (GetOption(S57O_UPDATES) != NULL)
+  //if (GetOption(S57O_UPDATES) != NULL)
     papszReaderOptions = CSLSetNameValue(papszReaderOptions, S57O_UPDATES,
-                                         GetOption(S57O_UPDATES));
+                                         "ON");
 
   if (GetOption(S57O_SPLIT_MULTIPOINT) != NULL)
     papszReaderOptions =

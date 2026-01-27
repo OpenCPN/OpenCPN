@@ -30,30 +30,8 @@
 #include <vector>
 #include <deque>
 
+#include "undo_defs.h"
 #include "chcanv.h"
-
-enum UndoType {
-  Undo_CreateWaypoint,
-  Undo_DeleteWaypoint,
-  Undo_AppendWaypoint,
-  Undo_MoveWaypoint
-};
-
-enum UndoBeforePointerType { Undo_IsOrphanded, Undo_NeedsCopy, Undo_HasParent };
-
-typedef void* UndoItemPointer;
-
-class UndoAction {
-public:
-  ~UndoAction();
-  wxString Description();
-
-  UndoType type;
-  std::vector<UndoItemPointer> before;
-  std::vector<UndoBeforePointerType> beforeType;
-  std::vector<UndoItemPointer> after;
-  std::vector<UndoItemPointer> selectable;
-};
 
 class Undo {
 public:

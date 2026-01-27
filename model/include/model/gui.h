@@ -21,6 +21,9 @@
  * Hooks into gui available in model.
  */
 
+#ifndef ModEl_gUi_H
+#define ModEl_gUi_H
+
 #include <wx/window.h>
 #include <model/nmea_log.h>
 
@@ -30,3 +33,5 @@ static const char* const kDataMonitorWindowName = "DataMonitor";
 
 /** Return the top level window a k a gFrame. */
 wxWindow* GetTopWindow();
+
+#endif  //  ModEl_gUi_H

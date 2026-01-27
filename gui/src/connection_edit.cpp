@@ -1847,7 +1847,7 @@ void ConnectionEditDialog::ApplySettings() {
   m_tFilterSec->GetValue().ToLong(&filter_val);
   g_COGFilterSec =
       wxMin(static_cast<int>(filter_val),
-            60 /*MAX_COGSOG_FILTER_SECONDS*/);  // FIXME (dave)  should be
+            60 /*kMaxCogsogFilterSeconds*/);  // FIXME (dave)  should be
   g_COGFilterSec = wxMax(g_COGFilterSec, 1);
   g_SOGFilterSec = g_COGFilterSec;
 

@@ -55,7 +55,6 @@
 #include "gui_lib.h"
 #include "mark_info.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "pluginmanager.h"
 #include "routemanagerdialog.h"
@@ -1059,7 +1058,7 @@ void MarkInfoDlg::OnPositionCtlUpdated(wxCommandEvent& event) {
                                    SELTYPE_ROUTEPOINT);
   }
   // Update the mark position dynamically
-  gFrame->RefreshAllCanvas();
+  top_frame::Get()->RefreshAllCanvas();
 }
 
 void MarkInfoDlg::m_htmlListContextMenu(wxMouseEvent& event) {
@@ -1365,7 +1364,7 @@ void MarkInfoDlg::OnMarkInfoCancelClick(wxCommandEvent& event) {
   m_lasttspos.Clear();
 
 #ifdef __WXGTK__
-  gFrame->Raise();
+  top_frame::Get()->Raise();
 #endif
 
   Show(false);
@@ -1389,7 +1388,7 @@ void MarkInfoDlg::OnMarkInfoOKClick(wxCommandEvent& event) {
   }
 
 #ifdef __WXGTK__
-  gFrame->Raise();
+  top_frame::Get()->Raise();
 #endif
 
   Show(false);
@@ -1877,7 +1876,8 @@ void MarkInfoDlg::ShowTidesBtnClicked(wxCommandEvent& event) {
                                   fromDMM(m_textLatitude->GetValue()),
                                   fromDMM(m_textLongitude->GetValue())));
   if (pIDX) {
-    TCWin* pCwin = new TCWin(gFrame->GetPrimaryCanvas(), 0, 0, pIDX);
+    TCWin* pCwin =
+        new TCWin(top_frame::Get()->GetAbstractPrimaryCanvas(), 0, 0, pIDX);
     pCwin->Show();
   } else {
     wxString msg(_("Tide Station not found"));
