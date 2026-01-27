@@ -2782,9 +2782,14 @@ endif ()
 add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
-set( _run_tests "
-  execute_process(COMMAND ./tests)
-  execute_process(COMMAND ./buffer-tests)
+if (MSVC)
+  set(test_root  ${CMAKE_BINARY_DIR}/test/${CMAKE_BUILD_TYPE})
+else ()
+  set(test_root  ${CMAKE_BINARY_DIR}/test/)
+endif ()
+set(_run_tests "
+execute_process(COMMAND ${test_root}/tests)
+execute_process(COMMAND ${test_root}/buffer_tests)
 ")
 file(WRITE "${CMAKE_BINARY_DIR}/run_tests.cmake" ${_run_tests})
 if (OCPN_BUILD_TEST)
