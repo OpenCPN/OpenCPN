@@ -62,9 +62,12 @@ void MbtTilesThread::Run() {
     // Only request a refresh of the display when there is no more tiles in
     // the queue.
     if (m_tile_queue.GetSize() == 0) {
-      wxTheApp->GetTopWindow()->GetEventHandler()->CallAfter(
-          &AbstractTopFrame::RefreshAllCanvas, true);
+      wxWeakRef<wxWindow> frame(wxTheApp->GetTopWindow());
+      frame->CallAfter([frame]() {
+        if (frame) frame->Refresh();
+      });
     }
+
     // Check if the thread has been requested to be destroyed
   } while (!m_exit_thread);
 
