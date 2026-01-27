@@ -1105,6 +1105,12 @@ void glTextureManager::PurgeJobList(wxString chart_path) {
         });
     list.erase(removed_begin, list.end());
 
+    //  Mark running tasks for this chart as "abort"
+    for (auto node = running_list.begin(); node != running_list.end(); ++node) {
+      JobTicket *ticket = *node;
+      if (ticket->m_ChartPath == chart_path) ticket->b_abort = true;
+    }
+
     if (bthread_debug)
       std::cout << "Pool: Purge, todo count: " << list.size() << "\n";
   } else {
