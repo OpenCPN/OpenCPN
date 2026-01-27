@@ -1636,6 +1636,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     std::sort(m_extended_stack_array.begin(), m_extended_stack_array.end(),
               CompareScalesStd);
   }
+  // Sort the full screen array too
+  std::sort(m_fullscreen_index_array.begin(), m_fullscreen_index_array.end(),
+            CompareScalesStd);
+
   return true;
 }
 
