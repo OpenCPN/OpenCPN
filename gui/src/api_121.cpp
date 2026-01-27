@@ -652,6 +652,42 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
       if (!cte_ref.IsBasemap()) return false;
     }
 
+    // Special case for switching to ENC
+    int index_smallest_nobasemap = -1;
+    if (Family == PI_CHART_FAMILY_VECTOR) {
+      // Find the smallest scale chart that is not a basemap
+      for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
+        const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+        if ((cte.GetChartFamily() == Family) && !cte.IsBasemap())
+          index_smallest_nobasemap = index;
+      }
+      if (index_smallest_nobasemap < 0) {
+        // There is no ENC except basemap
+        // So choose the smallest scale basemap as reference
+        int index_smallest_basemap = -1;
+        int scale_smallest_basemap = 1;
+        for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
+          const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
+          if ((cte.GetChartFamily() == Family) && cte.IsBasemap()) {
+            if (cte.GetScale() > scale_smallest_basemap) {
+              scale_smallest_basemap = cte.GetScale();
+              index_smallest_basemap = index;
+            }
+          }
+        }
+        if (index_smallest_basemap >= 0) {
+          const ChartTableEntry& cte =
+              ChartData->GetChartTableEntry(index_smallest_basemap);
+          oCanvas->SelectQuiltRefdbChart(index_smallest_basemap, false);
+          // Induce a recomposition of the quilt
+          oCanvas->ZoomCanvasSimple(.9999);
+          oCanvas->DoCanvasUpdate();
+          oCanvas->ReloadVP();
+          return true;
+        }
+      }
+    }
+
     int target_scale = cte_ref.GetScale();
 
     int target_index = -1;
@@ -689,6 +725,7 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
     }
 
     if (target_index >= 0) {
+      const ChartTableEntry& cte = ChartData->GetChartTableEntry(target_index);
       // Found a suitable chart in the new family
       if (oCanvas->IsChartQuiltableRef(target_index)) {
         oCanvas->SelectQuiltRefdbChart(target_index, false);  // no autoscale
