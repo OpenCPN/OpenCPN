@@ -1,3 +1,9 @@
+opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa3) jammy; urgency=medium
+
+  * Add Debian 12 plugin compatibility patch
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 27 Jan 2026 11:52:24 +0100
+
 opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa2) jammy; urgency=medium
 
   * Add b-d linunarr-dev, required since libarchive is too old.

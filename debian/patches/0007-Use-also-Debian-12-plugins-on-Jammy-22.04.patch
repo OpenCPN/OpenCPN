@@ -1,0 +1,52 @@
+From a5465b06abe9e5ba7362f43e315f9743866d4d84 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@nowhere.net>
+Date: Tue, 27 Jan 2026 11:41:37 +0100
+Subject: [PATCH] Use also Debian/12 plugins on Jammy/22.04
+
+Since we build openpcn for Ubuntu Jammy/22.04 using our own
+wxWidgets 3.2 build we can use both Debian/11 and Debian/12
+plugins on Jammy.
+
+We need to be able to use Debian 12 plugins since the D11 builds
+are phased out.
+
+Add  D12 compatibility to the existing D11. This means that many
+plugins exposes two versions to user. It's not nice, but works
+until the Jammy support is dropped.
+
+Forwarded: not-needed
+---
+ model/src/plugin_handler.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/model/src/plugin_handler.cpp b/model/src/plugin_handler.cpp
+index b0c9391ff..a0f60085b 100644
+--- a/model/src/plugin_handler.cpp
++++ b/model/src/plugin_handler.cpp
+@@ -277,6 +277,7 @@ class Host {
+         // clang-format: off
+         "debian-x86_64;11;ubuntu-gtk3-x86_64;20.04",
+         "debian-wx32-x86_64;11;ubuntu-wx32-x86_64;22.04",
++        "debian-x86_64;12;ubuntu-x86_64;22.04",
+         "debian-x86_64;12;ubuntu-x86_64;23.04",
+         "debian-x86_64;12;ubuntu-x86_64;23.10",
+         "debian-x86_64;12;ubuntu-x86_64;24.04",
+@@ -284,6 +285,7 @@ class Host {
+ 
+         "debian-arm64;11;ubuntu-gtk3-arm64;20.04",
+         "debian-wx32-arm64;11;ubuntu-wx32-arm64;22.04",
++        "debian-arm64;12;ubuntu-arm64;22.04",
+         "debian-arm64;12;ubuntu-arm64;23.04",
+         "debian-arm64;12;ubuntu-arm64;23.10",
+         "debian-arm64;12;ubuntu-arm64;24.04",
+@@ -293,6 +295,7 @@ class Host {
+         "debian-gtk3-armhf;10;ubuntu-gtk3-armhf;18.04",
+         "debian-armhf;11;ubuntu-gtk3-armhf;20.04",
+         "debian-wx32-armhf;11;ubuntu-wx32-armhf;22.04",
++        "debian-armhf;12;ubuntu-armhf;22.04",
+         "debian-armhf;12;ubuntu-armhf;23.04",
+         "debian-armhf;12;ubuntu-armhf;23.10",
+         "debian-armhf;12;ubuntu-armhf;24.04",
+-- 
+2.34.1
+
