@@ -1226,8 +1226,8 @@ void ocpnToolBarSimple::OnToolTipTimerEvent(wxTimerEvent &event) {
 
         // Show tooltip using new system
         TooltipManager::Get().ShowTooltipAtPosition(
-            top_frame::Get()->GetAbstractPrimaryCanvas()->GetWindow(), s,
-            screenPosition, m_last_ro_tool->m_btooltip_hiviz);
+            top_frame::Get()->GetAbstractPrimaryCanvas(), s, screenPosition,
+            m_last_ro_tool->m_btooltip_hiviz);
 
 #ifndef __WXOSX__
         wxTheApp->GetTopWindow()->Raise();
