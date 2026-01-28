@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
@@ -319,8 +317,8 @@ static bool LoadAllPlugIns(bool load_enabled) {
 #include "bitmaps/opencpn.xpm"
 #endif
 
-wxString newPrivateFileName(wxString, const char *name,
-                            [[maybe_unused]] const char *windowsName) {
+static wxString newPrivateFileName(wxString, const char *name,
+                                   [[maybe_unused]] const char *windowsName) {
   wxString fname = wxString::FromUTF8(name);
   wxString filePathAndName;
 
@@ -336,6 +334,10 @@ wxString newPrivateFileName(wxString, const char *name,
 #endif
 
   return filePathAndName;
+}
+
+void MyApp::OnNewMsgTypes() {
+  for (auto it : m_msg_type_callbacks) it.second();
 }
 
 class WallpaperFrame : public wxFrame {
@@ -1205,6 +1207,8 @@ bool MyApp::OnInit() {
   }
 
   InitRestListeners();
+  new_msg_type_listener.Init(NavMsgBus::GetInstance().new_msg_event,
+                             [&](ObservedEvt &) { OnNewMsgTypes(); });
 
   //      Establish the GSHHS Dataset location
   gDefaultWorldMapLocation = "gshhs";

@@ -46,6 +46,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -7216,6 +7217,14 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
 
+/** @interface providing backend api support.  */
+class Api121Support {
+public:
+  virtual std::unordered_map<std::string, std::function<void()>>&
+	  GetMsgTypeCallbacks() = 0;
+};
+
+
 /** Empty, virtual base class for HostApi versions. */
 class HostApi {
 public:
@@ -7234,12 +7243,14 @@ extern DECL_EXP std::unique_ptr<HostApi> GetHostApi();
 
 class HostApi121 : public HostApi {
 public:
-  HostApi121()
+  HostApi121(Api121Support& support)
       : HostApi(),
         kContextMenuDisableWaypoint(1),
         kContextMenuDisableRoute(2),
         kContextMenuDisableTrack(4),
-        kContextMenuDisableAistarget(8) {}
+        kContextMenuDisableAistarget(8),
+        m_api_support(support) {}
+
   ~HostApi121() override = default;
 
   const int kContextMenuDisableWaypoint;
@@ -7362,6 +7373,29 @@ public:
 
   /** Retrieve route from database */
   virtual std::unique_ptr<HostApi121::Route> GetRoute(const wxString &guid);
+
+  /**
+   * Return currently known messages types flowing through system.
+   *
+   * General key format: <bus>::<key>
+   * bus  ::= "nmea0183" | "nmea2000" | "SignalK" | "Plugin"
+   * <key> depends on bus -- TBD
+   */
+  const std::set<std::string>& GetActiveMessages();
+
+   /**
+    * Register a new callback invoked when the GetActiveMessages() info is
+    * updated.
+    *
+    * @param plugin_name Invoking plugin name as of GetCommonName().
+    * @param callback Invoked when GetActiveMessages() is updated. Use
+    *     nullptr to clear the callback. Possibly existing callback is cleared.
+    */
+   void RegisterNewMsgTypeCallback(const std::string& plugin_name,
+                                   std::function<void()> callback);
+private:
+  Api121Support& m_api_support;
+
 };
 
 #endif  //_PLUGIN_H_
