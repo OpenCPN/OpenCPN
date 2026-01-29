@@ -43,8 +43,9 @@
 #include <wx/statbmp.h>
 
 #include "model/notification.h"
+
+#include "abstract_chart_canv.h"
 #include "color_types.h"
-#include "chcanv.h"
 #include "ocpndc.h"
 
 class NotificationListPanel;  // forward
@@ -106,7 +107,7 @@ private:
 
 class NotificationButton {
 public:
-  NotificationButton(ChartCanvas *parent);
+  NotificationButton(AbstractChartCanvas *parent);
   ~NotificationButton();
 
   void SetIconName(wxString &name) { m_NoteIconName = name; }
@@ -140,7 +141,7 @@ private:
   void CreateTexture();
   void UpdateTexture();
 
-  ChartCanvas *m_parent;
+  AbstractChartCanvas *m_parent;
   wxBitmap m_StatBmp;
   wxBitmap m_MaskBmp;
   wxStaticBitmap *m_pStatBoxToolStaticBmp;
