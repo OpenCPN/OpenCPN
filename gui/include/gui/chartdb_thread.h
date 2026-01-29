@@ -204,7 +204,6 @@ protected:
       wxQueueEvent(m_target, evt);
     }
 
-    printf("####thread exit\n");
     return 0;
   }
 

@@ -1081,24 +1081,8 @@ ChartDatabase::ChartDatabase() {
   UpdateChartClassDescriptorArray();
 }
 
-#if 0
-//  Check for duplicates within this directory
-bool collision_found = false;
-ChartCollisionsHashMap::iterator it;
-for (it = collision_map.begin(); it != collision_map.end(); ++it) {
-  if (it->first.IsSameAs(file_name)) {
-    // Two files found with identical file name
-    // For now, just drop this ticket
-    // TODO Make an (expensive) test on file modification times
-    collision_found = true;
-    break;
-  }
-}
-#endif
-
 void ChartDatabase::OnDBSProgressUpdate(wxCommandEvent &evt) {
   int value = evt.GetInt();  // retrieve progress value
-  printf("Prog...%d\n", value);
   if (m_pprog) {
     // Update dialog safely
     m_pprog->Update(value);
@@ -1111,7 +1095,6 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
 
   in_event++;
   // Capture the completed job tickets
-  printf("Thread...\n");
   auto ticket = event.GetTicket();
   if (!ticket) {
     in_event--;
@@ -1127,7 +1110,7 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
       if (((m_progcount % m_nFileProgressQuantum) == 0)) {
         if (val != m_progint) {
           m_progint = val;
-          printf("%d %d\n", m_progcount, val);
+          // printf("%d %d\n", m_progcount, val);
 #ifdef x__WXMSW__
           // On Windows, Update may pump messages even without
           // CAN_ABORT/ELAPSED_TIME
@@ -1170,12 +1153,10 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
   }
 
   int remaining = --m_jobsRemaining;
-  printf("  Remaining  %d\n", remaining);
 
   if (remaining == 0) {
     m_pool.Shutdown();
     m_pool_deferred.Shutdown();
-    printf("#######################################\n");
     size_t a = m_ticket_vector.size();
 
     if (m_deferred_ticket_vector.size()) {
@@ -1196,7 +1177,6 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
       if (m_pprog) m_pprog->Update(0, _("Processing charts."));
 
       // Start up the queued thread, if necessary
-      printf("Starting deferred thread\n");
       if (m_jobsRemaining) {
         const int workerCount = 1;
         if (m_pool_deferred.GetWorkerCount() < workerCount) {
@@ -1210,71 +1190,6 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
       in_event--;
       return;  // Let the thread run
     }
-
-#if 0
-    if (m_deferred_ticket_vector.size()) {
-      m_progcount = 0;
-      m_nFileProgressQuantum = wxMax(m_deferred_ticket_vector.size() / 5, 2);
-      if (m_pprog) {
-        wxCommandEvent *prog_evt = new wxCommandEvent(
-            wxEVT_COMMAND_MENU_SELECTED, ID_DBS_PROGRESS_UPDATE);
-        prog_evt->SetInt(0);  // send progress value
-        wxQueueEvent(this, prog_evt);
-      }
-
-      for (auto &ticket_d : m_deferred_ticket_vector) {
-        // auto ticket_deferred = m_deferred_ticket_vector.back();
-        // m_deferred_ticket_vector.pop_back();
-        // ChartClassDescriptor tmpDescriptor(ticket_d->provider_class_name, "",
-        //                                    nullptr, PLUGIN_DESCRIPTOR);
-        // ChartTableEntry *pnewChartTableEntry = CreateChartTableEntry(
-        //     ticket_d->m_ChartPath, ticket_d->m_ChartPath, tmpDescriptor);
-
-        auto *evt = new OCPN_ChartTableEntryThreadEvent(
-            wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
-        evt->SetTicket(
-            ticket_d);  // dummy event to get one pass of event handler
-        wxQueueEvent(this, evt);
-
-        if (m_pprog) {
-          m_progcount++;
-          double ratio =
-              100. * (double)m_progcount / m_deferred_ticket_vector.size();
-          int val = ratio;
-          if (((m_progcount % m_nFileProgressQuantum) == 0)) {
-            if (val != m_progint) {
-              m_progint = val;
-              wxCommandEvent *prog_evt = new wxCommandEvent(
-                  wxEVT_COMMAND_MENU_SELECTED, ID_DBS_PROGRESS_UPDATE);
-              prog_evt->SetInt(val);  // send progress value
-              wxQueueEvent(this, prog_evt);
-              // printf("          %d %d\n", m_progcount, val);
-            }
-          }
-        }
-      }
-      m_jobsRemaining = m_deferred_ticket_vector.size();
-      m_deferred_ticket_vector.clear();
-      return;
-    }
-    size_t b = m_ticket_vector.size();
-
-#if 0
-    // Process the deferred tickets
-    for (auto &ticket_d : m_deferred_ticket_vector) {
-      ChartClassDescriptor tmpDescriptor(ticket_d->provider_class_name, "",
-                                         nullptr, PLUGIN_DESCRIPTOR);
-      ChartTableEntry *pnewChartTableEntry = CreateChartTableEntry(
-          ticket_d->m_ChartPath, ticket_d->m_ChartPath, tmpDescriptor);
-      if (pnewChartTableEntry) {
-        std::shared_ptr<ChartTableEntry> safe_ptr(pnewChartTableEntry);
-        ticket_d->m_chart_table_entry = safe_ptr;  // class member
-        m_ticket_vector.push_back(ticket_d);
-      }
-    }
-    m_deferred_ticket_vector.clear();
-#endif
-#endif
 
     // Now m_ticket_vector is populated with verified tickets
     // for all specified directories.
@@ -1464,15 +1379,6 @@ ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const {
   // else
   // return m_ChartTableEntryDummy;
 }
-
-#if 0
-ChartTableEntry *ChartDatabase::GetpChartTableEntry(int index) const {
-  if (index < GetChartTableEntries())
-    return (active_chartTable[index])->get();
-  else
-    return (ChartTableEntry *)&m_ChartTableEntryDummy;
-}
-#endif
 
 bool ChartDatabase::CompareChartDirArray(ArrayOfCDI &test_array) {
   //  Compare the parameter "test_array" with this.m_dir_array
@@ -1855,24 +1761,6 @@ bool ChartDatabase::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
                                                wxGenericProgressDialog *_prog) {
   // AbstractPlatform::ShowBusySpinner();
 
-  if (0) {
-    wxString longmsg = _("OpenCPN Chart Update");
-    longmsg +=
-        ".................................................................."
-        "........";
-
-    m_pprog = new wxGenericProgressDialog();
-
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    m_pprog->SetFont(*qFont);
-
-    m_pprog->Create(_("OpenCPN Chart Update"), longmsg, 100, nullptr,
-                    wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
-                        wxPD_REMAINING_TIME);
-
-    DimeControl(m_pprog);
-    m_pprog->Show();
-  }
   m_pprog = _prog;
 
   wxLogMessage("   ");
@@ -1900,7 +1788,7 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_full_collision_map.clear();
   m_jobsRemaining = 0;
   m_deferred_ticket_vector.clear();
-  m_dir_array = dir_array;
+  SetChartDirArray(dir_array);
 
   bValid = false;  // database is not useable right now...
   SetBusy(true);
@@ -1985,20 +1873,6 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
     }
   }
 
-  // Start deferred ticket processing
-#if 0
-  if (m_deferred_ticket_vector.size()) {
-      auto *evt =
-          new OCPN_ChartTableEntryThreadEvent(wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
-      auto ticket_deferred = m_deferred_ticket_vector.back();
-      m_deferred_ticket_vector.pop_back();
-      ticket_deferred->b_thread_safe = false;
-      evt->SetTicket(ticket_deferred);  // dummy event to get one pass of event handler
-      m_jobsRemaining = 1;
-      wxQueueEvent(this, evt);
-  }
-#endif
-
   // Initialize progress dialog
   m_progcount = 0;
   m_progint = 0;
@@ -2026,20 +1900,9 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 //-------------------------------------------------------------------
 
 int ChartDatabase::FinddbIndex(wxString PathToFind) {
-#if 0
-      //    Find the chart
-      for(unsigned int i=0 ; i<active_chartTable.GetCount() ; i++)
-      {
-          if(active_chartTable[i].GetpsFullPath()->IsSameAs(PathToFind))
-            {
-                  return i;
-            }
-      }
-#else
   if (active_chartTable_pathindex.find(PathToFind) !=
       active_chartTable_pathindex.end())
     return active_chartTable_pathindex[PathToFind];
-#endif
 
   return -1;
 }
@@ -2395,285 +2258,6 @@ one_file) find_unique = false;
 }
 */
 
-// ----------------------------------------------------------------------------
-// Populate Chart Table by directory search for specified file type
-// If bupdate flag is true, search the Chart Table for matching chart.
-//  if target chart is already in table, mark it valid and skip chart processing
-// ----------------------------------------------------------------------------
-
-#if 0
-int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
-                                         ChartClassDescriptor &chart_desc,
-                                         wxGenericProgressDialog *pprog) {
-  wxString msg("Searching directory: ");
-  msg += dir_name_base;
-  msg += " for ";
-  msg += chart_desc.m_search_mask;
-  wxLogMessage(msg);
-
-  wxString dir_name = dir_name_base;
-
-#ifdef __ANDROID__
-  dir_name = wxString(dir_name_base.mb_str(wxConvUTF8));  // android
-#endif
-
-  if (!wxDir::Exists(dir_name)) return 0;
-
-  wxString filespec = chart_desc.m_search_mask.Upper();
-  wxString lowerFileSpec = chart_desc.m_search_mask.Lower();
-  wxString filespecXZ = filespec + ".xz";
-  wxString lowerFileSpecXZ = lowerFileSpec + ".xz";
-  wxString filename;
-
-  //    Count the files
-  wxArrayString FileList;
-  int gaf_flags = wxDIR_DEFAULT;  // as default, recurse into subdirs
-
-  //    Here is an optimization for MSW/cm93 especially
-  //    If this directory seems to be a cm93, and we are not explicitely looking
-  //    for cm93, then abort Otherwise, we will be looking thru entire cm93 tree
-  //    for non-existent .KAP files, etc.
-
-  bool b_found_cm93 = false;
-  bool b_cm93 = Check_CM93_Structure(dir_name);
-  if (b_cm93) {
-    if (filespec != "00300000.A")
-      return false;
-    else {
-      filespec = dir_name;
-      b_found_cm93 = true;
-    }
-  }
-
-  if (!b_found_cm93) {
-    wxDir dir(dir_name);
-    dir.GetAllFiles(dir_name, &FileList, filespec, gaf_flags);
-
-#ifdef __ANDROID__
-    if (!FileList.GetCount()) {
-      wxArrayString afl = androidTraverseDir(dir_name, filespec);
-      for (wxArrayString::const_iterator item = afl.begin(); item != afl.end();
-           item++)
-        FileList.Add(*item);
-    }
-#endif
-
-#ifndef __WXMSW__
-    if (filespec != lowerFileSpec) {
-      // add lowercase filespec files too
-      wxArrayString lowerFileList;
-      dir.GetAllFiles(dir_name, &lowerFileList, lowerFileSpec, gaf_flags);
-
-#ifdef __ANDROID__
-      if (!lowerFileList.GetCount()) {
-        wxArrayString afl = androidTraverseDir(dir_name, lowerFileSpec);
-        for (wxArrayString::const_iterator item = afl.begin();
-             item != afl.end(); item++)
-          lowerFileList.Add(*item);
-      }
-#endif
-
-      for (wxArrayString::const_iterator item = lowerFileList.begin();
-           item != lowerFileList.end(); item++)
-        FileList.Add(*item);
-    }
-#endif
-
-#ifdef OCPN_USE_LZMA
-    // add xz compressed files;
-    dir.GetAllFiles(dir_name, &FileList, filespecXZ, gaf_flags);
-    dir.GetAllFiles(dir_name, &FileList, lowerFileSpecXZ, gaf_flags);
-#endif
-
-    FileList.Sort();  // Sorted processing order makes the progress bar more
-                      // meaningful to the user.
-  } else {            // This is a cm93 dataset, specified as yada/yada/cm93
-    wxString dir_plus = dir_name;
-    dir_plus += wxFileName::GetPathSeparator();
-    FileList.Add(dir_plus);
-  }
-
-  int nFile = FileList.GetCount();
-
-  if (!nFile) return false;
-
-  int nDirEntry = 0;
-
-  //    Check to see if there are any charts in the DB which refer to this
-  //    directory If none at all, there is no need to scan the DB for fullpath
-  //    match of each potential addition and bthis_dir_in_dB is false.
-  bool bthis_dir_in_dB = IsChartDirUsed(dir_name);
-
-  if (pprog) pprog->SetTitle(_("OpenCPN Chart Add...."));
-
-  // build a hash table based on filename (without directory prefix) of
-  // the chart to fast to detect identical charts
-  ChartCollisionsHashMap collision_map;
-  int nEntry = active_chartTable.GetCount();
-  for (int i = 0; i < nEntry; i++) {
-    wxString table_file_name = active_chartTable[i].GetFullSystemPath();
-    wxFileName table_file(table_file_name);
-    collision_map[table_file.GetFullName()] = i;
-  }
-
-  int nFileProgressQuantum = wxMax(nFile / 100, 2);
-  double rFileProgressRatio = 100.0 / wxMax(nFile, 1);
-
-  for (int ifile = 0; ifile < nFile; ifile++) {
-    wxFileName file(FileList[ifile]);
-    wxString full_name = file.GetFullPath();
-    wxString file_name = file.GetFullName();
-    wxString utf8_path = full_name;
-
-#ifdef __ANDROID__
-    // The full path (full_name) is the broken Android files system
-    // interpretation, which does not display well onscreen. So, here we
-    // reconstruct a full path spec in UTF-8 encoding for later use in string
-    // displays. This utf-8 string will be used to construct the chart database
-    // entry if required.
-    wxFileName fnbase(dir_name_base);
-    int nDirs = fnbase.GetDirCount();
-
-    wxFileName file_target(FileList[ifile]);
-
-    for (int i = 0; i < nDirs + 1;
-         i++)  // strip off the erroneous intial directories
-      file_target.RemoveDir(0);
-
-    wxString leftover_path = file_target.GetFullPath();
-    utf8_path =
-        dir_name_base + leftover_path;  // reconstruct a fully utf-8 version
-#endif
-
-    //    Validate the file name again, considering MSW's semi-random treatment
-    //    of case....
-    // TODO...something fishy here - may need to normalize saved name?
-    if (!file_name.Matches(lowerFileSpec) && !file_name.Matches(filespec) &&
-        !file_name.Matches(lowerFileSpecXZ) && !file_name.Matches(filespecXZ) &&
-        !b_found_cm93) {
-      // wxLogMessage("FileSpec test failed for:" + file_name);
-      continue;
-    }
-
-    if (pprog && ((ifile % nFileProgressQuantum) == 0))
-      pprog->Update(static_cast<int>(ifile * rFileProgressRatio), utf8_path);
-
-    ChartTableEntry *pnewChart = NULL;
-    bool bAddFinal = true;
-    int b_add_msg = 0;
-
-    // Check the collisions map looking for duplicates, and choosing the right
-    // one.
-    ChartCollisionsHashMap::const_iterator collision_ptr =
-        collision_map.find(file_name);
-    bool collision = (collision_ptr != collision_map.end());
-    bool file_path_is_same = false;
-    bool file_time_is_same = false;
-    ChartTableEntry *pEntry = NULL;
-    wxString table_file_name;
-
-    //  Allow multiple cm93 chart sets #4217
-    if (b_found_cm93) collision = false;
-
-    if (collision) {
-      pEntry = &active_chartTable[collision_ptr->second];
-      table_file_name = pEntry->GetFullSystemPath();
-      file_path_is_same =
-          bthis_dir_in_dB && full_name.IsSameAs(table_file_name);
-
-      // If the chart full file paths are exactly the same, select the newer
-      // one.
-      if (file_path_is_same) {
-        b_add_msg++;
-
-        //    Check the file modification time
-        time_t t_oldFile = pEntry->GetFileTime();
-        time_t t_newFile = file.GetModificationTime().GetTicks();
-
-        if (t_newFile <= t_oldFile) {
-          file_time_is_same = true;
-          bAddFinal = false;
-          pEntry->SetValid(true);
-        } else {
-          bAddFinal = true;
-          pEntry->SetValid(false);
-        }
-      }
-    }
-
-    wxString msg_fn(full_name);
-    msg_fn.Replace("%", "%%");
-    if (file_time_is_same) {
-      // Produce the same output without actually calling
-      // `CreateChartTableEntry()`.
-      wxLogMessage(
-          wxString::Format("Loading chart data for %s", msg_fn.c_str()));
-    } else {
-      pnewChart = CreateChartTableEntry(full_name, utf8_path, chart_desc);
-      if (!pnewChart) {
-        bAddFinal = false;
-        wxLogMessage(wxString::Format(
-            "   CreateChartTableEntry() failed for file: %s", msg_fn.c_str()));
-      }
-    }
-
-    if (!collision || !pnewChart) {
-      // Do nothing.
-    } else if (file_path_is_same) {
-      wxLogMessage(wxString::Format(
-          "   Replacing older chart file of same path: %s", msg_fn.c_str()));
-    } else if (!file_time_is_same) {
-      //  Look at the chart file name (without directory prefix) for a further
-      //  check for duplicates This catches the case in which the "same" chart
-      //  is in different locations, and one may be newer than the other.
-      b_add_msg++;
-
-      if (pnewChart->IsEarlierThan(*pEntry)) {
-        wxFileName table_file(table_file_name);
-        //    Make sure the compare file actually exists
-        if (table_file.IsFileReadable()) {
-          pEntry->SetValid(true);
-          bAddFinal = false;
-          wxLogMessage(
-              wxString::Format("   Retaining newer chart file of same name: %s",
-                               msg_fn.c_str()));
-        }
-      } else if (pnewChart->IsEqualTo(*pEntry)) {
-        //    The file names (without dir prefix) are identical,
-        //    and the mod times are identical
-        //    Prsume that this is intentional, in order to facilitate
-        //    having the same chart in multiple groups.
-        //    So, add this chart.
-        bAddFinal = true;
-      } else {
-        pEntry->SetValid(false);
-        bAddFinal = true;
-        wxLogMessage(wxString::Format(
-            "   Replacing older chart file of same name: %s", msg_fn.c_str()));
-      }
-    }
-
-    if (bAddFinal) {
-      if (0 == b_add_msg) {
-        wxLogMessage(
-            wxString::Format("   Adding chart file: %s", msg_fn.c_str()));
-      }
-      collision_map[file_name] = active_chartTable.GetCount();
-      active_chartTable.Add(pnewChart);
-      nDirEntry++;
-    } else {
-      if (pnewChart) delete pnewChart;
-      //                    wxLogMessage(wxString::Format("   Not adding
-      //                    chart file: %s", msg_fn.c_str()));
-    }
-  }
-
-  m_nentries = active_chartTable.GetCount();
-
-  return nDirEntry;
-}
-#endif
-
 int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
                                          ChartClassDescriptor &chart_desc,
                                          wxGenericProgressDialog *pprog) {
@@ -2827,14 +2411,11 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
       continue;
     }
 
-    // if (pprog && ((ifile % nFileProgressQuantum) == 0))
-    //   pprog->Update(static_cast<int>(ifile * rFileProgressRatio), utf8_path);
-
     ChartTableEntry *pnewChart = NULL;
     bool bAddFinal = true;
     int b_add_msg = 0;
 
-#if 0
+#if 0  // TODO  Fix?
     // Check the collisions map looking for duplicates in directories already
     // processed, and choosing the right one.
 //    ChartCollisionsHashMap::const_iterator collision_ptr =
@@ -2901,24 +2482,6 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
     }
 
   }  // the big loop
-
-#if 0  // Cannot happen
-      bool file_path_is_same = ticket_found->m_ChartPath.IsSameAs(ticket->m_ChartPath);
-      if (file_path_is_same) {
-        //    Check the file modification time
-        time_t t_oldFile = pEntry->GetFileTime();
-        time_t t_newFile = file.GetModificationTime().GetTicks();
-
-        if (t_newFile <= t_oldFile) {
-          file_time_is_same = true;
-          bAddFinal = false;
-          pEntry->SetValid(true);
-        } else {
-          bAddFinal = true;
-          pEntry->SetValid(false);
-        }
-      }
-#endif
 
   // Built-in chart types are all thread-safe
   // Check plugin charts
@@ -3069,10 +2632,8 @@ bool ChartDatabase::AddChart(wxString &chartfilename,
       wxLogMessage(
           wxString::Format("   Adding chart file: %s", msg_fn.c_str()));
     }
-
-    // TODO Fix
-    // active_chartTable.push_back(pnewChart);
-
+    std::shared_ptr<ChartTableEntry> sharedPtr(pnewChart);
+    active_chartTable.push_back(sharedPtr);
     rv = true;
   } else {
     delete pnewChart;
@@ -3097,7 +2658,7 @@ bool ChartDatabase::AddSingleChart(wxString &ChartFullPath,
   wxString dir_name = fn.GetPath();
 
   //    Search the array of chart class descriptors to find a match
-  //    bewteen the search mask and the the chart file extension
+  //    between the search mask and the chart file extension
 
   ChartClassDescriptor desc;
   for (auto &cd : m_ChartClassDescriptorArray) {
@@ -3180,29 +2741,28 @@ bool ChartDatabase::AddSingleChart(wxString &ChartFullPath,
 
   m_nentries = active_chartTable.size();
 
+  ChartData->UpdateChartDatabaseInplace(NewChartDirArray, false, nullptr);
   return rv;
 }
 
 bool ChartDatabase::RemoveSingleChart(wxString &ChartFullPath) {
-  // TODO fix this
-  return false;
-#if 0
   bool rv = false;
 
   //  Walk the chart table, looking for the target
-  for (unsigned int i = 0; i < active_chartTable.GetCount(); i++) {
-    if (ChartFullPath.IsSameAs(GetChartTableEntry(i).GetFullSystemPath())) {
-      active_chartTable.RemoveAt(i);
+  for (unsigned int i = 0; i < active_chartTable.size(); i++) {
+    auto &cte = GetChartTableEntry(i);
+    if (ChartFullPath.IsSameAs(cte.GetFullSystemPath())) {
+      // Fast remove element, order not preserved
+      std::swap(active_chartTable[i], active_chartTable.back());
+      active_chartTable.pop_back();
       break;
     }
   }
 
   //    Update the EntryOffset fields for the array
-  ChartTableEntry *pcte;
-
-  for (unsigned int i = 0; i < active_chartTable.GetCount(); i++) {
-    pcte = GetpChartTableEntry(i);
-    pcte->SetEntryOffset(i);
+  for (unsigned int i = 0; i < active_chartTable.size(); i++) {
+    auto &pcte = GetChartTableEntry(i);
+    pcte.SetEntryOffset(i);
   }
 
   //  Check and update the dir array
@@ -3231,10 +2791,10 @@ bool ChartDatabase::RemoveSingleChart(wxString &ChartFullPath) {
     m_chartDirs.Add(cdi.fullpath);
   }
 
-  m_nentries = active_chartTable.GetCount();
+  m_nentries = active_chartTable.size();
+  ChartData->UpdateChartDatabaseInplace(m_dir_array, false, nullptr);
 
   return rv;
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -3254,7 +2814,6 @@ ChartBase *ChartDatabase::GetChart(const wxChar *theFilePath,
 ChartTableEntry *ChartDatabase::CreateChartTableEntry(
     const wxString &filePath, wxString &utf8Path,
     ChartClassDescriptor &chart_desc) {
-  // printf("CreateCTE\n");
   wxString msg_fn(filePath);
   msg_fn.Replace("%", "%%");
   wxLogMessage(wxString::Format("Loading chart data for %s", msg_fn.c_str()));
@@ -3267,9 +2826,7 @@ ChartTableEntry *ChartDatabase::CreateChartTableEntry(
   }
 
   InitReturn rc = pch->Init(filePath, HEADER_ONLY);
-  // printf("Back from Init\n");
   if (rc != INIT_OK) {
-    // printf("   ###ERROR\n");
     delete pch;
     wxLogMessage(
         wxString::Format("   ...initialization failed for %s", msg_fn.c_str()));
