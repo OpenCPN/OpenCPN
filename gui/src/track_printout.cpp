@@ -100,7 +100,7 @@ TrackPrintout::TrackPrintout(Track* track, OCPNTrackListCtrl* lcPoints,
   if (GUI::HasKey(options, TrackPrintOptions::kTrackSpeed)) m_table << 40;
 
   m_table.StartFillData();
-  for (int n = 0; n <= m_track->GetnPoints(); n++) {
+  for (int n = 0; n < m_track->GetnPoints(); n++) {
     m_table << lcPoints->OnGetItemText(n, 0);  // leg
 
     if (GUI::HasKey(options, TrackPrintOptions::kTrackPosition)) {
