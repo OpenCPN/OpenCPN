@@ -182,7 +182,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog(wxWindow *parent,
   m_cs = (ColorScheme)-1;
 
   m_style = g_StyleManager->GetCurrentStyle();
-  SetULDockPosition(wxPoint(4, 4));
+  SetULDockPosition(wxPoint(4, g_maintoolbar_y));
 
   SetGeometry(false, wxRect());
 
