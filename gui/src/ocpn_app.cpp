@@ -1543,6 +1543,8 @@ void MyApp::BuildMainFrame() {
 
   gFrame->DoChartUpdate();
 
+  CommBridge::GetInstance();
+
   // Load comm connections
   for (auto *cp : TheConnectionParams()) {
     if (cp->bEnabled) {
