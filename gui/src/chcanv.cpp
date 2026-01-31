@@ -5455,15 +5455,17 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
 
   // recompute cursor position
   // and send to interested plugins if the mouse is actually in this window
-  int mouseX = mouse_x;
-  int mouseY = mouse_y;
-  if ((mouseX > 0) && (mouseX < VPoint.pix_width) && (mouseY > 0) &&
-      (mouseY < VPoint.pix_height)) {
-    double lat, lon;
-    GetCanvasPixPoint(mouseX, mouseY, lat, lon);
-    m_cursor_lat = lat;
-    m_cursor_lon = lon;
-    SendCursorLatLonToAllPlugIns(lat, lon);
+  if (top_frame::Get()->GetCanvasIndexUnderMouse() == m_canvasIndex) {
+    int mouseX = mouse_x;
+    int mouseY = mouse_y;
+    if ((mouseX > 0) && (mouseX < VPoint.pix_width) && (mouseY > 0) &&
+        (mouseY < VPoint.pix_height)) {
+      double lat_mouse, lon_mouse;
+      GetCanvasPixPoint(mouseX, mouseY, lat_mouse, lon_mouse);
+      m_cursor_lat = lat_mouse;
+      m_cursor_lon = lon_mouse;
+      SendCursorLatLonToAllPlugIns(m_cursor_lat, m_cursor_lon);
+    }
   }
 
   if (!VPoint.b_quilt && m_singleChart) {
