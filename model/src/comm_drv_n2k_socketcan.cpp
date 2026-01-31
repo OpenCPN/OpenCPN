@@ -327,7 +327,7 @@ bool CommDriverN2KSocketCanImpl::SendMessage(
 
   int sentbytes = 0;
 
-  if (load.size() <= 8) {
+  if (!IsFastMessagePGN(_pgn)) {
     frame.can_dlc = load.size();
     if (load.size() > 0) memcpy(&frame.data, load.data(), load.size());
 
