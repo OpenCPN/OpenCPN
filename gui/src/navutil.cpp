@@ -2411,6 +2411,12 @@ void MyConfig::UpdateSettings() {
 
   Flush();
   SendMessageToAllPlugins("GLOBAL_SETTINGS_UPDATED", "{\"updated\":\"1\"}");
+
+#ifdef ocpnUSE_GL
+  if (g_bopengl) {
+    top_frame::Get()->SendGlJsonConfigMsg();
+  }
+#endif
 }
 
 static wxFileName exportFileName(wxWindow *parent,
