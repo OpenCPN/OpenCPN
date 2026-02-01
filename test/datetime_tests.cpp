@@ -89,10 +89,11 @@ protected:
   void SetTimezone(const std::string& tz) {
 #ifdef _MSC_VER
     _putenv_s("TZ", tz.c_str());
+    _tzset();  // Force reload of timezone data
 #else
     setenv("TZ", tz.c_str(), 1);
-#endif
     tzset();  // Force reload of timezone data
+#endif
   }
 
   std::string original_tz;
