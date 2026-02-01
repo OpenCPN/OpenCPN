@@ -4,6 +4,7 @@ project(opencpn_tests)
 set(CMAKE_CXX_STANDARD 17)
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 message(STATUS "Building tests")
+option(ENABLE_5047_TESTS  "Run tests known to fail - #5077" OFF)
 
 enable_testing ()
 
@@ -66,6 +67,9 @@ endif ()
 
 add_executable(tests ${SRC})
 
+if (ENABLE_5047_TESTS)
+  target_compile_definitions(tests PRIVATE ENABLE_5047_TESTS)
+endif ()
 
 if (DEFINED ENV{FLATPAK_ID})
   target_compile_definitions(tests PRIVATE OCPN_FLATPAK)
