@@ -2855,7 +2855,7 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
   wxBitmap bmp(width, height, 32);
   mdc.SelectObject(bmp);
   HPGL->SetTargetDC(&mdc);
-#if (defined(__WXMSW__) || defined(__WXMAC__))
+#if (defined(__WXMSW__) || defined(__WXMAC__) || defined(__WXQT__))
   mdc.SetBackground(wxBrush(m_unused_wxColor));
   mdc.Clear();
 #endif
@@ -2869,6 +2869,10 @@ int s52plib::BuildHPGLTexture(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
   unsigned char *source = image.GetData();
   unsigned char *alpha = image.GetAlpha();
+
+#ifdef __WXQT__
+  alpha = nullptr;
+#endif
 
   unsigned char mr, mg, mb;
   if (!alpha) {
@@ -11929,7 +11933,7 @@ void RenderFromHPGL::Circle(wxPoint center, int radius, bool filled) {
 void RenderFromHPGL::Polygon() {
   if (renderToDC) {
     unsigned char rtrans = transparency;
-#ifdef __WXMSW__
+#if defined(__WXMSW__) || defined(__WXQT__)
     rtrans = 255;
 #endif
     penColor.Set(penColor.Red(), penColor.Green(), penColor.Blue(), rtrans);
