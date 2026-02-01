@@ -565,8 +565,13 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
           break;
         case GribDownloadType::XYGRIB:
           // Update XyGrib progress gauge
-          m_xygribPanel->m_progress_gauge->SetValue(100 * ev.getTransferred() /
-                                                    ev.getTotal());
+          if (ev.getTotal() > 0) 
+            {
+            m_xygribPanel->m_progress_gauge->SetValue(100 * ev.getTransferred() /
+                                                      ev.getTotal());
+            }
+          else m_xygribPanel->m_progress_gauge->SetValue(0);
+          
           // Update status text to display information on file size
           m_xygribPanel->m_status_text->SetLabel(
               GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
@@ -2759,30 +2764,50 @@ void GribRequestSetting::UpdateGribSizeEstimate() {
   m_gribSizeEstimate = estimate;
 }
 
-double GribRequestSetting::GetMinLat() const {
-  if (m_rbManualSelect && m_rbManualSelect->GetValue()) {
-    return m_spMinLat->GetValue();
-  }
-  return m_VpFocus->lat_min;
+// ----------------------------------------------------------------------------
+// SAFE GetMinLat
+// ----------------------------------------------------------------------------
+double GribRequestSetting::GetMinLat() const
+{
+    // m_VpFocus is likely already an LLBBox*, so call GetMinLat directly
+    if (m_VpFocus)
+        return m_VpFocus->lat_min;
+    
+    
+    return -90.0;
 }
 
-double GribRequestSetting::GetMaxLat() const {
-  if (m_rbManualSelect && m_rbManualSelect->GetValue()) {
-    return m_spMaxLat->GetValue();
-  }
-  return m_VpFocus->lat_max;
+// ----------------------------------------------------------------------------
+// SAFE GetMaxLat
+// ----------------------------------------------------------------------------
+double GribRequestSetting::GetMaxLat() const
+{
+    if (m_VpFocus)
+        return m_VpFocus->lat_max;
+
+    
+    return 90.0;
 }
 
-double GribRequestSetting::GetMinLon() const {
-  if (m_rbManualSelect && m_rbManualSelect->GetValue()) {
-    return m_spMinLon->GetValue();
-  }
-  return m_VpFocus->lon_min;
+// ----------------------------------------------------------------------------
+// SAFE GetMinLon
+// ----------------------------------------------------------------------------
+double GribRequestSetting::GetMinLon() const
+{
+    if (m_VpFocus)
+        return m_VpFocus->lon_min;
+
+    
+    return -180.0;
 }
 
-double GribRequestSetting::GetMaxLon() const {
-  if (m_rbManualSelect && m_rbManualSelect->GetValue()) {
-    return m_spMaxLon->GetValue();
-  }
-  return m_VpFocus->lon_max;
+// ----------------------------------------------------------------------------
+// SAFE GetMaxLon
+// ----------------------------------------------------------------------------
+double GribRequestSetting::GetMaxLon() const
+{
+    if (m_VpFocus)
+        return m_VpFocus->lon_max;
+
+    return 180.0;
 }
