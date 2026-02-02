@@ -108,9 +108,10 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
   wxString tzName;
   if (effective_time_zone == "Local Time") {
     wxDateTime now = wxDateTime::Now();
-    if ((now == (now.ToGMT())) &&
-        t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
+    if (now == now.ToGMT() && t.IsDST()) {
+      // bug in wxWingets 3.0 for UTC meridien ?
       t.Add(wxTimeSpan(1, 0, 0, 0));
+    }
     if (options.show_timezone) {
 #ifdef __WXMSW__
       tzName = _("LOC");
@@ -134,10 +135,11 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
     }
   } else {
     // UTC, or fallback to UTC if the timezone is not recognized.
-    t.MakeUTC();
     tzName = _("UTC");
   }
-  wxString formattedDate = t.Format(format);
+  wxDateTime::TimeZone zone =
+      tzName == _("UTC") ? wxDateTime::GMT0 : wxDateTime::Local;
+  wxString formattedDate = t.Format(format, zone);
   if (options.show_timezone) {
     return formattedDate + " " + tzName;
   } else {
