@@ -8348,6 +8348,7 @@ void options::OnCancelClick(wxCommandEvent& event) {
 
   top_frame::Get()->ThawCharts();
   Hide();
+  top_frame::Get()->EnableSettingsTool(true);
 }
 
 void options::OnClose(wxCloseEvent& event) {

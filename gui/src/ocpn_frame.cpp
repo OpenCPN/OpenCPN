@@ -3978,9 +3978,12 @@ void MyFrame::PrepareOptionsClose(options *settings,
   androidEnableRotation();
 #endif
   ThawCharts();
+  EnableSettingsTool(true);
 }
 
 void MyFrame::DoOptionsDialog() {
+  EnableSettingsTool(false);
+
   if (NULL == g_options) {
     AbstractPlatform::ShowBusySpinner();
 
@@ -4551,6 +4554,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
   switch (m_iInitCount++) {
     case 0: {
+      EnableSettingsTool(false);
+
       FontMgr::Get()
           .ScrubList();  // Clean the font list, removing nonsensical entries
 
@@ -4818,10 +4823,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       GetPrimaryCanvas()->Enable();
       g_focusCanvas = GetPrimaryCanvas();
 
-#ifndef __ANDROID__
-      // gFrame->Raise();
-#endif
-
       if (b_reloadForPlugins) {
         //  If any PlugIn implements PlugIn Charts, we need to re-run the
         //  initial chart load logic to select the correct chart as saved from
@@ -4855,8 +4856,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       androidLastCall();
 #endif
 
-      // if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
-
       if (g_start_fullscreen && !IsFullScreen()) ToggleFullScreen();
 
       UpdateStatusBar();
@@ -4879,6 +4878,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
   RefreshAllCanvas(true);
   UsbWatchDaemon::GetInstance().Start();
+  EnableSettingsTool(true);
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);

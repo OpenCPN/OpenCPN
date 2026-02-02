@@ -41,6 +41,7 @@
 
 #include "model/ais_target_data.h"
 #include "model/gui.h"
+#include "model/idents.h"
 #include "model/ocpn_types.h"
 #include "model/track.h"
 #include "model/comm_appmsg_bus.h"
@@ -440,6 +441,12 @@ public:
 
   void DestroyPersistentDialogs();
   void UpdateAISTool(void);
+  void EnableSettingsTool(bool _enable) {
+    if (g_MainToolbar) {
+      g_MainToolbar->EnableTool(ID_SETTINGS, _enable);
+      g_MainToolbar->RefreshToolbar();
+    }
+  }
 
   wxMenuBar* m_pMenuBar;
   bool m_bTimeIsSet;

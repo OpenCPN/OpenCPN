@@ -155,6 +155,7 @@ public:
   virtual void TouchAISActive() = 0;
   virtual void UpdateAISMOBRoute(const AisTargetData *ptarget) = 0;
   virtual void ActivateAISMOBRoute(const AisTargetData *ptarget) = 0;
+  virtual void EnableSettingsTool(bool _enable) = 0;
 };
 
 namespace top_frame {
