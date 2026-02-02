@@ -48,6 +48,8 @@
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 
+#include "test_config.h"
+
 // Macos up to 10.13
 #if (defined(OCPN_GHC_FILESYSTEM) || \
      (defined(__clang_major__) && (__clang_major__ < 15)))
@@ -909,13 +911,14 @@ public:
         Nmea0183Msg("AIVDO", AISVDO_1, addr1));
     msgbus.Notify(m);
     ProcessPendingEvents();
-    EXPECT_NEAR(gLat, 57.985758, 0.0001);
-    EXPECT_NEAR(gLon, 11.740108, 0.0001);
+    CallAfter([] {
+      EXPECT_NEAR(gLat, 57.985758, 0.0001);
+      EXPECT_NEAR(gLon, 11.740108, 0.0001);
+    });
   }
 };
 
 // GetSignalkPayload() introduced in 1.19
-#if 0
 #if API_VERSION_MINOR > 18
 class SignalKApp : public BasicTest {
 public:
@@ -947,7 +950,6 @@ public:
     EXPECT_EQ(1, msg.ItemAt("Data").ItemAt("list").ItemAt(0).AsInt());
   }
 };
-#endif
 #endif
 
 class AisDecodeApp : public BasicTest {
@@ -1069,6 +1071,7 @@ public:
     std::string server_cmd(CMAKE_BINARY_DIR);
     server_cmd += "/test/cli-server";
     stream = popen(server_cmd.c_str(), "r");
+    EXPECT_TRUE(stream != NULL) << strerror(errno);
     std::this_thread::sleep_for(25ms);  // Need some time to start server
     char buff[1024];
     char* line = fgets(buff, sizeof(buff), stream);  // initial line, throw.
@@ -1184,7 +1187,7 @@ TEST(Navmsg2000, to_string) {
   auto id = static_cast<uint64_t>(1234);
   auto msg =
       std::make_shared<Nmea2000Msg>(id, payload, shared_navaddr_none2000);
-  EXPECT_EQ(string("n2000-    PGN: 6385516 [  ]"), msg->to_string());
+  EXPECT_EQ(string("n2000  pgn: 6385516 [  ]"), msg->to_string());
 }
 
 TEST(FileDriver, Registration) {
@@ -1211,31 +1214,8 @@ TEST(FileDriver, output) {
   std::ifstream f("test-output.txt");
   stringstream ss;
   ss << f.rdbuf();
-  EXPECT_EQ(ss.str(), string("n2000-    PGN: 6385516 [  ]"));
+  EXPECT_EQ(ss.str(), string("n2000  pgn: 6385516 [  ]"));
 }
-
-#if 0
-// FIXME (comm_drv_file, see FIXME there)
-TEST(FileDriver, input) {
-  wxLog::SetActiveTarget(&defaultLog);
-  auto driver = std::make_shared<FileCommDriver>("test-output.txt");
-  std::string s("payload data");
-  auto payload = std::vector<unsigned char>(s.begin(), s.end());
-  auto id = static_cast<uint64_t>(1234);
-  Nmea2000Msg msg(id, payload, shared_navaddr_none);
-  remove("test-output.txt");
-  driver->SendMessage(std::make_shared<Nmea2000Msg>(msg),
-                      std::make_shared<NavAddr>());
-
-  SillyListener listener;
-  auto indriver = std::make_shared<FileCommDriver>("/tmp/foo.txt",
-                                                   "test-output.txt", listener);
-  indriver->Activate();
-  EXPECT_EQ(s_result2, string("nmea2000"));
-  EXPECT_EQ(s_result3, string("1234"));
-  EXPECT_EQ(s_result, string("payload data"));
-}
-#endif
 
 TEST(Listeners, vector) { ListenerCliApp app; };
 
@@ -1260,16 +1240,15 @@ TEST(AIS, AISVDM) { AisVdmApp app; }
 TEST(Navmsg, ActiveMessages) { NavMsgApp app; }
 
 #if API_VERSION_MINOR > 18
-#if 0
 TEST(PluginApi, SignalK) { SignalKApp app; }
-#endif
 #endif
 
 #ifdef HAVE_UNISTD_H
 TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
 #endif
 
-#if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+// #if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+#ifdef __unix__
 TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
 
 TEST(IpcClient, Raise) { CliRaise run_test; }
@@ -1278,7 +1257,7 @@ TEST(IpcClient, Open) { IpcOpen run_test; }
 
 TEST(Plugin, Basic) { PluginMsgApp app; }
 
-#endif
+#endif  // __unix__
 
 TEST(FormatTime, Basic) {
   wxTimeSpan span(0, 0, 7200, 0);

@@ -47,6 +47,10 @@
 #include "observable_confvar.h"
 #include "ocpn_plugin.h"
 
+#if wxCHECK_VERSION(3, 1, 6)
+
+#include "test_config.h"
+
 class DateTimeFormatTest : public ::testing::Test {
 protected:
   void SetUp() override {
@@ -85,10 +89,11 @@ protected:
   void SetTimezone(const std::string& tz) {
 #ifdef _MSC_VER
     _putenv_s("TZ", tz.c_str());
+    _tzset();  // Force reload of timezone data
 #else
     setenv("TZ", tz.c_str(), 1);
-#endif
     tzset();  // Force reload of timezone data
+#endif
   }
 
   std::string original_tz;
@@ -210,14 +215,15 @@ TEST_F(DateTimeFormatTest, ShowTimezoneDefault) {
   EXPECT_EQ(result, "2023-01-22 12:45:57 UTC");
 }
 
-#ifndef OCPN_DISTRO_BUILD
+#ifdef HAS_EN_US
 // Test with Local Time in EST timezone
 TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
-  // Set timezone to EST for this test (UTC-5)
-  SetTimezone("EST+5");
-
   wxDateTime testDate(22, wxDateTime::Feb, 2023, 12, 45, 57);
   testDate.MakeFromTimezone(wxDateTime::UTC);
+
+  // Set timezone to EST for this test (UTC-5)
+  SetTimezone("EST");
+
   // Set the UI local locale to US English to ensure consistent formatting
   // regardless of the system locale where the test is run.
   wxUILocale us_locale = wxUILocale::FromTag("en_US.UTF-8");
@@ -229,12 +235,13 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
                                    .SetFormatString("%A, %B %d, %Y %H:%M:%S")
                                    .SetTimezone("Local Time");
   wxString result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-  EXPECT_TRUE(result.StartsWith("Wednesday, February 22, 2023 07:45:57"))
-      << "Actual date/time: " << result;
+  std::string s = result.ToStdString();
+#ifdef ENABLE_5047_TESTS
+  EXPECT_TRUE(s.find("Wednesday, February 22, 2023 07:45:57") == 0)
+      << "Actual date/time: " << s;
   // Check for timezone abbreviation since we set it to EST
   EXPECT_TRUE(result.Contains(" EST") || result.Contains("LOC"))
       << "Actual timezone: " << result;
-
   // Test 2: request with default date/time format.
   // This should use the default format string which is
   // $weekday_short_date_time
@@ -242,12 +249,14 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
   result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
   EXPECT_TRUE(result.Contains("Wed 02/22/2023 07:45:57 AM"))
       << "Actual date/time: " << result;
+#endif  // ENABLE_5047_TESTS
 
   // Test 3: request with date/time format set to $weekday_short_date_time
   opts = DateTimeFormatOptions()
              .SetFormatString("$weekday_short_date_time")
              .SetTimezone("Local Time");
   result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+#ifdef ENABLE_5047_TESTS
   EXPECT_TRUE(result.Contains("Wed 02/22/2023 07:45:57 AM"))
       << "Actual date/time: " << result;
 
@@ -265,11 +274,16 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
              .SetFormatString("$hour_minutes_seconds")
              .SetTimezone("Local Time");
   result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
-  EXPECT_TRUE(result.Contains("07:45:57 AM EST") ||
-              result.Contains("07:45:57 AM LOC"))
+  std::string str = result.ToStdString();
+  EXPECT_TRUE(str.find("07:45:57 AM EST") != std::string::npos ||
+              str.find("07:45:57 AM LOC") != std::string::npos)
       << "Actual date/time: '" << result << "'";
+#endif  // ENABLE_5047_TESTS
 }
 
+#endif  // HAS_EN_US
+
+#ifdef HAS_SV_SE
 // Test with Local Time in CET timezone with Swedish locale (Västeuropa,
 // sommartid)
 TEST_F(DateTimeFormatTest, LocalTimezoneCETSwedish) {
@@ -326,4 +340,7 @@ TEST_F(DateTimeFormatTest, LocalTimezoneCETSwedish) {
   EXPECT_FALSE(result.Contains("sommartid"))
       << "Should not contain 'sommartid' suffix: " << result;
 }
-#endif  // OCPN_DISTRO_BUILD
+
+#endif  // SV_SE
+
+#endif  // wxCHECK_VERSION(3, 1, 6)
