@@ -4687,10 +4687,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 #ifdef __WXOSX__
       optionsParent = GetPrimaryCanvas();
 #endif
-      // g_options = new options(optionsParent, -1, _("Options"), wxPoint(-1,
-      // -1),
-      //                         wxSize(sx, sy));
-
       BuildiENCToolbar(true, m_toolbar_callbacks);
 
       break;
@@ -4768,6 +4764,32 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         laymsg.Printf("Getting .gpx layer files from: %s", layerdir.c_str());
         wxLogMessage(laymsg);
         pConfig->LoadLayers(layerdir);
+      }
+      break;
+    }
+    case 8: {
+      if (!g_kiosk_startup) {
+        AbstractPlatform::ShowBusySpinner();
+
+        int sx, sy;
+        pConfig->SetPath("/Settings");
+        pConfig->Read("OptionsSizeX", &sx, -1);
+        pConfig->Read("OptionsSizeY", &sy, -1);
+
+        wxWindow *optionsParent = this;
+#ifdef __WXOSX__
+        optionsParent = GetPrimaryCanvas();
+#endif
+        OptionsCallbacks callbacks;
+        callbacks.prepare_close = [&](options *me, int changes) {
+          PrepareOptionsClose(me, changes);
+        };
+        callbacks.process_dialog = [&](int changes, ArrayOfCDI *workdir_list) {
+          ProcessOptionsDialog(changes, workdir_list);
+        };
+        g_options = new options(optionsParent, callbacks, -1, _("Options"),
+                                wxPoint(-1, -1), wxSize(sx, sy));
+        AbstractPlatform::HideBusySpinner();
       }
       break;
     }
