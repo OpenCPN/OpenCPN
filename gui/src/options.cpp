@@ -2192,38 +2192,6 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
                                  m_pShipIconType->GetSize(), 3, trackAlt);
   pTrackGrid->Add(pTrackPrecision, 0, wxALIGN_RIGHT | wxALL,
                   group_item_spacing);
-
-  //  Calculate values
-  wxStaticBox* ownshipcalcText =
-      new wxStaticBox(itemPanelShip, wxID_ANY, _("Calculate values"));
-  wxStaticBoxSizer* ownshipcalcSizer =
-      new wxStaticBoxSizer(ownshipcalcText, wxVERTICAL);
-  ownShip->Add(ownshipcalcSizer, 0, wxTOP | wxALL | wxEXPAND, border_size);
-
-  wxFlexGridSizer* dispOwnShipCalcOptionsGrid =
-      new wxFlexGridSizer(2, 2, group_item_spacing, group_item_spacing);
-  ownshipcalcSizer->Add(dispOwnShipCalcOptionsGrid, 0, wxTOP | wxALL | wxEXPAND,
-                        border_size);
-
-  dispOwnShipCalcOptionsGrid->AddGrowableCol(1);
-
-  pSogCogFromLLCheckBox =
-      new wxCheckBox(itemPanelShip, ID_SOGCOGFROMLLCHECKBOX,
-                     _("Calculate SOG and COG from position changes"));
-  dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLCheckBox, 1, wxALL, 5);
-  dispOwnShipCalcOptionsGrid->AddSpacer(0);
-
-  wxStaticText* SogCogFromLLDampIntText = new wxStaticText(
-      itemPanelShip, wxID_STATIC, _("Min seconds between updates"));
-  dispOwnShipCalcOptionsGrid->Add(SogCogFromLLDampIntText, 1, wxEXPAND | wxALL,
-                                  group_item_spacing);
-
-  pSogCogFromLLDampInterval = new wxSpinCtrl(
-      itemPanelShip, ID_SOGCOGDAMPINTTEXTCTRL, wxEmptyString, wxDefaultPosition,
-      wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 0);
-
-  dispOwnShipCalcOptionsGrid->Add(pSogCogFromLLDampInterval, 0,
-                                  wxALIGN_RIGHT | wxALL, group_item_spacing);
 }
 
 void options::CreatePanel_Routes(size_t parent, int border_size,
@@ -6455,9 +6423,6 @@ void options::SetInitialSettings() {
   pWayPointPreventDragging->SetValue(g_bWayPointPreventDragging);
   pConfirmObjectDeletion->SetValue(g_bConfirmObjectDelete);
 
-  pSogCogFromLLCheckBox->SetValue(g_own_ship_sog_cog_calc);
-  pSogCogFromLLDampInterval->SetValue(g_own_ship_sog_cog_calc_damp_sec);
-
   if (pEnableZoomToCursor) pEnableZoomToCursor->SetValue(g_bEnableZoomToCursor);
   if (pEnableTenHertz) pEnableTenHertz->SetValue(g_btenhertz);
 
@@ -7402,8 +7367,6 @@ void options::ApplyChanges(wxCommandEvent& event) {
                g_colourWaypointRangeRingsColour.Green(),
                g_colourWaypointRangeRingsColour.Blue());
   g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
-  g_own_ship_sog_cog_calc = pSogCogFromLLCheckBox->GetValue();
-  g_own_ship_sog_cog_calc_damp_sec = pSogCogFromLLDampInterval->GetValue();
 
   g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
 

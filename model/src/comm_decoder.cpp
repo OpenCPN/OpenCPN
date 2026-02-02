@@ -84,17 +84,15 @@ bool CommDecoder::DecodeRMC(std::string s, NavData& temp_data) {
     } else
       return false;
 
-    // FIXME (dave) if (!g_own_ship_sog_cog_calc )
-    {
-      if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)) {
-        temp_data.gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-      }
-      if (!std::isnan(temp_data.gSog) && (temp_data.gSog > 0.05)) {
-        temp_data.gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-      } else {
-        temp_data.gCog = NAN;
-      }
+    if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)) {
+      temp_data.gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
     }
+    if (!std::isnan(temp_data.gSog) && (temp_data.gSog > 0.05)) {
+      temp_data.gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+    } else {
+      temp_data.gCog = NAN;
+    }
+
     // Any device sending VAR=0.0 can be assumed to not really know
     // what the actual variation is, so in this case we use WMM if
     // available
@@ -214,8 +212,6 @@ bool CommDecoder::DecodeVTG(std::string s, NavData& temp_data) {
 
   if (!m_NMEA0183.PreParse()) return false;
   if (!m_NMEA0183.Parse()) return false;
-
-  // FIXME (dave)if (g_own_ship_sog_cog_calc) return false;
 
   if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots))
     temp_data.gSog = m_NMEA0183.Vtg.SpeedKnots;

@@ -237,7 +237,6 @@ int MyConfig::LoadMyConfig() {
   g_cog_predictor_width = 3;
   g_ownship_HDTpredictor_miles = 1;
   g_n_ownship_min_mm = 2;
-  g_own_ship_sog_cog_calc_damp_sec = 1;
   g_bFullScreenQuilt = 1;
   g_track_rotate_time_type = TIME_TYPE_COMPUTER;
   g_bHighliteTracks = 1;
@@ -663,8 +662,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("OwnShipGPSOffsetX", &g_n_gps_antenna_offset_x);
   Read("OwnShipGPSOffsetY", &g_n_gps_antenna_offset_y);
   Read("OwnShipMinSize", &g_n_ownship_min_mm);
-  Read("OwnShipSogCogCalc", &g_own_ship_sog_cog_calc);
-  Read("OwnShipSogCogCalcDampSec", &g_own_ship_sog_cog_calc_damp_sec);
   Read("ShowDirectRouteLine", &g_bShowShipToActive);
   Read("DirectRouteLineStyle", &g_shipToActiveStyle);
   Read("DirectRouteLineColor", &g_shipToActiveColor);
@@ -1984,8 +1981,6 @@ void MyConfig::UpdateSettings() {
   Write("OwnShipGPSOffsetX", g_n_gps_antenna_offset_x);
   Write("OwnShipGPSOffsetY", g_n_gps_antenna_offset_y);
   Write("OwnShipMinSize", g_n_ownship_min_mm);
-  Write("OwnShipSogCogCalc", g_own_ship_sog_cog_calc);
-  Write("OwnShipSogCogCalcDampSec", g_own_ship_sog_cog_calc_damp_sec);
   Write("ShowDirectRouteLine", g_bShowShipToActive);
   Write("DirectRouteLineStyle", g_shipToActiveStyle);
   Write("DirectRouteLineColor", g_shipToActiveColor);

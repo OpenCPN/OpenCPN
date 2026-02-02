@@ -592,8 +592,6 @@ public:
   ;
   wxChoice *pTrackPrecision;
   wxTextCtrl *pNavAidRadarRingsStep, *pWaypointRangeRingsStep;
-  wxCheckBox *pSogCogFromLLCheckBox;
-  wxSpinCtrl *pSogCogFromLLDampInterval;
   wxTextCtrl *m_pText_TP_Secs, *m_pText_TP_Dist;
   wxCheckBox *pWayPointPreventDragging, *pConfirmObjectDeletion;
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;

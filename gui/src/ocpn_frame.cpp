@@ -6420,7 +6420,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
 }
 
 void MyFrame::FilterCogSog() {
-  if (g_bfilter_cogsog && !g_own_ship_sog_cog_calc) {
+  if (g_bfilter_cogsog) {
     //    Simple averaging filter for COG
     double cog_last = gCog;  // most recent reported value
 
