@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  AIS info GUI parts.
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
@@ -19,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * AIS info GUI parts.
+ */
 
 #include <memory>
 
@@ -37,21 +35,24 @@
 #include <wx/event.h>
 #include <wx/string.h>
 
+#include "o_sound/o_sound.h"
+#include "gl_headers.h"  // Must be before anything including GL stuff
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/gui_vars.h"
+#include "model/navobj_db.h"
 #include "model/route_point.h"
 
 #include "ais_info_gui.h"
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "chcanv.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "routemanagerdialog.h"
-#include "SoundFactory.h"
+#include "top_frame.h"
 #include "undo.h"
-#include "model/navobj_db.h"
 
 wxDEFINE_EVENT(EVT_AIS_DEL_TRACK, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_INFO, ObservedEvt);
@@ -60,16 +61,7 @@ wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern bool g_bquiting;
-extern int g_iSoundDeviceIndex;
-extern OCPNPlatform *g_Platform;
-extern Route *pAISMOBRoute;
-extern wxString g_CmdSoundString;
-extern MyConfig *pConfig;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern MyFrame *gFrame;
-extern AisInfoGui *g_pAISGUI;
+AisInfoGui *g_pAISGUI;  // global instance
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
@@ -83,12 +75,12 @@ static void OnNewAisWaypoint(RoutePoint *pWP) {
 
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
-  if (gFrame->GetPrimaryCanvas()) {
-    gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction(
-        Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
-    gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction(NULL);
-    gFrame->RefreshAllCanvas(false);
-    gFrame->InvalidateAllGL();
+  if (top_frame::Get()->GetAbstractPrimaryCanvas()) {
+    top_frame::Get()->BeforeUndoableAction(Undo_CreateWaypoint, pWP,
+                                           Undo_HasParent, NULL);
+    top_frame::Get()->AfterUndoableAction(NULL);
+    top_frame::Get()->RefreshAllCanvas(false);
+    top_frame::Get()->InvalidateAllGL();
   }
 }
 
@@ -116,7 +108,8 @@ AisInfoGui::AisInfoGui() {
   });
 
   ais_touch_listener.Listen(g_pAIS->touch_state, this, EVT_AIS_TOUCH);
-  Bind(EVT_AIS_TOUCH, [&](wxCommandEvent ev) { gFrame->TouchAISActive(); });
+  Bind(EVT_AIS_TOUCH,
+       [&](wxCommandEvent ev) { top_frame::Get()->TouchAISActive(); });
 
   ais_wp_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_WP);
   Bind(EVT_AIS_WP, [&](wxCommandEvent ev) {
@@ -142,6 +135,8 @@ AisInfoGui::AisInfoGui() {
   m_AIS_Sound = 0;
   m_bAIS_Audio_Alert_On = false;
   m_bAIS_AlertPlaying = false;
+  m_alarm_defer_count = -1;
+  m_lastMMSItime = wxDateTime::Now();
 }
 
 void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
@@ -172,47 +167,75 @@ void AisInfoGui::ShowAisInfo(
       break;
   }
 
+  // Maybe Reset deferral counter
+  // Arrange to reset deferral counter if 5 seconds have passed without an alarm
+  int last_alert_MMSI = m_lastMMSI;
+  wxDateTime last_alert_time = m_lastMMSItime;
+
+  if (palert_target->MMSI != last_alert_MMSI) {
+    wxTimeSpan dt = wxDateTime::Now() - last_alert_time;
+    if (dt.GetSeconds() > 5) {
+      m_alarm_defer_count = -1;  // reset the counter
+    }
+  }
+
+  m_lastMMSI = palert_target->MMSI;
+  m_lastMMSItime = wxDateTime::Now();
+
+  // printf("defer count: %d\n", m_alarm_defer_count);
+
   // If no alert dialog shown yet...
   if (!g_pais_alert_dialog_active) {
-    bool b_jumpto =
-        (palert_target->Class == AIS_SART) || (palert_target->Class == AIS_DSC);
-    bool b_createWP = palert_target->Class == AIS_DSC;
-    bool b_ack = palert_target->Class != AIS_DSC;
+    // Manage deferred Alarm dialog and sound
+    if (m_alarm_defer_count < 0) {
+      m_alarm_defer_count = g_AIS_alert_delay;
+    } else {
+      if (m_alarm_defer_count >= 1) {
+        m_alarm_defer_count--;
+      }
+    }
+    if (m_alarm_defer_count == 0) {  // Fire the Alarm, with sound
+      bool b_jumpto = (palert_target->Class == AIS_SART) ||
+                      (palert_target->Class == AIS_DSC);
+      bool b_createWP = palert_target->Class == AIS_DSC;
+      bool b_ack = palert_target->Class != AIS_DSC;
 
-    //    Show the Alert dialog
+      //    Show the Alert dialog
 
-    //      See FS# 968/998
-    //      If alert occurs while OCPN is iconized to taskbar, then clicking
-    //      the taskbar icon only brings up the Alert dialog, and not the
-    //      entire application. This is an OS specific behavior, not seen on
-    //      linux or Mac. This patch will allow the audio alert to occur, and
-    //      the visual alert will pop up soon after the user selects the OCPN
-    //      icon from the taskbar. (on the next timer tick, probably)
+      //      See FS# 968/998
+      //      If alert occurs while OCPN is iconized to taskbar, then clicking
+      //      the taskbar icon only brings up the Alert dialog, and not the
+      //      entire application. This is an OS specific behavior, not seen on
+      //      linux or Mac. This patch will allow the audio alert to occur, and
+      //      the visual alert will pop up soon after the user selects the OCPN
+      //      icon from the taskbar. (on the next timer tick, probably)
 
 #ifndef __ANDROID__
-    if (gFrame->IsIconized() || !gFrame->IsActive())
-      gFrame->RequestUserAttention();
+//      if (gFrame->IsIconized() || !gFrame->IsActive())
+//        gFrame->RequestUserAttention();
 #endif
 
-    if (!gFrame->IsIconized()) {
-      AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
-      pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS, b_jumpto,
-                              b_createWP, b_ack, -1, _("AIS Alert"));
+      if (!top_frame::Get()->IsIconized()) {
+        AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
+        pAISAlertDialog->Create(palert_target->MMSI, wxTheApp->GetTopWindow(),
+                                g_pAIS, b_jumpto, b_createWP, b_ack, -1,
+                                _("AIS Alert"));
 
-      g_pais_alert_dialog_active = pAISAlertDialog;
+        g_pais_alert_dialog_active = pAISAlertDialog;
 
-      wxTimeSpan alertLifeTime(0, 1, 0,
-                               0);  // Alert default lifetime, 1 minute.
-      auto alert_dlg_active =
-          dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
-      alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
-      g_Platform->PositionAISAlert(pAISAlertDialog);
+        wxTimeSpan alertLifeTime(0, 1, 0,
+                                 0);  // Alert default lifetime, 1 minute.
+        auto alert_dlg_active =
+            dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
+        alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
+        g_Platform->PositionAISAlert(pAISAlertDialog);
 
-      pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
+        pAISAlertDialog->Show();  // Show modeless, so it stays on the screen
+      }
+
+      //    Audio alert if requested
+      m_bAIS_Audio_Alert_On = true;  // always on when alert is first shown
     }
-
-    //    Audio alert if requested
-    m_bAIS_Audio_Alert_On = true;  // always on when alert is first shown
   }
 
   //    The AIS Alert dialog is already shown.  If the  dialog MMSI number is
@@ -252,6 +275,7 @@ void AisInfoGui::ShowAisInfo(
         if (palert_target_lowestcpa) {
           palert_target = NULL;
         }
+        m_alarm_defer_count = -1;
       }
     }
 
@@ -273,6 +297,7 @@ void AisInfoGui::ShowAisInfo(
       } else {
         alert_dlg_active->Close();
         m_bAIS_Audio_Alert_On = false;
+        m_alarm_defer_count = -1;
       }
 
       if (true == palert_target->b_suppress_audio)
@@ -282,57 +307,64 @@ void AisInfoGui::ShowAisInfo(
     } else {  // this should not happen, however...
       alert_dlg_active->Close();
       m_bAIS_Audio_Alert_On = false;
+      m_alarm_defer_count = -1;
     }
   }
 
-  //    At this point, the audio flag is set
+  //    At this point, the audio flag (m_bAIS_Audio_Alert_On) is set
   //    Honor the global flag
   if (!g_bAIS_CPA_Alert_Audio) m_bAIS_Audio_Alert_On = false;
 
-  if (m_bAIS_Audio_Alert_On) {
-    if (!m_AIS_Sound) {
-      m_AIS_Sound = SoundFactory(/*g_CmdSoundString.mb_str(wxConvUTF8)*/);
-    }
-    if (!AIS_AlertPlaying()) {
-      m_bAIS_AlertPlaying = true;
-      wxString soundFile;
-      switch (audioType) {
-        case AISAUDIO_DSC:
-          if (g_bAIS_DSC_Alert_Audio) soundFile = g_DSC_sound_file;
-          break;
-        case AISAUDIO_SART:
-          if (g_bAIS_SART_Alert_Audio) soundFile = g_SART_sound_file;
-          break;
-        case AISAUDIO_CPA:
-        default:
-          if (g_bAIS_GCPA_Alert_Audio) soundFile = g_AIS_sound_file;
-          break;
+  // Ensure that an Alert dialog in visible before activating sound
+  auto alert_dlg_active_audio_check =
+      dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
+  if (alert_dlg_active_audio_check && alert_dlg_active_audio_check->IsShown()) {
+    if (m_bAIS_Audio_Alert_On) {
+      if (!m_AIS_Sound) {
+        m_AIS_Sound = o_sound::Factory();
       }
+      if (!AIS_AlertPlaying()) {
+        m_bAIS_AlertPlaying = true;
+        wxString soundFile;
+        switch (audioType) {
+          case AISAUDIO_DSC:
+            if (g_bAIS_DSC_Alert_Audio) soundFile = g_DSC_sound_file;
+            break;
+          case AISAUDIO_SART:
+            if (g_bAIS_SART_Alert_Audio) soundFile = g_SART_sound_file;
+            break;
+          case AISAUDIO_CPA:
+          default:
+            if (g_bAIS_GCPA_Alert_Audio) soundFile = g_AIS_sound_file;
+            break;
+        }
 
-      m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
-      if (m_AIS_Sound->IsOk()) {
-        m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-        if (!m_AIS_Sound->Play()) {
+        m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
+        if (m_AIS_Sound->IsOk()) {
+          m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
+          if (!m_AIS_Sound->Play()) {
+            delete m_AIS_Sound;
+            m_AIS_Sound = 0;
+            m_bAIS_AlertPlaying = false;
+          }
+        } else {
           delete m_AIS_Sound;
           m_AIS_Sound = 0;
           m_bAIS_AlertPlaying = false;
         }
-      } else {
-        delete m_AIS_Sound;
-        m_AIS_Sound = 0;
-        m_bAIS_AlertPlaying = false;
       }
     }
   }
+
   //  If a SART Alert is active, check to see if the MMSI has special properties
   //  set indicating that this Alert is a MOB for THIS ship.
   if (palert_target && (palert_target->Class == AIS_SART)) {
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       if (palert_target->MMSI == g_MMSI_Props_Array[i]->MMSI) {
         if (pAISMOBRoute)
-          gFrame->UpdateAISMOBRoute(palert_target.get());
+          top_frame::Get()->UpdateAISMOBRoute(palert_target.get());
         else
-          gFrame->ActivateAISMOBRoute(palert_target.get());
+          top_frame::Get()->ActivateAISMOBRoute(palert_target.get());
         break;
       }
     }

@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Nmea2000 serial driver
+ */
 
 #ifndef _COMMDRIVERN2KSERIAL_H
 #define _COMMDRIVERN2KSERIAL_H
@@ -48,10 +47,11 @@
 
 #define MsgTypeN2kData 0x93
 #define MsgTypeN2kRequest 0x94
+
 using namespace std::literals::chrono_literals;
 
-class CommDriverN2KSerialThread;  // fwd
-class CommDriverN2KSerialEvent;
+class CommDriverN2KSerialThread;  // forward
+class CommDriverN2KSerialEvent;   // forward in .cpp file
 
 class CommDriverN2KSerial : public CommDriverN2K,
                             public wxEvtHandler,

@@ -12,7 +12,7 @@ you should probably prefer the workflow implemented by the
 
 Steps to to make a build:
 
-. Get Visual Studio Community 2022,  either the command line tools or the
+. Get Visual Studio Community 2026,  either the command line tools or the
   complete environment, from https://visualstudio.microsoft.com/vs/community/
 . Install the choco package manager, https://chocolatey.org/install
 . Clone the sources and move into them: +
@@ -56,7 +56,7 @@ using:
   thus be reasonably tested. However, user environment (in particular PATH))
   can make them fail.
 
-== Complete builds using Visual Studio 2022 Community Edition or Visual Studio 2019 Community Edition
+== Complete builds using Visual Studio 2026 Community Edition, Visual Studio 2022 Community Edition or Visual Studio 2019 Community Edition
 
 The steps here describe an alternative to the "Fast Track" scenario above.  It is much
  simpler to make a complete build in Visual Studio, including full source debugging
@@ -64,7 +64,7 @@ The steps here describe an alternative to the "Fast Track" scenario above.  It i
 
 Quick start:
 
-From the Windows Desktop open _x86 Native Tools Command Prompt for VS 2022_ (or 2019). Then
+From the Windows Desktop open _x86 Native Tools Command Prompt for VS_ (VS 2026), _x86 Native Tools Command Prompt for VS 2022_ (or 2019). Then
 enter these 4 commands:
 [,console]
 ----
@@ -73,21 +73,21 @@ $ cd opencpn
 $ .\buildwin\winConfig.bat
 $ .\build\opencpn.sln
 ----
-This one-time procedure takes about 10 minutes on a 12-processor Windows 11 computer.
+This one-time procedure takes about 10 minutes on a 12-core processor Windows 11 computer.
 When Visual Studio opens, select the desired build configuration (Debug or RelWithDebInfo) and you
 are ready to edit and build. Click the "Local Windows Debugger" button in Visual Studio to
 build and run OpenCPN in the VS debugger.
 
 Here are more details with explanations of each step.
 
-. Install Visual Studio 2022 Community Edition
+. Install Visual Studio 2026 Community Edition
   https://visualstudio.microsoft.com/downloads/. Be sure to select components:
 +
 * [*] ```Desktop development with C++```
 * [*] ```C++ CMake tools for windows```
 +
 . Install git for Windows: https://git-scm.com/download/win
-. Open _x86 Native Tools Command Prompt for Visual Studio 2022_
+. Open _x86 Native Tools Command Prompt for VS_ (or _x86 Native Tools Command Prompt for Visual Studio 2022_ if you use VS 2022)
 . Create folder where you want to work with OpenCPN sources, something
    like this:
 +

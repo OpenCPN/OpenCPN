@@ -110,6 +110,49 @@ bool getDisplayMetrics();
 
 #define CHART_DIR "Charts"
 
+// Helper function to check if a path is safely inside the target directory
+// Returns true if normalizedPath is inside targetDir, false otherwise (path
+// traversal attempt)
+static bool IsPathInsideDir(const wxString &targetDir,
+                            const wxString &entryName, wxString &outFullPath) {
+  // Construct the full path
+  wxString combinedPath = targetDir;
+  if (!combinedPath.EndsWith(wxFileName::GetPathSeparator())) {
+    combinedPath += wxFileName::GetPathSeparator();
+  }
+  combinedPath += entryName;
+
+  // Normalize the combined path to resolve any ".." components
+  wxFileName fn(combinedPath);
+  fn.Normalize(wxPATH_NORM_DOTS | wxPATH_NORM_ABSOLUTE | wxPATH_NORM_LONG);
+  outFullPath = fn.GetFullPath();
+
+  // Normalize target dir for comparison
+  wxFileName targetFn(targetDir);
+  targetFn.Normalize(wxPATH_NORM_DOTS | wxPATH_NORM_ABSOLUTE |
+                     wxPATH_NORM_LONG);
+  wxString normalizedTarget = targetFn.GetFullPath();
+
+  // Ensure target ends with separator for proper prefix matching
+  if (!normalizedTarget.EndsWith(wxFileName::GetPathSeparator())) {
+    normalizedTarget += wxFileName::GetPathSeparator();
+  }
+
+  // Check if the normalized path starts with the target directory
+  // This catches all path traversal attempts including "../", absolute paths,
+  // etc.
+  if (outFullPath.StartsWith(normalizedTarget)) {
+    return true;
+  }
+
+  // Also allow if it's exactly the target directory (for directory entries)
+  if (outFullPath == targetFn.GetFullPath()) {
+    return true;
+  }
+
+  return false;
+}
+
 static wxString FormatBytes(double bytes) {
   if (bytes <= 0) return "?";
   return wxString::Format(_T("%.1fMB"), bytes / 1024 / 1024);
@@ -1850,10 +1893,17 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString &aArchiveFile,
     }
     if (aTargetDir != wxEmptyString) {
       const char *currentFile = archive_entry_pathname(entry);
-      const std::string fullOutputPath =
-          aTargetDir.ToStdString() +
-          wxString(wxFileName::GetPathSeparator()).ToStdString() + currentFile;
-      archive_entry_set_pathname(entry, fullOutputPath.c_str());
+      wxString entryName = wxString::FromUTF8(currentFile);
+      wxString fullOutputPath;
+
+      // Path traversal protection: validate path stays inside target directory
+      if (!IsPathInsideDir(aTargetDir, entryName, fullOutputPath)) {
+        wxLogWarning(
+            _T("Skipping archive entry with path traversal attempt: ") +
+            entryName);
+        continue;
+      }
+      archive_entry_set_pathname(entry, fullOutputPath.ToUTF8().data());
     }
     r = archive_write_header(ext, entry);
     if (r < ARCHIVE_OK)
@@ -1932,6 +1982,7 @@ bool chartdldr_pi::ExtractUnarrFiles(const wxString &aRarFile,
   while (ar_parse_entry(ar)) {
     size_t size = ar_entry_get_size(ar);
     wxString name = ar_entry_get_name(ar);
+    wxString originalName = name;  // Save for logging
     if (aStripPath) {
       wxFileName fn(name);
       /* We can completly replace the entry path */
@@ -1940,11 +1991,19 @@ bool chartdldr_pi::ExtractUnarrFiles(const wxString &aRarFile,
       /* Or only remove the first dir (eg. ENC_ROOT) */
       if (fn.GetDirCount() > 0) {
         fn.RemoveDir(0);
-        name = aTargetDir + wxFileName::GetPathSeparator() + fn.GetFullPath();
-      } else {
-        name = aTargetDir + wxFileName::GetPathSeparator() + name;
+        name = fn.GetFullPath();
       }
     }
+
+    // Path traversal protection: validate path stays inside target directory
+    wxString fullPath;
+    if (!IsPathInsideDir(aTargetDir, name, fullPath)) {
+      wxLogWarning(_T("Skipping archive entry with path traversal attempt: ") +
+                   originalName);
+      continue;
+    }
+    name = fullPath;
+
     wxFileName fn(name);
     if (!fn.DirExists()) {
       if (!wxFileName::Mkdir(fn.GetPath())) {
@@ -2021,6 +2080,7 @@ bool chartdldr_pi::ExtractZipFiles(const wxString &aZipFile,
     while (entry.reset(zip.GetNextEntry()), entry.get() != NULL) {
       // access meta-data
       wxString name = entry->GetName();
+      wxString fullPath;
       if (aStripPath) {
         wxFileName fn(name);
         /* We can completly replace the entry path */
@@ -2028,10 +2088,16 @@ bool chartdldr_pi::ExtractZipFiles(const wxString &aZipFile,
         // name = fn.GetFullPath();
         /* Or only remove the first dir (eg. ENC_ROOT) */
         if (fn.GetDirCount() > 0) fn.RemoveDir(0);
-        name = aTargetDir + wxFileName::GetPathSeparator() + fn.GetFullPath();
-      } else {
-        name = aTargetDir + wxFileName::GetPathSeparator() + name;
+        name = fn.GetFullPath();
       }
+
+      // Path traversal protection: validate path stays inside target directory
+      if (!IsPathInsideDir(aTargetDir, name, fullPath)) {
+        wxLogWarning(_T("Skipping zip entry with path traversal attempt: ") +
+                     entry->GetName());
+        continue;
+      }
+      name = fullPath;
 
       // read 'zip' to access the entry's data
       if (entry->IsDir()) {

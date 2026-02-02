@@ -222,6 +222,17 @@ bool ParseN2kPGN127251(std::vector<unsigned char> &v, unsigned char &SID, double
 bool ParseN2kPGN127257(std::vector<unsigned char> &v, unsigned char &SID, double &Yaw, double &Pitch, double &Roll);
 
 //*****************************************************************************
+// Magnetic Variation
+// Input:
+//  - SID                   Sequence ID. If your device is e.g. boat speed and heading at same time, you can set same SID for different messages
+//                          to indicate that they are measured at same time.
+//  - Source                How was the variation value generated
+//  - DaysSince1970         Days since January 1, 1970
+//  - Variation             Magnetic variation/declination in radians
+bool ParseN2kPGN127258(std::vector<unsigned char> &v, unsigned char &SID,
+                       tN2kMagneticVariation &Source, uint16_t &DaysSince1970, double &Variation);
+
+//*****************************************************************************
 // Leeway
 // Input:
 //  - SID            Sequence ID field
@@ -849,4 +860,3 @@ bool ParseN2kPGN129793(std::vector<unsigned char> &v, uint8_t &MessageID, tN2kAI
                         unsigned int &SecondsSinceMidnight, unsigned int &DaysSinceEpoch);
 
 #endif  //guard
-

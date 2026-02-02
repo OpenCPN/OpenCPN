@@ -71,6 +71,9 @@ bool g_compact;
 //---------------------------------------------------------------------------------------------------------
 
 #include "icons.h"
+#include <N2kMsg.h>
+#include <N2kTypes.h>
+#include <N2kMessages.h>
 
 void WmmUIDialog::EnablePlotChanged(wxCommandEvent &event) {
   if (m_cbEnablePlot->GetValue()) m_wmm_pi.RecomputePlot();
@@ -112,7 +115,7 @@ and extended by Sean D'Epagnier to support plotting."));
 //---------------------------------------------------------------------------------------------------------
 
 wmm_pi::wmm_pi(void *ppimgr)
-    : opencpn_plugin_18(ppimgr),
+    : opencpn_plugin_118(ppimgr),
       m_bShowPlot(false),
       m_DeclinationMap(DECLINATION_PLOT, MagneticModel, TimedMagneticModel,
                        &Ellip),
@@ -209,6 +212,24 @@ int wmm_pi::Init(void) {
     Geoid.Geoid_Initialized = 1;
     /* Set EGM96 Geoid parameters END */
   }
+
+  bool found_handle = false;
+  for (const auto &handle : GetActiveDrivers()) {
+    const auto &attributes = GetAttributes(handle);
+    if (attributes.find("protocol") == attributes.end()) continue;
+    WMMLogMessage1(
+        wxString::Format("handle proto %s", attributes.at("protocol")));
+    if (attributes.at("protocol") == "nmea2000") {
+      m_handleN2k = handle;
+      found_handle = true;
+      break;
+    }
+  }
+  if (!found_handle) {
+    WMMLogMessage1("nmea2000 handle not found");
+  }
+  std::vector<int> pgn_list = {127258};
+  CommDriverResult xx = RegisterTXPGNs(m_handleN2k, pgn_list);
 
   int ret_flag =
       (WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
@@ -756,6 +777,9 @@ void wmm_pi::SendBoatVariation() {
   wxString out;
   w.Write(v, out);
   SendPluginMessage(wxString(_T("WMM_VARIATION_BOAT")), out);
+  // Send boat variation as NMEA HVD for the Priority List.
+  SendBoatVarHVD(m_boatVariation.Decl);
+  SendPGN127258(m_boatVariation.Decl);
 }
 
 void wmm_pi::SendCursorVariation() {
@@ -944,4 +968,46 @@ void wmm_pi::ShowPlotSettings() {
     SaveConfig();
   }
   delete dialog;
+}
+
+void wmm_pi::SendBoatVarHVD(double d_var) {
+  // We use the HVD NMEA sentence to send magnetic variation.
+  // The user can then select the desired variation
+  // via the priority of the source code. The not official Talker: WM
+  // is used to print source: WMM plugin in the Priority list.
+  wxString s_dir = d_var >= 0 ? "E" : "W";
+  d_var = fabs(d_var);  // Make it positive for NMEA sentence
+  wxString S = "$WMHVD";
+  S.Append(",");  // 1 Var degrees
+  S.Append(wxString::Format("%.1f", d_var));
+  S.Append(",");    // 2 Var Dir
+  S.Append(s_dir);  // E/W
+  S.Append("*");
+  S.Append(wxString::Format("%02X", ComputeChecksum(S)));
+  S += "\r\n";
+
+  PushNMEABuffer(S);
+}
+
+void wmm_pi::SendPGN127258(double d_var) {
+  // Send Magnetic Variation as PGN 127258 Magnetic Variation
+  double var_rad = d_var * (M_PI / 180.0);
+  // Calculate the number of days since the Unix epoch
+  time_t now = time(nullptr);
+  int days_since_epoch = now / (60 * 60 * 24);
+  tN2kMsg msg127285;
+  SetN2kPGN127258(msg127285, 0xFF, tN2kMagneticVariation::N2kmagvar_WMM2025,
+                  days_since_epoch, var_rad);
+  std::shared_ptr<std::vector<uint8_t>> payload(new std::vector<uint8_t>(
+      msg127285.Data, msg127285.Data + msg127285.DataLen));
+  WriteCommDriverN2K(m_handleN2k, 127258, 0xFF, 7, payload);
+}
+
+unsigned char wmm_pi::ComputeChecksum(wxString sentence) const {
+  unsigned char calculated_checksum = 0;
+  for (wxString::const_iterator i = sentence.begin() + 1;
+       i != sentence.end() && *i != '*'; ++i)
+    calculated_checksum ^= static_cast<unsigned char>(*i);
+
+  return (calculated_checksum);
 }

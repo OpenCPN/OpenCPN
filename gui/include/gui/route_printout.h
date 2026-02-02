@@ -13,26 +13,31 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
-#ifndef __ROUTEPRINTOUT_H__
-#define __ROUTEPRINTOUT_H__
+
+/**
+ * \file
+ *
+ * Route print dialog
+ */
+
+#ifndef ROUTEPRINTOUT_H_
+#define ROUTEPRINTOUT_H_
 
 #include <set>
+
 #include <wx/print.h>
-#include <wx/datetime.h>
-#include <wx/cmdline.h>
+#include <wx/dc.h>
 
 #ifdef __WXMSW__
 #include <wx/msw/private.h>
 #endif
 
-#include "dialog_input.h"
 #include "model/ocpn_types.h"
+
+#include "dialog_input.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "printout_base.h"
 #include "printtable.h"
 #include "ui_utils.h"

@@ -12,26 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
+ *
  *  General purpose GUI support.
  */
 
 #ifndef GUI_LIB_H__
 #define GUI_LIB_H__
 
+#include <wx/button.h>
 #include <wx/font.h>
 #include <wx/html/htmlwin.h>
 #include <wx/msgdlg.h>
 #include <wx/textctrl.h>
 #include <wx/timer.h>
 #include <wx/window.h>
-#include <wx/utils.h>
+
+#include "model/std_icon.h"
 
 /** Non-editable TextCtrl, used like wxStaticText but is copyable. */
 class CopyableText : public wxTextCtrl {
@@ -71,9 +72,8 @@ wxFont* GetOCPNScaledFont(wxString item, int default_size = 0);
 wxFont GetOCPNGUIScaledFont(wxString item);
 
 extern int OCPNMessageBox(wxWindow* parent, const wxString& message,
-                          const wxString& caption = _T("Message"),
-                          int style = wxOK, int timout_sec = -1, int x = -1,
-                          int y = -1);
+                          const wxString& caption = "Message", int style = wxOK,
+                          int timout_sec = -1, int x = -1, int y = -1);
 
 class OCPNMessageDialog : public wxDialog {
 public:
@@ -95,7 +95,7 @@ private:
 class TimedMessageBox : public wxEvtHandler {
 public:
   TimedMessageBox(wxWindow* parent, const wxString& message,
-                  const wxString& caption = _T("Message box"),
+                  const wxString& caption = "Message box",
                   long style = wxOK | wxCANCEL, int timeout_sec = -1,
                   const wxPoint& pos = wxDefaultPosition);
   ~TimedMessageBox();
@@ -134,6 +134,25 @@ private:
   bool isActive;
 
   DECLARE_EVENT_TABLE()
+};
+
+/**
+ * Clickable, small info icon which displays a help text
+ * Typical usage:
+ *
+ * auto info_btn = InfoButton(this, g_btouch, "short header"
+ *                            "long, multiline help");
+ */
+class InfoButton : public wxButton {
+public:
+  InfoButton(wxWindow* parent, bool touch, const char* header,
+             const char* info);
+
+private:
+  class InfoFrame;
+
+  StdIcon m_icon;
+  InfoFrame* m_info_frame;
 };
 
 #endif  // GUI_LIB_H__

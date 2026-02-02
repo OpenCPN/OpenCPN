@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Layer to perform wxDC drawing using wxDC or opengl
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2011 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,12 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ * Layer to perform wxDC drawing using wxDC or opengl
  */
+
+#include <list>
+#include <vector>
+
+#ifdef __MSVC__
+#include <winsock2.h>
+#include <windows.h>
+#endif
 
 #include <wx/wxprec.h>
 
@@ -31,37 +35,28 @@
 #include <wx/wx.h>
 #endif
 
+#include <wx/graphics.h>
+#include <wx/dcclient.h>
+
 #include "config.h"
+#include "ocpndc.h"
 
-#include "dychart.h"
-#include "ocpn_plugin.h"
+#include "model/cutil.h"
+#include "model/config_vars.h"
+
 #include "chcanv.h"
+#include "dychart.h"
 #include "linmath.h"
-#include "ocpn_frame.h"
-
-#ifdef __MSVC__
-#include <windows.h>
-#endif
+#include "ocpn_plugin.h"
 
 #ifdef ocpnUSE_GL
 #include "shaders.h"
 #endif
 
-#include <wx/graphics.h>
-#include <wx/dcclient.h>
-
-#include <vector>
-
-#include "ocpndc.h"
-#include "model/cutil.h"
-#include "model/config_vars.h"
-
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 extern ocpnGLOptions g_GLOptions;
 #endif
-
-wxArrayPtrVoid gTesselatorVertices;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 extern GLint color_tri_shader_program;
@@ -77,6 +72,8 @@ extern GLint texture_2D_shader_program;
 #endif
 
 //----------------------------------------------------------------------------
+static wxArrayPtrVoid gTesselatorVertices;
+
 ocpnDC::ocpnDC(glChartCanvas &canvas)
     : m_glchartCanvas(&canvas),
       m_glcanvas(NULL),
@@ -153,7 +150,7 @@ ocpnDC::~ocpnDC() {
 }
 
 void ocpnDC::Init() {
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = GetLocaleCanonicalName().IsSameAs("en_US");
   workBuf = NULL;
   workBufSize = 0;
   m_dpi_factor = 1.0;

@@ -12,16 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
-#ifndef _STD_INSTANCE_CHECK_H__
-#define _STD_INSTANCE_CHECK_H__
 
-#include <wx/snglinst.h>
+/**
+ * \file
+ *
+ * Posix native instance check implementation
+ */
+
+#ifndef STD_INSTANCE_CHECK_H_
+#define STD_INSTANCE_CHECK_H_
 
 #include "model/instance_check.h"
+#include "std_filesystem.h"
 
 /**  InstanceCheck implementation based on <unistd.h> i. e. Linux/MacOS */
 class StdInstanceCheck : public InstanceCheck {
@@ -35,8 +39,12 @@ public:
   void CleanUp() override;
 
 private:
-  std::string m_path;
+  fs::path m_path;
   bool m_is_main_instance;
+  bool is_inited;
+  bool is_my_lock;
+
+  void Init();
 };
 
-#endif  // _STD_INSTANCE_CHECK_H__
+#endif  // STD_INSTANCE_CHECK_H_

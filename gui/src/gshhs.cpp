@@ -1,15 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GSHHS Chart Object (Global Self-consistent, Hierarchical,
- *High-resolution Shoreline) Author:   Jesper Weissglas for the OpenCPN port.
- *
- *           Derived from http://www.zygrib.org/ and
- *http://sourceforge.net/projects/qtvlm/ which has the original copyright:
- *   zUGrib: meteorologic GRIB file data viewer
- *   Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org
- *
- ***************************************************************************
+/**************************************************************************
+ *   Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org        *
+ *   Copyright (C) 2012 Jesper Weissglass                                  *
  *   Copyright (C) 2012 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,13 +14,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
  *
+ * Implement gshhs.h -- Global shoreline
  *
+ * Derived from http://www.zygrib.org/ and
+ *  http://sourceforge.net/projects/qtvlm/ which have the original copyrights
  */
+#include <cmath>
+#include <list>
+#include <vector>
 
 #include <wx/wxprec.h>
 
@@ -37,29 +35,25 @@
 #include <wx/wx.h>
 #endif
 
+#include <wx/colour.h>
+#include <wx/debug.h>
 #include <wx/file.h>
+#include <wx/gdicmn.h>
+#include <wx/log.h>
+#include <wx/pen.h>
+#include <wx/utils.h>
 
+#include "model/config_vars.h"
+
+#include "chartbase.h"  // for projections
 #include "dychart.h"
-
-// #if defined(__OCPN__ANDROID__)
-// #include <GLES2/gl2.h>
-// #elif defined(__WXQT__) || defined(__WXGTK__)
-// #include <GL/glew.h>
-// //#define GL_GLEXT_PROTOTYPES
-// //#include <GL/gl.h>
-// //#include <GL/glext.h>
-// #endif
-
+#include "gshhs.h"
+#include "linmath.h"
 #include "ocpndc.h"
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
-
-#include "gshhs.h"
-#include "chartbase.h"  // for projections
-#ifdef ocpnUSE_GL
 #include "shaders.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #ifdef __WXMSW__
@@ -67,10 +61,6 @@
 #else
 #define __CALL_CONVENTION
 #endif
-
-#include "linmath.h"
-
-extern wxString gWorldMapLocation;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 static const GLchar *vertex_shader_source =
@@ -100,13 +90,12 @@ static const GLfloat vertices3[] = {
 };
 
 enum Consts { INFOLOG_LEN = 512 };
-GLchar infoLog[INFOLOG_LEN];
-GLint fragment_shader;
-// GLint shader_program;
-GLint success;
-GLint vertex_shader;
+static GLchar infoLog[INFOLOG_LEN];
+static GLint fragment_shader;
+static GLint success;
+static GLint vertex_shader;
 
-extern GLint color_tri_shader_program;
+extern GLint color_tri_shader_program;  // FIXME (leamas) find a home
 #endif
 
 //-------------------------------------------------------------------------
@@ -167,12 +156,12 @@ void GSHHSChart::RenderViewOnDC(ocpnDC &dc, ViewPort &vp) {
     reader = new GshhsReader();
     if (reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 240) {
       wxLogMessage(
-          _T("GSHHS World chart files have wrong version. Found %d, expected ")
-          _T("210-220."),
+          "GSHHS World chart files have wrong version. Found %d, expected "
+          "210-220.",
           reader->GetPolyVersion());
     } else {
       wxLogMessage(
-          _T("Background world map loaded from GSHHS datafiles found in: ") +
+          "Background world map loaded from GSHHS datafiles found in: " +
           gWorldMapLocation);
     }
   }
@@ -240,7 +229,7 @@ void GshhsPolyCell::ReadPoly(contour_list &poly) {
   return;
 
 fail:
-  wxLogMessage(_T("gshhs ReadPoly failed"));
+  wxLogMessage("gshhs ReadPoly failed");
 }
 
 void GshhsPolyCell::ReadPolygonFile() {
@@ -264,7 +253,7 @@ void GshhsPolyCell::ReadPolygonFile() {
   return;
 
 fail:
-  wxLogMessage(_T("gshhs ReadPolygon failed"));
+  wxLogMessage("gshhs ReadPolygon failed");
 }
 
 wxPoint2DDouble GetDoublePixFromLL(ViewPort &vp, double lat, double lon) {
@@ -335,8 +324,6 @@ typedef union {
   } info;
 } GLvertex;
 
-#include <list>
-
 static std::list<float_2Dpt> g_pv;
 static std::list<GLvertex *> g_vertexes;
 static int g_type, g_pos;
@@ -385,7 +372,7 @@ void __CALL_CONVENTION gshhsvertexCallback(GLvoid *arg) {
 void __CALL_CONVENTION gshhserrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
+  // wxLogMessage( "OpenGL Tessellation Error: %s", estring );
 }
 
 void __CALL_CONVENTION gshhsbeginCallback(GLenum type) {
@@ -901,7 +888,7 @@ void GshhsPolyReader::readPolygonFileHeader(FILE *polyfile,
                                             PolygonFileHeader *header) {
   fseek(polyfile, 0, SEEK_SET);
   if (fread(header, sizeof(PolygonFileHeader), 1, polyfile) != 1)
-    wxLogMessage(_T("gshhs ReadPolygonFileHeader failed"));
+    wxLogMessage("gshhs ReadPolygonFileHeader failed");
 }
 
 //-------------------------------------------------------------------------
@@ -1145,8 +1132,8 @@ GshhsReader::GshhsReader() {
 
   if (maxQualityAvailable < 0) {
     wxString msg(
-        _T("Unable to initialize background world map. No GSHHS datafiles ")
-        _T("found in "));
+        "Unable to initialize background world map. No GSHHS datafiles "
+        "found in ");
     msg += gWorldMapLocation;
     wxLogMessage(msg);
   }
@@ -1207,22 +1194,22 @@ wxString GshhsReader::getNameExtension(int quality) {
   wxString ext;
   switch (quality) {
     case 0:
-      ext = _T("c");
+      ext = "c";
       break;
     case 1:
-      ext = _T("l");
+      ext = "l";
       break;
     case 2:
-      ext = _T("i");
+      ext = "i";
       break;
     case 3:
-      ext = _T("h");
+      ext = "h";
       break;
     case 4:
-      ext = _T("f");
+      ext = "f";
       break;
     default:
-      ext = _T("l");
+      ext = "l";
       break;
   }
   return ext;
@@ -1231,21 +1218,21 @@ wxString GshhsReader::getNameExtension(int quality) {
 wxString GshhsReader::getFileName_Land(int quality) {
   wxString ext = GshhsReader::getNameExtension(quality);
   wxString fname =
-      gWorldMapLocation + wxString::Format(_T("poly-%c-1.dat"), ext.GetChar(0));
+      gWorldMapLocation + wxString::Format("poly-%c-1.dat", ext.GetChar(0));
   return fname;
 }
 
 wxString GshhsReader::getFileName_boundaries(int quality) {
   wxString ext = GshhsReader::getNameExtension(quality);
-  wxString fname = gWorldMapLocation +
-                   wxString::Format(_T("wdb_borders_%c.b"), ext.GetChar(0));
+  wxString fname =
+      gWorldMapLocation + wxString::Format("wdb_borders_%c.b", ext.GetChar(0));
   return fname;
 }
 
 wxString GshhsReader::getFileName_rivers(int quality) {
   wxString ext = GshhsReader::getNameExtension(quality);
-  wxString fname = gWorldMapLocation +
-                   wxString::Format(_T("wdb_rivers_%c.b"), ext.GetChar(0));
+  wxString fname =
+      gWorldMapLocation + wxString::Format("wdb_rivers_%c.b", ext.GetChar(0));
   return fname;
 }
 
@@ -1316,7 +1303,7 @@ void GshhsReader::LoadQuality(int newQuality)  // 5 levels: 0=low ... 4=full
         }
     }
 #endif
-  wxLogMessage(_T("Loading World Chart Q=%d in %ld ms."), quality,
+  wxLogMessage("Loading World Chart Q=%d in %ld ms.", quality,
                perftimer.Time());
 }
 

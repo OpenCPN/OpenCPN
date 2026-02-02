@@ -13,15 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/   *
  **************************************************************************/
 
 /**
  * \file
- * SerialIo asynchronous implementation based on the serial/serial.h header.
- * Used on all platforms besides Android.
+ *
+ * Implement std_serial_io.h -- * SerialIo asynchronous implementation based
+ * on the serial/serial.h header.
  */
 
 #include <memory>
@@ -134,7 +133,9 @@ void* StdSerialIo::Entry() {
     //  Handle pending output messages
     std::string qmsg;
     while (KeepGoing() && m_out_que.Get(qmsg)) {
-      qmsg += "\r\n";
+      if (qmsg.size() < 3) continue;
+      if (qmsg.find("\r\n", qmsg.size() - 2) == std::string::npos)
+        qmsg += "\r\n";
       bool failed_write = WriteComPortPhysical(qmsg.c_str()) == -1;
       if (!failed_write) {
         std::lock_guard lock(m_stats_mutex);

@@ -40,6 +40,7 @@
 #include <wx/matrix.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
+#include "o_sound/o_sound.h"
 
 #include "model/ais_state_vars.h"
 #include "model/cmdline.h"
@@ -48,6 +49,7 @@
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
@@ -59,38 +61,38 @@
 #include "model/select.h"
 
 #include "about.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetListDialog.h"
-#include "AISTargetQueryDialog.h"
-#include "AndroidSound.h"
+#include "ais_target_alert_dlg.h"
+#include "ais_target_list_dlg.h"
+#include "ais_target_query_dlg.h"
 #include "androidUTIL.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "config.h"
 #include "dychart.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "gui_lib.h"
-#include "iENCToolbar.h"
-#include "MarkInfo.h"
-#include "MUIBar.h"
+#include "ienc_toolbar.h"
+#include "mark_info.h"
+#include "mui_bar.h"
 #include "navutil.h"
 #include "nmea0183.h"
 #include "model/nmea_ctx_factory.h"
-#include "OCPNPlatform.h"
+#include "ocpn_frame.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "options.h"
 #include "routemanagerdialog.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s52s57.h"
 #include "s52utils.h"
-#include "S57QueryDialog.h"
-#include "TCWin.h"
+#include "s57_query_dlg.h"
+#include "tc_win.h"
 #include "toolbar.h"
 #include "toolbar.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
 #endif
@@ -204,8 +206,6 @@ extern bool g_bConfirmObjectDelete;
 extern wxLocale *plocale_def_lang;
 #endif
 
-// extern OCPN_Sound        g_anchorwatch_sound;
-
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
 extern bool g_oz_vector_scale;
@@ -263,7 +263,6 @@ extern bool g_bAutoAnchorMark;
 extern wxAuiManager *g_pauimgr;
 extern wxString g_AisTargetList_perspective;
 
-WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
 wxString callActivityMethod_vs(const char *method);
@@ -271,9 +270,8 @@ wxString callActivityMethod_is(const char *method, int parm);
 
 //      Globals, accessible only to this module
 
-bool b_androidBusyShown;
-double g_androidDPmm;
-double g_androidDensity;
+static bool b_androidBusyShown;
+static double g_androidDensity;
 
 bool g_bExternalApp;
 
@@ -469,17 +467,11 @@ void androidUtilHandler::handle_N0183_MSG(AndroidNMEAEvent &event) {
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
 
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
-
+    // notify message listener
     auto address = std::make_shared<NavAddr>(NavAddr0183("Android_RAW"));
-
     auto msg =
         std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
     m_listener.Notify(std::move(msg));
-    m_listener.Notify(std::move(msg_all));
   }
 }
 
@@ -1113,7 +1105,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env,
 extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onSoundDone(
     JNIEnv *env, jobject obj, long soundPtr) {
-  auto sound = reinterpret_cast<AndroidSound *>(soundPtr);
+  auto sound = reinterpret_cast<o_sound::Sound *>(soundPtr);
   DEBUG_LOG << "on SoundDone, ptr: " << soundPtr;
   sound->OnSoundDone();
   return 57;
@@ -3865,7 +3857,7 @@ wxString getFontQtStylesheet(wxFont *font) {
   return qstyle;
 }
 
-bool androidPlaySound(const wxString soundfile, AndroidSound *sound) {
+bool androidPlaySound(const wxString soundfile, o_sound::Sound *sound) {
   DEBUG_LOG << "androidPlaySound";
   std::ostringstream oss;
   oss << sound;
@@ -4563,11 +4555,8 @@ int doAndroidPersistState() {
     {
       //    First, delete any single anchorage waypoint closer than 0.25 NM from
       //    this point This will prevent clutter and database congestion....
-
-      wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-      while (node) {
-        RoutePoint *pr = node->GetData();
-        if (pr->GetName().StartsWith(_T("Anchorage"))) {
+      for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
+        if (pr->GetName().StartsWith("Anchorage")) {
           double a = gLat - pr->m_lat;
           double b = gLon - pr->m_lon;
           double l = sqrt((a * a) + (b * b));
@@ -4580,8 +4569,6 @@ int doAndroidPersistState() {
             break;
           }
         }
-
-        node = node->GetNext();
       }
 
       wxString name = ocpn::toUsrDateTimeFormat(now);

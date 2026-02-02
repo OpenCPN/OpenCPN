@@ -437,6 +437,7 @@ public:
   wxRadioBox* m_rbLoadOptions;
   wxRadioBox* m_rbStartOptions;
   wxString m_grib_dir_sel;
+  wxTextCtrl* m_textDirectory;
 
 #ifdef __WXMSW__
   wxSlider* m_sIconSizeFactor;

@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_n2k.h -- Nmea2000 serial driver.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,21 +13,24 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_drv_n2k.h -- Nmea2000 serial driver.
+ */
+
+#include <mutex>  // std::mutex
+#include <queue>  // std::queue
+#include <vector>
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
-
-#include <vector>
-#include <mutex>  // std::mutex
-#include <queue>  // std::queue
+#endif
 
 #include <wx/log.h>
 
@@ -42,7 +40,7 @@
 #include "model/logger.h"
 #include "model/comm_drv_stats.h"
 
-#include <N2kMsg.h>
+#include "N2kMsg.h"
 
 /* Copied from canboat Project
  * https://github.com/canboat/canboat
@@ -57,7 +55,7 @@ static unsigned char NGT_STARTUP_SEQ[] = {
     0x00  /* msg byte 3, meaning ? */
 };
 
-std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg);
+static std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg);
 
 template <typename T>
 class n2k_atomic_queue {
@@ -152,10 +150,10 @@ public:
                             const wxString& PortName,
                             const wxString& strBaudRate);
 
-  ~CommDriverN2KSerialThread(void);
+  ~CommDriverN2KSerialThread();
   void* Entry();
   bool SetOutMsg(const std::vector<unsigned char>& load);
-  void OnExit(void);
+  void OnExit();
   DriverStats GetStats() const;
 
 private:
@@ -167,7 +165,7 @@ private:
   void CloseComPortPhysical();
   size_t WriteComPortPhysical(std::vector<unsigned char> msg);
   size_t WriteComPortPhysical(unsigned char* msg, size_t length);
-  void SetGatewayOperationMode(void);
+  void SetGatewayOperationMode();
 
   CommDriverN2KSerial* m_pParentDriver;
   wxString m_PortName;
@@ -256,50 +254,6 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
 
   //  Initialize the device clearing all rx/tx filterx
   SendMgmtMsg(NGT_STARTUP_SEQ, sizeof(NGT_STARTUP_SEQ), 0x11, 0, NULL);
-
-#if 0
-  // Testing TX of Heartbeat
-  wxSleep(1);
-
-  tN2kMsg N2kMsg;   // automatically sets destination 255
-  //SetHeartbeat(N2kMsg,2000,0);
-      //SetN2kPGN126993(N2kMsg, 2000, 0);
-        N2kMsg.SetPGN(126993L);
-        //N2kMsg.Priority=7;
-        N2kMsg.Source = 2;
-        N2kMsg.Destination = 133;
-        N2kMsg.Add2ByteUInt((uint16_t)(2000));    // Rate, msec
-
-        N2kMsg.AddByte(0);    //Status
-        N2kMsg.AddByte(0xff); // Reserved
-        N2kMsg.Add4ByteUInt(0xffffffff); // Reserved
-
-  const std::vector<unsigned char> mv = BufferToActisenseFormat(N2kMsg);
-
-  size_t len = mv.size();
-
-  wxString comx = m_params.GetDSPort().AfterFirst(':');
-  std::string interface = comx.ToStdString();
-
-  N2kName source_name(1234);
-  auto source_address = std::make_shared<NavAddr2000>(interface, source_name);
-  auto dest_address = std::make_shared<NavAddr2000>(interface, N2kMsg.Destination);
-
-  auto message_to_send = std::make_shared<Nmea2000Msg>(126993L,
-                                  mv, source_address, 3);
-
-    for(size_t i=0; i< mv.size(); i++){
-      printf("%02X ", mv.at(i));
-    }
-    printf("\n\n");
-
-  SetTXPGN(126993);
-  wxSleep(1);
-
-  SendMessage(message_to_send, dest_address);
-
-  int yyp = 4;
-#endif
 }
 
 CommDriverN2KSerial::~CommDriverN2KSerial() { Close(); }
@@ -333,8 +287,7 @@ bool CommDriverN2KSerial::Open() {
 }
 
 void CommDriverN2KSerial::Close() {
-  wxLogMessage(
-      wxString::Format(_T("Closing N2K Driver %s"), m_portstring.c_str()));
+  wxLogMessage(wxString::Format("Closing N2K Driver %s", m_portstring.c_str()));
 
   m_stats_timer.Stop();
   m_closing = true;
@@ -343,7 +296,7 @@ void CommDriverN2KSerial::Close() {
   if (m_pSecondary_Thread) {
     if (m_bsec_thread_active)  // Try to be sure thread object is still alive
     {
-      wxLogMessage(_T("Stopping Secondary Thread"));
+      wxLogMessage("Stopping Secondary Thread");
 
       m_Thread_run_flag = 0;
       int tsec = 10;
@@ -351,9 +304,9 @@ void CommDriverN2KSerial::Close() {
 
       wxString msg;
       if (m_Thread_run_flag < 0)
-        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+        msg.Printf("Stopped in %d sec.", 10 - tsec);
       else
-        msg.Printf(_T("Not Stopped after 10 sec."));
+        msg.Printf("Not Stopped after 10 sec.");
       wxLogMessage(msg);
     }
 
@@ -370,6 +323,7 @@ static uint64_t PayloadToName(const std::vector<unsigned char> payload) {
 bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
                                       std::shared_ptr<const NavAddr> addr) {
   if (m_closing) return false;
+  if (!msg) return false;
 
 #ifndef ANDROID
 
@@ -388,19 +342,13 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
 
   const std::vector<uint8_t> acti_pkg = BufferToActisenseFormat(N2kMsg);
 
-  // Create the internal message for all N2K listeners
+  // Create the internal message  and notify upper layers
   std::vector<unsigned char> msg_payload;
   for (size_t i = 2; i < acti_pkg.size() - 2; i++)
     msg_payload.push_back(acti_pkg[i]);
   auto name = PayloadToName(load);
-  auto msg_all =
-      std::make_shared<const Nmea2000Msg>(1, msg_payload, GetAddress(name));
-  auto msg_internal =
-      std::make_shared<const Nmea2000Msg>(_pgn, msg_payload, GetAddress(name));
-
-  // Notify listeners
-  m_listener.Notify(std::move(msg_internal));
-  m_listener.Notify(std::move(msg_all));
+  m_listener.Notify(
+      std::make_shared<const Nmea2000Msg>(_pgn, msg_payload, GetAddress(name)));
 
   if (GetSecondaryThread()) {
     if (IsSecThreadActive()) {
@@ -491,11 +439,8 @@ void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
     auto name = PayloadToName(*payload);
     auto msg =
         std::make_shared<const Nmea2000Msg>(pgn, *payload, GetAddress(name));
-    auto msg_all =
-        std::make_shared<const Nmea2000Msg>(1, *payload, GetAddress(name));
 
     m_listener.Notify(std::move(msg));
-    m_listener.Notify(std::move(msg_all));
   }
 }
 
@@ -665,7 +610,7 @@ CommDriverN2KSerialThread::CommDriverN2KSerialThread(
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
   m_PortName = PortName;
-  m_FullPortName = _T("Serial:") + PortName;
+  m_FullPortName = "Serial:" + PortName;
 
   rx_buffer = new unsigned char[DS_RX_BUFFER_SIZE + 1];
 
@@ -685,11 +630,9 @@ CommDriverN2KSerialThread::CommDriverN2KSerialThread(
   Create();
 }
 
-CommDriverN2KSerialThread::~CommDriverN2KSerialThread(void) {
-  delete[] rx_buffer;
-}
+CommDriverN2KSerialThread::~CommDriverN2KSerialThread() { delete[] rx_buffer; }
 
-void CommDriverN2KSerialThread::OnExit(void) {}
+void CommDriverN2KSerialThread::OnExit() {}
 
 DriverStats CommDriverN2KSerialThread::GetStats() const {
   std::lock_guard lock(m_stats_mutex);
@@ -721,7 +664,7 @@ void CommDriverN2KSerialThread::CloseComPortPhysical() {
   m_driver_stats.available = false;
 }
 
-void CommDriverN2KSerialThread::SetGatewayOperationMode(void) {
+void CommDriverN2KSerialThread::SetGatewayOperationMode() {
   // For YDNU-02 device
   // From Device User Manual
   // Set the mode to "N2K"
@@ -779,7 +722,7 @@ void* CommDriverN2KSerialThread::Entry() {
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_PortName, m_baud)) {
-    wxString msg(_T("NMEA input device open failed: "));
+    wxString msg("NMEA input device open failed: ");
     msg.Append(m_PortName);
     ThreadMessage(msg);
     std::lock_guard lock(m_stats_mutex);
@@ -961,7 +904,7 @@ void* CommDriverN2KSerialThread::Entry() {
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_PortName, m_baud)) {
-    wxString msg(_T("NMEA input device open failed: "));
+    wxString msg("NMEA input device open failed: ");
     msg.Append(m_PortName);
     ThreadMessage(msg);
     std::lock_guard lock(m_stats_mutex);
@@ -1152,7 +1095,7 @@ void* CommDriverN2KSerialThread::Entry() {
 void AddByteEscapedToBuf(unsigned char byteToAdd, uint8_t& idx,
                          unsigned char* buf, int& byteSum);
 
-std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg) {
+static std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg) {
   unsigned long _PGN = msg.PGN;
   uint8_t msgIdx = 0;
   int byteSum = 0;

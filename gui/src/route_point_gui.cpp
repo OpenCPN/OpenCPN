@@ -1,25 +1,28 @@
-#if defined(__ANDROID__)
-#include <qopengl.h>
-#include <GL/gl_private.h>  // this is a cut-down version of gl.h
-#include <GLES2/gl2.h>
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
-#elif defined(ocpnUSE_GL)
+/**
+ * \file
+ *
+ * Route and routepoint drawing stuff
+ */
 
-#if defined(__MSVC__)
-#include "glew.h"
-#include <GL/glu.h>
-
-#elif defined(__WXOSX__)
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-typedef void (*_GLUfuncptr)();
-#define GL_COMPRESSED_RGB_FXT1_3DFX 0x86B0
-
-#elif defined(__WXQT__) || defined(__WXGTK__)
-#include <GL/glew.h>
-#include <GL/glu.h>
-#endif  // ocpnUSE_GL
-#endif
+#include "gl_headers.h"
 
 #include <wx/colour.h>
 #include <wx/gdicmn.h>
@@ -27,34 +30,27 @@ typedef void (*_GLUfuncptr)();
 #include <wx/brush.h>
 
 #include "model/comm_n0183_output.h"
+#include "model/cutil.h"
 #include "model/georef.h"
+#include "model/gui_vars.h"
 #include "model/multiplexer.h"
-#include "model/own_ship.h"
 #include "model/route.h"
 #include "model/routeman.h"
+#include "model/svg_utils.h"
 
 #include "color_handler.h"
-#include "FontMgr.h"
-#include "glChartCanvas.h"
+#include "font_mgr.h"
+#include "gl_chart_canvas.h"
 #include "n0183_ctx_factory.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "route_point_gui.h"
 #include "styles.h"
-#include "svg_utils.h"
+#include "user_colors.h"
 #include "viewport.h"
 #include "waypointman_gui.h"
-
-extern Multiplexer *g_pMUX;
-extern ocpnGLOptions g_GLOptions;
-extern float g_MarkScaleFactorExp;
-extern MyFrame *gFrame;
-extern OCPNPlatform *g_Platform;
-extern ocpnStyle::StyleManager *g_StyleManager;
-
-extern Routeman *g_pRouteMan;
+#include "user_colors.h"
 
 void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
                          bool boverride_viz) {
@@ -78,7 +74,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
   if ((abs(r.x) == INVALID_COORD) || (abs(r.y) == INVALID_COORD)) return;
 
   //    Optimization, especially apparent on tracks in normal cases
-  if (m_point.m_IconName == _T("empty") && !m_point.m_bShowName &&
+  if (m_point.m_IconName == "empty" && !m_point.m_bShowName &&
       !m_point.m_bPtIsSelected) {
     return;
   }
@@ -92,8 +88,8 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
   //  Substitue icon?
   if (m_point.m_IconIsDirty) ReLoadIcon();
   wxBitmap *pbm;
-  if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
-    pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
+  if ((m_point.m_bIsActive) && (m_point.m_IconName != "mob"))
+    pbm = pWayPointMan->GetIconBitmap("activepoint");
   else
     pbm = m_point.m_pbmIcon;
 
@@ -154,7 +150,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
   wxColour hi_colour = pen->GetColour();
   unsigned char transparency = 100;
   if (m_point.m_bRPIsBeingEdited) {
-    hi_colour = GetGlobalColor(_T ( "YELO1" ));
+    hi_colour = GetGlobalColor("YELO1");
     transparency = 150;
   }
 
@@ -166,7 +162,7 @@ void RoutePointGui::Draw(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rpn,
 
   bool bDrawHL = false;
 
-  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+  if (m_point.m_bBlink && (g_blinker_tick & 1)) bDrawHL = true;
 
   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
     dc.DrawBitmap(*pbm, r.x - sx2, r.y - sy2, true);
@@ -236,7 +232,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   if (!RoutePointGui(m_point).IsVisibleSelectable(canvas, bVizOverride)) return;
 
   //    Optimization, especially apparent on tracks in normal cases
-  if (m_point.m_IconName == _T("empty") && !m_point.m_bShowName &&
+  if (m_point.m_IconName == "empty" && !m_point.m_bShowName &&
       !m_point.m_bPtIsSelected)
     return;
 
@@ -280,8 +276,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   //    Substitute icon?
   if (m_point.m_IconIsDirty) ReLoadIcon();
   wxBitmap *pbm;
-  if ((m_point.m_bIsActive) && (m_point.m_IconName != _T("mob")))
-    pbm = pWayPointMan->GetIconBitmap(_T ( "activepoint" ));
+  if ((m_point.m_bIsActive) && (m_point.m_IconName != "mob"))
+    pbm = pWayPointMan->GetIconBitmap("activepoint");
   else
     pbm = m_point.m_pbmIcon;
 
@@ -373,7 +369,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
       wxPen *pen = g_pRouteMan->GetActiveRoutePointPen();
       hi_colour = pen->GetColour();
     } else {
-      hi_colour = GetGlobalColor(_T ( "YELO1" ));
+      hi_colour = GetGlobalColor("YELO1");
     }
 
     AlphaBlending(dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width,
@@ -382,7 +378,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
 
   bool bDrawHL = false;
 
-  if (m_point.m_bBlink && (gFrame->nBlinkerTick & 1)) bDrawHL = true;
+  if (m_point.m_bBlink && (g_blinker_tick & 1)) bDrawHL = true;
 
   if ((!bDrawHL) && (NULL != m_point.m_pbmIcon)) {
     int glw, glh;
@@ -598,8 +594,8 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
         sqrt(pow((double)(r.x - r1.x), 2) + pow((double)(r.y - r1.y), 2));
     int pix_radius = (int)lpp;
 
-    extern wxColor GetDimColor(wxColor c);
-    wxColor ring_dim_color = GetDimColor(m_point.m_wxcWaypointRangeRingsColour);
+    wxColor ring_dim_color =
+        user_colors::GetDimColor(m_point.m_wxcWaypointRangeRingsColour);
 
     // 0.5 mm nominal, but not less than 1 pixel
     double platform_pen_width =
@@ -623,7 +619,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
         wxMax(1.0, g_Platform->GetDisplayDPmm() /
                        2));  // 0.5 mm nominal, but not less than 1 pixel
 
-    wxColor dh_color = GetGlobalColor(_T ( "YELO1" ));
+    wxColor dh_color = GetGlobalColor("YELO1");
     wxPen ppPen1(dh_color, 3 * platform_pen_width);
     dc.SetPen(ppPen1);
     dc.DrawLine(r.x + hilitebox.width / 4, r.y + hilitebox.height / 4,
@@ -777,7 +773,7 @@ void RoutePointGui::ShowScaleWarningMessage(ChartCanvas *canvas) {
   wxString strC =
       _("Therefore the new waypoint will not be visible at this zoom level.");
   wxString MessStr =
-      wxString::Format(_T("%s %li,\n %s %.0f.\n%s"), strA, m_point.GetScaMin(),
+      wxString::Format("%s %li,\n %s %.0f.\n%s", strA, m_point.GetScaMin(),
                        strB, canvas->GetScaleValue(), strC);
   OCPNMessageBox(canvas, MessStr);
 }
@@ -791,10 +787,10 @@ void RoutePointGui::EnableDragHandle(bool bEnable) {
       int bm_size = g_Platform->GetDisplayDPmm() * 9;  // 9 mm nominal
 
       // What icon?
-      wxString UserIconPath = g_Platform->GetSharedDataDir() + _T("uidata") +
+      wxString UserIconPath = g_Platform->GetSharedDataDir() + "uidata" +
                               wxFileName::GetPathSeparator();
 
-      m_point.m_dragIcon = LoadSVG(UserIconPath + _T("DragHandle.svg"), bm_size,
+      m_point.m_dragIcon = LoadSVG(UserIconPath + "DragHandle.svg", bm_size,
                                    bm_size, m_point.m_pbmIcon);
 
       // build a texture
@@ -860,7 +856,7 @@ void RoutePointGui::EnableDragHandle(bool bEnable) {
   }
 }
 
-void RoutePointGui::ReLoadIcon(void) {
+void RoutePointGui::ReLoadIcon() {
   if (!pWayPointMan) return;
   bool icon_exists = pWayPointMan->DoesIconExist(m_point.m_IconName);
 
@@ -877,10 +873,10 @@ void RoutePointGui::ReLoadIcon(void) {
     //      Icon name is not in the standard or user lists, so add to the list a
     //      generic placeholder
     else {
-      if (!pWayPointMan->DoesIconExist(_T("tempsub"))) {
+      if (!pWayPointMan->DoesIconExist("tempsub")) {
         ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
         if (style) {
-          wxBitmap bmp = style->GetIcon(_T("circle"));
+          wxBitmap bmp = style->GetIcon("circle");
           if (bmp.IsOk()) {
             wxImage image = bmp.ConvertToImage();
             WayPointmanGui(*pWayPointMan)
@@ -888,7 +884,7 @@ void RoutePointGui::ReLoadIcon(void) {
           }
         }
       }
-      iconUse = _T("tempsub");
+      iconUse = "tempsub";
     }
   }
 

@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Plugin blacklist for plugins which can or should not be loaded
- * Author:   Alec Leamas
- *
- ***************************************************************************
  *   Copyright (C) 2022 by Alec Leamas                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,11 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
-#include "model/plugin_blacklist.h"
+
+/**
+ * \file
+ *
+ * Implement plugin_blacklist.h -- blacklist for plugins which can or should
+ * not be loaded
+ */
 
 #include <algorithm>
 #include <cctype>
@@ -33,6 +31,7 @@
 #include <wx/translation.h>
 #include <wx/log.h>
 
+#include "model/plugin_blacklist.h"
 #include "model/logger.h"
 
 // Work around gnu's major() and minor() macros

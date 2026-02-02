@@ -29,6 +29,8 @@
 #include <string.h>
 #include <math.h>
 
+#include <utility>
+
 #if defined(__OCPN__ANDROID__)
  //#include <GLES2/gl2.h>
  #include <qopengl.h>
@@ -94,8 +96,19 @@ bool LLRegion::PointsCCW(size_t n, const double *points) {
   return total > 0;
 }
 
+// Robust deep copy assignment (stronger exception safety via copy-and-swap)
+LLRegion &LLRegion::operator=(const LLRegion &rhs) {
+  if (this == &rhs) return *this;
+
+  LLRegion tmp(rhs);
+  contours.swap(tmp.contours);
+  using std::swap;
+  swap(m_box, tmp.m_box);
+  return *this;
+}
+
 void LLRegion::Print() const {
-  for (std::list<poly_contour>::const_iterator i = contours.begin();
+  for (auto i = contours.begin();
        i != contours.end(); i++) {
     printf("[");
     for (poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
@@ -108,7 +121,7 @@ void LLRegion::plot(const char *fn) const {
   char filename[100] = "/home/sean/";
   strcat(filename, fn);
   FILE *f = fopen(filename, "w");
-  for (std::list<poly_contour>::const_iterator i = contours.begin();
+  for (auto i = contours.begin();
        i != contours.end(); i++) {
     for (poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
       fprintf(f, "%f %f\n", j->x, j->y);
@@ -127,7 +140,7 @@ LLBBox LLRegion::GetBox() const {
   // there are 3 possible longitude bounds: -180 to 180, 0 to 360, -360 to 0
   double minlat = 90, minlon[3] = {180, 360, 0};
   double maxlat = -90, maxlon[3] = {-180, 0, -360};
-  for (std::list<poly_contour>::const_iterator i = contours.begin();
+  for (auto i = contours.begin();
        i != contours.end(); i++) {
     bool neg = false, pos = false;
     for (poly_contour::const_iterator j = i->begin(); j != i->end(); j++)
@@ -210,7 +223,7 @@ bool LLRegion::Contains(float lat, float lon) const {
   if (lon > 180) return Contains(lat, lon - 360);
 
   int cnt = 0;
-  for (std::list<poly_contour>::const_iterator i = contours.begin();
+  for (auto i = contours.begin();
        i != contours.end(); i++) {
     contour_pt l = *i->rbegin();
     for (poly_contour::const_iterator j = i->begin(); j != i->end(); j++) {
@@ -243,8 +256,8 @@ struct work {
 
   ~work() {
     gluDeleteTess(tobj);
-    for (std::list<double *>::iterator i = data.begin(); i != data.end(); i++)
-      delete[] * i;
+    for (auto p : data)
+      delete[] p;
     data.clear();
   }
 
@@ -260,7 +273,8 @@ struct work {
     gluTessVertex(tobj, p, p);
   }
 
-  std::list<double *> data;
+  // Use vector to store stable heap-allocated vertex arrays
+  std::vector<double *> data;
   poly_contour contour;
   GLUtesselator *tobj;
   LLRegion &region;
@@ -326,26 +340,41 @@ void LLRegion::Subtract(const LLRegion &region) {
   Put(region, GLU_TESS_WINDING_POSITIVE, true);
 }
 
-void LLRegion::Reduce(double factor) {
-  double factor2 = factor * factor;
+/**
+ * Simplifies the contours of the region by removing points that are closer
+ * together than the specified distance (factor). Contours with fewer than 3
+ * points after reduction are removed, as they are not valid. This helps to
+ * reduce the complexity of the region.
+ *
+ * @param factor The minimum allowed distance between consecutive points in a
+ * contour.
+ */
 
-  std::list<poly_contour>::iterator i = contours.begin();
+void LLRegion::Reduce(double factor) {
+  const double factor2 = factor * factor;
+
+  auto i = contours.begin();
   while (i != contours.end()) {
     if (i->size() < 3) {
-      printf("invalid contour");
+      // remove bad contour and advance to next to avoid infinite loop
+      i = contours.erase(i);
+      wxLogWarning("Removed bad contour.");
       continue;
     }
 
     // reduce segments
     contour_pt l = *i->rbegin();
-    poly_contour::iterator j = i->begin(), k;
+
+    // iterate safely while erasing
+    auto j = i->begin();
     while (j != i->end()) {
-      k = j;
-      j++;
-      if (dist2(vector(*k, l)) < factor2)
-        i->erase(k);
-      else
-        l = *k;
+      if (dist2(vector(*j, l)) < factor2) {
+        // erase returns next valid iterator
+        j = i->erase(j);
+      } else {
+        l = *j;
+        ++j;
+      }
     }
 
     // erase zero contours
@@ -453,7 +482,7 @@ bool LLRegion::NoIntersection(const LLRegion &region) const {
 }
 
 void LLRegion::PutContours(work &w, const LLRegion &region, bool reverse) {
-  for (std::list<poly_contour>::const_iterator i = region.contours.begin();
+  for (auto i = region.contours.begin();
        i != region.contours.end(); i++) {
     gluTessBeginContour(w.tobj);
     if (reverse)
@@ -495,7 +524,7 @@ void LLRegion::Put(const LLRegion &region, int winding_rule, bool reverse) {
 
 // same result as union, but only allowed if there is no intersection
 void LLRegion::Combine(const LLRegion &region) {
-  for (std::list<poly_contour>::const_iterator i = region.contours.begin();
+  for (auto i = region.contours.begin();
        i != region.contours.end(); i++)
     contours.push_back(*i);
   m_box.Invalidate();
@@ -518,11 +547,12 @@ void LLRegion::InitBox(float minlat, float minlon, float maxlat, float maxlon) {
 
 void LLRegion::InitPoints(size_t n, const double *points) {
   if (n < 3) {
-    printf("invalid point count\n");
+    wxLogWarning("  LLRegion::InitPoints - invalid point count: %zu", n);
     return;
   }
 
-  std::list<contour_pt> pts;
+  std::vector<contour_pt> pts;
+  pts.reserve(n);
   bool adjust = false;
 
   bool ccw = PointsCCW(n, points);
@@ -531,13 +561,22 @@ void LLRegion::InitPoints(size_t n, const double *points) {
     p.y = points[i + 0];
     p.x = points[i + 1];
     if (p.x < -180 || p.x > 180) adjust = true;
-    if (ccw)
-      pts.push_back(p);
-    else
-      pts.push_front(p);
+    pts.push_back(p);
   }
 
-  contours.push_back(pts);
+  if (!ccw) {
+    // reverse in-place without <algorithm> to avoid adding includes
+    size_t a = 0, b = pts.size() - 1;
+    while (a < b) {
+      contour_pt t = pts[a];
+      pts[a] = pts[b];
+      pts[b] = t;
+      ++a;
+      --b;
+    }
+  }
+
+  contours.push_back(poly_contour(std::move(pts)));
 
   if (adjust) AdjustLongitude();
   Optimize();
@@ -551,7 +590,7 @@ void LLRegion::AdjustLongitude() {
   if (!resolved.Empty()) {
     Intersect(clip);
     // apply longitude offset
-    for (std::list<poly_contour>::iterator i = resolved.contours.begin();
+    for (auto i = resolved.contours.begin();
          i != resolved.contours.end(); i++)
       for (poly_contour::iterator j = i->begin(); j != i->end(); j++)
         if (j->x > 0)
@@ -565,19 +604,19 @@ void LLRegion::AdjustLongitude() {
 
 void LLRegion::Optimize() {
   // merge parallel segments
-  std::list<poly_contour>::iterator i = contours.begin();
+  auto i = contours.begin();
   while (i != contours.end()) {
     if (i->size() < 3) {
-      printf("invalid contour");
+      wxLogDebug("  LLRegion::Optimize() - invalid contour erased.");
+      i = contours.erase(i);
       continue;
     }
 
     // Round coordinates to avoid numerical errors in region computations
     const double eps = 6e-6;  // about 1cm on earth's surface at equator
-    for (poly_contour::iterator j = i->begin(); j != i->end(); j++) {
-      // j->x -= fmod(j->x, 1e-8);
-      j->x = round(j->x / eps) * eps;
-      j->y = round(j->y / eps) * eps;
+    for (auto &pt : *i) {
+      pt.x = round(pt.x / eps) * eps;
+      pt.y = round(pt.y / eps) * eps;
     }
 
 #if 0
@@ -587,32 +626,27 @@ void LLRegion::Optimize() {
             if(fabs(j->x - 180) < 2e-4) j->x = 180;
             else if(fabs(j->x + 180) < 2e-4) j->x = -180;
 #endif
-
-    // eliminiate parallel segments
-    poly_contour::iterator j = i->begin();
-    int s = i->size();
-    for (int c = 0; c < s; c++) {
-      poly_contour::iterator l = j, k = j;
-
-      if (l == i->begin()) l = i->end();
-      l--;
-
-      k++;
-      if (k == i->end()) k = i->begin();
-
-      if (l == k) break;
-      if (fabs(cross(vector(*j, *l), vector(*j, *k))) < 1e-12) {
-        i->erase(j);
-        j = l;
-        c--;
-      } else
-        j = k;
+    // Eliminate parallel segments using a temporary vector to avoid repeated
+    // erases
+    std::vector<contour_pt> new_pts;
+    size_t s = i->size();
+    new_pts.reserve(s);
+    new_pts.push_back((*i)[0]);
+    for (size_t idx = 1; idx < s; ++idx) {
+      const auto &prev = (*i)[(idx + s - 1) % s];
+      const auto &curr = (*i)[idx];
+      const auto &next = (*i)[(idx + 1) % s];
+      if (fabs(cross(vector(curr, prev), vector(curr, next))) >= 1e-12) {
+        new_pts.push_back(curr);
+      }
     }
 
     // erase zero contours
-    if (i->size() < 3)
+    if (new_pts.size() < 3)
       i = contours.erase(i);
-    else
-      i++;
+    else {
+      *i = std::move(new_pts);
+      ++i;
+    }
   }
 }

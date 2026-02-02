@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,13 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
-/**  Handle downloading of files from remote urls. */
+/**
+ * \file
+ *
+ * Handle downloading of files from remote urls.
+ */
 
 #ifndef DOWNLOADER_H__
 #define DOWNLOADER_H__
@@ -30,10 +27,19 @@
 #include <string>
 #include <ostream>
 
-/** Default downloader, usable in a CLI context.*/
+/**
+ * Default downloader, usable in a CLI context.
+ *
+ * @class Downloader downloader.h "model/downloader.h"
+ */
 class Downloader {
 public:
-  Downloader(std::string url);
+  explicit Downloader(std::string url);
+
+  /**
+   * Destroy the Downloader object.
+   */
+  virtual ~Downloader() = default;
 
   /** Download url into stream, return false on errors. */
   bool download(std::ostream* stream);

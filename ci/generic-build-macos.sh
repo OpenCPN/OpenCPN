@@ -19,16 +19,18 @@ brew list --versions python3 || {
     brew update-reset
 }
 
+# install cmake if not available
+cmake --version 2> /dev/null || brew install cmake
+
 # Install the build dependencies for OpenCPN
-brew install cmake
 brew install gettext
 brew install lame
 brew install lz4
 brew install mpg123
 brew install xz
 brew install zstd
+brew install wxwidgets@3.2
 brew install libarchive
-brew install wxwidgets
 brew install create-dmg
 brew install gpatch
 

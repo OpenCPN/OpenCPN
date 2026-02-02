@@ -12,13 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Class AboutFrame
  */
 
@@ -46,8 +45,9 @@
 #if wxUSE_WEBVIEW && defined(HAVE_WEBVIEW)
 #include <wx/webview.h>
 #endif
-#include <wx/panel.h>
+#include <wx/button.h>
 #include <wx/frame.h>
+#include <wx/stattext.h>
 
 /**
  * About dialog main frame, various controls to display information about
