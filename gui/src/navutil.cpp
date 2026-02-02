@@ -2409,7 +2409,7 @@ void MyConfig::UpdateSettings() {
 
 #ifdef ocpnUSE_GL
   if (g_bopengl) {
-    top_frame::Get()->SendGlJsonConfigMsg();
+    if (top_frame::Get()) top_frame::Get()->SendGlJsonConfigMsg();
   }
 #endif
 }
