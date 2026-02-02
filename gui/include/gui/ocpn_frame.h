@@ -444,6 +444,7 @@ public:
   void EnableSettingsTool(bool _enable) {
     if (g_MainToolbar) {
       g_MainToolbar->EnableTool(ID_SETTINGS, _enable);
+      g_MainToolbar->GetToolbar()->SetDirty(true);
       g_MainToolbar->RefreshToolbar();
     }
   }
