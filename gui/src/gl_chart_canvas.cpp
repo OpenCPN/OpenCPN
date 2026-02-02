@@ -508,7 +508,10 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 #endif
 #endif
 
-  if (!IsShown() || !m_bsetup) return;
+#ifndef __ANDROID__
+  if (!m_bsetup) return;
+#endif
+  if (!IsShown()) return;
 
   SetCurrent(*m_pcontext);
 
