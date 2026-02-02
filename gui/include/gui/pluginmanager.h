@@ -1,11 +1,4 @@
-/***************************************************************************
- *
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * PlugInManager and helper classes -- Mostly gui parts (dialogs) and
+ * plugin API stuff.
+ */
 
 #ifndef _PLUGINMGR_H_
 #define _PLUGINMGR_H_
@@ -43,12 +41,14 @@
 #include <wx/jsonwriter.h>
 #include <wx/tglbtn.h>
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #ifdef OCPN_USE_CURL
 #include <wx/curl/http.h>
 #include <wx/curl/dialog.h>
 #endif
 #endif
+
+#include "o_sound/o_sound.h"
 
 #include "model/ais_target_data.h"
 #include "model/catalog_parser.h"
@@ -56,25 +56,26 @@
 #include "model/plugin_blacklist.h"
 #include "model/plugin_loader.h"
 #include "model/semantic_vers.h"
+
 #include "chartimg.h"
 #include "observable.h"
 #include "ocpndc.h"
 #include "ocpn_plugin.h"
-#include "OCPN_Sound.h"
 #include "s57chart.h"  // for Object list
-
-//    Assorted static helper routines
-
-PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
-
-class PluginListPanel;
-class PluginPanel;
-class pluginUtilHandler;
-class MyFrame;
+#include "top_frame.h"
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
 //----------------------------------------------------------------------------
+
+class PlugInManager;                // forward
+extern PlugInManager* g_pi_manager; /**< Global instance */
+
+class PluginListPanel;    // forward
+class PluginPanel;        // forward
+class pluginUtilHandler;  // forward in .cpp file
+
+PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
 
 class OCPN_MsgEvent : public wxEvent {
 public:
@@ -170,7 +171,7 @@ class BlacklistUI;
 
 class PlugInManager : public wxEvtHandler {
 public:
-  PlugInManager(MyFrame* parent);
+  PlugInManager(AbstractTopFrame* parent);
   virtual ~PlugInManager();
 
   bool RenderAllCanvasOverlayPlugIns(ocpnDC& dc, const ViewPort& vp,
@@ -259,6 +260,7 @@ public:
   void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxArrayString GetPlugInChartClassNameArray(void);
+  opencpn_plugin* GetProvidingPlugin(const wxString& ChartClassName);
 
   ListOfPI_S57Obj* GetPlugInObjRuleListAtLatLon(ChartPlugInWrapper* target,
                                                 float zlat, float zlon,
@@ -268,7 +270,7 @@ public:
                                  ListOfPI_S57Obj* rule_list);
 
   wxString GetLastError();
-  MyFrame* GetParentFrame() { return pParent; }
+  AbstractTopFrame* GetParentFrame() { return m_parent; }
 
   void DimeWindow(wxWindow* win);
   pluginUtilHandler* GetUtilHandler() { return m_utilHandler; }
@@ -280,6 +282,7 @@ public:
 private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
+  void OnNewMessageType();
 
   ObservableListener evt_ais_json_listener;
   ObservableListener evt_blacklisted_plugin_listener;
@@ -294,10 +297,13 @@ private:
   ObservableListener evt_routeman_json_listener;
   ObservableListener evt_routeman_leginfo_listener;
 
-  ObservableListener m_listener_N0183_all;
   ObservableListener m_listener_SignalK;
 
+  ObsListener m_new_msgtype_lstnr;
+
   ObsListener m_on_msg_sent_listener;
+
+  std::unordered_map<std::string, ObsListener> m_0183_listeners;
 
   wxBitmap* BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
                                   unsigned char dim_ratio);
@@ -308,7 +314,7 @@ private:
   void HandlePluginLoaderEvents();
   void HandlePluginHandlerEvents();
 
-  MyFrame* pParent;
+  AbstractTopFrame* m_parent;
   std::unique_ptr<BlacklistUI> m_blacklist_ui;
 
   wxString m_last_error_string;
@@ -330,7 +336,7 @@ private:
   PluginListPanel* m_listPanel;
   std::unique_ptr<AbstractBlacklist> m_blacklist;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #ifdef OCPN_USE_CURL
 
 public:

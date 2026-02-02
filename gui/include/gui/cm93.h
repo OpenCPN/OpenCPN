@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  CM93 Chart Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,36 +12,34 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Class cm93chart and helpers -- CM93 chart state
+ */
 
 #ifndef __CM93CHART_H__
 #define __CM93CHART_H__
 
-#include <wx/listctrl.h>  // Somehow missing from wx build
+#include <wx/listctrl.h>
+#include <wx/spinctrl.h>
 
-#include "s57chart.h"
+#include "chcanv.h"
 #include "model/cutil.h"  // for types
-#include "OCPNRegion.h"
-#include "ocpndc.h"
+#include "ocpn_region.h"
 #include "poly_math.h"
+#include "s57chart.h"
 #include "viewport.h"
-
-//    Some constants
-#define INDEX_m_sor 217  // cm93 dictionary index for object type _m_sor
 
 #define CM93_ZOOM_FACTOR_MAX_RANGE 5
 
-//    Static functions
-int Get_CM93_CellIndex(double lat, double lon, int scale);
-void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);
+class CM93OffsetDialog;                       // Forward
+extern CM93OffsetDialog *g_pCM93OffsetDialog; /**< Global instance */
 
-//    Fwd definitions
-class covr_set;
-class wxSpinCtrl;
-class ChartCanvas;
+class covr_set;  // Forward
 
 class M_COVR_Desc {
 public:

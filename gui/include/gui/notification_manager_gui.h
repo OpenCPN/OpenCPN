@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Notification Manager GUI
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,22 +16,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Notification Manager GUI
+ */
+
 #ifndef _NOTIFICATION_MANAGER_GUI_H__
 #define _NOTIFICATION_MANAGER_GUI_H__
 
 #include <memory>
+#include <vector>
 
 #include "wx/wxprec.h"
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif  // precompiled headers
+#endif
+
+#include <wx/bitmap.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/panel.h>
+#include <wx/scrolwin.h>
+#include <wx/statbmp.h>
 
 #include "model/notification.h"
 #include "color_types.h"
+#include "chcanv.h"
+#include "ocpndc.h"
 
-class ocpnDC;
-class ChartCanvas;
-class NotificationListPanel;
+class NotificationListPanel;  // forward
 
 class NotificationPanel : public wxPanel {
   DECLARE_EVENT_TABLE()

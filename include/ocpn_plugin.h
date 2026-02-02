@@ -43,37 +43,40 @@
 #define DECL_IMP
 #endif
 
-#include <wx/xml/xml.h>
-#include <wx/dcmemory.h>
-#include <wx/dialog.h>
-#include <wx/event.h>
-#include <wx/menuitem.h>
-#include <wx/gdicmn.h>
-
-#ifdef ocpnUSE_SVG
-#include <wx/bitmap.h>
-#endif  // ocpnUSE_SVG
-
 #include <cstdint>
+#include <functional>
 #include <memory>
+#include <string>
 #include <vector>
 #include <unordered_map>
 
-class wxGLContext;
+#include <wx/arrstr.h>
+#include <wx/aui/framemanager.h>
+#include <wx/bitmap.h>
+#include <wx/colour.h>
+#include <wx/cursor.h>
+#include <wx/dcmemory.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/fileconf.h>
+#include <wx/gdicmn.h>
+#include <wx/menuitem.h>
+#include <wx/notebook.h>
+#include <wx/region.h>
+#include <wx/scrolwin.h>
+#include <wx/xml/xml.h>
 
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
 //    PlugIns conforming to API Version less than the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR 1
-#define API_VERSION_MINOR 20
+#define API_VERSION_MINOR 21
 
-//    Fwd Definitions
-class wxFileConfig;
-class wxNotebook;
-class wxFont;
-class wxAuiManager;
-class wxScrolledWindow;
+//  Using the correct #include <wx/glcanvas.h> causes compilation errors
+//  on windows, probably errors in bundled and partly modified GL headers.
+//  For now, use this as work around.
+class wxGLContext;
 class wxGLCanvas;
 
 //---------------------------------------------------------------------------------------------------------
@@ -160,32 +163,88 @@ class wxGLCanvas;
     Allows plugins to clean up resources and save state. */
 #define WANTS_PRESHUTDOWN_HOOK 0x00400000
 
-//---------------------------------------------------------------------------------------------------------
-//
-//    Overlay priorities
-//
-//---------------------------------------------------------------------------------------------------------
+#define WANTS_TIDECURRENT_CLICK 0x00800000
+
+/**
+ * Overlay rendering priorities determine the layering order of plugin graphics.
+ *
+ * These constants define the priority levels for overlay rendering in both
+ * OpenGL and standard DC modes. Lower priority values render first
+ * (background), while higher priority values render last (foreground).
+ *
+ * Plugins should render only when the priority parameter matches their intended
+ * layer to ensure proper visual ordering and prevent overlays from appearing
+ * above UI elements like toolbars and menus.
+ */
+
+/**
+ * Default overlay priority for background data visualization.
+ *
+ * Used for chart overlays, weather data, tracks, routes, and other navigation
+ * information that should appear behind ships and interactive features.
+ * Most plugins should render at this priority level.
+ *
+ * Examples: GRIB weather overlays, current displays, depth contours
+ */
 #define OVERLAY_LEGACY 0
+
+/**
+ * Priority for overlays that should appear above ship symbols.
+ *
+ * Used for overlays that need to be visible over vessel icons but still
+ * remain behind embossed chart features and UI elements.
+ *
+ * Examples: AIS collision warnings, proximity alerts
+ */
 #define OVERLAY_OVER_SHIPS 64
+
+/**
+ * Priority for overlays above embossed chart features.
+ *
+ * Used for overlays that should appear above chart relief and 3D effects
+ * but remain behind UI controls.
+ *
+ * Examples: Critical navigation warnings, hazard markers
+ */
 #define OVERLAY_OVER_EMBOSS 96
+
+/**
+ * Highest priority for overlays above all UI elements.
+ *
+ * Reserved for critical overlays that must appear above all other elements
+ * including toolbars, menus, and dialogs. Use sparingly and only for
+ * essential safety-critical information.
+ *
+ * Examples: Emergency alerts, collision imminent warnings
+ */
 #define OVERLAY_OVER_UI 128
+
+/**
+ * Lowest priority for overlays to render above all basic charts.
+ */
+#define OVERLAY_CHARTS 256
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------
 /**
- * Enumeration of color schemes.
+ * Color schemes for different lighting conditions.
+ *
+ * @note: When implementing SetColorScheme(), use GetGlobalColor() with
+ * predefined color names for automatic adaptation across all schemes.
  */
 enum PI_ColorScheme {
-  PI_GLOBAL_COLOR_SCHEME_RGB,    //!< RGB color scheme, unmodified colors
-  PI_GLOBAL_COLOR_SCHEME_DAY,    //!< Day color scheme, optimized for bright
-                                 //!< ambient light
-  PI_GLOBAL_COLOR_SCHEME_DUSK,   //!< Dusk color scheme, optimized for low
-                                 //!< ambient light
-  PI_GLOBAL_COLOR_SCHEME_NIGHT,  //!< Night color scheme, optimized for dark
-                                 //!< conditions with minimal impact on night
-                                 //!< vision
-  PI_N_COLOR_SCHEMES  //!< Number of color schemes, used for bounds checking
+  /** RGB color scheme, unmodified colors. */
+  PI_GLOBAL_COLOR_SCHEME_RGB,
+  /** Day color scheme, optimized for bright ambient light. */
+  PI_GLOBAL_COLOR_SCHEME_DAY,
+  /** Dusk color scheme, optimized for low ambient light. */
+  PI_GLOBAL_COLOR_SCHEME_DUSK,
+  /** Night/dark color scheme, optimized for dark conditions with minimal impact
+     on night vision. */
+  PI_GLOBAL_COLOR_SCHEME_NIGHT,
+  /** Number of color schemes, used for bounds checking. */
+  PI_N_COLOR_SCHEMES
 };
 
 /**
@@ -506,11 +565,11 @@ public:
    * (day/dusk/night). Chart plugins should update their rendering colors and
    * styles to match the specified scheme.
    *
-   * @param cs Color scheme to use:
-   *        - PI_GLOBAL_COLOR_SCHEME_RGB (0): RGB color scheme
-   *        - PI_GLOBAL_COLOR_SCHEME_DAY (1): Day color scheme
-   *        - PI_GLOBAL_COLOR_SCHEME_DUSK (2): Dusk/twilight color scheme
-   *        - PI_GLOBAL_COLOR_SCHEME_NIGHT (3): Night/dark color scheme
+   * @param cs New color scheme to use:
+   *   - PI_GLOBAL_COLOR_SCHEME_RGB: RGB color scheme
+   *   - PI_GLOBAL_COLOR_SCHEME_DAY: Day color scheme
+   *   - PI_GLOBAL_COLOR_SCHEME_DUSK: Dusk/twilight color scheme
+   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT: Night/dark color scheme
    * @param bApplyImmediate True to immediately refresh display, False to defer
    *
    * @note If bApplyImmediate is true, any cached rendering should be
@@ -1209,6 +1268,20 @@ protected:
 //    Declare an array of PlugIn_AIS_Targets
 WX_DEFINE_ARRAY_PTR(PlugIn_AIS_Target *, ArrayOfPlugIn_AIS_Targets);
 
+// Support for plugin Tide/Current access
+typedef enum TideStationType {
+  TIDE_STATION = 0,
+  CURRENT_STATION
+} _TideStationType;
+
+struct TCClickInfo {
+  TideStationType point_type;
+  int index;
+  std::string name;
+  int tz_offset_minutes;
+  std::function<bool(time_t, int, float &, float &)> getTide;
+};
+
 /**
  * Base class for OpenCPN plugins.
  *
@@ -1604,9 +1677,12 @@ public:
    * modes. Plugins should update their UI colors to match the new scheme.
    *
    * @param cs New color scheme to use:
-   *   - PI_GLOBAL_COLOR_SCHEME_DAY
-   *   - PI_GLOBAL_COLOR_SCHEME_DUSK
-   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT
+   *   - PI_GLOBAL_COLOR_SCHEME_RGB: Unmodified RGB colors
+   *   - PI_GLOBAL_COLOR_SCHEME_DAY: Optimized for bright conditions
+   *   - PI_GLOBAL_COLOR_SCHEME_DUSK: Optimized for low light
+   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT: Optimized for dark conditions
+   *
+   * @note Follow the patterns documented in the PI_ColorScheme enum.
    */
   virtual void SetColorScheme(PI_ColorScheme cs);
 
@@ -1670,21 +1746,41 @@ public:
   using opencpn_plugin::RenderOverlay;
 
   /**
-   * Renders plugin overlay graphics in standard (non-OpenGL) mode.
+   * Renders plugin overlay graphics in standard DC mode for single canvas.
+   *
+   * Legacy method for standard (non-OpenGL) overlay rendering that predates
+   * multi-canvas and priority support. This method renders overlays at
+   * OVERLAY_LEGACY priority level (0) on the primary canvas only.
    *
    * Called by OpenCPN during chart redraw to allow plugins to render custom
-   * visualizations on top of charts. Drawing occurs through piDC device
-   * context that abstracts both standard and OpenGL contexts.
+   * visualization overlays on top of charts. Drawing occurs through standard
+   * wxWidgets device context methods.
    *
-   * Plugins render in their load order within the plugin array.
+   * Plugins render in their load order within the plugin array for overlays
+   * at the same priority level.
    *
-   * @param dc Device context for drawing
-   * @param vp Current viewport parameters
-   * @return True if overlay was rendered, false if no overlay
+   * @param dc Device context for drawing using standard wxWidgets methods
+   *           like DrawLine(), DrawCircle(), DrawText(), DrawBitmap()
+   * @param vp Current viewport settings including scale, position, rotation
+   *
+   * @return True if overlay was rendered, False if no overlay
    *
    * @note Only called if plugin declares WANTS_OVERLAY_CALLBACK capability
    * @note Drawing should respect current viewport parameters
-   * @note For API v1.18+, use RenderOverlayMultiCanvas() to specify priority
+   * @note Use GetCanvasPixLL() to convert lat/lon coordinates to screen pixels
+   * @note Renders only on primary canvas (index 0)
+   * @note Renders at OVERLAY_LEGACY priority level automatically
+   * @note Performance critical - keep drawing efficient for smooth navigation
+   *
+   * @deprecated Use RenderOverlayMultiCanvas() for multi-canvas and priority
+   * support
+   *
+   * @see RenderOverlayMultiCanvas() for modern multi-canvas priority-aware
+   * rendering
+   * @see RenderGLOverlay() for OpenGL rendering
+   * @see OVERLAY_LEGACY
+   *
+   * @since API v1.6
    */
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
 
@@ -1727,25 +1823,41 @@ public:
 
   virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
   /**
-   * Renders plugin overlay graphics in OpenGL mode.
+   * Renders plugin overlay graphics in OpenGL mode for single canvas.
    *
-   * Called by OpenCPN during chart redraw to allow plugins to render custom
-   * visualizations in OpenGL mode. Both RenderOverlay() and RenderGLOverlay()
-   * use the same piDC device context abstraction for drawing, but
-   * RenderGLOverlay() provides direct access to the OpenGL context.
+   * Legacy method for OpenGL overlay rendering that predates multi-canvas
+   * and priority support. This method renders overlays at OVERLAY_LEGACY
+   * priority level (0) on the primary canvas only.
    *
-   * Plugins render in their load order within plugin array
+   * Both RenderOverlay() and RenderGLOverlay() use the same piDC device context
+   * abstraction for drawing, but RenderGLOverlay() provides direct access to
+   * the OpenGL context for advanced OpenGL operations.
    *
-   * @param pcontext OpenGL context for direct GL drawing commands
-   * @param vp Current viewport settings (scale, position, rotation)
-   * @return True if overlay was rendered, false if no overlay
+   * Plugins render in their load order within the plugin array for overlays
+   * at the same priority level.
+   *
+   * @param pcontext OpenGL context for direct GL drawing commands and piDC
+   * operations
+   * @param vp Current viewport settings including scale, position, rotation
+   *
+   * @return True if overlay was rendered, False if no overlay
    *
    * @note Only called if plugin declares WANTS_OPENGL_OVERLAY_CALLBACK
    * capability
    * @note Drawing should respect current viewport parameters
    * @note For OpenGL-specific rendering optimizations
-   * @note Modern plugins should use RenderGLOverlayMultiCanvas() for priority
-   * control
+   * @note Renders only on primary canvas (index 0)
+   * @note Renders at OVERLAY_LEGACY priority level automatically
+   *
+   * @deprecated Use RenderGLOverlayMultiCanvas() for multi-canvas and priority
+   * support
+   *
+   * @see RenderGLOverlayMultiCanvas() for modern multi-canvas priority-aware
+   * rendering
+   * @see RenderOverlay() for standard DC rendering
+   * @see OVERLAY_LEGACY
+   *
+   * @since API v1.7
    */
   virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
   virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
@@ -1894,31 +2006,71 @@ public:
   opencpn_plugin_116(void *pmgr);
   virtual ~opencpn_plugin_116();
   /**
-   * Renders plugin overlay graphics in OpenGL mode with canvas selection.
+   * Renders plugin overlay graphics in OpenGL mode for multi-canvas support.
    *
-   * Extended version of RenderGLOverlay() that supports multiple chart canvases
-   * and overlay priorities.
+   * Legacy version of RenderGLOverlayMultiCanvas without priority control.
+   * This method is called for backward compatibility with plugins that haven't
+   * upgraded to the priority-aware API. The overlay is rendered at
+   * OVERLAY_LEGACY priority level (0), appearing behind ships and other
+   * high-priority elements.
    *
-   * @param pcontext OpenGL context for drawing
-   * @param vp Current viewport parameters
-   * @param canvasIndex Index of target canvas (0-based)
-   * @param priority Drawing priority level (OVERLAY_LEGACY etc)
-   * @return True if overlay was rendered
+   * @param pcontext OpenGL context for drawing operations
+   * @param vp Current viewport parameters including position, scale, rotation
+   * @param canvasIndex Index of the target canvas (0-based)
+   *
+   * @return True if overlay was rendered, False otherwise
+   *
+   * @note Only called if plugin declares WANTS_OPENGL_OVERLAY_CALLBACK
+   * capability
+   * @note Modern plugins should use the priority-aware version instead
+   * @note Renders at OVERLAY_LEGACY priority level automatically
+   * @note Drawing should respect current viewport parameters
+   * @note For new plugins, prefer RenderGLOverlayMultiCanvas() with priority
+   * parameter
+   *
+   * @deprecated Use RenderGLOverlayMultiCanvas(wxGLContext*, PlugIn_ViewPort*,
+   * int, int) for priority control
+   *
+   * @see RenderGLOverlayMultiCanvas() with priority parameter
+   * @see RenderGLOverlay() for single-canvas legacy rendering
+   * @see OVERLAY_LEGACY
+   *
+   * @since API v1.16
    */
   virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
                                           PlugIn_ViewPort *vp, int canvasIndex);
 
   /**
-   * Renders plugin overlay graphics with canvas selection.
+   * Renders plugin overlay graphics in standard DC mode for multi-canvas
+   * support.
    *
-   * Extended version of RenderOverlay() that supports multiple chart canvases
-   * and overlay priorities.
+   * Legacy version of RenderOverlayMultiCanvas without priority control.
+   * This method is called for backward compatibility with plugins that haven't
+   * upgraded to the priority-aware API. The overlay is rendered at
+   * OVERLAY_LEGACY priority level (0), appearing behind ships and other
+   * high-priority elements.
    *
-   * @param dc Device context for drawing
-   * @param vp Current viewport parameters
-   * @param canvasIndex Index of target canvas (0-based)
-   * @param priority Drawing priority level (OVERLAY_LEGACY etc)
-   * @return True if overlay was rendered
+   * @param dc Device context for drawing operations
+   * @param vp Current viewport parameters including position, scale, rotation
+   * @param canvasIndex Index of the target canvas (0-based)
+   *
+   * @return True if overlay was rendered, False otherwise
+   *
+   * @note Only called if plugin declares WANTS_OVERLAY_CALLBACK capability
+   * @note Modern plugins should use the priority-aware version instead
+   * @note Renders at OVERLAY_LEGACY priority level automatically
+   * @note Use GetCanvasPixLL() to convert lat/lon coordinates to screen pixels
+   * @note For new plugins, prefer RenderOverlayMultiCanvas() with priority
+   * parameter
+   *
+   * @deprecated Use RenderOverlayMultiCanvas(wxDC&, PlugIn_ViewPort*, int, int)
+   *             for priority control
+   *
+   * @see RenderOverlayMultiCanvas() with priority parameter
+   * @see RenderOverlay() for single-canvas legacy rendering
+   * @see OVERLAY_LEGACY
+   *
+   * @since API v1.16
    */
   virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
                                         int canvasIndex);
@@ -1964,14 +2116,63 @@ public:
   using opencpn_plugin_116::RenderGLOverlayMultiCanvas;
   using opencpn_plugin_116::RenderOverlayMultiCanvas;
 
-  /// Render plugin overlay over chart canvas in OpenGL mode
-  ///
-  /// \param pcontext Pointer to the OpenGL context
-  /// \param vp Pointer to the Viewport
-  /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
-  /// \param priority Priority, plugins only upgrading from older API versions
-  ///        should draw only when priority is OVERLAY_LEGACY (0)
-  /// \return true if overlay was rendered, false otherwise
+  /**
+   * Renders plugin overlay graphics in OpenGL mode with priority control.
+   *
+   * This is the recommended method for OpenGL overlay rendering in modern
+   * plugins. It provides precise control over rendering order through priority
+   * levels and supports multi-canvas configurations. OpenCPN calls this method
+   * multiple times with different priority values to build up the complete
+   * overlay stack.
+   *
+   * The plugin should examine the priority parameter and only render overlays
+   * appropriate for that layer. This ensures proper visual ordering where
+   * background data appears behind ships, which appear behind critical alerts.
+   *
+   * For plugins upgrading from older APIs, rendering should typically occur
+   * only when priority equals OVERLAY_LEGACY (0) to maintain compatibility with
+   * existing behavior.
+   *
+   * @param pcontext OpenGL context for drawing operations - use for direct
+   *                 OpenGL commands or OpenCPN's piDC abstraction layer
+   * @param vp Current viewport parameters including:
+   *           - Center position (clat, clon)
+   *           - Scale (view_scale_ppm)
+   *           - Rotation and skew
+   *           - Canvas dimensions (pix_width, pix_height)
+   *           - Visible area bounds (lat_min/max, lon_min/max)
+   * @param canvasIndex Index of the target canvas (0-based). In multi-canvas
+   *                    configurations (split screen), each canvas may have
+   *                    different viewport parameters
+   * @param priority Rendering priority level determining overlay layering:
+   *                 - OVERLAY_LEGACY (0): Background data, most common usage
+   *                 - OVERLAY_OVER_SHIPS (64): Above vessel symbols
+   *                 - OVERLAY_OVER_EMBOSS (96): Above chart relief
+   *                 - OVERLAY_OVER_UI (128): Above all UI elements (use
+   * sparingly)
+   *
+   * @return True if overlay was rendered for this priority level, False if no
+   *         rendering occurred (normal when priority doesn't match plugin's
+   * needs)
+   *
+   * @note Only called if plugin declares WANTS_OPENGL_OVERLAY_CALLBACK
+   * capability
+   * @note Drawing coordinates should be calculated relative to the viewport
+   * parameters
+   * @note Performance critical - keep rendering optimized for smooth chart
+   * updates
+   * @note Plugin should check priority parameter to render only appropriate
+   * overlays
+   * @note For plugins supporting multiple priority levels, maintain separate
+   * rendering paths for each priority to avoid duplicate drawing
+   *
+   * @see RenderOverlayMultiCanvas() for standard DC rendering
+   * @see RenderGLOverlay() for legacy single-canvas OpenGL rendering
+   * @see OVERLAY_LEGACY, OVERLAY_OVER_SHIPS, OVERLAY_OVER_EMBOSS,
+   * OVERLAY_OVER_UI
+   *
+   * @since API v1.18
+   */
 #ifdef _MSC_VER
   virtual bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
                                           PlugIn_ViewPort *vp, int canvasIndex,
@@ -1987,14 +2188,61 @@ public:
   }
 #endif
 
-  /// Render plugin overlay over chart canvas in non-OpenGL mode
-  ///
-  /// \param dc Reference to the "device context"
-  /// \param vp Pointer to the Viewport
-  /// \param canvasIndex Index of the chart canvas, 0 for the first canvas
-  /// \param priority Priority, plugins only upgrading from older API versions
-  ///        should draw only when priority is OVERLAY_LEGACY (0)
-  /// \return true if overlay was rendered, false otherwise
+  /**
+   * Renders plugin overlay graphics in standard DC mode with priority control.
+   *
+   * This is the recommended method for standard (non-OpenGL) overlay rendering
+   * in modern plugins. It provides precise control over rendering order through
+   * priority levels and supports multi-canvas configurations. OpenCPN calls
+   * this method multiple times with different priority values to build up the
+   * complete overlay stack.
+   *
+   * The plugin should examine the priority parameter and only render overlays
+   * appropriate for that layer. This ensures proper visual ordering where
+   * background data appears behind ships, which appear behind critical alerts.
+   *
+   * For plugins upgrading from older APIs, rendering should typically occur
+   * only when priority equals OVERLAY_LEGACY (0) to maintain compatibility with
+   * existing behavior.
+   *
+   * @param dc Device context for drawing operations - supports standard
+   * wxWidgets drawing methods like DrawLine(), DrawCircle(), DrawText(), etc.
+   * @param vp Current viewport parameters including:
+   *           - Center position (clat, clon)
+   *           - Scale (view_scale_ppm)
+   *           - Rotation and skew
+   *           - Canvas dimensions (pix_width, pix_height)
+   *           - Visible area bounds (lat_min/max, lon_min/max)
+   * @param canvasIndex Index of the target canvas (0-based). In multi-canvas
+   *                    configurations (split screen), each canvas may have
+   *                    different viewport parameters
+   * @param priority Rendering priority level determining overlay layering:
+   *                 - OVERLAY_LEGACY (0): Background data, most common usage
+   *                 - OVERLAY_OVER_SHIPS (64): Above vessel symbols
+   *                 - OVERLAY_OVER_EMBOSS (96): Above chart relief
+   *                 - OVERLAY_OVER_UI (128): Above all UI elements (use
+   * sparingly)
+   *
+   * @return True if overlay was rendered for this priority level, False if no
+   *         rendering occurred (normal when priority doesn't match plugin's
+   * needs)
+   *
+   * @note Only called if plugin declares WANTS_OVERLAY_CALLBACK capability
+   * @note Drawing coordinates should be calculated relative to the viewport
+   * parameters
+   * @note Use GetCanvasPixLL() to convert lat/lon coordinates to screen pixels
+   * @note Plugin should check priority parameter to render only appropriate
+   * overlays
+   * @note For plugins supporting multiple priority levels, maintain separate
+   * rendering paths for each priority to avoid duplicate drawing
+   *
+   * @see RenderGLOverlayMultiCanvas() for OpenGL rendering
+   * @see RenderOverlay() for legacy single-canvas DC rendering
+   * @see OVERLAY_LEGACY, OVERLAY_OVER_SHIPS, OVERLAY_OVER_EMBOSS,
+   * OVERLAY_OVER_UI
+   *
+   * @since API v1.18
+   */
 #ifdef _MSC_VER
   virtual bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
                                         int canvasIndex, int priority = -1);
@@ -2039,6 +2287,13 @@ public:
   virtual void OnContextMenuItemCallbackExt(int id, std::string obj_ident,
                                             std::string obj_type, double lat,
                                             double lon);
+};
+
+class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
+public:
+  opencpn_plugin_121(void *pmgr);
+  virtual void UpdateFollowState(int canvas_index, bool state);
+  virtual void OnTideCurrentClick(TCClickInfo info);
 };
 
 //------------------------------------------------------------------
@@ -2340,13 +2595,19 @@ extern "C" DECL_EXP wxFileConfig *GetOCPNConfigObject(void);
 extern "C" DECL_EXP void RequestRefresh(wxWindow *);
 
 /**
- * Gets a global color value.
+ * Gets a functionally-named color for a specific UI purpose.
  *
- * Retrieves color values from OpenCPN's color scheme system.
+ * Retrieves colors by their functional role (e.g., "DILG3" for text, "URED"
+ * for vessels) that automatically adapt to current lighting conditions
+ * (Day/Dusk/Night modes).
  *
- * @param colorName Name of the color to retrieve
- * @param pcolour Pointer to wxColour to receive the color value
- * @return True if color was found, false if not
+ * @param colorName Functional color identifier.
+ * @param pcolour Pointer to wxColour to receive the adapted color value.
+ * @return True if color was found and retrieved successfully, false if color
+ *         name is unknown (returns grey fallback color).
+ *
+ * @see gui/src/ocpn_frame.cpp for color scheme definitions and available color
+ * names.
  */
 extern "C" DECL_EXP bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 
@@ -2952,6 +3213,35 @@ extern DECL_EXP double toUsrDepth_Plugin(double m_depth, int unit = -1);
  * @return Depth in meters
  */
 extern DECL_EXP double fromUsrDepth_Plugin(double usr_depth, int unit = -1);
+
+/**
+ * Gets display string for user's preferred height unit.
+ *
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=meters, 1=feet
+ * @return Localized unit string (e.g. "m", "ft")
+ */
+extern DECL_EXP wxString getUsrHeightUnit_Plugin(int unit = -1);
+
+/**
+ * Converts meters to user's preferred height unit.
+ *
+ * @param m_height Height in meters
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=meters, 1=feet
+ * @return Height in user's preferred unit
+ */
+extern DECL_EXP double toUsrHeight_Plugin(double m_height, int unit = -1);
+
+/**
+ * Converts from user's preferred height unit to meters.
+ *
+ * @param usr_height Height in user's unit
+ * @param unit Override unit choice (-1 for user preference):
+ *             0=meters, 1=feet
+ * @return Height in meters
+ */
+extern DECL_EXP double fromUsrHeight_Plugin(double usr_height, int unit = -1);
 
 /**
  * Parse a formatted coordinate string to get decimal degrees.
@@ -6164,10 +6454,20 @@ GetAttributes(DriverHandle handle);
 /**
  * Send a non-NMEA2000 message. The call is not blocking.
  * @param handle Obtained from GetActiveDrivers()
- * @param payload Message data, for example a complete Nmea0183 message.
+ * @param payload Message data, for example a complete Nmea0183 message.<br/>
  *        From 1.19: if the handle "protocol" attribute is "internal" it is
  *        parsed as <id><space><message> where the id is used when listening/
- *        subscribing to message.
+ *        subscribing to message.<br/>
+ *        From 5.12.4: if handle "protocol" attribute is "loopback" it is
+ *        parsed as one of
+ *          - "signalk" <source> <context_self> <json payload>
+ *          - "nmea0183" <source> <0183id> <n0183 sentence>
+ *          - "nmea2000" <source> <PGN> <hex encoded 2000 payload> <br/><br/>
+ *        <source> is the interface which is tagged as receiving interface.
+ *        must not contain spaces <br/>
+ *        <hex encoded payload> is bytes separated by space e.g. "0f ff 8 3e"
+ *        <br/>
+ *
  * @return value number of bytes queued for transmission.
  */
 extern DECL_EXP CommDriverResult WriteCommDriver(
@@ -6915,5 +7215,153 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
+
+/** Empty, virtual base class for HostApi versions. */
+class HostApi {
+public:
+  virtual ~HostApi() = default;
+};
+
+/**
+ * HostApi factory,
+ * @return Last known HostApi instance.
+ */
+extern DECL_EXP std::unique_ptr<HostApi> GetHostApi();
+
+// To gain access to api121, do something like this:
+// auto host_api = std::move(GetHostApi());
+// auto api_121 = std::dynamic_pointer_cast<HostApi121>(host_api);
+
+class HostApi121 : public HostApi {
+public:
+  HostApi121()
+      : HostApi(),
+        kContextMenuDisableWaypoint(1),
+        kContextMenuDisableRoute(2),
+        kContextMenuDisableTrack(4),
+        kContextMenuDisableAistarget(8) {}
+  ~HostApi121() override = default;
+
+  const int kContextMenuDisableWaypoint;
+  const int kContextMenuDisableRoute;
+  const int kContextMenuDisableTrack;
+  const int kContextMenuDisableAistarget;
+
+  enum class PiContextObjectType {
+    kObjectChart = 0,
+    kObjectRoutepoint,
+    kObjectRoutesegment,
+    kObjectTracksegment,
+    kObjectAisTarget,
+    kObjectUnknown
+  };
+
+  struct PiPointContext {
+    PiContextObjectType object_type;
+    std::string object_ident;
+  };
+
+  // Extended plugin route
+  class Route : public PlugIn_Route_ExV2 {
+  public:
+    Route()
+        : m_PlannedSpeed(0),
+          m_Colour(""),
+          m_style(wxPENSTYLE_SOLID),
+          m_PlannedDeparture(wxDateTime::Now()),
+          m_TimeDisplayFormat("UTC") {}
+
+    ~Route() override {
+      if (pWaypointList) {
+        pWaypointList->DeleteContents(true);
+        delete pWaypointList;
+        pWaypointList = NULL;
+      }
+    }
+
+    double m_PlannedSpeed;
+    wxString m_Colour;
+    wxPenStyle m_style;
+    wxDateTime m_PlannedDeparture;
+    wxString m_TimeDisplayFormat;
+  };
+
+  virtual wxString DropMarkPI(double lat, double lon);
+  virtual wxString RouteCreatePI(int canvas_index, bool start);
+  virtual wxString NavToHerePI(double lat, double lon);
+  virtual bool ActivateRoutePI(wxString route_guid, bool activate);
+
+  virtual void EnableDefaultConsole(bool enable);
+  virtual void EnableDefaultContextMenus(bool enable);
+
+  virtual void SetMinZoomScale(double min_scale);
+  virtual void SetMaxZoomScale(double max_scale);
+
+  virtual wxBitmap GetObjectIcon_PlugIn(const wxString &name);
+
+  virtual void SetDepthUnitVisible(bool bviz);
+  virtual void SetOverzoomFlagVisible(bool bviz);
+
+  virtual bool IsRouteActive(wxString route_guid);
+  virtual void SetBoatPosition(double zlat, double zlon);
+
+  virtual void RouteInsertWaypoint(int canvas_index, wxString route_guid,
+                                   double zlat, double zlon);
+  virtual void RouteAppendWaypoint(int canvas_index, wxString route_guid);
+  virtual void FinishRoute(int canvas_index);
+  virtual bool IsRouteBeingCreated(int canvas_index);
+  virtual bool AreRouteWaypointNamesVisible(wxString route_guid);
+  virtual void ShowRouteWaypointNames(wxString route_guid, bool show);
+  virtual void NavigateToWaypoint(wxString waypoint_guid);
+  virtual bool DoMeasurePI(int canvas_index, bool start);
+  virtual bool IsMeasureActive(int canvas_index);
+  virtual void CancelMeasure(int canvas_index);
+
+  // AIS related
+  // for Show/Hide Target Track
+  virtual bool IsAISTrackVisible(const wxString &ais_mmsi) const;
+  // for Show/Hide Target Track
+  virtual void AISToggleShowTrack(const wxString &ais_mmsi);
+  // for Show/Hide Target CPA
+  virtual bool IsAIS_CPAVisible(const wxString &ais_mmsi) const;
+  // for Show/Hide Target CPA
+  virtual void AISToggleShowCPA(const wxString &ais_mmsi);
+  // for Target Query
+  virtual void ShowAISTargetQueryDialog(int canvas_index,
+                                        const wxString &ais_mmsi);
+  // for Target List
+  virtual void ShowAISTargetList(int canvas_index);
+  virtual std::shared_ptr<PiPointContext> GetContextAtPoint(int x, int y,
+                                                            int canvas_index);
+
+  // Extended Chart table management support
+  virtual void AddNoShowDirectory(std::string chart_dir);
+  virtual void RemoveNoShowDirectory(std::string chart_dir);
+  virtual void ClearNoShowVector();
+  virtual const std::vector<std::string> &GetNoShowVector();
+  virtual bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family);
+
+  // Enhanced AIS Target List support
+  virtual void CenterToAisTarget(wxString ais_mmsi);
+  virtual void AisTargetCreateWpt(wxString ais_mmsi);
+  virtual void AisShowAllTracks(bool show);
+  virtual void AisToggleTrack(wxString ais_mmsi);
+
+  virtual int GetContextMenuMask();
+  virtual void SetContextMenuMask(int mask);
+
+  // Enhanced Track support
+  virtual void SetTrackVisibiiity(const wxString &track_GUID, bool viz);
+
+  // Extended plugin route, V3
+  /** Add route to database, updated version of AddPlugInRouteExV2. */
+  virtual bool AddRoute(Route *route, bool permanent = true);
+
+  /** Update database route, updated version of UpdatePlugInRouteExV2 */
+  virtual bool UpdateRoute(Route *route);
+
+  /** Retrieve route from database */
+  virtual std::unique_ptr<HostApi121::Route> GetRoute(const wxString &guid);
+};
 
 #endif  //_PLUGIN_H_

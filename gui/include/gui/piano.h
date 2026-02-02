@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Chart Bar Window
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,29 +12,29 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Chart Bar Window
  */
 
-#ifndef __statwin_H__
-#define __statwin_H__
+#ifndef _statwin_H_
+#define _statwin_H_
 
-//----------------------------------------------------------------------------
-//   constants
-//----------------------------------------------------------------------------
+#include <vector>
 
-#define PIANO_EVENT_TIMER 73566
-#define DEFERRED_KEY_CLICK_DOWN 1
-#define DEFERRED_KEY_CLICK_UP 2
-#define INFOWIN_TIMEOUT 3
+#include <wx/bitmap.h>
+#include <wx/brush.h>
+#include <wx/event.h>
+#include <wx/gdicmn.h>
+#include <wx/timer.h>
 
-// Class declarations
+#include "chcanv.h"
+
 WX_DECLARE_OBJARRAY(wxRect, RectArray);
-
-class MyFrame;
-class ChartCanvas;
 
 enum { PIANO_MODE_COMPOSITE = 0, PIANO_MODE_LEGACY };
 

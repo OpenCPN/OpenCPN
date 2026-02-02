@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,31 +12,30 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
  *
+ * Implement compass.h -- Compass display state
  */
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
-#include "config.h"
-#include "model/ocpn_types.h"
+#endif
+
+#include "model/comm_vars.h"
+#include "model/config_vars.h"
 #include "model/own_ship.h"
-#include "compass.h"
+
 #include "chcanv.h"
+#include "color_handler.h"
+#include "compass.h"
+#include "gl_chart_canvas.h"
+#include "tooltip.h"
 #include "styles.h"
-
-#include "glChartCanvas.h"
-#include "ocpn_frame.h"  // FIXME (dave) colorschemes
-
-extern ocpnStyle::StyleManager* g_StyleManager;
-extern bool g_bSatValid;
-extern int g_SatsInView;
-extern bool g_bopengl;
-extern bool g_btenhertz;
 
 #ifndef GL_RGBA8
 #define GL_RGBA8 0x8058
@@ -53,8 +46,8 @@ ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
   m_bshowGPS = bShowGPS;
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  _img_compass = style->GetIcon(_T("CompassRose"));
-  _img_gpsRed = style->GetIcon(_T("gpsRed"));
+  _img_compass = style->GetIcon("CompassRose");
+  _img_gpsRed = style->GetIcon("gpsRed");
 
   m_rose_angle = -999;  // force a refresh when first used
 
@@ -74,9 +67,13 @@ ocpnCompass::ocpnCompass(ChartCanvas* parent, bool bShowGPS) {
 
   m_scale = 1.0;
   m_cs = GLOBAL_COLOR_SCHEME_RGB;
+  SetToolTip("");
 }
 
 ocpnCompass::~ocpnCompass() {
+  // Hide any active tooltips for this compass
+  TooltipManager::Get().HideTooltip();
+
 #ifdef ocpnUSE_GL
   if (m_texobj) {
     glDeleteTextures(1, &m_texobj);
@@ -177,7 +174,8 @@ bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
     return false;
   }
   if (!logicalRect.Contains(event.GetPosition())) {
-    // User is moving away from compass widget.
+    // User is moving away from compass widget. Hide universal tooltip.
+    TooltipManager::Get().HideTooltip();
     return false;
   }
 
@@ -189,6 +187,17 @@ bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
     else
       m_parent->SetUpMode(NORTH_UP_MODE);
   }
+  if (event.LeftUp() || event.Entering() || event.Moving()) {
+    // Show tooltip on hover or after the user has changed the compass mode.
+    if (!m_tooltip.IsEmpty()) {
+      wxPoint screenPos = wxGetMousePosition();
+      screenPos.x += 15;  // Default offset from mouse
+      screenPos.y += 15;
+
+      TooltipManager::Get().ShowTooltipAtPosition(m_parent, m_tooltip,
+                                                  screenPos);
+    }
+  }
 
   return true;
 }
@@ -196,9 +205,14 @@ bool ocpnCompass::MouseEvent(wxMouseEvent& event) {
 void ocpnCompass::SetColorScheme(ColorScheme cs) {
   m_cs = cs;
   UpdateStatus(true);
+
+  // Update universal tooltip color scheme
+  TooltipManager::Get().SetColorScheme(cs);
 }
 
-wxRect ocpnCompass::GetLogicalRect(void) const {
+void ocpnCompass::SetToolTip(const wxString& tooltip) { m_tooltip = tooltip; }
+
+wxRect ocpnCompass::GetLogicalRect() const {
 #ifdef wxHAS_DPI_INDEPENDENT_PIXELS
 #if wxCHECK_VERSION(3, 1, 6)
   wxRect logicalRect = wxRect(m_parent->FromPhys(m_rect.GetPosition()),
@@ -225,6 +239,31 @@ void ocpnCompass::UpdateStatus(bool bnew) {
 #ifdef ocpnUSE_GL
   if (g_bopengl && m_texobj) CreateTexture();
 #endif
+
+  // Show a tooltip with the current compass mode and GPS status.
+  wxString tooltipText;
+  if (m_parent->GetUpMode() == NORTH_UP_MODE)
+    tooltipText = _("North Up");
+  else if (m_parent->GetUpMode() == COURSE_UP_MODE)
+    tooltipText = _("Course Up");
+  else
+    tooltipText = _("Heading Up");
+
+  if (m_bshowGPS) {
+    tooltipText += "\n";
+    if (bGPSValid) {
+      if (g_bSatValid)
+        tooltipText +=
+            wxString::Format(_("GNSS (%d satellites)"), g_SatsInView);
+      else
+        // Satellite watchdog timer has expired, no data has been received
+        // recently.
+        tooltipText += _("GNSS data stale");
+    } else {
+      tooltipText += _("No GNSS data");
+    }
+  }
+  SetToolTip(tooltipText);
 }
 
 void ocpnCompass::SetScaleFactor(float factor) {
@@ -318,15 +357,15 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 
   if (bGPSValid) {
     if (g_bSatValid) {
-      gpsIconName = _T("gps3Bar");
-      if (g_SatsInView <= 8) gpsIconName = _T("gps2Bar");
-      if (g_SatsInView <= 4) gpsIconName = _T("gps1Bar");
-      if (g_SatsInView < 0) gpsIconName = _T("gpsGry");
+      gpsIconName = "gps3Bar";
+      if (g_SatsInView <= 8) gpsIconName = "gps2Bar";
+      if (g_SatsInView <= 4) gpsIconName = "gps1Bar";
+      if (g_SatsInView < 0) gpsIconName = "gpsGry";
 
     } else
-      gpsIconName = _T("gpsGrn");
+      gpsIconName = "gpsGrn";
   } else
-    gpsIconName = _T("gpsRed");
+    gpsIconName = "gpsRed";
 
   if (m_lastgpsIconName != gpsIconName) b_need_refresh = true;
 
@@ -383,11 +422,11 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
 
   wxMemoryDC mdc;
   mdc.SelectObject(m_StatBmp);
-  mdc.SetBackground(wxBrush(GetGlobalColor(_T("COMP1")), wxBRUSHSTYLE_SOLID));
+  mdc.SetBackground(wxBrush(GetGlobalColor("COMP1"), wxBRUSHSTYLE_SOLID));
   mdc.Clear();
 
-  mdc.SetPen(wxPen(GetGlobalColor(_T("UITX1")), 1));
-  mdc.SetBrush(wxBrush(GetGlobalColor(_T("UITX1")), wxBRUSHSTYLE_TRANSPARENT));
+  mdc.SetPen(wxPen(GetGlobalColor("UITX1"), 1));
+  mdc.SetBrush(wxBrush(GetGlobalColor("UITX1"), wxBRUSHSTYLE_TRANSPARENT));
 
   if (!style->marginsInvisible)
     mdc.DrawRoundedRectangle(0, 0, m_StatBmp.GetWidth(), m_StatBmp.GetHeight(),
@@ -406,11 +445,11 @@ void ocpnCompass::CreateBmp(bool newColorScheme) {
   cheight = cwidth;
 
   if (m_parent->GetUpMode() == COURSE_UP_MODE)
-    BMPRose = style->GetIcon(_T("CompassRose"), cwidth, cheight);
+    BMPRose = style->GetIcon("CompassRose", cwidth, cheight);
   else if (m_parent->GetUpMode() == HEAD_UP_MODE)
-    BMPRose = style->GetIcon(_T("CompassRoseMag"), cwidth, cheight);
+    BMPRose = style->GetIcon("CompassRoseMag", cwidth, cheight);
   else
-    BMPRose = style->GetIcon(_T("CompassRoseBlue"), cwidth, cheight);
+    BMPRose = style->GetIcon("CompassRoseBlue", cwidth, cheight);
   if ((fabs(m_parent->GetVPRotation()) > .01) ||
       (fabs(m_parent->GetVPSkew()) > .01)) {
     wxImage rose_img = BMPRose.ConvertToImage();

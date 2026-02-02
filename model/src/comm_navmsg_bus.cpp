@@ -13,19 +13,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Implement comm_navmsg_bus.h i. e., NavMsgBus.
  */
 
 #include "model/comm_navmsg_bus.h"
 
 void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
+  if (!msg) return;
   std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
   RegisterKey(key);
   Observable(*msg).Notify(msg);

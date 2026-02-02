@@ -78,6 +78,8 @@ NMEA0183::NMEA0183(const NmeaContext& ctx) : caller_ctx(ctx)
    response_table.Append( (RESPONSE *) &Hdm );
    response_table.Append( (RESPONSE *) &Hdg );
    response_table.Append( (RESPONSE *) &Hdt );
+   response_table.Append( (RESPONSE *) &Hvd );
+   response_table.Append( (RESPONSE *) &Ths );
    response_table.Append( (RESPONSE *) &Rmb );
    response_table.Append( (RESPONSE *) &Rmc );
    response_table.Append( (RESPONSE *) &Wpl );
@@ -301,7 +303,7 @@ bool NMEA0183::Parse( void )
 
 //          Traverse the response list to find a mnemonic match
 
-       wxMRLNode *node = response_table.GetFirst();
+       MRL::compatibility_iterator node = response_table.GetFirst();
 
        int comparison  = 0;
 

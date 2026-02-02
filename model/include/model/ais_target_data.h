@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * AIS target definitions
  */
 
-#ifndef _AIS_TARGET_DATA_H__
-#define _AIS_TARGET_DATA_H__
+#ifndef AIS_TARGET_DATA_H_
+#define AIS_TARGET_DATA_H_
 
 #include <functional>
 #include <memory>
@@ -255,6 +254,7 @@ public:
   double CPA;           // Nautical Miles
   bool b_show_AIS_CPA;  // TR 2012.06.28: Show AIS-CPA
   bool b_show_track;
+  bool b_show_track_old;  // Previous state of b_show_track
 
   AisMeteoData met_data;
   std::vector<AISTargetTrackPoint> m_ptrack;

@@ -12,25 +12,29 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * class About
  */
-
-#include <functional>
 
 #ifndef _ABOUT_H_
 #define _ABOUT_H_
 
-#include <wx/notebook.h>
-#include <wx/html/htmlwin.h>
+#include <functional>
+
 #include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/html/htmlwin.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/string.h>
 #include <wx/textctrl.h>
+
+#include "about_frame_impl.h"
 
 //      Constants
 
@@ -43,6 +47,11 @@
 #define ID_COPYLOG 10012
 
 #define ID_NOTEBOOK_HELP 10002
+
+class About;  // forward
+
+extern About* g_pAboutDlgLegacy;    /**< Global instance */
+extern AboutFrameImpl* g_pAboutDlg; /**< Global instance */
 
 /**
  * The OpenCPN About dialog displaying information including

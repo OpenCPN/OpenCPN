@@ -1,12 +1,6 @@
-
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  implement routeman_gui.h: Routeman drawing stuff
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,22 +13,32 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ******************A********************************************************/
+
+/**
+ * \file
+ *
+ * implement routeman_gui.h: Routeman drawing stuff
+ */
+
+#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
-#include <wx/utils.h>
 #include <wx/gdicmn.h>
+#include <wx/utils.h>
 
+#include "model/ais_decoder.h"
+#include "model/config_vars.h"
 #include "model/georef.h"
+#include "model/gui_vars.h"
+#include "model/navobj_db.h"
 #include "model/nav_object_database.h"
 #include "model/own_ship.h"
 #include "model/route.h"
@@ -43,29 +47,14 @@
 #include "model/track.h"
 
 #include "chcanv.h"
+#include "color_handler.h"
 #include "concanv.h"
-#include "model/ais_decoder.h"
 #include "navutil.h"
-#include "ocpn_app.h"
-#include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
-#include "TrackPropDlg.h"
+#include "top_frame.h"
+#include "track_prop_dlg.h"
 #include "vector2D.h"
-#include "model/navobj_db.h"
-
-extern bool g_bShowShipToActive;
-extern bool g_bAdvanceRouteWaypointOnArrivalOnly;
-
-extern MyFrame *gFrame;
-
-extern APConsole *console;
-
-extern std::vector<Track *> g_TrackList;
-extern ActiveTrack *g_pActiveTrack;
-extern TrackPropDlg *pTrackPropDialog;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern MyConfig *pConfig;
 
 static bool ConfirmDeleteAisMob() {
   int r = OCPNMessageBox(NULL,
@@ -81,7 +70,7 @@ RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
   ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
   ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
   ctx.show_with_fresh_fonts = [] {
-    if (console) console->ShowWithFreshFonts();
+    if (console && !g_bhide_route_console) console->ShowWithFreshFonts();
   };
   ctx.clear_console_background = []() {
     console->GetCDI()->ClearBackground();
@@ -107,12 +96,12 @@ bool RoutemanGui::UpdateProgress() {
          gLon, &east, &north);
     double a = atan(north / east);
     if (fabs(m_routeman.pActivePoint->m_lon - gLon) < 180.) {
-      if (m_routeman.pActivePoint->m_lon > gLon)
+      if (m_routeman.pActivePoint->m_lon >= gLon)
         m_routeman.CurrentBrgToActivePoint = 90. - (a * 180 / PI);
       else
         m_routeman.CurrentBrgToActivePoint = 270. - (a * 180 / PI);
     } else {
-      if (m_routeman.pActivePoint->m_lon > gLon)
+      if (m_routeman.pActivePoint->m_lon >= gLon)
         m_routeman.CurrentBrgToActivePoint = 270. - (a * 180 / PI);
       else
         m_routeman.CurrentBrgToActivePoint = 90. - (a * 180 / PI);
@@ -196,12 +185,12 @@ bool RoutemanGui::UpdateProgress() {
         wxPoint r, r1;
         ll_gc_ll(gLat, gLon, m_routeman.CourseToRouteSegment,
                  (m_routeman.CurrentXTEToActivePoint / 1.852), &tlat, &tlon);
-        gFrame->GetFocusCanvas()->GetCanvasPointPix(gLat, gLon, &r1);
-        gFrame->GetFocusCanvas()->GetCanvasPointPix(tlat, tlon, &r);
+        top_frame::Get()->GetCanvasPointPix(gLat, gLon, &r1);
+        top_frame::Get()->GetCanvasPointPix(tlat, tlon, &r);
         double xtepix =
             sqrt(pow((double)(r1.x - r.x), 2) + pow((double)(r1.y - r.y), 2));
         // xte in mm
-        double xtemm = xtepix / gFrame->GetFocusCanvas()->GetPixPerMM();
+        double xtemm = xtepix / top_frame::Get()->GetPixPerMM();
         // allow display (or not)
         g_bAllowShipToActive = (xtemm > 3.0) ? true : false;
       }
@@ -270,7 +259,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
     int count = pTrack->GetnPoints();
     if (count > 10000) {
       pprog = new wxGenericProgressDialog(
-          _("OpenCPN Track Delete"), _T("0/0"), count, NULL,
+          _("OpenCPN Track Delete"), "0/0", count, NULL,
           wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME |
               wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
       pprog->SetSize(400, wxDefaultCoord);
@@ -283,7 +272,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
     }
 
     if ((pTrack == g_pActiveTrack) && pTrack->IsRunning()) {
-      pTrack = gFrame->TrackOff();
+      pTrack = top_frame::Get()->TrackOff();
     }
     //    Remove the track from associated lists
     pSelect->DeleteAllSelectableTrackSegments(pTrack);
@@ -300,7 +289,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
 }
 
 void RoutemanGui::DeleteAllTracks() {
-  gFrame->TrackOff();
+  top_frame::Get()->TrackOff();
 
   ::wxBeginBusyCursor();
 
@@ -318,7 +307,7 @@ void RoutemanGui::DeleteAllTracks() {
   ::wxEndBusyCursor();
 }
 
-void RoutemanGui::DoAdvance(void) {
+void RoutemanGui::DoAdvance() {
   if (!m_routeman.ActivateNextPoint(m_routeman.pActiveRoute,
                                     false))  // at the end?
   {
