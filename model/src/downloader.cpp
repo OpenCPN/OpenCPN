@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement downloader.h -- handle downloading of files from remote urls.
  */
 
 #include <fstream>
@@ -29,13 +28,25 @@
 #include <wx/filename.h>
 #include <wx/log.h>
 
+#include "config.h"
 #include "model/downloader.h"
+#include "model/ocpn_utils.h"
 
 /** Dummy curl callback on received data from remote. */
 static size_t throw_cb(void* ptr, size_t size, size_t nmemb, void* data) {
   (void)ptr;
   (void)data;
   return (size_t)(size * nmemb);
+}
+
+static std::string GetUserAgent() {
+  std::string ua = "Mozilla/5.0 (@abi@; @abi_version@) OpenCPN/@o_version@";
+  ua += " curl/@curl_version@";
+  ocpn::replace(ua, "@o_version@", VERSION_FULL);
+  ocpn::replace(ua, "@abi@", PKG_TARGET);
+  ocpn::replace(ua, "@abi_version@", PKG_TARGET_VERSION);
+  ocpn::replace(ua, "@curl_version@", LIBCURL_VERSION);
+  return ua;
 }
 
 static unsigned write_cb(char* in, unsigned size, unsigned nmemb, void* data);
@@ -60,7 +71,7 @@ bool Downloader::download(std::ostream* stream) {
   curl = curl_easy_init();
   curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
   curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_errbuf);
-  curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0");
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, GetUserAgent().c_str());
   curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
   curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
   // FIXME -- Add correct certificates on host.
@@ -103,6 +114,7 @@ long Downloader::get_filesize() {
 
   curl = curl_easy_init();
   curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, GetUserAgent().c_str());
   curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
   curl_easy_setopt(curl, CURLOPT_FILETIME, 1L);
   curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, throw_cb);

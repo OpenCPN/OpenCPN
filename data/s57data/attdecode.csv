@@ -1,5 +1,5 @@
 "Attribute","ValueDecode"
-BCNSHP,1;Stake. Pole. Perch. Post;2;Withy;3;BeaconTower;4;Lattice Beacon;5;Pile Beacon;6;Cairn;7;Bouyant Beacon
+BCNSHP,1;Stake. Pole. Perch. Post;2;Withy;3;BeaconTower;4;Lattice Beacon;5;Pile Beacon;6;Cairn;7;Buoyant Beacon
 BUISHP,1;no specific shape;2;tower;3;spire;4;cupola (dome);5;high-rise building;6;pyramid;7;cylindrical;8;spherical;9;cubic
 BOYSHP,1;conical (nun);2;can (cylindrical);3;spherical;4;pillar;5;spar (spindle);6;barrel (tun);7;super-buoy;8;ice buoy
 CATAIR,1;military aeroplane airport;2;civil aeroplane airport;3;military heliport;4;civil heliport;5;glider arifield;6;small planes airfield;8;emergency airfield

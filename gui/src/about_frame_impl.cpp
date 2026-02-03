@@ -12,13 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Implement about_frame_impl.h
  */
 
@@ -26,9 +25,10 @@
 #include <sstream>
 #include <string>
 
+#include "model/base_platform.h"
+
 #include "about_frame_impl.h"
 #include "config.h"
-#include "OCPNPlatform.h"
 #include "gui_lib.h"
 #include "std_filesystem.h"
 
@@ -40,11 +40,9 @@
 #define EXTEND_HEIGHT 50
 #endif
 
-extern OCPNPlatform* g_Platform;
-
 /** Load utf-8 encoded HTML page, works around wxHtmlWindow LoadFile() bugs */
 static void LoadAuthors(wxHtmlWindow& hyperlink) {
-  fs::path datadir(g_Platform->GetSharedDataDir().ToStdString());
+  fs::path datadir(g_BasePlatform->GetSharedDataDir().ToStdString());
   std::ifstream stream(datadir / "Authors.html");
   std::stringstream ss;
   ss << stream.rdbuf();
@@ -61,27 +59,27 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
     m_staticTextVersion->SetLabel(PACKAGE_VERSION);
 
   m_staticTextCopyYears->SetLabel("\u00A9 2000-2024");
-  m_hyperlinkIniFile->SetLabel(g_Platform->GetConfigFileName());
-  m_hyperlinkIniFile->SetURL(g_Platform->GetConfigFileName());
-  m_hyperlinkLogFile->SetLabel(g_Platform->GetLogFileName());
-  m_hyperlinkLogFile->SetURL(g_Platform->GetLogFileName());
+  m_hyperlinkIniFile->SetLabel(g_BasePlatform->GetConfigFileName());
+  m_hyperlinkIniFile->SetURL(g_BasePlatform->GetConfigFileName());
+  m_hyperlinkLogFile->SetLabel(g_BasePlatform->GetLogFileName());
+  m_hyperlinkLogFile->SetURL(g_BasePlatform->GetLogFileName());
   m_htmlWinAuthors->Hide();
   m_htmlWinLicense->Hide();
   m_htmlWinHelp->Hide();
   m_btnBack->Hide();
   m_htmlWinLicense->LoadFile(wxString::Format(
-      "%s/license.html", g_Platform->GetSharedDataDir().c_str()));
+      "%s/license.html", g_BasePlatform->GetSharedDataDir().c_str()));
   LoadAuthors(*m_htmlWinAuthors);
   wxBitmap logo(wxString::Format("%s/opencpn.png",
-                                 g_Platform->GetSharedDataDir().c_str()),
+                                 g_BasePlatform->GetSharedDataDir().c_str()),
                 wxBITMAP_TYPE_ANY);
 
-  wxString target = wxString::Format("%sdoc/local/toc_flat.html",
-                                     g_Platform->GetSharedDataDir().c_str());
+  wxString target = wxString::Format(
+      "%sdoc/local/toc_flat.html", g_BasePlatform->GetSharedDataDir().c_str());
 
   if (!::wxFileExists(target))
     target = wxString::Format("%sdoc/help_web.html",
-                              g_Platform->GetSharedDataDir().c_str());
+                              g_BasePlatform->GetSharedDataDir().c_str());
 
   target.Prepend("file://");
 
@@ -105,18 +103,18 @@ AboutFrameImpl::AboutFrameImpl(wxWindow* parent, wxWindowID id,
 
 void AboutFrameImpl::OnLinkHelp(wxHyperlinkEvent& event) {
 #ifdef __WXGTK__
-  wxString testFile = wxString::Format("/%s/doc/help_web.html",
-                                       g_Platform->GetSharedDataDir().c_str());
+  wxString testFile = wxString::Format(
+      "/%s/doc/help_web.html", g_BasePlatform->GetSharedDataDir().c_str());
   if (!::wxFileExists(testFile)) {
     wxString msg = _("OpenCPN Help documentation is not available locally.");
-    msg += _T("\n");
+    msg += "\n";
     msg +=
         _("Would you like to visit the opencpn.org website for more "
           "information?");
 
     if (wxID_YES ==
         OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxYES_NO | wxCENTER, 60)) {
-      wxLaunchDefaultBrowser(_T("https://opencpn.org"));
+      wxLaunchDefaultBrowser("https://opencpn.org");
     }
   } else
 #endif
@@ -166,8 +164,8 @@ void AboutFrameImpl::AboutFrameOnActivate(wxActivateEvent& event) {
   m_panelMainLinks->Refresh();
 }
 
-void AboutFrameImpl::RecalculateSize(void) {
-#ifdef __OCPN__ANDROID__
+void AboutFrameImpl::RecalculateSize() {
+#ifdef __ANDROID__
   //  Make an estimate of the dialog size, without scrollbars showing
 
   wxSize esize;

@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_drv_signalk_net.h -- IP netork SignalK driver
+ */
 
 #include <vector>
 #include <mutex>  // std::mutex
@@ -44,9 +43,10 @@
 #include "ixwebsocket/IXWebSocket.h"
 #include "ixwebsocket/IXUserAgent.h"
 #include "ixwebsocket/IXSocketTLSOptions.h"
+
 using namespace std::literals::chrono_literals;
 
-const int kTimerSocket = 9006;
+static const int kTimerSocket = 9006;
 
 class CommDriverSignalKNetEvent;  // fwd
 
@@ -56,10 +56,10 @@ public:
                              const wxString& PortName,
                              const wxString& strBaudRate);
 
-  ~CommDriverSignalKNetThread(void);
+  ~CommDriverSignalKNetThread();
   void* Entry();
   bool SetOutMsg(const wxString& msg);
-  void OnExit(void);
+  void OnExit();
 
 private:
   void ThreadMessage(const wxString& msg);
@@ -67,7 +67,7 @@ private:
   void CloseComPortPhysical();
   size_t WriteComPortPhysical(std::vector<unsigned char> msg);
   size_t WriteComPortPhysical(unsigned char* msg, size_t length);
-  void SetGatewayOperationMode(void);
+  void SetGatewayOperationMode();
 
   CommDriverSignalKNet* m_pParentDriver;
   wxString m_PortName;
@@ -280,7 +280,7 @@ DriverStats CommDriverSignalKNet::GetDriverStats() const {
     return m_driver_stats;
 }
 
-void CommDriverSignalKNet::Open(void) {
+void CommDriverSignalKNet::Open() {
   wxString discoveredIP;
 #if 0
   int discoveredPort;
@@ -290,25 +290,6 @@ void CommDriverSignalKNet::Open(void) {
   {
     std::string serviceIdent =
         std::string("_signalk-ws._tcp.local.");  // Works for node.js server
-#if 0
-    if (m_params->AutoSKDiscover) {
-      if (DiscoverSKServer(serviceIdent, discoveredIP, discoveredPort,
-                           1)) {  // 1 second scan
-        wxLogDebug(wxString::Format(
-            _T("SK server autodiscovery finds WebSocket service: %s:%d"),
-            discoveredIP.c_str(), discoveredPort));
-        m_addr.Hostname(discoveredIP);
-        m_addr.Service(discoveredPort);
-
-        // Update the connection params, by pointer to item in global params
-        // array
-        ConnectionParams *params = (ConnectionParams *)m_params;  // non-const
-        params->NetworkAddress = discoveredIP;
-        params->NetworkPort = discoveredPort;
-      } else
-        wxLogDebug(_T("SK server autodiscovery finds no WebSocket server."));
-    }
-#endif
     OpenWebSocket();
   }
 }
@@ -366,14 +347,14 @@ bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
 
 void CommDriverSignalKNet::OpenWebSocket() {
   // printf("OpenWebSocket\n");
-  wxLogMessage(wxString::Format(_T("Opening Signal K WebSocket client: %s"),
+  wxLogMessage(wxString::Format("Opening Signal K WebSocket client: %s",
                                 m_params.GetDSPort().c_str()));
 
   // Start a thread to run the client without blocking
 
   m_wsThread = new WebSocketThread(this, GetAddr(), this, m_token);
   if (m_wsThread->Create() != wxTHREAD_NO_ERROR) {
-    wxLogError(wxT("Can't create WebSocketThread!"));
+    wxLogError("Can't create WebSocketThread!");
 
     return;
   }
@@ -389,7 +370,7 @@ void CommDriverSignalKNet::OpenWebSocket() {
 void CommDriverSignalKNet::CloseWebSocket() {
   if (m_wsThread) {
     if (IsThreadRunning()) {
-      wxLogMessage(_T("Stopping Secondary SignalK Thread"));
+      wxLogMessage("Stopping Secondary SignalK Thread");
       m_stats_timer.Stop();
 
       m_Thread_run_flag = 0;
@@ -401,27 +382,13 @@ void CommDriverSignalKNet::CloseWebSocket() {
 
       wxString msg;
       if (m_Thread_run_flag <= 0)
-        msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
+        msg.Printf("Stopped in %d sec.", 10 - tsec);
       else
-        msg.Printf(_T("Not Stopped after 10 sec."));
+        msg.Printf("Not Stopped after 10 sec.");
       wxLogMessage(msg);
     }
 
     wxMilliSleep(100);
-
-#if 0
-      m_thread_run_flag = 0;
-       printf("sending delete\n");
-      m_wsThread->Delete();
-      wxMilliSleep(100);
-
-      int nDeadman = 0;
-      while (IsThreadRunning() && (++nDeadman < 200)) {  // spin for max 2 secs.
-        wxMilliSleep(10);
-      }
-       printf("Closed in %d\n", nDeadman);
-      wxMilliSleep(100);
-#endif
   }
 }
 
@@ -431,21 +398,19 @@ void CommDriverSignalKNet::handle_SK_sentence(
 
   // LOG_DEBUG("%s\n", msg.c_str());
 
-  std::string* msg = event.GetPayload().get();
-  std::string msgTerminated = *msg;
-  msgTerminated.append("\r\n");
+  std::shared_ptr<const std::string> msg = event.GetPayload();
 
   root.Parse(*msg);
   if (root.HasParseError()) {
     wxLogMessage(wxString::Format(
-        _T("SignalKDataStream ERROR: the JSON document is not well-formed:%d"),
+        "SignalKDataStream ERROR: the JSON document is not well-formed:%d",
         root.GetParseError()));
     return;
   }
 
   if (!root.IsObject()) {
     wxLogMessage(wxString::Format(
-        _T("SignalKDataStream ERROR: Message is not a JSON Object: %s"),
+        "SignalKDataStream ERROR: Message is not a JSON Object: %s",
         msg->c_str()));
     return;
   }
@@ -453,7 +418,7 @@ void CommDriverSignalKNet::handle_SK_sentence(
   // Decode just enough of string to extract some identifiers
   // such as the sK version, "self" context, and target context
   if (root.HasMember("version")) {
-    wxString msg = _T("Connected to Signal K server version: ");
+    wxString msg = "Connected to Signal K server version: ";
     msg << (root["version"].GetString());
     wxLogMessage(msg);
   }
@@ -475,8 +440,8 @@ void CommDriverSignalKNet::handle_SK_sentence(
   auto pos = iface.find(":");
   std::string comm_interface = "";
   if (pos != std::string::npos) comm_interface = iface.substr(pos + 1);
-  auto navmsg = std::make_shared<const SignalkMsg>(
-      m_self, m_context, msgTerminated, comm_interface);
+  auto navmsg = std::make_shared<const SignalkMsg>(m_self, m_context, *msg,
+                                                   comm_interface);
   m_listener.Notify(std::move(navmsg));
 }
 
@@ -484,130 +449,6 @@ void CommDriverSignalKNet::initIXNetSystem() { ix::initNetSystem(); };
 
 void CommDriverSignalKNet::uninitIXNetSystem() { ix::uninitNetSystem(); };
 
-#if 0
-void CommDriverSignalKNet::handleUpdate(wxJSONValue &update) {
-  wxString sfixtime = "";
-
-  if (update.HasMember("timestamp")) {
-    sfixtime = update["timestamp"].AsString();
-  }
-  if (update.HasMember("values") && update["values"].IsArray()) {
-    for (int j = 0; j < update["values"].Size(); ++j) {
-      wxJSONValue &item = update["values"][j];
-      updateItem(item, sfixtime);
-    }
-  }
-}
-
-void CommDriverSignalKNet::updateItem(wxJSONValue &item,
-                                     wxString &sfixtime) {
-  if (item.HasMember("path") && item.HasMember("value")) {
-    const wxString &update_path = item["path"].AsString();
-    wxJSONValue &value = item["value"];
-
-    if (update_path == _T("navigation.position") && !value.IsNull()) {
-      updateNavigationPosition(value, sfixtime);
-    } else if (update_path == _T("navigation.speedOverGround") &&
-               m_bGPSValid_SK && !value.IsNull()) {
-      updateNavigationSpeedOverGround(value, sfixtime);
-    } else if (update_path == _T("navigation.courseOverGroundTrue") &&
-               m_bGPSValid_SK && !value.IsNull()) {
-      updateNavigationCourseOverGround(value, sfixtime);
-    } else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
-    }
-    else if (update_path ==
-             _T("navigation.gnss.satellites"))  // From GGA sats in use
-    {
-      /*if (g_priSats >= 2)*/ updateGnssSatellites(value, sfixtime);
-    } else if (update_path ==
-               _T("navigation.gnss.satellitesInView"))  // From GSV sats in view
-    {
-      /*if (g_priSats >= 3)*/ updateGnssSatellites(value, sfixtime);
-    } else if (update_path == _T("navigation.headingTrue")) {
-      if(!value.IsNull())
-        updateHeadingTrue(value, sfixtime);
-    } else if (update_path == _T("navigation.headingMagnetic")) {
-      if(!value.IsNull())
-        updateHeadingMagnetic(value, sfixtime);
-    } else if (update_path == _T("navigation.magneticVariation")) {
-      if(!value.IsNull())
-        updateMagneticVariance(value, sfixtime);
-    } else {
-      // wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"),
-      // update_path));
-#if 0
-            wxString dbg;
-            wxJSONWriter writer;
-            writer.Write(item, dbg);
-            wxString msg( _T("update: ") );
-            msg.append(dbg);
-            wxLogMessage(msg);
-#endif
-    }
-  }
-}
-
-void CommDriverSignalKNet::updateNavigationPosition(
-    wxJSONValue &value, const wxString &sfixtime) {
-  if ((value.HasMember("latitude" && value["latitude"].IsDouble())) &&
-      (value.HasMember("longitude") && value["longitude"].IsDouble())) {
-    // wxLogMessage(_T(" ***** Position Update"));
-    m_lat = value["latitude"].AsDouble();
-    m_lon = value["longitude"].AsDouble();
-    m_bGPSValid_SK = true;
-  } else {
-    m_bGPSValid_SK = false;
-  }
-}
-
-
-void CommDriverSignalKNet::updateNavigationSpeedOverGround(
-    wxJSONValue &value, const wxString &sfixtime){
-  double sog_ms = value.AsDouble();
-  double sog_knot = sog_ms * ms_to_knot_factor;
-  // wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
-  m_sog = sog_knot;
-}
-
-void CommDriverSignalKNet::updateNavigationCourseOverGround(
-    wxJSONValue &value, const wxString &sfixtime) {
-  double cog_rad = value.AsDouble();
-  double cog_deg = GEODESIC_RAD2DEG(cog_rad);
-  // wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
-  m_cog = cog_deg;
-}
-
-void CommDriverSignalKNet::updateGnssSatellites(wxJSONValue &value,
-                                               const wxString &sfixtime) {
-#if 0
-  if (value.IsInt()) {
-    if (value.AsInt() > 0) {
-      m_frame->setSatelitesInView(value.AsInt());
-      g_priSats = 2;
-    }
-  } else if ((value.HasMember("count") && value["count"].IsInt())) {
-    m_frame->setSatelitesInView(value["count"].AsInt());
-    g_priSats = 3;
-  }
-#endif
-}
-
-void CommDriverSignalKNet::updateHeadingTrue(wxJSONValue &value,
-                                            const wxString &sfixtime) {
-  m_hdt = GEODESIC_RAD2DEG(value.AsDouble());
-}
-
-void CommDriverSignalKNet::updateHeadingMagnetic(
-    wxJSONValue &value, const wxString &sfixtime) {
-  m_hdm = GEODESIC_RAD2DEG(value.AsDouble());
-}
-
-void CommDriverSignalKNet::updateMagneticVariance(
-    wxJSONValue &value, const wxString &sfixtime) {
-  m_var = GEODESIC_RAD2DEG(value.AsDouble());
-}
-
-#endif
 ////////////
 
 //   std::vector<unsigned char>* payload = p.get();

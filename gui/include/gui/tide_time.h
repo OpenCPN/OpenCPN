@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,16 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
-#ifndef __TIDE_TIME_H__
-#define __TIDE_TIME_H__
+#ifndef TIDE_TIME_H_
+#define TIDE_TIME_H_
 
-// constants for hight and low tide search
+/** High and low tide search constants */
 enum {
   FORWARD_ONE_HOUR_STEP = 3600,
   FORWARD_TEN_MINUTES_STEP = 600,

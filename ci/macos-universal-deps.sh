@@ -24,14 +24,14 @@ vorbis_version="1.3.7"
 flac_version="1.4.3"
 opus_version="1.5.2"
 blake2_version="0.98.1"
-zstd_version="1.5.6"
-libarchive_version="3.7.7"
+zstd_version="1.5.7"
+libarchive_version="3.8.5"
 mpg123_version="1.32.8"
 lame_version="3.100"
 libsndfile_version="1.2.2"
-libusb_version="1.0.27"
-openssl_version="3.0.16"
-wx_version="3.2.8"
+libusb_version="1.0.29"
+openssl_version="3.5.4"
+wx_version="3.2.9"
 
 macos_deployment_target="10.13"
 
@@ -417,7 +417,17 @@ patch < $(dirname "${scriptpath}")/../buildosx/wx_slider_patch.diff
       --without-subdirs \
       --prefix=${cache_dir}
 make -j ${ncpu}
+
 make install
+# The second make install for some reason fixes the RPATH of the installed libraries in wx 3.2.9
+make install
+#for lib in $(otool -L ${cache_dir}/lib/libwx*.dylib|grep Users|sort -u|cut -d ' ' -f1); do
+#    newlib=$(echo $lib | sed "s|${PWD}/wxWidgets-${wx_version}|${cache_dir}|g")
+#    for l in ${cache_dir}/lib/libwx*.dylib; do
+#        install_name_tool -change ${lib} ${newlib} ${l}
+#    done
+#done
+
 # We are maybe going to run on x86_64 and have to be using system grep, have to change the path
 sudo sed -i -e "s/^EGREP.*/EGREP=\/usr\/bin\/egrep/g" $(readlink ${cache_dir}/bin/wx-config)
 cd ..

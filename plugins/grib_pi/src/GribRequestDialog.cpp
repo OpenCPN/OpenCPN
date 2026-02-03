@@ -20,6 +20,10 @@
  * \file
  * \implements \ref GribRequestDialog.h
  */
+// Disable the maybe-uninitialized warning as it triggers in std::regex and
+// makes the build with sanitizers impossible
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 #include "wx/wx.h"
 #include <wx/utils.h>
 #include <sstream>
@@ -34,6 +38,8 @@
 #include "grib_pi.h"
 
 #include <unordered_map>
+#include <regex>
+#include <string>
 
 #define RESOLUTIONS 4
 
@@ -137,6 +143,7 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
   ReadLocalCatalog();
   m_bLocal_source_selected = false;
   EnableDownloadButtons();
+
   m_selectedAtmModelIndex = 0;
   m_selectedWaveModelIndex = 0;
   InitializeXygribDialog();
@@ -340,107 +347,42 @@ void GribRequestSetting::OnClose(wxCloseEvent &event) {
 }
 
 void GribRequestSetting::SetRequestDialogSize() {
-  int display_height = wxGetDisplaySize().y;
+  int y;
+  /*first let's size the mail display space*/
+  GetTextExtent(_T("abc"), nullptr, &y, 0, 0, OCPNGetFont(_("Dialog")));
+  m_MailImage->SetMinSize(
+      wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
 
-  // For smaller physical displays, adjust the dialog sizing algorithm
-  // to work based on the app frame size, adding scrolled windows as necessary.
-  if (display_height < 800) {
-    wxWindow *frame = wxTheApp->GetTopWindow();
-    int w0 = frame->GetSize().x;
-    int h0 = frame->GetSize().y;
-
-    // Get a font metric
-    int font_height;
-    GetTextExtent(_T("ABC"), nullptr, &font_height, 0, 0,
-                  OCPNGetFont(_("Dialog")));
-
-    // Set the height of the mail requests box
-    // by sizing the parameter scrolled window
-    m_MailImage->SetMinSize(
-        wxSize(-1, ((font_height * m_MailImage->GetNumberOfLines()) + 10)));
-
-    // Calculate size available for e-mail page scrolled window
-    int scroll_height = h0;
-    scroll_height -=
-        font_height * 11;  // estimated space required at top
-                           //  including decorations and notebook bar
-
-    scroll_height -= font_height * 3;  // estimated space required at bottom
-                                       //  including  OK/Camcel
-    m_sScrolledDialog->SetMinSize(wxSize(w0 * 8 / 10, scroll_height));
-    m_fgScrollSizer->Fit(m_sScrolledDialog);
-
-    // Preset sizes of other pages that require it
-
-    // XyGrib Panel scroller
-    int xy_scroll_height = h0;
-    xy_scroll_height -=
-        font_height * 11;  // estimated space required at top
-                           //  including decorations and notebook bar
-
-    xy_scroll_height -= font_height * 4;  // estimated space required at bottom
-                                          //  including  OK/Camcel
-    m_xygribPanel->m_xyScrolledDialog->SetMinSize(
-        wxSize(w0 * 8 / 10, xy_scroll_height));
-    m_xygribPanel->m_xyScrollSizer->Fit(m_xygribPanel->m_xyScrolledDialog);
-    m_xygribPanel->Layout();
-
-    // Local Models Tree control
-    int localtree_height = h0;
-    localtree_height -=
-        font_height * 11;  // estimated space required at top
-                           //  including decorations and notebook bar
-
-    localtree_height -= font_height * 4;  // estimated space required at bottom
-                                          //  including  OK/Camcel
-    m_SourcesTreeCtrl1->SetMinSize(wxSize(w0 * 8 / 10, xy_scroll_height));
-
-    // Set overall dialog size
-    SetSize(w0 * 8 / 10, h0);
-    SetMinSize(wxSize(w0 * 8 / 10, h0));
-
-    Layout();
-    Fit();
-
-    Refresh();
-  } else {
-    int y;
-    /*first let's size the mail display space*/
-    GetTextExtent(_T("abc"), nullptr, &y, 0, 0, OCPNGetFont(_("Dialog")));
-    m_MailImage->SetMinSize(
-        wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
-
-    /*then as default sizing do not work with wxScolledWindow let's compute it*/
-    wxSize scroll = m_fgScrollSizer->Fit(
-        m_sScrolledDialog);  // the area size to be scrolled
+  /*then as default sizing do not work with wxScolledWindow let's compute it*/
+  wxSize scroll =
+      m_fgScrollSizer->Fit(m_sScrolledDialog);  // the area size to be scrolled
 
 #ifdef __WXGTK__
-    SetMinSize(wxSize(0, 0));
+  SetMinSize(wxSize(0, 0));
 #endif
 
-    wxWindow *frame = wxTheApp->GetTopWindow();
+  wxWindow *frame = wxTheApp->GetTopWindow();
 
-    int w = frame->GetClientSize().x;  // the display size
-    int h = frame->GetClientSize().y;
-    int dMargin = 80;  // set a margin
+  int w = frame->GetClientSize().x;  // the display size
+  int h = frame->GetClientSize().y;
+  int dMargin = 80;  // set a margin
 
-    // height available for the scrolled window.
-    h -= (m_rButtonCancel->GetSize().GetY() + dMargin);
-    w -= dMargin;  // width available for the scrolled window
-    m_sScrolledDialog->SetMinSize(
-        wxSize(wxMin(w, scroll.x),
-               wxMin(h, scroll.y)));  // set scrolled area size with margin
+  // height available for the scrolled window.
+  h -= (m_rButtonCancel->GetSize().GetY() + dMargin);
+  w -= dMargin;  // width available for the scrolled window
+  m_sScrolledDialog->SetMinSize(
+      wxSize(wxMin(w, scroll.x),
+             wxMin(h, scroll.y)));  // set scrolled area size with margin
 
-    Layout();
-    Fit();
+  Layout();
+  Fit();
 #ifdef __WXGTK__
-    wxSize sd = GetSize();
-    if (sd.y == GetClientSize().y) sd.y += 30;
-    SetSize(wxSize(sd.x, sd.y));
-    SetMinSize(wxSize(sd.x, sd.y));
+  wxSize sd = GetSize();
+  if (sd.y == GetClientSize().y) sd.y += 30;
+  SetSize(wxSize(sd.x, sd.y));
+  SetMinSize(wxSize(sd.x, sd.y));
 #endif
-    Refresh();
-  }
+  Refresh();
 }
 
 void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp) {
@@ -578,6 +520,28 @@ size_t LengthSelToHours(int sel) {
   }
 }
 
+template <typename T>
+std::string GribRequestSetting::FormatPerLocale(T value) {
+  std::stringstream ss;
+  // use the the user-preferred locale rather than the default "C" locale
+  ss.imbue(std::locale(""));
+  ss << value;  // Output for a US locale would be: 12,345,678 for integers
+  return ss.str();
+}
+
+wxString GribRequestSetting::GetDownloadProgressText(long transferredBytes,
+                                                     long totalBytes) {
+  if (totalBytes > 0) {
+    return wxString::Format(_("Downloading... %s kB / %s kB (%li%%)"),
+                            FormatPerLocale(transferredBytes / 1024).c_str(),
+                            FormatPerLocale(totalBytes / 1024).c_str(),
+                            (int)((double)transferredBytes / totalBytes * 100));
+  } else {
+    return wxString::Format(_("Downloading... %s kB / ???"),
+                            FormatPerLocale(transferredBytes / 1024).c_str());
+  }
+}
+
 void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
   // std::cout << "onDLEvent  " << ev.getDLEventCondition() << " "
   //           << ev.getDLEventStatus() << std::endl;
@@ -595,48 +559,28 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
       break;
 
     case OCPN_DL_EVENT_TYPE_PROGRESS:
-      if (ev.getTotal() != 0) {
-        switch (m_downloadType) {
-          case GribDownloadType::WORLD:
-            m_staticTextInfo->SetLabelText(
-                wxString::Format(_("Downloading... %li / %li"),
-                                 ev.getTransferred(), ev.getTotal()));
-            break;
-          case GribDownloadType::LOCAL:
-          case GribDownloadType::LOCAL_CATALOG:
-            m_stLocalDownloadInfo->SetLabelText(
-                wxString::Format(_("Downloading... %li / %li"),
-                                 ev.getTransferred(), ev.getTotal()));
-            break;
-          case GribDownloadType::XYGRIB:
-            // Update XyGrib progress gauge
+      switch (m_downloadType) {
+        case GribDownloadType::WORLD:
+          m_staticTextInfo->SetLabelText(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        case GribDownloadType::LOCAL:
+        case GribDownloadType::LOCAL_CATALOG:
+          m_stLocalDownloadInfo->SetLabelText(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        case GribDownloadType::XYGRIB:
+          // Update XyGrib progress gauge
+          if (ev.getTotal()) {
             m_xygribPanel->m_progress_gauge->SetValue(
                 100 * ev.getTransferred() / ev.getTotal());
-            // Update status text to display information on file size
-            m_xygribPanel->m_status_text->SetLabel(wxString::Format(
-                "%s (%ld kB / %ld kB)",
-                _("Downloading GRIB file").c_str().AsChar(),
-                ev.getTransferred() / 1024, ev.getTotal() / 1024));
-            break;
-          default:
-            break;
-        }
-      } else {
-        if (ev.getTransferred() > 0) {
-          switch (m_downloadType) {
-            case GribDownloadType::WORLD:
-              m_staticTextInfo->SetLabelText(wxString::Format(
-                  _("Downloading... %li / ???"), ev.getTransferred()));
-              break;
-            case GribDownloadType::LOCAL:
-            case GribDownloadType::LOCAL_CATALOG:
-              m_stLocalDownloadInfo->SetLabelText(wxString::Format(
-                  _("Downloading... %li / ???"), ev.getTransferred()));
-              break;
-            default:
-              break;
           }
-        }
+          // Update status text to display information on file size
+          m_xygribPanel->m_status_text->SetLabel(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        default:
+          break;
       }
       wxYieldIfNeeded();
       break;
@@ -1926,30 +1870,45 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
     return;
   }
 
+  std::string mailto =
+      (m_pMailTo->GetCurrentSelection() == SAILDOCS
+           ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
+           : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')))
+          .ToStdString();
+  std::string mailfrom = m_pSenderAddress->GetValue().ToStdString();
+
+  std::regex mailregex("^([a-z0-9+_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$");
+
+  if ((!mailto.empty() && !std::regex_match(mailto, mailregex)) ||
+      (!mailfrom.empty() && !std::regex_match(mailfrom, mailregex))) {
+    OCPNMessageBox_PlugIn(
+        this,
+        _("Sender or recipient e-mail address seems invalid.\nPlease correct "
+          "it in the configuration file."),
+        _("Error"), wxOK | wxICON_ERROR);
+    return;
+  }
+
 #ifdef __WXMAC__
   // macOS, at least Big Sur, requires the body to be URLEncoded, otherwise the
   // invocation of the mail application via sh/open in wxEmail fails due to
   // "invalid characters" in "filename" regardless of quotation used (which is
   // weird, but real)
-  wxMailMessage *message = new wxMailMessage(
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? _T("grib-request")
-          : wxT("gribauto"),  // requested subject
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
-          : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
-      EncodeURL(WriteMail()),  // message image
-      m_pSenderAddress->GetValue());
+  wxMailMessage *message =
+      new wxMailMessage((m_pMailTo->GetCurrentSelection() == SAILDOCS)
+                            ? _T("grib-request")
+                            : wxT("gribauto"),  // requested subject
+                        mailto,
+                        EncodeURL(WriteMail()),  // message image
+                        mailfrom);
 #else
-  wxMailMessage *message = new wxMailMessage(
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? _T("grib-request")
-          : wxT("gribauto"),  // requested subject
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
-          : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
-      WriteMail(),  // message image
-      m_pSenderAddress->GetValue());
+  wxMailMessage *message =
+      new wxMailMessage((m_pMailTo->GetCurrentSelection() == SAILDOCS)
+                            ? _T("grib-request")
+                            : wxT("gribauto"),  // requested subject
+                        mailto,
+                        WriteMail(),  // message image
+                        mailfrom);
 #endif
 
   wxEmail mail;

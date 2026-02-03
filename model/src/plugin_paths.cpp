@@ -1,3 +1,32 @@
+/**************************************************************************
+ *   Copyright (C) 2010 - 2023 by David S. Register                        *
+ *   Copyright (C) 2023 - 2025  Alec Leamas                                *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement plugin_paths.h -- plugin installation and data paths support.
+ *
+ * User-writable paths for libraries, binaries and plugin data,
+ * one path each. Also the list of paths used for loading plugin
+ * plugin libraries, locating helper binaries and storing plugin
+ * data.
+ */
+
 #include <sstream>
 
 #include <wx/filename.h>
@@ -11,13 +40,6 @@
 #include "model/ocpn_utils.h"
 #include "model/plugin_paths.h"
 #include "ocpn_plugin.h"
-
-/*
- * The user-writable paths for libraries, binaries and plugin data,
- * one path each. And the list of paths used fo loading plugin
- * plugin libraries, locating helper binaries and storing plugin
- * data.
- */
 
 static std::vector<std::string> split(const std::string& s, char delimiter) {
   std::vector<std::string> tokens;
@@ -223,7 +245,7 @@ PluginPaths::PluginPaths() {
   } else if (g_BasePlatform->isFlatpacked()) {
     InitFlatpakPaths();
   } else if (osSystemId & wxOS_UNIX_LINUX) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     InitAndroidPaths();
 #else
     InitLinuxPaths();
@@ -232,8 +254,8 @@ PluginPaths::PluginPaths() {
     InitApplePaths();
   } else {
     wxString os_name = wxPlatformInfo::Get().GetPortIdName();
-    wxLogMessage(_T("OS_NAME: ") + os_name);
-    if (os_name.Contains(_T("wxQT"))) {
+    wxLogMessage("OS_NAME: " + os_name);
+    if (os_name.Contains("wxQT")) {
       InitAndroidPaths();
     } else
       wxLogWarning("PluginPaths: Unknown platform");

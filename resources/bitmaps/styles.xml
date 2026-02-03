@@ -359,11 +359,11 @@
                 <icon-location x="80" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="bouy1">
+            <icon name="buoy1">
                 <icon-location x="100" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="bouy2">
+            <icon name="buoy2">
                 <icon-location x="120" y="140"/>
                 <size x="16" y="16"/>
             </icon>
@@ -439,7 +439,7 @@
                 <icon-location x="500" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="oilbouy">
+            <icon name="oilbuoy">
                 <icon-location x="520" y="140"/>
                 <size x="16" y="16"/>
             </icon>
@@ -845,11 +845,11 @@
                                 <icon-location x="80" y="140"/>
                                 <size x="16" y="16"/>
                         </icon>
-                        <icon name="bouy1">
+                        <icon name="buoy1">
                                 <icon-location x="100" y="140"/>
                                 <size x="16" y="16"/>
                         </icon>
-                        <icon name="bouy2">
+                        <icon name="buoy2">
                                 <icon-location x="120" y="140"/>
                                 <size x="16" y="16"/>
                         </icon>
@@ -925,7 +925,7 @@
                                 <icon-location x="500" y="140"/>
                                 <size x="16" y="16"/>
                         </icon>
-                        <icon name="oilbouy">
+                        <icon name="oilbuoy">
                                 <icon-location x="520" y="140"/>
                                 <size x="16" y="16"/>
                         </icon>
@@ -1358,11 +1358,11 @@
                 <icon-location x="80" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="bouy1">
+            <icon name="buoy1">
                 <icon-location x="100" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="bouy2">
+            <icon name="buoy2">
                 <icon-location x="120" y="140"/>
                 <size x="16" y="16"/>
             </icon>
@@ -1438,7 +1438,7 @@
                 <icon-location x="500" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="oilbouy">
+            <icon name="oilbuoy">
                 <icon-location x="520" y="140"/>
                 <size x="16" y="16"/>
             </icon>
@@ -1862,11 +1862,11 @@
                 <icon-location x="80" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="bouy1">
+            <icon name="buoy1">
                 <icon-location x="100" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="bouy2">
+            <icon name="buoy2">
                 <icon-location x="120" y="140"/>
                 <size x="16" y="16"/>
             </icon>
@@ -1942,7 +1942,7 @@
                 <icon-location x="500" y="140"/>
                 <size x="16" y="16"/>
             </icon>
-            <icon name="oilbouy">
+            <icon name="oilbuoy">
                 <icon-location x="520" y="140"/>
                 <size x="16" y="16"/>
             </icon>

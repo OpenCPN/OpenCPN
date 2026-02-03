@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Layer to use wxDC or opengl
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2011 by Sean D'Epagnier                                 *
  *   sean at depagnier dot com                                             *
  *                                                                         *
@@ -19,41 +13,43 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *f
+ * Layer to use wxDC or opengl
  */
 
 #ifndef __OCPNDC_H__
 #define __OCPNDC_H__
 
-#include <vector>
+#ifdef ocpnUSE_GL
+#include "gl_headers.h"
+#include "shaders.h"
+#endif
 
-#include "dychart.h"
+#include <wx/brush.h>
+#include <wx/colour.h>
+#include <wx/font.h>
+#include <wx/glcanvas.h>
+#include <wx/pen.h>
+#include <wx/string.h>
 
 #include "linmath.h"
 
 #include "TexFont.h"
 #include "viewport.h"
-#ifdef ocpnUSE_GL
-#include "shaders.h"
-#endif
 
-class ViewPort;
-class GLUtesselator;
+class glChartCanvas;  // Circular
 
-void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
-                     bool b_hiqual);
+static void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
+                            bool b_hiqual);
 
 //----------------------------------------------------------------------------
 // ocpnDC
 //----------------------------------------------------------------------------
-
-class wxGLCanvas;
-class glChartCanvas;
 
 /**
  * Device context class that can use either wxDC or OpenGL for drawing.

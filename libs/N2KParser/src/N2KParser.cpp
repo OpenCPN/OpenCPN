@@ -143,6 +143,16 @@ bool ParseN2kPGN127257(std::vector<unsigned char> &v, unsigned char &SID,
 
 }
 
+bool ParseN2kPGN127258(std::vector<unsigned char> &v, unsigned char &SID,
+                       tN2kMagneticVariation &Source, uint16_t &DaysSince1970, double &Variation) {
+
+  tN2kMsg msg;
+  MakeN2kMsg(v,msg);
+
+  return ParseN2kPGN127258(msg, SID, Source, DaysSince1970, Variation);
+
+}
+
 bool ParseN2kPGN128259(std::vector<unsigned char> &v, unsigned char &SID,
                        double &WaterReferenced, double &GroundReferenced,
                        tN2kSpeedWaterReferenceType &SWRT) {

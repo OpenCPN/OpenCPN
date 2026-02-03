@@ -61,10 +61,11 @@ get all necessary three branches:
     $ cd OpenCPN
     $ git clone --origin upstream  https://github.com/OpenCPN/OpenCPN.git
     $ cd OpenCPN
-    $ git fetch upstream upstream/latest:upstream/latest
+    $ git fetch --tags upstream upstream/latest:upstream/latest
     $ git fetch upstream pristine-tar:pristine-tar
     $ git fetch upstream ubuntu/numbat:ubuntu/numbat
     $ git checkout ubuntu/numbat
+    $ git checkout .; git clean -fxd
 
 `ubuntu/numbat` is the branch to use when building Ubuntu Numbat (24.04)
 packages.
@@ -78,7 +79,6 @@ To update an existing clone:
     $ git checkout ubuntu/numbat
     $ git pull upstream ubuntu/numbat
 
-
 [#import-version]
 == Import a new opencpn version into packaging branches.
 
@@ -87,11 +87,14 @@ To update an existing clone:
 _debian/changelog_ is picky about the format. Editing by hand is hard. Instead,
 use the `dch` tool. It has a multitude of options.In preparation of importing a
 new version, first update *debian/changelog* with a new version, something like
-`dch -v 1:5.9.3-beta3+dfsg`
+`dch -v 1:5.9.3-beta3+dfsg-1~bpo24.04+1`
 
 `dch` throws you in an editor loaded with _debian/changelog_.
 Complete the entry as you consider best.
-The standard message for a new version is "New upstream Release".
+The standard message for a new version is "New upstream Release". 
+Commit the update using a like 
+`git commit -am "d/chnangelog: provisionary 1:5.9.3-beta3+dfsg-1~bpo24.04+1"`
+The entry is, as stated in the commit message, provisionary at this point.
 
 === Import a release tag into upstream/latest
 
@@ -119,11 +122,15 @@ see Make a fresh clone <<create-clone, above>>.
 Nest step is to import this tarball into upstream/latest. Using the
 tarball created by git-archive above do:
 
-   $ gbp import-orig ../opencpn_5.9.3~beta3+dfsg.orig.tar.xz
+    $ git clean -fxd; git checkout .
+    $ gbp import-orig ../opencpn_5.9.3~beta3+dfsg.orig.tar.xz
+
 
 === Push upstream changes
 
-Final step is to push these changes:
+Final step is to push these changes. 
+Updates the `pristine-tar` and `upstream/latest` branches and a new tag like 
+`upstream/5.12.2+dfsg`
 
    $ gbp push
 
@@ -147,14 +154,16 @@ For each release do:
 4. Merge upstream changes using `gbp import-ref -u5.9.3-beta3`. 
    The -u argument is the last part of an upstream tag like 
    `upstream/5.9.3-beta3`.
-5. Do possible changes in the new release.
+5. Rebase possible patches to new version, see
+   <<rebase-patches, Rebase patches>> below
+6. Do possible changes in the new release.
    Note that only files in the _debian/_ directory can be modified;
    changes in other files are handled using patches in _debian/patches_.
    See Modifying Sources <<edit-src,below>>
-6. Commit all changes.
-7. Finalize the changelog entry using `dch -r`.
-8. Commit the change in _debian/changelog_
-9. Push the actual branch, for example `git push upstream ubuntu/jammy`
+7. Commit all changes.
+8. Finalize the changelog entry using `dch -r`.
+9. Commit the change in _debian/changelog_
+10. Push the actual branch, for example `git push upstream ubuntu/jammy`
 
 [#publish]
 == Publish existing downstream release to PPA
@@ -177,6 +186,8 @@ Or, a more generic oneliner pushing the most recent _source.changes_ file:
 ```
   $ dput ppa:leamas-alec/opencpn $(ls -t ../*source.changes | head -1)
 ```
+8. Tag the published  release using a tag name like 
+   *ppa/5.12.2+dfsg-1-bpo20.04+2*
 
 [#test-build]
 == Local test build from existing upstream tag.
@@ -247,7 +258,27 @@ And build package. -j4 builds in  four parallel pipes, depending on processor
 you might want to use another value (I typically use -j12).
 
     $  debuild -us -uc -j4
-    
+
+[#rebase-patches]
+== Rebase patches to current release.
+
+Rebasing patches could be more or less complicated. The canned workflow which
+works in most cases:
+
+    $ gbp pq import --force --time-machine=7
+    $ git rebase ubuntu/numbat   #  Packaging  branch we work in
+    $ gbp pg export 
+    $ git add debian/patches
+    $ git commit -m "d/patches: rebased"
+
+Check that all is ok -- if this works the patches are rebased:
+
+    $ gbp pq import --force; gbp pq drop
+
+If this still does not work the patches need to be applied "by hand" using
+`patch -p1` and eventually updated. Seldom required.
+
+
 [#edit-src]
 == Modifying sources in a downstream release.
 

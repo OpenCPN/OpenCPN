@@ -12,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement hotkeys.h -- hotkeys help dialog ('?' button).
+ */
 
 #include <array>
 #include <string>
@@ -107,8 +111,7 @@ private:
                                    _("Toggle range rings"), "R"},
        {_("Toggle chart bar"), "Ctrl B",
                                    _("Change color scheme"), "Ctrl-G, F5"},
-       {_("Toggle full screen"), "F11",
-                                   "", ""},
+       {_("Toggle full screen"),   "F11", "Toggle menu bar", "Alt"},
        {"", "", "", ""},
        {_("Start measure mode"), "M, F4",
                                    _("Stop measure mode"), "Esc"},
@@ -138,7 +141,7 @@ private:
        {_("Start measure mode"), "F4",
                                    _("Stop measure mode"), "Esc"},
        {_("Drop mark"), _("Ctrl O, space bar"),
-                                   "", ""}}};  // clang-format on
+                                   _("Open Data Monitor"), "E"}}};  // clang-format on
 };
 
 HotkeysDlg::HotkeysDlg(wxWindow* parent)

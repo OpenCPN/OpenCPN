@@ -27,6 +27,12 @@
  *
  */
 
+// Disable the maybe-uninitialized warning as it triggers in std::regex and
+// makes the build with sanitizers impossible
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -38,14 +44,14 @@
 #include <wx/jsonval.h>
 #include <wx/jsonreader.h>
 #include "wiz_ui.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "model/comm_drv_signalk_net.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/conn_params.h"
 #include "model/logger.h"
 #include "model/mdns_query.h"
 #include "navutil.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #ifndef __ANDROID__
 #include "serial/serial.h"
 #include "dnet.h"

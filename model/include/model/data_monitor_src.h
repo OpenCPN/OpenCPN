@@ -12,13 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Provide a data stream of input messages for the Data Monitor. The
  * messages are intercepted before the multiplexer and have thus no state
  * as defined by the mux. All messages received, whether they are know to
@@ -62,6 +61,7 @@ private:
   SinkFunc m_sink_func;
   std::unordered_map<std::string, ObsListener> m_listeners;
   ObsListener new_msg_lstnr;
+  ObsListener undelivered_msg_lstnr;
   std::string m_last_payload;  // Horrible hack (tm)
 
   /** Handle new message type detected. */

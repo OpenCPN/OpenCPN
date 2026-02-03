@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Peer-peer data sharing.
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 by David Register                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,14 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement peer_client_dlg.h -- Confirm peer transfer PIN code dialog
+ */
 
 #include <cassert>
 #include <iostream>
 #include <sstream>
+
+#include "gl_headers.h"  // Must come before anything using GL stuff
 
 #include <wx/fileconf.h>
 #include <wx/json_defs.h>
@@ -40,8 +40,7 @@
 #include "model/config_vars.h"
 
 #include "peer_client_dlg.h"
-#include "ocpn_frame.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gui_lib.h"
 
 struct MemoryStruct {

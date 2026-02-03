@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2017 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,27 +12,31 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef __SHADERS_H__
-#define __SHADERS_H__
+/**
+ * \file
+ *
+ * OpenGL shader interface
+ */
 
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
+#ifndef SHADERS_H_
+#define SHADERS_H_
 
-#include "dychart.h"
+#include "gl_headers.h"
 
+#include <cstring>
 #include <memory>
-#include <vector>
-#include <fstream>
+#include <string>
 #include <unordered_map>
 
-class GLShaderProgram;
+#ifdef __ANDROID__
+#include <QDebug>
+#include "qlogging.h"
+#endif
+
+class GLShaderProgram;  // forward
 
 extern GLShaderProgram *pAALine_shader_program[2];
 extern GLShaderProgram *pcolor_tri_shader_program[2];
@@ -172,4 +172,5 @@ void reConfigureShaders(int index = 0);
 void unloadShaders();
 
 GLShaderProgram *GetStaticTriShader();
-#endif
+
+#endif  // SHADERS_H_

@@ -2135,7 +2135,7 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
 
   m_sdbSizer2->Realize();
 
-  itemBoxSizerMainPanel->Add(m_sdbSizer2, 0, wxEXPAND, 5);
+  itemBoxSizerMainPanel->Add(m_sdbSizer2, 0, wxEXPAND | wxALL, 5);
 
   wxStaticBoxSizer* sbSizer9;
   sbSizer9 = new wxStaticBoxSizer(
@@ -2192,6 +2192,20 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_rbLoadOptions->SetSelection(0);
   bSizerPrefsMain->Add(m_rbLoadOptions, 0, wxALL | wxEXPAND, 5);
 
+  wxStaticBoxSizer* sbSizerFolder;
+  sbSizerFolder = new wxStaticBoxSizer(
+      new wxStaticBox(this, wxID_ANY, _("Grib File Directory")), wxHORIZONTAL);
+
+  m_textDirectory =
+      new wxTextCtrl(scrollWin, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxDefaultSize, wxTE_READONLY);
+  sbSizerFolder->Add(m_textDirectory, 1, wxALL, 5);
+
+  wxButton* dbFolderButton = new wxButton(scrollWin, wxID_ANY, _("Browse..."));
+  sbSizerFolder->Add(dbFolderButton, 0, wxALL, 5);
+
+  bSizerPrefsMain->Add(sbSizerFolder, 0, wxALL | wxEXPAND, 5);
+
   wxString m_rbStartOptionsChoices[] = {
       _("Start at the first forecast in GRIB file"),
       _("Start at the nearest forecast to current time"),
@@ -2219,15 +2233,6 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   fgSizer47->Add(m_sIconSizeFactor, 0, wxALL | wxEXPAND, 5);
   bSizerPrefsMain->Add(fgSizer47, 0, wxALL | wxEXPAND, 5);
 #endif
-
-  wxButton* SetSaveButton =
-      new wxButton(scrollWin, wxID_ANY, _("Select GRIB download directory"));
-  bSizerPrefsMain->Add(SetSaveButton, 0, wxALL | wxEXPAND, 5);
-  SetSaveButton->Connect(
-      wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(GribPreferencesDialogBase::OnDirSelClick), nullptr,
-      this);
-
   Layout();
   Fit();
 
@@ -2239,6 +2244,10 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   m_sdbSizer2OK->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribPreferencesDialogBase::OnOKClick), nullptr,
+      this);
+  dbFolderButton->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribPreferencesDialogBase::OnDirSelClick), nullptr,
       this);
 }
 #else
@@ -2366,6 +2375,7 @@ void GribPreferencesDialogBase::OnDirSelClick(wxCommandEvent& event) {
 
   if (response == wxID_OK) {
     m_grib_dir_sel = dir_spec;
+    m_textDirectory->ChangeValue(dir_spec);
   }
 }
 
@@ -2571,9 +2581,9 @@ void GribRequestSettingBase::createLocalModelsPanel() {
   bSizerSource = new wxBoxSizer(wxHORIZONTAL);
 
   m_SourcesTreeCtrl1 = new wxTreeCtrl(
-      m_panelLocalModels, wxID_ANY, wxDefaultPosition, wxSize(-1, -1),
+      m_panelLocalModels, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       wxTR_DEFAULT_STYLE | wxTR_FULL_ROW_HIGHLIGHT | wxTR_SINGLE);
-  bSizerSource->Add(m_SourcesTreeCtrl1, 0, wxALL | wxEXPAND, 5);
+  bSizerSource->Add(m_SourcesTreeCtrl1, 1, wxALL | wxEXPAND, 5);
 
   m_htmlInfoWin =
       new wxHtmlWindow(m_panelLocalModels, wxID_ANY, wxDefaultPosition,
@@ -2977,24 +2987,20 @@ void GribRequestSettingBase::createEmailPanel() {
   m_MailImage = new wxTextCtrl(m_sScrolledDialog, wxID_ANY, wxEmptyString,
                                wxDefaultPosition, wxDefaultSize,
                                wxTE_MULTILINE | wxTE_READONLY);
-  fgSizer11->Add(m_MailImage, 0, wxALL | wxEXPAND, 3);
+  fgSizer11->Add(m_MailImage, 0, wxALL | wxEXPAND, 5);
 
   sbSizer6->Add(fgSizer11, 1, wxEXPAND, 5);
 
-  m_fgScrollSizer->Add(sbSizer6, 1, wxEXPAND, 3);
+  m_fgScrollSizer->Add(sbSizer6, 1, wxEXPAND, 5);
 
   m_sScrolledDialog->SetSizer(m_fgScrollSizer);
   m_sScrolledDialog->Layout();
   m_fgScrollSizer->Fit(m_sScrolledDialog);
-  fgSizer101->Add(m_sScrolledDialog, 1, 0, 3);
+  fgSizer101->Add(m_sScrolledDialog, 1, 0, 5);
 
-  m_fgFixedSizer = new wxFlexGridSizer(0, 4, 0, 0);
+  m_fgFixedSizer = new wxFlexGridSizer(0, 3, 0, 0);
   m_fgFixedSizer->SetFlexibleDirection(wxBOTH);
   m_fgFixedSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
-  m_rButtonYes = new wxButton(m_panelEmail, wxID_YES);
-  m_rButtonYes->SetLabel(_("Send"));
-  m_fgFixedSizer->Add(m_rButtonYes, 0, wxALL, 5);
 
   wxStaticText* m_staticText181;
   m_staticText181 =
@@ -3012,7 +3018,14 @@ void GribRequestSettingBase::createEmailPanel() {
                               wxDefaultPosition, wxDefaultSize, 0);
   m_tLimit->Wrap(-1);
   m_fgFixedSizer->Add(m_tLimit, 0, wxALL, 5);
+
   fgSizer101->Add(m_fgFixedSizer, 1, wxEXPAND, 5);
+
+  wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
+  m_rButtonYes = new wxButton(m_panelEmail, wxID_YES);
+  m_rButtonYes->SetLabel(_("Send"));
+  buttonSizer->Add(m_rButtonYes, 0, wxALL, 5);
+  fgSizer101->Add(buttonSizer, 0, wxEXPAND | wxALL, 5);
 
   m_panelEmail->SetSizer(fgSizer101);
   m_panelEmail->Layout();
@@ -3307,7 +3320,6 @@ GribRequestSettingBase::GribRequestSettingBase(GRIBUICtrlBarBase* parent,
 }
 
 GribRequestSettingBase::~GribRequestSettingBase() {
-  return;
   // Disconnect Events
   this->Disconnect(wxEVT_CLOSE_WINDOW,
                    wxCloseEventHandler(GribRequestSettingBase::OnClose));
