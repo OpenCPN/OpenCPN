@@ -1,8 +1,8 @@
-opencpn (1:5.14.1+dfsg~beta1-1~bpo24.04+1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta1-1~bpo24.04+1) noble; urgency=medium
 
   * New upstream release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 10:44:31 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 11:48:52 +0100
 
 opencpn (1:5.12.4+dfsg-1~bpo24.04+1) noble; urgency=medium
 
