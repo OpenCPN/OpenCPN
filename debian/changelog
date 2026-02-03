@@ -1,3 +1,9 @@
+opencpn (1:5.14.1+dfsg~beta1-1~bpo22.04~ppa1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 13:31:29 +0100
+
 opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa3) jammy; urgency=medium
 
   * Add Debian 12 plugin compatibility patch
