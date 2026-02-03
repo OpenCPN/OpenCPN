@@ -1,11 +1,13 @@
 
 #include <mutex>
 
+#include <wx/app.h>
 #include <wx/thread.h>
 
 #include "dychart.h"
 #include "tile_thread.h"
 #include "tile_cache.h"
+#include "top_frame.h"
 
 #ifdef __WXMSW__
 void my_translate_mbtile(unsigned int code, _EXCEPTION_POINTERS* ep) {
@@ -60,9 +62,12 @@ void MbtTilesThread::Run() {
     // Only request a refresh of the display when there is no more tiles in
     // the queue.
     if (m_tile_queue.GetSize() == 0) {
-      wxGetApp().GetTopWindow()->GetEventHandler()->CallAfter(
-          &MyFrame::RefreshAllCanvas, true);
+      wxWeakRef<wxWindow> frame(wxTheApp->GetTopWindow());
+      frame->CallAfter([frame]() {
+        if (frame) frame->Refresh();
+      });
     }
+
     // Check if the thread has been requested to be destroyed
   } while (!m_exit_thread);
 

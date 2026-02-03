@@ -1,12 +1,20 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        ocpn_fontdlg
-// Purpose:     Generic font dialog for OpenCPN
 // Author:      Julian Smart
 // Modified by: David S Register
 // Created:     04/01/98
 // Copyright:   (c) Julian Smart, David S Register
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \file
+ *
+ * Implement ocpn_fontlg.h -- Generic font dialog for OpenCPN
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -15,31 +23,24 @@
        // defined(__WXUNIVERSAL__))
 
 #ifndef WX_PRECOMP
-#include <stdio.h>
-#include "wx/crt.h"
-#include "wx/utils.h"
-#include "wx/dialog.h"
-#include "wx/listbox.h"
-#include "wx/button.h"
-#include "wx/stattext.h"
-#include "wx/layout.h"
-#include "wx/dcclient.h"
-#include "wx/choice.h"
-#include "wx/checkbox.h"
-#include "wx/intl.h"
-#include "wx/settings.h"
-#include "wx/sizer.h"
-#endif
-
-#include <string.h>
-#include <stdlib.h>
-
-#include "wx/fontdlg.h"
-#include "ocpn_fontdlg.h"
-
-#if USE_SPINCTRL_FOR_POINT_SIZE
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/crt.h>
+#include <wx/dcclient.h>
+#include <wx/dialog.h>
+#include <wx/fontdlg.h>
+#include <wx/intl.h>
+#include <wx/layout.h>
+#include <wx/listbox.h>
+#include <wx/settings.h>
+#include <wx/sizer.h>
 #include "wx/spinctrl.h"
+#include <wx/stattext.h>
+#include <wx/utils.h>
 #endif
+
+#include "ocpn_fontdlg.h"
 
 //-----------------------------------------------------------------------------
 // helper class - wxFontPreviewer
@@ -73,7 +74,7 @@ wxBEGIN_EVENT_TABLE(OCPNFontPreviewer, wxWindow)
     dc.SetTextForeground(GetForegroundColour());
     dc.SetClippingRegion(2, 2, size.x - 4, size.y - 4);
     dc.DrawText(_("ABCDEFGabcdefg12345"), 10,
-                (size.y - dc.GetTextExtent(wxT("X")).y) / 2);
+                (size.y - dc.GetTextExtent("X").y) / 2);
     dc.DestroyClippingRegion();
   }
 }
@@ -85,57 +86,57 @@ wxBEGIN_EVENT_TABLE(OCPNFontPreviewer, wxWindow)
 static const wxChar* ocpnFontWeightIntToString(int weight) {
   switch (weight) {
     case wxFONTWEIGHT_LIGHT:
-      return wxT("Light");
+      return wxString("Light");
     case wxFONTWEIGHT_BOLD:
-      return wxT("Bold");
+      return wxString("Bold");
     case wxFONTWEIGHT_NORMAL:
     default:
-      return wxT("Normal");
+      return wxString("Normal");
   }
 }
 
 static const wxChar* ocpnFontStyleIntToString(int style) {
   switch (style) {
     case wxFONTSTYLE_ITALIC:
-      return wxT("Italic");
+      return wxString("Italic");
     case wxFONTSTYLE_SLANT:
-      return wxT("Slant");
+      return wxString("Slant");
     case wxFONTSTYLE_NORMAL:
     default:
-      return wxT("Normal");
+      return wxString("Normal");
   }
 }
 
 static const wxChar* ocpnFontFamilyIntToString(int family) {
   switch (family) {
     case wxFONTFAMILY_ROMAN:
-      return wxT("Roman");
+      return wxString("Roman");
     case wxFONTFAMILY_DECORATIVE:
-      return wxT("Decorative");
+      return wxString("Decorative");
     case wxFONTFAMILY_MODERN:
-      return wxT("Modern");
+      return wxString("Modern");
     case wxFONTFAMILY_SCRIPT:
-      return wxT("Script");
+      return wxString("Script");
     case wxFONTFAMILY_TELETYPE:
-      return wxT("Teletype");
+      return wxString("Teletype");
     case wxFONTFAMILY_SWISS:
     default:
-      return wxT("Swiss");
+      return wxString("Swiss");
   }
 }
 
 static wxFontFamily ocpnFontFamilyStringToInt(const wxString& family) {
   if (family.empty()) return wxFONTFAMILY_SWISS;
 
-  if (wxStrcmp(family, wxT("Roman")) == 0)
+  if (wxStrcmp(family, "Roman") == 0)
     return wxFONTFAMILY_ROMAN;
-  else if (wxStrcmp(family, wxT("Decorative")) == 0)
+  else if (wxStrcmp(family, "Decorative") == 0)
     return wxFONTFAMILY_DECORATIVE;
-  else if (wxStrcmp(family, wxT("Modern")) == 0)
+  else if (wxStrcmp(family, "Modern") == 0)
     return wxFONTFAMILY_MODERN;
-  else if (wxStrcmp(family, wxT("Script")) == 0)
+  else if (wxStrcmp(family, "Script") == 0)
     return wxFONTFAMILY_SCRIPT;
-  else if (wxStrcmp(family, wxT("Teletype")) == 0)
+  else if (wxStrcmp(family, "Teletype") == 0)
     return wxFONTFAMILY_TELETYPE;
   else
     return wxFONTFAMILY_SWISS;
@@ -143,9 +144,9 @@ static wxFontFamily ocpnFontFamilyStringToInt(const wxString& family) {
 
 static wxFontStyle ocpnFontStyleStringToInt(const wxString& style) {
   if (style.empty()) return wxFONTSTYLE_NORMAL;
-  if (wxStrcmp(style, wxT("Italic")) == 0)
+  if (wxStrcmp(style, "Italic") == 0)
     return wxFONTSTYLE_ITALIC;
-  else if (wxStrcmp(style, wxT("Slant")) == 0)
+  else if (wxStrcmp(style, "Slant") == 0)
     return wxFONTSTYLE_SLANT;
   else
     return wxFONTSTYLE_NORMAL;
@@ -153,9 +154,9 @@ static wxFontStyle ocpnFontStyleStringToInt(const wxString& style) {
 
 static wxFontWeight ocpnFontWeightStringToInt(const wxString& weight) {
   if (weight.empty()) return wxFONTWEIGHT_NORMAL;
-  if (wxStrcmp(weight, wxT("Bold")) == 0)
+  if (wxStrcmp(weight, "Bold") == 0)
     return wxFONTWEIGHT_BOLD;
-  else if (wxStrcmp(weight, wxT("Light")) == 0)
+  else if (wxStrcmp(weight, "Light") == 0)
     return wxFONTWEIGHT_LIGHT;
   else
     return wxFONTWEIGHT_NORMAL;
@@ -187,59 +188,59 @@ wxBEGIN_EVENT_TABLE(ocpnGenericFontDialog, wxDialog)
 
 #define NUM_COLS 48
                                         static wxString
-    ocpnColourDialogNames[NUM_COLS] = {wxT("ORANGE"),
-                                       wxT("GOLDENROD"),
-                                       wxT("WHEAT"),
-                                       wxT("SPRING GREEN"),
-                                       wxT("SKY BLUE"),
-                                       wxT("SLATE BLUE"),
-                                       wxT("MEDIUM VIOLET RED"),
-                                       wxT("PURPLE"),
+    ocpnColourDialogNames[NUM_COLS] = {"ORANGE",
+                                       "GOLDENROD",
+                                       "WHEAT",
+                                       "SPRING GREEN",
+                                       "SKY BLUE",
+                                       "SLATE BLUE",
+                                       "MEDIUM VIOLET RED",
+                                       "PURPLE",
 
-                                       wxT("RED"),
-                                       wxT("YELLOW"),
-                                       wxT("MEDIUM SPRING GREEN"),
-                                       wxT("PALE GREEN"),
-                                       wxT("CYAN"),
-                                       wxT("LIGHT STEEL BLUE"),
-                                       wxT("ORCHID"),
-                                       wxT("LIGHT MAGENTA"),
+                                       "RED",
+                                       "YELLOW",
+                                       "MEDIUM SPRING GREEN",
+                                       "PALE GREEN",
+                                       "CYAN",
+                                       "LIGHT STEEL BLUE",
+                                       "ORCHID",
+                                       "LIGHT MAGENTA",
 
-                                       wxT("BROWN"),
-                                       wxT("YELLOW"),
-                                       wxT("GREEN"),
-                                       wxT("CADET BLUE"),
-                                       wxT("MEDIUM BLUE"),
-                                       wxT("MAGENTA"),
-                                       wxT("MAROON"),
-                                       wxT("ORANGE RED"),
+                                       "BROWN",
+                                       "YELLOW",
+                                       "GREEN",
+                                       "CADET BLUE",
+                                       "MEDIUM BLUE",
+                                       "MAGENTA",
+                                       "MAROON",
+                                       "ORANGE RED",
 
-                                       wxT("FIREBRICK"),
-                                       wxT("CORAL"),
-                                       wxT("FOREST GREEN"),
-                                       wxT("AQUAMARINE"),
-                                       wxT("BLUE"),
-                                       wxT("NAVY"),
-                                       wxT("THISTLE"),
-                                       wxT("MEDIUM VIOLET RED"),
+                                       "FIREBRICK",
+                                       "CORAL",
+                                       "FOREST GREEN",
+                                       "AQUAMARINE",
+                                       "BLUE",
+                                       "NAVY",
+                                       "THISTLE",
+                                       "MEDIUM VIOLET RED",
 
-                                       wxT("INDIAN RED"),
-                                       wxT("GOLD"),
-                                       wxT("MEDIUM SEA GREEN"),
-                                       wxT("MEDIUM BLUE"),
-                                       wxT("MIDNIGHT BLUE"),
-                                       wxT("GREY"),
-                                       wxT("PURPLE"),
-                                       wxT("KHAKI"),
+                                       "INDIAN RED",
+                                       "GOLD",
+                                       "MEDIUM SEA GREEN",
+                                       "MEDIUM BLUE",
+                                       "MIDNIGHT BLUE",
+                                       "GREY",
+                                       "PURPLE",
+                                       "KHAKI",
 
-                                       wxT("BLACK"),
-                                       wxT("MEDIUM FOREST GREEN"),
-                                       wxT("KHAKI"),
-                                       wxT("DARK GREY"),
-                                       wxT("SEA GREEN"),
-                                       wxT("LIGHT GREY"),
-                                       wxT("MEDIUM SLATE BLUE"),
-                                       wxT("WHITE")};
+                                       "BLACK",
+                                       "MEDIUM FOREST GREEN",
+                                       "KHAKI",
+                                       "DARK GREY",
+                                       "SEA GREEN",
+                                       "LIGHT GREY",
+                                       "MEDIUM SLATE BLUE",
+                                       "WHITE"};
 
 /*
  * Generic wxFontDialog
@@ -260,10 +261,9 @@ void ocpnGenericFontDialog::OnCloseWindow(wxCloseEvent& WXUNUSED(event)) {
 bool ocpnGenericFontDialog::DoCreate(wxWindow* parent) {
   parent = GetParentForModalDialog(parent, 0);
 
-  if (!wxDialog::Create(parent, wxID_ANY, wxT("Choose Font"), wxDefaultPosition,
-                        wxDefaultSize, wxDEFAULT_DIALOG_STYLE,
-                        wxT("fontdialog"))) {
-    wxFAIL_MSG(wxT("wxFontDialog creation failed"));
+  if (!wxDialog::Create(parent, wxID_ANY, "Choose Font", wxDefaultPosition,
+                        wxDefaultSize, wxDEFAULT_DIALOG_STYLE, "fontdialog")) {
+    wxFAIL_MSG("wxFontDialog creation failed");
     return false;
   }
 
@@ -310,7 +310,7 @@ void ocpnGenericFontDialog::CreateWidgets() {
   int i;
   for (i = 0; i < 40; i++) {
     wxChar buf[5];
-    wxSprintf(buf, wxT("%d"), i + 1);
+    wxSprintf(buf, "%d", i + 1);
     pointSizes[i] = buf;
   }
   // #endif
@@ -406,7 +406,7 @@ void ocpnGenericFontDialog::CreateWidgets() {
 
 #if USE_SPINCTRL_FOR_POINT_SIZE
   m_pointSizeSpin =
-      new wxSpinCtrl(this, wxID_FONT_SIZE, wxT("12"), wxDefaultPosition,
+      new wxSpinCtrl(this, wxID_FONT_SIZE, "12", wxDefaultPosition,
                      wxSize(80, wxDefaultCoord), wxSP_ARROW_KEYS, 1, 500, 12);
   m_pointSizeSpin->SetHelpText(_("The font point size."));
   if (ShowToolTips()) m_pointSizeSpin->SetToolTip(_("The font point size."));
@@ -491,7 +491,7 @@ void ocpnGenericFontDialog::CreateWidgets() {
   if (m_colourChoice) {
     wxString name(wxTheColourDatabase->FindName(m_fontData.GetColour()));
     if (name.empty())
-      m_colourChoice->SetStringSelection(wxT("BLACK"));
+      m_colourChoice->SetStringSelection("BLACK");
     else
       m_colourChoice->SetStringSelection(name);
   }

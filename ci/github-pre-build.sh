@@ -31,6 +31,9 @@ case $(uname -s) in
 
             sudo apt-get -qq install devscripts equivs software-properties-common
 
+            # Unit tests require US and Swedish locales
+            sudo apt-get -qq install language-pack-en language-pack-sv
+
             sudo mk-build-deps -ir ci/control
             sudo apt-get -q --allow-unauthenticated install -f
         fi

@@ -12,13 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Communication statistics infrastructure.
  */
 
@@ -50,9 +49,23 @@ struct DriverStats {
         available(false) {}
 };
 
-/** Driver interface providing driver statistics */
+/**
+ * Driver interface providing driver statistics
+ *
+ * @interface DriverStatsProvider comm_drv_stats.h "model/comm_drv_stats.h"
+ */
 class DriverStatsProvider {
 public:
+  /**
+   * Destroy the Driver Stats Provider object.
+   */
+  virtual ~DriverStatsProvider() = default;
+
+  /**
+   * Get the Driver Statistics.
+   *
+   * @return DriverStats Object containing the driver statistics.
+   */
   virtual DriverStats GetDriverStats() const = 0;
 };
 

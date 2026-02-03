@@ -12,24 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Miscellaneous utilities, many of which string related.
  */
 
-#ifndef _OCPN_UTILS_H__
-#define _OCPN_UTILS_H__
+#ifndef OCPN_UTILS_H_
+#define OCPN_UTILS_H_
 
 #include <string>
 #include <vector>
 
 /** Standard, mostly strings utilities. */
-
 namespace ocpn {
 
 /** Return true if s ends with given suffix */
@@ -97,6 +95,13 @@ bool N0183CheckSumOk(const std::string& sentence);
 /** Return copy of str with non-printable chars replaced by hex like "<0D>" */
 std::string printable(const std::string& str);
 
+/**
+ * Return  constrained value of d so that
+ * AnchorPointMinDist < abs(d) < AnchorPointMaxDist
+ */
+double AnchorDistFix(double const d, double const AnchorPointMinDist,
+                     double const AnchorPointMaxDist);  //  pjotrc 2010.02.22
+
 }  // namespace ocpn
 
-#endif  //  _OCPN_UTILS_H__
+#endif  //  OCPN_UTILS_H_

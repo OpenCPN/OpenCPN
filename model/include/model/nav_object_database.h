@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,11 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
-#ifndef _NAVOBJECTCOLLECTION_H__
-#define _NAVOBJECTCOLLECTION_H__
+#ifndef NAVOBJECTCOLLECTION_H_
+#define NAVOBJECTCOLLECTION_H_
 
 #include <memory>
 #include <vector>
@@ -31,16 +24,13 @@
 #include <wx/checkbox.h>
 #include <wx/string.h>
 
+#include "model/route.h"
+#include "model/route_point.h"
+#include "model/track.h"
+
 #include "pugixml.hpp"
 #include "bbox.h"
 #include "observable_evtvar.h"
-
-class Track;
-class TrackPoint;
-class RouteList;
-class RoutePointList;
-class Route;
-class RoutePoint;
 
 //      Bitfield definition controlling the GPX nodes output for point objects
 #define OUT_TYPE 1 << 1        //  Output point type
@@ -81,6 +71,12 @@ class RoutePoint;
 #define RT_OUT_NO_RTPTS 1 << 4
 
 class NavObjectCollection1;  // forward
+
+class Route;       // circular
+class Track;       // circular
+class TrackPoint;  // circular
+
+using RouteList = std::vector<Route *>;  // circular
 
 bool WptIsInRouteList(RoutePoint *pr);
 RoutePoint *WaypointExists(const wxString &name, double lat, double lon);
@@ -141,4 +137,4 @@ public:
   LLBBox BBox;
 };
 
-#endif  // _NAVOBJECTCOLLECTION_H__
+#endif  // NAVOBJECTCOLLECTION_H_

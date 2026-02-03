@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,69 +12,67 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * OpenCPN top window
+ */
 
 #ifndef _OFRAME_H
 #define _OFRAME_H
 
 #include <wx/print.h>
 #include <wx/power.h>
+#include <wx/artprov.h>
+#include <wx/socket.h>
+#include <wx/html/htmlwin.h>
+#include <wx/aui/aui.h>
+#include <wx/aui/dockart.h>
 
 #include <memory>
 #ifdef __WXMSW__
 #include <wx/msw/private.h>
 #endif
 
+#include "ocpn_plugin.h"
+
+#include "model/ais_target_data.h"
+#include "model/gui.h"
 #include "model/ocpn_types.h"
+#include "model/track.h"
 #include "model/comm_appmsg_bus.h"
+#include "model/rest_server.h"
+
 #include "bbox.h"
-#include "comm_overflow_dlg.h"
-#include "connections_dlg.h"
+#include "canvas_menu.h"
+#include "chartbase.h"
+#include "chartdbs.h"
+#include "chcanv.h"
 #include "color_handler.h"
+#include "connections_dlg.h"
 #include "data_monitor.h"
+#include "displays.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
 #include "observable_evtvar.h"
+#include "options.h"
+#include "pluginmanager.h"
+#include "s52_plib_utils.h"
 #include "s52s57.h"
 #include "s57registrar_mgr.h"
-#include "SencManager.h"
-#include "displays.h"
-
-wxColour GetGlobalColor(wxString colorName);
-wxColour GetDialogColor(DialogColor color);
-
-// Helper to create menu label + hotkey string when registering menus
-wxString _menuText(wxString name, wxString shortcut);
-
-// The point for anchor watch should really be a class...
-double AnchorDistFix(double const d, double const AnchorPointMinDist,
-                     double const AnchorPointMaxDist);  //  pjotrc 2010.02.22
-
-bool TestGLCanvas(wxString prog_dir);
-bool ReloadLocale();
-void ApplyLocale(void);
-
-void LoadS57();
-
-//    Fwd definitions
-class ChartCanvas;
-class ocpnFloatingToolbarDialog;
-class OCPN_MsgEvent;
-class options;
-class Track;
-class wxHtmlWindow;
-class ArrayOfCDI;
+#include "senc_manager.h"
+#include "toolbar.h"
+#include "top_frame.h"
+#include "undo_defs.h"
 
 //----------------------------------------------------------------------------
 //   constants
 //----------------------------------------------------------------------------
 
 #define TIMER_GFRAME_1 999
-
-#define ID_CM93ZOOMG 102
 
 // Command identifiers for wxCommandEvents coming from the outside world.
 // Removed from enum to facilitate constant definition
@@ -94,52 +86,233 @@ class ArrayOfCDI;
 #define ID_CMD_SOUND_FINISHED 306
 // NOLINTEND
 
-#ifdef __ANDROID__
-#define STAT_FIELD_COUNT 2
-#define STAT_FIELD_TICK -1
-#define STAT_FIELD_SOGCOG 0
-#define STAT_FIELD_CURSOR_LL -1
-#define STAT_FIELD_CURSOR_BRGRNG -1
-#define STAT_FIELD_SCALE 1
-#else
-#define STAT_FIELD_COUNT 5
-#define STAT_FIELD_TICK 0
-#define STAT_FIELD_SOGCOG 1
-#define STAT_FIELD_CURSOR_LL 2
-#define STAT_FIELD_CURSOR_BRGRNG 3
-#define STAT_FIELD_SCALE 4
-#endif
-
-//      Define a constant GPS signal watchdog timeout value
-#define GPS_TIMEOUT_SECONDS 10
-
-#define MAX_COG_AVERAGE_SECONDS 60
-#define MAX_COGSOG_FILTER_SECONDS 60
+using OpenFileFunc = std::function<bool(const std::string& path)>;
 //----------------------------------------------------------------------------
 // fwd class declarations
 //----------------------------------------------------------------------------
-class ChartBase;
-class wxSocketEvent;
-class ocpnToolBarSimple;
-class OCPN_DataStreamEvent;
-class AisTargetData;
 
+class MyFrame;          // forward
+extern MyFrame* gFrame; /**< Global instance */
+
+// FIXME (leamas) to have utility functions in top window is a really bad idea.
 bool ShowNavWarning();
 
-bool isSingleChart(ChartBase* chart);
+void ApplyLocale(void);
 
 /**
  * Main application frame. Top-level window frame for OpenCPN that manages
  * overall application state, menus, toolbars, and child windows like chart
  * canvases.
  */
-class MyFrame : public wxFrame {
+class MyFrame : public AbstractTopFrame, public S52PlibUtils {
 public:
-  MyFrame(wxFrame* frame, const wxString& title, const wxPoint& pos,
-          const wxSize& size, long style);
+  MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size,
+          RestServer& rest_server, wxAuiDefaultDockArt* pauidockart,
+          OpenFileFunc open_gpx_file);
 
   ~MyFrame();
 
+  void SetGPSCompassScale() override;
+  void FastClose() override;
+  void RefreshAllCanvas(bool bErase = true) override;
+  void UpdateStatusBar() override;
+  void ToggleFullScreen() override;
+  Track* TrackOff(bool do_add_point = false) override;
+  void TrackOn(void) override;
+  void ProcessOptionsDialog(int resultFlags) override {
+    ProcessOptionsDialog(resultFlags, nullptr);
+  }
+
+  void SetAlertString(wxString msg) override {
+    GetPrimaryCanvas()->SetAlertString(msg);
+  }
+
+  void JumpToPosition(double lat, double lon) override {
+    if (!GetFocusCanvas()) return;
+    JumpToPosition(GetFocusCanvas(), lat, lon, GetFocusCanvas()->GetVPScale());
+  }
+
+  void JumpToPosition(double lat, double lon, double scale) override {
+    if (!GetFocusCanvas()) return;
+    JumpToPosition(GetFocusCanvas(), lat, lon, scale);
+  }
+
+  void JumpToPosition(AbstractChartCanvas* acc, double lat, double lon,
+                      double scale) override {
+    if (!acc) return;
+    auto cc = dynamic_cast<ChartCanvas*>(acc);
+    assert(cc);
+    JumpToPosition(cc, lat, lon, scale);
+  }
+  void JumpToPosition(AbstractChartCanvas* acc, double lat,
+                      double lon) override {
+    if (!acc) return;
+    auto cc = dynamic_cast<ChartCanvas*>(acc);
+    assert(cc);
+    JumpToPosition(cc, lat, lon, GetFocusCanvas()->GetVPScale());
+  }
+
+  AbstractChartCanvas* GetAbstractPrimaryCanvas() override {
+    return GetPrimaryCanvas();
+  }
+
+  AbstractChartCanvas* GetAbstractFocusCanvas() override {
+    return GetFocusCanvas();
+  }
+
+  void SwitchKBFocus(AbstractChartCanvas* acc) override {
+    return SwitchKBFocus(dynamic_cast<ChartCanvas*>(acc));
+  }
+
+  double GetCanvasTrueScale() override {
+    return GetPrimaryCanvas()->GetCanvasTrueScale();
+  }
+
+  double GetPixPerMM() override { return GetPrimaryCanvas()->GetPixPerMM(); }
+
+  double GetContentScaleFactor() override {
+    if (GetPrimaryCanvas())
+      return GetPrimaryCanvas()->GetContentScaleFactor();
+    else
+      return 1.0;
+  }
+
+  void RequestNewToolbars(bool bforcenew = false) override;
+
+  bool GetCanvasPointPix(double rlat, double rlon, wxPoint* r) override {
+    return GetFocusCanvas()->GetCanvasPointPix(rlat, rlon, r);
+  }
+
+  virtual wxSize GetFocusCanvasSize() override {
+    return GetFocusCanvas() ? GetFocusCanvas()->GetSize() : wxSize(0, 0);
+  }
+
+  void CancelAllMouseRoute() override;
+  void InvalidateAllCanvasUndo() override;
+  void PositionConsole() override;
+  void InvalidateAllGL() override;
+  double GetBestVPScale(AbstractChart* arg) override {
+    auto chart = dynamic_cast<ChartBase*>(arg);
+    assert(chart);
+    return GetPrimaryCanvas()->GetBestVPScale(chart);
+  }
+
+  void DoStackUp(AbstractChartCanvas* cc) override;
+  void DoStackDown(AbstractChartCanvas* cc) override;
+  void LoadHarmonics() override;
+
+  bool DropMarker(bool atOwnShip = true) override;
+  double GetMag(double a, double lat, double lon) override;
+  void SetMasterToolbarItemState(int tool_id, bool state) override;
+  bool DoChartUpdate() override;
+  void ProcessCanvasResize() override;
+  bool SetGlobalToolbarViz(bool viz) override;
+  void ToggleQuiltMode(AbstractChartCanvas* acc) override {
+    auto cc = dynamic_cast<ChartCanvas*>(acc);
+    ToggleQuiltMode(cc);
+  }
+  void UpdateGlobalMenuItems(AbstractChartCanvas* acc) override {
+    UpdateGlobalMenuItems(dynamic_cast<ChartCanvas*>(acc));
+  }
+  void UpdateGlobalMenuItems() override;
+  void RefreshCanvasOther(AbstractChartCanvas* ccThis) override {
+    RefreshCanvasOther(dynamic_cast<ChartCanvas*>(ccThis));
+  }
+  virtual double* GetCOGTable() override { return COGTable; }
+  virtual void StartCogTimer() override {
+    FrameCOGTimer.Start(100, wxTIMER_CONTINUOUS);
+  }
+
+  wxWindow* GetPrimaryCanvasWindow() override { return GetPrimaryCanvas(); }
+  void ApplyGlobalSettings(bool bnewtoolbar) override;
+  void SetMenubarItemState(int item_id, bool state) override;
+  void ToggleColorScheme() override;
+  void ActivateMOB() override;
+  void ToggleTestPause() override;
+
+  void ToggleChartBar(AbstractChartCanvas* acc) override {
+    ToggleChartBar(dynamic_cast<ChartCanvas*>(acc));
+  }
+  void DoSettings() override;
+
+  void UpdateRotationState(double rotation) override;
+  void SetChartUpdatePeriod() override;
+  wxStatusBar* GetStatusBar() override { return wxFrame::GetStatusBar(); }
+  wxStatusBar* GetFrameStatusBar() const override { return m_pStatusBar; }
+  void SetENCDisplayCategory(AbstractChartCanvas* acc,
+                             enum _DisCat nset) override {
+    SetENCDisplayCategory(dynamic_cast<ChartCanvas*>(acc), nset);
+  }
+  int GetCanvasIndexUnderMouse() override;
+
+  double GetCanvasRefScale() override {
+    return GetPrimaryCanvas()->GetVP().ref_scale;
+    ;
+  }
+
+#ifdef ocpnUSE_GL
+  void SendGlJsonConfigMsg() override {
+    if (GetPrimaryCanvas() && GetPrimaryCanvas()->GetglCanvas())
+      GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
+  }
+  bool CanAccelerateGlPanning() override {
+    return GetPrimaryCanvas()->GetglCanvas()->CanAcceleratePanning();
+  }
+  void SetupGlCompression() override {
+    GetPrimaryCanvas()->GetglCanvas()->SetupCompression();
+  }
+  wxString GetGlVersionString() override {
+    return GetPrimaryCanvas()->GetglCanvas()->GetVersionString();
+  }
+  wxGLCanvas* GetWxGlCanvas() override {
+    return GetPrimaryCanvas()->GetglCanvas();
+  }
+
+#else
+  void SendGlJsonConfigMsg() override {}
+  bool CanAccelerateGlPanning() override { return false; }
+  void SetupGlCompression() override {}
+  wxString GetGlVersionString() override { return ""; }
+  wxGLCanvas* GetWxGlCanvas() override { return nullptr; }
+#endif
+  void SwitchKBFocus(ChartCanvas* pCanvas);
+  int GetNextToolbarToolId() override {
+    return m_next_available_plugin_tool_id;
+  }
+  void SetToolbarItemBitmaps(int tool_id, wxBitmap* bitmap,
+                             wxBitmap* bmpDisabled) override;
+  void SetToolbarItemSVG(int tool_id, wxString normalSVGfile,
+                         wxString rolloverSVGfile,
+                         wxString toggledSVGfile) override;
+  void UpdateAllFonts() override;
+  void ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog) override;
+  void ScheduleReloadCharts() override;
+  void ChartsRefresh() override;
+  void FreezeCharts() override;
+  void ThawCharts() override;
+
+  void ScheduleDeleteSettingsDialog() override;
+
+  void BeforeUndoableAction(UndoType undo_type, RoutePoint* point,
+                            UndoBeforePointerType pointer_type,
+                            UndoItemPointer pointer) override {
+    if (!GetPrimaryCanvas()) return;
+    GetPrimaryCanvas()->undo->BeforeUndoableAction(undo_type, point,
+                                                   pointer_type, pointer);
+  }
+
+  virtual void AfterUndoableAction(UndoItemPointer pointer) override {
+    GetPrimaryCanvas()->undo->AfterUndoableAction(pointer);
+  }
+  virtual void TouchAISActive() override;
+  virtual void UpdateAISMOBRoute(const AisTargetData* ptarget) override;
+  virtual void ActivateAISMOBRoute(const AisTargetData* ptarget) override;
+  void OnToolLeftClick(wxCommandEvent& event) override;
+
+  void SetENCDisplayCategory(ChartCanvas* cc, enum _DisCat nset);
+  void ToggleQuiltMode(ChartCanvas* cc);
+
+  wxFont* GetFont(wxFont* font, double scale) override;
   int GetApplicationMemoryUse(void);
 
   void OnEraseBackground(wxEraseEvent& event);
@@ -160,7 +333,6 @@ public:
    */
   void OnFrameTimer1(wxTimerEvent& event);
 
-  bool DoChartUpdate(void);
   void OnEvtPlugInMessage(OCPN_MsgEvent& event);
   void OnMemFootTimer(wxTimerEvent& event);
   void OnRecaptureTimer(wxTimerEvent& event);
@@ -189,47 +361,32 @@ public:
 #endif  // wxHAS_POWER_EVENTS
 
   void RefreshCanvasOther(ChartCanvas* ccThis);
-  void UpdateAllFonts(void);
-  void PositionConsole(void);
-  void OnToolLeftClick(wxCommandEvent& event);
-  void DoStackUp(ChartCanvas* cc);
-  void DoStackDown(ChartCanvas* cc);
   void selectChartDisplay(int type, int family);
   void applySettingsString(wxString settings);
   void setStringVP(wxString VPS);
-  void InvalidateAllGL();
-  void RefreshAllCanvas(bool bErase = true);
-  void CancelAllMouseRoute();
   void InvalidateAllQuilts();
 
   void SetUpMode(ChartCanvas* cc, int mode);
 
   ChartCanvas* GetPrimaryCanvas();
   ChartCanvas* GetFocusCanvas();
+  void DoStackUp(ChartCanvas* cc);
+  void DoStackDown(ChartCanvas* cc);
+  void NotifyChildrenResize();
 
   void DoStackDelta(ChartCanvas* cc, int direction);
-  void DoSettings(void);
   void DoSettingsNew(void);
-  void SwitchKBFocus(ChartCanvas* pCanvas);
   ChartCanvas* GetCanvasUnderMouse();
-  int GetCanvasIndexUnderMouse();
-
-  bool DropMarker(bool atOwnShip = true);
 
   void TriggerRecaptureTimer();
-  bool SetGlobalToolbarViz(bool viz);
 
   void MouseEvent(wxMouseEvent& event);
   void CenterView(ChartCanvas* cc, const LLBBox& bbox);
 
   void JumpToPosition(ChartCanvas* cc, double lat, double lon, double scale);
 
-  void ProcessCanvasResize(void);
-
   void BuildMenuBar(void);
-  void ApplyGlobalSettings(bool bnewtoolbar);
   void RegisterGlobalMenuItems();
-  void UpdateGlobalMenuItems();
   void UpdateGlobalMenuItems(ChartCanvas* cc);
   void DoOptionsDialog();
   void ProcessOptionsDialog(int resultFlags, ArrayOfCDI* pNewDirArray);
@@ -238,7 +395,6 @@ public:
   void DoPrint(void);
   void ToggleDataQuality(ChartCanvas* cc);
   void TogglebFollow(ChartCanvas* cc);
-  void ToggleFullScreen();
   void ToggleChartBar(ChartCanvas* cc);
   void SetbFollow(ChartCanvas* cc);
   void ClearbFollow(ChartCanvas* cc);
@@ -253,30 +409,17 @@ public:
   void ToggleAISDisplay(ChartCanvas* cc);
   void ToggleAISMinimizeTargets(ChartCanvas* cc);
 
-  void ToggleTestPause(void);
-  void TrackOn(void);
-  void SetENCDisplayCategory(ChartCanvas* cc, enum _DisCat nset);
   void ToggleNavobjects(ChartCanvas* cc);
 
-  Track* TrackOff(bool do_add_point = false);
   void TrackDailyRestart(void);
   bool ShouldRestartTrack();
-  void ToggleColorScheme();
-  void SetMenubarItemState(int item_id, bool state);
-  void SetMasterToolbarItemState(int tool_id, bool state);
+  void InitializeTrackRestart();
 
-  void SetToolbarItemBitmaps(int tool_id, wxBitmap* bitmap,
-                             wxBitmap* bmpDisabled);
-  void SetToolbarItemSVG(int tool_id, wxString normalSVGfile,
-                         wxString rolloverSVGfile, wxString toggledSVGfile);
-  void ToggleQuiltMode(ChartCanvas* cc);
   void UpdateControlBar(ChartCanvas* cc);
 
   void SubmergeAllCanvasToolbars(void);
   void SurfaceAllCanvasToolbars(void);
   void SetAllToolbarScale(void);
-  void SetGPSCompassScale(void);
-  void InvalidateAllCanvasUndo();
 
   void RefreshGroupIndices(void);
 
@@ -284,7 +427,6 @@ public:
 
   DataMonitor* GetDataMonitor() const { return m_data_monitor; }
 
-  ColorScheme GetColorScheme();
   void SetAndApplyColorScheme(ColorScheme cs);
 
   void OnFrameTCTimer(wxTimerEvent& event);
@@ -293,22 +435,13 @@ public:
   void HandleBasicNavMsg(std::shared_ptr<const BasicNavDataMsg> msg);
   void HandleGPSWatchdogMsg(std::shared_ptr<const GPSWatchdogMsg> msg);
 
-  void ChartsRefresh();
-
   bool CheckGroup(int igroup);
-  double GetMag(double a, double lat, double lon);
   bool SendJSON_WMM_Var_Request(double lat, double lon, wxDateTime date);
 
   void DestroyPersistentDialogs();
-  void TouchAISActive(void);
   void UpdateAISTool(void);
 
-  void ActivateAISMOBRoute(const AisTargetData* ptarget);
-  void UpdateAISMOBRoute(const AisTargetData* ptarget);
-
-  wxStatusBar* m_pStatusBar;
   wxMenuBar* m_pMenuBar;
-  int nBlinkerTick;
   bool m_bTimeIsSet;
 
   wxTimer InitTimer;
@@ -325,29 +458,25 @@ public:
   int m_BellsToPlay;
   wxTimer BellsTimer;
 
+  wxGenericProgressDialog* Updateprog = nullptr;
+
   //      PlugIn support
-  int GetNextToolbarToolId() { return m_next_available_plugin_tool_id; }
   void RequestNewToolbarArgEvent(wxCommandEvent& WXUNUSED(event)) {
     return RequestNewMasterToolbar();
   }
-  void RequestNewToolbars(bool bforcenew = false);
 
-  void ActivateMOB(void);
   void UpdateGPSCompassStatusBoxes(bool b_force_new = false);
-  void UpdateRotationState(double rotation);
 
   bool UpdateChartDatabaseInplace(ArrayOfCDI& DirArray, bool b_force,
                                   bool b_prog,
                                   const wxString& ChartListFileName);
+  void FinalizeChartDBUpdate();
 
   bool m_bdefer_resize;
   wxSize m_defer_size;
-  double COGTable[MAX_COG_AVERAGE_SECONDS];
+  double COGTable[kMaxCogAverageSeconds];
 
-  void FastClose();
-  void SetChartUpdatePeriod();
   void CreateCanvasLayout(bool b_useStoredSize = false);
-  void LoadHarmonics();
   void ReloadAllVP();
   void SetCanvasSizes(wxSize frameSize);
 
@@ -356,24 +485,20 @@ public:
   bool CheckAndAddPlugInTool();
   bool AddDefaultPositionPlugInTools();
 
-  void NotifyChildrenResize(void);
   void UpdateCanvasConfigDescriptors();
   void ScheduleSettingsDialog();
   void ScheduleSettingsDialogNew();
-  void ScheduleDeleteSettingsDialog();
-  void ScheduleReconfigAndSettingsReload(bool reload, bool new_dialog);
   static void RebuildChartDatabase();
   void PositionIENCToolbar();
 
   void InitAppMsgBusListener();
   void InitApiListeners();
   void ReleaseApiListeners();
-  void UpdateStatusBar(void);
   void ConfigureStatusBar();
 
 private:
   void ProcessUnitTest();
-  void ProcessQuitFlag();
+  bool ProcessQuitFlag();
   void ProcessDeferredTrackOn();
   void SendFixToPlugins();
   void ProcessAnchorWatch();
@@ -410,8 +535,8 @@ private:
   //      Plugin Support
   int m_next_available_plugin_tool_id;
 
-  double COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
-  double SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
+  double COGFilterTable[kMaxCogsogFilterSeconds];
+  double SOGFilterTable[kMaxCogsogFilterSeconds];
 
   int m_ChartUpdatePeriod;
   bool m_last_bGPSValid;
@@ -430,27 +555,39 @@ private:
   time_t m_fixtime;
   bool b_autofind;
 
-  time_t m_last_track_rotation_ts;
+  wxDateTime m_target_rotate_time;
+
   wxTimer ToolbarAnimateTimer;
   int m_nMasterToolCountShown;
   wxTimer m_recaptureTimer;
 
   std::unique_ptr<LoadErrorsDlgCtrl> m_load_errors_dlg_ctrl;
+  wxString m_gshhg_chart_loc;
 
+private:
   ObservableListener listener_basic_navdata;
   ObservableListener listener_gps_watchdog;
   ObsListener m_on_raise_listener;
   ObsListener m_on_quit_listener;
   ObsListener m_routes_update_listener;
   ObsListener m_evt_drv_msg_listener;
+  ObsListener m_update_statusbar_listener;
+  ObsListener m_center_aistarget_listener;
+  ObsListener m_reload_charts_listener;
+  ToolbarDlgCallbacks m_toolbar_callbacks;
 
-  CommOverflowDlg comm_overflow_dlg;
+  wxStatusBar* m_pStatusBar;
   ConnectionsDlg* m_connections_dlg;
   bool m_need_new_options;
   wxArrayString pathArray;
   double restoreScale[4];
   unsigned int last_canvasConfig;
   DataMonitor* m_data_monitor;
+  wxAuiDefaultDockArt* m_pauidockart;
+  RestServer& m_rest_server;
+  OpenFileFunc m_open_gpx_file;
+
+  void CenterAisTarget(const std::shared_ptr<const AisTargetData>& ais_target);
 
   DECLARE_EVENT_TABLE()
 };

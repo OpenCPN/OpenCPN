@@ -4,8 +4,32 @@ project(opencpn_tests)
 set(CMAKE_CXX_STANDARD 17)
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 message(STATUS "Building tests")
+option(ENABLE_5047_TESTS  "Run tests known to fail - #5077" OFF)
 
 enable_testing ()
+
+add_executable(test_config   ${CMAKE_SOURCE_DIR}/test/test_config.cpp)
+target_link_libraries(test_config  PRIVATE ${wxWidgets_LIBRARIES})
+if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+  target_link_libraries(test_config  PRIVATE -fsanitize=${ENABLE_SANITIZER})
+endif ()
+target_include_directories(test_config  PRIVATE ${wxWidgets_INCLUDE_DIRS})
+
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/test_config.h
+  COMMAND test_config
+  WORKING_DIRECTORY  ${CMAKE_BINARY_DIR}
+  VERBATIM
+  COMMENT "Running test_config "
+)
+
+add_custom_target(config_tests
+  COMMENT "Installing test_config.h"
+  DEPENDS ${CMAKE_BINARY_DIR}/test_config.h
+  COMMAND cmake -E cat ${CMAKE_BINARY_DIR}/test_config.h
+  COMMAND cmake -E
+      copy ${CMAKE_BINARY_DIR}/test_config.h ${CMAKE_BINARY_DIR}/include
+)
 
 add_library(win32_libs INTERFACE)
 if (MSVC)
@@ -21,8 +45,13 @@ set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 set(SRC
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
+  navutil_base_tests.cpp
+  route_point_tests.cpp
   ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
 )
+
+if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)
+endif ()
 
 if (LINUX)
   list(APPEND SRC n2k_tests.cpp)
@@ -37,6 +66,11 @@ if (CURL)
 endif ()
 
 add_executable(tests ${SRC})
+
+if (ENABLE_5047_TESTS)
+  target_compile_definitions(tests PRIVATE ENABLE_5047_TESTS)
+endif ()
+
 if (DEFINED ENV{FLATPAK_ID})
   target_compile_definitions(tests PRIVATE OCPN_FLATPAK)
 endif ()
@@ -56,6 +90,7 @@ target_compile_definitions(tests
     FILTER_DIR="${CMAKE_SOURCE_DIR}/data/filters"
     UNIT_TESTS
 )
+add_dependencies(tests config_tests)
 
 target_link_libraries(tests PRIVATE ocpn::model-src ocpn::gtest win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
@@ -75,8 +110,8 @@ endif ()
 if (UNIX AND NOT DEFINED ENV{FLATPAK_ID})
   set(_IPC_SRV_SRC ipc-srv-tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
   add_executable(ipc-srv-tests ${_IPC_SRV_SRC} )
-  target_link_libraries(
-    ipc-srv-tests PRIVATE ocpn::gtest ocpn::model-src win32_libs
+  target_link_libraries(ipc-srv-tests
+    PRIVATE ocpn::gtest ocpn::model-src ocpn::gl-headers win32_libs
   )
   if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
     target_link_libraries(ipc-srv-tests PUBLIC -fsanitize=${ENABLE_SANITIZER})
@@ -89,7 +124,7 @@ endif ()
 set(_BUF_TEST_SRC buffer_tests.cpp ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
 add_executable(buffer_tests ${_BUF_TEST_SRC})
 target_link_libraries(
-  buffer_tests PRIVATE  ocpn::model-src ocpn::gtest win32_libs
+  buffer_tests PRIVATE  ocpn::model-src ocpn::gtest ocpn::gl-headers win32_libs
 )
 target_compile_definitions(
   buffer_tests PUBLIC TESTDATA="${CMAKE_CURRENT_LIST_DIR}/testdata"

@@ -27,6 +27,9 @@
 #ifndef __S57CLASSREGISTRAR_H__
 #define __S57CLASSREGISTRAR_H__
 
+class S57ClassRegistrar;  // forward
+extern S57ClassRegistrar *g_poRegistrar;   /**< Global instance */
+
 class S57ClassRegistrar {
   // Class information:
   int nClasses;

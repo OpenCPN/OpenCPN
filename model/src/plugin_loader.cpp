@@ -13,14 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement config_loader.h
+ *
+ * Implement plugin_loader.h  -- low level code to load plugins from disk,
+ * notably the PluginLoader class
  */
 
 #include "config.h"
@@ -42,6 +42,17 @@
 
 #ifndef WIN32
 #include <cxxabi.h>
+#endif
+
+#ifdef _WIN32
+#include <winsock2.h>
+#include <windows.h>
+#include <psapi.h>
+#endif
+
+#ifdef __ANDROID__
+#include <dlfcn.h>
+#include <crashlytics.h>
 #endif
 
 #include <wx/wx.h>  //  NOLINT
@@ -70,17 +81,12 @@
 #include "model/plugin_paths.h"
 #include "model/safe_mode.h"
 #include "model/semantic_vers.h"
+
 #include "observable_confvar.h"
 #include "std_filesystem.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
-#include <dlfcn.h>
-#include "crashlytics.h"
-#endif
-
-#ifdef __WXMSW__
-#include <Psapi.h>
 #endif
 
 static const std::vector<std::string> SYSTEM_PLUGINS = {
@@ -385,7 +391,10 @@ void PluginLoader::NotifySetupOptionsPlugin(const PlugInData* pd) {
         case 115:
         case 116:
         case 117:
-        case 118: {
+        case 118:
+        case 119:
+        case 120:
+        case 121: {
           if (pic->m_pplugin) {
             auto ppi = dynamic_cast<opencpn_plugin_19*>(pic->m_pplugin);
             if (ppi) {
@@ -487,7 +496,6 @@ bool PluginLoader::LoadAllPlugIns(bool load_enabled, bool keep_orphans) {
   auto errors = std::make_shared<std::vector<LoadError>>(load_errors);
   evt_plugin_loadall_finalize.Notify(errors, "");
   load_errors.clear();
-
   return any_dir_loaded;
 }
 
@@ -561,14 +569,18 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   if (!base_plugin_path.EndsWith(wxFileName::GetPathSeparator()))
     base_plugin_path += wxFileName::GetPathSeparator();
 
-  if (!g_bportable) {
-    if (base_plugin_path.IsSameAs(plugin_file_path)) {
-      if (!IsSystemPluginPath(file_name.ToStdString())) {
-        DEBUG_LOG << "Skipping plugin " << file_name << " in "
-                  << g_BasePlatform->GetPluginDir();
+  // By hidden config file entry, allow loading arbitrary plugins from
+  // "system" plugin directory, e.g. /usr/lib/opencpn on linux
+  if (!g_allow_arb_system_plugin) {
+    if (!g_bportable) {
+      if (base_plugin_path.IsSameAs(plugin_file_path)) {
+        if (!IsSystemPluginPath(file_name.ToStdString())) {
+          DEBUG_LOG << "Skipping plugin " << file_name << " in "
+                    << g_BasePlatform->GetPluginDir();
 
-        ClearLoadStamp(plugin_loadstamp.ToStdString());  // Not a fatal error
-        return false;
+          ClearLoadStamp(plugin_loadstamp.ToStdString());  // Not a fatal error
+          return false;
+        }
       }
     }
   }
@@ -623,7 +635,8 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_plugin_modification = plugin_modification;
       pic->m_enabled = enabled.Get(false);
 
-      if (safe_mode::get_mode()) {
+      if (safe_mode::get_mode() &&
+          !IsSystemPluginPath(file_name.ToStdString())) {
         pic->m_enabled = false;
         enabled.Set(false);
       }
@@ -649,6 +662,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_long_description = pic->m_pplugin->GetLongDescription();
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
+      m_on_activate_cb(pic);
 
       auto pbm0 = pic->m_pplugin->GetPlugInBitmap();
       if (!pbm0->IsOk()) {
@@ -836,6 +850,7 @@ bool PluginLoader::UpdatePlugIns() {
       wxBitmap* pbm0 = pic->m_pplugin->GetPlugInBitmap();
       pic->m_bitmap = wxBitmap(pbm0->GetSubBitmap(
           wxRect(0, 0, pbm0->GetWidth(), pbm0->GetHeight())));
+      m_on_activate_cb(pic);
       bret = true;
     } else if (!pic->m_enabled && pic->m_init_state) {
       // Save a local copy of the plugin icon before unloading
@@ -848,6 +863,7 @@ bool PluginLoader::UpdatePlugIns() {
       if (pic->m_library.IsLoaded()) pic->m_library.Unload();
       pic->m_pplugin = nullptr;
       pic->m_init_state = false;
+      pic->m_has_setup_options = false;
     }
   }
   evt_update_chart_types.Notify();
@@ -1670,6 +1686,10 @@ PlugInContainer* PluginLoader::LoadPlugIn(const wxString& plugin_file,
 
     case 120:
       pic->m_pplugin = dynamic_cast<opencpn_plugin_120*>(plug_in);
+      break;
+
+    case 121:
+      pic->m_pplugin = dynamic_cast<opencpn_plugin_121*>(plug_in);
       break;
 
     default:

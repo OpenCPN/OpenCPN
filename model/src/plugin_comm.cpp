@@ -13,13 +13,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
+ *
  *  Implement various ocpn_plugin.h methods.
  */
 
@@ -57,6 +56,7 @@ static void catch_signals_PIM(int signo) {
 }
 
 #endif
+
 static std::string PosItem(const std::string what, double item) {
   std::stringstream ss;
   ss << " " << what << " " << std::setprecision(3) << item;
@@ -131,7 +131,8 @@ void SendMessageToAllPlugins(const wxString& message_id,
           case 117:
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             auto* ppi = dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
             if (ppi) ppi->SetPluginMessage(id, body);
             break;
@@ -224,7 +225,8 @@ void SendPositionFixToAllPlugIns(GenericPosDatEx* ppos) {
           case 117:
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             auto* ppi = dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
             if (ppi) ppi->SetPositionFixEx(pfix_ex);
             break;
@@ -263,7 +265,8 @@ void SendActiveLegInfoToAllPlugIns(const ActiveLegDat* leg_info) {
           case 117:
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             auto* ppi = dynamic_cast<opencpn_plugin_117*>(pic->m_pplugin);
             if (ppi) ppi->SetActiveLegInfo(leg);
             break;
@@ -292,7 +295,8 @@ bool SendMouseEventToPlugins(wxMouseEvent& event) {
           case 117:
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             auto* ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
             if (ppi && ppi->MouseEventHook(event)) bret = true;
             break;
@@ -322,7 +326,8 @@ bool SendKeyEventToPlugins(wxKeyEvent& event) {
             case 117:
             case 118:
             case 119:
-            case 120: {
+            case 120:
+            case 121: {
               auto* ppi = dynamic_cast<opencpn_plugin_113*>(pic->m_pplugin);
               if (ppi && ppi->KeyboardEventHook(event)) bret = true;
               break;
@@ -346,7 +351,8 @@ void SendPreShutdownHookToPlugins() {
       if (pic->m_cap_flag & WANTS_PRESHUTDOWN_HOOK) {
         switch (pic->m_api_version) {
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             auto* ppi = dynamic_cast<opencpn_plugin_119*>(pic->m_pplugin);
             if (ppi) ppi->PreShutdownHook();
             break;
@@ -454,7 +460,8 @@ void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
           case 117:
           case 118:
           case 119:
-          case 120: {
+          case 120:
+          case 121: {
             auto* ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
             if (ppi)
               ppi->SendVectorChartObjectInfo(decouple_chart, decouple_feature,

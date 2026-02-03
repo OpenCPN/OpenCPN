@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Platform specific support utilities
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,37 +12,60 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#include <wx/wxprec.h>
+/**
+ * \file
+ *
+ * Implement base_platform.h -- OpenCPN Platform specific support utilities
+ */
 
+#include <algorithm>
 #include <cstdlib>
 #include <string>
 #include <vector>
+
+#ifdef __APPLE__
+#include <malloc/malloc.h>
+#include <mach/vm_map.h>
+#endif
+
+#ifdef __ANDROID__
+#include <QDebug>
+#include "androidUTIL.h"
+#endif
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
 #include <windows.h>
 #endif
 
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-
-#ifdef __WXMSW__
+#ifdef _WIN32
+#define NOMINMAX  // required to not interfere with std::max (sigh)
+#include <winsock2.h>
 #include <windows.h>
 #include <winioctl.h>
 #include <initguid.h>
+#include <psapi.h>
 #include "setupapi.h"  // presently stored in opencpn/src
+#endif
+
+#if defined(__linux__)
+#include <sys/types.h>
+#include <sys/sysinfo.h>
+#endif
+
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
 #endif
 
 #include <wx/app.h>
 #include <wx/apptrait.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
+#include <wx/platinfo.h>
 #include <wx/stdpaths.h>
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>
@@ -58,14 +75,10 @@
 #include "model/base_platform.h"
 #include "model/cmdline.h"
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
 #include "ocpn_plugin.h"
-
-#ifdef __ANDROID__
-#include <QDebug>
-#include "androidUTIL.h"
-#endif
 
 #ifdef __WXOSX__
 #include "model/macutils.h"
@@ -89,6 +102,10 @@ BasePlatform* g_BasePlatform;
 #ifdef __ANDROID__
 PlatSpec android_plat_spc;
 #endif
+
+static inline bool IsWindows() {
+  return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
+}
 
 static bool checkIfFlatpacked() {
   wxString id;
@@ -212,7 +229,7 @@ wxString& AbstractPlatform::GetHomeDir() {
 
 #ifdef __WXOSX__
     appendOSDirSlash(&m_homeDir);
-    m_homeDir.Append(_T("opencpn"));
+    m_homeDir.Append("opencpn");
 #endif
 
     appendOSDirSlash(&m_homeDir);
@@ -266,11 +283,19 @@ wxString& AbstractPlatform::GetSharedDataDir() {
   return m_SData_Dir;
 }
 
+wxString AbstractPlatform::GetSupplementalLicenseString() {
+  wxString lic;
+#ifdef __ANDROID__
+  lic = androidGetSupplementalLicense();
+#endif
+  return lic;
+}
+
 wxString GetPluginDataDir(const char* plugin_name) {
   static const wxString sep = wxFileName::GetPathSeparator();
 
   wxString datadirs = g_BasePlatform->GetPluginDataPath();
-  wxLogMessage(_T("PlugInManager: Using data dirs from: ") + datadirs);
+  wxLogMessage("PlugInManager: Using data dirs from: " + datadirs);
   wxStringTokenizer dirs(datadirs, ";");
   while (dirs.HasMoreTokens()) {
     wxString dir = dirs.GetNextToken();
@@ -282,14 +307,14 @@ wxString GetPluginDataDir(const char* plugin_name) {
     while (more) {
       if (next == plugin_name) {
         next = next.Prepend(tryDirName.GetFullPath() + sep);
-        wxLogMessage(_T("PlugInManager: using data dir: %s"), next);
+        wxLogMessage("PlugInManager: using data dir: %s", next);
         return next;
       }
       more = tryDir.GetNext(&next);
     }
     tryDir.Close();
   }
-  wxLogMessage(_T("Warning: no data directory found, using \"\""));
+  wxLogMessage("Warning: no data directory found, using \"\"");
   return "";
 }
 
@@ -328,7 +353,7 @@ wxString& AbstractPlatform::DefaultPrivateDataDir() {
     m_PrivateDataDir =
         std_path.GetUserConfigDir();  // should be ~/Library/Preferences
     appendOSDirSlash(&m_PrivateDataDir);
-    m_PrivateDataDir.Append(_T("opencpn"));
+    m_PrivateDataDir.Append("opencpn");
 #else
     m_PrivateDataDir = std_path.GetUserDataDir();  // should be ~/.opencpn
 #endif
@@ -358,14 +383,14 @@ wxString AbstractPlatform::GetWinPluginBaseDir() {
   wxString winPluginDir;
   // Portable case: plugins directory is in the .exe folder
   if (g_bportable) {
-    winPluginDir = (GetHomeDir() + _T("plugins"));
+    winPluginDir = (GetHomeDir() + "plugins");
     if (ocpn::exists(winPluginDir.ToStdString())) {
       wxLogMessage("Using portable plugin dir: %s", winPluginDir);
       return winPluginDir;
     }
   }
   // Standard case: c:\Users\%USERPROFILE%\AppData\Local
-  bool ok = wxGetEnv(_T("LOCALAPPDATA"), &winPluginDir);
+  bool ok = wxGetEnv("LOCALAPPDATA", &winPluginDir);
   if (!ok) {
     wxLogMessage("winPluginDir: Cannot lookup LOCALAPPDATA");
     // Without %LOCALAPPDATA%: Use default location if it exists.
@@ -379,7 +404,7 @@ wxString AbstractPlatform::GetWinPluginBaseDir() {
   }
   if (!ok) {
     // Usually: c:\Users\%USERPROFILE%\AppData\Roaming
-    ok = wxGetEnv(_T("APPDATA"), &winPluginDir);
+    ok = wxGetEnv("APPDATA", &winPluginDir);
   }
   if (!ok) {
     // Without %APPDATA%: Use default location if it exists.
@@ -411,11 +436,11 @@ wxString& AbstractPlatform::GetPluginDir() {
     m_PluginsDir = std_path.GetPluginsDir();  // linux:   {prefix}/lib/opencpn
     // Mac:     appname.app/Contents/PlugIns
 #ifdef __WXMSW__
-    m_PluginsDir += _T("\\plugins");  // Windows: {exe dir}/plugins
+    m_PluginsDir += "\\plugins";  // Windows: {exe dir}/plugins
 #endif
     if (g_bportable) {
       m_PluginsDir = GetHomeDir();
-      m_PluginsDir += _T("plugins");
+      m_PluginsDir += "plugins";
     }
 
 #ifdef __ANDROID__
@@ -481,24 +506,24 @@ bool AbstractPlatform::DetectOSDetail(OCPN_OSDetail* detail) {
 
   // Now parse by basic platform
 #ifdef __linux__
-  if (wxFileExists(_T("/etc/os-release"))) {
-    wxTextFile release_file(_T("/etc/os-release"));
+  if (wxFileExists("/etc/os-release")) {
+    wxTextFile release_file("/etc/os-release");
     if (release_file.Open()) {
       wxString val;
       for (wxString str = release_file.GetFirstLine(); !release_file.Eof();
            str = release_file.GetNextLine()) {
-        if (str.StartsWith(_T("NAME"))) {
+        if (str.StartsWith("NAME")) {
           val = str.AfterFirst('=').Mid(1);
           val = val.Mid(0, val.Length() - 1);
           if (val.Length()) detail->osd_name = std::string(val.mb_str());
-        } else if (str.StartsWith(_T("VERSION_ID"))) {
+        } else if (str.StartsWith("VERSION_ID")) {
           val = str.AfterFirst('=').Mid(1);
           val = val.Mid(0, val.Length() - 1);
           if (val.Length()) detail->osd_version = std::string(val.mb_str());
-        } else if (str.StartsWith(_T("ID="))) {
+        } else if (str.StartsWith("ID=")) {
           val = str.AfterFirst('=');
           if (val.Length()) detail->osd_ID = ocpn::split(val.mb_str(), " ")[0];
-        } else if (str.StartsWith(_T("ID_LIKE"))) {
+        } else if (str.StartsWith("ID_LIKE")) {
           if (val.StartsWith('"')) {
             val = str.AfterFirst('=').Mid(1);
             val = val.Mid(0, val.Length() - 1);
@@ -514,16 +539,15 @@ bool AbstractPlatform::DetectOSDetail(OCPN_OSDetail* detail) {
 
       release_file.Close();
     }
-    if (detail->osd_name == _T("Linux Mint")) {
-      if (wxFileExists(_T("/etc/upstream-release/lsb-release"))) {
-        wxTextFile upstream_release_file(
-            _T("/etc/upstream-release/lsb-release"));
+    if (detail->osd_name == "Linux Mint") {
+      if (wxFileExists("/etc/upstream-release/lsb-release")) {
+        wxTextFile upstream_release_file("/etc/upstream-release/lsb-release");
         if (upstream_release_file.Open()) {
           wxString val;
           for (wxString str = upstream_release_file.GetFirstLine();
                !upstream_release_file.Eof();
                str = upstream_release_file.GetNextLine()) {
-            if (str.StartsWith(_T("DISTRIB_RELEASE"))) {
+            if (str.StartsWith("DISTRIB_RELEASE")) {
               val = str.AfterFirst('=').Mid(0);
               val = val.Mid(0, val.Length());
               if (val.Length()) detail->osd_version = std::string(val.mb_str());
@@ -624,7 +648,7 @@ wxString& AbstractPlatform::GetConfigFileName() {
   return m_config_file_name;
 }
 
-bool BasePlatform::InitializeLogFile(void) {
+bool BasePlatform::InitializeLogFile() {
   //      Establish Log File location
   mlog_file = GetPrivateDataDir();
   appendOSDirSlash(&mlog_file);
@@ -638,16 +662,16 @@ bool BasePlatform::InitializeLogFile(void) {
   mlog_file = LibPref.GetFullPath();
   appendOSDirSlash(&mlog_file);
 
-  mlog_file.Append(_T("Logs/"));  // so, on OS X, opencpn.log ends up in
-                                  // ~/Library/Logs which makes it accessible to
-                                  // Applications/Utilities/Console....
+  mlog_file.Append("Logs/");  // so, on OS X, opencpn.log ends up in
+                              // ~/Library/Logs which makes it accessible to
+                              // Applications/Utilities/Console....
 #endif
 
   // create the opencpn "home" directory if we need to
   wxFileName wxHomeFiledir(GetHomeDir());
   if (true != wxHomeFiledir.DirExists(wxHomeFiledir.GetPath()))
     if (!wxHomeFiledir.Mkdir(wxHomeFiledir.GetPath())) {
-      wxASSERT_MSG(false, _T("Cannot create opencpn home directory"));
+      wxASSERT_MSG(false, "Cannot create opencpn home directory");
       return false;
     }
 
@@ -655,12 +679,12 @@ bool BasePlatform::InitializeLogFile(void) {
   wxFileName wxLogFiledir(mlog_file);
   if (true != wxLogFiledir.DirExists(wxLogFiledir.GetPath())) {
     if (!wxLogFiledir.Mkdir(wxLogFiledir.GetPath())) {
-      wxASSERT_MSG(false, _T("Cannot create opencpn log directory"));
+      wxASSERT_MSG(false, "Cannot create opencpn log directory");
       return false;
     }
   }
 
-  mlog_file.Append(_T("opencpn.log"));
+  mlog_file.Append("opencpn.log");
   wxString logit = mlog_file;
 
 #ifdef __ANDROID__
@@ -672,10 +696,10 @@ bool BasePlatform::InitializeLogFile(void) {
   if (::wxFileExists(mlog_file)) {
     if (wxFileName::GetSize(mlog_file) > 1000000) {
       wxString oldlog = mlog_file;
-      oldlog.Append(_T(".log"));
+      oldlog.Append(".log");
       //  Defer the showing of this messagebox until the system locale is
       //  established.
-      large_log_message = (_T("Old log will be moved to opencpn.log.log"));
+      large_log_message = ("Old log will be moved to opencpn.log.log");
       ::wxRenameFile(mlog_file, oldlog);
     }
   }
@@ -698,7 +722,7 @@ bool BasePlatform::InitializeLogFile(void) {
   return true;
 }
 
-void AbstractPlatform::CloseLogFile(void) {
+void AbstractPlatform::CloseLogFile() {
   if (m_old_logger) {
     delete wxLog::SetActiveTarget(m_old_logger);
     m_old_logger = nullptr;
@@ -708,7 +732,7 @@ void AbstractPlatform::CloseLogFile(void) {
 wxString AbstractPlatform::GetPluginDataPath() {
   if (g_bportable) {
     wxString sep = wxFileName::GetPathSeparator();
-    wxString ret = GetPrivateDataDir() + sep + _T("plugins");
+    wxString ret = GetPrivateDataDir() + sep + "plugins";
     return ret;
   }
 
@@ -853,8 +877,7 @@ bool GetMonitorSizeFromEDID(const HKEY hDevRegKey, int* WidthMm,
                             EDIDdata,    // buffer
                             &edidsize);  // buffer size
 
-    if (retValue != ERROR_SUCCESS || 0 != _tcscmp(valueName, _T("EDID")))
-      continue;
+    if (retValue != ERROR_SUCCESS || 0 != _tcscmp(valueName, L"EDID")) continue;
 
     *WidthMm = ((EDIDdata[68] & 0xF0) << 4) + EDIDdata[66];
     *HeightMm = ((EDIDdata[68] & 0x0F) << 8) + EDIDdata[67];
@@ -955,4 +978,166 @@ bool AbstractPlatform::GetWindowsMonitorSize(int* width, int* height) {
   return bFoundDevice;
 }
 
+#endif  // __WXMSW__
+
+int BasePlatform::GetSvgStdIconSize(const wxWindow* w, bool touch) {
+  double size = w->GetCharHeight() * (IsWindows() ? 1.3 : 1.0);
+#if wxCHECK_VERSION(3, 1, 2)
+  // Apply scale factor, mostly for Windows. Other platforms
+  // does this in the toolkits, ToDIP() is aware of this.
+  size *= static_cast<double>(w->ToDIP(100)) / 100.;
 #endif
+  // Force minimum physical size for touch screens
+  if (touch) {
+    double pixel_per_mm = wxGetDisplaySize().x / GetDisplaySizeMM();
+    size = std::max(size, 7.0 * pixel_per_mm);
+  }
+  return std::round(size);
+}
+
+bool platform::GetMemoryStatus(int* mem_total, int* mem_used) {
+#ifdef __ANDROID__
+  return androidGetMemoryStatus(mem_total, mem_used);
+#endif
+
+#if defined(__linux__)
+  // Use sysinfo to obtain total RAM
+  if (mem_total) {
+    *mem_total = 0;
+    struct sysinfo sys_info;
+    if (sysinfo(&sys_info) != -1)
+      *mem_total = ((uint64_t)sys_info.totalram * sys_info.mem_unit) / 1024;
+  }
+  //      Use filesystem /proc/self/statm to determine memory status
+  //  Provides information about memory usage, measured in pages.  The columns
+  //  are: size       total program size (same as VmSize in /proc/[pid]/status)
+  //  resident   resident set size (same as VmRSS in /proc/[pid]/status)
+  //  share      shared pages (from shared mappings)
+  //  text       text (code)
+  //  lib        library (unused in Linux 2.6)
+  //  data       data + stack
+  //  dt         dirty pages (unused in Linux 2.6)
+
+  if (mem_used) {
+    *mem_used = 0;
+    FILE* file = fopen("/proc/self/statm", "r");
+    if (file) {
+      if (fscanf(file, "%d", mem_used) != 1) {
+        wxLogWarning("Cannot parse /proc/self/statm (!)");
+      }
+      *mem_used *= 4;  // XXX assume 4K page
+      fclose(file);
+    }
+  }
+
+  return true;
+
+#endif /* __linux__ */
+
+#ifdef __WXMSW__
+  HANDLE hProcess;
+  PROCESS_MEMORY_COUNTERS pmc;
+
+  unsigned long processID = wxGetProcessId();
+
+  if (mem_used) {
+    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,
+                           processID);
+
+    if (hProcess && GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
+      /*
+       printf( "\tPageFaultCount: 0x%08X\n", pmc.PageFaultCount );
+       printf( "\tPeakWorkingSetSize: 0x%08X\n",
+       pmc.PeakWorkingSetSize );
+       printf( "\tWorkingSetSize: 0x%08X\n", pmc.WorkingSetSize );
+       printf( "\tQuotaPeakPagedPoolUsage: 0x%08X\n",
+       pmc.QuotaPeakPagedPoolUsage );
+       printf( "\tQuotaPagedPoolUsage: 0x%08X\n",
+       pmc.QuotaPagedPoolUsage );
+       printf( "\tQuotaPeakNonPagedPoolUsage: 0x%08X\n",
+       pmc.QuotaPeakNonPagedPoolUsage );
+       printf( "\tQuotaNonPagedPoolUsage: 0x%08X\n",
+       pmc.QuotaNonPagedPoolUsage );
+       printf( "\tPagefileUsage: 0x%08X\n", pmc.PagefileUsage );
+       printf( "\tPeakPagefileUsage: 0x%08X\n",
+       pmc.PeakPagefileUsage );
+       */
+      *mem_used = pmc.WorkingSetSize / 1024;
+    }
+
+    CloseHandle(hProcess);
+  }
+
+  if (mem_total) {
+    MEMORYSTATUSEX statex;
+
+    statex.dwLength = sizeof(statex);
+
+    GlobalMemoryStatusEx(&statex);
+    /*
+     _tprintf (TEXT("There is  %*ld percent of memory in use.\n"),
+     WIDTH, statex.dwMemoryLoad);
+     _tprintf (TEXT("There are %*I64d total Kbytes of physical memory.\n"),
+     WIDTH, statex.ullTotalPhys/DIV);
+     _tprintf (TEXT("There are %*I64d free Kbytes of physical memory.\n"),
+     WIDTH, statex.ullAvailPhys/DIV);
+     _tprintf (TEXT("There are %*I64d total Kbytes of paging file.\n"),
+     WIDTH, statex.ullTotalPageFile/DIV);
+     _tprintf (TEXT("There are %*I64d free Kbytes of paging file.\n"),
+     WIDTH, statex.ullAvailPageFile/DIV);
+     _tprintf (TEXT("There are %*I64d total Kbytes of virtual memory.\n"),
+     WIDTH, statex.ullTotalVirtual/DIV);
+     _tprintf (TEXT("There are %*I64d free Kbytes of virtual memory.\n"),
+     WIDTH, statex.ullAvailVirtual/DIV);
+     */
+
+    *mem_total = statex.ullTotalPhys / 1024;
+  }
+  return true;
+#endif
+
+#ifdef __WXMAC__
+
+  if (g_tick != g_lastMemTick) {
+    malloc_zone_pressure_relief(NULL, 0);
+
+    int bytesInUse = 0;
+    int blocksInUse = 0;
+    int sizeAllocated = 0;
+
+    malloc_statistics_t stats;
+    stats.blocks_in_use = 0;
+    stats.size_in_use = 0;
+    stats.max_size_in_use = 0;
+    stats.size_allocated = 0;
+    malloc_zone_statistics(NULL, &stats);
+    bytesInUse += stats.size_in_use;
+    blocksInUse += stats.blocks_in_use;
+    sizeAllocated += stats.size_allocated;
+
+    g_memUsed = sizeAllocated >> 10;
+
+    // printf("mem_used (Mb):  %d   %d \n", g_tick, g_memUsed / 1024);
+    g_lastMemTick = g_tick;
+  }
+
+  if (mem_used) *mem_used = g_memUsed;
+  if (mem_total) {
+    *mem_total = 4000;
+    FILE* fpIn = popen("sysctl -n hw.memsize", "r");
+    if (fpIn) {
+      double pagesUsed = 0.0, totalPages = 0.0;
+      char buf[64];
+      if (fgets(buf, sizeof(buf), fpIn) != NULL) {
+        *mem_total = atol(buf) >> 10;
+      }
+    }
+  }
+
+  return true;
+#endif
+
+  if (mem_used) *mem_used = 0;
+  if (mem_total) *mem_total = 0;
+  return false;
+}

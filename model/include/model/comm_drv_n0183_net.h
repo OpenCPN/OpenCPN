@@ -13,14 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * NMEA0183 over IP driver
+ *
+ * NMEA0183 over IP driver.
  */
 
 #ifndef COMMDRIVERN0183NET_H_
@@ -29,6 +28,11 @@
 #include <chrono>
 #include <memory>
 #include <string>
+
+#ifndef __WXMSW__
+#include <sys/socket.h>  // needed for (some) Mac builds
+#include <netinet/in.h>
+#endif
 
 #include <wx/wxprec.h>
 
@@ -43,17 +47,11 @@
 // newer versions of glib define its own GSocket, but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
-// #include <gtk/gtk.h>
 #define GSocket GlibGSocket
 #include <wx/socket.h>
 #undef GSocket
 #else
 #include <wx/socket.h>
-#endif
-
-#ifndef __WXMSW__
-#include <sys/socket.h>  // needed for (some) Mac builds
-#include <netinet/in.h>
 #endif
 
 #include "model/comm_buffers.h"
@@ -63,7 +61,7 @@
 #include "model/ocpn_utils.h"
 #include "observable.h"
 
-class MrqContainer;
+class MrqContainer;  // forward in .cpp file
 
 class CommDriverN0183Net : public CommDriverN0183,
                            public wxEvtHandler,
@@ -73,7 +71,7 @@ public:
 
   ~CommDriverN0183Net() override;
 
-  ConnectionParams GetParams() const { return m_params; }
+  const ConnectionParams& GetParams() const override { return m_params; }
 
   const wxSocketBase* GetSock() const { return m_sock; }
 

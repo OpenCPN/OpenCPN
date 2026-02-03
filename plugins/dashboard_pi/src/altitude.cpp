@@ -1,12 +1,17 @@
 /******************************************************************************
- * $Id: altitude.cpp, v0.1 $
+ * $Id: altitude.cpp, v0.3 $
  *
  * Project:  OpenCPN
  * Purpose:  Dashboard Plugin, display altitude trace
  * Author:   derived from Jean-Eudes Onfray's depth.cpp by Andreas Merz
  *
  * Comment:  since not every vessel is always on sea level, I found it
- *           sometimes intersting to observe the GPS altitude information.
+ *           sometimes interesting to observe the GPS altitude information.
+ *           It can be extracted from the GGA nmea message.
+ *
+ *           Besides showing a rolling plot, the grid will auto-rescale to
+ *           keep the plot within the visible range.
+ *           The top line shows mean altitude and its standard deviation.
  *
  ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
@@ -91,21 +96,28 @@ wxSize DashboardInstrument_Altitude::GetSize(int orient, wxSize hint) {
 void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
                                            wxString unit) {
   if (st == OCPN_DBP_STC_ALTI) {
-    m_Altitude = std::isnan(data) ? 0.0 : data;
-    // m_Altitude = m_Altitude*10.0 +1000;       // inject fake testdata
-    // printf("Altitude = %3.3f\n", m_Altitude); // debug output
+    if (std::isnan(data)) {
+      m_cntValid = 0;
+      m_Altitude = 0.0;
+    } else {
+      m_Altitude = data;
+      // m_Altitude = m_Altitude*10.0 +1000;       // inject fake testdata
+      if (m_cntValid < ALTITUDE_RECORD_COUNT && data != 0.0) m_cntValid++;
+    }
+    // printf("Altitude = %3.3f  # %2d ", m_Altitude, m_cntValid); // debug
 
-    // save FLOPS by just accumulating the FIFO changes
-    m_meanAltitude += (m_Altitude - m_ArrayAltitude[0]) / ALTITUDE_RECORD_COUNT;
-    m_sum2Altitude +=
-        (m_Altitude * m_Altitude - m_ArrayAltitude[0] * m_ArrayAltitude[0]);
-
-    for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
-      m_ArrayAltitude[idx - 1] = m_ArrayAltitude[idx];  // shift FIFO
+    if (m_cntValid == 1) {
+      for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
+        m_ArrayAltitude[idx - 1] = m_Altitude;  // init FIFO with 1st valid data
+      }
+    } else {
+      for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
+        m_ArrayAltitude[idx - 1] = m_ArrayAltitude[idx];  // shift FIFO
+      }
     }
     m_ArrayAltitude[ALTITUDE_RECORD_COUNT - 1] = m_Altitude;
     m_AltitudeUnit = unit;
-  } else if (st == OCPN_DBP_STC_ATMP) {
+  } else if (st == OCPN_DBP_STC_ATMP) {  // Air Temperature
     if (!std::isnan(data)) {
       m_Temp = wxString::Format(_T("%.1f"), data) + DEGREE_SIGN + unit;
     } else {
@@ -219,31 +231,34 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     dc->SetFont(g_pFontSmall->GetChosenFont());
     dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
   }
-  double MaxAltitude = -9999.0;
-  double MinAltitude = 9999999.0;
-  // evaluate buffered data
-  for (int idx = 0; idx < ALTITUDE_RECORD_COUNT; idx++) {
-    if (m_ArrayAltitude[idx] > MaxAltitude)
-      MaxAltitude = m_ArrayAltitude[idx];
-    else if (m_ArrayAltitude[idx] < MinAltitude)
-      MinAltitude = m_ArrayAltitude[idx];
-  }
 
-  // calculate 1st and 2nd Moments
-  double varAltitude =
-      m_sum2Altitude / ALTITUDE_RECORD_COUNT;  // biased estimator, avoid / N-1
+  // evaluate buffered data to determine its range, mean, variance
+  m_meanAltitude = m_ArrayAltitude[0];  // moving average
+  double MaxAltitude = m_ArrayAltitude[0];
+  double MinAltitude = m_ArrayAltitude[0];
+  double sum2Altitude = m_ArrayAltitude[0] * m_ArrayAltitude[0];  // sum^2
+  for (int idx = 1; idx < ALTITUDE_RECORD_COUNT; idx++) {
+    MaxAltitude = std::max(MaxAltitude, m_ArrayAltitude[idx]);
+    MinAltitude = std::min(MinAltitude, m_ArrayAltitude[idx]);
+    m_meanAltitude += m_ArrayAltitude[idx];
+    sum2Altitude += m_ArrayAltitude[idx] * m_ArrayAltitude[idx];
+  }
+  m_meanAltitude /= ALTITUDE_RECORD_COUNT;
+
+  // calculate 2nd Moment
+  double varAltitude = sum2Altitude / ALTITUDE_RECORD_COUNT;
   varAltitude -= m_meanAltitude * m_meanAltitude;
+  // estimator bias correction
+  varAltitude *= (ALTITUDE_RECORD_COUNT / (ALTITUDE_RECORD_COUNT - 1.0));
+  // printf("varAltitude = %5.3f\n", varAltitude);  // debug output
+  if (varAltitude < 0.0) varAltitude = 0.0;  // avoid nan when calling sqrt().
 
   // do AGC to adjust scaling
   double range = MaxAltitude - MinAltitude;
   if (range > 1.1 * m_Range) setAttenuation(+1);
-  if (range < 0.3 * m_Range)  // some hysteresis
-    setAttenuation(-1);
+  if (range < 0.3 * m_Range) setAttenuation(-1);  // some hysteresis
   double grid = getAttenuation();
   m_Range = grid * c_GridLines;
-  // printf("m_Range = %5.1f  range = %5.1f  att=%d , mean=%3.2f, std=%3.2f\n",
-  //   m_Range, range, getAttenuation(), meanAltitude, sqrt(varAltitude));  //
-  //   debug output
 
   // only update axes on major corridor changes
   if ((MaxAltitude - m_MaxAltitude) / grid > 0.25 ||
@@ -256,6 +271,11 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     m_MinAltitude = (round(MinAltitude / grid) - 1) * grid;
     m_MaxAltitude = m_MinAltitude + m_Range;
   }
+  // debug output
+  // printf("m_MinAltitude=%7.1f  m_MaxAltitude=%7.1f  m_Range = %5.1f "
+  //        " range = %5.1f  att=%d , mean=%7.2f, std=%5.2f\n",
+  //        m_MinAltitude, m_MaxAltitude, m_Range,
+  //        range, getAttenuation(), m_meanAltitude, sqrt(varAltitude));
 
   wxString label;
   label.Printf(_T("+/-%.1f %8.0f ") + m_AltitudeUnit, sqrt(varAltitude),

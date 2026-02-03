@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement plugin_handler.h -- plugin remote repositories installation and
+ * uninstall/list operations.
  */
+
 #include <algorithm>
 #include <cstdio>
 #include <fstream>
@@ -35,18 +36,6 @@
 #include <unordered_map>
 
 #include "wx/wxprec.h"
-
-#if (defined(OCPN_GHC_FILESYSTEM) || \
-     (defined(__clang_major__) && (__clang_major__ < 15)))
-// MacOS 1.13
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#else
-#include <filesystem>
-#include <utility>
-namespace fs = std::filesystem;
-#endif
-
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
@@ -61,6 +50,7 @@ namespace fs = std::filesystem;
 
 #include <archive.h>
 #include <archive_entry.h>
+
 typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
 #if defined(__MINGW32__) && defined(Yield)
@@ -68,7 +58,6 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #endif
 
 #include "config.h"
-
 #include "model/base_platform.h"
 #include "model/catalog_handler.h"
 #include "model/catalog_parser.h"
@@ -81,6 +70,8 @@ typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 #include "model/plugin_handler.h"
 #include "model/plugin_loader.h"
 #include "model/plugin_paths.h"
+
+#include "std_filesystem.h"
 
 #ifdef _WIN32
 static std::string SEP("\\");
@@ -375,7 +366,7 @@ PluginHandler::PluginHandler() {}
 bool PluginHandler::IsCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
   static const SemanticVersion kMinApi = SemanticVersion(1, 16);
-  static const SemanticVersion kMaxApi = SemanticVersion(1, 20);
+  static const SemanticVersion kMaxApi = SemanticVersion(1, 21);
   auto plugin_api = SemanticVersion::parse(metadata.api_version);
   if (plugin_api.major == -1) {
     DEBUG_LOG << "Cannot parse API version \"" << metadata.api_version << "\"";
@@ -564,7 +555,7 @@ static bool win_entry_set_install_path(struct archive_entry* entry,
     path = installPaths["share"] + "\\" + path;
 
   } else if (archive_entry_filetype(entry) == AE_IFREG) {
-    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    wxString msg("PluginHandler::Invalid install path on file: ");
     msg += wxString(path.c_str());
     DEBUG_LOG << msg;
     return false;
@@ -601,7 +592,7 @@ static bool flatpak_entry_set_install_path(struct archive_entry* entry,
   string suffix = path.substr(slashpos + 1);
   if (installPaths.find(location) == installPaths.end() &&
       archive_entry_filetype(entry) == AE_IFREG) {
-    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    wxString msg("PluginHandler::Invalid install path on file: ");
     msg += wxString(path.c_str());
     DEBUG_LOG << msg;
     return false;
@@ -646,7 +637,7 @@ static bool linux_entry_set_install_path(struct archive_entry* entry,
   string suffix = path.substr(slashpos + 1);
   if (installPaths.find(location) == installPaths.end() &&
       archive_entry_filetype(entry) == AE_IFREG) {
-    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    wxString msg("PluginHandler::Invalid install path on file: ");
     msg += wxString(path.c_str());
     DEBUG_LOG << msg;
     return false;
@@ -723,7 +714,7 @@ static bool apple_entry_set_install_path(struct archive_entry* entry,
     }
   }
   if (dest == "" && archive_entry_filetype(entry) == AE_IFREG) {
-    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    wxString msg("PluginHandler::Invalid install path on file: ");
     msg += wxString(path.c_str());
     DEBUG_LOG << msg;
     return false;
@@ -767,7 +758,7 @@ static bool android_entry_set_install_path(struct archive_entry* entry,
   string suffix = path.substr(slashpos + 1);
   if (installPaths.find(location) == installPaths.end() &&
       archive_entry_filetype(entry) == AE_IFREG) {
-    wxString msg(_T("PluginHandler::Invalid install path on file: "));
+    wxString msg("PluginHandler::Invalid install path on file: ");
     msg += wxString(path.c_str());
     DEBUG_LOG << msg;
     return false;
@@ -799,7 +790,7 @@ static bool entry_set_install_path(struct archive_entry* entry,
                                    pathmap_t installPaths) {
   const std::string src = archive_entry_pathname(entry);
   bool rv;
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   rv = android_entry_set_install_path(entry, installPaths);
 #else
   const auto osSystemId = wxPlatformInfo::Get().GetOperatingSystemId();
@@ -960,7 +951,7 @@ bool PluginHandler::IsPluginWritable(std::string name) {
   return PlugInIxByName(name, loader->GetPlugInArray()) == -1;
 }
 
-static std::string computeMetadataPath(void) {
+static std::string computeMetadataPath() {
   std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
   path += SEP;
   path += "ocpn-plugins.xml";

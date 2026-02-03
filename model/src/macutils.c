@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007..2010 by David S. Register, Richard M Smith        *
+ *   Copyright (C) 2007 - 2010 by David S. Register, Richard M Smith       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,49 +12,50 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ * Implement macutils.h -- MacOS hardware probing functions
  */
 
-#include "wx/wxprec.h"
-#ifdef __WXOSX__
+#ifdef __APPLE__
 
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <paths.h>
-#include <termios.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sysexits.h>
+#include <sys/ioctl.h>
 #include <sys/param.h>
 #include <sys/select.h>
-#include <sys/time.h>
 #include <sys/sysctl.h>
+#include <sys/time.h>
+#include <termios.h>
 #include <time.h>
-#include <stdlib.h>
+#include <unistd.h>
+
 #include <AvailabilityMacros.h>
-
 #include <CoreFoundation/CoreFoundation.h>
-
 #include <IOKit/IOKitLib.h>
 #include <IOKit/serial/IOSerialKeys.h>
+#include <IOKit/IOBSD.h>
+
 #if defined(MAC_OS_X_VERSION_10_3) && \
     (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_3)
 #include <IOKit/serial/ioss.h>
 #endif
-#include <IOKit/IOBSD.h>
 
 // We need CoreGraphics to read the monitor physical size.
 // In 10.7 CoreGraphics is part of ApplicationServices.
 #include <ApplicationServices/ApplicationServices.h>
 // When we stop building against 10.7 we will probably want to link agains
 // CoreGraphics directly:
-//#include <CoreGraphics/CoreGraphics.h>
+// #include <CoreGraphics/CoreGraphics.h>
 
 #include "config.h"
 
@@ -247,28 +248,27 @@ int GetMacMonitorSize() {
 
 /**
  * Determines whether we run as a translated binary under Rosetta
- * See https://developer.apple.com/documentation/apple-silicon/about-the-rosetta-translation-environment#Determine-Whether-Your-App-Is-Running-as-a-Translated-Binary
+ * See
+ * https://developer.apple.com/documentation/apple-silicon/about-the-rosetta-translation-environment#Determine-Whether-Your-App-Is-Running-as-a-Translated-Binary
  */
 int ProcessIsTranslated() {
-   int ret = 0;
-   size_t size = sizeof(ret);
-   if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) == -1)
-   {
-      if (errno == ENOENT)
-         return 0;
-      return -1;
-   }
-   return ret;
+  int ret = 0;
+  size_t size = sizeof(ret);
+  if (sysctlbyname("sysctl.proc_translated", &ret, &size, NULL, 0) == -1) {
+    if (errno == ENOENT) return 0;
+    return -1;
+  }
+  return ret;
 }
 
 int IsAppleSilicon() {
-    int ret = 0;
-    size_t size = sizeof(ret);
+  int ret = 0;
+  size_t size = sizeof(ret);
 
-    if (sysctlbyname("hw.optional.arm64", &ret, &size, NULL, 0) == -1) {
-        return -1;
-    }
-    return ret;
+  if (sysctlbyname("hw.optional.arm64", &ret, &size, NULL, 0) == -1) {
+    return -1;
+  }
+  return ret;
 }
 
 #endif  //__WXOSX__

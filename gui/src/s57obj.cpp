@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  S57 Chart Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,13 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-// For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+/**
+ * \file
+ *
+ *  S57 Chart Object
+ */
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
@@ -35,7 +30,7 @@
 #include <wx/textfile.h>
 
 #include "dychart.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 
 #include "s52s57.h"
 #include "s52plib.h"
@@ -49,7 +44,6 @@
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
 #include "s52utils.h"
-#include "model/wx28compat.h"
 
 #include "gdal/cpl_csv.h"
 #include "setjmp.h"
@@ -58,14 +52,14 @@
 
 #include "pluginmanager.h"  // for S57 lights overlay
 
-#include "Osenc.h"
+#include "o_senc.h"
 
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
 #endif
 
 #ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #endif
 
 #include <algorithm>  // for std::sort
@@ -75,7 +69,45 @@
 #define strncasecmp(x, y, z) _strnicmp(x, y, z)
 #endif
 
-extern bool g_b_EnableVBO;
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
+#endif
+
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include <wx/image.h>  // for some reason, needed for msvc???
+#include <wx/textfile.h>
+#include <wx/string.h>
+#include <wx/tokenzr.h>
+
+#include "gdal/cpl_csv.h"
+
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "model/gui_vars.h"
+
+#include "dychart.h"
+#include "mygeom.h"
+#include "navutil.h"  // for LogMessageOnce
+#include "ocpndc.h"
+#include "ocpn_pixel.h"
+#include "ocpn_platform.h"
+#include "ogr_s57.h"
+#include "o_senc.h"
+#include "pluginmanager.h"  // for S57 lights overlay
+#include "s52plib.h"
+#include "s52s57.h"
+#include "s52utils.h"
+#include "s57chart.h"
+
+#ifdef ocpnUSE_GL
+#include "gl_chart_canvas.h"
+#endif
 
 //----------------------------------------------------------------------------------
 //      S57Obj CTOR
@@ -409,16 +441,16 @@ wxString S57Obj::GetAttrValueAsString(const char *AttrName) {
       }
       case OGR_REAL: {
         double dval = *(double *)(v->value);
-        str.Printf(_T("%g"), dval);
+        str.Printf("%g", dval);
         break;
       }
       case OGR_INT: {
         int ival = *((int *)v->value);
-        str.Printf(_T("%d"), ival);
+        str.Printf("%d", ival);
         break;
       }
       default: {
-        str.Printf(_T("Unknown attribute type"));
+        str.Printf("Unknown attribute type");
         break;
       }
     }

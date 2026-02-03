@@ -12,14 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Handle dialog reporting plugin load errors.
+ * Dialog handling reported plugin load errors.
  *
  * PluginLoader emits an event containing a list of all plugins which cannot
  * be loaded for various reasons when loading is complete. If this list is
@@ -35,11 +33,13 @@
 #include <wx/event.h>
 #include <wx/window.h>
 
+#include "model/plugin_handler.h"
+
+#include "model/plugin_loader.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
 #include "observable_evt.h"
-#include "model/plugin_handler.h"
-#include "model/plugin_loader.h"
+
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif

@@ -13,14 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement mDNS RESTful server.
+ *
+ * Implement mdns_server.h -- mDNS RESTful server.
  */
 
 #include <string>
@@ -33,7 +32,6 @@
 #endif
 
 #include <stdio.h>
-
 #include <errno.h>
 #include <signal.h>
 
@@ -436,24 +434,6 @@ void service_mdns(const char* hostname, const char* service_name,
   service.record_aaaa.rclass = 0;
   service.record_aaaa.ttl = 0;
 
-  // Add two test TXT records for our service instance name, will be coalesced
-  // into one record with both key-value pair strings by the library
-#if 0
-  service.txt_record[0].name = service.service_instance;
-  service.txt_record[0].type = MDNS_RECORDTYPE_TXT;
-  service.txt_record[0].data.txt.key = {MDNS_STRING_CONST("test")};
-  service.txt_record[0].data.txt.value = {MDNS_STRING_CONST("1")};
-  service.txt_record[0].rclass = 0;
-  service.txt_record[0].ttl = 0;
-
-  service.txt_record[1].name = service.service_instance;
-  service.txt_record[1].type = MDNS_RECORDTYPE_TXT;
-  service.txt_record[1].data.txt.key = {MDNS_STRING_CONST("other")};
-  service.txt_record[1].data.txt.value = {MDNS_STRING_CONST("value")};
-  service.txt_record[1].rclass = 0;
-  service.txt_record[1].ttl = 0;
-#endif
-
   // Send an announcement on startup of service
   {
     printf("Sending announce\n");
@@ -510,8 +490,8 @@ void service_mdns(const char* hostname, const char* service_name,
       additional[additional_count++] = service.record_a;
     if (service.address_ipv6.sin6_family == AF_INET6)
       additional[additional_count++] = service.record_aaaa;
-    additional[additional_count++] = service.txt_record[0];
-    additional[additional_count++] = service.txt_record[1];
+    // additional[additional_count++] = service.txt_record[0];
+    // additional[additional_count++] = service.txt_record[1];
 
     for (int isock = 0; isock < num_sockets; ++isock)
       mdns_goodbye_multicast(sockets[isock], buffer, capacity,

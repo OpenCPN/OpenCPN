@@ -1,11 +1,6 @@
 /**************************************************************************
- *
- * Project:  ChartManager
- * Purpose:  Basic Chart Info Storage
- * Author:   David S Register, Mark A Sikes
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register *
+ *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010 by Mark A Sikes                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Basic chart info storage
+ */
 
 #ifndef __CHARTDBS_H__
 #define __CHARTDBS_H__
@@ -29,13 +28,19 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <atomic>
+
+#include <wx/progdlg.h>
+#include <wx/thread.h>
 
 #include "model/ocpn_types.h"
 #include "bbox.h"
 #include "LLRegion.h"
+#include "chartdb_thread.h"
 
-class wxGenericProgressDialog;
-class ChartBase;
+class ChartGroupArray;                 // forward
+extern ChartGroupArray *g_pGroupArray; /**< Global instance */
+class ChartBase;  // Circular if including chcanv.h in gui...
 
 //    A small class used in an array to describe chart directories
 class ChartDirInfo {
@@ -45,6 +50,7 @@ public:
 };
 
 WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
+WX_DECLARE_STRING_HASH_MAP(int, ChartCollisionsHashMap);
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -226,6 +232,7 @@ struct ChartTableEntry {
   const wxString *GetpFileName(void) const { return m_pfilename; }
   wxString *GetpsFullPath(void) const { return m_psFullPath; }
   wxString GetFullSystemPath() const { return m_fullSystemPath; }
+  const std::string &GetFullPath() const { return m_FullPath; }
 
   const std::vector<int> &GetGroupArray(void) const { return m_GroupArray; }
   void ClearGroupArray(void) { m_GroupArray.clear(); }
@@ -241,6 +248,7 @@ struct ChartTableEntry {
   bool Scale_eq(int b) const { return abs(Scale - b) <= rounding; }
   bool Scale_ge(int b) const { return Scale_eq(b) || Scale > b; }
   bool Scale_gt(int b) const { return Scale > b && !Scale_eq(b); }
+  bool IsBasemap() const;
 
 private:
   int EntryOffset;
@@ -271,6 +279,7 @@ private:
   wxString *m_pfilename;  // a helper member, not on disk
   wxString *m_psFullPath;
   wxString m_fullSystemPath;
+  std::string m_FullPath;
 
   LLBBox m_bbox;
   bool m_bavail;
@@ -280,35 +289,25 @@ private:
   std::vector<std::vector<float>> m_reducedAuxPlyPointsVector;
 };
 
-enum { BUILTIN_DESCRIPTOR = 0, PLUGIN_DESCRIPTOR };
-
-class ChartClassDescriptor {
-public:
-  ChartClassDescriptor() {};
-  virtual ~ChartClassDescriptor() {}
-
-  ChartClassDescriptor(wxString classn, wxString mask, int type)
-      : m_class_name(classn), m_search_mask(mask), m_descriptor_type(type) {};
-
-  wxString m_class_name;
-  wxString m_search_mask;
-  int m_descriptor_type;
-};
-
 ///////////////////////////////////////////////////////////////////////
 // Chart Database
 ///////////////////////////////////////////////////////////////////////
 
 WX_DECLARE_OBJARRAY(ChartTableEntry, ChartTable);
 
+#define CTE_THREAD_MAX 1
+
 /**
  * Manages a database of charts, including reading, writing, and querying chart
  * information.
  */
-class ChartDatabase {
+class ChartDatabase : public wxEvtHandler {
 public:
   ChartDatabase();
   virtual ~ChartDatabase() {};
+
+  void OnEvtThread(OCPN_ChartTableEntryThreadEvent &event);
+  void OnAnyEvent(wxEvent &event);
 
   /**
    * Creates a new chart database from a list of directories.
@@ -325,6 +324,7 @@ public:
    */
   bool Update(ArrayOfCDI &dir_array, bool bForce,
               wxGenericProgressDialog *pprog);
+  void FinalizeChartUpdate();
 
   bool Read(const wxString &filePath);
   bool Write(const wxString &filePath);
@@ -340,11 +340,14 @@ public:
   wxString GetMagicNumberCached(wxString dir);
 
   void UpdateChartClassDescriptorArray(void);
+  bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
+                                  wxGenericProgressDialog *_prog);
 
+  inline std::vector<std::shared_ptr<ChartTableEntry>> &GetChartTable() {
+    return active_chartTable;
+  }
   int GetChartTableEntries() const { return active_chartTable.size(); }
-  const ChartTableEntry &GetChartTableEntry(int index) const;
-  ChartTableEntry *GetpChartTableEntry(int index) const;
-  inline ChartTable &GetChartTable() { return active_chartTable; }
+  ChartTableEntry &GetChartTableEntry(int index) const;
 
   bool IsValid() const { return bValid; }
   int DisableChart(wxString &PathToDisable);
@@ -370,22 +373,27 @@ public:
   wxString GetDBChartFileName(int dbIndex);
   void ApplyGroupArray(ChartGroupArray *pGroupArray);
   bool IsChartAvailable(int dbIndex);
-  ChartTable active_chartTable;
   std::map<wxString, int> active_chartTable_pathindex;
 
   std::vector<float> GetReducedPlyPoints(int dbIndex);
   std::vector<float> GetReducedAuxPlyPoints(int dbIndex, int iTable);
 
   bool IsBusy() { return m_b_busy; }
+  void SetBusy(bool _busy) { m_b_busy = _busy; }
+  bool ScrubGroupArray();
+
+  ChartTableEntry *CreateChartTableEntry(const wxString &filePath,
+                                         wxString &utf8Path,
+                                         ChartClassDescriptor &chart_desc);
+
+  std::vector<std::shared_ptr<ChartTableEntry>> active_chartTable;
+  void OnDBSProgressUpdate(wxCommandEvent &evt);
 
 protected:
   virtual ChartBase *GetChart(const wxChar *theFilePath,
                               ChartClassDescriptor &chart_desc) const;
   int AddChartDirectory(const wxString &theDir, bool bshow_prog);
   void SetValid(bool valid) { bValid = valid; }
-  ChartTableEntry *CreateChartTableEntry(const wxString &filePath,
-                                         wxString &utf8Path,
-                                         ChartClassDescriptor &chart_desc);
 
   std::vector<ChartClassDescriptor> m_ChartClassDescriptorArray;
   ArrayOfCDI m_dir_array;
@@ -425,6 +433,19 @@ private:
   int m_nentries;
 
   LLBBox m_dummy_bbox;
+  std::atomic<int> m_jobsRemaining{0};
+  JobQueueCTE m_pool;
+  JobQueueCTE m_pool_deferred;
+  std::vector<std::shared_ptr<ChartTableEntryJobTicket>> m_ticket_vector;
+  std::vector<std::shared_ptr<ChartTableEntryJobTicket>>
+      m_deferred_ticket_vector;
+  ChartCollisionsHashMap m_full_collision_map;
+  int m_progcount;
+  int m_ticketcount;
+  wxGenericProgressDialog *m_pprog;
+  int m_progint;
+  int m_nFileProgressQuantum;
+  wxString m_gshhg_chart_loc;
 };
 
 //-------------------------------------------------------------------------------------------

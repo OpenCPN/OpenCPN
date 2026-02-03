@@ -13,26 +13,24 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement comm_navmsg.h
+ *
+ * Implement comm_navmsg.h -- raw, undecoded messages definitions
  */
-
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
 
 #include <algorithm>
 #include <string>
 #include <iomanip>
+
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
 
 #include "model/comm_driver.h"
 #include "model/ocpn_utils.h"
@@ -120,8 +118,7 @@ std::string Nmea2000Msg::to_string() const {
 
   std::stringstream ss1;
   std::string spgn = "    ";
-  if (PGN.pgn == 1) spgn = "ALL ";
-  ss1 << "n2000-" << spgn << "PGN: " << pgn << " [ " << st << " ]";
+  ss1 << "n2000  pgn: " << pgn << " [ " << st << " ]";
   return ss1.str();
 }
 
@@ -151,4 +148,10 @@ std::string PluginMsg::to_string() const {
       ss << CharToString(c);
   }
   return name + ": " + ss.str();
+}
+
+NavAddr::Bus NavMsg::GetBusByKey(const std::string& key) {
+  if (key.find("::") == std::string::npos) return NavAddr::Bus::Undef;
+  auto key_parts = ocpn::split(key, "::");
+  return NavAddr::StringToBus(key_parts[0]);
 }

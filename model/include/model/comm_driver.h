@@ -13,40 +13,47 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Communication driver layer. Defines the generic driver model,
  * messages sent to/from drivers and addresses. The driver layer
  * is the lowest of the three layers drivers, raw messages (navmsg)
  * and decoded application messages(appmsg).
  */
 
+#ifndef _DRIVER_API_H
+#define _DRIVER_API_H
+
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 #include "observable.h"
-// #include "comm_drv_stats.h"
 #include "comm_navmsg.h"
-
-#ifndef _DRIVER_API_H
-#define _DRIVER_API_H
 
 enum class CommStatus { Ok, NotImplemented, NotSupported, NameInUse };
 
 class AbstractCommDriver;  // forward
 
 /**
- * Interface implemented by transport layer and possible other parties
+ * Interface for handling incoming messages.
+ *
+ * Implemented by transport layer and possible other parties
  * like test code which should handle incoming messages
+ *
+ * @interface DriverListener comm_driver.h "model/comm_driver.h"
  */
 class DriverListener {
 public:
+  /**
+   * Destroy the Driver Listener object.
+   */
+  virtual ~DriverListener() = default;
+
   /** Handle a received message. */
   virtual void Notify(std::shared_ptr<const NavMsg> message) = 0;
 

@@ -1,4 +1,28 @@
+/***************************************************************************
+ *   Copyright (C) 2022 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement route_validator.h -- route dialog validation checks.
+ */
+
 #include "route_validator.h"
+
 #include "model/routeman.h"
 #include "model/route.h"
 
@@ -15,17 +39,9 @@ wxValidator* RoutePointNameValidator::Clone() const {
 }
 
 /**
- * Validate the route point name.
+ * Validate route point name.
  */
 wxString RoutePointNameValidator::IsValid(const wxString& val) const {
-  if (val.Len() < 3) {
-    return wxString("Name must be at least 3 characters");
-  } else {
-    Route* route = FindRouteContainingWaypoint(m_wp_ptr);
-    if (route) {
-      return route->IsPointNameValid(m_wp_ptr, val);
-    } else {
-      return wxEmptyString;
-    }
-  }
+  Route* route = FindRouteContainingWaypoint(m_wp_ptr);
+  return route ? route->IsPointNameValid(m_wp_ptr, val) : "";
 }
