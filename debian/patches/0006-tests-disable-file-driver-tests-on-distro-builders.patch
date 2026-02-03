@@ -13,22 +13,22 @@ Forwarded: not-needed
  1 file changed, 2 insertions(+)
 
 diff --git a/test/tests.cpp b/test/tests.cpp
-index b575ec6..086b914 100644
+index 4c15b63..99974e2 100644
 --- a/test/tests.cpp
 +++ b/test/tests.cpp
-@@ -964,6 +964,7 @@ TEST(Navmsg2000, to_string) {
-   EXPECT_EQ(string("n2000-    PGN: 6385516 [  ]"), msg->to_string());
+@@ -1190,6 +1190,7 @@ TEST(Navmsg2000, to_string) {
+   EXPECT_EQ(string("n2000  pgn: 6385516 [  ]"), msg->to_string());
  }
  
 +#ifndef OCPN_DISTRO_BUILD
  TEST(FileDriver, Registration) {
    wxLog::SetActiveTarget(&defaultLog);
    auto driver = std::make_unique<FileCommDriver>("test-output.txt");
-@@ -990,6 +991,7 @@ TEST(FileDriver, output) {
+@@ -1216,6 +1217,7 @@ TEST(FileDriver, output) {
    ss << f.rdbuf();
-   EXPECT_EQ(ss.str(), string("n2000-    PGN: 6385516 [  ]"));
+   EXPECT_EQ(ss.str(), string("n2000  pgn: 6385516 [  ]"));
  }
 +#endif //  OCPN_DISTRO_BUILD
  
- #if 0
- // FIXME (comm_drv_file, see FIXME there)
+ TEST(Listeners, vector) { ListenerCliApp app; };
+ 
