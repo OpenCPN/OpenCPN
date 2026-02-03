@@ -1,0 +1,136 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 2 Feb 2026 12:45:25 +0100
+Subject: [PATCH] datetime: Fix inconsistent locale handling -- #5047
+
+Simple bugfix for datetime.cpp.
+
+The cmake option ENABLE_5047_TESTS was just a hack to let tests
+complete until #5047 was fixed. Now obsolete and thus removed.
+
+Closes: #5047
+---
+ model/src/datetime.cpp  | 10 ++++++----
+ test/CMakeLists.txt     |  5 -----
+ test/datetime_tests.cpp | 13 +++++++------
+ 3 files changed, 13 insertions(+), 15 deletions(-)
+
+diff --git a/model/src/datetime.cpp b/model/src/datetime.cpp
+index a81d879..39e2afc 100644
+--- a/model/src/datetime.cpp
++++ b/model/src/datetime.cpp
+@@ -108,9 +108,10 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
+   wxString tzName;
+   if (effective_time_zone == "Local Time") {
+     wxDateTime now = wxDateTime::Now();
+-    if ((now == (now.ToGMT())) &&
+-        t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
++    if (now == now.ToGMT() && t.IsDST()) {
++      // bug in wxWingets 3.0 for UTC meridien ?
+       t.Add(wxTimeSpan(1, 0, 0, 0));
++    }
+     if (options.show_timezone) {
+ #ifdef __WXMSW__
+       tzName = _("LOC");
+@@ -134,10 +135,11 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
+     }
+   } else {
+     // UTC, or fallback to UTC if the timezone is not recognized.
+-    t.MakeUTC();
+     tzName = _("UTC");
+   }
+-  wxString formattedDate = t.Format(format);
++  wxDateTime::TimeZone zone =
++      tzName == _("UTC") ? wxDateTime::GMT0 : wxDateTime::Local;
++  wxString formattedDate = t.Format(format, zone);
+   if (options.show_timezone) {
+     return formattedDate + " " + tzName;
+   } else {
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index d9ee632..ba31fbd 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -4,7 +4,6 @@ project(opencpn_tests)
+ set(CMAKE_CXX_STANDARD 17)
+ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+ message(STATUS "Building tests")
+-option(ENABLE_5047_TESTS  "Run tests known to fail - #5077" OFF)
+ 
+ enable_testing ()
+ 
+@@ -67,10 +66,6 @@ endif ()
+ 
+ add_executable(tests ${SRC})
+ 
+-if (ENABLE_5047_TESTS)
+-  target_compile_definitions(tests PRIVATE ENABLE_5047_TESTS)
+-endif ()
+-
+ if (DEFINED ENV{FLATPAK_ID})
+   target_compile_definitions(tests PRIVATE OCPN_FLATPAK)
+ endif ()
+diff --git a/test/datetime_tests.cpp b/test/datetime_tests.cpp
+index 139c16c..aeaaef7 100644
+--- a/test/datetime_tests.cpp
++++ b/test/datetime_tests.cpp
+@@ -144,7 +144,8 @@ TEST_F(DateTimeFormatTest, CustomFormatStringEnUS) {
+   DateTimeFormatOptions opts =
+       DateTimeFormatOptions().SetFormatString("%A, %B %d, %Y %I:%M:%S %p");
+   wxString result = ocpn::toUsrDateTimeFormat(testDate, opts);
+-  EXPECT_EQ(result, "Sunday, January 22, 2023 12:45:57 PM UTC");
++  EXPECT_EQ(result, "Sunday, January 22, 2023 12:45:57 PM UTC")
++      << "Actual date: " << result;
+ }
+ 
+ TEST_F(DateTimeFormatTest, CustomFormatStringUTC) {
+@@ -154,7 +155,7 @@ TEST_F(DateTimeFormatTest, CustomFormatStringUTC) {
+                                    .SetFormatString("%Y-%m-%d %H:%M:%S")
+                                    .SetTimezone("UTC");
+   wxString result = ocpn::toUsrDateTimeFormat(testDate, opts);
+-  EXPECT_EQ(result, "2023-01-22 12:45:57 UTC");
++  EXPECT_EQ(result, "2023-01-22 12:45:57 UTC") << "Actual date: " << result;
+ }
+ 
+ TEST_F(DateTimeFormatTest, CustomFormatStringEST) {
+@@ -222,7 +223,11 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
+   testDate.MakeFromTimezone(wxDateTime::UTC);
+ 
+   // Set timezone to EST for this test (UTC-5)
++#ifdef _MSC_VER
++  SetTimezone("EST+5");
++#else
+   SetTimezone("EST");
++#endif
+ 
+   // Set the UI local locale to US English to ensure consistent formatting
+   // regardless of the system locale where the test is run.
+@@ -236,7 +241,6 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
+                                    .SetTimezone("Local Time");
+   wxString result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+   std::string s = result.ToStdString();
+-#ifdef ENABLE_5047_TESTS
+   EXPECT_TRUE(s.find("Wednesday, February 22, 2023 07:45:57") == 0)
+       << "Actual date/time: " << s;
+   // Check for timezone abbreviation since we set it to EST
+@@ -249,14 +253,12 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
+   result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+   EXPECT_TRUE(result.Contains("Wed 02/22/2023 07:45:57 AM"))
+       << "Actual date/time: " << result;
+-#endif  // ENABLE_5047_TESTS
+ 
+   // Test 3: request with date/time format set to $weekday_short_date_time
+   opts = DateTimeFormatOptions()
+              .SetFormatString("$weekday_short_date_time")
+              .SetTimezone("Local Time");
+   result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+-#ifdef ENABLE_5047_TESTS
+   EXPECT_TRUE(result.Contains("Wed 02/22/2023 07:45:57 AM"))
+       << "Actual date/time: " << result;
+ 
+@@ -278,7 +280,6 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
+   EXPECT_TRUE(str.find("07:45:57 AM EST") != std::string::npos ||
+               str.find("07:45:57 AM LOC") != std::string::npos)
+       << "Actual date/time: '" << result << "'";
+-#endif  // ENABLE_5047_TESTS
+ }
+ 
+ #endif  // HAS_EN_US
