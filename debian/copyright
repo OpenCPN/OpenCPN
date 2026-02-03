@@ -916,7 +916,7 @@ License: other
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/aclocal.m4
 Copyright: 1996-2021, Free Software Foundation, Inc.
-License: (FSFULLR or GPL-2+) with Autoconf-data exception
+License: GPL-2+ with Autoconf-data exception
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/config/*
 Copyright: 1996-2021, Free Software Foundation, Inc.
@@ -925,7 +925,7 @@ License: GPL-2+ with Autoconf-data exception
 Files: libs/libdnet/libdnet-libdnet-1.18.0/config/config.guess
  libs/libdnet/libdnet-libdnet-1.18.0/config/config.sub
 Copyright: 1992-2021, Free Software Foundation, Inc.
-License: GPL-3+ with Autoconf-data exception
+License: GPL-2+ with Autoconf-data exception
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/config/install-sh
 Copyright: 1994, X Consortium
@@ -958,7 +958,7 @@ License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/config/ltmain.sh
 Copyright: 1996-2019, 2021, 2022, Free Software Foundation, Inc.
-License: (Expat or GPL-2+) with Libtool exception
+License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/configure
 Copyright: 1992-1996, 1998-2017, 2020-2023, Free Software Foundation
@@ -1014,7 +1014,7 @@ License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/libtool.m4
 Copyright: 1996-2001, 2003-2019, 2021, 2022, Free Software
-License: (FSFULLR or GPL-2) with Libtool exception
+License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/ltsugar.m4
 Copyright: 2004, 2005, 2007, 2008, 2011-2019, 2021, 2022, Free Software
@@ -1037,7 +1037,7 @@ License: other
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/man/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULR
+License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/man/dnet.3
 Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
@@ -1056,7 +1056,7 @@ License: other
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/python/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULR
+License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/python/dnet.pyx
 Copyright: 2023, 2024, Oliver Falk'
@@ -1133,7 +1133,7 @@ License: other
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/test/check/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: FSFULR
+License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
@@ -2118,20 +2118,6 @@ License: BSD-2-clause
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-License: BSD-3-Clause
- Redistribution and use in source and binary forms are permitted
- provided that the above copyright notice and this paragraph are
- duplicated in all such forms and that any documentation, advertising
- materials, and other materials related to such distribution and use
- acknowledge that the software was developed by the University of
- Southern California, Information Sciences Institute.  The name of the
- University may not be used to endorse or promote products derived from
- this software without specific prior written permission
- .
- THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
- WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
- MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-
 License: BSD-3-clause
  The BSD License
  .
@@ -2532,16 +2518,6 @@ License: Expat
  DEALINGS IN THE SOFTWARE.
 
 License: FSFULLR
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
- .
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY, to the extent permitted by law; without
- even the implied warranty of MERCHANTABILITY or FITNESS FOR A
- PARTICULAR PURPOSE.
-
-License: FSFULR
- This file is free software; the Free Software Foundation
  gives unlimited permission to copy and/or distribute it,
  with or without modifications, as long as this notice is preserved.
  .
