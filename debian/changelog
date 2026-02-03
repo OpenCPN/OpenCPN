@@ -1,8 +1,9 @@
-opencpn (1:5.12.4+dfsg-1~bpo13+1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta1-1~bpo13+1) UNRELEASED; urgency=medium
 
-  * New upstream maintenance release
+  * New upstream beta release
+  * 
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 15 Sep 2025 23:07:50 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 16:08:16 +0100
 
 opencpn (1:5.12.2+dfsg-3~bpo13+1) trixie-backports; urgency=medium
 
