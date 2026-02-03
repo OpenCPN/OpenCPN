@@ -1,4 +1,3 @@
-
 /***************************************************************************
  *   Copyright (C) 2025  Alec Leamas                                       *
  *                                                                         *
@@ -13,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 #ifndef MONITOR_FILTER_H_
@@ -23,6 +20,7 @@
 
 /**
  * \file
+ *
  * Data monitor filter definitions.
  *
  * Filter       ::= "filter:" <name> [description] [buses] [directions] [status]
@@ -67,10 +65,19 @@ public:
   enum class Accepted { kOk, kFilteredNoOutput, kFilteredDropped, kNone };
   enum class State { kOk, kChecksumError, kMalformed, kTxError, kNone };
 
-  NavmsgStatus()
-      : direction(Direction::kInput),
-        status(State::kOk),
-        accepted(Accepted::kOk) {}
+  NavmsgStatus(Direction direction_, State status_, Accepted accepted_)
+      : direction(direction_), status(status_), accepted(accepted_) {}
+
+  NavmsgStatus(Direction direction)
+      : NavmsgStatus(direction, State::kOk, Accepted::kOk) {}
+
+  NavmsgStatus(State status)
+      : NavmsgStatus(Direction::kInput, status, Accepted::kOk) {}
+
+  NavmsgStatus(Accepted accepted)
+      : NavmsgStatus(Direction::kInput, State::kOk, accepted) {}
+
+  NavmsgStatus() : NavmsgStatus(Direction::kInput, State::kOk, Accepted::kOk) {}
 
   /** Return string representation of argument. */
   static std::string AcceptedToString(Accepted);

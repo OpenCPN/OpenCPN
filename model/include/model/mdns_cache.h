@@ -13,18 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
-
-#ifndef MDNS_CACHE_H
-#define MDNS_CACHE_H
 
 /**
  *  \file
- *   MdnsCache mDNS host lookups cache.
+ *
+ *   mDNS host lookups cache.
  */
+
+#ifndef MDNS_CACHE_H
+#define MDNS_CACHE_H
 
 #include <mutex>
 #include <string>

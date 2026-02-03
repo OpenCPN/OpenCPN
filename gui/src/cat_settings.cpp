@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement cat_settings.h -- Plugin catalog settings dialog
  */
 
 #include <map>
@@ -110,7 +109,7 @@ public:
     for (const auto& l : labels) wxLabels.Add(l);
     Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLabels);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     SetMinSize(wxSize(12 * GetCharWidth(), -1));
 #endif
 
@@ -236,13 +235,13 @@ CatalogSettingsDialog::CatalogSettingsDialog(wxWindow* parent)
     : wxDialog(parent, wxID_ANY, _("Plugin Catalog Settings"),
                wxDefaultPosition, wxDefaultSize,
                wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
 #endif
   auto vbox = new wxBoxSizer(wxVERTICAL);
 
   vbox->Add(new CatalogSizer(this), wxSizerFlags().Expand().DoubleBorder());
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   vbox->Add(new CompatSizer(this), wxSizerFlags().Expand().DoubleBorder());
 #endif
   vbox->Add(new CacheSizer(this), wxSizerFlags().Expand().DoubleBorder());

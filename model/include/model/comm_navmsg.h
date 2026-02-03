@@ -1,5 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 - 2024 by David Register, Alec Leamas              *
+/***************************************************************************
+ *   Copyright (C) 2022 - 2024 by David Register                           *
+ *   Copyright (C) 2022 - 2024 Alec Leamas                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,13 +13,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
+ *
  *  Raw, undecoded messages definitions
  */
 
@@ -226,8 +226,13 @@ public:
 /** Actual data sent between application and transport layer */
 class NavMsg : public KeyProvider {
 public:
+  enum class State { kOk, kCannotParse, kBadChecksum, kFiltered };
+
   NavMsg() = delete;
   virtual ~NavMsg() = default;
+
+  /** Return bus corresponding to given key. */
+  static NavAddr::Bus GetBusByKey(const std::string& key);
 
   /** Return unique key used by observable to notify/listen. */
   virtual std::string key() const = 0;
@@ -246,6 +251,8 @@ public:
 
   const NavAddr::Bus bus;
 
+  const State state;
+
   /**
    * Source address is set by drivers when receiving, unused and should be
    * empty when sending.
@@ -255,8 +262,13 @@ public:
   const NavmsgTimePoint created_at;
 
 protected:
+  NavMsg(const NavAddr::Bus& _bus, std::shared_ptr<const NavAddr> src,
+         State _state)
+      : bus(_bus), state(_state), source(src), created_at(NavmsgClock::now()) {
+        };
+
   NavMsg(const NavAddr::Bus& _bus, std::shared_ptr<const NavAddr> src)
-      : bus(_bus), source(src), created_at(NavmsgClock::now()) {};
+      : NavMsg(_bus, src, State::kOk) {};
 };
 
 /**
@@ -301,11 +313,15 @@ public:
 class Nmea0183Msg : public NavMsg {
 public:
   Nmea0183Msg(const std::string& id, const std::string& _payload,
-              std::shared_ptr<const NavAddr> src)
-      : NavMsg(NavAddr::Bus::N0183, src),
+              std::shared_ptr<const NavAddr> src, State _state)
+      : NavMsg(NavAddr::Bus::N0183, src, _state),
         talker(id.substr(0, 2)),
         type(id.substr(2)),
         payload(_payload) {}
+
+  Nmea0183Msg(const std::string& id, const std::string& _payload,
+              std::shared_ptr<const NavAddr> src)
+      : Nmea0183Msg(id, _payload, src, State::kOk) {};
 
   Nmea0183Msg()
       : NavMsg(NavAddr::Bus::Undef, std::make_shared<const NavAddr>()) {}
@@ -331,7 +347,8 @@ public:
   std::string to_vdr() const override;
 
   /** Return key which should be used to listen to given message type. */
-  static std::string MessageKey(const char* type = "ALL") {
+  static std::string MessageKey(const char* type) {
+    assert(type && strlen(type) != 0);
     static const char* const prefix = "n0183-";
     return std::string(prefix) + type;
   }

@@ -210,6 +210,7 @@ OGRFeatureDefn *S57GenerateObjectClassDefn(S57ClassRegistrar *poCR, int nOBJL,
 
   for (int iAttr = 0; papszAttrList != NULL && papszAttrList[iAttr] != NULL;
        iAttr++) {
+    char *tt = papszAttrList[iAttr];
     int iAttrIndex = poCR->FindAttrByAcronym(papszAttrList[iAttr]);
 
     if (iAttrIndex == -1) {
@@ -252,6 +253,35 @@ OGRFeatureDefn *S57GenerateObjectClassDefn(S57ClassRegistrar *poCR, int nOBJL,
     OGRFieldDefn oField("DEPTH", OFTReal);
     poFDefn->AddFieldDefn(&oField);
   }
+
+  return poFDefn;
+}
+
+/*************************************************************************/
+/*                     S57GenerateObjectClassDefn()                      */
+/*                      Expedited for COVR only                          */
+/*************************************************************************/
+
+OGRFeatureDefn *S57GenerateObjectClassDefnM_COVR( int nOBJL )
+
+{
+  OGRFeatureDefn *poFDefn = NULL;
+
+  /* -------------------------------------------------------------------- */
+  /*      Create the feature definition based on the object class         */
+  /*      acronym.                                                        */
+  /* -------------------------------------------------------------------- */
+  poFDefn = new OGRFeatureDefn("M_COVR");
+
+  poFDefn->SetOBJL(nOBJL);
+  poFDefn->SetGeomType(wkbPolygon);
+
+  /* -------------------------------------------------------------------- */
+  /*      Add the CATCOV attribute                                        */
+  /* -------------------------------------------------------------------- */
+  OGRFieldDefn oField("CATCOV", OFTInteger);
+  oField.SetType(OFTInteger);
+  poFDefn->AddFieldDefn(&oField);
 
   return poFDefn;
 }

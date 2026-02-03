@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Wrapper for creating a N0183DlgCtx based on global vars
- * Author:   Alec Leamas
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2023 by Alec Leamas
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Wrapper creating a N0183DlgCtx based on a SendToGpsDlg instance.
+ */
+
+// FIXME (leamas) use separate cpp file
+
 #ifndef _N0183_DLG_CTX_FACTORY_H__
 #define _N0183_DLG_CTX_FACTORY_H__
 
@@ -30,7 +31,7 @@
 #include <wx/string.h>
 
 #include "gui_lib.h"
-#include "SendToGpsDlg.h"
+#include "send_to_gps_dlg.h"
 #include "model/comm_n0183_output.h"
 
 static bool ConfirmOverwrite() {

@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Route Manager
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Route Manager
+ */
 
 #ifndef _ROUTEMAN_H__
 #define _ROUTEMAN_H__
@@ -55,27 +53,25 @@
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
 
+using RouteList = std::vector<Route *>;
+
 class Routeman;     // forward
 class WayPointman;  // forward
 
-extern bool g_bPluginHandleAutopilotRoute;
+extern bool g_bPluginHandleAutopilotRoute; /**< Global instance */
 
-extern Route *pAISMOBRoute;
+extern Route *pAISMOBRoute; /**< Global instance */
 
-extern RouteList *pRouteList;
+extern RouteList *pRouteList; /**< Global instance */
 
-extern RoutePoint *pAnchorWatchPoint1;
-extern RoutePoint *pAnchorWatchPoint2;
+extern RoutePoint *pAnchorWatchPoint1; /**< Global instance */
+extern RoutePoint *pAnchorWatchPoint2; /**< Global instance */
 
-extern float g_ChartScaleFactorExp;
+extern float g_ChartScaleFactorExp; /**< Global instance */
 
-extern Routeman *g_pRouteMan;
+extern Routeman *g_pRouteMan; /**< Global instance */
 
 //    List definitions for Waypoint Manager Icons
-
-class markicon_bitmap_list_type;
-class markicon_key_list_type;
-class markicon_description_list_type;
 
 WX_DEFINE_SORTED_ARRAY(MarkIcon *, SortedArrayOfMarkIcon);
 WX_DEFINE_ARRAY(MarkIcon *, ArrayOfMarkIcon);
@@ -264,9 +260,6 @@ public:
 
   /** Notified when a message available as GetString() is sent to garmin. */
   EventVar on_message_sent;
-
-  /** Notified when list of routes is updated (no data in event) */
-  EventVar on_routes_update;
 
 private:
   Route *pActiveRoute;

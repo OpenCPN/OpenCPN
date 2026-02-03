@@ -33,6 +33,10 @@ jobs:
             runner: ubuntu-latest
             cmake_generator: Unix Makefiles
             cmake_defines: -DOCPN_USE_GL:BOOL=OFF
+          - name: Ubuntu latest wxGTK 3 Address Sanitizer
+            runner: ubuntu-latest
+            cmake_generator: Unix Makefiles
+            cmake_defines: -DENABLE_SANITIZER=address
 
     env:
       wxGTK_VERSION: ${{ matrix.gtk_version && matrix.gtk_version || 3 }}
@@ -58,12 +62,10 @@ jobs:
         run: cmake --build build --config ${{env.BUILD_TYPE}}
 
       - name: Test
+        # Make sure tests always pass until they are refactored for 5.14
         continue-on-error: true
         working-directory: build
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
         run: |
-          if make run-tests; then
-            true
-          else
-            cd test && ctest --rerun-failed --output-on-failure || :
-          fi
-
+          make run-tests

@@ -12,14 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement data_monitor_src.h
+ *
+ * Implement data_monitor_src.h -- Provide a data stream of input messages
+ * for the Data Monitor.
  */
 
 #include <functional>
@@ -30,6 +30,7 @@
 #include <wx/event.h>
 #include <wx/log.h>
 
+#include "model/comm_drv_registry.h"
 #include "model/comm_navmsg.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/data_monitor_src.h"
@@ -44,10 +45,10 @@ static void InitListener(ObsListener& ol, NavMsg& msg,
 
 DataMonitorSrc::DataMonitorSrc(const SinkFunc& sink_func)
     : m_sink_func(sink_func) {
-  ObsListener listener;
-  auto messages = NavMsgBus::GetInstance().GetActiveMessages();
   new_msg_lstnr.Init(NavMsgBus::GetInstance().new_msg_event,
                      [&](ObservedEvt&) { OnNewMessage(); });
+  undelivered_msg_lstnr.Init(CommDriverRegistry::GetInstance().evt_dropped_msg,
+                             [&](ObservedEvt& ev) { OnMessage(ev); });
 }
 
 void DataMonitorSrc::OnNewMessage() {

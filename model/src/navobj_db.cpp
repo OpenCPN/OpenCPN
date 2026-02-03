@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  NavObj_dB
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,30 +12,33 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement navobj_db.h -- MySQL based storage for routes, tracks, etc.
+ */
+
 #include <cmath>
-#include <memory>
-#include <vector>
-#include <string>
 #include <iomanip>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <wx/dir.h>
+#include <wx/filename.h>
 
 #include "model/base_platform.h"
+#include "model/comm_appmsg_bus.h"
 #include "model/navobj_db.h"
 #include "model/navutil_base.h"
 #include "model/notification.h"
 #include "model/notification_manager.h"
-#include "wx/filename.h"
-#include "model/comm_appmsg_bus.h"
+#include "model/routeman.h"
 
-extern BasePlatform* g_BasePlatform;
-extern std::shared_ptr<ObservableListener> ack_listener;
-extern RouteList* pRouteList;
-
-void ReportError(const std::string zmsg);
+static void ReportError(const std::string zmsg);  // forward
 
 static bool executeSQL(sqlite3* db, const char* sql) {
   char* errMsg = nullptr;
@@ -168,6 +165,9 @@ bool CreateTables(sqlite3* db) {
             html_type TEXT,
             FOREIGN KEY (routepoint_guid) REFERENCES routepoints(guid) ON DELETE CASCADE
         );
+
+        CREATE INDEX IF NOT EXISTS idx_track_points
+        ON trk_points (track_guid);
 
         )";
 
@@ -530,7 +530,7 @@ void errorLogCallback(void* pArg, int iErrCode, const char* zMsg) {
   noteman.AddNotification(NotificationSeverity::kWarning, msg.ToStdString());
 }
 
-void ReportError(const std::string zmsg) {
+static void ReportError(const std::string zmsg) {
   wxString msg =
       wxString::Format(_("navobj database error.") + " %s", zmsg.c_str());
   wxLogMessage(msg);
@@ -655,20 +655,15 @@ void NavObj_dB::CountImportNavObjects() {
           pugi::xml_parse_status::status_ok) {
     input_set->LoadAllGPXPointObjects();
     auto pointlist = pWayPointMan->GetWaypointList();
-    wxRoutePointListNode* prpnode = pointlist->GetFirst();
-    while (prpnode) {
-      RoutePoint* point = prpnode->GetData();
+    for (RoutePoint* point : *pointlist) {
       if (point->m_bIsolatedMark) {
         m_nImportObjects++;
         m_nimportPoints++;
       }
-      prpnode = prpnode->GetNext();  // RoutePoint
     }
 
     input_set->LoadAllGPXRouteObjects();
-    for (wxRouteListNode* node = pRouteList->GetFirst(); node;
-         node = node->GetNext()) {
-      Route* route_import = node->GetData();
+    for (Route* route_import : *pRouteList) {
       m_nImportObjects++;
       m_nimportRoutes++;
       m_nImportObjects += route_import->GetnPoints();
@@ -713,9 +708,7 @@ bool NavObj_dB::ImportLegacyRoutes() {
   std::vector<Route*> routes_added;
   //  Add all routes to database
   int nroute = 0;
-  for (wxRouteListNode* node = pRouteList->GetFirst(); node;
-       node = node->GetNext()) {
-    Route* route_import = node->GetData();
+  for (Route* route_import : *pRouteList) {
     if (InsertRoute(route_import)) {
       routes_added.push_back(route_import);
     }
@@ -746,10 +739,7 @@ bool NavObj_dB::ImportLegacyPoints() {
   if (m_nimportPoints > 1000) nmod = 10;
   if (m_nimportPoints > 10000) nmod = 100;
 
-  auto pointlist = pWayPointMan->GetWaypointList();
-  wxRoutePointListNode* prpnode = pointlist->GetFirst();
-  while (prpnode) {
-    RoutePoint* point = prpnode->GetData();
+  for (RoutePoint* point : *pWayPointMan->GetWaypointList()) {
     if (point->m_bIsolatedMark) {
       if (InsertRoutePointDB(m_db, point)) {
         points_added.push_back(point);
@@ -765,7 +755,6 @@ bool NavObj_dB::ImportLegacyPoints() {
       }
       npoint++;
     }
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
 
   //  Delete all points that were successfully added
@@ -813,18 +802,16 @@ bool NavObj_dB::InsertTrack(Track* track) {
   }
 
   //  Add HTML links to track
-  int NbrOfLinks = track->m_TrackHyperlinkList->GetCount();
+  int NbrOfLinks = track->m_TrackHyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = track->m_TrackHyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = track->m_TrackHyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       if (!TrackHtmlLinkExists(m_db, link->GUID)) {
         InsertTrackHTML(m_db, track->m_GUID.ToStdString(), link->GUID,
                         link->DescrText.ToStdString(), link->Link.ToStdString(),
                         link->LType.ToStdString());
       }
-      linknode = linknode->GetNext();
     }
   }
   sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
@@ -933,11 +920,11 @@ bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
   DeleteAllCommentsForTrack(m_db, track->m_GUID.ToStdString());
 
   // Now add all the links to db
-  int NbrOfLinks = track->m_TrackHyperlinkList->GetCount();
+  int NbrOfLinks = track->m_TrackHyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = track->m_TrackHyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
+    auto& list = track->m_TrackHyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
 
       if (!TrackHtmlLinkExists(m_db, link->GUID)) {
         InsertTrackHTML(m_db, track->m_GUID.ToStdString(), link->GUID,
@@ -964,11 +951,8 @@ bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
           sqlite3_finalize(stmt);
           return false;
         }
-
         sqlite3_finalize(stmt);
       }
-
-      linknode = linknode->GetNext();
     }
   }
 
@@ -1103,7 +1087,7 @@ bool NavObj_dB::LoadAllTracks() {
           h->Link = link_link;
           h->LType = link_type;
 
-          new_trk->m_TrackHyperlinkList->Append(h);
+          new_trk->m_TrackHyperlinkList->push_back(h);
           int yyp = 4;
         }
 
@@ -1187,18 +1171,16 @@ bool NavObj_dB::InsertRoute(Route* route) {
   }
 
   //  Add HTML links to route
-  int NbrOfLinks = route->m_HyperlinkList->GetCount();
+  int NbrOfLinks = route->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = *route->m_HyperlinkList;
+    for (auto it = list.begin(); it != list.end(); ++it) {
+      Hyperlink* link = *it;
       if (!RouteHtmlLinkExists(m_db, link->GUID)) {
         InsertRouteHTML(m_db, route->m_GUID.ToStdString(), link->GUID,
                         link->DescrText.ToStdString(), link->Link.ToStdString(),
                         link->LType.ToStdString());
       }
-      linknode = linknode->GetNext();
     }
   }
 
@@ -1264,18 +1246,16 @@ bool NavObj_dB::UpdateRoute(Route* route) {
   }
 
   //  Add HTML links to route
-  int NbrOfLinks = route->m_HyperlinkList->GetCount();
+  int NbrOfLinks = route->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = *route->m_HyperlinkList;
+    for (auto it = list.begin(); it != list.end(); ++it) {
+      Hyperlink* link = *it;
       if (!RouteHtmlLinkExists(m_db, link->GUID)) {
         InsertRouteHTML(m_db, route->m_GUID.ToStdString(), link->GUID,
                         link->DescrText.ToStdString(), link->Link.ToStdString(),
                         link->LType.ToStdString());
       }
-      linknode = linknode->GetNext();
     }
   }
   sqlite3_exec(m_db, "COMMIT", 0, 0, nullptr);
@@ -1335,7 +1315,8 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
                       -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 5, route->IsVisible());
     sqlite3_bind_int(stmt, 6, route->GetSharedWPViz());
-    sqlite3_bind_int(stmt, 7, route->m_PlannedDeparture.GetTicks());
+    if (route->m_PlannedDeparture.IsValid())
+      sqlite3_bind_int(stmt, 7, route->m_PlannedDeparture.GetTicks());
     sqlite3_bind_double(stmt, 8, route->m_PlannedSpeed);
     sqlite3_bind_text(stmt, 9, route->m_TimeDisplayFormat.ToStdString().c_str(),
                       -1, SQLITE_TRANSIENT);
@@ -1364,12 +1345,11 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
   DeleteAllCommentsForRoute(m_db, route->m_GUID.ToStdString());
 
   // Now add all the links to db
-  int NbrOfLinks = route->m_HyperlinkList->GetCount();
+  int NbrOfLinks = route->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = route->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = route->m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       if (!RouteHtmlLinkExists(m_db, link->GUID)) {
         InsertRouteHTML(m_db, route->m_GUID.ToStdString(), link->GUID,
                         link->DescrText.ToStdString(), link->Link.ToStdString(),
@@ -1398,11 +1378,8 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
           sqlite3_finalize(stmt);
           return false;
         }
-
         sqlite3_finalize(stmt);
       }
-
-      linknode = linknode->GetNext();
     }
   }
   return true;
@@ -1500,12 +1477,11 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
   DeleteAllCommentsForRoutePoint(m_db, point->m_GUID.ToStdString());
 
   // Now add all the links to db
-  int NbrOfLinks = point->m_HyperlinkList->GetCount();
+  int NbrOfLinks = point->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = point->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = point->m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       if (!RoutePointHtmlLinkExists(m_db, link->GUID)) {
         InsertRoutePointHTML(m_db, point->m_GUID.ToStdString(), link->GUID,
                              link->DescrText.ToStdString(),
@@ -1535,11 +1511,8 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
           sqlite3_finalize(stmt);
           return false;
         }
-
         sqlite3_finalize(stmt);
       }
-
-      linknode = linknode->GetNext();
     }
   }
 
@@ -1756,12 +1729,23 @@ bool NavObj_dB::LoadAllRoutes() {
           reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
 
       RoutePoint* point;
-      // RoutePoint exists already, in another route?
+      // RoutePoint exists already, in another route or isolated??
+      RoutePoint* existing_point = NULL;
       auto containing_route =
           g_pRouteMan->FindRouteContainingWaypoint(point_guid);
 
-      if (containing_route) {
-        point = containing_route->GetPoint(point_guid);
+      if (containing_route) {  // In a route already?
+        existing_point = containing_route->GetPoint(point_guid);
+      }
+      // Or isolated?
+      if (!existing_point) {
+        existing_point = pWayPointMan->FindRoutePointByGUID(point_guid.c_str());
+      }
+
+      if (existing_point) {
+        point = existing_point;
+        point->SetShared(true);  // by definition
+        point->m_bIsolatedMark = false;
       } else {
         point =
             new RoutePoint(latitude, longitude, symbol, name, point_guid, true);
@@ -1831,7 +1815,7 @@ bool NavObj_dB::LoadAllRoutes() {
             h->Link = link_link;
             h->LType = link_type;
 
-            point->m_HyperlinkList->Append(h);
+            point->m_HyperlinkList->push_back(h);
           }
         }
       }
@@ -1876,7 +1860,7 @@ bool NavObj_dB::LoadAllRoutes() {
           h->Link = link_link;
           h->LType = link_type;
 
-          route->m_HyperlinkList->Append(h);
+          route->m_HyperlinkList->push_back(h);
         }
         if (errcode != SQLITE_DONE) {
           ReportError("LoadAllRoutes-B:step");
@@ -1996,7 +1980,7 @@ bool NavObj_dB::LoadAllPoints() {
       point->m_fWaypointRangeRingsStep = range_ring_step;
       point->m_iWaypointRangeRingsStepUnits = range_ring_units;
       point->SetShowWaypointRangeRings(range_ring_visible == 1);
-      
+
       point->m_wxcWaypointRangeRingsColour.Set(range_ring_color);
 
       point->SetScaMin(scamin);
@@ -2055,7 +2039,7 @@ bool NavObj_dB::LoadAllPoints() {
         h->Link = link_link;
         h->LType = link_type;
 
-        point->m_HyperlinkList->Append(h);
+        point->m_HyperlinkList->push_back(h);
       }
 
       sqlite3_finalize(stmt);
@@ -2083,19 +2067,17 @@ bool NavObj_dB::InsertRoutePoint(RoutePoint* point) {
   UpdateDBRoutePointAttributes(point);
 
   //  Add HTML links to routepoint
-  int NbrOfLinks = point->m_HyperlinkList->GetCount();
+  int NbrOfLinks = point->m_HyperlinkList->size();
   if (NbrOfLinks > 0) {
-    wxHyperlinkListNode* linknode = point->m_HyperlinkList->GetFirst();
-    while (linknode) {
-      Hyperlink* link = linknode->GetData();
-
+    auto& list = point->m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) {
+      Hyperlink* link = *it;
       if (!RoutePointHtmlLinkExists(m_db, link->GUID)) {
         InsertRoutePointHTML(m_db, point->m_GUID.ToStdString(), link->GUID,
                              link->DescrText.ToStdString(),
                              link->Link.ToStdString(),
                              link->LType.ToStdString());
       }
-      linknode = linknode->GetNext();
     }
   }
 
@@ -2133,4 +2115,24 @@ bool NavObj_dB::UpdateRoutePoint(RoutePoint* point) {
   if (!RoutePointExists(m_db, point->m_GUID.ToStdString())) return false;
   UpdateDBRoutePointAttributes(point);
   return true;
+}
+
+bool NavObj_dB::Backup(wxString fileName) {
+  sqlite3_backup* pBackup;
+  sqlite3* backupDatabase;
+
+  if (sqlite3_open(fileName.c_str(), &backupDatabase) == SQLITE_OK) {
+    pBackup = sqlite3_backup_init(backupDatabase, "main", m_db, "main");
+    if (pBackup) {
+      int result = sqlite3_backup_step(pBackup, -1);
+      if ((result == SQLITE_OK) || (result == SQLITE_DONE)) {
+        if (sqlite3_backup_finish(pBackup) == SQLITE_OK) {
+          sqlite3_close_v2(backupDatabase);
+          return true;
+        }
+      }
+    }
+  }
+  wxLogMessage("navobj database backup error: %s", sqlite3_errmsg(m_db));
+  return false;
 }

@@ -12,55 +12,30 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-#ifndef __OCPNVIEWPORT_H__
-#define __OCPNVIEWPORT_H__
+/**
+ * \file
+ *
+ * Geographic projection and coordinate transformations
+ */
+
+#ifndef OCPNVIEWPORT_H_
+#define OCPNVIEWPORT_H_
+
+#include <wx/gdicmn.h>
 
 #include "bbox.h"
-class OCPNRegion;
-class LLRegion;
+#include "color_types.h"
+#include "LLRegion.h"
+#include "ocpn_region.h"
+
+extern ColorScheme global_color_scheme;  // library dependency
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
-#endif
-
-#if 0
-//    ChartType constants
-typedef enum ChartTypeEnum
-{
-      CHART_TYPE_UNKNOWN = 0,
-      CHART_TYPE_DUMMY,
-      CHART_TYPE_DONTCARE,
-      CHART_TYPE_KAP,
-      CHART_TYPE_GEO,
-      CHART_TYPE_S57,
-      CHART_TYPE_CM93,
-      CHART_TYPE_CM93COMP,
-      CHART_TYPE_PLUGIN
-}_ChartTypeEnum;
-
-//    ChartFamily constants
-typedef enum ChartFamilyEnum
-{
-      CHART_FAMILY_UNKNOWN = 0,
-      CHART_FAMILY_RASTER,
-      CHART_FAMILY_VECTOR,
-      CHART_FAMILY_DONTCARE
-}_ChartFamilyEnum;
-
-typedef enum ColorScheme
-{
-      GLOBAL_COLOR_SCHEME_RGB,
-      GLOBAL_COLOR_SCHEME_DAY,
-      GLOBAL_COLOR_SCHEME_DUSK,
-      GLOBAL_COLOR_SCHEME_NIGHT,
-      N_COLOR_SCHEMES
-}_ColorScheme;
 #endif
 
 #define INVALID_COORD (-2147483647 - 1)
@@ -185,7 +160,7 @@ public:
    * being fetched and rendered for areas that may be just outside the visible
    * part of the screen.
    */
-  void SetBoxes(void);
+  void SetBoxes();
   /**
    * Set the physical to logical pixel ratio for the display.
    *

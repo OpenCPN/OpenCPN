@@ -70,9 +70,6 @@ public:
   wxGauge* m_progress_gauge;
   wxStaticText* m_status_text;
   wxStaticText* m_sizeestimate_text;
-  wxBoxSizer* m_xyScrollSizer;
-  wxScrolledWindow* m_xyScrolledDialog;
-  wxBoxSizer* m_topsizer;
 
   XyGribPanel(wxWindow* parent, wxWindowID id = wxID_ANY,
               const wxPoint& pos = wxDefaultPosition,

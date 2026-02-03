@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,20 +12,23 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Generic hyperlink data type.
  */
 
-#ifndef _HYPERLINK_H__
-#define _HYPERLINK_H__
+#ifndef HYPERLINK_H_
+#define HYPERLINK_H_
+
+#include <vector>
 
 #include <wx/string.h>
-#include <wx/list.h>
 
-class Hyperlink  // toh, 2009.02.14
-{
+class Hyperlink {
 public:
   Hyperlink();
   virtual ~Hyperlink();
@@ -39,6 +38,6 @@ public:
   std::string GUID;
 };
 
-WX_DECLARE_LIST(Hyperlink, HyperlinkList);  // establish class as list member
+using HyperlinkList = std::vector<Hyperlink*>;
 
 #endif

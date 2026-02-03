@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Basic platform specific support utilities without GUI deps.
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,16 +12,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Basic platform specific support utilities without GUI deps.
+ */
 
 #ifndef BASEPLATFORM_H
 #define BASEPLATFORM_H
 
 #include <stdio.h>
 #include <vector>
+
+#ifdef _WIN32
+#define NOMINMAX  // Required to not interfere with std::max et. al. Sigh.
+#include <winsock2.h>
+#include <windows.h>
+#endif
 
 #include <wx/wxprec.h>
 
@@ -56,8 +60,6 @@ typedef struct {
   char msdk[20];
 } PlatSpec;
 
-void appendOSDirSlash(wxString* path);
-
 struct OCPN_OSDetail {
   OCPN_OSDetail() {};
   ~OCPN_OSDetail() {};
@@ -69,6 +71,17 @@ struct OCPN_OSDetail {
   std::string osd_ID;
 };
 
+void appendOSDirSlash(wxString* path);
+
+namespace platform {
+
+/**
+ * Return total system RAM and size of program
+ * Values returned are in kilobytes
+ */
+bool GetMemoryStatus(int* mem_total, int* mem_used);
+
+}  // namespace platform
 class AbstractPlatform {
 public:
   AbstractPlatform() = default;
@@ -88,6 +101,9 @@ public:
 
   /** The original in-tree plugin directory, sometimes not user-writable.*/
   wxString& GetPluginDir();
+
+  /** Android license details, otherwise "" */
+  wxString GetSupplementalLicenseString();
 
   wxStandardPaths& GetStdPaths();
 
@@ -140,6 +156,12 @@ public:
    */
   double GetDisplayDIPMult(wxWindow* win);
 
+  /**
+   * Return icon size roughly corresponding to height of a char in w, tweaked
+   * to be "big enough" for touch screens if touch is true.
+   */
+  virtual int GetSvgStdIconSize(const wxWindow* w, bool touch) = 0;
+
   static void ShowBusySpinner();
   static void HideBusySpinner();
 
@@ -183,6 +205,7 @@ public:
   wxSize getDisplaySize() override;
   double GetDisplaySizeMM() override;
   double GetDisplayDPmm() override;
+  int GetSvgStdIconSize(const wxWindow* w, bool touch) override;
 };
 
 #endif  //  BASEPLATFORM_H
