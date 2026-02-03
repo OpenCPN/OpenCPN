@@ -742,6 +742,12 @@ void s52plib::GenerateStateHash() {
     offset += sizeof(int);
   }
 
+  wxFont *templateFont = GetOCPNScaledFont_PlugIn(_("ChartTexts"));
+  if (offset + sizeof(templateFont) < sizeof(state_buffer)) {
+    memcpy(&state_buffer[offset], &templateFont, sizeof(templateFont));
+    offset += sizeof(templateFont);
+  }
+
   m_state_hash = crc32buf(state_buffer, offset);
 }
 
