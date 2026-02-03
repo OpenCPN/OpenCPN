@@ -1,11 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Track and Trackpoint drawing stuff
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,20 +13,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _TRACK_GUI_H
-#define _TRACK_GUI_H
+/**
+ * \file
+ *
+ * Track and Trackpoint drawing stuff
+ */
+
+#ifndef TRACK_GUI_H_
+#define TRACK_GUI_H_
 
 #include <list>
+
+#include "model/track.h"
 
 #include "bbox.h"
 #include "chcanv.h"
 #include "ocpndc.h"
-#include "model/track.h"
 #include "viewport.h"
 
 class TrackPointGui {

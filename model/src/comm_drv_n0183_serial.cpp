@@ -13,15 +13,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
- *  Implement comm_drv_n0183_serial.h
+ *
+ *  Implement comm_drv_n0183_serial.h -- Network IP Nmea0183 driver.
  */
+
+#include <mutex>  // std::mutex
+#include <queue>  // std::queue
+#include <vector>
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -30,20 +33,13 @@
 #include <wx/wx.h>
 #endif
 
-#include <mutex>  // std::mutex
-#include <queue>  // std::queue
-#include <vector>
-
 #include <wx/log.h>
 #include <wx/string.h>
 
-#include "config.h"
 #include "model/comm_buffers.h"
 #include "model/comm_drv_n0183_serial.h"
-#include "model/comm_drv_registry.h"
 #include "model/comm_drv_stats.h"
 #include "model/logger.h"
-#include "model/wait_continue.h"
 
 #include "observable.h"
 
@@ -84,9 +80,6 @@ bool CommDriverN0183Serial::Open() {
   } else if (m_params.Garmin) {
     m_garmin_handler = new GarminProtocolHandler(comx, send_func, false);
   } else {
-    // strip off any description provided by Windows
-    comx = comx.BeforeFirst(' ');
-
     //    Kick off the  RX thread
     m_serial_io->Start();
   }
@@ -120,7 +113,7 @@ void CommDriverN0183Serial::Close() {
   }
 }
 
-bool CommDriverN0183Serial::IsGarminThreadActive() {
+bool CommDriverN0183Serial::IsGarminThreadActive() const {
   if (m_garmin_handler) {
     // TODO expand for serial
 #ifdef __WXMSW__
@@ -134,7 +127,7 @@ bool CommDriverN0183Serial::IsGarminThreadActive() {
   return false;
 }
 
-void CommDriverN0183Serial::StopGarminUSBIOThread(bool b_pause) {
+void CommDriverN0183Serial::StopGarminUSBIOThread(bool b_pause) const {
   if (m_garmin_handler) {
     m_garmin_handler->StopIOThread(b_pause);
   }
@@ -162,21 +155,5 @@ void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
   // Commonly used for "Send to GPS" function
   if (m_params.IOSelect == DS_TYPE_OUTPUT) return;
 
-  // sanity checks
-  if (msg.size() < 6) return;
-  if (msg[0] != '$' && msg[0] != '!') return;
-
-  // We use the full src + type to discriminate messages,  like GPGGA
-  std::string identifier(msg.begin() + 1, msg.begin() + 6);
-
-  // notify msg listener and also "ALL" N0183 messages, to support plugin
-  // API using original talker id
-  std::string payload(msg.begin(), msg.end());
-  auto message =
-      std::make_shared<const Nmea0183Msg>(identifier, payload, GetAddress());
-  auto message_all = std::make_shared<const Nmea0183Msg>(*message, "ALL");
-
-  if (m_params.SentencePassesFilter(payload, FILTER_INPUT))
-    m_listener.Notify(std::move(message));
-  m_listener.Notify(std::move(message_all));
+  SendToListener({msg.begin(), msg.end()}, m_listener, m_params);
 }

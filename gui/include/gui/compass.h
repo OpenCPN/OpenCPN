@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Main wxWidgets Program
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,14 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+#ifndef GUI_COMPASS_H
+#define GUI_COMPASS_H
 
+/**
+ * \file
+ *
+ * Compass display state
+ */
+
+#include "chcanv.h"
 #include "color_types.h"
-class ocpnDC;
-class ChartCanvas;
+#include "ocpndc.h"
+
+class ChartCanvas;  // circular
 
 /**
  * Represents a compass display in the OpenCPN navigation system.
@@ -69,6 +71,7 @@ private:
   void CreateBmp(bool bnew = false);
   void CreateTexture();
   void UpdateTexture();
+  void SetToolTip(const wxString &tooltip);
 
   ChartCanvas *m_parent;
   wxBitmap m_StatBmp;
@@ -93,6 +96,8 @@ private:
   bool m_bshowGPS;
   ColorScheme m_cs;
   bool m_texOK;
+  /** The string value to display in the compass tooltip. */
+  wxString m_tooltip;
 
 #ifdef ocpnUSE_GL
   unsigned int m_texobj;
@@ -100,3 +105,5 @@ private:
   int m_image_width, m_image_height;
 #endif
 };
+
+#endif  //  GUI_COMPASS_H

@@ -13,14 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
- *  Implement various ocpn_plugin.h methods.
+ *
+ *  Implement various non-gui ocpn_plugin.h methods.
  */
 
 #include <memory>
@@ -35,6 +34,7 @@
 
 #include "model/base_platform.h"
 #include "model/comm_appmsg.h"
+#include "model/comm_drv_loopback.h"
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_drv_n2k.h"
@@ -45,6 +45,7 @@
 #include "model/comm_drv_factory.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/comm_drv_n2k_serial.h"
+
 using namespace std;
 
 vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
@@ -194,23 +195,29 @@ CommDriverResult WriteCommDriver(
   if (protocol_it == attributes.end()) return RESULT_COMM_INVALID_PARMS;
   std::string protocol = protocol_it->second;
 
+  // This whole thing is a design collapse. If things were as they should,
+  // all drivers should have the same interface and there should be no
+  // need to handle different protocols separately. Part of the problem
+  // is that there is no "internal" driver.
+  const std::string msg(payload->begin(), payload->end());
   if (protocol == "nmea0183") {
-    auto d0183 = dynamic_cast<CommDriverN0183*>(found);
-
-    std::string msg(payload->begin(), payload->end());
     std::string id = msg.substr(1, 5);
     auto address = std::make_shared<NavAddr>();
     auto msg_out = std::make_shared<Nmea0183Msg>(id, msg, address);
-    bool xmit_ok = d0183->SendMessage(msg_out, address);
+    bool xmit_ok = found->SendMessage(msg_out, address);
     return xmit_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
   } else if (protocol == "internal") {
-    std::string msg(payload->begin(), payload->end());
     size_t space_pos = msg.find(" ");
     if (space_pos == std::string::npos) return RESULT_COMM_INVALID_PARMS;
     auto plugin_msg = std::make_shared<PluginMsg>(msg.substr(0, space_pos),
                                                   msg.substr(space_pos + 1));
     NavMsgBus::GetInstance().Notify(static_pointer_cast<NavMsg>(plugin_msg));
     return RESULT_COMM_NO_ERROR;
+  } else if (protocol == "loopback") {
+    auto navmsg = LoopbackDriver::ParsePluginMessage(msg);
+    if (!navmsg) return RESULT_COMM_INVALID_PARMS;
+    bool send_ok = found->SendMessage(navmsg, nullptr);
+    return send_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
   } else {
     return RESULT_COMM_INVALID_PARMS;
   }
@@ -274,7 +281,7 @@ CommDriverResult RegisterTXPGNs(DriverHandle handle,
   return RESULT_COMM_NO_ERROR;
 }
 
-wxString* GetpPrivateApplicationDataLocation(void) {
+wxString* GetpPrivateApplicationDataLocation() {
   return g_BasePlatform->GetPrivateDataDirPtr();
 }
 
@@ -287,12 +294,12 @@ void ReloadConfigConnections() {
   wxFileConfig* pConf = GetOCPNConfigObject();
   if (pConf) {
     TheConnectionParams().clear();
-    pConf->SetPath(_T ( "/Settings/NMEADataSource" ));
+    pConf->SetPath("/Settings/NMEADataSource");
 
     wxString connectionconfigs;
-    pConf->Read(_T( "DataConnections" ), &connectionconfigs);
+    pConf->Read("DataConnections", &connectionconfigs);
     if (!connectionconfigs.IsEmpty()) {
-      wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+      wxArrayString confs = wxStringTokenize(connectionconfigs, "|");
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams* prm = new ConnectionParams(confs[i]);
         if (!prm->Valid) continue;

@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,15 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Updates install and optional selection dialog.
  */
 
-/** Updates install and optional selection dialog. */
-
 #include "config.h"
+#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <set>
 #include <sstream>
@@ -41,29 +39,26 @@
 #include <wx/statline.h>
 #include <wx/textwrapper.h>
 
+#include "update_mgr.h"
+
+#include "model/downloader.h"
+#include "model/plugin_handler.h"
+#include "model/plugin_loader.h"
+#include "model/semantic_vers.h"
+#include "model/svg_utils.h"
+
 #include "catalog_mgr.h"
 #include "expand_icon.h"
-#include "update_mgr.h"
-#include "model/plugin_loader.h"
-#include "model/downloader.h"
-#include "OCPNPlatform.h"
-#include "model/plugin_handler.h"
-#include "pluginmanager.h"
-#include "model/semantic_vers.h"
-#include "styles.h"
+#include "ocpn_platform.h"
 #include "options.h"
-#include "svg_utils.h"
+#include "pluginmanager.h"
+#include "styles.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
 
-extern PlugInManager* g_pi_manager;
-extern ocpnStyle::StyleManager* g_StyleManager;
-extern OCPNPlatform* g_Platform;
-extern options* g_options;
-
-#undef major  // walk around gnu's major() and minor() macros.
+#undef major  // work around gnu's major() and minor() macros.
 #undef minor
 
 class HardBreakWrapper : public wxTextWrapper {
@@ -86,11 +81,6 @@ private:
   wxString m_wrapped;
   int m_lineCount;
 };
-
-//    HardBreakWrapper wrapper(win, text, widthMax);
-//    return wrapper.GetWrapped();
-
-// namespace update_mgr {
 
 /**
  * Return index in ArrayOfPlugins for plugin with given name,
@@ -161,24 +151,9 @@ protected:
 
     if (!ok) {
       auto style = g_StyleManager->GetCurrentStyle();
-      bitmap = wxBitmap(style->GetIcon(_T("default_pi"), size, size));
+      bitmap = wxBitmap(style->GetIcon("default_pi", size, size));
       wxLogMessage("Icon: %s not found.", path.GetFullPath());
     }
-
-    /*
-                wxFileName path(g_Platform->GetSharedDataDir(), plugin_name);
-                path.AppendDir("uidata");
-                bool ok = false;
-                path.SetExt("png");
-                if (path.IsFileReadable()) {
-                    LoadPNGIcon(path.GetFullPath(), size, bitmap);
-                    ok = bitmap.IsOk();
-                }
-                if (!ok) {
-                    auto style = g_StyleManager->GetCurrentStyle();
-                    bitmap = wxBitmap(style->GetIcon( _T("default_pi")));
-                }
-    */
   }
 };
 
@@ -292,7 +267,7 @@ public:
 
     // m_summary = staticText(plugin->summary);
     m_summary = new wxStaticText(
-        this, wxID_ANY, _T(""), wxDefaultPosition,
+        this, wxID_ANY, "", wxDefaultPosition,
         wxSize(m_widthDescription, -1) /*, wxST_NO_AUTORESIZE*/);
     m_summaryText = wxString(plugin->summary.c_str());
     m_summary->SetLabel(m_summaryText);
@@ -322,7 +297,7 @@ public:
     auto name = staticText(nameText);
 
     m_descr = new wxStaticText(
-        this, wxID_ANY, _T(""), wxDefaultPosition,
+        this, wxID_ANY, "", wxDefaultPosition,
         wxSize(m_widthDescription, -1) /*, wxST_NO_AUTORESIZE*/);
     m_descText = wxString(plugin->description.c_str());
     m_descr->SetLabel(m_descText);
@@ -424,8 +399,6 @@ private:
   const std::vector<PluginMetadata> m_updates;
   wxFlexGridSizer* m_grid;
 };
-
-//}  // namespace update_mgr
 
 /** Top-level install plugins dialog. */
 UpdateDialog::UpdateDialog(wxWindow* parent,

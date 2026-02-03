@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_socketcan.h -- socketcan driver.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,14 +13,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_drv_socketcan.h -- socketcan driver.
+ */
 
 #if !defined(__linux__) || defined(__ANDROID__)
 #error "This file can only be compiled on Linux"
 #endif
+
+#include "config.h"
 
 #include <algorithm>
 #include <atomic>
@@ -34,8 +35,6 @@
 #include <thread>
 #include <vector>
 #include <future>
-
-#include "config.h"
 
 #include <net/if.h>
 #include <serial/serial.h>
@@ -299,6 +298,7 @@ bool CommDriverN2KSocketCanImpl::SendProductInfo() {
 
 bool CommDriverN2KSocketCanImpl::SendMessage(
     std::shared_ptr<const NavMsg> msg, std::shared_ptr<const NavAddr> addr) {
+  if (!msg) return false;
   wxMutexLocker lock(m_TX_mutex);
 
   // Verify claimed address is useable
@@ -327,7 +327,7 @@ bool CommDriverN2KSocketCanImpl::SendMessage(
 
   int sentbytes = 0;
 
-  if (load.size() <= 8) {
+  if (!IsFastMessagePGN(_pgn)) {
     frame.can_dlc = load.size();
     if (load.size() > 0) memcpy(&frame.data, load.data(), load.size());
 
@@ -555,11 +555,9 @@ void Worker::HandleInput(CanFrame frame) {
     // auto name = N2kName(static_cast<uint64_t>(header.pgn));
     auto src_addr = m_parent_driver->GetAddress(m_parent_driver->node_name);
     auto msg = std::make_shared<const Nmea2000Msg>(header.pgn, vec, src_addr);
-    auto msg_all = std::make_shared<const Nmea2000Msg>(1, vec, src_addr);
 
     ProcessRxMessages(msg);
     m_parent_driver->m_listener.Notify(std::move(msg));
-    m_parent_driver->m_listener.Notify(std::move(msg_all));
 
     DriverStats stats = m_parent_driver->GetDriverStats();
     stats.rx_count += vec.size();

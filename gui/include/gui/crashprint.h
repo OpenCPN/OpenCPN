@@ -3,31 +3,20 @@
 // Purpose:     wxCrashPrint class
 // Maintainer:  Wyo
 // Created:     2004-09-28
-// RCS-ID:      $Id: crashprint.h,v 1.5 2004-11-22 18:27:11 wyo Exp $
 // Copyright:   (c) 2004 wxCode
 // Licence:     wxWindows
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * \file
+ *
+ * Dump debug info  on crash.
+ */
+
 #ifndef _WX_CRASHPRINT_H_
 #define _WX_CRASHPRINT_H_
 
-// #ifdef __GNUG__
-//     #pragma implementation "crashprint.h"
-// #endif
-
-//----------------------------------------------------------------------------
-// information
-//----------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------
-// headers
-//----------------------------------------------------------------------------
-//! wxWidgets headers
-
-//============================================================================
-// declarations
-//============================================================================
-const int maxBtCount = 100;
+static const int maxBtCount = 100;
 
 /**
  * Handles crash reporting in wxWidgets applications.

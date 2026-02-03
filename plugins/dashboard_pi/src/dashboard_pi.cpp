@@ -828,7 +828,7 @@ void dashboard_pi::Notify() {
     mPriSatStatus = 3;  // GSV
   else if (satID.find("ignal") != std::string::npos)
     mPriSatStatus = 2;  // SignalK
-  else if (satID.find("nmea2000") != std::string::npos) {
+  else if (satID.find("N2k") != std::string::npos) {
     prioN2kPGNsat = PriorityIDs[4];
     mPriSatStatus = 1;  // N2k
   }
@@ -2276,15 +2276,14 @@ wxString talker_N2k = wxEmptyString;
 void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
   NMEA2000Id id_129029(129029);
   std::vector<uint8_t> v = GetN2000Payload(id_129029, ev);
-  // Get a uniqe ID to prioritize source(s)
+  // Get a uniqe ID, e.g, "127", to prioritize source(s)
   unsigned char source_id = v.at(7);
   char ss[4];
   sprintf(ss, "%d", source_id);
   std::string ident = std::string(ss);
-  std::string source = GetN2000Source(id_129029, ev);
-  source += ":" + ident;
-  // Use the source prioritized by OCPN only
-  if (source != prioN2kPGNsat) return;
+  // Use the source ID prioritized by OCPN only
+  std::string prio_ID(prioN2kPGNsat.substr(prioN2kPGNsat.find(':') + 1, 5));
+  if (prio_ID.find(ident) == std::string::npos) return;
 
   unsigned char SID;
   uint16_t DaysSince1970;
@@ -2344,15 +2343,14 @@ void dashboard_pi::HandleN2K_129540(ObservedEvt ev) {
   NMEA2000Id id_129540(129540);
   std::vector<uint8_t> v = GetN2000Payload(id_129540, ev);
 
-  // Get a uniqe ID to prioritize source(s)
+  // Get a uniqe ID, e.g, "127", to prioritize source(s)
   unsigned char source_id = v.at(7);
   char ss[4];
   sprintf(ss, "%d", source_id);
   std::string ident = std::string(ss);
-  std::string source = GetN2000Source(id_129540, ev);
-  source += ":" + ident;
-  // Use the source prioritized by OCPN only
-  if (source != prioN2kPGNsat) return;
+  // Use the source ID prioritized by OCPN only
+  std::string prio_ID(prioN2kPGNsat.substr(prioN2kPGNsat.find(':') + 1, 5));
+  if (prio_ID.find(ident) == std::string::npos) return;
 
   unsigned char SID;
   tN2kRangeResidualMode Mode;
