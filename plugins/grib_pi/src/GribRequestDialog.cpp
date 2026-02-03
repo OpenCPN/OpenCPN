@@ -380,6 +380,10 @@ void GribRequestSetting::SetRequestDialogSize() {
 }
 
 void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp) {
+  if (vp == nullptr) {
+    return;
+  }
+
   double lonmax = vp->lon_max;
   double lonmin = vp->lon_min;
   if ((fabs(vp->lat_max) < 90.) && (fabs(lonmax) < 360.)) {
@@ -529,7 +533,7 @@ wxString GribRequestSetting::GetDownloadProgressText(long transferredBytes,
     return wxString::Format(_("Downloading... %s kB / %s kB (%li%%)"),
                             FormatPerLocale(transferredBytes / 1024).c_str(),
                             FormatPerLocale(totalBytes / 1024).c_str(),
-                            (int)((double)transferredBytes / totalBytes * 100));
+                            (long)((double)transferredBytes / totalBytes * 100));
   } else {
     return wxString::Format(_("Downloading... %s kB / ???"),
                             FormatPerLocale(transferredBytes / 1024).c_str());
@@ -2769,6 +2773,8 @@ void GribRequestSetting::UpdateGribSizeEstimate() {
 // ----------------------------------------------------------------------------
 double GribRequestSetting::GetMinLat() const
 {
+
+    wxLogMessage("DEBUG: GetMinLat called");
     // m_VpFocus is likely already an LLBBox*, so call GetMinLat directly
     if (m_VpFocus)
         return m_VpFocus->lat_min;
@@ -2783,10 +2789,10 @@ double GribRequestSetting::GetMinLat() const
 double GribRequestSetting::GetMaxLat() const
 {
     if (m_VpFocus)
+      {
         return m_VpFocus->lat_max;
-
-    
-    return 90.0;
+      }
+    else return 90.0;
 }
 
 // ----------------------------------------------------------------------------
