@@ -1,0 +1,34 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 3 Feb 2026 12:17:08 +0100
+Subject: tests: disable ipc tests on distro builds
+
+The ipc test setup requires more permissions than what's
+available in at least Debian builders. This should really
+be probed for, this is a quick fix
+---
+ test/tests.cpp | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/test/tests.cpp b/test/tests.cpp
+index 4c15b63..6f95931 100644
+--- a/test/tests.cpp
++++ b/test/tests.cpp
+@@ -1247,8 +1247,7 @@ TEST(PluginApi, SignalK) { SignalKApp app; }
+ TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
+ #endif
+ 
+-// #if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+-#ifdef __unix__
++#if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+ TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
+ 
+ TEST(IpcClient, Raise) { CliRaise run_test; }
+@@ -1257,7 +1256,7 @@ TEST(IpcClient, Open) { IpcOpen run_test; }
+ 
+ TEST(Plugin, Basic) { PluginMsgApp app; }
+ 
+-#endif  // __unix__
++#endif  // !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+ 
+ TEST(FormatTime, Basic) {
+   wxTimeSpan span(0, 0, 7200, 0);

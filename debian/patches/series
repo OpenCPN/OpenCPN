@@ -5,3 +5,5 @@
 0005-build-add-latomic-linkage.patch
 0006-libdnet-Handle-cmake-3.20.patch
 0007-Use-also-Debian-12-plugins-on-Jammy-22.04.patch
+0008-tests-disable-ipc-tests-on-distro-builds.patch
+0009-datetime-Fix-inconsistent-locale-handling-5047.patch
