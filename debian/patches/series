@@ -3,4 +3,6 @@
 0003-CMakeLists-handle-help_web.html-location.patch
 0004-tests-disable-rest-server-tests-for-now.patch
 0005-build-add-latomic-linkage.patch
-0006-tests-disable-file-driver-tests-on-distro-builders.patch
+0008-libdnet-Handle-cmake-3.20.patch
+0009-datetime-Fix-inconsistent-locale-handling-5047.patch
+0008-tests-disable-ipc-tests-on-distro-builds.patch
