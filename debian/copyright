@@ -1,7 +1,8 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Source: https://github.com/OpenCPN/OpenCPN.git
 Upstream-Name: OpenCPN
-Upstream-Contact: Dave S. Register <bdbcat@yahoo.com>
+Upstream-Contact:
+ Dave S. Register <bdbcat@yahoo.com>,
 Files-Excluded:
  */NSIS.template.in*
  *.cpt
@@ -22,7 +23,7 @@ Files-Excluded:
  plugins/grib_pi/src/bzip2
 
 Files: *
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: LICENSING
@@ -34,12 +35,12 @@ Copyright: 2020, Google LLC
 License: Apache-2.0
 
 Files: cli/*
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: cli/CMakeLists.txt
 Copyright: 2023, Alec Leamas <leamas.alec@gmail.com>
- 2010, David S Register <bdbcat@yahoo.com>
+ 2010, David S Register
 License: GPL-2+
 
 Files: cmake/*
@@ -71,12 +72,15 @@ Copyright: 2010, David Register
  2006-2009, Kitware, Inc.
  2006, Alexander Neundorf <neundorf@kde.org>
  2000-2009, Kitware, Inc., Insight Software Consortium
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: data/*
-Copyright: 2008-2025, David S Register <bdbcat@yahoo.com>
+Copyright: The OpenCPN authors
+ 2011-2024, Alec Leamas <leamas.alec@gmail.com>
+ 2011, Michael Jansen, <kde@michael-jansen.biz>
+ 2010-2024, David S. Register
  1989, 1991, Free Software Foundation, Inc.
-License: CC0-1.0 or Expat or GPL-2+ or LGPL-2 or SGI-B-2.0 or public-domain
+License: BSD-2-clause or BSD-3-clause or BSL-1.0 or Expat or GPL-2 or GPL-3
 
 Files: data/basemap_shp/*
 Copyright: 2019, OpenStreetMap contributors
@@ -94,16 +98,17 @@ License: ODbL
 Comment: https://osmdata.openstreetmap.de/info/license.html
 
 Files: data/basemap_shp/basemap_low.shx
-Copyright: 2019, OpenStreetMap contributors
 License: ODbL
+Copyright: 2019, OpenStreetMap contributors
 Comment: https://osmdata.openstreetmap.de/info/license.html
 
-Files: data/gshhs/wdb_borders_c.b data/gshhs/wdb_rivers_c.b
-Copyright:  2014, The GMT Team
-License:  GPL-3+
+Files: data/gshhs/*
+Copyright: 2014, The GMT Team
+License: GPL-3+
 Comment: Debian gmt-gshhg-full package
 
-Files: data/license.html data/license.txt
+Files: data/license.html
+ data/license.txt
 Copyright: 1989, 1991, Free Software Foundation, Inc.
 License: GPL-2
 
@@ -141,7 +146,7 @@ License: GPL-2+
 
 Files: glutil/*
 Copyright: 2023, Alec Leamas <leamas.alec@gmail.com>
- 2010, David S Register <bdbcat@yahoo.com>
+ 2010, David S Register
 License: GPL-2+
 
 Files: glutil/console.cpp
@@ -149,37 +154,68 @@ Copyright: 2024, Pavel Kalian
  2022, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
-Files: gui/include/gui/cat_settings.h
+Files: gui/include/gui/abstract_chart.h
+ gui/include/gui/abstract_chart_canv.h
+ gui/include/gui/cat_settings.h
  gui/include/gui/catalog_mgr.h
  gui/include/gui/chart_ctx_factory.h
- gui/include/gui/comm_overflow_dlg.h
  gui/include/gui/connections_dlg.h
  gui/include/gui/data_monitor.h
  gui/include/gui/download_mgr.h
  gui/include/gui/filter_dlg.h
+ gui/include/gui/gl_headers.h
  gui/include/gui/hotkeys_dlg.h
  gui/include/gui/load_errors_dlg.h
  gui/include/gui/n0183_ctx_factory.h
  gui/include/gui/route_ctx_factory.h
+ gui/include/gui/safe_mode_gui.h
+ gui/include/gui/top_frame.h
  gui/include/gui/udev_rule_mgr.h
  gui/include/gui/update_mgr.h
  gui/include/gui/usb_devices.h
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+ gui/include/gui/user_colors_dlg.h
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: gui/include/gui/chartclassdescriptor.h
+ gui/include/gui/chartdbs.h
+Copyright: 2010, Mark A Sikes
+ 2010, David S. Register
 License: GPL-2+
 
 Files: gui/include/gui/crashprint.h
-Copyright: 2004, Wyo
+Copyright: 2004, wxCode
 License: wxWidgets
 
+Files: gui/include/gui/flex_hash.h
+Copyright: 2010, David S. Register
+ 2010, Anton Samsonov
+License: GPL-2+
+
+Files: gui/include/gui/gl_texture_mgr.h
+Copyright: 2014, 2016, Sean D'Epagnier
+ 2014, 2016, David S. Register
+License: GPL-2+
+
 Files: gui/include/gui/gshhs.h
-Copyright: zUGrib: meteorologic GRIB file data viewer
+Copyright: 2012, Jesper Weissglass
  2012, David S. Register
  2008, Jacques Zaninetti - http://www.zygrib.org
+License: GPL-2+
+
+Files: gui/include/gui/kml.h
+Copyright: 2012, Jesper Weissglass
+ 2012, David S. Register
 License: GPL-2+
 
 Files: gui/include/gui/ocpn_fontdlg.h
 Copyright: Julian Smart, David S Register
 License: wxWidgets
+
+Files: gui/include/gui/ocpn_region.h
+Copyright: 2010, David S Register
+ 1998, Robert Roebling
+License: GPL-2+
 
 Files: gui/include/gui/ocpndc.h
 Copyright: 2011, 2013-2016, Sean D'Epagnier
@@ -201,16 +237,23 @@ Copyright: 2025, NoCodeHummel
  2010, 2012, 2017, David S. Register
 License: GPL-2+
 
+Files: gui/include/gui/printtable.h
+Copyright: 2010, 2012, Pavel Saviankou
+ 2010, 2012, David S. Register
+License: GPL-2+
+
 Files: gui/include/gui/route_gui.h
 Copyright: 2025, NoCodeHummel
- 2022, David Register, Alec Leamas
+ 2022, David Register
+ 2022, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: gui/include/gui/route_point_gui.h
  gui/include/gui/routeman_gui.h
  gui/include/gui/track_gui.h
  gui/include/gui/waypointman_gui.h
-Copyright: 2022-2024, David Register, Alec Leamas
+Copyright: 2022-2025, Alec Leamas <leamas.alec@gmail.com>
+ 2022-2024, David Register
 License: GPL-2+
 
 Files: gui/include/gui/routemanagerdialog.h
@@ -226,25 +269,23 @@ Files: gui/include/gui/ssfn.h
 Copyright: 2019, bzt (bztsrc@gitlab)
 License: Expat
 
+Files: gui/include/gui/styles.h
+Copyright: 2010, Jesper Weissglas
+ 2010, David S. Register bdbcat@yahoo.com
+License: GPL-2+
+
 Files: gui/include/gui/svg_icons.h
 Copyright: The Gnome Authors
 License: GPL-3+
 
-Files: gui/src/RoutePropDlg.cpp
- gui/src/TCWin.cpp
-Copyright: 2011, 2014, Pavel Kalian
- 2011, 2013-2016, Sean D'Epagnier
- 2010, Samuel R. Blackburn, David S Register
- 2010, Anders Lund <anders@alweb.dk>
- 2010, 2012-2018, David S. Register
- 2008, Jacques Zaninetti - http:www.zygrib.org
- 2007, 2016, Transmitterdan
- 2006-2014, Brainspark B.V.
- 2006, dsr
- 2004-2006, Robert Lipe, robertlipe@usa.net
- 2000-2018, The OpenCPN Authors
- 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
- 1995-1998, Brian Paul
+Files: gui/include/gui/tooltip.h
+Copyright: 2025, OpenCPN developer team
+License: GPL-2+
+
+Files: gui/include/gui/undo.h
+ gui/include/gui/undo_defs.h
+Copyright: 2012, Jesper Weissglas
+ 2012, David S. Register
 License: GPL-2+
 
 Files: gui/src/ais_info_gui.cpp
@@ -255,30 +296,55 @@ License: GPL-2+
 
 Files: gui/src/cat_settings.cpp
  gui/src/catalog_mgr.cpp
- gui/src/comm_overflow_dlg.cpp
  gui/src/connections_dlg.cpp
+ gui/src/data_monitor.cpp
  gui/src/download_mgr.cpp
  gui/src/filter_dlg.cpp
  gui/src/hotkeys_dlg.cpp
  gui/src/load_errors_dlg.cpp
+ gui/src/safe_mode_gui.cpp
+ gui/src/top_frame.cpp
  gui/src/udev_rule_mgr.cpp
  gui/src/update_mgr.cpp
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+ gui/src/user_colors_dlg.cpp
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
+License: GPL-2+
+
+Files: gui/src/chartdbs.cpp
+Copyright: 2010, Mark A Sikes
+ 2010, David S. Register
 License: GPL-2+
 
 Files: gui/src/crashprint.cpp
 Copyright: 2004, wxCode
 License: wxWidgets
 
+Files: gui/src/gl_chart_canvas.cpp
+ gui/src/gl_tex_cache.cpp
+ gui/src/gl_texture_mgr.cpp
+Copyright: 2014, 2016, Sean D'Epagnier
+ 2014, 2016, David S. Register
+License: GPL-2+
+
 Files: gui/src/gshhs.cpp
-Copyright: zUGrib: meteorologic GRIB file data viewer
+Copyright: 2012, Jesper Weissglass
  2012, David S. Register
  2008, Jacques Zaninetti - http://www.zygrib.org
+License: GPL-2+
+
+Files: gui/src/kml.cpp
+Copyright: 2012, Jesper Weissglass
+ 2012, David S. Register
 License: GPL-2+
 
 Files: gui/src/ocpn_fontdlg.cpp
 Copyright: Julian Smart, David S Register
 License: wxWidgets
+
+Files: gui/src/ocpn_region.cpp
+Copyright: 2010, David S. Register
+ 1998, Robert Roebling
+License: GPL-2+
 
 Files: gui/src/ocpndc.cpp
 Copyright: 2011, 2013-2016, Sean D'Epagnier
@@ -300,15 +366,39 @@ Copyright: 2025, NoCodeHummel
  2010, 2012, 2017, David S. Register
 License: GPL-2+
 
+Files: gui/src/printtable.cpp
+Copyright: 2010, 2012, Pavel Saviankou
+ 2010, 2012, David S. Register
+License: GPL-2+
+
 Files: gui/src/route_gui.cpp
 Copyright: 2025, NoCodeHummel
  2022, David Register
  2022, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
-Files: gui/src/routeman_gui.cpp
+Files: gui/src/route_point_gui.cpp
+ gui/src/routeman_gui.cpp
+ gui/src/track_gui.cpp
  gui/src/waypointman_gui.cpp
-Copyright: 2022-2024, David Register, Alec Leamas
+Copyright: 2022-2025, Alec Leamas <leamas.alec@gmail.com>
+ 2022-2024, David Register
+License: GPL-2+
+
+Files: gui/src/route_prop_dlg.cpp
+Copyright: 2011, 2014, Pavel Kalian
+ 2011, 2013-2016, Sean D'Epagnier
+ 2010, Samuel R. Blackburn, David S Register
+ 2010, Anders Lund <anders@alweb.dk>
+ 2010, 2012-2018, David S. Register
+ 2008, Jacques Zaninetti - http:www.zygrib.org
+ 2007, 2016, Transmitterdan
+ 2006-2014, Brainspark B.V.
+ 2006, dsr
+ 2004-2006, Robert Lipe, robertlipe@usa.net
+ 2000-2018, The OpenCPN Authors
+ 2000-2004, Sylvain Duclos <sduclos@users.sourceforgue.net>
+ 1995-1998, Brian Paul
 License: GPL-2+
 
 Files: gui/src/routemanagerdialog.cpp
@@ -316,11 +406,24 @@ Copyright: 2025, NoCodeHummel
  2010, Anders Lund <anders@alweb.dk>
 License: GPL-2+
 
+Files: gui/src/styles.cpp
+Copyright: 2010, Jesper Weissglas
+ 2010, David S. Register bdbcat@yahoo.com
+License: GPL-2+
+
+Files: gui/src/tooltip.cpp
+Copyright: 2025, OpenCPN developer team
+License: GPL-2+
+
 Files: libs/*
-Copyright: 1998-2003, Frank Warmerdam <warmerdam@pobox.com>
-License: Expat
+Copyright: 2010, Samuel R. Blackburn, David S Register
+License: GPL-2+
 
 Files: libs/IXWebSocket/*
+Copyright: 2017-2020, Machine Zone, Inc.
+License: BSD-3-clause
+
+Files: libs/IXWebSocket/ixwebsocket/*
 Copyright: 2017-2020, Machine Zone, Inc.
 License: BSD-3-Clause
 
@@ -354,11 +457,16 @@ License: Expat
 Files: libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp
  libs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h
 Copyright: 2015, Peter Thorson.
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp
 Copyright: 2012, 2013, <dhbaird@gmail.com>
 License: Expat
+
+Files: libs/IXWebSocket/test/*
+Copyright: 2017-2020, 2022, Machine Zone.
+License: BSD-3-Clause
+Comment: License as of https://github.com/machinezone/IXWebSocket
 
 Files: libs/IXWebSocket/test/CMakeLists.txt
  libs/IXWebSocket/test/IXWebSocketLeakTest.cpp
@@ -378,41 +486,17 @@ Files: libs/IXWebSocket/test/Catch2/single_include/catch_reporter_tap.hpp
 Copyright: 2015, Martin Moene.
 License: BSL-1.0
 
-Files: libs/IXWebSocket/test/IXDNSLookupTest.cpp
- libs/IXWebSocket/test/IXExponentialBackoffTest.cpp
- libs/IXWebSocket/test/IXHttpClientTest.cpp
- libs/IXWebSocket/test/IXHttpServerTest.cpp
- libs/IXWebSocket/test/IXHttpTest.cpp
- libs/IXWebSocket/test/IXSentryClientTest.cpp
- libs/IXWebSocket/test/IXSocketConnectTest.cpp
- libs/IXWebSocket/test/IXSocketTest.cpp
- libs/IXWebSocket/test/IXStrCaseCompareTest.cpp
- libs/IXWebSocket/test/IXStreamSqlTest.cpp
- libs/IXWebSocket/test/IXTest.cpp
- libs/IXWebSocket/test/IXTest.h
- libs/IXWebSocket/test/IXUnityBuildsTest.cpp
- libs/IXWebSocket/test/IXUrlParserTest.cpp
- libs/IXWebSocket/test/IXWebSocketBroadcastTest.cpp
- libs/IXWebSocket/test/IXWebSocketChatTest.cpp
- libs/IXWebSocket/test/IXWebSocketCloseTest.cpp
- libs/IXWebSocket/test/IXWebSocketPerMessageDeflateCompressorTest.cpp
- libs/IXWebSocket/test/IXWebSocketPingTest.cpp
- libs/IXWebSocket/test/IXWebSocketPingTimeoutTest.cpp
- libs/IXWebSocket/test/IXWebSocketServerTest.cpp
- libs/IXWebSocket/test/IXWebSocketSubProtocolTest.cpp
- libs/IXWebSocket/test/IXWebSocketTestConnectionDisconnection.cpp
- libs/IXWebSocket/test/test_runner.cpp
-Copyright: 2017-2020, 2022, Machine Zone.
-License: BSD-3-Clause
-Comment: License as of https://github.com/machinezone/IXWebSocket
-
 Files: libs/IXWebSocket/test/compatibility/cpp/*
 Copyright: 2017-2020, 2022, Machine Zone
 License: CC0-1.0
 
+Files: libs/IXWebSocket/test/compatibility/csharp/Main.cs
+Copyright: 2017-2020, Machine Zone, Inc.
+License: BSD-3-Clause
+
 Files: libs/IXWebSocket/third_party/cli11/*
 Copyright: 2017-2020, University of Cincinnati, developedHenry
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/IXWebSocket/third_party/cpp-linenoise/*
 Copyright: 2015, yhirose
@@ -478,18 +562,27 @@ Copyright: 2023, 2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-3+
 
 Files: libs/ShapefileCpp/ShapeFileCpp-b2681f8/*
- libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/multiline.shp
- libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/multipolygons.shp
- libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/polygons.shp
 Copyright: 2021, Jared Erickson
 License: Expat
 
+Files: libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/multiline.shp
+Copyright:  2021, Jared Erickson
+License: Expat
+
+Files: libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/multipolygons.shp
+Copyright:  2021, Jared Erickson
+License: Expat
+
+Files: libs/ShapefileCpp/ShapeFileCpp-b2681f8/data/polygons.shp
+Copyright:  2021, Jared Erickson
+License: Expat
+
 Files: libs/ShapefileCpp/cmake/*
-Copyright: no-info-found
+Copyright:  2021, Jared Erickson
 License: Expat
 
 Files: libs/android_jvm/*
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: libs/garmin/*
@@ -499,7 +592,7 @@ License: GPL-2+
 Files: libs/garmin/jeeps/garmin_gps.h
  libs/garmin/jeeps/garmin_wrapper_utils.c
  libs/garmin/jeeps/garmin_wrapper_utils.h
-Copyright: 2010, David S Register <bdbcat@yahoo.com>
+Copyright: 2010, David S Register
 License: GPL-2+
 
 Files: libs/garmin/jeeps/gpsapp.c
@@ -545,6 +638,10 @@ Copyright: 2006, Robert Lipe
  1999, 2000, Alan Bleasby
 License: LGPL-2+
 
+Files: libs/gdal/*
+Copyright: 1998-2003, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
+
 Files: libs/gdal/include/gdal/cpl_error.h
  libs/gdal/include/gdal/cpl_string.h
 Copyright: 1998, Daniel Morissette
@@ -573,7 +670,7 @@ Copyright: 1999, Les Technologies SoftMap Inc.
 License: Expat
 
 Files: libs/geoprim/*
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: libs/geoprim/src/LLRegion.cpp
@@ -772,7 +869,7 @@ Files: libs/gui/include/edit_button.h
  libs/gui/include/expand_icon.h
  libs/gui/include/expand_panel.h
  libs/gui/include/svg_button.h
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: libs/gui/include/svg_icons.h
@@ -782,8 +879,12 @@ License: GPL-3+
 Files: libs/gui/src/expand_icon.cpp
  libs/gui/src/expand_panel.cpp
  libs/gui/src/svg_button.cpp
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
+
+Files: libs/iso8211/*
+Copyright: 1998-2003, Frank Warmerdam <warmerdam@pobox.com>
+License: Expat
 
 Files: libs/libdnet/*
 Copyright: 2000-2006, Dug Song <dugsong@monkey.org>
@@ -796,6 +897,10 @@ License: GPL-3+
 Files: libs/libdnet/cmake/*
 Copyright: 2021, Michael
 License: Expat
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/*
+Copyright: 2000-2006, Dug Song <dugsong@monkey.org>
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
@@ -811,7 +916,7 @@ License: other
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/aclocal.m4
 Copyright: 1996-2021, Free Software Foundation, Inc.
-License: FSFULLR or GPL-2+ with Autoconf-data exception
+License: (FSFULLR or GPL-2+) with Autoconf-data exception
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/config/*
 Copyright: 1996-2021, Free Software Foundation, Inc.
@@ -853,7 +958,7 @@ License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/config/ltmain.sh
 Copyright: 1996-2019, 2021, 2022, Free Software Foundation, Inc.
-License: Expat or GPL-2+ with Libtool exception
+License: (Expat or GPL-2+) with Libtool exception
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/configure
 Copyright: 1992-1996, 1998-2017, 2020-2023, Free Software Foundation
@@ -863,6 +968,10 @@ License: FSFUL
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/configure.ac
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
+License: BSD-3-Clause
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/include/*
+Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
 License: BSD-3-Clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/include/Makefile.in
@@ -905,7 +1014,7 @@ License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/libtool.m4
 Copyright: 1996-2001, 2003-2019, 2021, 2022, Free Software
-License: FSFULLR or GPL-2+ with Libtool exception
+License: (FSFULLR or GPL-2) with Libtool exception
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/ltsugar.m4
 Copyright: 2004, 2005, 2007, 2008, 2011-2019, 2021, 2022, Free Software
@@ -1001,6 +1110,10 @@ License: BSD-3-Clause
 Files: libs/libdnet/libdnet-libdnet-1.18.0/src/strlcat.c
  libs/libdnet/libdnet-libdnet-1.18.0/src/strlcpy.c
 Copyright: 1998, Todd C. Miller <Todd.Miller@courtesan.com>
+License: BSD-3-clause
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/test/*
+Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
 License: BSD-3-Clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/test/Makefile.in
@@ -1032,6 +1145,42 @@ License: other
  but WITHOUT ANY WARRANTY, to the extent permitted by law; without
  even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  PARTICULAR PURPOSE.
+
+Files: libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/addr.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/arp.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/aton.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/aton.h
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/dnet.8
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/dnet.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/eth.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/hex.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/icmp.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/intf.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/ip.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/mod.h
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/rand.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/route.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/send.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/tcp.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/udp.c
+Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
+License: BSD-3-Clause
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/arp.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/aton.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/aton.h
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/dnet.8
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/dnet.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/eth.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/hex.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/icmp.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/intf.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/ip.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/mod.h
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/rand.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/route.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/send.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/tcp.c
+ libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/udp.c
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/fw.c
 Copyright: 2020, Oliver Falk <oliver@linux-kernel.at>
@@ -1074,7 +1223,7 @@ Copyright: 2000, Pierre Terdiman (p.terdiman@wanadoo.fr)
 License: GPL-2+
 
 Files: libs/manual/*
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: libs/mdns/*
@@ -1084,6 +1233,10 @@ License: Unlicense
 Files: libs/mdns/CMakeLists.txt
 Copyright: 2023, 2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-3+
+
+Files: libs/mdns/mdns-1.4.3/*
+Copyright: 2017, Mattias Jansson
+License: Unlicense or public-domain
 
 Files: libs/mdns/mdns-1.4.3/LICENSE
 Copyright: 2017, Mattias Jansson
@@ -1107,9 +1260,26 @@ Copyright: 2013-2022, Cesanta Software Limited
  2004-2013, Sergey Lyubka
 License: GPL-2
 
-Files: libs/nmea0183/*
-Copyright: 2010, Samuel R. Blackburn, David S Register
+Files: libs/nmea0183/src/ths.cpp
+ libs/nmea0183/src/ths.hpp
+Copyright: 2010, Samuel R. Blackburn.
 License: GPL-2+
+
+Files: libs/o_sound/*
+Copyright: 2010-2026, David S. Register
+License: GPL-2+
+
+Files: libs/o_sound/cmake/*
+Copyright: 2009-2015, Jorgen Muller.
+License: Apache-2.0
+
+Files: libs/o_sound/cmake/FindLibSndfile.cmake
+Copyright: 2009-2015, JÃ¶rg MÃ¼ller.
+License: Apache-2.0
+
+Files: libs/o_sound/cmake/FindPortaudio.cmake
+Copyright: 2006, Andreas Schneider <mail@cynapses.org>
+License: BSD-3-clause
 
 Files: libs/observable/*
 Copyright: Alec Leamas 2021-2022. It is distributed under
@@ -1121,16 +1291,15 @@ Copyright: 1989, 1991, Free Software Foundation, Inc.
 License: GPL-2
 
 Files: libs/observable/include/*
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: libs/observable/manual/*
-Copyright: and License
- Alec Leamas 2021-2023. It is distributed under
-License: GPL-2+
+Copyright: Alec Leamas 2021-2023 Alec Leamas
+License: BSD-2-clause
 
 Files: libs/observable/src/*
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: libs/picosha2/*
@@ -1186,7 +1355,7 @@ Copyright: 2021, Michael
 License: Expat
 
 Files: libs/s52plib/*
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: libs/s52plib/src/DepthFont.cpp
@@ -1218,7 +1387,7 @@ Copyright: 2023, 2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-3+
 
 Files: libs/s57-charts/include/*
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: libs/s57-charts/include/ogr_s57.h
@@ -1238,10 +1407,10 @@ Copyright: 1999, Frank Warmerdam warmerda@home.co
 License: Expat
 
 Files: libs/s57-charts/src/s57registrar_mgr.cpp
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
-Files: libs/shapelib/CMakeLists.txt
+Files: libs/shapelib/*
 Copyright: 2023, 2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-3+
 
@@ -1252,18 +1421,6 @@ License: GPL-2
 Files: libs/shapelib/cmake/PatchFile.cmake
 Copyright: no-info-found
 License: Expat
-
-Files: libs/sound/*
-Copyright: 2010-2025, David S. Register
-License: GPL-2+
-
-Files: libs/sound/cmake/*
-Copyright: 2009-2015, JÃ¶rg MÃ¼ller.
-License: Apache-2.0
-
-Files: libs/sound/cmake/FindPortaudio.cmake
-Copyright: 2006, Andreas Schneider <mail@cynapses.org>
-License: BSD-3-Clause
 
 Files: libs/sqlite/cmake/*
 Copyright: 2008, Gilles Caulier, <caulier.gilles@gmail.com>
@@ -1278,7 +1435,7 @@ Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: libs/std_filesystem/CMakeLists.txt
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: libs/std_filesystem/include/*
@@ -1291,7 +1448,7 @@ License: Expat
 
 Files: libs/texcmp/etcpak.cpp
 Copyright: 2013, Bartosz Taudul <wolf.pld@gmail.com>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/texcmp/squish/clusterfit.cpp
  libs/texcmp/squish/clusterfit.h
@@ -1347,7 +1504,8 @@ License: GPL-2+
 
 Files: manual/*
 Copyright: Alec Leamas <leamas.alec@gmail.com>
-License: BSD-2-clause
+License: BSD-2-Clause
+ Please fill license BSD-2-Clause from header of manual/*
 
 Files: manual/modules/*
 Copyright: 2022, 2023, Alec Leamas
@@ -1362,7 +1520,7 @@ Copyright: 2022, Alec Leamas <leamas.alec@gmail.com>
 License: CC-BY-SA-4.0
 
 Files: model/*
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: model/CMakeLists.txt
@@ -1383,8 +1541,11 @@ Files: model/cmake/FindLIBUSB.cmake
 Copyright: 2019, Alec Leamas <leamas.alec@gmail.com>
 License: Expat
 
+Files: model/cmake/FindSystemd.cmake
+Copyright: 2015, Jari Vetoniemi
+License: Expat
+
 Files: model/include/model/MarkIcon.h
- model/include/model/SencManager.h
  model/include/model/ais_bitstring.h
  model/include/model/ais_decoder.h
  model/include/model/ais_defs.h
@@ -1392,7 +1553,6 @@ Files: model/include/model/MarkIcon.h
  model/include/model/autopilot_output.h
  model/include/model/base_platform.h
  model/include/model/certificates.h
- model/include/model/chartdata_input_stream.h
  model/include/model/comm_ais.h
  model/include/model/comm_drv_signalk_net.h
  model/include/model/comm_n0183_output.h
@@ -1418,46 +1578,56 @@ Files: model/include/model/MarkIcon.h
  model/include/model/select.h
  model/include/model/select_item.h
  model/include/model/ser_ports.h
- model/include/model/track.h
- model/include/model/wx28compat.h
-Copyright: 2010-2025, David S. Register
+ model/include/model/svg_utils.h
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: model/include/model/ais_state_vars.h
- model/include/model/comm_driver.h
- model/include/model/comm_drv_n0183.h
- model/include/model/comm_drv_n0183_net.h
- model/include/model/comm_drv_n0183_serial.h
- model/include/model/comm_drv_registry.h
- model/include/model/comm_navmsg_bus.h
- model/include/model/mdns_query.h
- model/include/model/mdns_service.h
- model/include/model/peer_client.h
- model/include/model/rest_server.h
- model/include/model/serial_io.h
-Copyright: 2022-2024, Alec Leamas <leamas.alec@gmail.com>
- 2022, David Register
-License: GPL-2+
-
-Files: model/include/model/atomic_queue.h
+ model/include/model/atomic_queue.h
  model/include/model/cmdline.h
  model/include/model/comm_appmsg.h
  model/include/model/comm_appmsg_bus.h
  model/include/model/comm_bridge.h
  model/include/model/comm_can_util.h
  model/include/model/comm_decoder.h
+ model/include/model/comm_driver.h
  model/include/model/comm_drv_factory.h
  model/include/model/comm_drv_file.h
+ model/include/model/comm_drv_n0183.h
  model/include/model/comm_drv_n0183_android_bt.h
  model/include/model/comm_drv_n0183_android_int.h
- model/include/model/comm_drv_n2k.h
+ model/include/model/comm_drv_n0183_net.h
+ model/include/model/comm_drv_n0183_serial.h
  model/include/model/comm_drv_n2k_net.h
  model/include/model/comm_drv_n2k_serial.h
  model/include/model/comm_drv_n2k_socketcan.h
+ model/include/model/comm_drv_registry.h
  model/include/model/comm_drv_signalk.h
  model/include/model/comm_navmsg.h
+ model/include/model/comm_navmsg_bus.h
  model/include/model/comm_util.h
-Copyright: 2022-2024, David Register, Alec Leamas
+ model/include/model/json_event.h
+ model/include/model/mdns_query.h
+ model/include/model/mdns_service.h
+ model/include/model/peer_client.h
+ model/include/model/rest_server.h
+ model/include/model/serial_io.h
+Copyright: 2022-2025, Alec Leamas <leamas.alec@gmail.com>
+ 2022-2024, David Register
+License: GPL-2+
+
+Files: model/include/model/chartdata_input_stream.h
+ model/include/model/track.h
+Copyright: 2014, 2016, Sean D'Epagnier
+ 2014, 2016, David S. Register
+License: GPL-2+
+
+Files: model/include/model/comm_drv_loopback.h
+Copyright: 2014, 2025, ALec Leamas
+License: GPL-2+
+
+Files: model/include/model/comm_drv_n2k.h
+Copyright: 2022, 2023, David Register, Alec Leamas
 License: GPL-2+
 
 Files: model/include/model/datetime.h
@@ -1465,7 +1635,7 @@ Copyright: 2020, 2022, 2023, David Register
 License: GPL-2+
 
 Files: model/include/model/garmin_wrapper.h
-Copyright: 2010, David S Register <bdbcat@yahoo.com>
+Copyright: 2010, David S Register
 License: GPL-2+
 
 Files: model/include/model/logger.h
@@ -1476,7 +1646,7 @@ Copyright: 2022-2025, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: model/include/model/macutils.h
-Copyright: 2007, 2016
+Copyright: 2007-2010, David S. Register, Richard M Smith
 License: GPL-2+
 
 Files: model/include/model/meteo_points.h
@@ -1490,7 +1660,6 @@ Files: model/src/ais_bitstring.cpp
  model/src/autopilot_output.cpp
  model/src/base_platform.cpp
  model/src/certificates.cpp
- model/src/chartdata_input_stream.cpp
  model/src/comm_ais.cpp
  model/src/comm_n0183_output.cpp
  model/src/conn_params.cpp
@@ -1513,27 +1682,11 @@ Files: model/src/ais_bitstring.cpp
  model/src/select.cpp
  model/src/select_item.cpp
  model/src/ser_ports.cpp
- model/src/track.cpp
-Copyright: 2010-2025, David S. Register
+ model/src/svg_utils.cpp
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: model/src/ais_state_vars.cpp
- model/src/comm_drv_n0183_net.cpp
- model/src/comm_drv_n0183_serial.cpp
- model/src/comm_drv_registry.cpp
- model/src/comm_navmsg.cpp
- model/src/comm_navmsg_bus.cpp
- model/src/mdns_query.cpp
- model/src/mdns_service.cpp
- model/src/plugin_api.cpp
- model/src/plugin_comm.cpp
- model/src/rest_server.cpp
- model/src/std_serial_io.cpp
-Copyright: 2022-2024, Alec Leamas <leamas.alec@gmail.com>
- 2022, David Register
-License: GPL-2+
-
-Files: model/src/cmdline.cpp
  model/src/comm_appmsg.cpp
  model/src/comm_appmsg_bus.cpp
  model/src/comm_bridge.cpp
@@ -1544,14 +1697,35 @@ Files: model/src/cmdline.cpp
  model/src/comm_drv_n0183.cpp
  model/src/comm_drv_n0183_android_bt.cpp
  model/src/comm_drv_n0183_android_int.cpp
+ model/src/comm_drv_n0183_net.cpp
+ model/src/comm_drv_n0183_serial.cpp
  model/src/comm_drv_n2k.cpp
  model/src/comm_drv_n2k_net.cpp
  model/src/comm_drv_n2k_serial.cpp
  model/src/comm_drv_n2k_socketcan.cpp
+ model/src/comm_drv_registry.cpp
  model/src/comm_drv_signalk.cpp
  model/src/comm_drv_signalk_net.cpp
+ model/src/comm_navmsg.cpp
+ model/src/comm_navmsg_bus.cpp
  model/src/comm_util.cpp
-Copyright: 2022-2024, David Register, Alec Leamas
+ model/src/mdns_query.cpp
+ model/src/mdns_service.cpp
+ model/src/plugin_api.cpp
+ model/src/plugin_comm.cpp
+ model/src/rest_server.cpp
+ model/src/std_serial_io.cpp
+Copyright: 2022-2025, Alec Leamas <leamas.alec@gmail.com>
+ 2022-2024, David Register
+License: GPL-2+
+
+Files: model/src/chartdata_input_stream.cpp
+Copyright: 2016, Sean D'Epagnier
+ 2016, David S.Register
+License: GPL-2+
+
+Files: model/src/cmdline.cpp
+Copyright: 2022, 2023, David Register, Alec Leamas
 License: GPL-2+
 
 Files: model/src/datetime.cpp
@@ -1560,11 +1734,11 @@ Copyright: 2020, 2022, 2023, David Register
 License: GPL-2+
 
 Files: model/src/ds_porttype.cpp
-Copyright: 2014, ALec Leamas
+Copyright: 2014, 2025, ALec Leamas
 License: GPL-2+
 
 Files: model/src/garmin_wrapper.cpp
-Copyright: 2010, David S Register <bdbcat@yahoo.com>
+Copyright: 2010, David S Register
 License: GPL-2+
 
 Files: model/src/geodesic.cpp
@@ -1574,12 +1748,18 @@ Comment: https://geographiclib.sourceforge.io/
 
 Files: model/src/logger.cpp
  model/src/plugin_loader.cpp
+ model/src/plugin_paths.cpp
 Copyright: 2022-2025, Alec Leamas <leamas.alec@gmail.com>
  2010-2023, David S. Register
 License: GPL-2+
 
 Files: model/src/macutils.c
-Copyright: 2007, 2016
+Copyright: 2007-2010, David S. Register, Richard M Smith
+License: GPL-2+
+
+Files: model/src/track.cpp
+Copyright: 2014, 2016, Sean D'Epagnier
+ 2014, 2016, David S. Register
 License: GPL-2+
 
 Files: opencpn-cmd.1
@@ -1600,8 +1780,8 @@ Copyright: 2011-2019, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/chartdldr_pi/CMakeLists.txt
-Copyright: 2014, Pavel Kalian
-License: GPL-2+
+Copyright: 2014, License: GPLv2 License
+License: GPL-2
 
 Files: plugins/chartdldr_pi/cmake/*
 Copyright: 2014, License: GPLv3+
@@ -1612,7 +1792,7 @@ Copyright: 1989, 1991, Free Software Foundation, Inc.
 License: GPL-2
 
 Files: plugins/chartdldr_pi/cmake/wxWTranslateCatalog.h.in
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/chartdldr_pi/src/*
@@ -1621,7 +1801,7 @@ License: Expat
 
 Files: plugins/chartdldr_pi/src/androidSupport.cpp
  plugins/chartdldr_pi/src/androidSupport.h
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/chartdldr_pi/src/base64.h
@@ -1636,7 +1816,7 @@ Copyright: 2011-2019, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/dashboard_pi/CMakeLists.txt
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/dashboard_pi/include/*
@@ -1672,7 +1852,7 @@ Files: plugins/dashboard_pi/src/altitude.cpp
  plugins/dashboard_pi/src/wind.h
  plugins/dashboard_pi/src/wind_history.cpp
  plugins/dashboard_pi/src/wind_history.h
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/icons.cpp
@@ -1694,7 +1874,7 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/iirfilter.h
-Copyright: 2007, 2016
+Copyright: 2016
 License: GPL-2+
 
 Files: plugins/dashboard_pi/src/wxJSON/*
@@ -1711,16 +1891,16 @@ License: GPL-3
 
 Files: plugins/demo_pi_sample/cmake/gpl.txt
 Copyright: 1989, 1991, Free Software Foundation, Inc.
-License: GPL-2
+License: GPL-2+
 
 Files: plugins/demo_pi_sample/cmake/wxWTranslateCatalog.h.in
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/demo_pi_sample/src/demo_pi.cpp
  plugins/demo_pi_sample/src/demo_pi.h
  plugins/demo_pi_sample/src/ocpn_plugin.h
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/grib_pi/*
@@ -1754,7 +1934,7 @@ Copyright: 2011, 2014, Pavel Kalian
 License: GPL-2+
 
 Files: plugins/grib_pi/src/*
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/grib_pi/src/GribReader.cpp
@@ -1823,15 +2003,19 @@ Copyright: PJ Naughter
 License: wxWidgets
 
 Files: plugins/wmm_pi/*
-Copyright: 2011-2025 Pavel Kalian
+Copyright: 2011-2025, Pavel Kalian
 License: GPL-3+
+
+Files: plugins/wmm_pi/cmake/*
+Copyright: 2014, License: GPLv3+
+License: GPL-3
 
 Files: plugins/wmm_pi/cmake/gpl.txt
 Copyright: 1989, 1991, Free Software Foundation, Inc.
-License: GPL-2
+License: GPL-2+
 
 Files: plugins/wmm_pi/cmake/wxWTranslateCatalog.h.in
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/*
@@ -1879,7 +2063,7 @@ Comment: https://github.com/ESA-VirES/WMM/blob/master/LICENSE
 
 Files: plugins/wmm_pi/src/pi_shaders.cpp
  plugins/wmm_pi/src/pi_shaders.h
-Copyright: 2010-2025, David S. Register
+Copyright: 2010-2026, David S. Register
 License: GPL-2+
 
 Files: plugins/wmm_pi/src/wmm_pi.cpp
@@ -1887,21 +2071,8 @@ Files: plugins/wmm_pi/src/wmm_pi.cpp
 Copyright: 2011-2019, Pavel Kalian
 License: GPL-2+
 
-Files: resources/*
+Files: resources/opencpn.appdata.xml.in
 Copyright: 2018, Alec Leamas <leamas@nowhere.net> ->
-License: GPL-2+
-
-Files: resources/bitmaps/13xX_svg_src/create_all_13xX.sh
-Copyright: 2010-2025, David S. Register
-License: GPL-2+
-
-Files: resources/bitmaps/16x16_svg_src/create_all_16x16.sh
- resources/bitmaps/28x28_svg_src/create_all_28x28.sh
- resources/bitmaps/32x32_svg_src/cursor/create_all_32x32.sh
- resources/bitmaps/32x32_svg_src/ribbon/create_all_32x32.sh
- resources/bitmaps/other_svg_src/create_opencpn_main_icon.sh
- resources/bitmaps/other_svg_src/create_ship.sh
-Copyright: 2010-2025, David S. Register
 License: GPL-2+
 
 Files: test/*
@@ -1909,7 +2080,8 @@ Copyright: 2011-2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 Files: test/ipc-srv-tests.cpp
-Copyright: 2011-2025, Alec Leamas <leamas.alec@gmail.com>
+ test/test_config.cpp
+Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
 License: Apache-2.0
@@ -1959,6 +2131,36 @@ License: BSD-3-Clause
  THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+License: BSD-3-clause
+ The BSD License
+ .
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are
+ met:
+ .
+   * Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+ .
+   * Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution. 
+ .
+   * Neither the name of the copyright holder nor the names of its
+     contributors may be used to endorse or promote products derived from
+     this software without specific prior written permission. 
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 License: BSD-4-Clause-UC
  Redistribution and use in source and binary forms, with or without
@@ -2424,24 +2626,58 @@ License: GPL-3+ with Autoconf-data exception
  program.  This Exception is an additional permission under section 7
  of the GNU General Public License, version 3 ("GPLv3").
 
-License: GPL-2+ with Libtool exception
- GNU Libtool is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+License: Harmonics
+ Highly trustworthy tide predictions cannot be achieved on a zero
+ budget.  If you need guaranteed results, don't use these data!
+ Contact the tide authority for your region (NOAA in the U.S.).
  .
- As a special exception to the GNU General Public License,
- if you distribute this file as part of a program or library that
- is built using GNU Libtool, you may include this file under the
- same distribution terms that you use for the rest of that program.
+ This data file is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without any warranty that its use will NOT
+ INFRINGE ANY RIGHTS, and without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  .
- GNU Libtool is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- General Public License for more details.
+ WHOEVER CHOOSES TO REDISTRIBUTE THESE DATA ASSUMES ALL LIABILITY
+ ASSOCIATED THEREWITH.  NEITHER DAVID FLATER NOR ANYONE ELSE INVOLVED
+ SHALL BE LIABLE PERSONALLY OR OTHERWISE FOR ANY LOSSES THAT THE
+ REDISTRIBUTOR MIGHT SUFFER AS A CONSEQUENCE OF ANY CLAIMS, BOGUS OR
+ OTHERWISE, THAT ARE MADE TO THESE DATA.
  .
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ --- Copyright statements ---
+ .
+ United States:  Data published by the U.S. government is by law
+ non-proprietary.  Stations in the U.S., territories of the U.S.,
+ commonwealths associated with the U.S., and countries with a Compact
+ of Free Association with the U.S. have been included.  A few other
+ stations available from the NOS web site have been dropped.
+ .
+   Notice available on the NOS web site at
+   http://tidesandcurrents.noaa.gov/disclaimers.html as of
+   2007-05-30:
+ .
+   The information on government servers are in the public domain,
+   unless specifically annotated otherwise, and may be used freely by
+   the public. Before using information obtained from this server,
+   special attention should be given to the date and time of the data
+   and products being displayed. This information shall not be
+   modified in content and then presented as official government
+   material.
+ .
+   The user assumes the entire risk related to its use of these
+   data. NOS is providing these data "as is," and NOS disclaims any
+   and all warranties, whether express or implied, including (without
+   limitation) any implied warranties of merchantability or fitness
+   for a particular purpose. In no event will NOS be liable to you or
+   to any third party for any direct, indirect, incidental,
+   consequential, special or exemplary damages or lost profit
+   resulting from any use or misuse of this data.
+ .
+   NOS requests that attribution be given whenever NOS material is
+   reproduced and re-disseminated. Pursuant to 17 U.S.C. 403, third
+   parties producing copyrighted (compilation) works consisting
+   predominantly of material created by Federal Government employees
+   are encouraged to provide notice with such work(s) identifying the
+   U.S. Government material incorporated and stating that such
+   material is not subject to copyright protection.
 
 License: Khronos
  Permission is hereby granted, free of charge, to any person obtaining
@@ -2468,13 +2704,6 @@ License: Khronos
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE MATERIALS OR THE USE OR OTHER DEALINGS
  IN THE MATERIALS.
-
-License: LGPL-2
- This program is free software; you can redistribute it and/or modify it
- under the terms of the GNU Library General Public License as published by the
- Free Software Foundation; version 2 of the License.
- On Debian systems, the complete text of version 2 of the GNU Library
- General Public License can be found in '/usr/share/common-licenses/LGPL-2'.
 
 License: LGPL-2+
  This library is free software; you can redistribute it and/or
@@ -2663,56 +2892,3 @@ License: wxWidgets
  to permit this exception to apply to your modifications. If you do not wish that,
  you must delete the exception notice from such code and/or adjust the licensing '
  conditions notice accordingly.
-
-License: Harmonics
- Highly trustworthy tide predictions cannot be achieved on a zero
- budget.  If you need guaranteed results, don't use these data!
- Contact the tide authority for your region (NOAA in the U.S.).
- .
- This data file is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without any warranty that its use will NOT
- INFRINGE ANY RIGHTS, and without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- .
- WHOEVER CHOOSES TO REDISTRIBUTE THESE DATA ASSUMES ALL LIABILITY
- ASSOCIATED THEREWITH.  NEITHER DAVID FLATER NOR ANYONE ELSE INVOLVED
- SHALL BE LIABLE PERSONALLY OR OTHERWISE FOR ANY LOSSES THAT THE
- REDISTRIBUTOR MIGHT SUFFER AS A CONSEQUENCE OF ANY CLAIMS, BOGUS OR
- OTHERWISE, THAT ARE MADE TO THESE DATA.
- .
- --- Copyright statements ---
- .
- United States:  Data published by the U.S. government is by law
- non-proprietary.  Stations in the U.S., territories of the U.S.,
- commonwealths associated with the U.S., and countries with a Compact
- of Free Association with the U.S. have been included.  A few other
- stations available from the NOS web site have been dropped.
- .
-   Notice available on the NOS web site at
-   http://tidesandcurrents.noaa.gov/disclaimers.html as of
-   2007-05-30:
- .
-   The information on government servers are in the public domain,
-   unless specifically annotated otherwise, and may be used freely by
-   the public. Before using information obtained from this server,
-   special attention should be given to the date and time of the data
-   and products being displayed. This information shall not be
-   modified in content and then presented as official government
-   material.
- .
-   The user assumes the entire risk related to its use of these
-   data. NOS is providing these data "as is," and NOS disclaims any
-   and all warranties, whether express or implied, including (without
-   limitation) any implied warranties of merchantability or fitness
-   for a particular purpose. In no event will NOS be liable to you or
-   to any third party for any direct, indirect, incidental,
-   consequential, special or exemplary damages or lost profit
-   resulting from any use or misuse of this data.
- .
-   NOS requests that attribution be given whenever NOS material is
-   reproduced and re-disseminated. Pursuant to 17 U.S.C. 403, third
-   parties producing copyrighted (compilation) works consisting
-   predominantly of material created by Federal Government employees
-   are encouraged to provide notice with such work(s) identifying the
-   U.S. Government material incorporated and stating that such
-   material is not subject to copyright protection.
