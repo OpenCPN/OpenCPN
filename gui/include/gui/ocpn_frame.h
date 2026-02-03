@@ -308,6 +308,13 @@ public:
   virtual void TouchAISActive() override;
   virtual void UpdateAISMOBRoute(const AisTargetData* ptarget) override;
   virtual void ActivateAISMOBRoute(const AisTargetData* ptarget) override;
+  void EnableSettingsTool(bool _enable) override {
+    if (g_MainToolbar) {
+      g_MainToolbar->EnableTool(ID_SETTINGS, _enable);
+      g_MainToolbar->GetToolbar()->SetDirty(true);
+      g_MainToolbar->RefreshToolbar();
+    }
+  }
   void OnToolLeftClick(wxCommandEvent& event) override;
 
   void SetENCDisplayCategory(ChartCanvas* cc, enum _DisCat nset);
@@ -441,14 +448,6 @@ public:
 
   void DestroyPersistentDialogs();
   void UpdateAISTool(void);
-  void EnableSettingsTool(bool _enable) {
-    if (g_MainToolbar) {
-      g_MainToolbar->EnableTool(ID_SETTINGS, _enable);
-      g_MainToolbar->GetToolbar()->SetDirty(true);
-      g_MainToolbar->RefreshToolbar();
-    }
-  }
-
   wxMenuBar* m_pMenuBar;
   bool m_bTimeIsSet;
 
