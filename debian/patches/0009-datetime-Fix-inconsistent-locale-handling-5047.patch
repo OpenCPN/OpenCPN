@@ -1,4 +1,3 @@
-From b7cafef3cb69545987d65ed688b27196007d5cbf Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 2 Feb 2026 12:45:25 +0100
 Subject: [PATCH] datetime: Fix inconsistent locale handling -- #5047
@@ -16,7 +15,7 @@ Closes: #5047
  3 files changed, 13 insertions(+), 15 deletions(-)
 
 diff --git a/model/src/datetime.cpp b/model/src/datetime.cpp
-index a81d879a6..39e2afc68 100644
+index a81d879..39e2afc 100644
 --- a/model/src/datetime.cpp
 +++ b/model/src/datetime.cpp
 @@ -108,9 +108,10 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
@@ -47,7 +46,7 @@ index a81d879a6..39e2afc68 100644
      return formattedDate + " " + tzName;
    } else {
 diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
-index 00a906b51..606f139f4 100644
+index d9ee632..ba31fbd 100644
 --- a/test/CMakeLists.txt
 +++ b/test/CMakeLists.txt
 @@ -4,7 +4,6 @@ project(opencpn_tests)
@@ -70,7 +69,7 @@ index 00a906b51..606f139f4 100644
    target_compile_definitions(tests PRIVATE OCPN_FLATPAK)
  endif ()
 diff --git a/test/datetime_tests.cpp b/test/datetime_tests.cpp
-index 139c16c9c..aeaaef7a1 100644
+index 139c16c..aeaaef7 100644
 --- a/test/datetime_tests.cpp
 +++ b/test/datetime_tests.cpp
 @@ -144,7 +144,8 @@ TEST_F(DateTimeFormatTest, CustomFormatStringEnUS) {
@@ -135,6 +134,3 @@ index 139c16c9c..aeaaef7a1 100644
  }
  
  #endif  // HAS_EN_US
--- 
-2.43.0
-
