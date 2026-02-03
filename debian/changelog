@@ -1,89 +1,97 @@
-opencpn (1:5.14.1+dfsg~beta1-1~bpo22.04~ppa1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta1-1~bpo24.04~ppa1) noble; urgency=medium
 
   * New upstream release
+  * d/patches: rebased.
+  * d/copyright: Updated for new sources
+  * New patch: disable some ipc tests
 
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 13:31:29 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 11:48:52 +0100
 
-opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa3) jammy; urgency=medium
-
-  * Add Debian 12 plugin compatibility patch
-
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 27 Jan 2026 11:52:24 +0100
-
-opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa2) jammy; urgency=medium
-
-  * Add b-d linunarr-dev, required since libarchive is too old.
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 15 Sep 2025 09:31:17 +0200
-
-opencpn (1:5.12.4+dfsg-1~bpo22.04~ppa1) jammy; urgency=medium
+opencpn (1:5.12.2+dfsg-1~bpo24.04+1) noble; urgency=medium
 
   [ Alec Leamas ]
-  * New upstream version
-  * debian/: updated from sid besides changelog, gbp.con,  not-installed
-    and patches.
-
- -- dsr <dsr@Jammy.myguest.virtualbox.org>  Sun, 14 Sep 2025 22:40:34 -0400
-
-opencpn (1:5.12.2+dfsg-1~bpo22.04+3) jammy; urgency=medium
-
   * New upstream release
+  * d/patches: rebased.
   * d/opencpn-data.install: authors.html file name update
+  * d/control: drop heavy b-d asciidoc-base, now not required
 
- -- dsr <dsr@Jammy.myguest.virtualbox.org>  Fri, 01 Aug 2025 23:05:30 -0400
+ -- dsr <dsr@dsr-VirtualBox>  Fri, 01 Aug 2025 09:08:40 -0400
 
-opencpn (1:5.12.2+dfsg-1~bpo22.04+2) jammy; urgency=medium
-
-  * New upstream release
-  * Corrected patchfiles
-
- -- dsr <dsr@Jammy.myguest.virtualbox.org>  Fri, 01 Aug 2025 22:05:28 -0400
-
-opencpn (1:5.12.2+dfsg-1~bpo22.04+1) jammy; urgency=medium
+opencpn (1:5.12.0+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
   * New upstream release
-  * Rebase patches 
+  * d/control: Add asciidoc-base
+  * d/patches: Import from bookworm-backports
+  * d/opencpn-data.install: Add missing filters and Authors.html
+  * d/lintian-overrides: Drop not existing files
+  * d/copyright: Update from sid
 
- -- dsr <dsr@Jammy.myguest.virtualbox.org>  Fri, 01 Aug 2025 21:44:25 -0400
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 10:43:13 +0200
 
-opencpn (1:5.12.0+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
+opencpn (1:5.11.3~beta3+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
+
+  * New upstream beta release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 29 Jun 2025 16:29:54 +0200
+
+opencpn (1:5.11.1~beta2+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
+
+  * New upstream beta release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 13 Jun 2025 21:24:17 +0200
+
+opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo24.04+2) noble; urgency=medium
+
+  * libdnet: Add patch for cmake < 3.20
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 14:20:21 +0200
+
+opencpn (1:5.11.1~beta1+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
+
+  * New upstream beta release
+  * Drop upstreamed patches, rebase the rest
+  * Update installation paths
+  * Update d/copyright
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 23 May 2025 13:10:33 +0200
+
+opencpn (1:5.10.2+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
   * New upstream release
-  * Drop upstreamed patches, rebase remaining
-  * New patch: Disable local dependent tests
-  * New patch: libdnet: Handle cmake < 3.20
-  * Update installation paths from debian/sid
-  * Update d/copyright from debian/sid
+  * Drop upstreamed patches:
+      - 0004-build-Use-system-shapelib-if-available.patch
+      - 0006-Improve-display-detection-on-headless-X11-systems.patch
+      - 0007-Build-Don-t-use-march-native-4088.patch                
+      - 0008-VERSION.cmake-Fix-date-string.patch                    
+      - 0009-build-add-latomic-linkage.patch                        
+      - 0011-Explicitly-set-extra-object-info-text-color.4101.patch
+  * Drop sid patch -chartdldr-Don-t-use-unarr-for-libarchive-3.7...,
+    not useful here.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 14 Jul 2025 11:28:35 +0200
 
-opencpn (1:5.10.2+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 11:08:29 +0200
 
-  * New upstream release
-  * Drop upstreamed patches
-  * Drop sid patch for using libarchive instead of libunarr, not usable here-
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+2) noble; urgency=medium
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 11 Sep 2024 11:47:24 +0200
-
-opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+2) jammy; urgency=medium
-
-  * New patch: Dont use -march=native (#1078467).
+  * New patch: Don't use -march=native (#1078467).
   * New patch: Fix wrong date string (2023 -> 2024).
-  * New patch: Improve headless X11 display size handling (opencpn/4099).
-  * New patch: Fix dark theme invisible object text (opencpn/4101).
+  * New patch: Disable some tests onn Debian builders (#opencpn/4090).
+  * New patch: Improve headless display size handling (opencpn/4099).
+  * New patch: Add -latomic for armel and some other 32-bit platforms
+  * New patch: Fix dark theme invisible object test (opencpn/4101)
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 10:26:41 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 18 Aug 2024 10:23:46 +0200
 
-opencpn (1:5.10.0+dfsg-1ubuntu1~bpo22.04+1) jammy; urgency=medium
+opencpn (1:5.10.0+dfsg-1ubuntu1~bpo24.04+1) noble; urgency=medium
 
   * New upstream release backport
-  * New patch: disable intermittent failing test
-  * Use R:opencpn-sqlock instead of S:
-  * Add S: and R: from downstream PPA package
-  * Add Breaks/Replaces to handle existing PPA installations.
-  * Adjust version to handle epoch.
+  * Add new patch for arm compiler options (#4027)
+  * Add R: and S: from downstream package
+  * Add Breaks/Replaces from downstream package
+  * Add Breaks opencpn (<< 1:1) to overwrite downstream package
+  * Adjust version to handle the new epoch
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 13:35:02 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 10 Aug 2024 12:48:49 +0200
 
 opencpn (5.10.0+dfsg-1) unstable; urgency=medium
 
