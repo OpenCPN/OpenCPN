@@ -154,6 +154,7 @@ std-filters: &std-filters
         - build
         - flatpak
         - dpt
+        - v5.14.x
 
 
 workflows:
