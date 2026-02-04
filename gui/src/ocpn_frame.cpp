@@ -4812,7 +4812,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       // Last call....
       wxLogMessage("OnInitTimer...Last Call");
 
-      g_pi_manager->CallLateInit();
+      if (!g_kiosk_startup) g_pi_manager->CallLateInit();
 
       RequestNewMasterToolbar();
 
