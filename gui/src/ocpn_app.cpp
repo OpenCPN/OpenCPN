@@ -1015,6 +1015,7 @@ bool MyApp::OnInit() {
     g_wallpaper = new WallpaperFrame();
     g_wallpaper->ShowFullScreen(true);  // For a kiosk app, make it fullscreen
     g_wallpaper->Show();
+    g_bFullscreen = true;  // override config value
   }
 
   //  Override for some safe and nice default values if the config file was
@@ -1250,14 +1251,11 @@ bool MyApp::OnInit() {
 #endif
 
   // Create and initialize the main application frame.
-  if (!g_kiosk_startup) {
-    BuildMainFrame();
-    SetTopWindow(gFrame);  // Set the main frame as the new top window.
-    gFrame->Show();
-    gFrame->Raise();
-  } else {
-    wxTheApp->CallAfter(&MyApp::OnWallpaperStable);
-  }
+  BuildMainFrame();
+  if (g_kiosk_startup) gFrame->ShowFullScreen(true);
+  SetTopWindow(gFrame);  // Set the main frame as the new top window.
+  gFrame->Show();
+  gFrame->Raise();
 
   OCPNPlatform::Initialize_4();
 
@@ -1317,14 +1315,12 @@ bool MyApp::OnInit() {
                      8000);
   }
 
-  if (!g_kiosk_startup) {
-    // Ensure execution after all pending layout events
-    CallAfter([]() {
-      // Start delayed initialization chain after some milliseconds
-      wxLogMessage("InitTimer start");
-      gFrame->InitTimer.Start(10, wxTIMER_CONTINUOUS);
-    });
-  }
+  // Ensure execution after all pending layout events
+  CallAfter([]() {
+    // Start delayed initialization chain after some milliseconds
+    wxLogMessage("InitTimer start");
+    gFrame->InitTimer.Start(10, wxTIMER_CONTINUOUS);
+  });
 
   return TRUE;
 }
@@ -1374,6 +1370,8 @@ void MyApp::BuildMainFrame() {
     new_frame_size.Set(g_nframewin_x, g_nframewin_y);
   else
     new_frame_size.Set(cw * 7 / 10, ch * 7 / 10);
+
+  if (g_kiosk_startup) new_frame_size.Set(cw, ch);
 
   //  Try to detect any change in physical screen configuration
   //  This can happen when drivers are changed, for instance....
@@ -1565,8 +1563,6 @@ void MyApp::BuildMainFrame() {
   AbstractPlatform::ShowBusySpinner();
   PluginLoader::GetInstance()->LoadAllPlugIns(true);
   AbstractPlatform::HideBusySpinner();
-
-  if (g_kiosk_startup) g_pi_manager->CallLateInit();
 
   wxString perspective;
   pConfig->SetPath("/AUI");
