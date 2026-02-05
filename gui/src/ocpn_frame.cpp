@@ -463,8 +463,14 @@ wxFont *MyFrame::GetFont(wxFont *font, double scale) {
                                  font->GetFamily(), font->GetStyle(),
                                  font->GetWeight(), false, font->GetFaceName());
 }
-wxFont *MyFrame::GetDefaultFont( wxString label, int Ptsize) {
-  return GetOCPNScaledFont_PlugIn( label, Ptsize);
+wxFont *MyFrame::GetScaledFont(int pointSize, wxFontFamily family,
+                               wxFontStyle style, wxFontWeight weight,
+                               const wxString faceName, double scale) {
+  return FindOrCreateFont_PlugIn(pointSize / scale, family, style, weight,
+                                 false, faceName);
+}
+wxFont *MyFrame::GetDefaultFont(wxString label, int Ptsize) {
+  return GetOCPNScaledFont_PlugIn(label, Ptsize);
 }
 
 //------------------------------------------------------------------------------
