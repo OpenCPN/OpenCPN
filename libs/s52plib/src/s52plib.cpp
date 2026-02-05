@@ -2453,8 +2453,9 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX) {
       // We will use the user-configured font size as the base size for the
       // text rendering, and adjust the size based on the S52 text size
       // specification.
-      // old call   wxFont *templateFont = GetOCPNScaledFont_PlugIn(_("ChartTexts"));
-      wxFont *templateFont = GetS52Utils()->GetDefaultFont(  _("ChartTexts"), 0);
+      // old call   wxFont *templateFont =
+      // GetOCPNScaledFont_PlugIn(_("ChartTexts"));
+      wxFont *templateFont = GetS52Utils()->GetDefaultFont(_("ChartTexts"), 0);
       int default_size = templateFont->GetPointSize();
 
       // In S52, the "body size" refers to the base size of the text characters
@@ -2491,9 +2492,9 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX) {
       // unreadable
       fontSize = wxMax(10, fontSize);
 
-      text->pFont = FindOrCreateFont_PlugIn(
+      text->pFont = GetS52Utils()->GetScaledFont(
           fontSize, templateFont->GetFamily(), templateFont->GetStyle(),
-          fontweight_t, false, templateFont->GetFaceName());
+          fontweight_t, templateFont->GetFaceName(), 1.0);
     }
 
     //  Render text at declared x/y of object

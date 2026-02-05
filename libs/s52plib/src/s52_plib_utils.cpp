@@ -1,10 +1,16 @@
 #include "s52_plib_utils.h"
 
 static class _DefaultUtils : public S52PlibUtils {
-
-    /** Default implementation: return unscaled font. */
-    wxFont* GetFont(wxFont*  font, double scale) override { return font; }
-    wxFont*  GetDefaultFont( wxString label, int Ptsize) override {return nullptr;}
+  /** Default implementation: return unscaled font. */
+  wxFont* GetFont(wxFont* font, double scale) override { return font; }
+  wxFont* GetDefaultFont(wxString label, int Ptsize) override {
+    return nullptr;
+  }
+  wxFont* GetScaledFont(int pointSize, wxFontFamily family, wxFontStyle style,
+                        wxFontWeight weight, const wxString faceName,
+                        double scale) override {
+    return nullptr;
+  }
 
 } DefaultUtils;
 
