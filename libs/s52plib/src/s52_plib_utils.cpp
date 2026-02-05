@@ -4,6 +4,7 @@ static class _DefaultUtils : public S52PlibUtils {
 
     /** Default implementation: return unscaled font. */
     wxFont* GetFont(wxFont*  font, double scale) override { return font; }
+    wxFont*  GetDefaultFont( wxString label, int Ptsize) override {return nullptr;}
 
 } DefaultUtils;
 

@@ -463,6 +463,9 @@ wxFont *MyFrame::GetFont(wxFont *font, double scale) {
                                  font->GetFamily(), font->GetStyle(),
                                  font->GetWeight(), false, font->GetFaceName());
 }
+wxFont *MyFrame::GetDefaultFont( wxString label, int Ptsize) {
+  return GetOCPNScaledFont_PlugIn( label, Ptsize);
+}
 
 //------------------------------------------------------------------------------
 // MyFrame

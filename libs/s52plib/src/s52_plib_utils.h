@@ -8,6 +8,7 @@ class S52PlibUtils {
 public:
     /** Get a scaled font based on given; created if not already existing. */
     virtual wxFont* GetFont(wxFont*  font, double scale) = 0;
+    virtual wxFont* GetDefaultFont( wxString label, int Ptsize) = 0;
 };
 
 S52PlibUtils* GetS52Utils();
