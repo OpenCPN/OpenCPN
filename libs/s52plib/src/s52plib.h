@@ -651,6 +651,7 @@ private:
 #define TXF_CACHE 8
   TexFontCache s_txf[TXF_CACHE];
   wxString m_renderer_string;
+  wxFont *ChartTextDefaultFont;
 
   LLBBox reducedBBox;
   std::unordered_map<std::string, int> vector_symbol_cache;
