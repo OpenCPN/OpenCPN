@@ -147,6 +147,7 @@ WX_DEFINE_LIST(TextObjList);
 
 //    Implement all arrays
 #include <wx/arrimpl.cpp>
+#include "s52_plib_utils.h"
 WX_DEFINE_OBJARRAY(ArrayOfNoshow);
 
 //  S52_TextC Implementation
@@ -2452,7 +2453,8 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX) {
       // We will use the user-configured font size as the base size for the
       // text rendering, and adjust the size based on the S52 text size
       // specification.
-      wxFont *templateFont = GetOCPNScaledFont_PlugIn(_("ChartTexts"));
+      // old call   wxFont *templateFont = GetOCPNScaledFont_PlugIn(_("ChartTexts"));
+      wxFont *templateFont = GetS52Utils()->GetDefaultFont(  _("ChartTexts"), 0);
       int default_size = templateFont->GetPointSize();
 
       // In S52, the "body size" refers to the base size of the text characters

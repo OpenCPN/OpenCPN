@@ -321,6 +321,8 @@ public:
   void ToggleQuiltMode(ChartCanvas* cc);
 
   wxFont* GetFont(wxFont* font, double scale) override;
+  wxFont* GetDefaultFont( wxString label, int Ptsize) override;
+
   int GetApplicationMemoryUse(void);
 
   void OnEraseBackground(wxEraseEvent& event);
