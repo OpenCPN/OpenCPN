@@ -50,6 +50,11 @@
     </screenshot>
   </screenshots>
   <url type="homepage">https://opencpn.org/</url>
-  <update_contact>https://opencpn.org/flyspray/</update_contact>
+  <url type="vcs-browser">https://github.com/opencpn/OpenCPN/</url>
+  <url type="bugtracker">https://www.cruisersforum.com/forums/f134/</url>
+  <url type="help">https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn</url>
+  <url type="translate">https://crowdin.com/project/opencpn</url>
+  <url type="donate">https://www.paypal.com/donate/?item_name=Donation+to+OpenCPN&amp;cmd=_donations&amp;business=bdbcat%40yahoo.com</url>
+  <update_contact>https://opencpn.zulipchat.com/</update_contact>
   <content_rating type="oars-1.0" />
 </component>
