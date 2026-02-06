@@ -8589,7 +8589,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         RoutePoint *pNearbyPoint =
             pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
         if (pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) &&
-            !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
+            pNearbyPoint->IsVisible()) {
           wxArrayPtrVoid *proute_array =
               g_pRouteMan->GetRouteArrayContaining(pNearbyPoint);
 
@@ -8629,18 +8629,35 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
             m_FinishRouteOnKillFocus = true;
             if (dlg_return == wxID_YES) {
+              wxString wp_name;
               if (noname) {
                 if (m_pMouseRoute) {
                   int last_wp_num = m_pMouseRoute->GetnPoints();
                   // AP-ECRMB will truncate to 6 characters
                   wxString guid_short = m_pMouseRoute->GetGUID().Left(2);
-                  wxString wp_name = wxString::Format(
-                      "M%002i-%s", last_wp_num + 1, guid_short);
-                  pNearbyPoint->SetName(wp_name);
-                } else
-                  pNearbyPoint->SetName("WPXX");
+                  wp_name = wxString::Format("M%002i-%s", last_wp_num + 1,
+                                             guid_short);
+                } else {
+                  wp_name = "WPXX";
+                }
               }
-              pMousePoint = pNearbyPoint;
+              if (pNearbyPoint->m_bIsInLayer || pNearbyPoint->m_LayerID != 0) {
+                pMousePoint =
+                    DuplicateRoutePointForRoute(pNearbyPoint, wp_name, true);
+                if (pMousePoint) {
+                  pSelect->AddSelectableRoutePoint(
+                      pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
+                  NavObj_dB::GetInstance().InsertRoutePoint(pMousePoint);
+                  if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
+                    pRouteManagerDialog->UpdateWptListCtrl();
+                  }
+                  pMousePoint->SetShared(true);
+                }
+              } else {
+                if (noname && !wp_name.IsEmpty())
+                  pNearbyPoint->SetName(wp_name);
+                pMousePoint = pNearbyPoint;
+              }
 
               // Using existing waypoint, so nothing to delete for undo.
               if (m_routeState > 1)
@@ -9208,7 +9225,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         RoutePoint *pNearbyPoint =
             pWayPointMan->GetNearbyWaypoint(rlat, rlon, nearby_radius_meters);
         if (pNearbyPoint && (pNearbyPoint != m_prev_pMousePoint) &&
-            !pNearbyPoint->m_bIsInLayer && pNearbyPoint->IsVisible()) {
+            pNearbyPoint->IsVisible()) {
           int dlg_return;
 #ifndef __WXOSX__
           m_FinishRouteOnKillFocus =
@@ -9221,7 +9238,21 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           dlg_return = wxID_YES;
 #endif
           if (dlg_return == wxID_YES) {
-            pMousePoint = pNearbyPoint;
+            if (pNearbyPoint->m_bIsInLayer || pNearbyPoint->m_LayerID != 0) {
+              pMousePoint = DuplicateRoutePointForRoute(pNearbyPoint,
+                                                        wxEmptyString, true);
+              if (pMousePoint) {
+                pSelect->AddSelectableRoutePoint(
+                    pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
+                NavObj_dB::GetInstance().InsertRoutePoint(pMousePoint);
+                if (pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
+                  pRouteManagerDialog->UpdateWptListCtrl();
+                }
+                pMousePoint->SetShared(true);
+              }
+            } else {
+              pMousePoint = pNearbyPoint;
+            }
 
             // Using existing waypoint, so nothing to delete for undo.
             if (m_routeState > 1)
@@ -9676,8 +9707,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             RoutePoint *pNearbyPoint = pWayPointMan->GetOtherNearbyWaypoint(
                 m_pRoutePointEditTarget->m_lat, m_pRoutePointEditTarget->m_lon,
                 nearby_radius_meters, m_pRoutePointEditTarget->m_GUID);
-            if (pNearbyPoint && !pNearbyPoint->m_bIsInLayer &&
-                pWayPointMan->IsReallyVisible(pNearbyPoint)) {
+            if (pNearbyPoint && pWayPointMan->IsReallyVisible(pNearbyPoint)) {
               bool duplicate =
                   false;  // ensure we won't create duplicate point in routes
               if (m_pEditRouteArray && !pNearbyPoint->m_bIsolatedMark) {
@@ -9779,13 +9809,27 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   }
                 }
                 if (dlg_return == wxID_YES) {
-                  pMousePoint = pNearbyPoint;
-                  if (pMousePoint->m_bIsolatedMark) {
-                    pMousePoint->SetShared(true);
+                  if (pNearbyPoint->m_bIsInLayer ||
+                      pNearbyPoint->m_LayerID != 0)
+                    pMousePoint = DuplicateRoutePointForRoute(
+                        pNearbyPoint, pNearbyPoint->GetName(), true);
+                  else
+                    pMousePoint = pNearbyPoint;
+                  if (pMousePoint) {
+                    if (pMousePoint != pNearbyPoint) {
+                      NavObj_dB::GetInstance().InsertRoutePoint(pMousePoint);
+                      if (pRouteManagerDialog &&
+                          pRouteManagerDialog->IsShown()) {
+                        pRouteManagerDialog->UpdateWptListCtrl();
+                      }
+                    }
+                    if (pMousePoint->m_bIsolatedMark) {
+                      pMousePoint->SetShared(true);
+                    }
+                    pMousePoint->m_bIsolatedMark =
+                        false;  // definitely no longer isolated
+                    pMousePoint->m_bIsInRoute = true;
                   }
-                  pMousePoint->m_bIsolatedMark =
-                      false;  // definitely no longer isolated
-                  pMousePoint->m_bIsInRoute = true;
                 }
               }
             }
@@ -9949,8 +9993,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             RoutePoint *pNearbyPoint = pWayPointMan->GetOtherNearbyWaypoint(
                 m_pRoutePointEditTarget->m_lat, m_pRoutePointEditTarget->m_lon,
                 nearby_radius_meters, m_pRoutePointEditTarget->m_GUID);
-            if (pNearbyPoint && !pNearbyPoint->m_bIsInLayer &&
-                pWayPointMan->IsReallyVisible(pNearbyPoint)) {
+            if (pNearbyPoint && pWayPointMan->IsReallyVisible(pNearbyPoint)) {
               bool duplicate = false;  // don't create duplicate point in routes
               if (m_pEditRouteArray && !pNearbyPoint->m_bIsolatedMark) {
                 for (unsigned int ir = 0; ir < m_pEditRouteArray->GetCount();
@@ -10050,13 +10093,31 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                   }
                 }
                 if (dlg_return == wxID_YES) {
-                  pMousePoint = pNearbyPoint;
-                  if (pMousePoint->m_bIsolatedMark) {
-                    pMousePoint->SetShared(true);
+                  if (pNearbyPoint->m_bIsInLayer ||
+                      pNearbyPoint->m_LayerID != 0) {
+                    pMousePoint = DuplicateRoutePointForRoute(
+                        pNearbyPoint, pNearbyPoint->GetName(), true);
+                    if (pMousePoint) {
+                      pSelect->AddSelectableRoutePoint(
+                          pMousePoint->m_lat, pMousePoint->m_lon, pMousePoint);
+                      NavObj_dB::GetInstance().InsertRoutePoint(pMousePoint);
+                      if (pRouteManagerDialog &&
+                          pRouteManagerDialog->IsShown()) {
+                        pRouteManagerDialog->UpdateWptListCtrl();
+                      }
+                      pMousePoint->SetShared(true);
+                    }
+                  } else {
+                    pMousePoint = pNearbyPoint;
                   }
-                  pMousePoint->m_bIsolatedMark =
-                      false;  // definitely no longer isolated
-                  pMousePoint->m_bIsInRoute = true;
+                  if (pMousePoint) {
+                    if (pMousePoint->m_bIsolatedMark) {
+                      pMousePoint->SetShared(true);
+                    }
+                    pMousePoint->m_bIsolatedMark =
+                        false;  // definitely no longer isolated
+                    pMousePoint->m_bIsInRoute = true;
+                  }
                 }
               }
             }

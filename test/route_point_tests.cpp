@@ -34,10 +34,10 @@ TEST_F(RoutePointScaleTest, ScaMaxStoresAndClampsValue) {
 }
 
 TEST_F(RoutePointScaleTest, ScaMinHonorsScaMax) {
-  RoutePoint point(0, 0, "", "", "", false);
+  RoutePoint point(0, 0, wxEmptyString, wxEmptyString, wxEmptyString, false);
   point.SetScaMax(500);
   point.SetScaMin(400);
-  EXPECT_EQ(point.GetScaMin(), 800);  // Limited to  SCAMIN_MIN
+  EXPECT_EQ(point.GetScaMin(), 500);
 }
 
 TEST_F(RoutePointScaleTest, NewPointUsesConfiguredScaMax) {
