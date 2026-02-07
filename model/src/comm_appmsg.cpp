@@ -44,12 +44,11 @@ std::string TimeToString(const time_t t) {
 #ifdef _MSC_VER
   errno_t e = ctime_s(buff, sizeof(buff), &t);
   assert(e == 0 && "Huh? ctime_s returned an error");
-  return std::string(buff);
 #else
   const char* r = ctime_r(&t, buff);
   assert(r != NULL && "ctime_r failed...");
-  return std::string(buff);
 #endif
+  return std::string(buff, strlen(buff) - 1);  // Drop trailing '\n'
 }
 
 std::string DegreesToString(double degrees) {
