@@ -81,14 +81,10 @@ WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 #define STAT_FIELD_SCALE 4
 #endif
 
-class canvasConfig;        // circular
-class CanvasMenuHandler;   // circular
-class MyFrame;             // circular
-class NotificationsList;   // circular
-class NotificationButton;  // circular
-class Quilt;               // circular
-class TCWin;               // circular
-class Undo;                // circular
+class canvasConfig;       // circular
+class CanvasMenuHandler;  // circular
+class Quilt;              // circular
+class TCWin;              // circular
 
 class ChartCanvas;                      // forward
 extern ChartCanvas *g_overlayCanvas;    ///< Global instance
@@ -177,15 +173,20 @@ public:
   ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log);
   ~ChartCanvas();
 
+  // wxWindow
+  //
+  bool SetCursor(const wxCursor &c) override;
+
+  void Update() override;
+
+  // AbstractChartCanvas
+  //
   virtual void ReloadVP(bool b_adjust = true) override;
 
   /** Return ViewPort scale factor, in physical pixels per meter. */
   float GetVPScale() override { return GetVP().view_scale_ppm; }
 
-  bool Show(bool show = true) override { return wxWindow::Show(show); }
-  double GetCanvasRangeMeters() override;
   int GetENCDisplayCategory() override { return m_encDisplayCategory; }
-  void SetCanvasRangeMeters(double range) override;
   wxBitmap *GetScratchBitmap() const override { return pscratch_bm; }
   void ResetGridFont() override { m_pgridFont = nullptr; }
   void ResetGlGridFont() override;
@@ -196,12 +197,36 @@ public:
   void TriggerDeferredFocus() override;
   void Refresh(bool eraseBackground = true,
                const wxRect *rect = nullptr) override;
-  wxWindow *GetWindow() override { return this; }
   double GetScaleValue() override { return m_scaleValue; }
 
-  void SetupGlCanvas();
+  double GetCanvasRangeMeters() override;
+  void SetCanvasRangeMeters(double range) override;
+
+  double GetPrevRlat() const override { return m_prev_rlat; }
+  void SetPrevRlat(double lat) override { m_prev_rlat = lat; }
+
+  double GetPrevRlon() const override { return m_prev_rlon; }
+  void SetPrevRlon(double lat) override { m_prev_rlon = lat; }
+
+  RoutePoint *GetPrevMousePoint() const override { return m_prev_pMousePoint; }
+  void SetPrevMousePoint(RoutePoint *point) override {
+    m_prev_pMousePoint = point;
+  }
+
+  int GetRouteState() const override { return m_routeState; }
+  void SetRouteState(int state) override { m_routeState = state; }
+
+  RoutePoint *GetSelectedRoutePoint() const override {
+    return m_pFoundRoutePoint;
+  }
+  void SetSelectedRoutePoint(RoutePoint *point) override {
+    m_pFoundRoutePoint = point;
+  }
+
+  void InvalidateRedo() override { undo->InvalidateRedo(); }
 
   //    Methods
+  void SetupGlCanvas();
   void OnKeyDown(wxKeyEvent &event);
   void OnKeyUp(wxKeyEvent &event);
   void OnKeyChar(wxKeyEvent &event);
@@ -258,9 +283,6 @@ public:
   bool IsPrimaryCanvas() { return (m_canvasIndex == 0); }
 
   bool SetUserOwnship();
-
-  bool SetCursor(const wxCursor &c) override;
-  void Update() override;
 
   void LostMouseCapture(wxMouseCaptureLostEvent &event);
 
@@ -804,11 +826,7 @@ public:
    */
   double m_cursor_lat;
   wxPoint r_rband;
-  double m_prev_rlat;
-  double m_prev_rlon;
-  RoutePoint *m_prev_pMousePoint;
   bool m_bShowNavobjects;
-  int m_routeState;
   int m_upMode;
   bool m_bLookAhead;
 
@@ -845,7 +863,6 @@ public:
   }
   Route *GetSelectedRoute() const { return m_pSelectedRoute; }
   Track *GetSelectedTrack() const { return m_pSelectedTrack; }
-  RoutePoint *GetSelectedRoutePoint() const { return m_pFoundRoutePoint; }
 
   void SetAISCanvasDisplayStyle(int StyleIndx);
   void TouchAISToolActive(void);
@@ -923,6 +940,9 @@ private:
   wxPoint m_menuPos;
   bool m_inLongPress;
 
+  double m_prev_rlat;
+  double m_prev_rlon;
+
   wxBitmap *pscratch_bm;
   ViewPort VPoint;
   void PositionConsole(void);
@@ -941,7 +961,9 @@ private:
   void ShipIndicatorsDraw(ocpnDC &dc, int img_height, wxPoint GPSOffsetPixels,
                           wxPoint2DDouble lGPSPoint);
 
+  int m_routeState;
   ChInfoWin *m_pCIWin;
+  RoutePoint *m_prev_pMousePoint;
 
   bool m_bShowCurrent;
   bool m_bShowTide;

@@ -28,21 +28,20 @@
 #include <wx/gdicmn.h>
 #include <wx/window.h>
 
+#include "model/route_point.h"
+
 /** Minimal ChartCAnvas interface with very little dependencies. */
 class AbstractChartCanvas : public wxWindow {
 public:
   AbstractChartCanvas(wxWindow* parent, wxPoint point, wxSize size, int flags)
       : wxWindow(parent, wxID_ANY, point, size, flags) {}
+
+  virtual ~AbstractChartCanvas() = default;
+
   virtual void ReloadVP(bool b_adjust = true) = 0;
 
   virtual float GetVPScale() = 0;
-
-  virtual bool Show(bool show = true) = 0;
-
-  virtual double GetCanvasRangeMeters() = 0;
-
   virtual int GetENCDisplayCategory() = 0;
-  virtual void SetCanvasRangeMeters(double range) = 0;
   virtual wxBitmap* GetScratchBitmap() const = 0;
   virtual void ResetGridFont() = 0;
   virtual void ResetGlGridFont() = 0;
@@ -52,8 +51,26 @@ public:
   virtual void TriggerDeferredFocus() = 0;
   virtual void Refresh(bool eraseBackground = true,
                        const wxRect* rect = nullptr) = 0;
-  virtual wxWindow* GetWindow() = 0;
+  virtual void InvalidateRedo() = 0;
   virtual double GetScaleValue() = 0;
+
+  virtual double GetCanvasRangeMeters() = 0;
+  virtual void SetCanvasRangeMeters(double range) = 0;
+
+  virtual double GetPrevRlat() const = 0;
+  virtual void SetPrevRlat(double lat) = 0;
+
+  virtual double GetPrevRlon() const = 0;
+  virtual void SetPrevRlon(double lat) = 0;
+
+  virtual RoutePoint* GetPrevMousePoint() const = 0;
+  virtual void SetPrevMousePoint(RoutePoint* point) = 0;
+
+  virtual int GetRouteState() const = 0;
+  virtual void SetRouteState(int state) = 0;
+
+  virtual RoutePoint* GetSelectedRoutePoint() const = 0;
+  virtual void SetSelectedRoutePoint(RoutePoint* point) = 0;
 };
 
 #endif  /// AbsTraCT_ChArt_canV_h

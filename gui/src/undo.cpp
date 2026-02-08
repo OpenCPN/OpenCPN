@@ -38,15 +38,14 @@
 #include "model/routeman.h"
 #include "model/select.h"
 
-#include "chcanv.h"
+#include "abstract_chart_canv.h"
 #include "mark_info.h"
 #include "navutil.h"
 #include "routemanagerdialog.h"
-#include "styles.h"
 #include "top_frame.h"
 #include "undo.h"
 
-Undo::Undo(ChartCanvas* parent) {
+Undo::Undo(AbstractChartCanvas* parent) {
   m_parent = parent;
   depthSetting = 10;
   stackpointer = 0;
@@ -86,7 +85,7 @@ wxString UndoAction::Description() {
   return descr;
 }
 
-void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doUndoMoveWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   double lat, lon;
   RoutePoint* currentPoint = (RoutePoint*)action->after[0];
   wxRealPoint* lastPoint = (wxRealPoint*)action->before[0];
@@ -118,7 +117,7 @@ void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
   }
 }
 
-void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doUndoDeleteWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
   NavObj_dB::GetInstance().InsertRoutePoint(point);
@@ -130,7 +129,7 @@ void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
     pRouteManagerDialog->UpdateWptListCtrl();
 }
 
-void doRedoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doRedoDeleteWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   NavObj_dB::GetInstance().DeleteRoutePoint(point);
   pSelect->DeleteSelectablePoint(point, SELTYPE_ROUTEPOINT);
@@ -139,15 +138,15 @@ void doRedoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
     pRouteManagerDialog->UpdateWptListCtrl();
 }
 
-void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doUndoAppendWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   Route* route = (Route*)action->after[0];
 
   bool noRouteLeftToRedo = false;
-  if ((route->GetnPoints() == 2) && (cc->m_routeState == 0))
+  if ((route->GetnPoints() == 2) && (cc->GetRouteState() == 0))
     noRouteLeftToRedo = true;
 
-  g_pRouteMan->RemovePointFromRoute(point, route, cc->m_routeState);
+  g_pRouteMan->RemovePointFromRoute(point, route, cc->GetRouteState());
   top_frame::Get()->InvalidateAllGL();
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
@@ -157,7 +156,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   }
 
   if (noRouteLeftToRedo) {
-    cc->undo->InvalidateRedo();
+    cc->InvalidateRedo();
   }
 
   if (RouteManagerDialog::getInstanceFlag()) {
@@ -165,16 +164,16 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
       pRouteManagerDialog->UpdateWptListCtrl();
   }
 
-  if (cc->m_routeState > 1) {
-    cc->m_routeState--;
-    cc->m_prev_pMousePoint = route->GetLastPoint();
-    cc->m_prev_rlat = cc->m_prev_pMousePoint->m_lat;
-    cc->m_prev_rlon = cc->m_prev_pMousePoint->m_lon;
+  if (cc->GetRouteState() > 1) {
+    cc->SetRouteState(cc->GetRouteState() - 1);
+    cc->SetPrevMousePoint(route->GetLastPoint());
+    cc->SetPrevRlat(cc->GetPrevMousePoint()->m_lat);
+    cc->SetPrevRlon(cc->GetPrevMousePoint()->m_lon);
     route->m_lastMousePointIndex = route->GetnPoints();
   }
 }
 
-void doRedoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
+void doRedoAppendWaypoint(UndoAction* action, AbstractChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   Route* route = (Route*)action->after[0];
 
@@ -193,11 +192,11 @@ void doRedoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
 
-  if (cc->m_routeState > 1) {
-    cc->m_routeState++;
-    cc->m_prev_pMousePoint = route->GetLastPoint();
-    cc->m_prev_rlat = cc->m_prev_pMousePoint->m_lat;
-    cc->m_prev_rlon = cc->m_prev_pMousePoint->m_lon;
+  if (cc->GetRouteState() > 1) {
+    cc->SetRouteState(cc->GetRouteState() + 1);
+    cc->SetPrevMousePoint(route->GetLastPoint());
+    cc->SetPrevRlat(cc->GetPrevMousePoint()->m_lat);
+    cc->SetPrevRlon(cc->GetPrevMousePoint()->m_lon);
     route->m_lastMousePointIndex = route->GetnPoints();
   }
 }
