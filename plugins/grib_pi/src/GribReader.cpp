@@ -113,6 +113,18 @@ static bool RecordIsCurrent(GribRecord *rec) {
          rec->getDataType() == GRB_CUR_SPEED;
 }
 
+static bool RecordIsWave(GribRecord *rec) {
+  return rec->getDataType() == GRB_HTSGW ||  // Combined significant wave height
+         rec->getDataType() == GRB_DIRPW ||  // Primary wave direction
+         rec->getDataType() == GRB_PERPW ||  // Primary wave period
+         rec->getDataType() == GRB_WVHGT ||  // Wind wave height
+         rec->getDataType() == GRB_WVDIR ||  // Wind wave direction
+         rec->getDataType() == GRB_WVPER ||  // Wind wave period
+         rec->getDataType() == GRB_SWELL ||  // Swell wave height
+         rec->getDataType() == GRB_SWDIR ||  // Swell wave direction
+         rec->getDataType() == GRB_SWPER;    // Swell wave period
+}
+
 void GribReader::readAllGribRecords() {
   //--------------------------------------------------------
   // Lecture de l'ensemble des GribRecord du fichier
@@ -215,27 +227,11 @@ void GribReader::readAllGribRecords() {
               || rec->getDataType() == GRB_COMP_REFL) &&
              rec->getLevelType() == LV_ATMOS_ALL && rec->getLevelValue() == 0)
       storeRecordInMap(rec);
-    else if (rec->getDataType() == GRB_HTSGW)  // Significant Wave Height
+
+    else if (RecordIsWave(rec))  // All wave parameters
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() ==
-             GRB_PER)  // Combined Wind Waves and Swell period
-      storeRecordInMap(rec);
-
-    else if (rec->getDataType() ==
-             GRB_DIR)  // Combined Wind Waves and Swell Direction
-      storeRecordInMap(rec);
-
-    else if (rec->getDataType() == GRB_WVHGT)  // Wind Wave Height
-      storeRecordInMap(rec);
-
-    else if (rec->getDataType() == GRB_WVPER)  // Wind Waves period
-      storeRecordInMap(rec);
-
-    else if (rec->getDataType() == GRB_WVDIR)  // Wind Waves Direction
-      storeRecordInMap(rec);
-
-    else if (rec->getDataType() == GRB_CRAIN)  // Catagorical Rain  1/0
+    else if (rec->getDataType() == GRB_CRAIN)  // Categorical Rain  1/0
       storeRecordInMap(rec);
 
     else if ((rec->getDataType() == GRB_WTMP) &&
@@ -253,7 +249,7 @@ void GribReader::readAllGribRecords() {
 
     else if ((rec->getDataType() == GRB_GEOPOT_HGT &&
               rec->getLevelType() ==
-                  LV_ISOBARIC)  // geopotentiel geight at x hpa
+                  LV_ISOBARIC)  // geopotentiel height at x hpa
              && (rec->getLevelValue() == 850 || rec->getLevelValue() == 700 ||
                  rec->getLevelValue() == 500 || rec->getLevelValue() == 300))
       storeRecordInMap(rec);
@@ -412,11 +408,21 @@ void  GribReader::removeFirstCumulativeRecord()
 }
 */
 void GribReader::copyMissingWaveRecords() {
-  copyMissingWaveRecords(GRB_HTSGW, LV_GND_SURF, 0);
-  copyMissingWaveRecords(GRB_WVDIR, LV_GND_SURF, 0);
-  copyMissingWaveRecords(GRB_WVPER, LV_GND_SURF, 0);
-  copyMissingWaveRecords(GRB_DIR, LV_GND_SURF, 0);
-  copyMissingWaveRecords(GRB_PER, LV_GND_SURF, 0);
+  // Combined wave parameters (existing)
+  copyMissingWaveRecords(GRB_HTSGW, LV_GND_SURF,
+                         0);  // Combined significant height
+  copyMissingWaveRecords(GRB_DIRPW, LV_GND_SURF, 0);  // Primary wave direction
+  copyMissingWaveRecords(GRB_PERPW, LV_GND_SURF, 0);  // Primary wave period
+
+  // Wind wave parameters (existing definitions reused)
+  copyMissingWaveRecords(GRB_WVHGT, LV_GND_SURF, 0);  // Wind wave height
+  copyMissingWaveRecords(GRB_WVDIR, LV_GND_SURF, 0);  // Wind wave direction
+  copyMissingWaveRecords(GRB_WVPER, LV_GND_SURF, 0);  // Wind wave period
+
+  // Swell wave parameters (existing definitions reused)
+  copyMissingWaveRecords(GRB_SWELL, LV_GND_SURF, 0);  // Swell height
+  copyMissingWaveRecords(GRB_SWDIR, LV_GND_SURF, 0);  // Swell direction
+  copyMissingWaveRecords(GRB_SWPER, LV_GND_SURF, 0);  // Swell period
 }
 
 //---------------------------------------------------------------------------------

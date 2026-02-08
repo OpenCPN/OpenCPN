@@ -91,7 +91,9 @@ struct GribOverlaySettings {
     WIND,
     WIND_GUST,
     PRESSURE,
-    WAVE,
+    COMBINED_WAVES,
+    WIND_WAVES,
+    SWELL_WAVES,
     CURRENT,
     PRECIPITATION,
     CLOUD,
@@ -106,11 +108,26 @@ struct GribOverlaySettings {
   enum Units0 { KNOTS, M_S, MPH, KPH, BFS };
   enum Units1 { MILLIBARS, MMHG, INHG };
   enum Units2 { METERS, FEET };
-  enum Units3 { CELCIUS, FAHRENHEIT };
+  enum Units3 { CELSIUS, FAHRENHEIT };
   enum Units4 { MILLIMETERS, INCHES };
   enum Units5 { PERCENTAGE };
   enum Units6 { JPKG };
   enum Units7 { DBZ };
+
+  enum UnitType {
+    UNIT_TYPE_WIND_SPEED =
+        0,  ///< Wind speed units (knots, m/s, mph, kph, beaufort)
+    UNIT_TYPE_PRESSURE = 1,  ///< Pressure units (millibars, mmHg, inHg)
+    UNIT_TYPE_DISTANCE =
+        2,  ///< Distance/height units (meters, feet) - includes wave height
+    UNIT_TYPE_TEMPERATURE = 3,    ///< Temperature units (celsius, fahrenheit)
+    UNIT_TYPE_PRECIPITATION = 4,  ///< Precipitation units (millimeters, inches)
+    UNIT_TYPE_PERCENTAGE = 5,     ///< Percentage units
+    UNIT_TYPE_ENERGY = 6,         ///< Energy units (j/kg)
+    UNIT_TYPE_CURRENT_SPEED =
+        7,                      ///< Current speed units (knots, m/s, mph, kph)
+    UNIT_TYPE_REFLECTIVITY = 8  ///< Reflectivity units (dBZ)
+  };
 
   struct OverlayDataSettings {
     int m_Units;
