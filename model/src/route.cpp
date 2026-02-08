@@ -170,12 +170,14 @@ void Route::AddPointAndSegment(RoutePoint *pNewPoint, bool b_rename_in_sequence,
                                bool b_deferBoxCalc) {
   int npoints = GetnPoints();
   RoutePoint *newpoint = pNewPoint;
-  if (newpoint->m_bIsInLayer) {
+  if (newpoint->m_bIsInLayer && !newpoint->m_bAllowLayerReuse) {
     newpoint = new RoutePoint(pNewPoint->m_lat, pNewPoint->m_lon,
                               pNewPoint->GetIconName(), pNewPoint->GetName(),
                               "", false);
     newpoint->m_bShowName =
         pNewPoint->m_bShowName;  // do not change new wpt's name visibility
+    if (pNewPoint->m_bLayerGuidIsPersistent)
+      newpoint->m_LinkedLayerGUID = pNewPoint->m_GUID;
   }
   AddPoint(newpoint, false);
   if (npoints != 0) {

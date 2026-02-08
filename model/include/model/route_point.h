@@ -215,6 +215,7 @@ public:
    *         wxInvalidDateTime if no manual ETD has been set.
    */
   wxDateTime GetManualETD();
+  bool UpdateFromLinkedLayer();
   /**
    * Sets the Estimated Time of Departure for this waypoint, in UTC.
    *
@@ -469,9 +470,21 @@ public:
    */
   bool m_bIsInLayer;
   /**
+   * Allow using a layer waypoint directly in a route (no cloning).
+   */
+  bool m_bAllowLayerReuse;
+  /**
+   * True if layer waypoint GUID came from the GPX file (stable across reloads).
+   */
+  bool m_bLayerGuidIsPersistent;
+  /**
    * Layer identifier if the waypoint belongs to a layer.
    */
   int m_LayerID;
+  /**
+   * GUID of a layer waypoint this point is linked to (empty if none).
+   */
+  wxString m_LinkedLayerGUID;
   /**
    * Course from this waypoint to the next waypoint, in degrees.
    * @note Calculated field - Calculated from bearing between points.
