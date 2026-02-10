@@ -1889,11 +1889,11 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
       wxDateTime now = wxDateTime::Now();
       unsigned long Time = now.GetValue().ToLong();
       ovec.push_back((unsigned char)((Time >> 24) & 0xFF));
-      byteSum += (Time >> 24);
+      byteSum += (Time >> 24 & 0xFF);
       ovec.push_back((unsigned char)((Time >> 16) & 0xFF));
-      byteSum += (Time >> 16);
+      byteSum += (Time >> 16 & 0xFF);
       ovec.push_back((unsigned char)((Time >> 8) & 0xFF));
-      byteSum += (Time >> 8);
+      byteSum += (Time >> 8 & 0xFF);
       ovec.push_back((unsigned char)(Time & 0xFF));
       byteSum += (Time & 0xFF);     
 
