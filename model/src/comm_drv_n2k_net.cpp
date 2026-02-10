@@ -1837,8 +1837,89 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
       break;
     case N2KFormat_Actisense_RAW:
       break;
-    case N2KFormat_Actisense_NGT:
+    case N2KFormat_Actisense_NGT: {
+      // packet
+      // format: 93 13 02 01 F8 01 FF 01 76 C2 52 00 08 08 70 EB 14 E8 8E 52 D2
+      // BB 10 03
+
+      // length (1):      0x13 (Payloadlen + 0x0B)
+      // priority (1);    0x02
+      // PGN (3):         0x01 0xF8 0x01
+      // destination(1):  0xFF
+      // source (1):      0x01
+      // time (4):        0x76 0xC2 0x52 0x00
+      // len (1):         0x08
+      // data (len):      08 70 EB 14 E8 8E 52 D2
+      // packet CRC:      0xBB
+      // Escape           0x10
+      // End of text:     0x03
+      // Make a message
+      int byteSum = 0;
+      uint8_t CheckSum;
+      std::vector<unsigned char> ovec;
+
+      ovec.push_back(ESCAPE);
+      ovec.push_back(STARTOFTEXT);
+      ovec.push_back(0x93);  // Messagetype
+      byteSum += 0x93;
+      ovec.push_back((uint8_t)(msg->payload.size() + 0x0B));  // length of all
+      byteSum += (msg->payload.size() + 0x0B);
+      ovec.push_back((uint8_t)msg->priority);  // priority
+      byteSum += (uint8_t)msg->priority;
+
+      // PGN
+      uint32_t pgn = (uint32_t) msg->PGN.pgn;
+      ovec.push_back((unsigned char)((pgn >> 16) & 0xFF));
+      byteSum += ((pgn >> 16) & 0xFF);
+      ovec.push_back((unsigned char)((pgn >> 8) & 0xFF));
+      byteSum += ((pgn >> 8) & 0xFF);
+      ovec.push_back((unsigned char)(pgn & 0xFF));
+      byteSum += (pgn & 0xFF);
+
+      //destination
+      ovec.push_back(dest_addr->address); 
+      byteSum += dest_addr->address;
+
+      // source ... like erverywere set to 1
+      // No need to specify the source address
+      ovec.push_back(0x01);
+      byteSum += 0x01;
+
+      // Time 4 Bytes
+      wxDateTime now = wxDateTime::Now();
+      unsigned long Time = now.GetValue().ToLong();
+      ovec.push_back((unsigned char)((Time >> 24) & 0xFF));
+      byteSum += (Time >> 24);
+      ovec.push_back((unsigned char)((Time >> 16) & 0xFF));
+      byteSum += (Time >> 16);
+      ovec.push_back((unsigned char)((Time >> 8) & 0xFF));
+      byteSum += (Time >> 8);
+      ovec.push_back((unsigned char)(Time & 0xFF));
+      byteSum += (Time & 0xFF);     
+
+      // Payload length
+      ovec.push_back((uint8_t)msg->payload.size());
+      byteSum += msg->payload.size();
+      
+      for (unsigned char d : msg->payload) {
+        ovec.push_back(d);
+        byteSum += d;
+      }
+      
+      // checksum
+      byteSum %= 256;
+      CheckSum = (uint8_t)((byteSum == 0) ? 0 : (256 - byteSum));
+      ovec.push_back(CheckSum);
+      if (CheckSum == ESCAPE) {
+        ovec.push_back(CheckSum);
+      }
+      ovec.push_back(ESCAPE);
+      ovec.push_back(ENDOFTEXT);
+      
+      // form the result
+      tx_vector.push_back(ovec);     
       break;
+    }
     case N2KFormat_SeaSmart:
       break;
     default:
@@ -1880,6 +1961,12 @@ bool CommDriverN2KNet::PrepareForTX() {
   // If the detected data format is N2KFormat_SeaSmart,
   // then we can't transmit.
   if (m_n2k_format == N2KFormat_SeaSmart) return false;
+
+  // Step 1.3
+  // If the detected data format is N2KFormat_Actisense_NGT,
+  // then we are clearly connected to an actisense device.
+  // Nothing else need be done.
+  if (m_n2k_format == N2KFormat_Actisense_NGT) return true;
 
   // Step 2
 
