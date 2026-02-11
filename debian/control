@@ -50,12 +50,6 @@ Depends: opencpn-data (>= ${source:Version}),
  ${misc:Depends}
 Recommends: wx3.2-i18n, xdg-utils, libusb-0.1-4
 Suggests: binutils
-Breaks: opencpn-plugins (<< 4.8.8~),
- opencpn-gshhs-crude (<< 1:1),
- opencpn-tcdata (<< 1:1)
-Replaces: opencpn-plugins (<< 4.8.8~),
- opencpn-gshhs-crude(<< 1:1),
- opencpn-tcdata(<< 1:1)
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
  or as a planning tool. Developed by a team of active sailors using real
