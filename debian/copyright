@@ -140,6 +140,10 @@ Files: data/wvsdata/*
 Copyright: 2017, wxTide Authors
 License: GPL-2+
 
+Files: data/svg/MUI_flat/help-info.svg
+Copyright: no copyright
+License: GPL-3
+
 Files: debian/*
 Copyright: 2023-2025, Alec Leamas
 License: GPL-2+
@@ -502,11 +506,6 @@ Files: libs/IXWebSocket/third_party/cpp-linenoise/*
 Copyright: 2015, yhirose
  2015, Yuji Hirose)
 License: BSD-2-clause
-
-Files: libs/IXWebSocket/third_party/cpp-linenoise/linenoise.cpp
- libs/IXWebSocket/third_party/cpp-linenoise/linenoise.hpp
-Copyright: 2015, yhirose
-License: BSD-2-clause or Zlib
 
 Files: libs/N2KParser/*
 Copyright: 2015-2022, Timo Lappalainen, Kave Oy, www.kave.fi
@@ -954,11 +953,11 @@ License: X11
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/config/libtool.m4
 Copyright: 1996-2001, 2003-2005, Free Software Foundation, Inc.
-License: FSFULLR
+License:  FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/config/ltmain.sh
 Copyright: 1996-2019, 2021, 2022, Free Software Foundation, Inc.
-License: FSFULLR
+License:  GPL-2+ with Libtool exception
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/configure
 Copyright: 1992-1996, 1998-2017, 2020-2023, Free Software Foundation
@@ -1014,7 +1013,7 @@ License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/libtool.m4
 Copyright: 1996-2001, 2003-2019, 2021, 2022, Free Software
-License: FSFULLR
+License: (FSFULLR and/or GPL-2) with Libtool exception
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/ltsugar.m4
 Copyright: 2004, 2005, 2007, 2008, 2011-2019, 2021, 2022, Free Software
@@ -1234,6 +1233,10 @@ Files: libs/mdns/CMakeLists.txt
 Copyright: 2023, 2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-3+
 
+Files: libs/mdns/mdns-util.h
+Copyright: 2017, Mattias Jansson
+License: public-domain
+
 Files: libs/mdns/mdns-1.4.3/*
 Copyright: 2017, Mattias Jansson
 License: Unlicense or public-domain
@@ -1243,13 +1246,19 @@ Copyright: 2017, Mattias Jansson
 License: Unlicense
 
 Files: libs/mdns/mdns-1.4.3/README.md
- libs/mdns/mdns-1.4.3/mdns.h
+ libs/mdns/mdns-1.4.3/mdns.h libs/mdns/include/mdns_util.h
 Copyright: no-info-found
 License: public-domain
 
 Files: libs/mdns/src/*
 Copyright: no-info-found
 License: public-domain
+
+Files: libs/mdns/include/android/ifaddrs-android.h
+   libs/mdns/include/android/LocalArray.h
+   libs/mdns/include/android/ScopedFd.h
+Copyright: 2009 The Android Open Source Project
+License: Apache-2.0
 
 Files: libs/mipmap/*
 Copyright: 2011, 2013-2016, Sean D'Epagnier
@@ -1297,6 +1306,10 @@ License: GPL-2+
 Files: libs/observable/manual/*
 Copyright: Alec Leamas 2021-2023 Alec Leamas
 License: BSD-2-clause
+
+Files: libs/observable/manual/intro.h
+Copyright: Alec Leamas 2021-2023 Alec Leamas
+License: GPL-2+
 
 Files: libs/observable/src/*
 Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
