@@ -429,7 +429,7 @@ License: BSD-3-clause
 
 Files: libs/IXWebSocket/ixwebsocket/*
 Copyright: 2017-2020, Machine Zone, Inc.
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/IXWebSocket/ixwebsocket/IXBase64.h
 Copyright: 2016, tomykaira
@@ -444,7 +444,7 @@ Files: libs/IXWebSocket/ixwebsocket/IXGetFreePort.cpp
  libs/IXWebSocket/ixwebsocket/IXUuid.cpp
  libs/IXWebSocket/ixwebsocket/IXUuid.h
 Copyright: 2017-2020, 2022, Machine Zone.
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/IXWebSocket/ixwebsocket/IXUrlParser.cpp
 Copyright: 2015, Sergey Kosarevsky (sk@linderdaum.com)
@@ -469,7 +469,7 @@ License: Expat
 
 Files: libs/IXWebSocket/test/*
 Copyright: 2017-2020, 2022, Machine Zone.
-License: BSD-3-Clause
+License: BSD-3-clause
 Comment: License as of https://github.com/machinezone/IXWebSocket
 
 Files: libs/IXWebSocket/test/CMakeLists.txt
@@ -496,7 +496,7 @@ License: CC0-1.0
 
 Files: libs/IXWebSocket/test/compatibility/csharp/Main.cs
 Copyright: 2017-2020, Machine Zone, Inc.
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/IXWebSocket/third_party/cli11/*
 Copyright: 2017-2020, University of Cincinnati, developedHenry
@@ -887,7 +887,7 @@ License: Expat
 
 Files: libs/libdnet/*
 Copyright: 2000-2006, Dug Song <dugsong@monkey.org>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/CMakeLists.txt
 Copyright: 2023, 2024, Alec Leamas <leamas.alec@gmail.com>
@@ -967,32 +967,32 @@ License: FSFUL
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/configure.ac
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/include/*
 Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/include/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/include/dnet/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/include/dnet/arp.h
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/include/dnet/rand.h
 Copyright: 2000, Dug Song <dugsong@monkey.org>
  1996, David Mazieres <dm@lcs.mit.edu>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/include/dnet/sctp.h
 Copyright: 2008, 2009, Daniel Roethlisberger <daniel@roe.ch>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/include/err.h
 Copyright: 2000, Dug Song <dugsong@monkey.org>
@@ -1040,7 +1040,7 @@ License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/man/dnet.3
 Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/python/*
 Copyright: 1994-2021, Free Software Foundation, Inc.
@@ -1059,7 +1059,7 @@ License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/python/dnet.pyx
 Copyright: 2023, 2024, Oliver Falk'
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/src/*
 Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
@@ -1084,11 +1084,11 @@ License: BSD-4-Clause-UC
 Files: libs/libdnet/libdnet-libdnet-1.18.0/src/fw-pktfilter.c
 Copyright: 2002, Dug Song <dugsong@monkey.org>
  2001, Jean-Baptiste Marchand, Hervé Schauer Consultants.
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/src/intf-win32.c
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-kernel.at>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/src/memcmp.c
  libs/libdnet/libdnet-libdnet-1.18.0/src/strsep.c
@@ -1099,12 +1099,12 @@ Files: libs/libdnet/libdnet-libdnet-1.18.0/src/rand.c
 Copyright: 2023, 2024, Oliver Falk <oliver@linux-krenle.at>
  2000, Dug Song <dugsong@monkey.org>
  1996, David Mazieres <dm@lcs.mit.edu>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/src/route-bsd.c
 Copyright: 2001, Dug Song <dugsong@monkey.org>
  1999, Masaki Hirabaru <masaki@merit.edu>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/src/strlcat.c
  libs/libdnet/libdnet-libdnet-1.18.0/src/strlcpy.c
@@ -1113,11 +1113,11 @@ License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/test/*
 Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/test/Makefile.in
 Copyright: 1994-2021, Free Software Foundation, Inc.
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/test/check/*
 Copyright: 1994-2021, Free Software Foundation, Inc.
@@ -1163,7 +1163,7 @@ Files: libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/addr.c
  libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/tcp.c
  libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/udp.c
 Copyright: 2000-2002, Dug Song <dugsong@monkey.org>
-License: BSD-3-Clause
+License: BSD-3-clause
  libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/arp.c
  libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/aton.c
  libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/aton.h
@@ -1184,7 +1184,7 @@ License: BSD-3-Clause
 Files: libs/libdnet/libdnet-libdnet-1.18.0/test/dnet/fw.c
 Copyright: 2020, Oliver Falk <oliver@linux-kernel.at>
  2001, Dug Song <dugsong@monkey.org>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/libtess2/*
 Copyright: [dates of first publication] Silicon Graphics, Inc.
@@ -1437,7 +1437,7 @@ License: Expat
 
 Files: libs/sqlite/cmake/*
 Copyright: 2008, Gilles Caulier, <caulier.gilles@gmail.com>
-License: BSD-3-Clause
+License: BSD-3-clause
 
 Files: libs/ssl_sha1/*
 Copyright: 2006-2014, Brainspark B.V.
@@ -2881,3 +2881,22 @@ License: wxWidgets
  to permit this exception to apply to your modifications. If you do not wish that,
  you must delete the exception notice from such code and/or adjust the licensing '
  conditions notice accordingly.
+
+License: GPL-2+ with Libtool exception
+ GNU Libtool is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ As a special exception to the GNU General Public License, if you
+ distribute this file as part of a program or library that is built
+ using GNU Libtool, you may include this file under the  same
+ distribution terms that you use for the rest of that program.
+ .
+ GNU Libtool is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
