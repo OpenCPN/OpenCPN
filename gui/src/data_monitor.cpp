@@ -44,9 +44,10 @@
 #include "model/base_platform.h"
 #include "model/data_monitor_src.h"
 #include "model/filters_on_disk.h"
+#include "model/gui.h"
 #include "model/navmsg_filter.h"
 #include "model/nmea_log.h"
-#include "model/gui.h"
+#include "model/svg_utils.h"
 
 #include "data_monitor.h"
 #include "std_filesystem.h"
@@ -205,6 +206,33 @@ static void AddStdLogline(const Logline& ll, std::ostream& stream, char fs,
   stream << ws;
 }
 
+/** Clickable crossmark icon window*/
+class CrossIconWindow : public wxWindow {
+public:
+  CrossIconWindow(wxWindow* parent, std::function<void()> on_click)
+      : wxWindow(parent, wxID_ANY), m_on_click(on_click) {
+    fs::path icon_path(g_BasePlatform->GetSharedDataDir().ToStdString());
+    icon_path /= fs::path("uidata") / "MUI_flat" / "cross-small-symbolic.svg";
+    int size = parent->GetTextExtent("X").y;
+    m_bitmap = LoadSVG(icon_path.string(), size, size);
+    assert(m_bitmap.IsOk());
+    SetInitialSize({size, size});
+
+    Bind(wxEVT_LEFT_DOWN, [&](wxMouseEvent&) { m_on_click(); });
+    Bind(wxEVT_PAINT, [&](wxPaintEvent& ev) { OnPaint(ev); });
+  }
+
+private:
+  void OnPaint(wxPaintEvent& event) {
+    wxPaintDC dc(this);
+    PrepareDC(dc);
+    dc.DrawBitmap(m_bitmap, 0, 0, true);
+  }
+
+  wxBitmap m_bitmap;
+  std::function<void()> m_on_click;
+};
+
 /** Main window, a rolling log of messages. */
 class TtyPanel : public wxPanel, public NmeaLog {
 public:
@@ -270,16 +298,20 @@ private:
 /** The quick filter above the status line, invoked by funnel button. */
 class QuickFilterPanel : public wxPanel {
 public:
-  QuickFilterPanel(wxWindow* parent, std::function<void()> on_text_evt)
+  QuickFilterPanel(wxWindow* parent, std::function<void()> on_text_evt,
+                   std::function<void()> on_close)
       : wxPanel(parent),
         m_text_ctrl(new wxTextCtrl(this, wxID_ANY)),
-        m_on_text_evt(std::move(on_text_evt)) {
+        m_on_text_evt(std::move(on_text_evt)),
+        m_on_close(std::move(on_close)) {
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     auto flags = wxSizerFlags(0).Border();
     auto label_box = new wxBoxSizer(wxVERTICAL);
     label_box->Add(new wxStaticText(this, wxID_ANY, _("Quick filter:")));
     hbox->Add(label_box, flags.Align(wxALIGN_CENTER_VERTICAL));
     hbox->Add(m_text_ctrl, flags);
+    hbox->AddStretchSpacer();
+    hbox->Add(new CrossIconWindow(this, [&] { m_on_close(); }), flags);
     SetSizer(hbox);
     wxWindow::Fit();
     wxWindow::Show();
@@ -298,6 +330,7 @@ public:
 private:
   wxTextCtrl* m_text_ctrl;
   std::function<void()> m_on_text_evt;
+  std::function<void()> m_on_close;
 };
 
 /** Offer user to select current filter. */
@@ -723,6 +756,7 @@ public:
   FilterButton(wxWindow* parent, wxWindow* quick_filter)
       : SvgButton(parent), m_quick_filter(quick_filter), m_show_filter(true) {
     Bind(wxEVT_BUTTON, [&](wxCommandEvent&) { OnClick(); });
+    LoadIcon(kFunnelSvg);
     OnClick();
   }
 
@@ -731,11 +765,8 @@ private:
   bool m_show_filter;
 
   void OnClick() {
-    LoadIcon(m_show_filter ? kFunnelSvg : kNoFunnelSvg);
-    m_show_filter = !m_show_filter;
     m_quick_filter->Show(m_show_filter);
-    SetToolTip(m_show_filter ? _("Close quick filter")
-                             : _("Open quick filter"));
+    SetToolTip(_("Open quick filter"));
     GetGrandParent()->Layout();
   }
 };
@@ -904,8 +935,12 @@ DataMonitor::DataMonitor(wxWindow* parent)
     std::string value = quick_filter->GetValue();
     tty_panel->SetQuickFilter(value);
   };
-  m_quick_filter = new QuickFilterPanel(this, on_quick_filter_evt);
-  vbox->Add(m_quick_filter, wxSizerFlags());
+  auto on_dismiss = [&] {
+    m_quick_filter->Hide();
+    Layout();
+  };
+  m_quick_filter = new QuickFilterPanel(this, on_quick_filter_evt, on_dismiss);
+  vbox->Add(m_quick_filter, wxSizerFlags().Expand());
 
   auto on_stop = [&, tty_panel](bool stop) { tty_panel->OnStop(stop); };
   auto on_close = [&, this]() { this->OnHide(); };
