@@ -604,7 +604,7 @@ public:
   };
 
   TheMenu(wxWindow* parent, DataLogger& logger)
-      : m_parent(parent), m_logger(logger) {
+      : m_parent(parent), m_logger(logger), m_is_logging_configured(false) {
     AppendCheckItem(static_cast<int>(Id::kViewStdColors), _("Use colors"));
     Append(static_cast<int>(Id::kUserColors), _("Colors..."));
     Append(static_cast<int>(Id::kClear), _("Clear..."));
@@ -673,16 +673,19 @@ public:
     m_filter = filter;
   }
 
-  void ConfigureLogging() const {
+  void ConfigureLogging() {
     LoggingSetup dlg(
         m_parent,
         [&](DataLogger::Format f, const std::string& s) { SetLogFormat(f, s); },
         m_logger);
     dlg.ShowModal();
+    m_is_logging_configured = true;
     auto monitor = wxWindow::FindWindowByName(kDataMonitorWindowName);
     assert(monitor);
     monitor->Layout();
   }
+
+  bool IsLoggingConfigured() const { return m_is_logging_configured; }
 
 private:
   static wxMenuItem* AppendId(wxMenu* root, Id id, const wxString& label) {
@@ -715,6 +718,7 @@ private:
   wxWindow* m_parent;
   DataLogger& m_logger;
   std::string m_filter;
+  bool m_is_logging_configured;
 };
 
 /** Button to start/stop logging. */
@@ -745,7 +749,7 @@ private:
   TheMenu& m_menu;
 
   void OnClick(bool ctor = false) {
-    if (!m_is_inited && !ctor) {
+    if (!m_is_inited && !ctor && !m_menu.IsLoggingConfigured()) {
       m_menu.ConfigureLogging();
       m_is_inited = true;
     }
