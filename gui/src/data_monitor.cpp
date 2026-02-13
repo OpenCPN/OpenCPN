@@ -595,6 +595,7 @@ public:
     kNewFilter = 1,  // MacOS does not want ids to be 0.
     kEditFilter,
     kDeleteFilter,
+    kRenameFilter,
     kEditActiveFilter,
     kLogSetup,
     kViewStdColors,
@@ -612,6 +613,7 @@ public:
     AppendId(filters, Id::kNewFilter, _("Create new..."));
     AppendId(filters, Id::kEditFilter, _("Edit..."));
     AppendId(filters, Id::kDeleteFilter, _("Delete..."));
+    AppendId(filters, Id::kRenameFilter, _("Rename..."));
     AppendSubMenu(filters, _("Filters..."));
     if (IsUserFilter(m_filter))
       Append(static_cast<int>(Id::kEditActiveFilter), _("Edit active filter"));
@@ -632,6 +634,10 @@ public:
 
         case Id::kEditFilter:
           EditFilterDlg(wxTheApp->GetTopWindow());
+          break;
+
+        case Id::kRenameFilter:
+          RenameFilterDlg(wxTheApp->GetTopWindow());
           break;
 
         case Id::kEditActiveFilter:

@@ -58,6 +58,8 @@ void RemoveFilterDlg(wxWindow* parent);
 
 void EditFilterDlg(wxWindow* parent);
 
+void RenameFilterDlg(wxWindow* parent);
+
 void EditOneFilterDlg(wxWindow* parent, const std::string& filter);
 
 #endif  // FILTER_DLG_H__
