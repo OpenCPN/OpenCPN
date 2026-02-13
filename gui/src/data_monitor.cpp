@@ -596,13 +596,15 @@ public:
     kEditActiveFilter,
     kLogSetup,
     kViewStdColors,
-    kUserColors
+    kUserColors,
+    kClear
   };
 
   TheMenu(wxWindow* parent, DataLogger& logger)
       : m_parent(parent), m_logger(logger) {
     AppendCheckItem(static_cast<int>(Id::kViewStdColors), _("Use colors"));
     Append(static_cast<int>(Id::kUserColors), _("Colors..."));
+    Append(static_cast<int>(Id::kClear), _("Clear..."));
     Append(static_cast<int>(Id::kLogSetup), _("Logging..."));
     auto filters = new wxMenu("");
     AppendId(filters, Id::kNewFilter, _("Create new..."));
@@ -641,9 +643,19 @@ public:
         case Id::kUserColors:
           UserColorsDlg(wxTheApp->GetTopWindow());
           break;
+
+        case Id::kClear:
+          ClearLogWindow();
+          break;
       }
     });
     Check(static_cast<int>(Id::kViewStdColors), true);
+  }
+
+  void ClearLogWindow() {
+    auto* w = wxWindow::FindWindowByName("TtyScroll");
+    auto tty_scroll = dynamic_cast<TtyScroll*>(w);
+    if (tty_scroll) tty_scroll->Clear();
   }
 
   void SetFilterName(const std::string& filter) {

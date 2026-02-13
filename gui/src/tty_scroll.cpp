@@ -180,6 +180,12 @@ void TtyScroll::OnSize(wxSizeEvent& ev) {
   ev.Skip();
 }
 
+void TtyScroll::Clear() {
+  m_lines.clear();
+  for (size_t i = 0; i < m_n_lines; ++i) m_lines.push_back(Logline());
+  Refresh(true);
+}
+
 void TtyScroll::Add(const Logline& ll) {
   if (m_is_paused || !m_filter.Pass(ll.state, ll.navmsg)) return;
   if (!m_quick_filter.empty() && !IsFilterMatch(ll, m_quick_filter)) return;
