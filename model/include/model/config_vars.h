@@ -283,6 +283,7 @@ extern wxString g_datetime_format;        // See extended docs below
 extern wxString g_default_font_facename;  // See extended docs below
 extern wxString g_default_routepoint_icon;
 extern wxString g_default_wp_icon;
+extern wxString g_dm_logfile;  ///< Last Data Monitor log file
 extern wxString g_GPS_Ident;
 extern wxString g_gpx_path;
 extern wxString g_hostname;

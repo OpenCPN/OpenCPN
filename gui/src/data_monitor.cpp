@@ -42,6 +42,7 @@
 #endif
 
 #include "model/base_platform.h"
+#include "model/config_vars.h"
 #include "model/data_monitor_src.h"
 #include "model/filters_on_disk.h"
 #include "model/gui.h"
@@ -536,6 +537,7 @@ public:
 
       FilenameLstnr.Init(logger.OnNewLogfile, [&](const ObservedEvt& ev) {
         GetWindowById<wxStaticText>(kFilenameLabelId)->SetLabel(ev.GetString());
+        g_dm_logfile = ev.GetString();
       });
     }
 
@@ -902,6 +904,7 @@ void DataLogger::SetLogfile(const fs::path& path) {
 void DataLogger::SetFormat(DataLogger::Format format) { m_format = format; }
 
 fs::path DataLogger::GetDefaultLogfile() {
+  if (!g_dm_logfile.empty()) return g_dm_logfile.ToStdString();
   if (m_path.stem() != NullLogfile().stem()) return m_path;
   fs::path path(g_BasePlatform->GetHomeDir().ToStdString());
   path /= "monitor";
