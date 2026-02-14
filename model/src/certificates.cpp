@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  TLS Certificate support
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,13 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
- *
+ * Implement certificates.h  -- TLS Certificate support
  */
 
 #include "config.h"
@@ -47,6 +41,7 @@
 #endif
 
 using namespace std;
+
 /* Generates a 2048-bit RSA key. */
 EVP_PKEY *generate_key() {
   /* Allocate memory for the EVP_PKEY structure. */
@@ -129,33 +124,6 @@ X509 *generate_x509(EVP_PKEY *pkey, string ip_v4) {
                              (unsigned char *)"MyCompany", -1, -1, 0);
   X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
                              (unsigned char *)"localhost", -1, -1, 0);
-
-#if 0
-    // Here is one way to add SAN records to certificate.
-    // Unfortunately, does not link on Windows.  Dunno why...
-    // Alternative method:
-    //    cs_cert_set_subject_alt_name(), above.
-
-    GENERAL_NAMES *gens = sk_GENERAL_NAME_new_null();
-    string dns_name = "www.example.com";
-    GENERAL_NAME *gen_dns = GENERAL_NAME_new();
-    ASN1_IA5STRING *ia5 = ASN1_IA5STRING_new();
-    ASN1_STRING_set(ia5, dns_name.data(), dns_name.length());
-    GENERAL_NAME_set0_value(gen_dns, GEN_DNS, ia5);
-    sk_GENERAL_NAME_push(gens, gen_dns);
-
-    in_addr_t ipv4 = inet_addr(ip_v4.c_str());
-    GENERAL_NAME *gen_ip = GENERAL_NAME_new();
-    ASN1_OCTET_STRING *octet = ASN1_OCTET_STRING_new();
-    ASN1_STRING_set(octet, &ipv4, sizeof(ipv4));
-    GENERAL_NAME_set0_value(gen_ip, GEN_IPADD, octet);
-    sk_GENERAL_NAME_push(gens, gen_ip);
-
-    X509_add1_ext_i2d(x509, NID_subject_alt_name, gens, 0, X509V3_ADD_DEFAULT);
-
-    sk_GENERAL_NAME_pop_free(gens, GENERAL_NAME_free);
-#endif
-
   string ext_name("IP: ");
   ext_name += ip_v4;
   cs_cert_set_subject_alt_name(x509, ext_name);

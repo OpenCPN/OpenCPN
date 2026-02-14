@@ -12,20 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement filters_on_disk.h.
+ *
+ * Implement filters_on_disk.h -- Data Monitor filter storage routines
  */
+
 #include <fstream>
 
 #include "model/filters_on_disk.h"
-#include "std_filesystem.h"
 #include "model/base_platform.h"
+#include "std_filesystem.h"
 
 extern BasePlatform* g_BasePlatform;
 
@@ -70,6 +70,20 @@ bool Remove(const std::string& name) {
   fs::path path(UserPath() / filename);
   fs::remove(path);
   return !fs::exists(path);
+}
+
+bool Rename(const std::string& old_name, const std::string& new_name) {
+  const std::string old_filename = old_name + ".json";
+  fs::path old_path(UserPath() / old_filename);
+  if (!fs::exists(old_path)) return false;
+  const std::string new_filename = new_name + ".json";
+  fs::path new_path(UserPath() / new_filename);
+  try {
+    fs::rename(old_path, new_path);
+  } catch (fs::filesystem_error& e) {
+    return false;
+  }
+  return !fs::exists(old_path) && fs::exists(new_path);
 }
 
 bool Write(const NavmsgFilter& filter, const std::string& name) {

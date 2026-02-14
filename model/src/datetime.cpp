@@ -12,18 +12,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#include <wx/tokenzr.h>
+/**
+ * \file
+ *
+ * Implement datetime.h -- date and time utilities.
+ */
+
 #include <iomanip>
 #include <sstream>
 
-#include "model/datetime.h"
-#include "ocpn_plugin.h"
-
+#include <wx/tokenzr.h>
 #if wxCHECK_VERSION(3, 1, 6)
 #include <wx/uilocale.h>
 #endif
@@ -31,6 +32,9 @@
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
+
+#include "model/datetime.h"
+#include "ocpn_plugin.h"
 
 namespace ocpn {
 
@@ -46,10 +50,10 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
 ) {
   wxDateTime t(date_time);
   wxString effective_time_zone = options.time_zone;
-  if (effective_time_zone == wxEmptyString) {
+  if (effective_time_zone == "") {
     effective_time_zone = ::g_datetime_format;
   }
-  if (effective_time_zone == wxEmptyString) {
+  if (effective_time_zone == "") {
     effective_time_zone = "UTC";
   }
 #ifdef __ANDROID__
@@ -87,7 +91,7 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
       {"$24_hour_minutes_seconds", "%H:%M:%S"},
   };
   wxString format = options.format_string;
-  if (format == wxEmptyString) {
+  if (format == "") {
     format = "$weekday_short_date_time";
   }
   // Iterate through the formatMap and replace each key with its value in
@@ -104,9 +108,10 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
   wxString tzName;
   if (effective_time_zone == "Local Time") {
     wxDateTime now = wxDateTime::Now();
-    if ((now == (now.ToGMT())) &&
-        t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
+    if (now == now.ToGMT() && t.IsDST()) {
+      // bug in wxWingets 3.0 for UTC meridien ?
       t.Add(wxTimeSpan(1, 0, 0, 0));
+    }
     if (options.show_timezone) {
 #ifdef __WXMSW__
       tzName = _("LOC");
@@ -130,10 +135,11 @@ wxString toUsrDateTimeFormat(const wxDateTime date_time,
     }
   } else {
     // UTC, or fallback to UTC if the timezone is not recognized.
-    t.MakeUTC();
     tzName = _("UTC");
   }
-  wxString formattedDate = t.Format(format);
+  wxDateTime::TimeZone zone =
+      tzName == _("UTC") ? wxDateTime::GMT0 : wxDateTime::Local;
+  wxString formattedDate = t.Format(format, zone);
   if (options.show_timezone) {
     return formattedDate + " " + tzName;
   } else {

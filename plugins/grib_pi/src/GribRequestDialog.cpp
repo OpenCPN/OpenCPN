@@ -20,6 +20,10 @@
  * \file
  * \implements \ref GribRequestDialog.h
  */
+// Disable the maybe-uninitialized warning as it triggers in std::regex and
+// makes the build with sanitizers impossible
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 #include "wx/wx.h"
 #include <wx/utils.h>
 #include <sstream>
@@ -34,6 +38,8 @@
 #include "grib_pi.h"
 
 #include <unordered_map>
+#include <regex>
+#include <string>
 
 #define RESOLUTIONS 4
 
@@ -514,6 +520,28 @@ size_t LengthSelToHours(int sel) {
   }
 }
 
+template <typename T>
+std::string GribRequestSetting::FormatPerLocale(T value) {
+  std::stringstream ss;
+  // use the the user-preferred locale rather than the default "C" locale
+  ss.imbue(std::locale(""));
+  ss << value;  // Output for a US locale would be: 12,345,678 for integers
+  return ss.str();
+}
+
+wxString GribRequestSetting::GetDownloadProgressText(long transferredBytes,
+                                                     long totalBytes) {
+  if (totalBytes > 0) {
+    return wxString::Format(_("Downloading... %s kB / %s kB (%li%%)"),
+                            FormatPerLocale(transferredBytes / 1024).c_str(),
+                            FormatPerLocale(totalBytes / 1024).c_str(),
+                            (int)((double)transferredBytes / totalBytes * 100));
+  } else {
+    return wxString::Format(_("Downloading... %s kB / ???"),
+                            FormatPerLocale(transferredBytes / 1024).c_str());
+  }
+}
+
 void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
   // std::cout << "onDLEvent  " << ev.getDLEventCondition() << " "
   //           << ev.getDLEventStatus() << std::endl;
@@ -531,48 +559,28 @@ void GribRequestSetting::onDLEvent(OCPN_downloadEvent &ev) {
       break;
 
     case OCPN_DL_EVENT_TYPE_PROGRESS:
-      if (ev.getTotal() != 0) {
-        switch (m_downloadType) {
-          case GribDownloadType::WORLD:
-            m_staticTextInfo->SetLabelText(
-                wxString::Format(_("Downloading... %li / %li"),
-                                 ev.getTransferred(), ev.getTotal()));
-            break;
-          case GribDownloadType::LOCAL:
-          case GribDownloadType::LOCAL_CATALOG:
-            m_stLocalDownloadInfo->SetLabelText(
-                wxString::Format(_("Downloading... %li / %li"),
-                                 ev.getTransferred(), ev.getTotal()));
-            break;
-          case GribDownloadType::XYGRIB:
-            // Update XyGrib progress gauge
+      switch (m_downloadType) {
+        case GribDownloadType::WORLD:
+          m_staticTextInfo->SetLabelText(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        case GribDownloadType::LOCAL:
+        case GribDownloadType::LOCAL_CATALOG:
+          m_stLocalDownloadInfo->SetLabelText(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        case GribDownloadType::XYGRIB:
+          // Update XyGrib progress gauge
+          if (ev.getTotal()) {
             m_xygribPanel->m_progress_gauge->SetValue(
                 100 * ev.getTransferred() / ev.getTotal());
-            // Update status text to display information on file size
-            m_xygribPanel->m_status_text->SetLabel(wxString::Format(
-                "%s (%ld kB / %ld kB)",
-                _("Downloading GRIB file").c_str().AsChar(),
-                ev.getTransferred() / 1024, ev.getTotal() / 1024));
-            break;
-          default:
-            break;
-        }
-      } else {
-        if (ev.getTransferred() > 0) {
-          switch (m_downloadType) {
-            case GribDownloadType::WORLD:
-              m_staticTextInfo->SetLabelText(wxString::Format(
-                  _("Downloading... %li / ???"), ev.getTransferred()));
-              break;
-            case GribDownloadType::LOCAL:
-            case GribDownloadType::LOCAL_CATALOG:
-              m_stLocalDownloadInfo->SetLabelText(wxString::Format(
-                  _("Downloading... %li / ???"), ev.getTransferred()));
-              break;
-            default:
-              break;
           }
-        }
+          // Update status text to display information on file size
+          m_xygribPanel->m_status_text->SetLabel(
+              GetDownloadProgressText(ev.getTransferred(), ev.getTotal()));
+          break;
+        default:
+          break;
       }
       wxYieldIfNeeded();
       break;
@@ -1862,30 +1870,45 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
     return;
   }
 
+  std::string mailto =
+      (m_pMailTo->GetCurrentSelection() == SAILDOCS
+           ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
+           : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')))
+          .ToStdString();
+  std::string mailfrom = m_pSenderAddress->GetValue().ToStdString();
+
+  std::regex mailregex("^([a-z0-9+_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$");
+
+  if ((!mailto.empty() && !std::regex_match(mailto, mailregex)) ||
+      (!mailfrom.empty() && !std::regex_match(mailfrom, mailregex))) {
+    OCPNMessageBox_PlugIn(
+        this,
+        _("Sender or recipient e-mail address seems invalid.\nPlease correct "
+          "it in the configuration file."),
+        _("Error"), wxOK | wxICON_ERROR);
+    return;
+  }
+
 #ifdef __WXMAC__
   // macOS, at least Big Sur, requires the body to be URLEncoded, otherwise the
   // invocation of the mail application via sh/open in wxEmail fails due to
   // "invalid characters" in "filename" regardless of quotation used (which is
   // weird, but real)
-  wxMailMessage *message = new wxMailMessage(
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? _T("grib-request")
-          : wxT("gribauto"),  // requested subject
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
-          : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
-      EncodeURL(WriteMail()),  // message image
-      m_pSenderAddress->GetValue());
+  wxMailMessage *message =
+      new wxMailMessage((m_pMailTo->GetCurrentSelection() == SAILDOCS)
+                            ? _T("grib-request")
+                            : wxT("gribauto"),  // requested subject
+                        mailto,
+                        EncodeURL(WriteMail()),  // message image
+                        mailfrom);
 #else
-  wxMailMessage *message = new wxMailMessage(
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? _T("grib-request")
-          : wxT("gribauto"),  // requested subject
-      (m_pMailTo->GetCurrentSelection() == SAILDOCS)
-          ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
-          : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')),
-      WriteMail(),  // message image
-      m_pSenderAddress->GetValue());
+  wxMailMessage *message =
+      new wxMailMessage((m_pMailTo->GetCurrentSelection() == SAILDOCS)
+                            ? _T("grib-request")
+                            : wxT("gribauto"),  // requested subject
+                        mailto,
+                        WriteMail(),  // message image
+                        mailfrom);
 #endif
 
   wxEmail mail;

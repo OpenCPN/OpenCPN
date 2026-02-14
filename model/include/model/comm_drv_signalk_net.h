@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * SignalK IP network driver
+ */
+
 // Originally by balp on 2018-07-28.
 
 #ifndef _SIGNALK_NET_H
@@ -50,9 +49,9 @@
 
 static const double ms_to_knot_factor = 1.9438444924406;
 
-class WebSocketThread;
-class OCPN_WebSocketMessageHandler;
-class CommDriverSignalKNetEvent;
+class WebSocketThread;               // Forward in .cpp file
+class OCPN_WebSocketMessageHandler;  // Indirectly unused
+class CommDriverSignalKNetEvent;     // Forward in .cpp file
 
 class CommDriverSignalKNet : public CommDriverSignalK,
                              public wxEvtHandler,

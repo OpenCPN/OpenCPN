@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_n0183_android_bt.h -- Nmea 0183 driver.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2023 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register                                  *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,21 +13,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
+/**
+ * \file
+ *
+ * Implement comm_drv_n0183_android_bt.h -- Android bluettooth Nmea0183
+ * driver.
+ */
 
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 #include <vector>
+
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
 
 #include <wx/event.h>
 #include <wx/log.h>
@@ -55,7 +54,7 @@ typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_FULL
 } _DS_ENUM_BUFFER_STATE;
 
-class CommDriverN0183AndroidBT;  // fwd
+class CommDriverN0183AndroidBT;  // forward
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
@@ -210,7 +209,7 @@ bool CommDriverN0183AndroidBT::Open() {
 
 void CommDriverN0183AndroidBT::Close() {
   wxLogMessage(
-      wxString::Format(_T("Closing NMEA BT Driver %s"), m_portstring.c_str()));
+      wxString::Format("Closing NMEA BT Driver %s", m_portstring.c_str()));
   m_stats_timer.Stop();
 
   androidStopBT();
@@ -227,7 +226,7 @@ bool CommDriverN0183AndroidBT::SendMessage(
   m_driver_stats.tx_count += sentence.Length();
 
   wxString payload = sentence;
-  if (!sentence.EndsWith(_T("\r\n"))) payload += _T("\r\n");
+  if (!sentence.EndsWith("\r\n")) payload += "\r\n";
 
   androidSendBTMessage(payload);
   return true;

@@ -13,18 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Implement comm_drv_factory.h: Communication driver factory.
  */
 
 // FIXME  Why is this needed?
-#ifdef __MSVC__
+#ifdef _WIN32
 #include <winsock2.h>
 #include <wx/msw/winundef.h>
 #endif
@@ -36,6 +35,7 @@
 #endif  // precompiled headers
 
 #include "model/comm_util.h"
+#include "model/comm_drv_loopback.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/comm_drv_n2k_serial.h"
 #include "model/comm_drv_n0183_serial.h"
@@ -70,6 +70,11 @@ public:
     }
   }
 };
+
+void MakeLoopbackDriver() {
+  auto driver = std::make_unique<LoopbackDriver>(NavMsgBus::GetInstance());
+  CommDriverRegistry::GetInstance().Activate(std::move(driver));
+}
 
 void MakeCommDriver(const ConnectionParams* params) {
   static N0183Listener listener;

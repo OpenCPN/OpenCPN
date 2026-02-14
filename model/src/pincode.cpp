@@ -1,5 +1,3 @@
-
-
 /***************************************************************************
  *   Copyright (C) 2023 Alec Leamas                     *
  *                                                                         *
@@ -14,12 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#include "model/pincode.h"
+/**
+ * \file
+ *
+ * Implement pincode.h -- peer communications pincode abstraction
+ */
 
 #include <algorithm>
 #include <iomanip>
@@ -27,6 +27,8 @@
 #include <sstream>
 
 #include "picosha2.h"
+
+#include "model/pincode.h"
 
 std::string Pincode::CompatHash() {
   std::linear_congruential_engine<unsigned long long, 48271, 0,

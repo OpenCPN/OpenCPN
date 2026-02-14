@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,13 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _IDENTS_H__
-#define _IDENTS_H__
+/**
+ * \file
+ *
+ * GUI constant definitions
+ */
+
+#ifndef IDENTS_H_
+#define IDENTS_H_
 
 #include <wx/event.h>
 #include <wx/toolbar.h>
@@ -65,6 +63,7 @@ enum {
   ID_MASTERTOGGLE,
   ID_SETTINGS_NEW,
   ID_SETTINGS_DELETE,
+  ID_RELOAD_CHARTS,
 
   ID_PLUGIN_BASE  // This MUST be the last item in the enum
 };
@@ -179,4 +178,4 @@ enum { TIME_TYPE_UTC = 1, TIME_TYPE_LMT, TIME_TYPE_COMPUTER };
 #define DS_SERVERSOCKET_ID 5002
 #define DS_ACTIVESERVERSOCKET_ID 5003
 
-#endif  // _IDENTS_H__
+#endif  // IDENTS_H_

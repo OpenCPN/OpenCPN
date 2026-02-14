@@ -12,18 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- *  Tools to send data to plugins.
+ *
+ * Tools to send data to plugins.
  */
 
-#ifndef PLUGIN__COMM_H
-#define PLUGIN__COMM_H
+#ifndef PLUGIN_COMM_H
+#define PLUGIN_COMM_H
 
 #include <wx/event.h>
 #include <wx/jsonval.h>
@@ -75,4 +74,4 @@ void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
                                const wxString& objname, double& lat,
                                double& lon, double& scale, int& nativescale);
 
-#endif  //  PLUGIN__COMM_H
+#endif  //  PLUGIN_COMM_H

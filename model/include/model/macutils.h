@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007..2010 by David S. Register, Richard M Smith        *
+ *   Copyright (C) 2007 - 2010 by David S. Register, Richard M Smith       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,15 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ * MacOS hardware probing functions
  */
 
-#ifndef MACUTILS_H_INCLUDED_H__
-#define MACUTILS_H_INCLUDED_H__
+#ifndef MACUTILS_H_INCLUDED_H_
+#define MACUTILS_H_INCLUDED_H_
 
 #include "config.h"
 

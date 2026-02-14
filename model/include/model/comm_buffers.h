@@ -12,18 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Line-oriented input/output buffers.
  */
 
-#ifndef _COMM_BUFFERS_H__
-#define _COMM_BUFFERS_H__
+#ifndef COMM_BUFFERS_H_
+#define COMM_BUFFERS_H_
 
 #include <deque>
 #include <mutex>
@@ -53,7 +52,7 @@ private:
   std::mutex m_mutex;
 };
 
-/** Assembles input characters to  lines. */
+/** Assembles input characters to lines. */
 class LineBuffer {
 public:
   /** Add a single character. */
@@ -96,4 +95,4 @@ private:
   enum class State { PrefixWait, Data, CsDigit1, CsDigit2 } m_state;
 };
 
-#endif  // _COMM_BUFFERS_H__
+#endif  // COMM_BUFFERS_H_

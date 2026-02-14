@@ -19,6 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * \file
  * \implements \ref IsoLine.h
  */
+
+#include "pi_gl.h"  // Must included before anything using GL stuff
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP

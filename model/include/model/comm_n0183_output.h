@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  NMEA Data Multiplexer Object
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * NMEA Data Multiplexer Object
+ */
 
 #ifndef _COMMN0183_OUT_H
 #define _COMMN0183_OUT_H
@@ -29,17 +27,15 @@
 #include <functional>
 
 #include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
 
 #include "model/nmea_log.h"
 #include "model/multiplexer.h"
+#include "model/route.h"
+#include "model/route_point.h"
 #include "observable_evtvar.h"
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-
-class RoutePoint;
-class Route;
 
 /**
  * Failed to initialize Garmin device.

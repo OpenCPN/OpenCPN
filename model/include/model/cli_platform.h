@@ -12,14 +12,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
 
-/** AbstractPlatform adapted for console/CLI usage */
+/**
+ * \file
+ *
+ * Platform console/CLI  support
+ */
+
 #include "model/base_platform.h"
 
+/** AbstractPlatform adapted for console/CLI usage */
 class CliPlatform : public AbstractPlatform {
   bool InitializeLogFile(void) override;
 };

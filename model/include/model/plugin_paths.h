@@ -13,18 +13,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Plugin installation and data paths support.
  */
 
-#ifndef MODEL__PLUGIN_PATHS_H
-#define MODEL__PLUGIN_PATHS_H
+#ifndef MODEL_PLUGIN_PATHS_H
+#define MODEL_PLUGIN_PATHS_H
+
 #include <string>
 #include <vector>
 
@@ -81,4 +81,4 @@ private:
   std::vector<std::string> m_bindirs;
   std::vector<std::string> m_datadirs;
 };
-#endif  // MODEL__PLUGIN_PATHS_H
+#endif  // MODEL_PLUGIN_PATHS_H

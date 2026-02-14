@@ -1,5 +1,28 @@
-#ifndef COMM__OUT_QUEUE_H__
-#define COMM__OUT_QUEUE_H__
+/***************************************************************************
+ *   Copyright (C) 2022 - 2024 Alec Leamas                                 *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Communications output queue
+ */
+
+#ifndef COMM_OUT_QUEUE_H_
+#define COMM_OUT_QUEUE_H_
 
 #include <chrono>
 #include <cstdint>
@@ -203,4 +226,4 @@ private:
 
 std::ostream& operator<<(std::ostream& os, const MeasuredCommOutQueue& q);
 
-#endif  //  COMM__OUT_QUEUE_H__
+#endif  //  COMM_OUT_QUEUE_H_

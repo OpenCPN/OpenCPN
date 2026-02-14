@@ -469,6 +469,7 @@ TEST(RestServer, start_stop) {
   EXPECT_EQ(1, 1);
 };
 
+#ifndef OCPN_DISTRO_BUILD
 TEST(RestServer, Ping) {
   wxDisableAsserts();
   RestServerDlgCtx dialog_ctx;
@@ -500,6 +501,7 @@ TEST(RestServer, Object) {
   RestServerObjectApp app(dialog_ctx, route_ctx, g_portable);
   app.Run();
 }
+#endif
 
 #ifndef OCPN_DISTRO_BUILD
 TEST(RestServer, CheckWrite) {
@@ -513,7 +515,6 @@ TEST(RestServer, CheckWrite) {
     g_BasePlatform = 0;
   }
 }
-#endif
 
 TEST(RestServer, PluginMessage) {
   wxDisableAsserts();
@@ -524,3 +525,4 @@ TEST(RestServer, PluginMessage) {
   delete g_BasePlatform;
   g_BasePlatform = 0;
 }
+#endif

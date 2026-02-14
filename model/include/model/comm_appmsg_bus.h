@@ -1,17 +1,6 @@
-
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Decoded messages send/receive support. This file represents the
- *           top layer in the three layer model drivers, raw messages and
- *           decoded messages.
- *
- *           Message definitions are in comm_appmsg.h
- *
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -24,13 +13,21 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _APP_MSG_BUS_H
-#define _APP_MSG_BUS_H
+/**
+ * \file
+ *
+ * Decoded messages send/receive support. This file represents the
+ * top layer in the three layer model drivers, raw messages and
+ * decoded messages.
+ *
+ * Message definitions are in comm_appmsg.h
+ */
+
+#ifndef APP_MSG_BUS_H
+#define APP_MSG_BUS_H
 
 #include <memory>
 

@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,15 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _ROUTE_H__
-#define _ROUTE_H__
+/**
+ * \file
+ *
+ * Route abstraction
+ */
+
+#ifndef _ROUTE_H_
+#define _ROUTE_H_
 
 #include <functional>
+#include <vector>
 
 #include <wx/colour.h>
 #include <wx/datetime.h>
@@ -102,7 +103,7 @@ public:
   Route();
   ~Route();
 
-  virtual int GetnPoints(void) { return pRoutePointList->GetCount(); }
+  virtual int GetnPoints(void) { return pRoutePointList->size(); }
   wxString IsPointNameValid(RoutePoint *pRP, const wxString &name) const;
 
   void AddPoint(RoutePoint *pNewPoint, bool b_rename_in_sequence = true,
@@ -389,6 +390,6 @@ private:
   bool m_bsharedWPViz;
 };
 
-WX_DECLARE_LIST(Route, RouteList);  // establish class Route as list member
+using RouteList = std::vector<Route *>;
 
 #endif  // _ROUTE_H__

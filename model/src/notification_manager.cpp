@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Notification Manager
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,27 +12,30 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement notification_manager.h -- User notifications manager
+ */
+
 #include <cmath>
-#include <memory>
-#include <vector>
 #include <fstream>
+#include <memory>
 #include <sstream>
+#include <vector>
+
 #include <wx/dir.h>
+#include <wx/filename.h>
 
 #include "model/base_platform.h"
+#include "model/comm_appmsg_bus.h"
+#include "model/datetime.h"
 #include "model/navutil_base.h"
 #include "model/notification.h"
 #include "model/notification_manager.h"
-#include "wx/filename.h"
-#include "model/datetime.h"
-#include "model/comm_appmsg_bus.h"
-
-extern BasePlatform* g_BasePlatform;
-extern std::shared_ptr<ObservableListener> ack_listener;
 
 NotificationManager& NotificationManager::GetInstance() {
   static NotificationManager instance;

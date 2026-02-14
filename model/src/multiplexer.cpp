@@ -12,23 +12,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
  *
- *  Implement multiplexer.h
+ *  Implement multiplexer.h -- Input multiplexer class and helpers
  */
 
 #ifdef __MSVC__
 #include "winsock2.h"
 #include <wx/msw/winundef.h>
 #endif
-
-#include "config.h"
 
 #ifdef HAVE_LIBGEN_H
 #include <libgen.h>
@@ -37,6 +33,8 @@
 #if defined(HAVE_READLINK) && !defined(HAVE_LIBGEN_H)
 #error Using readlink(3) requires libgen.h which cannot be found.
 #endif
+
+#include "config.h"
 
 #include <wx/wx.h>
 
@@ -89,6 +87,8 @@ static std::string N2K_LogMessage_Detail(unsigned int pgn) {
       return "AIS static data class B part B";
     case 127250:
       return "Heading rapid";
+    case 127258:
+      return "Magnetic variation.";
     case 129540:
       return "GNSS Sats & DBoard: SAT Status";
     //>> Dashboard
@@ -116,8 +116,6 @@ static std::string N2K_LogMessage_Detail(unsigned int pgn) {
       return "Heading/Track control. " + not_used;
     case 127251:
       return "Rate of turn. " + not_used;
-    case 127258:
-      return "Magnetic variation. " + not_used;
     case 127488:
       return "Engine rapid param. " + not_used;
     case 127489:
@@ -232,16 +230,6 @@ void Multiplexer::LogInputMessage(const std::shared_ptr<const NavMsg> &msg,
 
 void Multiplexer::HandleN0183(
     const std::shared_ptr<const Nmea0183Msg> &n0183_msg) const {
-  // Find the driver that originated this message
-  const auto &drivers = CommDriverRegistry::GetInstance().GetDrivers();
-  auto &source_driver = FindDriver(drivers, n0183_msg->source->iface);
-  if (!source_driver) {
-    // might be a message from a "virtual" plugin.
-    if ((n0183_msg->source->iface != "virtual")) {
-      return;
-    }
-  }
-
   std::string error_msg;
   if (n0183_msg->state == NavMsg::State::kCannotParse)
     error_msg = _("Unparsable NMEA0183 message").ToStdString();
@@ -251,14 +239,8 @@ void Multiplexer::HandleN0183(
   bool cs_error = n0183_msg->state == NavMsg::State::kBadChecksum;
   LogInputMessage(n0183_msg, is_filtered, cs_error, error_msg);
 
-  // Detect virtual driver, message comes from plugin API
-  // Set such source iface to "" for later test
-  std::string source_iface;
-  if (source_driver)  // NULL for virtual driver
-    source_iface = source_driver->iface;
-
   // Perform multiplexer output functions
-  for (auto &driver : drivers) {
+  for (auto &driver : CommDriverRegistry::GetInstance().GetDrivers()) {
     if (!driver) continue;
     if (driver->bus == NavAddr::Bus::N0183) {
       auto *drv_n0183 = dynamic_cast<CommDriverN0183 *>(driver.get());
@@ -275,7 +257,7 @@ void Multiplexer::HandleN0183(
         //  But, do not echo to the source network interface.  This will
         //  likely recurse...
         if ((!params_.DisableEcho && params_.Type == SERIAL) ||
-            driver->iface != source_iface) {
+            driver->iface != n0183_msg->source->iface) {
           if (params_.IOSelect == DS_TYPE_INPUT_OUTPUT ||
               params_.IOSelect == DS_TYPE_OUTPUT) {
             bool bout_filter = true;

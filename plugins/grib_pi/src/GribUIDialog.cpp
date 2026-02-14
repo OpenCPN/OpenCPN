@@ -20,6 +20,9 @@
  * \file
  * \implements \ref GribUIDialog.h
  */
+
+#include "pi_gl.h"  // Must included before anything using GL stuff
+
 #include "wx/wx.h"
 #include "wx/tokenzr.h"
 #include "wx/datetime.h"
@@ -38,7 +41,6 @@
 #include <time.h>
 
 #include "ocpn_plugin.h"
-#include "pi_gl.h"
 #include "grib_pi.h"
 #include "GribTable.h"
 #include "email.h"
@@ -1121,6 +1123,7 @@ void GRIBUICtrlBar::createRequestDialog() {
   pPlugIn->SetDialogFont(pReq_Dialog);
   pPlugIn->SetDialogFont(pReq_Dialog->m_sScrolledDialog);
   pReq_Dialog->OnVpUnderMouseChange(m_vpMouse);
+  pReq_Dialog->OnVpWithFocusChange(m_vpMouse);
   pReq_Dialog->SetRequestDialogSize();
   if (::wxIsBusy()) ::wxEndBusyCursor();
 }

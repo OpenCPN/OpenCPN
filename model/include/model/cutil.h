@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Extern C Linked Utilities
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,20 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Extern C linked utilities
  */
 
-#ifndef _CUTIL_H__
-#define _CUTIL_H__
+#ifndef CUTIL_H_
+#define CUTIL_H_
 
 #include <vector>
 
 #ifdef __MSVC__
+#include <winsock2.h>
 #include <windows.h>
 #endif
 
@@ -62,4 +58,4 @@ extern long __stdcall MyUnhandledExceptionFilter(
 extern "C" int clock_gettime_monotonic(struct timespec *tv);
 #endif
 
-#endif
+#endif  // CUTIL_H_

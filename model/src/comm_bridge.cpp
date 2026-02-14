@@ -13,24 +13,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
  *
- * Implement comm_bridge.h
+ * Implement comm_bridge.h -- handle incoming messages
  */
-
-// For compilers that support precompilation, includes "wx.h".
 
 #include <sstream>
 #include <string>
 
 #include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -59,7 +54,7 @@
 
 using std::string;
 
-bool debug_priority = false;
+static bool debug_priority = false;
 
 void ClearNavData(NavData& d) {
   d.gLat = NAN;
@@ -72,10 +67,12 @@ void ClearNavData(NavData& d) {
   d.n_satellites = -1;
   d.SID = 0;
 }
+
 static NmeaLog* GetDataMonitor() {
   auto w = wxWindow::FindWindowByName(kDataMonitorWindowName);
   return dynamic_cast<NmeaLog*>(w);
 }
+
 static BridgeLogCallbacks GetLogCallbacks() {
   BridgeLogCallbacks log_callbacks;
   log_callbacks.log_is_active = [&]() {
@@ -142,6 +139,8 @@ static string GetPriorityKey(const NavMsgPtr& msg) {
     auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
     if (msg_0183) {
       string source = msg->source->to_string();
+      if (msg_0183->talker == "WM" && msg_0183->type == "HVD")
+        source = "WMM plugin";
       this_identifier = msg_0183->talker;
       this_identifier += msg_0183->type;
       key = source + ":" + this_address + ";" + this_identifier;
@@ -177,7 +176,7 @@ static void PresetPriorityContainer(PriorityContainer& pc,
   }
 
   wxString this_key(key0.c_str());
-  wxStringTokenizer tkz(this_key, _T(";"));
+  wxStringTokenizer tkz(this_key, ";");
   string source = tkz.GetNextToken().ToStdString();
   string this_identifier = tkz.GetNextToken().ToStdString();
 
@@ -251,6 +250,16 @@ static void SelectNextLowerPriority(const PriorityMap& map,
 
 // CommBridge implementation
 
+CommBridge& CommBridge::GetInstance() {
+  static bool is_initialized = false;
+  static CommBridge the_instance;
+  if (!is_initialized) {
+    the_instance.Initialize();
+    is_initialized = true;
+  }
+  return the_instance;
+}
+
 CommBridge::CommBridge()
     : wxEvtHandler(),
       // every 60 minutes, reduced after first position Rx
@@ -312,8 +321,8 @@ void CommBridge::OnWatchdogTimer() {
 
       if (m_watchdogs.position_watchdog % m_n_log_watchdog_period == 0) {
         wxString logmsg;
-        logmsg.Printf(_T("   ***GPS Watchdog timeout at Lat:%g   Lon: %g"),
-                      gLat, gLon);
+        logmsg.Printf("   ***GPS Watchdog timeout at Lat:%g   Lon: %g", gLat,
+                      gLon);
         wxLogMessage(logmsg);
       }
     }
@@ -340,7 +349,7 @@ void CommBridge::OnWatchdogTimer() {
     active_priority_velocity.recent_active_time = -1;
 
     if (g_nNMEADebug && (m_watchdogs.velocity_watchdog == 0))
-      wxLogMessage(_T("   ***Velocity Watchdog timeout..."));
+      wxLogMessage("   ***Velocity Watchdog timeout...");
     if (m_watchdogs.velocity_watchdog % 5 == 0) {
       // Send AppMsg telling of watchdog expiry
       auto msg = std::make_shared<GPSWatchdogMsg>(
@@ -359,7 +368,7 @@ void CommBridge::OnWatchdogTimer() {
     gHdt = NAN;
     active_priority_heading.recent_active_time = -1;
     if (g_nNMEADebug && (m_watchdogs.heading_watchdog == 0))
-      wxLogMessage(_T("   ***HDT Watchdog timeout..."));
+      wxLogMessage("   ***HDT Watchdog timeout...");
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -373,7 +382,7 @@ void CommBridge::OnWatchdogTimer() {
     active_priority_variation.recent_active_time = -1;
 
     if (g_nNMEADebug && (m_watchdogs.variation_watchdog == 0))
-      wxLogMessage(_T("   ***VAR Watchdog timeout..."));
+      wxLogMessage("   ***VAR Watchdog timeout...");
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -389,7 +398,7 @@ void CommBridge::OnWatchdogTimer() {
     active_priority_satellites.recent_active_time = -1;
 
     if (g_nNMEADebug && (m_watchdogs.satellite_watchdog == 0))
-      wxLogMessage(_T("   ***SAT Watchdog timeout..."));
+      wxLogMessage("   ***SAT Watchdog timeout...");
 
     // Are there any other lower priority sources?
     // If so, adopt that one.
@@ -443,6 +452,11 @@ void CommBridge::InitCommListeners() {
                           [&](const ObservedEvt& ev) {
                             HandleN2K_127250(UnpackEvtPointer<Nmea2000Msg>(ev));
                           });
+  // Variation   PGN 127258
+  m_n2k_127258_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(127258)),
+                          [&](const ObservedEvt& ev) {
+                            HandleN2K_127258(UnpackEvtPointer<Nmea2000Msg>(ev));
+                          });
 
   // GNSS Satellites in View   PGN 129540
   m_n2k_129540_lstnr.Init(Nmea2000Msg(static_cast<uint64_t>(129540)),
@@ -455,6 +469,11 @@ void CommBridge::InitCommListeners() {
   Nmea0183Msg n0183_msg_RMC("RMC");
   m_n0183_rmc_lstnr.Init(Nmea0183Msg("RMC"), [&](const ObservedEvt& ev) {
     HandleN0183_RMC(UnpackEvtPointer<Nmea0183Msg>(ev));
+  });
+
+  // THS
+  m_n0183_ths_lstnr.Init(Nmea0183Msg("THS"), [&](const ObservedEvt& ev) {
+    HandleN0183_THS(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // HDT
@@ -470,6 +489,11 @@ void CommBridge::InitCommListeners() {
   // HDM
   m_n0183_hdm_lstnr.Init(Nmea0183Msg("HDM"), [&](const ObservedEvt& ev) {
     HandleN0183_HDM(UnpackEvtPointer<Nmea0183Msg>(ev));
+  });
+
+  // HVD
+  m_n0183_hvd_lstnr.Init(Nmea0183Msg("HVD"), [&](const ObservedEvt& ev) {
+    HandleN0183_HVD(UnpackEvtPointer<Nmea0183Msg>(ev));
   });
 
   // VTG
@@ -676,6 +700,28 @@ bool CommBridge::HandleN2K_127250(const N2000MsgPtr& n2k_msg) {
   return true;
 }
 
+bool CommBridge::HandleN2K_127258(const N2000MsgPtr& n2k_msg) {
+  std::vector<unsigned char> v = n2k_msg->payload;
+
+  NavData temp_data;
+  ClearNavData(temp_data);
+
+  if (!m_decoder.DecodePGN127258(v, temp_data)) return false;
+
+  int valid_flag = 0;
+  if (!N2kIsNA(temp_data.gVar)) {
+    if (EvalPriority(n2k_msg, active_priority_variation,
+                     priority_map_variation)) {
+      gVar = GeodesicRadToDeg(temp_data.gVar);
+      valid_flag += VAR_UPDATE;
+      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+    }
+  }
+
+  SendBasicNavdata(valid_flag, m_log_callbacks);
+  return true;
+}
+
 bool CommBridge::HandleN2K_129540(const N2000MsgPtr& n2k_msg) {
   std::vector<unsigned char> v = n2k_msg->payload;
 
@@ -760,6 +806,24 @@ bool CommBridge::HandleN0183_RMC(const N0183MsgPtr& n0183_msg) {
   return true;
 }
 
+bool CommBridge::HandleN0183_THS(const N0183MsgPtr& n0183_msg) {
+  string str = n0183_msg->payload;
+  NavData temp_data;
+  ClearNavData(temp_data);
+
+  if (!m_decoder.DecodeTHS(str, temp_data)) return false;
+
+  int valid_flag = 0;
+  if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
+    gHdt = temp_data.gHdt;
+    valid_flag += HDT_UPDATE;
+    m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+  }
+
+  SendBasicNavdata(valid_flag, m_log_callbacks);
+  return true;
+}
+
 bool CommBridge::HandleN0183_HDT(const N0183MsgPtr& n0183_msg) {
   string str = n0183_msg->payload;
   NavData temp_data;
@@ -788,10 +852,13 @@ bool CommBridge::HandleN0183_HDG(const N0183MsgPtr& n0183_msg) {
   int valid_flag = 0;
 
   bool bHDM = false;
-  if (EvalPriority(n0183_msg, active_priority_heading, priority_map_heading)) {
-    gHdm = temp_data.gHdm;
-    m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
-    bHDM = true;
+  if (!std::isnan(temp_data.gHdm)) {
+    if (EvalPriority(n0183_msg, active_priority_heading,
+                     priority_map_heading)) {
+      gHdm = temp_data.gHdm;
+      m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+      bHDM = true;
+    }
   }
 
   if (!std::isnan(temp_data.gVar)) {
@@ -822,6 +889,28 @@ bool CommBridge::HandleN0183_HDM(const N0183MsgPtr& n0183_msg) {
     MakeHDTFromHDM();
     valid_flag += HDT_UPDATE;
     m_watchdogs.heading_watchdog = gps_watchdog_timeout_ticks;
+  }
+
+  SendBasicNavdata(valid_flag, m_log_callbacks);
+  return true;
+}
+
+bool CommBridge::HandleN0183_HVD(const N0183MsgPtr& n0183_msg) {
+  string str = n0183_msg->payload;
+  NavData temp_data;
+  ClearNavData(temp_data);
+
+  if (!m_decoder.DecodeHVD(str, temp_data)) return false;
+
+  int valid_flag = 0;
+
+  if (!std::isnan(temp_data.gVar)) {
+    if (EvalPriority(n0183_msg, active_priority_variation,
+                     priority_map_variation)) {
+      gVar = temp_data.gVar;
+      valid_flag += VAR_UPDATE;
+      m_watchdogs.variation_watchdog = gps_watchdog_timeout_ticks;
+    }
   }
 
   SendBasicNavdata(valid_flag, m_log_callbacks);
@@ -989,8 +1078,11 @@ bool CommBridge::HandleN0183_AIVDO(const N0183MsgPtr& n0183_msg) {
 bool CommBridge::HandleSignalK(const SignalKMsgPtr& sK_msg) {
   string str = sK_msg->raw_message;
 
-  //  Here we ignore messages involving contexts other than ownship
-  if (sK_msg->context_self != sK_msg->context) return false;
+  //  Ignore messages involving contexts other than ownship, but do log them
+  if (sK_msg->context_self != sK_msg->context) {
+    g_pMUX->LogInputMessage(sK_msg, true, false);
+    return false;
+  }
 
   g_ownshipMMSI_SK = sK_msg->context_self;
 
@@ -1157,13 +1249,13 @@ bool CommBridge::EvalPriority(const NavMsgPtr& msg,
   if (debug_priority) printf("This Key: %s\n", this_key.c_str());
 
   // Pull some identifiers from the unique key
-  wxStringTokenizer tkz(this_key, _T(";"));
+  wxStringTokenizer tkz(this_key, ";");
   wxString wxs_this_source = tkz.GetNextToken();
   string source = wxs_this_source.ToStdString();
   wxString wxs_this_identifier = tkz.GetNextToken();
   string this_identifier = wxs_this_identifier.ToStdString();
 
-  wxStringTokenizer tka(wxs_this_source, _T(":"));
+  wxStringTokenizer tka(wxs_this_source, ":");
   tka.GetNextToken();
   std::stringstream ss;
   ss << tka.GetNextToken();

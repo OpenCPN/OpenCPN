@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement semantic_vers.h -- semantic version object
  */
 
 #include "config.h"
@@ -31,7 +30,7 @@
 
 #include "model/semantic_vers.h"
 
-#undef major  // walk around gnu's major() and minor() macros.
+#undef major  // work around gnu's major() and minor() macros.
 #undef minor
 
 SemanticVersion SemanticVersion::parse(std::string s) {

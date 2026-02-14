@@ -1,9 +1,4 @@
-/******************************************************************************
- *
- * Project: OpenCPN
- * Purpose: Variables maintained by comm stack, read-only access for others
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Variables maintained by comm stack, read-only access for others
  */
 
-#ifndef COMM_VARS_H__
-#define COMM_VARS_H__
+#ifndef COMM_VARS_H_
+#define COMM_VARS_H_
 
 #include <wx/string.h>
 
@@ -35,6 +33,7 @@ extern int g_priSats;
 extern int g_SatsInView;
 
 extern bool g_bVAR_Rx;
+
 /**
  * Indicates valid GNSS reception status based on satellite visibility
  * and successful parsing of NMEA0183, SignalK, or NMEA2000 data.

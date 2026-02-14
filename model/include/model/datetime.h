@@ -12,22 +12,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef DATETIME_API_H__
-#define DATETIME_API_H__
+/**
+ * \file
+ *
+ * Date and time utilities
+ */
+
+#ifndef DATETIME_API_H_
+#define DATETIME_API_H_
 
 #include <wx/wx.h>
 #if wxCHECK_VERSION(3, 1, 6)
 #include <wx/uilocale.h>
 #endif
 
+#include "model/config_vars.h"
 #include "ocpn_plugin.h"
-
-extern wxString g_datetime_format;
 
 namespace ocpn {
 
@@ -67,4 +70,4 @@ wxString toUsrDateTimeFormat(
 );
 }  // namespace ocpn
 
-#endif  // DATETIME_API_H__
+#endif  // DATETIME_API_H_

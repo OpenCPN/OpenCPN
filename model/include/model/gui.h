@@ -12,15 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Hooks into gui available in model.
  */
+
+#ifndef ModEl_gUi_H
+#define ModEl_gUi_H
 
 #include <wx/window.h>
 #include <model/nmea_log.h>
@@ -31,3 +33,5 @@ static const char* const kDataMonitorWindowName = "DataMonitor";
 
 /** Return the top level window a k a gFrame. */
 wxWindow* GetTopWindow();
+
+#endif  //  ModEl_gUi_H

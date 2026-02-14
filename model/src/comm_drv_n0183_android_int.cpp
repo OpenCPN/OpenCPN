@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_n0183_android_int.h -- Nmea 0183 driver.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2023 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register                                  *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_drv_n0183_android_int.h -- Android internal Nmea 0183
+ * driver.
+ */
+
+#include <mutex>
+#include <queue>
+#include <vector>
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -30,10 +34,6 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include <mutex>
-#include <queue>
-#include <vector>
-
 #include <wx/event.h>
 #include <wx/log.h>
 #include <wx/string.h>
@@ -41,8 +41,8 @@
 
 #include "config.h"
 #include "model/comm_drv_n0183_android_int.h"
-#include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
+#include "model/comm_navmsg_bus.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
@@ -204,7 +204,7 @@ bool CommDriverN0183AndroidInt::Open() {
 
 void CommDriverN0183AndroidInt::Close() {
   wxLogMessage(
-      wxString::Format(_T("Closing NMEA Driver %s"), m_portstring.c_str()));
+      wxString::Format("Closing NMEA Driver %s", m_portstring.c_str()));
   m_stats_timer.Stop();
 
   androidStopGPS();

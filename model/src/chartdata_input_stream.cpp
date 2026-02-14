@@ -1,11 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Support XZ compressed charts
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
- *   Copyright (C) 2016 by David S. Register                               *
+/***************************************************************************
+ *   Copyright (C) 2016 Sean D'Epagnier                                    *
+ *   Copyright (C) 2016 by David S.Register                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,19 +13,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ * Implement chartdata_input_stream.h -- XZ compressed charts support
  */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <wx/filename.h>
 #include <wx/log.h>
@@ -199,8 +195,8 @@ bool DecompressXZFile(const wxString &input_path, const wxString &output_path) {
 #else  // OCPN_USE_LZMA
 
 bool DecompressXZFile(const wxString &input_path, const wxString &output_path) {
-  wxLogMessage(_T("Failed to decompress: ") + input_path);
-  wxLogMessage(_T("OpenCPN compiled without liblzma support"));
+  wxLogMessage("Failed to decompress: " + input_path);
+  wxLogMessage("OpenCPN compiled without liblzma support");
 
   return false;
 }

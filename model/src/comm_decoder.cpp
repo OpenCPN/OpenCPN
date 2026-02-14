@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,16 +13,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#include <wx/wxprec.h>
+/**
+ * \file
+ *
+ * Implement comm_decoder-h -- incoming messages decoding support.
+ */
 
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <wx/log.h>
 #include <wx/math.h>
@@ -86,17 +84,15 @@ bool CommDecoder::DecodeRMC(std::string s, NavData& temp_data) {
     } else
       return false;
 
-    // FIXME (dave) if (!g_own_ship_sog_cog_calc )
-    {
-      if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)) {
-        temp_data.gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-      }
-      if (!std::isnan(temp_data.gSog) && (temp_data.gSog > 0.05)) {
-        temp_data.gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-      } else {
-        temp_data.gCog = NAN;
-      }
+    if (!std::isnan(m_NMEA0183.Rmc.SpeedOverGroundKnots)) {
+      temp_data.gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
     }
+    if (!std::isnan(temp_data.gSog) && (temp_data.gSog > 0.05)) {
+      temp_data.gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+    } else {
+      temp_data.gCog = NAN;
+    }
+
     // Any device sending VAR=0.0 can be assumed to not really know
     // what the actual variation is, so in this case we use WMM if
     // available
@@ -127,6 +123,21 @@ bool CommDecoder::DecodeHDM(std::string s, NavData& temp_data) {
   if (!m_NMEA0183.Parse()) return false;
 
   temp_data.gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
+
+  return true;
+}
+
+bool CommDecoder::DecodeTHS(std::string s, NavData& temp_data) {
+  wxString sentence(s.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+  m_NMEA0183 << sentence3;
+
+  if (!m_NMEA0183.PreParse()) return false;
+  if (!m_NMEA0183.Parse()) return false;
+
+  // Handle only valid data A = Autonomous
+  if (!(m_NMEA0183.Ths.ModeInd == "A")) return false;
+  temp_data.gHdt = m_NMEA0183.Ths.TrueHeading;
 
   return true;
 }
@@ -170,7 +181,7 @@ bool CommDecoder::DecodeHDG(std::string s, NavData& temp_data) {
   return true;
 }
 
-bool CommDecoder::DecodeVTG(std::string s, NavData& temp_data) {
+bool CommDecoder::DecodeHVD(std::string s, NavData& temp_data) {
   wxString sentence(s.c_str());
   wxString sentence3 = ProcessNMEA4Tags(sentence);
   m_NMEA0183 << sentence3;
@@ -178,7 +189,29 @@ bool CommDecoder::DecodeVTG(std::string s, NavData& temp_data) {
   if (!m_NMEA0183.PreParse()) return false;
   if (!m_NMEA0183.Parse()) return false;
 
-  // FIXME (dave)if (g_own_ship_sog_cog_calc) return false;
+  // Any device sending VAR=0.0 can be assumed to not really know
+  // what the actual variation is, so in this case we use WMM if
+  // available
+  if ((!std::isnan(m_NMEA0183.Hvd.MagneticVariationDegrees)) &&
+      0.0 != m_NMEA0183.Hvd.MagneticVariationDegrees) {
+    if (m_NMEA0183.Hvd.MagneticVariationDirection == East)
+      temp_data.gVar = m_NMEA0183.Hvd.MagneticVariationDegrees;
+    else if (m_NMEA0183.Hvd.MagneticVariationDirection == West)
+      temp_data.gVar = -m_NMEA0183.Hvd.MagneticVariationDegrees;
+
+    g_bVAR_Rx = true;
+  }
+
+  return true;
+}
+
+bool CommDecoder::DecodeVTG(std::string s, NavData& temp_data) {
+  wxString sentence(s.c_str());
+  wxString sentence3 = ProcessNMEA4Tags(sentence);
+  m_NMEA0183 << sentence3;
+
+  if (!m_NMEA0183.PreParse()) return false;
+  if (!m_NMEA0183.Parse()) return false;
 
   if (!std::isnan(m_NMEA0183.Vtg.SpeedKnots))
     temp_data.gSog = m_NMEA0183.Vtg.SpeedKnots;
@@ -347,6 +380,24 @@ bool CommDecoder::DecodePGN127250(std::vector<unsigned char> v,
   return false;
 }
 
+bool CommDecoder::DecodePGN127258(std::vector<unsigned char> v,
+                                  NavData& temp_data) {
+  unsigned char SID;
+  tN2kMagneticVariation Source;
+  uint16_t DaysSince1970;
+  double Variation;
+  tN2kHeadingReference ref;
+
+  if (ParseN2kPGN127258(v, SID, Source, DaysSince1970, Variation)) {
+    temp_data.gVar = Variation;
+    temp_data.SID = SID;
+    g_bVAR_Rx = true;
+    return true;
+  }
+
+  return false;
+}
+
 bool CommDecoder::DecodePGN129025(std::vector<unsigned char> v,
                                   NavData& temp_data) {
   double Latitude, Longitude;
@@ -417,7 +468,7 @@ void CommDecoder::updateItem(const rapidjson::Value& item, wxString& sfixtime,
   if (item.HasMember("path") && item.HasMember("value")) {
     const wxString& update_path = item["path"].GetString();
 
-    if (update_path == _T("navigation.gnss.methodQuality")) {
+    if (update_path == "navigation.gnss.methodQuality") {
       // Record statically the GNSS status for this source in a hashmap
       if (src_string.size()) {
         if (item["value"] == "no GPS") {  // no GPS GNSS Fix
@@ -428,7 +479,7 @@ void CommDecoder::updateItem(const rapidjson::Value& item, wxString& sfixtime,
       }
     }
 
-    if (update_path == _T("navigation.position") && !item["value"].IsNull()) {
+    if (update_path == "navigation.position" && !item["value"].IsNull()) {
       bposValid = updateNavigationPosition(item["value"], sfixtime, temp_data);
 
       // if "gnss.methodQuality" is reported as "no GPS", then invalidate gLat
@@ -439,7 +490,7 @@ void CommDecoder::updateItem(const rapidjson::Value& item, wxString& sfixtime,
         }
       }
 
-    } else if (update_path == _T("navigation.speedOverGround") &&
+    } else if (update_path == "navigation.speedOverGround" &&
                /*bposValid &&*/ !item["value"].IsNull()) {
       updateNavigationSpeedOverGround(item["value"], sfixtime, temp_data);
 
@@ -451,29 +502,29 @@ void CommDecoder::updateItem(const rapidjson::Value& item, wxString& sfixtime,
         }
       }
 
-    } else if (update_path == _T("navigation.courseOverGroundTrue") &&
+    } else if (update_path == "navigation.courseOverGroundTrue" &&
                /*bposValid &&*/ !item["value"].IsNull()) {
       updateNavigationCourseOverGround(item["value"], sfixtime, temp_data);
-    } else if (update_path == _T("navigation.courseOverGroundMagnetic")) {
+    } else if (update_path == "navigation.courseOverGroundMagnetic") {
     } else if (update_path ==
-               _T("navigation.gnss.satellites"))  // From GGA sats in use
+               "navigation.gnss.satellites")  // From GGA sats in use
     {
       updateGnssSatellites(item["value"], sfixtime, temp_data);
     } else if (update_path ==
-               _T("navigation.gnss.satellitesInView"))  // From GSV sats in view
+               "navigation.gnss.satellitesInView")  // From GSV sats in view
     {
       updateGnssSatellites(item["value"], sfixtime, temp_data);
-    } else if (update_path == _T("navigation.headingTrue")) {
+    } else if (update_path == "navigation.headingTrue") {
       if (!item["value"].IsNull())
         updateHeadingTrue(item["value"], sfixtime, temp_data);
-    } else if (update_path == _T("navigation.headingMagnetic")) {
+    } else if (update_path == "navigation.headingMagnetic") {
       if (!item["value"].IsNull())
         updateHeadingMagnetic(item["value"], sfixtime, temp_data);
-    } else if (update_path == _T("navigation.magneticVariation")) {
+    } else if (update_path == "navigation.magneticVariation") {
       if (!item["value"].IsNull())
         updateMagneticVariance(item["value"], sfixtime, temp_data);
     } else {
-      // wxLogMessage(wxString::Format(_T("** Signal K unhandled update: %s"),
+      // wxLogMessage(wxString::Format("** Signal K unhandled update: %s",
       // update_path));
     }
   }
@@ -484,7 +535,7 @@ bool CommDecoder::updateNavigationPosition(const rapidjson::Value& value,
                                            NavData& temp_data) {
   if ((value.HasMember("latitude") && value["latitude"].IsDouble()) &&
       (value.HasMember("longitude") && value["longitude"].IsDouble())) {
-    // wxLogMessage(_T(" ***** Position Update"));
+    // wxLogMessage(" ***** Position Update");
     temp_data.gLat = value["latitude"].GetDouble();
     temp_data.gLon = value["longitude"].GetDouble();
     return true;
@@ -498,7 +549,7 @@ void CommDecoder::updateNavigationSpeedOverGround(const rapidjson::Value& value,
                                                   NavData& temp_data) {
   double sog_ms = value.GetDouble();
   double sog_knot = sog_ms * 1.9438444924406;  // m/s to knots
-  // wxLogMessage(wxString::Format(_T(" ***** SOG: %f, %f"), sog_ms, sog_knot));
+  // wxLogMessage(wxString::Format(" ***** SOG: %f, %f", sog_ms, sog_knot));
   temp_data.gSog = sog_knot;
 }
 
@@ -507,7 +558,7 @@ void CommDecoder::updateNavigationCourseOverGround(
     NavData& temp_data) {
   double cog_rad = value.GetDouble();
   double cog_deg = GEODESIC_RAD2DEG(cog_rad);
-  // wxLogMessage(wxString::Format(_T(" ***** COG: %f, %f"), cog_rad, cog_deg));
+  // wxLogMessage(wxString::Format(" ***** COG: %f, %f", cog_rad, cog_deg));
   temp_data.gCog = cog_deg;
 }
 

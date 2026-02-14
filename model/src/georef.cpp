@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Georef utility
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,16 +12,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
- ***************************************************************************
- *  Parts of this file were adapted from source code found in              *
- *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
- ***************************************************************************
+/**
+ * \file
+ *
+ * Implement georef.h -- georef utilities
+ *
+ * Parts of this file were adapted from source code found in
+ * John F. Waers (jfwaers@csn.net) public domain program MacGPS45
  */
+
 #include <vector>
 #include <utility>
 #include <stdlib.h>
@@ -288,6 +284,7 @@ int GetDatumIndex(const char *str) {
 
   return -1;
 }
+
 /****************************************************************************/
 /* Convert degrees to dd mm'ss.s" (DMS-Format)                              */
 /****************************************************************************/

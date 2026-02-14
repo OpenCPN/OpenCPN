@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-20 08:00+0200\n"
-"PO-Revision-Date: 2025-06-24 20:31\n"
+"POT-Creation-Date: 2026-02-09 10:26-0500\n"
+"PO-Revision-Date: 2026-02-13 20:43\n"
 "Last-Translator: \n"
 "Language-Team: Japanese\n"
 "Language: ja_JP\n"
@@ -210,9 +210,9 @@ msgstr ""
 msgid "Windlass"
 msgstr ""
 
-#: src/dashboard_pi.cpp:622 src/dashboard_pi.cpp:968 src/dashboard_pi.cpp:3668
-#: src/dashboard_pi.cpp:3684 src/dashboard_pi.cpp:4222 src/dashboard_pi.cpp:4312
-#: src/dashboard_pi.cpp:4970
+#: src/dashboard_pi.cpp:622 src/dashboard_pi.cpp:968 src/dashboard_pi.cpp:3666
+#: src/dashboard_pi.cpp:3682 src/dashboard_pi.cpp:4215 src/dashboard_pi.cpp:4305
+#: src/dashboard_pi.cpp:5021
 msgid "Dashboard"
 msgstr "ダッシュボード"
 
@@ -226,280 +226,280 @@ msgid "Dashboard PlugIn for OpenCPN\n"
 msgstr "OpenCPN 用ダッシュ ボードプラグイン\n"
 "装置の表示はNMEAソースから表示します。"
 
-#: src/dashboard_pi.cpp:1847 src/dashboard_pi.cpp:2122 src/dashboard_pi.cpp:3128
-#: src/dashboard_pi.cpp:4445
+#: src/dashboard_pi.cpp:1847 src/dashboard_pi.cpp:2122 src/dashboard_pi.cpp:3126
+#: src/dashboard_pi.cpp:4439
 msgid "Up"
 msgstr "上へ"
 
-#: src/dashboard_pi.cpp:1850 src/dashboard_pi.cpp:2124 src/dashboard_pi.cpp:3130
-#: src/dashboard_pi.cpp:4452
+#: src/dashboard_pi.cpp:1850 src/dashboard_pi.cpp:2124 src/dashboard_pi.cpp:3128
+#: src/dashboard_pi.cpp:4446
 msgid "Down"
 msgstr "下へ"
 
-#: src/dashboard_pi.cpp:1867 src/dashboard_pi.cpp:2133 src/dashboard_pi.cpp:3117
+#: src/dashboard_pi.cpp:1867 src/dashboard_pi.cpp:2133 src/dashboard_pi.cpp:3115
 msgid "Stbd"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:2135 src/dashboard_pi.cpp:3119
+#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:2135 src/dashboard_pi.cpp:3117
 msgid "Port"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4155
+#: src/dashboard_pi.cpp:4153
 msgid "Dashboard preferences"
 msgstr "ダッシュ ボード設定"
 
-#: src/dashboard_pi.cpp:4158 src/dashboard_pi.cpp:5007 src/dashboard_pi.cpp:5306
-#: src/dashboard_pi.cpp:6311
+#: src/dashboard_pi.cpp:4156 src/dashboard_pi.cpp:5058 src/dashboard_pi.cpp:5357
+#: src/dashboard_pi.cpp:6369
 msgid "Dialog"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4321
+#: src/dashboard_pi.cpp:4314
 msgid "show this dashboard"
 msgstr "このダッシュ ボードを表示"
 
-#: src/dashboard_pi.cpp:4332
+#: src/dashboard_pi.cpp:4325
 msgid "Caption:"
 msgstr "タイトル:"
 
-#: src/dashboard_pi.cpp:4342
+#: src/dashboard_pi.cpp:4335
 msgid "Orientation:"
 msgstr "配置方向"
 
-#: src/dashboard_pi.cpp:4348 src/dashboard_pi.cpp:5696
+#: src/dashboard_pi.cpp:4341 src/dashboard_pi.cpp:5747
 msgid "Vertical"
 msgstr "縦"
 
-#: src/dashboard_pi.cpp:4349 src/dashboard_pi.cpp:5699
+#: src/dashboard_pi.cpp:4342 src/dashboard_pi.cpp:5750
 msgid "Horizontal"
 msgstr "横"
 
-#: src/dashboard_pi.cpp:4380 src/dashboard_pi.cpp:4399 src/dashboard_pi.cpp:5304
+#: src/dashboard_pi.cpp:4373 src/dashboard_pi.cpp:4393 src/dashboard_pi.cpp:5355
 msgid "Instruments"
 msgstr "計器"
 
-#: src/dashboard_pi.cpp:4412
+#: src/dashboard_pi.cpp:4406
 msgid "Add"
 msgstr "追加"
 
-#: src/dashboard_pi.cpp:4421
+#: src/dashboard_pi.cpp:4415
 msgid "Edit"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4437
+#: src/dashboard_pi.cpp:4431
 msgid "Delete"
 msgstr "削除"
 
-#: src/dashboard_pi.cpp:4465
+#: src/dashboard_pi.cpp:4459
 msgid "Appearance"
 msgstr "表示関連"
 
-#: src/dashboard_pi.cpp:4468
+#: src/dashboard_pi.cpp:4462
 msgid "Fonts"
 msgstr "フォント"
 
-#: src/dashboard_pi.cpp:4477 src/dashboard_pi.cpp:6421
+#: src/dashboard_pi.cpp:4471 src/dashboard_pi.cpp:6479
 msgid "Title:"
 msgstr "タイトル:"
 
-#: src/dashboard_pi.cpp:4486 src/dashboard_pi.cpp:6440
+#: src/dashboard_pi.cpp:4481 src/dashboard_pi.cpp:6498
 msgid "Data:"
 msgstr "データ:"
 
-#: src/dashboard_pi.cpp:4495 src/dashboard_pi.cpp:6459
+#: src/dashboard_pi.cpp:4490 src/dashboard_pi.cpp:6517
 msgid "Label:"
 msgstr "ラベル："
 
-#: src/dashboard_pi.cpp:4504 src/dashboard_pi.cpp:6468
+#: src/dashboard_pi.cpp:4499 src/dashboard_pi.cpp:6526
 msgid "Small:"
 msgstr "Small:"
 
-#: src/dashboard_pi.cpp:4514
+#: src/dashboard_pi.cpp:4509
 msgid "Reset:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4519
+#: src/dashboard_pi.cpp:4514
 msgid "Set dashboard default fonts"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4528
+#: src/dashboard_pi.cpp:4523
 msgid "Units, Ranges, Formats"
 msgstr "ユニット、範囲、フォーマット"
 
-#: src/dashboard_pi.cpp:4536
+#: src/dashboard_pi.cpp:4531
 msgid "Speedometer max value:"
 msgstr "スピード メーターの最大値:"
 
-#: src/dashboard_pi.cpp:4545
+#: src/dashboard_pi.cpp:4540
 msgid "Speed Over Ground Damping Factor:"
 msgstr "Speed Over Ground Damping Factor:"
 
-#: src/dashboard_pi.cpp:4554
+#: src/dashboard_pi.cpp:4549
 msgid "COG Damping Factor:"
 msgstr "COG Damping Factor:"
 
-#: src/dashboard_pi.cpp:4563
+#: src/dashboard_pi.cpp:4558
 msgid "Wind speed Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4572
+#: src/dashboard_pi.cpp:4567
 msgid "Wind angle Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4581
+#: src/dashboard_pi.cpp:4576
 msgid "Local Time Offset From UTC:"
 msgstr "UTCとの時差"
 
-#: src/dashboard_pi.cpp:4606
+#: src/dashboard_pi.cpp:4601
 msgid "Boat speed units:"
 msgstr "船の速度の単位:"
 
-#: src/dashboard_pi.cpp:4609 src/dashboard_pi.cpp:4673
+#: src/dashboard_pi.cpp:4604 src/dashboard_pi.cpp:4668
 msgid "Honor OpenCPN settings"
 msgstr "Honor OpenCPN settings"
 
-#: src/dashboard_pi.cpp:4609 src/dashboard_pi.cpp:4696
+#: src/dashboard_pi.cpp:4604 src/dashboard_pi.cpp:4691
 msgid "Kts"
 msgstr "Kts"
 
-#: src/dashboard_pi.cpp:4610 src/dashboard_pi.cpp:4696
+#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
 msgid "mph"
 msgstr "mph"
 
-#: src/dashboard_pi.cpp:4610 src/dashboard_pi.cpp:4696
+#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
 msgid "km/h"
 msgstr "km/h"
 
-#: src/dashboard_pi.cpp:4610 src/dashboard_pi.cpp:4696
+#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
 msgid "m/s"
 msgstr "m/s"
 
-#: src/dashboard_pi.cpp:4624
+#: src/dashboard_pi.cpp:4619
 msgid "Depth units:"
 msgstr "深さの単位:"
 
-#: src/dashboard_pi.cpp:4628 src/dashboard_pi.cpp:4675
+#: src/dashboard_pi.cpp:4623 src/dashboard_pi.cpp:4670
 msgid "Meters"
 msgstr "メートル"
 
-#: src/dashboard_pi.cpp:4628
+#: src/dashboard_pi.cpp:4623
 msgid "Feet"
 msgstr "フィート"
 
-#: src/dashboard_pi.cpp:4628
+#: src/dashboard_pi.cpp:4623
 msgid "Fathoms"
 msgstr "尋"
 
-#: src/dashboard_pi.cpp:4629
+#: src/dashboard_pi.cpp:4624
 msgid "Inches"
 msgstr "インチ"
 
-#: src/dashboard_pi.cpp:4629
+#: src/dashboard_pi.cpp:4624
 msgid "Centimeters"
 msgstr "センチメートル"
 
-#: src/dashboard_pi.cpp:4641
+#: src/dashboard_pi.cpp:4636
 #, c-format
 msgid "Depth Offset (%s):"
 msgstr "水深のオフセット(%s):"
 
-#: src/dashboard_pi.cpp:4670
+#: src/dashboard_pi.cpp:4665
 msgid "Distance units:"
 msgstr "距離の単位:"
 
-#: src/dashboard_pi.cpp:4674
+#: src/dashboard_pi.cpp:4669
 msgid "Nautical miles"
 msgstr "海里"
 
-#: src/dashboard_pi.cpp:4674
+#: src/dashboard_pi.cpp:4669
 msgid "Statute miles"
 msgstr "法定マイル"
 
-#: src/dashboard_pi.cpp:4675
+#: src/dashboard_pi.cpp:4670
 msgid "Kilometers"
 msgstr "キロメートル"
 
-#: src/dashboard_pi.cpp:4693
+#: src/dashboard_pi.cpp:4688
 msgid "Wind speed units:"
 msgstr "風速単位:"
 
-#: src/dashboard_pi.cpp:4710
+#: src/dashboard_pi.cpp:4705
 msgid "Temperature units:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4713
+#: src/dashboard_pi.cpp:4708
 msgid "Celsius"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4713
+#: src/dashboard_pi.cpp:4708
 msgid "Fahrenheit"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4713
+#: src/dashboard_pi.cpp:4708
 msgid "Kelvin"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4728
+#: src/dashboard_pi.cpp:4724 src/dashboard_pi.cpp:4759
 msgid "Other selections"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4738
+#: src/dashboard_pi.cpp:4734 src/dashboard_pi.cpp:4769
 msgid "Use internal Sumlog."
 msgstr ""
 
-#: src/dashboard_pi.cpp:4739
+#: src/dashboard_pi.cpp:4735 src/dashboard_pi.cpp:4776
 msgid "Enter new value if desired"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4755
+#: src/dashboard_pi.cpp:4751 src/dashboard_pi.cpp:4793
 msgid "Use N2K & SignalK true wind data over ground.\n"
 "(Instead of through water)"
 msgstr ""
 
-#: src/dashboard_pi.cpp:5266
+#: src/dashboard_pi.cpp:5317
 msgid "Add instrument"
 msgstr "機器を追加します。"
 
-#: src/dashboard_pi.cpp:5271
+#: src/dashboard_pi.cpp:5322
 msgid "Select instrument to add:"
 msgstr "追加する計器を選択します。"
 
-#: src/dashboard_pi.cpp:5676
+#: src/dashboard_pi.cpp:5727
 msgid "Menu"
 msgstr ""
 
-#: src/dashboard_pi.cpp:5680 src/dashboard_pi.cpp:5706
+#: src/dashboard_pi.cpp:5731 src/dashboard_pi.cpp:5757
 msgid "Preferences..."
 msgstr "設定"
 
-#: src/dashboard_pi.cpp:5685
+#: src/dashboard_pi.cpp:5736
 msgid "Resize..."
 msgstr ""
 
-#: src/dashboard_pi.cpp:5693
+#: src/dashboard_pi.cpp:5744
 msgid "Undock"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6288
+#: src/dashboard_pi.cpp:6346
 msgid "Choose font"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6430
+#: src/dashboard_pi.cpp:6488
 msgid "Title background color:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6449
+#: src/dashboard_pi.cpp:6507
 msgid "Data background color:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6477
+#: src/dashboard_pi.cpp:6535
 msgid "Arrow 1 Color :"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6487
+#: src/dashboard_pi.cpp:6545
 msgid "Arrow 2 Color :"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6514
+#: src/dashboard_pi.cpp:6572
 msgid "Set default"
 msgstr ""
 

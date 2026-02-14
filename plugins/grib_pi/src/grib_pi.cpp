@@ -251,6 +251,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
     pConf->SetPath(_T ( "/Directories" ));
     pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
     Pref->m_grib_dir_sel = l_grib_dir;
+    Pref->m_textDirectory->ChangeValue(l_grib_dir);
   }
 
 #ifdef __WXMSW__
@@ -466,10 +467,10 @@ void grib_pi::OnToolbarToolCallback(int id) {
   }
 
   // Toggle GRIB overlay display
-  m_bShowGrib = !m_bShowGrib;
+  if (id >= 0) m_bShowGrib = !m_bShowGrib;
 
   //    Toggle dialog?
-  if (m_bShowGrib) {
+  if (m_bShowGrib || id < 0) {
     // A new file could have been added since grib plugin opened
     if (!starting && m_bLoadLastOpenFile == 0) {
       m_pGribCtrlBar->OpenFile(true);
@@ -495,7 +496,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
       m_pGribCtrlBar->Refresh();
 #endif
     }
-    m_pGribCtrlBar->Show();
+    if (id >= 0) m_pGribCtrlBar->Show();
     if (m_pGribCtrlBar->m_bGRIBActiveFile) {
       if (m_pGribCtrlBar->m_bGRIBActiveFile->IsOK()) {
         ArrayOfGribRecordSets *rsa =
@@ -638,7 +639,7 @@ void grib_pi::SetDialogFont(wxWindow *dialog, wxFont *font) {
 
 void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
   if (message_id == _T("GRIB_VALUES_REQUEST")) {
-    if (!m_pGribCtrlBar) OnToolbarToolCallback(0);
+    if (!m_pGribCtrlBar) OnToolbarToolCallback(-1);
 
     // lat, lon, time, what
     wxJSONReader r;
@@ -730,7 +731,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
                     v[_T("Year")].AsInt(), v[_T("Hour")].AsInt(),
                     v[_T("Minute")].AsInt(), v[_T("Second")].AsInt());
 
-    if (!m_pGribCtrlBar) OnToolbarToolCallback(0);
+    if (!m_pGribCtrlBar) OnToolbarToolCallback(-1);
 
     GribTimelineRecordSet *set =
         m_pGribCtrlBar ? m_pGribCtrlBar->GetTimeLineRecordSet(time) : nullptr;

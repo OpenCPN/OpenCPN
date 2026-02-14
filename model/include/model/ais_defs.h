@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * General AIS definitions
  */
 
-#ifndef _AIS_DEFS_H__
-#define _AIS_DEFS_H__
+#ifndef AIS_DEFS_H_
+#define AIS_DEFS_H_
 
 #include <wx/hashmap.h>
 #include <wx/string.h>
@@ -50,4 +49,4 @@ WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual,
 #define TIMER_AIS_MSEC 998
 #define TIMER_AIS_AUDIO_MSEC 2000
 
-#endif  //  _AIS_DEFS_H__
+#endif  //  AIS_DEFS_H__

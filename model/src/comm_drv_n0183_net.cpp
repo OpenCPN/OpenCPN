@@ -13,15 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  *  \file
- *  Implement comm_drv_n0183_net.h.
+ *
+ *  Implement comm_drv_n0183_net.h -- Network IP Nmea0183 driver
  */
+
+#include <ctime>
+#include <deque>
 
 #ifdef __MSVC__
 #include "winsock2.h"
@@ -29,18 +31,14 @@
 #include <ws2tcpip.h>
 #endif
 
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
-#include <ctime>
-#include <deque>
-
-#ifndef __WXMSW__
+#ifndef _WIN32
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
+#endif
+
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
 #endif
 
 #include <wx/datetime.h>

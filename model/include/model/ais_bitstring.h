@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * AIS use bitstring.
  */
 
-#ifndef _AIS_BITSTRING_H__
-#define _AIS_BITSTRING_H__
+#ifndef AIS_BITSTRING_H_
+#define AIS_BITSTRING_H_
 
 #define AIS_MAX_MESSAGE_LEN \
   (10 * 82)  // AIS Spec allows up to 9 sentences per message, 82 bytes each

@@ -13,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Runtime connection/driver state definitions.
+ */
 
 #ifndef CONN_STATES_H_
 #define CONN_STATES_H_
@@ -29,11 +33,6 @@
 #include "model/comm_drv_registry.h"
 #include "model/comm_drv_stats.h"
 #include "model/comm_navmsg.h"
-
-/**
- * \file
- * Runtime connection/driver state definitions.
- */
 
 enum class ConnState { Disabled, NoStats, NoData, Unavailable, Ok };
 

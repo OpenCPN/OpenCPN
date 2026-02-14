@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement ocpn_utils.h -- miscellaneous utilities, many of which string
+ * related.
  */
+
 #include <algorithm>
 #include <cstdio>
 #include <iomanip>
@@ -180,6 +181,25 @@ std::string printable(const std::string& str) {
     }
   }
   return ss.str();
+}
+
+double AnchorDistFix(double const d, double const AnchorPointMinDist,
+                     double const AnchorPointMaxDist)  //  pjotrc 2010.02.22
+{
+  if (d >= 0.0)
+    if (d < AnchorPointMinDist)
+      return AnchorPointMinDist;
+    else if (d > AnchorPointMaxDist)
+      return AnchorPointMaxDist;
+    else
+      return d;
+  else  //  d < 0.0
+    if (d > -AnchorPointMinDist)
+      return -AnchorPointMinDist;
+    else if (d < -AnchorPointMaxDist)
+      return -AnchorPointMaxDist;
+    else
+      return d;
 }
 
 }  // namespace ocpn

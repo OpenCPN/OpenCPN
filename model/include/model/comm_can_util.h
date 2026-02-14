@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Low-level utility functions for socketcan support.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2024 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2024 by David Register                                  *
+ *   Copyright (C) 2024 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Low-level socketcan utility functions.
+ */
 
 #ifndef _COMMCANUTIL_H
 #define _COMMCANUTIL_H
@@ -29,12 +28,12 @@
 #include <memory>
 #include <string>
 
-#include <wx/datetime.h>
-
-#if !defined(__WXMSW__) && !defined(__WXMAC__)
+#if !defined(_WIN32) && !defined(__APPLE__)
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #endif
+
+#include <wx/datetime.h>
 
 #ifdef __WXMSW__
 #define CAN_MAX_DLEN 8

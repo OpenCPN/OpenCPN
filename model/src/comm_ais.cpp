@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,11 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_ais.h -- AIS decoding functions
  */
+
 #include <cmath>
 #include <memory>
 
@@ -49,10 +49,10 @@ AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos) {
   // if (!ctx.accumulator) return AIS_GENERIC_ERROR;
 
   //  We only process AIVDO messages
-  if (!str.Mid(1, 5).IsSameAs(_T("AIVDO"))) return AIS_GENERIC_ERROR;
+  if (!str.Mid(1, 5).IsSameAs("AIVDO")) return AIS_GENERIC_ERROR;
 
   //  Use a tokenizer to pull out the first 4 fields
-  wxStringTokenizer tkz(str, _T(","));
+  wxStringTokenizer tkz(str, ",");
 
   wxString token;
   token = tkz.GetNextToken();  // !xxVDx
@@ -83,7 +83,7 @@ AisError DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos) {
   if ((1 == nsentences) && (1 == isentence)) {
     string_to_parse = tkz.GetNextToken();  // the encapsulated data
   } else {
-    wxASSERT_MSG(false, wxT("Multipart AIVDO detected"));
+    wxASSERT_MSG(false, "Multipart AIVDO detected");
     return AIS_INCOMPLETE_MULTIPART;  // and non-zero return
   }
 

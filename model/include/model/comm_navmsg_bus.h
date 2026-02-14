@@ -13,31 +13,32 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Raw messages layer, supports sending and recieving navmsg
  * messages. This is the second layer in the three tier model
  * drivers, raw messages and application messages.
  */
 
-#ifndef _NAVMSG_BUS_H__
-#define _NAVMSG_BUS_H__
+#ifndef NAVMSG_BUS_H_
+#define NAVMSG_BUS_H_
 
 #include <memory>
 #include <mutex>
 #include <set>
 #include <string>
 
+#include <wx/event.h>
+
 #include "model/comm_driver.h"
 #include "observable_evtvar.h"
 
 /** The raw message layer, a singleton. */
-class NavMsgBus : public DriverListener {
+class NavMsgBus : public wxEvtHandler, public DriverListener {
 public:
   /* Singleton implementation. */
   static NavMsgBus& GetInstance();
@@ -49,8 +50,11 @@ public:
   void SendMessage(std::shared_ptr<const NavMsg> message,
                    std::shared_ptr<const NavAddr> address);
 
-  /** Register a message type in list the GetActiveMessages() list. */
-  void RegisterKey(const std::string& key);
+  /**
+   * Register a message type in list the GetActiveMessages() list
+   * @return true if key is inserted, false if already registered.
+   */
+  bool RegisterKey(const std::string& key);
 
   /** Accept message received by driver, make it available for upper layers. */
   void Notify(std::shared_ptr<const NavMsg> message);
@@ -71,4 +75,4 @@ private:
   std::set<std::string> m_active_messages;
 };
 
-#endif  // NAVMSG_BUS_H
+#endif  // NAVMSG_BUS_H_

@@ -12,14 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- *  Misc  GUI event vars, a singleton.
+ *
+ *  Misc GUI event vars, a singleton.
  */
 
 #ifndef GUI_EVENTS_H
@@ -44,6 +43,35 @@ public:
    * background.
    */
   EventVar color_scheme_change;
+
+  /**
+   * Notified when the top level status bas should be updated by gFrame
+   */
+  EventVar gframe_update_status_bar;
+
+  /**
+   * Notified with a shared_ptr<const AisTargetData> when gFrame should center
+   * the given AIS target
+   */
+  EventVar on_center_ais_target;
+
+  /**
+   * Notified without arguments when the global variables housing the Data
+   * Monitor user defined colors are updated.
+   */
+  EventVar on_dm_colors_change;
+
+  /** Notified when list of routes is updated (no data in event) */
+  EventVar on_routes_update;
+
+  /** Notified when waypoint(s) is updated (no data in event) */
+  EventVar on_waypoint_update;
+
+  /** Notified when chartdbs async operations complete, to reload charts */
+  EventVar on_finalize_chartdbs;
+
+  /** Notified when chartdbs async operations complete, to finalize settings */
+  EventVar options_on_finalize_chartdbs;
 
 private:
   GuiEvents() = default;

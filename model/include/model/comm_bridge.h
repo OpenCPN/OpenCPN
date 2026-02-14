@@ -1,5 +1,6 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/***************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,15 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
  *
- * The CommBridge class and helpers.
+ * CommBridge class and helpers.
  */
 
 #ifndef COMM_BRIDGE_H
@@ -89,7 +88,10 @@ struct BridgeLogCallbacks {
  */
 class CommBridge : public wxEvtHandler {
 public:
-  CommBridge();
+  static CommBridge& GetInstance();
+
+  CommBridge(const CommBridge&) = delete;
+  CommBridge& operator=(const CommBridge&) = delete;
 
   ~CommBridge() override;
 
@@ -130,6 +132,8 @@ public:
   bool SaveConfig() const;
 
 private:
+  CommBridge();
+
   PriorityContainer active_priority_position;
   PriorityContainer active_priority_velocity;
   PriorityContainer active_priority_heading;
@@ -148,12 +152,15 @@ private:
   ObsListener m_n2k_129025_lstnr;
   ObsListener m_n2k_129026_lstnr;
   ObsListener m_n2k_127250_lstnr;
+  ObsListener m_n2k_127258_lstnr;
   ObsListener m_n2k_129540_lstnr;
 
   ObsListener m_n0183_rmc_lstnr;
+  ObsListener m_n0183_ths_lstnr;
   ObsListener m_n0183_hdt_lstnr;
   ObsListener m_n0183_hdg_lstnr;
   ObsListener m_n0183_hdm_lstnr;
+  ObsListener m_n0183_hvd_lstnr;
   ObsListener m_n0183_vtg_lstnr;
   ObsListener m_n0183_gsv_lstnr;
   ObsListener m_n0183_gga_lstnr;
@@ -194,12 +201,15 @@ private:
   bool HandleN2K_129025(const N2000MsgPtr& n2k_msg);
   bool HandleN2K_129026(const N2000MsgPtr& n2k_msg);
   bool HandleN2K_127250(const N2000MsgPtr& n2k_msg);
+  bool HandleN2K_127258(const N2000MsgPtr& n2k_msg);
   bool HandleN2K_129540(const N2000MsgPtr& n2k_msg);
 
   bool HandleN0183_RMC(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_THS(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_HDT(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_HDG(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_HDM(const N0183MsgPtr& n0183_msg);
+  bool HandleN0183_HVD(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_VTG(const N0183MsgPtr& n0183_msg);
   bool HandleN0183_GSV(const N0183MsgPtr& n0183_msg);
 

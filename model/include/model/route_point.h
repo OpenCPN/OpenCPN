@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,15 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _ROUTEPOINT_H__
-#define _ROUTEPOINT_H__
+/**
+ * \file
+ *
+ * Waypoint or mark abstraction
+ */
+
+#ifndef ROUTEPOINT_H_
+#define ROUTEPOINT_H_
 
 #include <functional>
+#include <vector>
 
 #include <wx/bitmap.h>
 #include <wx/colour.h>
@@ -44,11 +45,11 @@
 //"%d/%m/%Y %H:%M" //"%Y-%m-%d %H:%M"
 
 // Default color, global state
-extern wxColour g_colourWaypointRangeRingsColour;
+extern wxColour g_colourWaypointRangeRingsColour; /**< Global instance */
 
-extern int g_LayerIdx;
+extern int g_LayerIdx; /**< Global instance */
 
-extern wxRect g_blink_rect;
+extern wxRect g_blink_rect; /**< Global instance */
 
 /**
  * Represents a waypoint or mark within the navigation system.
@@ -610,6 +611,6 @@ private:
   int m_dragIconTextureWidth, m_dragIconTextureHeight;
 };
 
-WX_DECLARE_LIST(RoutePoint, RoutePointList);  // establish class as list member
+using RoutePointList = std::vector<RoutePoint *>;
 
-#endif  //  _ROUTEPOINT_H__
+#endif  //  ROUTEPOINT_H_

@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN private types and ENUMs
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,17 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
- *
+ * Navigation data types.
  */
 
-#ifndef _OCPNTYPES_H__
-#define _OCPNTYPES_H__
+#ifndef OCPNTYPES_H_
+#define OCPNTYPES_H_
 
 #include <wx/colour.h>
 
@@ -57,9 +51,9 @@ typedef enum ChartFamilyEnum {
 //----------------------------------------------------------------------------
 // ocpn Toolbar stuff
 //----------------------------------------------------------------------------
-class ChartBase;
-class wxSocketEvent;
-class ocpnToolBarSimple;
+// class ChartBase;
+// class wxSocketEvent;
+// class ocpnToolBarSimple;
 
 /**
  * A generic position and navigation data structure.
@@ -141,4 +135,4 @@ typedef struct {
   bool arrival;
 } ActiveLegDat;
 
-#endif  //  _OCPNTYPES_H__
+#endif  //  OCPNTYPES_H_

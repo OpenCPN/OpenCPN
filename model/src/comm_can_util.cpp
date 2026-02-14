@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Low-level utility functions for socketcan support.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2024 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2024 by David Register                                  *
+ *   Copyright (C) 2024 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_can_util.h -- low-level socketcan utility functions.
+ */
 
 #include <algorithm>
 #include <vector>
@@ -43,12 +42,26 @@ typedef struct can_frame CanFrame;
 
 bool IsFastMessagePGN(unsigned pgn) {
   static const std::vector<unsigned> haystack = {
-      // All known multiframe fast messages
-      65240u,  126208u, 126464u, 126996u, 126998u, 127233u, 127237u, 127489u,
-      127496u, 127506u, 128275u, 129029u, 129038u, 129039u, 129040u, 129041u,
-      129284u, 129285u, 129540u, 129793u, 129794u, 129795u, 129797u, 129798u,
-      129801u, 129802u, 129808u, 129809u, 129810u, 130065u, 130074u, 130323u,
-      130577u, 130820u, 130822u, 130824u};
+      // All known multiframe fast messages, adopted from canboat
+      // https://github.com/canboat/canboat
+      65240u,  126208u, 126464u, 126720u, 126983u, 126984u, 126985u, 126986u,
+      126987u, 126988u, 126996u, 126998u, 127233u, 127237u, 127489u, 127490u,
+      127491u, 127494u, 127495u, 127496u, 127497u, 127498u, 127503u, 127504u,
+      127506u, 127507u, 127510u, 127513u, 128275u, 128520u, 128538u, 129029u,
+      129038u, 129039u, 129040u, 129041u, 129044u, 129045u, 129284u, 129285u,
+      129301u, 129302u, 129538u, 129540u, 129541u, 129542u, 129545u, 129547u,
+      129549u, 129550u, 129551u, 129556u, 129792u, 129793u, 129794u, 129795u,
+      129796u, 129797u, 129798u, 129799u, 129800u, 129801u, 129802u, 129803u,
+      129804u, 129805u, 129806u, 129807u, 129808u, 129809u, 129810u, 130052u,
+      130053u, 130054u, 130060u, 130061u, 130064u, 130065u, 130066u, 130067u,
+      130068u, 130069u, 130070u, 130071u, 130072u, 130073u, 130074u, 130320u,
+      130321u, 130322u, 130323u, 130324u, 130330u, 130561u, 130562u, 130563u,
+      130564u, 130565u, 130566u, 130567u, 130569u, 130570u, 130571u, 130572u,
+      130573u, 130574u, 130577u, 130578u, 130580u, 130581u, 130583u, 130584u,
+      130586u, 130816u, 130817u, 130818u, 130819u, 130820u, 130821u, 130822u,
+      130824u, 130827u, 130828u, 130831u, 130832u, 130834u, 130835u, 130836u,
+      130837u, 130838u, 130839u, 130840u, 130842u, 130843u, 130845u, 130846u,
+      130847u, 130850u, 130851u, 130856u, 130880u, 130881u, 130944u};
 
   unsigned needle = static_cast<unsigned>(pgn);
   auto found = std::find_if(haystack.begin(), haystack.end(),
@@ -132,12 +145,12 @@ int FastMessageMap::FindMatchingEntry(const CanHeader header,
   return kNotFound;
 }
 
-int FastMessageMap::AddNewEntry(void) {
+int FastMessageMap::AddNewEntry() {
   entries.push_back(Entry());
   return entries.size() - 1;
 }
 
-int FastMessageMap::GarbageCollector(void) {
+int FastMessageMap::GarbageCollector() {
   std::vector<unsigned> stale_entries;
   bool bremoved;
   int nremoved = 0;
@@ -229,7 +242,7 @@ bool FastMessageMap::AppendEntry(const CanHeader header,
     //     if ((dropped_frames > CONST_DROPPEDFRAME_THRESHOLD) &&
     //     (wxDateTime::Now() < (dropped_frame_time +
     //     wxTimeSpan::Seconds(CONST_DROPPEDFRAME_PERIOD) ) ) ) {
-    //       wxLogError(_T("TwoCan Device, Dropped Frames rate exceeded"));
+    //       wxLogError("TwoCan Device, Dropped Frames rate exceeded");
     //       wxLogError(wxString::Format(_T("Frame: Source: %d Destination: %d
     //       Priority: %d PGN: %d"),header.source, header.destination,
     //       header.priority, header.pgn)); dropped_frames = 0;

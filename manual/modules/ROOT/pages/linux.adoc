@@ -151,8 +151,8 @@ tools.
 The CLion IDE is currently used by some of the core project developers 
 with good results.
 
-CLion is commercial software, but are giving out free licenses for open
-source development in certain cases.
+CLion is commercial software, but are giving out free licenses for open source 
+development since the 2025 version
 
 === https://github.com/wxFormBuilder/wxFormBuilder[wxFormBuilder]
 

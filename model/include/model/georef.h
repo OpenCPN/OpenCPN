@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Georef utility
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,20 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
- ***************************************************************************
- *  Parts of this file were adapted from source code found in              *
- *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
- ***************************************************************************
-
+/**
+ * \file
+ *
+ * OpenCPN Georef utility
+ *
+ * Parts of this file were adapted from source code found in
+ * John F. Waers (jfwaers@csn.net) public domain program MacGPS45
  */
 
-#ifndef _GEOREF_H__
-#define _GEOREF_H__
+#ifndef GEOREF_H_
+#define GEOREF_H_
 
 #include <stdio.h>
 #include <string.h>
@@ -821,4 +815,4 @@ typedef struct {
   int n_par;
 } lm_data_type;
 
-#endif  // guard
+#endif  // GEOREF_H_
