@@ -1,4 +1,9 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Shapefile basemap
+ *
+ ***************************************************************************
  *   Copyright (C) 2012-2023 by David S. Register                          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,42 +17,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  *
- * Implement shapefile_basemap.h -- Shapefile basemap
+ *
  */
 
-#include <algorithm>
-#include <any>
-#include <chrono>
-#include <cstdlib>
-#include <future>
-#include <limits>
-#include <list>
-#include <memory>
-#include <string>
-#include <utility>
-
-#include <wx/colour.h>
-#include <wx/gdicmn.h>
-#include <wx/geometry.h>
-#include <wx/string.h>
-
-// Include ocpn_platform.h before shapefile_basemap.h to prevent obscure syntax
-// error when compiling with VS2022. gl_headers must be first.
-#include "gl_headers.h"
-
-#include "model/config_vars.h"
-#include "model/logger.h"
-
-#include "chartbase.h"
-#include "gl_chart_canvas.h"
-#include "ocpn_platform.h"
+// Include OCPNPlatform.h before shapefile_basemap.h to prevent obscure syntax
+// error when compiling with VS2022
+#include "OCPNPlatform.h"
 #include "shapefile_basemap.h"
+#include "chartbase.h"
+#include "glChartCanvas.h"
+
+#include "model/logger.h"
 
 #ifdef ocpnUSE_GL
 #include "shaders.h"
@@ -59,7 +44,8 @@
 #define __CALL_CONVENTION
 #endif
 
-ShapeBaseChartSet gShapeBasemap;
+extern OCPNPlatform *g_Platform;
+extern wxString gWorldShapefileLocation;
 
 #ifdef ocpnUSE_GL
 
@@ -74,6 +60,7 @@ typedef union {
     GLdouble b;
   } info;
 } GLvertexshp;
+#include <list>
 
 static std::list<float_2Dpt> g_pvshp;
 static std::list<GLvertexshp *> g_vertexesshp;
@@ -98,7 +85,7 @@ void __CALL_CONVENTION shpscombineCallback(GLdouble coords[3],
 void __CALL_CONVENTION shpserrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  // wxLogMessage( "OpenGL Tessellation Error: %s", estring );
+  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), estring );
 }
 
 void __CALL_CONVENTION shpsbeginCallback(GLenum type) {
@@ -141,7 +128,7 @@ void __CALL_CONVENTION shpsvertexCallback(GLvoid *arg) {
   g_pvshp.push_back(p);
   g_posshp++;
 }
-#endif  // ocpnUSE_GL
+#endif
 
 ShapeBaseChartSet::ShapeBaseChartSet() : _loaded(false) {
   land_color = wxColor(170, 175, 80);
@@ -351,9 +338,10 @@ void ShapeBaseChart::DoDrawPolygonFilled(ocpnDC &pnt, ViewPort &vp,
   }
 }
 
-#ifdef ocpnUSE_GL
 void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
                                         GLUtesselator *tobj, bool idl) {
+#ifdef ocpnUSE_GL
+
   wxPoint2DDouble q;
   if (glChartCanvas::HasNormalizedViewPort(vp)) {
     q = ShapeBaseChartSet::GetDoublePixFromLL(vp, point.getY(), point.getX());
@@ -380,9 +368,8 @@ void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
   vertex->info.y = q.m_y;
 
   gluTessVertex(tobj, (GLdouble *)vertex, (GLdouble *)vertex);
-}
-
 #endif
+}
 
 void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                                            const shp::Feature &feature) {
@@ -463,7 +450,7 @@ void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
 
   glDeleteBuffers(1, &vbo);
   shader->UnBind();
-#endif  // ocpnUSE_GL
+#endif
 }
 
 void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {

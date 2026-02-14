@@ -1,6 +1,11 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  OpenCPN Route table printout
+ * Author:   Pavel Saviankou
+ *
+ ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
- *   Copyright (C) 2010 by Pavel Saviankou                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -13,20 +18,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  *
- * OpenCPN Route table printout
+ *
  */
-
-#ifndef PRINTTABLE_H
-#define PRINTTABLE_H
-
 #include <iostream>
 #include <vector>
+
+#ifndef __PRINTTABLE_H__
+#define __PRINTTABLE_H__
 
 #include <wx/print.h>
 #include <wx/datetime.h>
@@ -40,6 +43,7 @@
 #include "navutil.h"
 
 /**
+ * \brief
  *  Enumeration is used to notice the state of the table.
  *
  *  Different states are used to signalize different semanic of the data in
@@ -51,13 +55,16 @@
 enum TableState { TABLE_SETUP_WIDTHS = 0, TABLE_FILL_DATA, TABLE_FILL_HEADER };
 
 /**
- *  Represents a NxM simple table with captions.
+ *  \brief Represents a NxM simple table with captions.
  *
  *  Input operator is "<<"
  *  Number of columns and rows are given dynamically by the input data.
  *  Captions are given by first input line.
  *  Every cell is given column by column.
  *  Next row is given by "<< '\n'" (or << endl)
+ *
+ *
+ *
  */
 class Table {
 protected:
@@ -202,5 +209,4 @@ public:
   // Returns the height of the header
   int GetHeaderHeight() { return header_height; };
 };
-
-#endif  // PRINTTABLE_H
+#endif

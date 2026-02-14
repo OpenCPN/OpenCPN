@@ -19,8 +19,7 @@
 
 /**
  * \file
- *
- * ocpn_plugin.h GUI API funtions up to api level 1.20
+ * PlugIn GUI API Functions
  */
 #include <vector>
 #include "dychart.h"  // Must be ahead due to buggy GL includes handling
@@ -35,33 +34,28 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
-#include "o_sound/o_sound.h"
-
 #include "model/ais_decoder.h"
-#include "model/comm_bridge.h"
 #include "model/comm_navmsg_bus.h"
-#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/multiplexer.h"
-#include "model/navobj_db.h"
 #include "model/notification_manager.h"
 #include "model/own_ship.h"
 #include "model/plugin_comm.h"
-#include "model/svg_utils.h"
 #include "model/route.h"
 #include "model/track.h"
 
 #include "ais.h"
 #include "chartdb.h"
 #include "chcanv.h"
-#include "config_mgr.h"
-#include "font_mgr.h"
-#include "gl_chart_canvas.h"
+#include "ConfigMgr.h"
+#include "FontMgr.h"
+#include "glChartCanvas.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_aui_manager.h"
+#include "ocpn_app.h"
+#include "OCPN_AUIManager.h"
 #include "ocpn_frame.h"
-#include "ocpn_platform.h"
+#include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 #include "options.h"
 #include "piano.h"
@@ -69,19 +63,77 @@
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "s52plib.h"
-#include "shapefile_basemap.h"
+#include "SoundFactory.h"
+#include "model/svg_utils.h"
+#include "SystemCmdSound.h"
 #include "toolbar.h"
 #include "waypointman_gui.h"
+#include "shapefile_basemap.h"
+#include "model/navobj_db.h"
+
+extern PlugInManager* s_ppim;
+extern MyConfig* pConfig;
+extern OCPN_AUIManager* g_pauimgr;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale* plocale_def_lang;
 #endif
 
-extern PlugInManager* s_ppim;  // FIXME (leamas) another name for global mgr
+extern OCPNPlatform* g_Platform;
+extern ChartDB* ChartData;
+extern MyFrame* gFrame;
+extern ocpnStyle::StyleManager* g_StyleManager;
+extern options* g_pOptions;
+extern Multiplexer* g_pMUX;
+extern bool g_bShowChartBar;
+extern Routeman* g_pRouteMan;
+extern Select* pSelect;
+extern RouteManagerDialog* pRouteManagerDialog;
+extern RouteList* pRouteList;
+extern std::vector<Track*> g_TrackList;
+extern PlugInManager* g_pi_manager;
+extern s52plib* ps52plib;
+extern wxString ChartListFileName;
+extern options* g_options;
+extern ColorScheme global_color_scheme;
+extern wxArrayString g_locale_catalog_array;
+extern int g_GUIScaleFactor;
+extern int g_ChartScaleFactor;
+extern wxString g_locale;
+extern ocpnFloatingToolbarDialog* g_MainToolbar;
 
-extern options* g_pOptions;  // FIXME (leamas) merge to g_options
+extern int g_chart_zoom_modifier_raster;
+extern int g_chart_zoom_modifier_vector;
+extern double g_display_size_mm;
+extern bool g_bopengl;
+extern AisDecoder* g_pAIS;
+extern ChartGroupArray* g_pGroupArray;
+extern ShapeBaseChartSet gShapeBasemap;
 
-extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find new home
+// extern ChartGroupArray* g_pGroupArray;
+extern unsigned int g_canvasConfig;
+
+extern wxString g_CmdSoundString;
+
+unsigned int gs_plib_flags;
+extern ChartCanvas* g_focusCanvas;
+extern ChartCanvas* g_overlayCanvas;
+extern bool g_bquiting;
+extern bool g_disable_main_toolbar;
+extern bool g_btenhertz;
+extern bool g_CanvasHideNotificationIcon;
+extern wxString g_default_wp_icon;
+extern bool g_bhide_route_console;
+extern bool g_bhide_context_menus;
+extern int g_maxzoomin;
+extern bool g_bhide_depth_units;
+extern bool g_bhide_overzoom_flag;
+extern wxString g_androidExtFilesDir;
+
+extern std::vector<std::string> ChartDirectoryExcludedVector;
+
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
+extern arrayofCanvasPtr g_canvasArray;
 
 void NotifySetupOptionsPlugin(const PlugInData* pic);
 
@@ -196,7 +248,7 @@ int AddCanvasContextMenuItemExt(wxMenuItem* pitem, opencpn_plugin* pplugin,
 }
 
 /*  Utility functions  */
-wxFileConfig* GetOCPNConfigObject() {
+wxFileConfig* GetOCPNConfigObject(void) {
   if (s_ppim)
     return reinterpret_cast<wxFileConfig*>(
         pConfig);  // return the global application config object
@@ -207,8 +259,8 @@ wxFileConfig* GetOCPNConfigObject() {
 wxWindow* GetOCPNCanvasWindow() {
   wxWindow* pret = NULL;
   if (s_ppim) {
-    AbstractTopFrame* pFrame = s_ppim->GetParentFrame();
-    pret = (wxWindow*)pFrame->GetAbstractPrimaryCanvas();
+    MyFrame* pFrame = s_ppim->GetParentFrame();
+    pret = (wxWindow*)pFrame->GetPrimaryCanvas();
   }
   return pret;
 }
@@ -305,7 +357,7 @@ wxString GetActiveStyleName() {
   if (g_StyleManager)
     return g_StyleManager->GetCurrentStyle()->name;
   else
-    return "";
+    return _T("");
 }
 
 wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width,
@@ -330,15 +382,17 @@ wxBitmap GetBitmapFromSVGFile(wxString filename, unsigned int width,
   }
 }
 
-bool IsTouchInterface_PlugIn() { return g_btouch; }
+bool IsTouchInterface_PlugIn(void) { return g_btouch; }
 
 wxColour GetFontColour_PlugIn(wxString TextElement) {
   return FontMgr::Get().GetFontColor(TextElement);
 }
 
-wxString* GetpSharedDataLocation() { return g_Platform->GetSharedDataDirPtr(); }
+wxString* GetpSharedDataLocation(void) {
+  return g_Platform->GetSharedDataDirPtr();
+}
 
-ArrayOfPlugIn_AIS_Targets* GetAISTargetArray() {
+ArrayOfPlugIn_AIS_Targets* GetAISTargetArray(void) {
   if (!g_pAIS) return NULL;
 
   ArrayOfPlugIn_AIS_Targets* pret = new ArrayOfPlugIn_AIS_Targets;
@@ -360,7 +414,7 @@ ArrayOfPlugIn_AIS_Targets* GetAISTargetArray() {
   return pret;
 }
 
-wxAuiManager* GetFrameAuiManager() { return g_pauimgr; }
+wxAuiManager* GetFrameAuiManager(void) { return g_pauimgr; }
 
 void SendPluginMessage(wxString message_id, wxString message_body) {
   SendMessageToAllPlugins(message_id, message_body);
@@ -428,7 +482,7 @@ bool UpdateChartDBInplace(wxArrayString dir_array, bool b_force_update,
     wxString dirname = dir_array[i];
     ChartDirInfo cdi;
     cdi.fullpath = dirname;
-    cdi.magic_number = "";
+    cdi.magic_number = _T("");
     ChartDirArray.Add(cdi);
   }
   bool b_ret = gFrame->UpdateChartDatabaseInplace(
@@ -532,7 +586,8 @@ wxScrolledWindow* AddOptionsPage(OptionsParentPI parent, wxString title) {
       parentid = g_pOptions->m_pagePlugins;
       break;
     default:
-      wxLogMessage("Error in PluginManager::AddOptionsPage: Unknown parent");
+      wxLogMessage(
+          _T("Error in PluginManager::AddOptionsPage: Unknown parent"));
       return NULL;
       break;
   }
@@ -571,7 +626,7 @@ bool DecodeSingleVDOMessage(const wxString& str, PlugIn_Position_Fix_Ex* pos,
   return false;
 }
 
-int GetChartbarHeight() {
+int GetChartbarHeight(void) {
   int val = 0;
   if (g_bShowChartBar) {
     ChartCanvas* cc = gFrame->GetPrimaryCanvas();
@@ -588,7 +643,7 @@ bool GetRoutepointGPX(RoutePoint* pRoutePoint, char* buffer,
 
   NavObjectCollection1* pgpx = new NavObjectCollection1;
   pgpx->AddGPXWaypoint(pRoutePoint);
-  wxString gpxfilename = wxFileName::CreateTempFileName("gpx");
+  wxString gpxfilename = wxFileName::CreateTempFileName(wxT("gpx"));
   pgpx->SaveFile(gpxfilename);
   delete pgpx;
 
@@ -718,19 +773,6 @@ double fromUsrDepth_Plugin(double usr_depth, int unit) {
 
 wxString getUsrDepthUnit_Plugin(int unit) { return getUsrDepthUnit(unit); }
 
-/**
- * Height Conversion Functions
- */
-double toUsrHeight_Plugin(double m_height, int unit) {
-  return toUsrHeight(m_height, unit);
-}
-
-double fromUsrHeight_Plugin(double usr_height, int unit) {
-  return fromUsrHeight(usr_height, unit);
-}
-
-wxString getUsrHeightUnit_Plugin(int unit) { return getUsrHeightUnit(unit); }
-
 double fromDMM_PlugIn(wxString sdms) { return fromDMM(sdms); }
 
 bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,
@@ -778,9 +820,9 @@ PlugIn_Waypoint::PlugIn_Waypoint(double lat, double lon,
 PlugIn_Waypoint::~PlugIn_Waypoint() {}
 
 //      PlugInRoute implementation
-PlugIn_Route::PlugIn_Route() { pWaypointList = new Plugin_WaypointList; }
+PlugIn_Route::PlugIn_Route(void) { pWaypointList = new Plugin_WaypointList; }
 
-PlugIn_Route::~PlugIn_Route() {
+PlugIn_Route::~PlugIn_Route(void) {
   pWaypointList->DeleteContents(false);  // do not delete Waypoints
   pWaypointList->Clear();
 
@@ -788,16 +830,16 @@ PlugIn_Route::~PlugIn_Route() {
 }
 
 //      PlugInTrack implementation
-PlugIn_Track::PlugIn_Track() { pWaypointList = new Plugin_WaypointList; }
+PlugIn_Track::PlugIn_Track(void) { pWaypointList = new Plugin_WaypointList; }
 
-PlugIn_Track::~PlugIn_Track() {
+PlugIn_Track::~PlugIn_Track(void) {
   pWaypointList->DeleteContents(false);  // do not delete Waypoints
   pWaypointList->Clear();
 
   delete pWaypointList;
 }
 
-wxString GetNewGUID() { return GpxDocument::GetUUID(); }
+wxString GetNewGUID(void) { return GpxDocument::GetUUID(); }
 
 bool AddCustomWaypointIcon(wxBitmap* pimage, wxString key,
                            wxString description) {
@@ -820,7 +862,7 @@ static void cloneHyperlinkList(RoutePoint* dst, const PlugIn_Waypoint* src) {
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->push_back(h);
+      dst->m_HyperlinkList->Append(h);
 
       linknode = linknode->GetNext();
     }
@@ -833,11 +875,15 @@ bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
+  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  while (prpnode) {
+    RoutePoint* prp = prpnode->GetData();
+
     if (prp->m_GUID == pwaypoint->m_GUID) {
       b_unique = false;
       break;
     }
+    prpnode = prpnode->GetNext();  // RoutePoint
   }
 
   if (!b_unique) return false;
@@ -911,7 +957,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->clear();
+      prp->m_HyperlinkList->Clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
         wxPlugin_HyperlinkListNode* linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
@@ -923,7 +969,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
           h->Link = link->Link;
           h->LType = link->Type;
 
-          prp->m_HyperlinkList->push_back(h);
+          prp->m_HyperlinkList->Append(h);
 
           linknode = linknode->GetNext();
         }
@@ -972,15 +1018,21 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint* dst,
   delete dst->m_HyperlinkList;
   dst->m_HyperlinkList = nullptr;
 
-  if (src->m_HyperlinkList->size() > 0) {
+  if (src->m_HyperlinkList->GetCount() > 0) {
     dst->m_HyperlinkList = new Plugin_HyperlinkList;
-    for (Hyperlink* link : *src->m_HyperlinkList) {
+
+    wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    while (linknode) {
+      Hyperlink* link = linknode->GetData();
+
       Plugin_Hyperlink* h = new Plugin_Hyperlink();
       h->DescrText = link->DescrText;
       h->Link = link->Link;
       h->Type = link->LType;
 
       dst->m_HyperlinkList->Append(h);
+
+      linknode = linknode->GetNext();
     }
   }
 }
@@ -996,25 +1048,37 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
   return true;
 }
 
-wxArrayString GetWaypointGUIDArray() {
+wxArrayString GetWaypointGUIDArray(void) {
   wxArrayString result;
-  if (pWayPointMan) {
-    for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
-      result.Add(prp->m_GUID);
-    }
+  const RoutePointList* list = pWayPointMan->GetWaypointList();
+
+  wxRoutePointListNode* prpnode = list->GetFirst();
+  while (prpnode) {
+    RoutePoint* prp = prpnode->GetData();
+    result.Add(prp->m_GUID);
+
+    prpnode = prpnode->GetNext();  // RoutePoint
   }
+
   return result;
 }
 
-wxArrayString GetRouteGUIDArray() {
+wxArrayString GetRouteGUIDArray(void) {
   wxArrayString result;
-  for (Route* proute : *pRouteList) {
+  RouteList* list = pRouteList;
+
+  wxRouteListNode* prpnode = list->GetFirst();
+  while (prpnode) {
+    Route* proute = prpnode->GetData();
     result.Add(proute->m_GUID);
+
+    prpnode = prpnode->GetNext();  // Route
   }
+
   return result;
 }
 
-wxArrayString GetTrackGUIDArray() {
+wxArrayString GetTrackGUIDArray(void) {
   wxArrayString result;
   for (Track* ptrack : g_TrackList) {
     result.Add(ptrack->m_GUID);
@@ -1025,7 +1089,11 @@ wxArrayString GetTrackGUIDArray() {
 
 wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
-  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
+  const RoutePointList* list = pWayPointMan->GetWaypointList();
+
+  wxRoutePointListNode* prpnode = list->GetFirst();
+  while (prpnode) {
+    RoutePoint* prp = prpnode->GetData();
     switch (req) {
       case OBJECTS_ALL:
         result.Add(prp->m_GUID);
@@ -1037,14 +1105,20 @@ wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
         if (prp->m_bIsInLayer) result.Add(prp->m_GUID);
         break;
     }
+
+    prpnode = prpnode->GetNext();  // RoutePoint
   }
+
   return result;
 }
 
 wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
+  RouteList* list = pRouteList;
 
-  for (Route* proute : *pRouteList) {
+  wxRouteListNode* prpnode = list->GetFirst();
+  while (prpnode) {
+    Route* proute = prpnode->GetData();
     switch (req) {
       case OBJECTS_ALL:
         result.Add(proute->m_GUID);
@@ -1056,6 +1130,8 @@ wxArrayString GetRouteGUIDArray(OBJECT_LAYER_REQ req) {
         if (proute->m_bIsInLayer) result.Add(proute->m_GUID);
         break;
     }
+
+    prpnode = prpnode->GetNext();  // Route
   }
 
   return result;
@@ -1080,7 +1156,7 @@ wxArrayString GetTrackGUIDArray(OBJECT_LAYER_REQ req) {
   return result;
 }
 
-wxArrayString GetIconNameArray() {
+wxArrayString GetIconNameArray(void) {
   wxArrayString result;
 
   for (int i = 0; i < pWayPointMan->GetNumIcons(); i++) {
@@ -1137,7 +1213,7 @@ bool AddPlugInRoute(PlugIn_Route* proute, bool b_permanent) {
   }
   route->m_btemp = (b_permanent == false);
 
-  pRouteList->push_back(route);
+  pRouteList->Append(route);
 
   if (b_permanent) {
     // pConfig->AddNewRoute(route);
@@ -1359,7 +1435,7 @@ void SetCanvasProjection(int projection) {
   gFrame->GetPrimaryCanvas()->SetVPProjection(projection);
 }
 
-o_sound::Sound* g_PluginSound = o_sound::Factory();
+OcpnSound* g_PluginSound = SoundFactory();
 static void onPlugInPlaySoundExFinished(void* ptr) {}
 
 // Start playing a sound to a given device and return status to plugin
@@ -1369,7 +1445,7 @@ bool PlugInPlaySoundEx(wxString& sound_file, int deviceIndex) {
     wxLogWarning("Cannot load sound file: %s", sound_file);
     return false;
   }
-  auto cmd_sound = dynamic_cast<o_sound::SystemCmdSound*>(g_PluginSound);
+  auto cmd_sound = dynamic_cast<SystemCmdSound*>(g_PluginSound);
   if (cmd_sound) cmd_sound->SetCmd(g_CmdSoundString.mb_str(wxConvUTF8));
 
   g_PluginSound->SetFinishedCallback(onPlugInPlaySoundExFinished, NULL);
@@ -1423,8 +1499,18 @@ int PlatformDirSelectorDialog(wxWindow* parent, wxString* file_spec,
 int PlatformFileSelectorDialog(wxWindow* parent, wxString* file_spec,
                                wxString Title, wxString initDir,
                                wxString suggestedName, wxString wildcard) {
+#ifndef __ANDROID__
   return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, initDir,
                                           suggestedName, wildcard);
+#else
+  // Android plugin without special processing are constrained to access
+  // files in the application private directory (and subdirectories) only,
+  //  e.g. /storage/emulated/0/Android/data/org.opencpn.opencpn/files
+
+  wxString ainitDir = g_androidExtFilesDir;
+  return g_Platform->DoFileSelectorDialog(parent, file_spec, Title, ainitDir,
+                                          suggestedName, wildcard);
+#endif
 }
 
 //---------------------------------------------------------------------------
@@ -1546,10 +1632,17 @@ std::unique_ptr<PlugIn_Route> GetRoute_Plugin(const wxString& GUID) {
 
   // PlugIn_Waypoint *pwp;
   RoutePoint* src_wp;
-  for (RoutePoint* src_wp : *route->pRoutePointList) {
+  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+
+  while (node) {
+    src_wp = node->GetData();
+
     PlugIn_Waypoint* dst_wp = new PlugIn_Waypoint();
     PlugInFromRoutePoint(dst_wp, src_wp);
+
     dst_route->pWaypointList->Append(dst_wp);
+
+    node = node->GetNext();
   }
   dst_route->m_NameString = route->m_RouteNameString;
   dst_route->m_StartString = route->m_RouteStartString;
@@ -1602,11 +1695,11 @@ void CanvasJumpToPosition(wxWindow* canvas, double lat, double lon,
   if (oCanvas) gFrame->JumpToPosition(oCanvas, lat, lon, scale);
 }
 
-bool ShuttingDown() { return g_bquiting; }
+bool ShuttingDown(void) { return g_bquiting; }
 
-wxWindow* GetCanvasUnderMouse() { return gFrame->GetCanvasUnderMouse(); }
+wxWindow* GetCanvasUnderMouse(void) { return gFrame->GetCanvasUnderMouse(); }
 
-int GetCanvasIndexUnderMouse() {
+int GetCanvasIndexUnderMouse(void) {
   ChartCanvas* l_canvas = gFrame->GetCanvasUnderMouse();
   if (l_canvas) {
     for (unsigned int i = 0; i < g_canvasArray.GetCount(); ++i) {
@@ -1797,11 +1890,19 @@ int PlugIn_Waypoint_Ex::GetRouteMembershipCount() {
   if (!pWP) return 0;
 
   int nCount = 0;
-  for (Route* proute : *pRouteList) {
-    for (RoutePoint* prp : *proute->pRoutePointList) {
+  wxRouteListNode* node = pRouteList->GetFirst();
+  while (node) {
+    Route* proute = node->GetData();
+    wxRoutePointListNode* pnode = (proute->pRoutePointList)->GetFirst();
+    while (pnode) {
+      RoutePoint* prp = pnode->GetData();
       if (prp == pWP) nCount++;
+      pnode = pnode->GetNext();
     }
+
+    node = node->GetNext();
   }
+
   return nCount;
 }
 
@@ -1878,10 +1979,17 @@ int PlugIn_Waypoint_ExV2::GetRouteMembershipCount() {
   if (!pWP) return 0;
 
   int nCount = 0;
-  for (Route* proute : *pRouteList) {
-    for (RoutePoint* prp : *proute->pRoutePointList) {
+  wxRouteListNode* node = pRouteList->GetFirst();
+  while (node) {
+    Route* proute = node->GetData();
+    wxRoutePointListNode* pnode = (proute->pRoutePointList)->GetFirst();
+    while (pnode) {
+      RoutePoint* prp = pnode->GetData();
       if (prp == pWP) nCount++;
+      pnode = pnode->GetNext();
     }
+
+    node = node->GetNext();
   }
 
   return nCount;
@@ -1931,15 +2039,21 @@ static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
     delete dst->m_HyperlinkList;
     dst->m_HyperlinkList = nullptr;
 
-    if (src->m_HyperlinkList->size() > 0) {
+    if (src->m_HyperlinkList->GetCount() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
 
-      for (Hyperlink* link : *src->m_HyperlinkList) {
+      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      while (linknode) {
+        Hyperlink* link = linknode->GetData();
+
         Plugin_Hyperlink* h = new Plugin_Hyperlink();
         h->DescrText = link->DescrText;
         h->Link = link->Link;
         h->Type = link->LType;
+
         dst->m_HyperlinkList->Append(h);
+
+        linknode = linknode->GetNext();
       }
     }
   }
@@ -1990,7 +2104,7 @@ static void cloneHyperlinkListExV2(RoutePoint* dst,
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->push_back(h);
+      dst->m_HyperlinkList->Append(h);
 
       linknode = linknode->GetNext();
     }
@@ -2045,11 +2159,15 @@ bool AddSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypointex,
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
+  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  while (prpnode) {
+    RoutePoint* prp = prpnode->GetData();
+
     if (prp->m_GUID == pwaypointex->m_GUID) {
       b_unique = false;
       break;
     }
+    prpnode = prpnode->GetNext();  // RoutePoint
   }
 
   if (!b_unique) return false;
@@ -2093,13 +2211,22 @@ bool UpdateSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->clear();
-      for (Plugin_Hyperlink* link : *pwaypoint->m_HyperlinkList) {
-        Hyperlink* h = new Hyperlink();
-        h->DescrText = link->DescrText;
-        h->Link = link->Link;
-        h->LType = link->Type;
-        prp->m_HyperlinkList->push_back(h);
+      prp->m_HyperlinkList->Clear();
+      if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
+        wxPlugin_HyperlinkListNode* linknode =
+            pwaypoint->m_HyperlinkList->GetFirst();
+        while (linknode) {
+          Plugin_Hyperlink* link = linknode->GetData();
+
+          Hyperlink* h = new Hyperlink();
+          h->DescrText = link->DescrText;
+          h->Link = link->Link;
+          h->LType = link->Type;
+
+          prp->m_HyperlinkList->Append(h);
+
+          linknode = linknode->GetNext();
+        }
       }
     }
 
@@ -2155,8 +2282,6 @@ std::unique_ptr<PlugIn_Waypoint_ExV2> GetWaypointExV2_Plugin(
   return w;
 }
 
-// PlugIn_Route_ExV2 utilities
-
 bool AddPlugInRouteExV2(PlugIn_Route_ExV2* proute, bool b_permanent) {
   Route* route = new Route();
 
@@ -2203,7 +2328,7 @@ bool AddPlugInRouteExV2(PlugIn_Route_ExV2* proute, bool b_permanent) {
   route->SetVisible(proute->m_isVisible);
   route->m_RouteDescription = proute->m_Description;
 
-  pRouteList->push_back(route);
+  pRouteList->Append(route);
 
   if (b_permanent) {
     // pConfig->AddNewRoute(route);
@@ -2241,10 +2366,18 @@ std::unique_ptr<PlugIn_Route_ExV2> GetRouteExV2_Plugin(const wxString& GUID) {
   r = std::unique_ptr<PlugIn_Route_ExV2>(new PlugIn_Route_ExV2);
   PlugIn_Route_ExV2* dst_route = r.get();
 
-  for (RoutePoint* src_wp : *route->pRoutePointList) {
+  RoutePoint* src_wp;
+  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+
+  while (node) {
+    src_wp = node->GetData();
+
     PlugIn_Waypoint_ExV2* dst_wp = new PlugIn_Waypoint_ExV2();
     PlugInExV2FromRoutePoint(dst_wp, src_wp);
+
     dst_route->pWaypointList->Append(dst_wp);
+
+    node = node->GetNext();
   }
   dst_route->m_NameString = route->m_RouteNameString;
   dst_route->m_StartString = route->m_RouteStartString;
@@ -2258,11 +2391,11 @@ std::unique_ptr<PlugIn_Route_ExV2> GetRouteExV2_Plugin(const wxString& GUID) {
 }
 
 //      PlugInRouteExtended implementation
-PlugIn_Route_Ex::PlugIn_Route_Ex() {
+PlugIn_Route_Ex::PlugIn_Route_Ex(void) {
   pWaypointList = new Plugin_WaypointExList;
 }
 
-PlugIn_Route_Ex::~PlugIn_Route_Ex() {
+PlugIn_Route_Ex::~PlugIn_Route_Ex(void) {
   pWaypointList->DeleteContents(false);  // do not delete Waypoints
   pWaypointList->Clear();
 
@@ -2289,14 +2422,21 @@ static void PlugInExFromRoutePoint(PlugIn_Waypoint_Ex* dst,
     delete dst->m_HyperlinkList;
     dst->m_HyperlinkList = nullptr;
 
-    if (src->m_HyperlinkList->size() > 0) {
+    if (src->m_HyperlinkList->GetCount() > 0) {
       dst->m_HyperlinkList = new Plugin_HyperlinkList;
-      for (Hyperlink* link : *src->m_HyperlinkList) {
+
+      wxHyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+      while (linknode) {
+        Hyperlink* link = linknode->GetData();
+
         Plugin_Hyperlink* h = new Plugin_Hyperlink();
         h->DescrText = link->DescrText;
         h->Link = link->Link;
         h->Type = link->LType;
+
         dst->m_HyperlinkList->Append(h);
+
+        linknode = linknode->GetNext();
       }
     }
   }
@@ -2328,7 +2468,7 @@ static void cloneHyperlinkListEx(RoutePoint* dst,
       h->Link = link->Link;
       h->LType = link->Type;
 
-      dst->m_HyperlinkList->push_back(h);
+      dst->m_HyperlinkList->Append(h);
 
       linknode = linknode->GetNext();
     }
@@ -2382,11 +2522,15 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypointex, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
+  wxRoutePointListNode* prpnode = pWayPointMan->GetWaypointList()->GetFirst();
+  while (prpnode) {
+    RoutePoint* prp = prpnode->GetData();
+
     if (prp->m_GUID == pwaypointex->m_GUID) {
       b_unique = false;
       break;
     }
+    prpnode = prpnode->GetNext();  // RoutePoint
   }
 
   if (!b_unique) return false;
@@ -2429,7 +2573,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     //  Transcribe (clone) the html HyperLink List, if present
 
     if (pwaypoint->m_HyperlinkList) {
-      prp->m_HyperlinkList->clear();
+      prp->m_HyperlinkList->Clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
         wxPlugin_HyperlinkListNode* linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
@@ -2441,7 +2585,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
           h->Link = link->Link;
           h->LType = link->Type;
 
-          prp->m_HyperlinkList->push_back(h);
+          prp->m_HyperlinkList->Append(h);
 
           linknode = linknode->GetNext();
         }
@@ -2528,7 +2672,7 @@ bool AddPlugInRouteEx(PlugIn_Route_Ex* proute, bool b_permanent) {
   route->SetVisible(proute->m_isVisible);
   route->m_RouteDescription = proute->m_Description;
 
-  pRouteList->push_back(route);
+  pRouteList->Append(route);
 
   if (b_permanent) {
     // pConfig->AddNewRoute(route);
@@ -2573,11 +2717,17 @@ std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(const wxString& GUID) {
 
   // PlugIn_Waypoint *pwp;
   RoutePoint* src_wp;
-  for (RoutePoint* src_wp : *route->pRoutePointList) {
+  wxRoutePointListNode* node = route->pRoutePointList->GetFirst();
+
+  while (node) {
+    src_wp = node->GetData();
+
     PlugIn_Waypoint_Ex* dst_wp = new PlugIn_Waypoint_Ex();
     PlugInExFromRoutePoint(dst_wp, src_wp);
 
     dst_route->pWaypointList->Append(dst_wp);
+
+    node = node->GetNext();
   }
   dst_route->m_NameString = route->m_RouteNameString;
   dst_route->m_StartString = route->m_RouteStartString;
@@ -2613,27 +2763,30 @@ int GetGlobalWatchdogTimoutSeconds() { return gps_watchdog_timeout_ticks; }
 
 /** Comm Priority query support methods  */
 std::vector<std::string> GetPriorityMaps() {
-  return (CommBridge::GetInstance().GetPriorityMaps());
+  MyApp& app = wxGetApp();
+  return (app.m_comm_bridge.GetPriorityMaps());
 }
 
 void UpdateAndApplyPriorityMaps(std::vector<std::string> map) {
-  CommBridge::GetInstance().UpdateAndApplyMaps(map);
+  MyApp& app = wxGetApp();
+  app.m_comm_bridge.UpdateAndApplyMaps(map);
 }
 
 std::vector<std::string> GetActivePriorityIdentifiers() {
   std::vector<std::string> result;
 
-  auto& comm_bridge = CommBridge::GetInstance();
+  MyApp& app = wxGetApp();
 
-  std::string id = comm_bridge.GetPriorityContainer("position").active_source;
+  std::string id =
+      app.m_comm_bridge.GetPriorityContainer("position").active_source;
   result.push_back(id);
-  id = comm_bridge.GetPriorityContainer("velocity").active_source;
+  id = app.m_comm_bridge.GetPriorityContainer("velocity").active_source;
   result.push_back(id);
-  id = comm_bridge.GetPriorityContainer("heading").active_source;
+  id = app.m_comm_bridge.GetPriorityContainer("heading").active_source;
   result.push_back(id);
-  id = comm_bridge.GetPriorityContainer("variation").active_source;
+  id = app.m_comm_bridge.GetPriorityContainer("variation").active_source;
   result.push_back(id);
-  id = comm_bridge.GetPriorityContainer("satellites").active_source;
+  id = app.m_comm_bridge.GetPriorityContainer("satellites").active_source;
   result.push_back(id);
 
   return result;
@@ -3117,15 +3270,10 @@ void EnableTenHertzUpdate(bool enable) { g_btenhertz = enable; }
 
 void ConfigFlushAndReload() {
   if (pConfig) {
-    // Store current locale to detect changes
-    wxString oldLocale = g_locale;
     pConfig->Flush();
 
     // Handle system general configuration options
     pConfig->LoadMyConfigRaw(false);
-
-    // Handle S57 configuration options
-    pConfig->LoadS57Config();
 
     // Handle chart canvas window configuration options
     pConfig->LoadCanvasConfigs(false);
@@ -3136,15 +3284,6 @@ void ConfigFlushAndReload() {
         pcc->canvas->Refresh();
       }
     }
-
-#if wxUSE_XLOCALE
-    // Detect and apply locale changes
-    if (g_locale != oldLocale && !g_locale.IsEmpty()) {
-      wxLogMessage("ConfigFlushAndReload: Locale changed, applying...");
-      g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang);
-      ApplyLocale();  // Deactivates/reactivates plugins, rebuilds UI
-    }
-#endif
   }
 }
 
@@ -3153,4 +3292,338 @@ void ConfigFlushAndReload() {
  */
 void EnableNotificationCanvasIcon(bool enable) {
   g_CanvasHideNotificationIcon = !enable;
+}
+
+//---------------------------------------------------------------------------
+//    API 1.21
+//---------------------------------------------------------------------------
+
+//  Plugin API121 Utility functions
+
+wxString DropMarkPI(double lat, double lon) {
+  if ((fabs(lat) > 80.0) || (fabs(lon) > 180.)) return "";
+
+  RoutePoint* pWP =
+      new RoutePoint(lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString);
+  pWP->m_bIsolatedMark = true;  // This is an isolated mark
+  pSelect->AddSelectableRoutePoint(lat, lon, pWP);
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+  return pWP->m_GUID;
+}
+
+wxString RouteCreatePI(int canvas_index, bool start) {
+  if ((size_t)canvas_index < g_canvasArray.GetCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+    if (cc) {
+      if (start) {
+        cc->StartRoute();
+        return "0";
+      } else {
+        return cc->FinishRoute();
+      }
+    }
+  }
+  return "-1";
+}
+
+bool DoMeasurePI(int canvas_index, bool start) {
+  if ((size_t)canvas_index < g_canvasArray.GetCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+    if (cc) {
+      if (start) {
+        cc->StartMeasureRoute();
+        return true;
+      } else {
+        cc->CancelMeasureRoute();
+        cc->Refresh(false);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+wxString NavToHerePI(double lat, double lon) {
+  RoutePoint* pWP_dest =
+      new RoutePoint(lat, lon, g_default_wp_icon, wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(lat, lon, pWP_dest);
+
+  RoutePoint* pWP_src = new RoutePoint(gLat, gLon, g_default_wp_icon,
+                                       wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
+
+  Route* temp_route = new Route();
+  pRouteList->Append(temp_route);
+
+  temp_route->AddPoint(pWP_src);
+  temp_route->AddPoint(pWP_dest);
+
+  pSelect->AddSelectableRouteSegment(gLat, gLon, lat, lon, pWP_src, pWP_dest,
+                                     temp_route);
+
+  temp_route->m_RouteNameString = _("Temporary GOTO Route");
+  temp_route->m_RouteStartString = _("Here");
+  temp_route->m_RouteEndString = _("There");
+  temp_route->m_bDeleteOnArrival = true;
+
+  if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+
+  g_pRouteMan->ActivateRoute(temp_route, pWP_dest);
+  return temp_route->m_GUID;
+}
+
+bool ActivateRoutePI(wxString route_guid, bool activate) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return false;
+
+  if (activate) {
+    if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+    RoutePoint* best_point =
+        g_pRouteMan->FindBestActivatePoint(route, gLat, gLon, gCog, gSog);
+    g_pRouteMan->ActivateRoute(route, best_point);
+    route->m_bRtIsSelected = false;
+    return true;
+  } else {
+    g_pRouteMan->DeactivateRoute();
+    route->m_bRtIsSelected = false;
+    return true;
+  }
+  return false;
+}
+
+void EnableDefaultConsole(bool enable) { g_bhide_route_console = !enable; }
+void EnableDefaultContextMenus(bool enable) { g_bhide_context_menus = !enable; }
+
+void SetMinZoomScale(double min_scale) {
+  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
+    ChartCanvas* cc = g_canvasArray.Item(i);
+    cc->SetAbsoluteMinScale(min_scale);
+  }
+}
+
+void SetMaxZoomScale(double max_scale) {
+  g_maxzoomin = wxRound(wxMax(max_scale, 100.));
+}
+
+std::shared_ptr<PI_PointContext> GetContextAtPoint(int x, int y,
+                                                   int canvas_index) {
+  ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+  if (cc) {
+    return cc->GetCanvasContextAtPoint(x, y);
+  } else {
+    auto rstruct = std::make_shared<PI_PointContext>();
+    rstruct->object_type = OBJECT_UNKNOWN;
+    rstruct->object_ident = "";
+    return rstruct;
+  }
+}
+
+wxBitmap GetObjectIcon_PlugIn(const wxString& name) {
+  if (pWayPointMan) {
+    return *pWayPointMan->GetIconBitmap(name);
+  } else
+    return wxNullBitmap;
+}
+
+bool IsRouteActive(wxString route_guid) {
+  if (g_pRouteMan->GetpActiveRoute())
+    return (route_guid.IsSameAs(g_pRouteMan->GetpActiveRoute()->m_GUID));
+  else
+    return false;
+}
+
+void SetBoatPosition(double zlat, double zlon) {
+  gLat = zlat;
+  gLon = zlon;
+  gFrame->UpdateStatusBar();
+}
+
+void RouteInsertWaypoint(int canvas_index, wxString route_guid, double zlat,
+                         double zlon) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return;
+
+  if (route->m_bIsInLayer) return;
+
+  int seltype = parent->PrepareContextSelections(zlat, zlon);
+  if ((seltype & SELTYPE_ROUTESEGMENT) != SELTYPE_ROUTESEGMENT) return;
+
+  bool rename = false;
+  route->InsertPointAfter(parent->GetFoundRoutepoint(), zlat, zlon, rename);
+
+  pSelect->DeleteAllSelectableRoutePoints(route);
+  pSelect->DeleteAllSelectableRouteSegments(route);
+  pSelect->AddAllSelectableRouteSegments(route);
+  pSelect->AddAllSelectableRoutePoints(route);
+
+  NavObj_dB::GetInstance().UpdateRoute(route);
+}
+
+void RouteAppendWaypoint(int canvas_index, wxString route_guid) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return;
+
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
+  parent->m_pMouseRoute = route;
+  parent->m_routeState = route->GetnPoints() + 1;
+  parent->m_pMouseRoute->m_lastMousePointIndex = route->GetnPoints();
+  parent->m_pMouseRoute->SetHiLite(50);
+
+  auto pLast = route->GetLastPoint();
+
+  parent->m_prev_rlat = pLast->m_lat;
+  parent->m_prev_rlon = pLast->m_lon;
+  parent->m_prev_pMousePoint = pLast;
+
+  parent->m_bAppendingRoute = true;
+}
+
+void FinishRoute(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
+  parent->FinishRoute();
+}
+
+bool IsRouteBeingCreated(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return false;
+  return !(parent->m_pMouseRoute == NULL);
+}
+
+bool AreRouteWaypointNamesVisible(wxString route_guid) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return false;
+  return route->AreWaypointNamesVisible();
+}
+
+void ShowRouteWaypointNames(wxString route_guid, bool show) {
+  Route* route = g_pRouteMan->FindRouteByGUID(route_guid);
+  if (!route) return;
+  route->ShowWaypointNames(show);
+}
+
+void NavigateToWaypoint(wxString waypoint_guid) {
+  RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(waypoint_guid);
+  if (!prp) return;
+
+  RoutePoint* pWP_src = new RoutePoint(gLat, gLon, g_default_wp_icon,
+                                       wxEmptyString, wxEmptyString);
+  pSelect->AddSelectableRoutePoint(gLat, gLon, pWP_src);
+
+  Route* temp_route = new Route();
+  pRouteList->Append(temp_route);
+
+  temp_route->AddPoint(pWP_src);
+  temp_route->AddPoint(prp);
+  prp->SetShared(true);
+
+  pSelect->AddSelectableRouteSegment(gLat, gLon, prp->m_lat, prp->m_lon,
+                                     pWP_src, prp, temp_route);
+
+  wxString name = prp->GetName();
+  if (name.IsEmpty()) name = _("(Unnamed Waypoint)");
+  wxString rteName = _("Go to ");
+  rteName.Append(name);
+  temp_route->m_RouteNameString = rteName;
+  temp_route->m_RouteStartString = _("Here");
+  temp_route->m_RouteEndString = name;
+  temp_route->m_bDeleteOnArrival = true;
+
+  if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
+  g_pRouteMan->ActivateRoute(temp_route, prp);
+}
+
+// AIS related
+bool IsAISTrackVisible(wxString ais_mmsi) {
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+  if (myptarget)
+    return myptarget->b_show_track;
+  else
+    return false;
+}
+
+void AISToggleShowTrack(wxString ais_mmsi) {
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+  if (myptarget) myptarget->ToggleShowTrack();
+}
+
+bool IsAIS_CPAVisible(wxString ais_mmsi) {
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+  if (myptarget)
+    return myptarget->b_show_AIS_CPA;
+  else
+    return false;
+}
+
+void AISToggleShowCPA(wxString ais_mmsi) {
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  auto myptarget = g_pAIS->Get_Target_Data_From_MMSI(mmsi);
+  if (myptarget) myptarget->Toggle_AIS_CPA();
+}
+
+void ShowAISTargetQueryDialog(int canvas_index, wxString ais_mmsi) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+
+  long mmsi = 0;
+  ais_mmsi.ToLong(&mmsi);
+  ShowAISTargetQueryDialog(parent, mmsi);
+}
+
+void ShowAISTargetList(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+  parent->ShowAISTargetList();
+}
+
+bool IsMeasureActive(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return false;
+  return parent->m_bMeasure_Active;
+}
+
+void CancelMeasure(int canvas_index) {
+  ChartCanvas* parent =
+      static_cast<ChartCanvas*>(GetCanvasByIndex(canvas_index));
+  if (!parent) return;
+  parent->CancelMeasureRoute();
+}
+
+void SetDepthUnitVisible(bool bviz) { g_bhide_depth_units = !bviz; }
+
+void SetOverzoomFlagVisible(bool bviz) { g_bhide_overzoom_flag = !bviz; }
+
+// Extended Chart table management support
+void AddNoShowDirectory(std::string chart_dir) {
+  ChartDirectoryExcludedVector.push_back(chart_dir);
+}
+void RemoveNoShowDirectory(std::string chart_dir) {
+  auto it = std::find(ChartDirectoryExcludedVector.begin(),
+                      ChartDirectoryExcludedVector.end(), chart_dir);
+  if (it != ChartDirectoryExcludedVector.end())
+    ChartDirectoryExcludedVector.erase(it);  // Erase the element
+}
+void ClearNoShowVector() { ChartDirectoryExcludedVector.clear(); }
+const std::vector<std::string>& GetNoShowVector() {
+  return ChartDirectoryExcludedVector;
 }

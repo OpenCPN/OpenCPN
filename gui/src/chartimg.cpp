@@ -1,4 +1,10 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  ChartBase, ChartBaseBSB and Friends
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,14 +18,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- *\ file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ ***************************************************************************
  *
- * Implement chartimg.h -- BSB chart
  */
+
+// ============================================================================
+// declarations
+// ============================================================================
+
+// ----------------------------------------------------------------------------
+// headers
+// ----------------------------------------------------------------------------
 
 #include <assert.h>
 
@@ -28,7 +40,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif
+#endif  // precompiled headers
 
 //  Why are these not in wx/prec.h?
 #include <wx/dir.h>
@@ -38,22 +50,19 @@
 #include <wx/filename.h>
 #include <wx/image.h>
 #include <wx/fileconf.h>
-
-#include "model/chartdata_input_stream.h"
+#include <sys/stat.h>
 
 #include "config.h"
 #include "chartimg.h"
 #include "ocpn_pixel.h"
+#include "model/chartdata_input_stream.h"
 
-#ifndef _MSC_VER
+#ifndef __WXMSW__
 #include <signal.h>
 #include <setjmp.h>
-#include "navutil.h"
 
 #define OCPN_USE_CONFIG 1
-#endif
 
-#ifndef _MSC_VER
 struct sigaction sa_all_chart;
 struct sigaction sa_all_previous;
 
@@ -83,6 +92,16 @@ typedef unsigned __int64 uint64_t;
 // ----------------------------------------------------------------------------
 // Random Prototypes
 // ----------------------------------------------------------------------------
+
+#ifdef OCPN_USE_CONFIG
+class MyConfig;
+extern MyConfig *pConfig;
+#endif
+
+typedef struct {
+  float y;
+  float x;
+} MyFlPoint;
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y);
 
@@ -173,12 +192,12 @@ wxString ChartBase::GetHashKey() const {
   wxString key = GetFullPath();
   wxChar separator = wxFileName::GetPathSeparator();
   for (unsigned int pos = 0; pos < key.size(); pos = key.find(separator, pos))
-    key.replace(pos, 1, "!");
+    key.replace(pos, 1, _T("!"));
   return key;
 }
 
 /*
-int ChartBase::Continue_BackgroundHiDefRender()
+int ChartBase::Continue_BackgroundHiDefRender(void)
 {
       return BR_DONE_NOP;            // signal "done, no refresh"
 }
@@ -194,7 +213,7 @@ ChartDummy::ChartDummy() {
   m_ChartFamily = CHART_FAMILY_UNKNOWN;
   m_Chart_Scale = 22000000;
 
-  m_FullPath = "No Chart Available";
+  m_FullPath = _T("No Chart Available");
   m_Description = m_FullPath;
 }
 
@@ -311,9 +330,9 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
   while ((ReadBSBHdrLine(ifs_hdr, &buffer[0], BUF_LEN_MAX)) != 0) {
     wxString str_buf(buffer, wxConvUTF8);
     if (!strncmp(buffer, "Bitmap", 6)) {
-      wxStringTokenizer tkz(str_buf, "=");
+      wxStringTokenizer tkz(str_buf, _T("="));
       wxString token = tkz.GetNextToken();
-      if (token.IsSameAs("Bitmap", TRUE)) {
+      if (token.IsSameAs(_T("Bitmap"), TRUE)) {
         pBitmapFilePath = new wxString();
 
         int i;
@@ -327,9 +346,9 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
     }
 
     else if (!strncmp(buffer, "Scale", 5)) {
-      wxStringTokenizer tkz(str_buf, "=");
+      wxStringTokenizer tkz(str_buf, _T("="));
       wxString token = tkz.GetNextToken();
-      if (token.IsSameAs("Scale", TRUE))  // extract Scale
+      if (token.IsSameAs(_T("Scale"), TRUE))  // extract Scale
       {
         int i;
         i = tkz.GetPosition();
@@ -338,9 +357,9 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
     }
 
     else if (!strncmp(buffer, "Depth", 5)) {
-      wxStringTokenizer tkz(str_buf, "=");
+      wxStringTokenizer tkz(str_buf, _T("="));
       wxString token = tkz.GetNextToken();
-      if (token.IsSameAs("Depth Units", FALSE))  // extract Depth Units
+      if (token.IsSameAs(_T("Depth Units"), FALSE))  // extract Depth Units
       {
         int i;
         i = tkz.GetPosition();
@@ -400,9 +419,9 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
     }
 
     else if (!strncmp(buffer, "Skew", 4)) {
-      wxStringTokenizer tkz(str_buf, "=");
+      wxStringTokenizer tkz(str_buf, _T("="));
       wxString token = tkz.GetNextToken();
-      if (token.IsSameAs("Skew Angle", FALSE))  // extract Skew Angle
+      if (token.IsSameAs(_T("Skew Angle"), FALSE))  // extract Skew Angle
       {
         int i;
         i = tkz.GetPosition();
@@ -413,9 +432,9 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
     }
 
     else if (!strncmp(buffer, "Latitude Offset", 15)) {
-      wxStringTokenizer tkz(str_buf, "=");
+      wxStringTokenizer tkz(str_buf, _T("="));
       wxString token = tkz.GetNextToken();
-      if (token.IsSameAs("Latitude Offset", FALSE)) {
+      if (token.IsSameAs(_T("Latitude Offset"), FALSE)) {
         int i;
         i = tkz.GetPosition();
         float lto;
@@ -425,9 +444,9 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
     }
 
     else if (!strncmp(buffer, "Longitude Offset", 16)) {
-      wxStringTokenizer tkz(str_buf, "=");
+      wxStringTokenizer tkz(str_buf, _T("="));
       wxString token = tkz.GetNextToken();
-      if (token.IsSameAs("Longitude Offset", FALSE)) {
+      if (token.IsSameAs(_T("Longitude Offset"), FALSE)) {
         int i;
         i = tkz.GetPosition();
         float lno;
@@ -437,18 +456,18 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
     }
 
     else if (!strncmp(buffer, "Datum", 5)) {
-      wxStringTokenizer tkz(str_buf, "=");
+      wxStringTokenizer tkz(str_buf, _T("="));
       wxString token = tkz.GetNextToken();
-      if (token.IsSameAs("Datum", FALSE)) {
+      if (token.IsSameAs(_T("Datum"), FALSE)) {
         token = tkz.GetNextToken();
         m_datum_str = token;
       }
     }
 
     else if (!strncmp(buffer, "Name", 4)) {
-      wxStringTokenizer tkz(str_buf, "=");
+      wxStringTokenizer tkz(str_buf, _T("="));
       wxString token = tkz.GetNextToken();
-      if (token.IsSameAs("Name", FALSE))  // Name
+      if (token.IsSameAs(_T("Name"), FALSE))  // Name
       {
         int i;
         i = tkz.GetPosition();
@@ -557,10 +576,10 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
     wxString str_buf(buffer, wxConvUTF8);
 
     if (!strncmp(buffer, "NOS", 3)) {
-      wxStringTokenizer tkz(str_buf, ",=");
+      wxStringTokenizer tkz(str_buf, _T(",="));
       while (tkz.HasMoreTokens()) {
         wxString token = tkz.GetNextToken();
-        if (token.IsSameAs("RA", TRUE))  // extract RA=x,y
+        if (token.IsSameAs(_T("RA"), TRUE))  // extract RA=x,y
         {
           int i;
           tkz.GetNextToken();
@@ -570,7 +589,7 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
           wxString token = tkz.GetNextToken();
           i = tkz.GetPosition();
           Size_Y = atoi(&buffer[i]);
-        } else if (token.IsSameAs("DU", TRUE))  // extract DU=n
+        } else if (token.IsSameAs(_T("DU"), TRUE))  // extract DU=n
         {
           token = tkz.GetNextToken();
           long temp_du;
@@ -612,7 +631,7 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
   }
 
   if (nPlypoint < 3) {
-    wxString msg("   Chart File contains less than 3 PLY points: ");
+    wxString msg(_T("   Chart File contains less than 3 PLY points: "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
     free(pPlyTable);
@@ -621,10 +640,10 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
   }
 
   if (m_datum_str.IsEmpty()) {
-    wxString msg("   Chart datum not specified on chart ");
+    wxString msg(_T("   Chart datum not specified on chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
-    wxLogMessage("   Default datum (WGS84) substituted.");
+    wxLogMessage(_T("   Default datum (WGS84) substituted."));
 
     //          return INIT_FAIL_REMOVE;
   } else {
@@ -635,12 +654,12 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
     int datum_index = GetDatumIndex(d_str);
 
     if (datum_index < 0) {
-      wxString msg("   Chart datum {");
+      wxString msg(_T("   Chart datum {"));
       msg += m_datum_str;
-      msg += "} invalid on chart ";
+      msg += _T("} invalid on chart ");
       msg.Append(m_FullPath);
       wxLogMessage(msg);
-      wxLogMessage("   Default datum (WGS84) substituted.");
+      wxLogMessage(_T("   Default datum (WGS84) substituted."));
 
       datum_index = DATUM_INDEX_WGS84;
     }
@@ -687,7 +706,7 @@ InitReturn ChartGEO::Init(const wxString &name, ChartInitFlag init_flags) {
   //    Read the Color table bit size
   nColorSize = ifs_bitmap->GetC();
   if (nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
-    wxString msg("   Invalid nColorSize data, corrupt on chart ");
+    wxString msg(_T("   Invalid nColorSize data, corrupt on chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
     return INIT_FAIL_REMOVE;
@@ -743,8 +762,9 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
 
   if (ifs_hdr->LastRead() != TestBlockSize) {
     wxString msg;
-    msg.Printf("   Could not read first %d bytes of header for chart file: ",
-               TestBlockSize);
+    msg.Printf(
+        _T("   Could not read first %d bytes of header for chart file: "),
+        TestBlockSize);
     msg.Append(name);
     wxLogMessage(msg);
     free(pPlyTable);
@@ -764,7 +784,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
       break;
   }
   if (i == TestBlockSize - 4) {
-    wxString msg("   Chart file has no BSB header, cannot Init.");
+    wxString msg(_T("   Chart file has no BSB header, cannot Init."));
     msg.Append(name);
     wxLogMessage(msg);
     free(pPlyTable);
@@ -777,7 +797,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   Size_X = Size_Y = 0;
 
   int done_header_parse = 0;
-  wxCSConv iso_conv("ISO-8859-1");  // we will need a converter
+  wxCSConv iso_conv(wxT("ISO-8859-1"));  // we will need a converter
 
   while (done_header_parse == 0) {
     if (ReadBSBHdrLine(ifs_hdr, buffer, BUF_LEN_MAX) == 0) {
@@ -799,16 +819,16 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     if (!str_buf.Len())  // failed conversion
       str_buf = wxString(buffer, iso_conv);
 
-    if (str_buf.Find("SHOM") != wxNOT_FOUND) m_b_SHOM = true;
+    if (str_buf.Find(_T("SHOM")) != wxNOT_FOUND) m_b_SHOM = true;
 
     if (!strncmp(buffer, "BSB", 3)) {
       wxString clip_str_buf(
           &buffer[0],
           iso_conv);  // for single byte French encodings of NAme field
-      wxStringTokenizer tkz(clip_str_buf, "/,=");
+      wxStringTokenizer tkz(clip_str_buf, _T("/,="));
       while (tkz.HasMoreTokens()) {
         wxString token = tkz.GetNextToken();
-        if (token.IsSameAs("RA", TRUE))  // extract RA=x,y
+        if (token.IsSameAs(_T("RA"), TRUE))  // extract RA=x,y
         {
           int i;
           i = tkz.GetPosition();
@@ -816,7 +836,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
           wxString token = tkz.GetNextToken();
           i = tkz.GetPosition();
           Size_Y = atoi(&buffer[i]);
-        } else if (token.IsSameAs("NA", TRUE))  // extract NA=str
+        } else if (token.IsSameAs(_T("NA"), TRUE))  // extract NA=str
         {
           int i = tkz.GetPosition();
           char nbuf[81];
@@ -825,7 +845,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
           nbuf[j] = 0;
           wxString n_str(nbuf, iso_conv);
           m_Name = n_str;
-        } else if (token.IsSameAs("NU", TRUE))  // extract NU=str
+        } else if (token.IsSameAs(_T("NU"), TRUE))  // extract NU=str
         {
           int i = tkz.GetPosition();
           char nbuf[81];
@@ -834,7 +854,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
           nbuf[j] = 0;
           wxString n_str(nbuf, iso_conv);
           m_ID = n_str;
-        } else if (token.IsSameAs("DU", TRUE))  // extract DU=n
+        } else if (token.IsSameAs(_T("DU"), TRUE))  // extract DU=n
         {
           token = tkz.GetNextToken();
           long temp_du;
@@ -845,41 +865,41 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
 
     else if (!strncmp(buffer, "KNP", 3)) {
       wxString conv_buf(buffer, iso_conv);
-      wxStringTokenizer tkz(conv_buf, "/,=");
+      wxStringTokenizer tkz(conv_buf, _T("/,="));
       while (tkz.HasMoreTokens()) {
         wxString token = tkz.GetNextToken();
-        if (token.IsSameAs("SC", TRUE))  // extract Scale
+        if (token.IsSameAs(_T("SC"), TRUE))  // extract Scale
         {
           int i;
           i = tkz.GetPosition();
           m_Chart_Scale = atoi(&buffer[i]);
           if (0 == m_Chart_Scale) m_Chart_Scale = 100000000;
-        } else if (token.IsSameAs("SK", TRUE))  // extract Skew
+        } else if (token.IsSameAs(_T("SK"), TRUE))  // extract Skew
         {
           int i;
           i = tkz.GetPosition();
           float fcs;
           sscanf(&buffer[i], "%f,", &fcs);
           m_Chart_Skew = fcs;
-        } else if (token.IsSameAs("UN", TRUE))  // extract Depth Units
+        } else if (token.IsSameAs(_T("UN"), TRUE))  // extract Depth Units
         {
           int i;
           i = tkz.GetPosition();
           wxString str(&buffer[i], iso_conv);
           m_DepthUnits = str.BeforeFirst(',');
-        } else if (token.IsSameAs("GD", TRUE))  // extract Datum
+        } else if (token.IsSameAs(_T("GD"), TRUE))  // extract Datum
         {
           int i;
           i = tkz.GetPosition();
           wxString str(&buffer[i], iso_conv);
           m_datum_str = str.BeforeFirst(',').Trim();
-        } else if (token.IsSameAs("SD", TRUE))  // extract Soundings Datum
+        } else if (token.IsSameAs(_T("SD"), TRUE))  // extract Soundings Datum
         {
           int i;
           i = tkz.GetPosition();
           wxString str(&buffer[i], iso_conv);
           m_SoundingsDatum = str.BeforeFirst(',').Trim();
-        } else if (token.IsSameAs("PP",
+        } else if (token.IsSameAs(_T("PP"),
                                   TRUE))  // extract Projection Parameter
         {
           int i;
@@ -888,7 +908,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
           wxString str(&buffer[i], iso_conv);
           wxString str1 = str.BeforeFirst(',').Trim();
           if (str1.ToDouble(&fcs)) m_proj_parameter = fcs;
-        } else if (token.IsSameAs("PR", TRUE))  // extract Projection Type
+        } else if (token.IsSameAs(_T("PR"), TRUE))  // extract Projection Type
         {
           int i;
           i = tkz.GetPosition();
@@ -897,43 +917,43 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
           bool bp_set = false;
           ;
 
-          if (stru.Matches("*MERCATOR*")) {
+          if (stru.Matches(_T("*MERCATOR*"))) {
             m_projection = PROJECTION_MERCATOR;
             bp_set = true;
           }
 
-          if (stru.Matches("*TRANSVERSE*")) {
+          if (stru.Matches(_T("*TRANSVERSE*"))) {
             m_projection = PROJECTION_TRANSVERSE_MERCATOR;
             bp_set = true;
           }
 
-          if (stru.Matches("*CONIC*")) {
+          if (stru.Matches(_T("*CONIC*"))) {
             m_projection = PROJECTION_POLYCONIC;
             bp_set = true;
           }
 
-          if (stru.Matches("*TM*")) {
+          if (stru.Matches(_T("*TM*"))) {
             m_projection = PROJECTION_TRANSVERSE_MERCATOR;
             bp_set = true;
           }
 
-          if (stru.Matches("*GAUSS CONFORMAL*")) {
+          if (stru.Matches(_T("*GAUSS CONFORMAL*"))) {
             m_projection = PROJECTION_TRANSVERSE_MERCATOR;
             bp_set = true;
           }
 
           if (!bp_set) {
             m_projection = PROJECTION_UNKNOWN;
-            wxString msg("   Chart projection is ");
+            wxString msg(_T("   Chart projection is "));
             msg += tkz.GetNextToken();
-            msg += " which is unsupported.  Disabling chart ";
+            msg += _T(" which is unsupported.  Disabling chart ");
             msg += m_FullPath;
             wxLogMessage(msg);
             free(pPlyTable);
             return INIT_FAIL_REMOVE;
           }
         } else if (token.IsSameAs(
-                       "DX",
+                       _T("DX"),
                        TRUE))  // extract Pixel scale parameter, if present
         {
           int i;
@@ -942,7 +962,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
           sscanf(&buffer[i], "%f,", &x);
           m_dx = x;
         } else if (token.IsSameAs(
-                       "DY",
+                       _T("DY"),
                        TRUE))  // extract Pixel scale parameter, if present
         {
           int i;
@@ -998,7 +1018,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     else if (!strncmp(buffer, "WPX", 3)) {
       int idx = 0;
       double d;
-      wxStringTokenizer tkz(str_buf.Mid(4), ",");
+      wxStringTokenizer tkz(str_buf.Mid(4), _T(","));
       wxString token = tkz.GetNextToken();
 
       if (token.ToLong((long int *)&wpx_type)) {
@@ -1016,7 +1036,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     else if (!strncmp(buffer, "WPY", 3)) {
       int idx = 0;
       double d;
-      wxStringTokenizer tkz(str_buf.Mid(4), ",");
+      wxStringTokenizer tkz(str_buf.Mid(4), _T(","));
       wxString token = tkz.GetNextToken();
 
       if (token.ToLong((long int *)&wpy_type)) {
@@ -1034,7 +1054,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     else if (!strncmp(buffer, "PWX", 3)) {
       int idx = 0;
       double d;
-      wxStringTokenizer tkz(str_buf.Mid(4), ",");
+      wxStringTokenizer tkz(str_buf.Mid(4), _T(","));
       wxString token = tkz.GetNextToken();
 
       if (token.ToLong((long int *)&pwx_type)) {
@@ -1052,7 +1072,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     else if (!strncmp(buffer, "PWY", 3)) {
       int idx = 0;
       double d;
-      wxStringTokenizer tkz(str_buf.Mid(4), ",");
+      wxStringTokenizer tkz(str_buf.Mid(4), _T(","));
       wxString token = tkz.GetNextToken();
 
       if (token.ToLong((long int *)&pwy_type)) {
@@ -1074,7 +1094,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     }
 
     else if (!strncmp(buffer, "VER", 3)) {
-      wxStringTokenizer tkz(str_buf, "/,=");
+      wxStringTokenizer tkz(str_buf, _T("/,="));
       wxString token = tkz.GetNextToken();
 
       m_bsb_ver = tkz.GetNextToken();
@@ -1082,7 +1102,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
 
     else if (!strncmp(buffer, "DTM", 3)) {
       double val;
-      wxStringTokenizer tkz(str_buf, "/,=");
+      wxStringTokenizer tkz(str_buf, _T("/,="));
       wxString token = tkz.GetNextToken();
 
       token = tkz.GetNextToken();
@@ -1123,10 +1143,10 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     }
 
     else if (!strncmp(buffer, "CED", 3)) {
-      wxStringTokenizer tkz(str_buf, "/,=");
+      wxStringTokenizer tkz(str_buf, _T("/,="));
       while (tkz.HasMoreTokens()) {
         wxString token = tkz.GetNextToken();
-        if (token.IsSameAs("ED", TRUE))  // extract Edition Date
+        if (token.IsSameAs(_T("ED"), TRUE))  // extract Edition Date
         {
           int i;
           i = tkz.GetPosition();
@@ -1166,7 +1186,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
           }
 
           m_PubYear = wxString(date_buf, wxConvUTF8);
-        } else if (token.IsSameAs("SE", TRUE))  // extract Source Edition
+        } else if (token.IsSameAs(_T("SE"), TRUE))  // extract Source Edition
         {
           int i;
           i = tkz.GetPosition();
@@ -1179,7 +1199,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
 
   //    Some charts improperly encode the DTM parameters.
   //    Identify them as necessary, for further processing
-  if (m_b_SHOM && (m_bsb_ver == "1.1")) m_b_apply_dtm = false;
+  if (m_b_SHOM && (m_bsb_ver == _T("1.1"))) m_b_apply_dtm = false;
 
   //    If imbedded coefficients are found,
   //    then use the polynomial georeferencing algorithms
@@ -1204,7 +1224,8 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   }
 
   if (nPlypoint < 3) {
-    wxString msg("   Chart File contains less than 3 or too many PLY points: ");
+    wxString msg(
+        _T("   Chart File contains less than 3 or too many PLY points: "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
     free(pPlyTable);
@@ -1212,10 +1233,10 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   }
 
   if (m_datum_str.IsEmpty()) {
-    wxString msg("   Chart datum not specified on chart ");
+    wxString msg(_T("   Chart datum not specified on chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
-    wxLogMessage("   Default datum (WGS84) substituted.");
+    wxLogMessage(_T("   Default datum (WGS84) substituted."));
 
     //          return INIT_FAIL_REMOVE;
   } else {
@@ -1226,12 +1247,12 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
     int datum_index = GetDatumIndex(d_str);
 
     if (datum_index < 0) {
-      wxString msg("   Chart datum {");
+      wxString msg(_T("   Chart datum {"));
       msg += m_datum_str;
-      msg += "} invalid on chart ";
+      msg += _T("} invalid on chart ");
       msg.Append(m_FullPath);
       wxLogMessage(msg);
-      wxLogMessage("   Default datum (WGS84) substituted.");
+      wxLogMessage(_T("   Default datum (WGS84) substituted."));
 
       //          return INIT_FAIL_REMOVE;
     }
@@ -1355,12 +1376,12 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
         m_nCOVREntries = covrRegion.contours.size();
         m_pCOVRTablePoints = (int *)malloc(m_nCOVREntries * sizeof(int));
         m_pCOVRTable = (float **)malloc(m_nCOVREntries * sizeof(float *));
-        auto it = covrRegion.contours.begin();
+        std::list<poly_contour>::iterator it = covrRegion.contours.begin();
         for (int i = 0; i < m_nCOVREntries; i++) {
           m_pCOVRTablePoints[i] = it->size();
           m_pCOVRTable[i] =
               (float *)malloc(m_pCOVRTablePoints[i] * 2 * sizeof(float));
-          auto jt = it->begin();
+          std::list<contour_pt>::iterator jt = it->begin();
           for (int j = 0; j < m_pCOVRTablePoints[i]; j++) {
             m_pCOVRTable[i][2 * j + 0] = jt->y;
             m_pCOVRTable[i][2 * j + 1] = jt->x;
@@ -1393,7 +1414,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   m_datum_index = datum_index;
 
   if (datum_index < 0)
-    m_ExtraInfo = "---<<< Warning:  Chart Datum may be incorrect. >>>---";
+    m_ExtraInfo = _T("---<<< Warning:  Chart Datum may be incorrect. >>>---");
 
   //    Establish defaults, may be overridden later
   m_lon_datum_adjust = (-m_dtm_lon) / 3600.;
@@ -1460,7 +1481,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   }
 
   if (bcorrupt) {
-    wxString msg("   Chart File RLL data corrupt on chart ");
+    wxString msg(_T("   Chart File RLL data corrupt on chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
 
@@ -1470,7 +1491,7 @@ InitReturn ChartKAP::Init(const wxString &name, ChartInitFlag init_flags) {
   //    Read the Color table bit size
   nColorSize = ifs_hdr->GetC();
   if (nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
-    wxString msg("   Invalid nColorSize data, corrupt on chart ");
+    wxString msg(_T("   Invalid nColorSize data, corrupt on chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
     return INIT_FAIL_REMOVE;
@@ -1521,7 +1542,7 @@ ChartBaseBSB::ChartBaseBSB() {
   n_pwx = 0;
   n_pwy = 0;
 
-#ifdef __ANDROID__
+#ifdef __OCPN__ANDROID__
   bUseLineCache = false;
 #else
   bUseLineCache = true;
@@ -1547,7 +1568,7 @@ ChartBaseBSB::ChartBaseBSB() {
 
   m_mapped_color_index = COLOR_RGB_DEFAULT;
 
-  m_datum_str = "WGS84";  // assume until proven otherwise
+  m_datum_str = _T("WGS84");  // assume until proven otherwise
 
   m_dtm_lat = 0.;
   m_dtm_lon = 0.;
@@ -1564,8 +1585,8 @@ ChartBaseBSB::ChartBaseBSB() {
 
 #ifdef OCPN_USE_CONFIG
   wxFileConfig *pfc = (wxFileConfig *)pConfig;
-  pfc->SetPath("/Settings");
-  pfc->Read("DebugBSBImg", &m_b_cdebug, 0);
+  pfc->SetPath(_T ( "/Settings" ));
+  pfc->Read(_T ( "DebugBSBImg" ), &m_b_cdebug, 0);
 #endif
 }
 
@@ -1735,10 +1756,11 @@ void ChartBaseBSB::CreatePaletteEntry(char *buffer, int palette_index) {
   }
 }
 
-InitReturn ChartBaseBSB::PostInit() {
+InitReturn ChartBaseBSB::PostInit(void) {
   // catch undefined shift if not already done in derived classes
   if (nColorSize == wxEOF || nColorSize <= 0 || nColorSize > 7) {
-    wxString msg("   Invalid nColorSize data, corrupt in PostInit() on chart ");
+    wxString msg(
+        _T("   Invalid nColorSize data, corrupt in PostInit() on chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
     return INIT_FAIL_REMOVE;
@@ -1747,7 +1769,7 @@ InitReturn ChartBaseBSB::PostInit() {
   if (Size_X <= 0 || Size_X > INT_MAX / 4 || Size_Y <= 0 ||
       Size_Y - 1 > INT_MAX / 4) {
     wxString msg(
-        "   Invalid Size_X/Size_Y data, corrupt in PostInit() on chart ");
+        _T("   Invalid Size_X/Size_Y data, corrupt in PostInit() on chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
     return INIT_FAIL_REMOVE;
@@ -1812,7 +1834,7 @@ InitReturn ChartBaseBSB::PostInit() {
   unsigned char *tmp = (unsigned char *)malloc(Size_Y * sizeof(int));
   ifs_bitmap->Read(tmp, Size_Y * sizeof(int));
   if (ifs_bitmap->LastRead() != Size_Y * sizeof(int)) {
-    wxString msg("   Chart File corrupt in PostInit() on chart ");
+    wxString msg(_T("   Chart File corrupt in PostInit() on chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
     free(tmp);
@@ -1844,7 +1866,7 @@ InitReturn ChartBaseBSB::PostInit() {
   //  look logically at the line offset table
   for (int iplt = 0; iplt < Size_Y - 1; iplt++) {
     if (pline_table[iplt] > bitmap_filesize) {
-      wxString msg("   Chart File corrupt in PostInit() on chart ");
+      wxString msg(_T("   Chart File corrupt in PostInit() on chart "));
       msg.Append(m_FullPath);
       wxLogMessage(msg);
 
@@ -1853,7 +1875,7 @@ InitReturn ChartBaseBSB::PostInit() {
 
     int thisline_size = pline_table[iplt + 1] - pline_table[iplt];
     if (thisline_size < 0) {
-      wxString msg("   Chart File corrupt in PostInit() on chart ");
+      wxString msg(_T("   Chart File corrupt in PostInit() on chart "));
       msg.Append(m_FullPath);
       wxLogMessage(msg);
 
@@ -1871,7 +1893,7 @@ InitReturn ChartBaseBSB::PostInit() {
     for (int iplt = 0; iplt < 10; iplt++) {
       if (wxInvalidOffset ==
           ifs_bitmap->SeekI(pline_table[iplt], wxFromStart)) {
-        wxString msg("   Chart File corrupt in PostInit() on chart ");
+        wxString msg(_T("   Chart File corrupt in PostInit() on chart "));
         msg.Append(m_FullPath);
         wxLogMessage(msg);
 
@@ -1906,11 +1928,11 @@ InitReturn ChartBaseBSB::PostInit() {
 
   // Recreate the scan line index if the embedded version seems corrupt
   if (!bline_index_ok) {
-    wxString msg("   Line Index corrupt, recreating Index for chart ");
+    wxString msg(_T("   Line Index corrupt, recreating Index for chart "));
     msg.Append(m_FullPath);
     wxLogMessage(msg);
     if (!CreateLineIndex()) {
-      wxString msg("   Error creating Line Index for chart ");
+      wxString msg(_T("   Error creating Line Index for chart "));
       msg.Append(m_FullPath);
       wxLogMessage(msg);
       return INIT_FAIL_REMOVE;
@@ -1933,21 +1955,21 @@ InitReturn ChartBaseBSB::PostInit() {
 
   //    Validate/Set Depth Unit Type
   wxString test_str = m_DepthUnits.Upper();
-  if (test_str.IsSameAs("FEET", FALSE))
+  if (test_str.IsSameAs(_T("FEET"), FALSE))
     m_depth_unit_id = DEPTH_UNIT_FEET;
-  else if (test_str.IsSameAs("METERS", FALSE))
+  else if (test_str.IsSameAs(_T("METERS"), FALSE))
     m_depth_unit_id = DEPTH_UNIT_METERS;
-  else if (test_str.IsSameAs("METRES",
+  else if (test_str.IsSameAs(_T("METRES"),
                              FALSE))  // Special case for alternate spelling
     m_depth_unit_id = DEPTH_UNIT_METERS;
-  else if (test_str.IsSameAs("METRIC", FALSE))
+  else if (test_str.IsSameAs(_T("METRIC"), FALSE))
     m_depth_unit_id = DEPTH_UNIT_METERS;
-  else if (test_str.IsSameAs("FATHOMS", FALSE))
+  else if (test_str.IsSameAs(_T("FATHOMS"), FALSE))
     m_depth_unit_id = DEPTH_UNIT_FATHOMS;
-  else if (test_str.Find("FATHOMS") !=
+  else if (test_str.Find(_T("FATHOMS")) !=
            wxNOT_FOUND)  // Special case for "Fathoms and Feet"
     m_depth_unit_id = DEPTH_UNIT_FATHOMS;
-  else if (test_str.Find("METERS") !=
+  else if (test_str.Find(_T("METERS")) !=
            wxNOT_FOUND)  // Special case for "Meters and decimeters"
     m_depth_unit_id = DEPTH_UNIT_METERS;
 
@@ -1978,7 +2000,7 @@ bool ChartBaseBSB::CreateLineIndex() {
             if(iscan > Size_Y)
             {
 
-                wxString msg("CreateLineIndex() failed on chart ");
+                wxString msg(_T("CreateLineIndex() failed on chart "));
                 msg.Append(m_FullPath);
                 wxLogMessage(msg);
                return false;
@@ -2001,7 +2023,7 @@ bool ChartBaseBSB::CreateLineIndex() {
 }
 
 //    Invalidate and Free the line cache contents
-void ChartBaseBSB::InvalidateLineCache() {
+void ChartBaseBSB::InvalidateLineCache(void) {
   if (pLineCache) {
     CachedLine *pt;
     for (int ylc = 0; ylc < Size_Y; ylc++) {
@@ -2026,7 +2048,7 @@ bool ChartBaseBSB::GetChartExtent(Extent *pext) {
   return true;
 }
 
-bool ChartBaseBSB::SetMinMax() {
+bool ChartBaseBSB::SetMinMax(void) {
   //    Calculate the Chart Extents(M_LatMin, M_LonMin, etc.)
   //     from the COVR data, for fast database search
   m_LonMax = -360.0;
@@ -3580,19 +3602,19 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, size_t data_size,
       sigaction(SIGSEGV, &sa_all_previous, NULL);  // reset signal handler
 
       wxString msg;
-      msg.Printf("   Caught SIGSEGV on GetandScaleData, Factor < 1");
+      msg.Printf(_T("   Caught SIGSEGV on GetandScaleData, Factor < 1"));
       wxLogMessage(msg);
 
       msg.Printf(
-          "   m_raster_scale_factor:  %g   source.width: %d  dest.y: %d "
-          "dest.x: %d dest.width: %d  dest.height: %d ",
+          _T("   m_raster_scale_factor:  %g   source.width: %d  dest.y: %d ")
+          _T("dest.x: %d dest.width: %d  dest.height: %d "),
           m_raster_scale_factor, source.width, dest.y, dest.x, dest.width,
           dest.height);
       wxLogMessage(msg);
 
       msg.Printf(
-          "   i: %d  j: %d dest_stride: %d  target_line_start: %p  "
-          "target_data_x:  %p  y_offset: %d",
+          _T("   i: %d  j: %d dest_stride: %d  target_line_start: %p  ")
+          _T("target_data_x:  %p  y_offset: %d"),
           i, j, dest_stride, target_line_start, target_data_x, y_offset);
       wxLogMessage(msg);
 
@@ -4347,7 +4369,7 @@ int *ChartBaseBSB::GetPalettePtr(BSB_Color_Capability color_index) {
     return NULL;
 }
 
-PaletteDir ChartBaseBSB::GetPaletteDir() {
+PaletteDir ChartBaseBSB::GetPaletteDir(void) {
   // make a pixel cache
   PixelCache *pc = new PixelCache(4, 4, BPP);
   RGBO r = pc->GetRGBO();
@@ -4359,7 +4381,7 @@ PaletteDir ChartBaseBSB::GetPaletteDir() {
     return PaletteRev;
 }
 
-bool ChartBaseBSB::AnalyzeSkew() {
+bool ChartBaseBSB::AnalyzeSkew(void) {
   double lonmin = 1000;
   double lonmax = -1000;
   double latmin = 90.;
@@ -4538,10 +4560,10 @@ bool ChartBaseBSB::AnalyzeSkew() {
       2) {                         // measured skew is more than 2 degrees
     m_Chart_Skew = apparent_skew;  // different from stated skew
 
-    wxString msg = "   Warning: Skew override on chart ";
+    wxString msg = _T("   Warning: Skew override on chart ");
     msg.Append(m_FullPath);
     wxString msg1;
-    msg1.Printf(" is %5g degrees", apparent_skew);
+    msg1.Printf(_T(" is %5g degrees"), apparent_skew);
     msg.Append(msg1);
 
     wxLogMessage(msg);
@@ -4898,7 +4920,8 @@ int ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution) {
 
     m_ppm_avg = fabs(dx / de);
 
-    m_ExtraInfo = "---<<< Warning:  Chart georef accuracy may be poor. >>>---";
+    m_ExtraInfo =
+        _T("---<<< Warning:  Chart georef accuracy may be poor. >>>---");
   }
 
   else
@@ -4990,16 +5013,16 @@ int ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution) {
 
   if (chart_error_pixels > max_pixel_error) {
     wxString msg =
-        "   VP Final Check: Georeference Chart_Error_Factor on chart ";
+        _T("   VP Final Check: Georeference Chart_Error_Factor on chart ");
     msg.Append(m_FullPath);
     wxString msg1;
-    msg1.Printf(" is %5g \n     nominal pixel error is: %5g",
+    msg1.Printf(_T(" is %5g \n     nominal pixel error is: %5g"),
                 Chart_Error_Factor, chart_error_pixels);
     msg.Append(msg1);
 
     wxLogMessage(msg);
 
-    m_ExtraInfo = "---<<< Warning:  Chart georef accuracy is poor. >>>---";
+    m_ExtraInfo = _T("---<<< Warning:  Chart georef accuracy is poor. >>>---");
   }
 
   //  Try again with my calculated georef
@@ -5007,7 +5030,7 @@ int ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution) {
   //  just wrong....
   if ((chart_error_pixels > max_pixel_error) && bHaveEmbeddedGeoref) {
     wxString msg =
-        "   Trying again with internally calculated georef solution ";
+        _T("   Trying again with internally calculated georef solution ");
     wxLogMessage(msg);
 
     bHaveEmbeddedGeoref = false;
@@ -5055,23 +5078,24 @@ int ChartBaseBSB::AnalyzeRefpoints(bool b_testSolution) {
     //        Good enough for navigation?
     if (chart_error_pixels > max_pixel_error) {
       wxString msg =
-          "   VP Final Check with internal georef: Georeference "
-          "Chart_Error_Factor on chart ";
+          _T("   VP Final Check with internal georef: Georeference ")
+          _T("Chart_Error_Factor on chart ");
       msg.Append(m_FullPath);
       wxString msg1;
-      msg1.Printf(" is %5g\n     nominal pixel error is: %5g",
+      msg1.Printf(_T(" is %5g\n     nominal pixel error is: %5g"),
                   Chart_Error_Factor, chart_error_pixels);
       msg.Append(msg1);
 
       wxLogMessage(msg);
 
-      m_ExtraInfo = "---<<< Warning:  Chart georef accuracy is poor. >>>---";
+      m_ExtraInfo =
+          _T("---<<< Warning:  Chart georef accuracy is poor. >>>---");
     } else {
-      wxString msg = "   Result: OK, Internal georef solution used.";
+      wxString msg = _T("   Result: OK, Internal georef solution used.");
 
       wxLogMessage(msg);
 
-      m_ExtraInfo = "";
+      m_ExtraInfo = _T("");
     }
   }
 

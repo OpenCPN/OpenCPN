@@ -17,17 +17,13 @@
 
 /**
  * \file
- *
- * Implement connections_dlg.h --  %Options | %Connections GUI
+ * Implement connections_dlg.h
  */
-
 #include <array>
 #include <algorithm>
 #include <sstream>
 #include <string>
 #include <vector>
-
-#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <wx/arrstr.h>
 #include <wx/bitmap.h>
@@ -48,6 +44,7 @@
 #include "model/conn_states.h"
 #include "model/gui_events.h"
 #include "model/notification_manager.h"
+#include "model/std_icon.h"
 
 #include "connections_dlg.h"
 
@@ -57,11 +54,16 @@
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_platform.h"
+#include "OCPNPlatform.h"
 #include "options.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"
 #include "model/svg_utils.h"
+
+#include <wx/statline.h>
+
+extern OCPNPlatform* g_Platform;
+extern options* g_options;
 
 static wxString UtfArrowDown() { return wxString::FromUTF8(u8"\u25bc"); }
 static wxString UtfArrowRight() { return wxString::FromUTF8(u8"\u25ba"); }
@@ -228,7 +230,7 @@ public:
 
   void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect,
             int row, int col, bool isSelected) override {
-    dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
+    dc.SetBrush(wxBrush(GetGlobalColor("DILG2")));
     if ((m_cs != GLOBAL_COLOR_SCHEME_DAY) && m_cs != GLOBAL_COLOR_SCHEME_RGB)
       dc.SetBrush(wxBrush(GetDialogColor(DLG_BACKGROUND)));
     if (IsWindows()) dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
@@ -358,7 +360,7 @@ public:
         m_icons(parent),
         m_on_edit_conn(on_edit_conn) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
-    SetTable(new wxGridStringTable(), true);
+    SetTable(new wxGridStringTable(), false);
     GetTable()->AppendCols(8);
     HideCol(7);
     if (IsAndroid()) {

@@ -13,33 +13,28 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * \file
- *
- * Track print dialog
- */
+#ifndef __TRACKPRINTOUT_H__
+#define __TRACKPRINTOUT_H__
 
-#ifndef TRACKPRINTOUT_H_
-#define TRACKPRINTOUT_H_
-
-#include <wx/cmdline.h>
-#include <wx/datetime.h>
 #include <wx/print.h>
+#include <wx/datetime.h>
+#include <wx/cmdline.h>
 
 #ifdef __WXMSW__
 #include <wx/msw/private.h>
 #endif
 
-#include "model/ocpn_types.h"
-
 #include "dialog_input.h"
+#include "model/ocpn_types.h"
 #include "navutil.h"
+#include "TrackPropDlg.h"
 #include "printout_base.h"
 #include "printtable.h"
-#include "track_prop_dlg.h"
 #include "ui_utils.h"
 
 enum class TrackPrintOptions {

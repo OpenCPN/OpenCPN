@@ -1,4 +1,9 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Shapefile basemap
+ *
+ ***************************************************************************
  *   Copyright (C) 2012-2023 by David S. Register                          *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,38 +17,36 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  *
- * Shapefile basemap
+ *
  */
 
 #ifndef SHAPEFILE_BASEMAP_H
 #define SHAPEFILE_BASEMAP_H
 
 #include <functional>
-#include <future>
+#include <vector>
 #include <map>
 #include <thread>
-#include <vector>
-
-#include "gl_headers.h"
-
-#include <wx/gdicmn.h>
-
+#include <future>
 #include "ShapefileReader.hpp"
 #include "poly_math.h"
 #include "ocpndc.h"
-#include "std_filesystem.h"
 
-typedef std::vector<wxRealPoint> contour;
-typedef std::vector<contour> contour_list;
-
-class ShapeBaseChartSet;                 // forward
-extern ShapeBaseChartSet gShapeBasemap;  ///< Global instance
+#if (defined(OCPN_GHC_FILESYSTEM) || \
+     (defined(__clang_major__) && (__clang_major__ < 15)))
+// MacOS 1.13
+#include <ghc/filesystem.hpp>
+namespace fs = ghc::filesystem;
+#else
+#include <filesystem>
+#include <utility>
+namespace fs = std::filesystem;
+#endif
 
 /**
  * A latitude/longitude key for 1x1 or 10x10 degree grid tiles.
@@ -116,6 +119,9 @@ enum Quality {
   /// on slow machines is low
   full
 };
+
+typedef std::vector<wxRealPoint> contour;
+typedef std::vector<contour> contour_list;
 
 /**
  * Represents a basemap chart based on shapefile data.
@@ -235,10 +241,8 @@ private:
   void DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
                              const shp::Feature &feature);
   void DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp);
-#ifdef ocpnUSE_GL
   void AddPointToTessList(shp::Point &point, ViewPort &vp, GLUtesselator *tobj,
                           bool idl);
-#endif
 
   /**
    * Path to the shapefile that contains the geographical data for this chart.
@@ -404,5 +408,4 @@ private:
   std::map<Quality, ShapeBaseChart> _basemap_map;
 };
 
-extern ShapeBaseChartSet gShapeBasemap; /**< global instance */
 #endif

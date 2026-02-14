@@ -1,4 +1,10 @@
-/***************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,38 +18,33 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  *
- * Implement priorities_gui.h -- input priorities management dialog
+ *
  */
-
-#include "gl_headers.h"  // Must be included before anything using GL stuff
-
-#ifdef __ANDROID__
-#include "qdebug.h"
-#include <QtWidgets/QScroller>
-#include "androidUTIL.h"
-#endif
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif
+#endif  // precompiled headers
 
 #include <wx/app.h>
-#include <wx/arrstr.h>
-#include <wx/dcscreen.h>
-#include <wx/sizer.h>
 #include <wx/tokenzr.h>
 
-#include "priority_gui.h"
+#ifdef __OCPN__ANDROID__
+#include "androidUTIL.h"
+#include "qdebug.h"
+#include <QtWidgets/QScroller>
+#endif
 
+#include "priority_gui.h"
+#include "ocpn_app.h"
 #include "model/comm_bridge.h"
+#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 
 class PriorityEntry : public wxTreeItemData {
@@ -61,10 +62,6 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
                wxSize(480, 420), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
   m_selIndex = 0;
   m_selmap_index = 0;
-  SetMinSize(wxSize(480, 420));
-  auto top_frame_size = wxTheApp->GetTopWindow()->GetSize();
-  SetMaxSize(
-      wxSize(wxMax(top_frame_size.x, 480), wxMax(top_frame_size.y, 420)));
 
   wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
@@ -134,7 +131,8 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
                       this);
 
   // Get the current status
-  m_map = CommBridge::GetInstance().GetPriorityMaps();
+  MyApp& app = wxGetApp();
+  m_map = app.m_comm_bridge.GetPriorityMaps();
 
   Populate();
 
@@ -179,8 +177,8 @@ void PriorityDlg::AddLeaves(const std::vector<std::string>& map_list,
   if (map_list.size() < (size_t)map_index) return;
 
   // Get the current Priority container for this branch
-  PriorityContainer pc =
-      CommBridge::GetInstance().GetPriorityContainer(map_name);
+  MyApp& app = wxGetApp();
+  PriorityContainer pc = app.m_comm_bridge.GetPriorityContainer(map_name);
 
   wxString priority_string(map_list[map_index].c_str());
   wxStringTokenizer tk(priority_string, "|");
@@ -214,7 +212,7 @@ void PriorityDlg::Populate() {
   m_prioTree->DeleteAllItems();
   m_maxStringLength = 15;  // default width calculation
 
-  //  wxTreeItemId* rootData = new wxDirItemData("Dummy", "Dummy",
+  //  wxTreeItemId* rootData = new wxDirItemData(_T("Dummy"), _T("Dummy"),
   //  TRUE);
   wxTreeItemId m_rootId = m_prioTree->AddRoot(_("Priorities"), -1, -1, NULL);
   m_prioTree->SetItemHasChildren(m_rootId);
@@ -366,16 +364,18 @@ void PriorityDlg::ProcessMove(wxTreeItemId id, int dir) {
   }
 
   // Update the priority mechanism
-  CommBridge::GetInstance().UpdateAndApplyMaps(m_map);
+  MyApp& app = wxGetApp();
+  app.m_comm_bridge.UpdateAndApplyMaps(m_map);
 
   // And reload the tree GUI
-  m_map = CommBridge::GetInstance().GetPriorityMaps();
+  m_map = app.m_comm_bridge.GetPriorityMaps();
   Populate();
 }
 
 void PriorityDlg::OnRefreshClick(wxCommandEvent& event) {
   // Reload the tree GUI
-  m_map = CommBridge::GetInstance().GetPriorityMaps();
+  MyApp& app = wxGetApp();
+  m_map = app.m_comm_bridge.GetPriorityMaps();
   Populate();
 }
 
@@ -389,10 +389,11 @@ void PriorityDlg::OnClearClick(wxCommandEvent& event) {
   m_selmap_index = m_selIndex = 0;
 
   // Update the priority mechanism
-  CommBridge::GetInstance().UpdateAndApplyMaps(m_map);
+  MyApp& app = wxGetApp();
+  app.m_comm_bridge.UpdateAndApplyMaps(m_map);
 
   // And reload the tree GUI
-  m_map = CommBridge::GetInstance().GetPriorityMaps();
+  m_map = app.m_comm_bridge.GetPriorityMaps();
   Populate();
 }
 

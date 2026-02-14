@@ -35,11 +35,6 @@
 ::    for minor patches but the github repository is always up to date.
 ::  - Various improvements to wxWidgets download and build speed.
 ::  - Make improvements to error handling and persistent configuration settings
-if CMDEXTVERSION 1 goto :start
-@echo Error: Command extensions must be enabled.
-exit /b 1
-
-:start
 call :StartTimer
 :: If not running in VS Command Prompt try to find VS and set up the environment
 @echo VisualStudioVersion=%VisualStudioVersion%
@@ -58,12 +53,12 @@ if [%VisualStudioVersion%]==[] (
 goto go
 :setenv
 @echo call %vsenv%
-call "%vsenv%"
+call %vsenv%
 set vsenv=
 :go
 setlocal enabledelayedexpansion
 if [%VisualStudioVersion%]==[] (
-  @echo Please install Visual Studio 2022 or 2026
+  @echo Please install Visual Studio 2022 or 2019
   exit /b 1
 )
 goto :main
@@ -73,15 +68,15 @@ goto :main
 @echo *                                                                          *
 @echo *  There are some prequisites before you can effectively use this script.  *
 @echo *                                                                          *
-@echo *  1. Install Visual Studio 202x Community Edition.                        *
+@echo *  1. Install Visual Studio 2022 Community Edition.                        *
 @echo *              https://visualstudio.microsoft.com/downloads/               *
-@echo *     Be sure to select the latest dev tools and                           *
+@echo *     Be sure to select the V143 latest dev tools and                      *
 @echo *     cmake tools check boxes.                                             *
 @echo *                                                                          *
-@echo *  2. Install git for Windows (or select it from the VS 202x installer)    *
+@echo *  2. Install git for Windows (or select it from the VS 2022 installer)    *
 @echo *              https://git-scm.com/download/win                            *
 @echo *                                                                          *
-@echo *  3. Open 'x86 Native Tools Command Prompt for Visual Studio 202x'        *
+@echo *  3. Open 'x86 Native Tools Command Prompt for Visual Studio 2022'        *
 @echo *                                                                          *
 @echo *  4. Create/move to folder where you want to work with OpenCPN sources    *
 @echo *        Example: mkdir \Users\myname\source\repos                         *
@@ -158,44 +153,42 @@ goto :main
 @echo ****************************************************************************
 goto :fail
 :main
-@echo Entering :main
 ::-------------------------------------------------------------
 :: Initialize local environment
 ::-------------------------------------------------------------
 pushd %~dp0..
-set "OCPN_DIR=%CD%"
+set "OCPN_Dir=%CD%"
 popd
 SET "CACHE_DIR=%OCPN_DIR%\cache"
 SET "DATA_DIR=%OCPN_DIR%\data"
 set "wxWidgetsURL=https://github.com/wxWidgets/wxWidgets"
+set "wxDIR=%OCPN_DIR%\..\ocpn_wxWidgets"
+set "wxWidgets_ROOT_DIR=%wxDIR%"
+set "wxWidgets_LIB_DIR=%wxDIR%\lib\vc_dll"
 set "wxMajor=v3.2"
-set "wxMinor=9"
+set "wxMinor=8"
 set "wxVER=%wxMajor%.%wxMinor%"
 if [%VisualStudioVersion%]==[16.0] (
   set VCver=16
-  set "VCstr=Visual Studio 16 2019"
-  set VCtool=141
+  set "VCstr=Visual Studio 16"
 )
 if [%VisualStudioVersion%]==[17.0] (
   set VCver=17
-  set "VCstr=Visual Studio 17 2022"
-  set VCtool=143
+  set "VCstr=Visual Studio 17"
 )
 if [%VisualStudioVersion%]==[18.0] (
   set VCver=18
-  set "VCstr=Visual Studio 18 2026"
-  set VCtool=145
+  set "VCstr=Visual Studio 18"
 )
 ::-------------------------------------------------------------
 :: Initialize local variables
 ::-------------------------------------------------------------
-@echo Checking if tools are available
 SET "buildWINtmp=%CACHE_DIR%\buildwintemp"
 set PSH=powershell
 where pwsh > NUL 2> NUL && set PSH=pwsh
 where %PSH% > NUL 2> NUL || echo PowerShell is not installed && goto :fail
 where msbuild.exe > NUL 2> NUL && goto :vsok
-@echo Please run this from Visual Studio "x86 Native Tools Command Prompt ..."
+@echo Please run this from "x86 Native Tools Command Prompt for VS2022 or VS2019
 goto :usage
 :vsok
 @echo Searching for Git
@@ -216,6 +209,18 @@ for /f "delims=" %%B in ('where /f /r "%gitdrv%%gitfldr%.." bash.exe') do (set b
 if not exist "%gitcmd%" (set gitcmd=& echo [101;93mWarning[0m: git not found)
 if not exist "%patchcmd%" (set patchcmd=& echo [101;93mWarning[0m: patch not found)
 if not exist "%bashcmd%" (set bashcmd=& echo [101;93mWarning[0m: bash not found)
+::-------------------------------------------------------------
+:: Initialize local helper script that can reinitialize environment
+::-------------------------------------------------------------
+@echo set "wxDIR=%wxDIR%" > "%OCPN_Dir%\buildwin\configdev.bat"
+@echo set "wxWIN=%wxDIR%" >> "%OCPN_Dir%\buildwin\configdev.bat"
+@echo set "wxWidgets_ROOT_DIR=%wxWidgets_ROOT_DIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
+@echo set "wxWidgets_LIB_DIR=%wxWidgets_LIB_DIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
+@echo set "VCver=%VCver%" >> "%OCPN_DIR%\buildwin\configdev.bat"
+@echo set "VCstr=%VCstr%" >> "%OCPN_DIR%\buildwin\configdev.bat"
+@echo set "gitcmd=%gitcmd%" >> "%OCPN_DIR%\buildwin\configdev.bat"
+@echo set "bashcmd=%bashcmd%" >> "%OCPN_DIR%\buildwin\configdev.bat"
+@echo set "patchcmd=%patchcmd%" >> "%OCPN_DIR%\buildwin\configdev.bat"
 :: By default build all 4 possible configurations the first time
 :: Edit and set to 1 at least one configuration
 set ocpn_all=1
@@ -225,9 +230,6 @@ set ocpn_relwithdebinfo=0
 set ocpn_debug=0
 set quiet=N
 set ocpn_package=0
-set ocpn_clean=0
-set ocpn_rebuild=0
-
 :: Clean up if previous run "failed"
 if exist "%~dp0..\build\.MinSizeRel\.Pack" (
   rmdir "%~dp0..\build\.MinSizeRel\.Pack"
@@ -259,35 +261,23 @@ if exist "%OCPN_DIR%\build\.MinSizeRel" (
   set ocpn_minsizerel=1
 )
 :parse
-if /I [%1]==[--all] (shift /1 && set ocpn_all=1&& goto :parse)
-if /I [%1]==[--clean] (shift /1 && set ocpn_clean=1&& set ocpn_rebuild=0&& goto :parse)
-:: Experimental - use cmake to build wxWidgets so we can have RelWithDebInfo
-if /I [%1]==[--cmake] (shift /1 && set ocpn_cmake=1&& goto :parse)
-if /I [%1]==[--debug] (shift /1 && set ocpn_all=0&& set ocpn_debug=1&& goto :parse)
-if /I [%1]==[--help] (shift /1 && goto :usage)
-if /I [%1]==[--minsizerel] (shift /1 && set ocpn_all=0&& set ocpn_minsizerel=1&& goto :parse)
-if /I [%1]==[--package] (shift /1 && set ocpn_package=1&& goto :parse)
-if /I [%1]==[--rebuild] (shift /1 && set ocpn_rebuild=1&& set ocpn_clean=0&& goto :parse)
-if /I [%1]==[--release] (shift /1 && set ocpn_all=0&& set ocpn_release=1&& goto :parse)
-if /I [%1]==[--relwithdebinfo] (shift /1 && set ocpn_all=0&& set ocpn_relwithdebinfo=1&& goto :parse)
-if /I [%1]==[--wxver] (shift /1 && set wxVER=%2&& shift /1 && goto :parse)
-if /I [%1]==[--Y] (shift /1 && set "quiet=Y" && goto :parse)
+if [%1]==[--clean] (shift /1 && set ocpn_clean=1&& set ocpn_rebuild=0&& goto :parse)
+if [%1]==[--rebuild] (shift /1 && set ocpn_rebuild=1&& set ocpn_clean=0&& goto :parse)
+if [%1]==[--help] (shift /1 && goto :usage)
+if [%1]==[--all] (shift /1 && set ocpn_all=1&& goto :parse)
+if [%1]==[--minsizerel] (shift /1 && set ocpn_all=0&& set ocpn_minsizerel=1&& goto :parse)
+if [%1]==[--release] (shift /1 && set ocpn_all=0&& set ocpn_release=1&& goto :parse)
+if [%1]==[--relwithdebinfo] (shift /1 && set ocpn_all=0&& set ocpn_relwithdebinfo=1&& goto :parse)
+if [%1]==[--debug] (shift /1 && set ocpn_all=0&& set ocpn_debug=1&& goto :parse)
+if [%1]==[--wxver] (shift /1 && set wxVER=%2&& shift /1 && goto :parse)
+if [%1]==[--Y] (shift /1 && set "quiet=Y" && goto :parse)
+if [%1]==[--package] (shift /1 && set ocpn_package=1&& goto :parse)
 if [%1]==[] (goto :begin) else (
   echo Unknown option: %1
   shift /1
   goto :usage
-)
+  )
 :begin
-::-------------------------------------------------------------
-:: Check if network is available
-::-------------------------------------------------------------
-set netok=0
-if not ["%gitcmd%"]==[] (
-  @echo Checking network connection...
-  @echo %cd%
-  "%gitcmd%" fetch --dry-run >nul 2>&1 && set netok=1
-)
-@echo netok=%netok%
 if [%ocpn_all%]==[1] (
   set ocpn_minsizerel=1
   set ocpn_release=1
@@ -295,44 +285,11 @@ if [%ocpn_all%]==[1] (
   set ocpn_debug=1
 )
 ::-------------------------------------------------------------
-:: Initialize local helper script that can reinitialize environment
-::-------------------------------------------------------------
-set "wxDIR=%OCPN_DIR%\..\ocpn_wxWidgets"
-set "wxSourceDir=%OCPN_DIR%\..\ocpn_wxWidgets"
-set "wxWidgets_ROOT_DIR=%wxDIR%"
-if "[%ocpn_cmake%]"=="[1]" (
-  echo set "wxBuildDir=%wxDIR%\build_cmake"
-  set "wxBuildDir=%wxDIR%\build_cmake"
-) else (
-  echo set "wxBuildDir=%wxDIR%"
-  set "wxBuildDir=%wxDIR%"
-)
-set "wxWidgets_LIB_DIR=%wxBuildDir%\lib\vc_dll"
-
-@echo set "wxDIR=%wxDIR%" > "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "wxWIN=%wxDIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "wxSourceDir=%wxSourceDir%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "wxBuildDir=%wxBuildDir%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "wxWidgets_ROOT_DIR=%wxWidgets_ROOT_DIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "wxWidgets_LIB_DIR=%wxWidgets_LIB_DIR%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "VCver=%VCver%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "VCstr=%VCstr%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "gitcmd=%gitcmd%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "bashcmd=%bashcmd%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "patchcmd=%patchcmd%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo set "VCtool=%VCtool%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-::-------------------------------------------------------------
 :: If this is the first build then initialize all build types
 ::-------------------------------------------------------------
 if not exist "%OCPN_DIR%\build" (
   set ocpn_clean=1
 )
-@echo ocpn_clean=%ocpn_clean%
-@echo ocpn_relwithdebinfo=%ocpn_relwithdebinfo%
-@echo ocpn_release=%ocpn_release%
-@echo ocpn_debug=%ocpn_debug%
-@echo ocpn_minsizerel=%ocpn_minsizerel%
-@echo ocpn_all=%ocpn_all%
 ::-------------------------------------------------------------
 :: Save user configuration data and clean build folders but
 :: do not delete downloaded tools.  Use this option if no internet
@@ -340,7 +297,6 @@ if not exist "%OCPN_DIR%\build" (
 ::-------------------------------------------------------------
 if [%ocpn_rebuild%]==[1] (
   echo Beginning rebuild cleanout
-  if not [%quiet%]==[Y] (timeout /T 15)
   if exist "%OCPN_DIR%\build" (
     set folder=Release
     call :backup
@@ -354,8 +310,8 @@ if [%ocpn_rebuild%]==[1] (
     echo Backup complete
   )
   set "target=%OCPN_DIR%\build\.vs" & call :removeTarget
-  set "target=%OCPN_DIR%\build\CMakeCache.txt" & call :removeTarget
-  if [%netok%]==[1] (set "target=%OCPN_DIR%\.git\hooks\pre-commit" & call :removeTarget)
+  if exist "%OCPN_DIR%\build\CMakeCache.txt" del "%OCPN_DIR%\build\CMakeCache.txt"
+  if exist "%OCPN_DIR%\.git\hooks\pre-commit" del "%OCPN_DIR%\.git\hooks\pre-commit"
   set "target=%OCPN_DIR%\build\Release" & call :removeTarget
   set "target=%OCPN_DIR%\build\RelWithDebInfo" & call :removeTarget
   set "target=%OCPN_DIR%\build\Debug" & call :removeTarget
@@ -373,31 +329,37 @@ if [%ocpn_rebuild%]==[1] (
   set "target=%OCPN_DIR%\build\Resources" & call :removeTarget
   set "target=%OCPN_DIR%\build\Win32" & call :removeTarget
   set "target=%OCPN_DIR%\build\_deps" & call :removeTarget
-  set "target=%WXDIR%\build\msw\*.obj" & call :removeTarget
-  where /Q /R "%OCPN_DIR%\build" *.cmake && del /Q /S "%OCPN_DIR%\build\*.cmake"
-  where /Q /R "%OCPN_DIR%\build" *.txt && del /Q /S "%OCPN_DIR%\build\*.txt"
-  where /Q /R "%OCPN_DIR%\build" *.in && del /Q /S "%OCPN_DIR%\build\*.in"
-  where /Q /R "%OCPN_DIR%\build" *.xml && del /Q /S "%OCPN_DIR%\build\*.xml"
-  where /Q /R "%OCPN_DIR%\build" *.rc && del /Q /S "%OCPN_DIR%\build\*.rc"
-  where /Q /R "%OCPN_DIR%\build" *.user && del /Q /S "%OCPN_DIR%\build\*.user"
-  where /Q /R "%OCPN_DIR%\build" *.sln && del /Q /S "%OCPN_DIR%\build\*.sln"
-  where /Q /R "%OCPN_DIR%\build" *.slnx && del /Q /S "%OCPN_DIR%\build\*.slnx"
-  where /Q /R "%OCPN_DIR%\build" *.mo && del /Q /S "%OCPN_DIR%\build\*.mo"
-  where /Q /R "%OCPN_DIR%\build" *.vcxproj && del /Q /S "%OCPN_DIR%\build\*.vcxproj"
-  where /Q /R "%OCPN_DIR%\build" *.filters && del /Q /S "%OCPN_DIR%\build\*.filters"
-  where /Q /R "%OCPN_DIR%\build" *.log && del /Q /S "%OCPN_DIR%\build\*.log"
+  where /Q /R "%OCPN_DIR%\build" *.cmake && del /Q "%OCPN_DIR%\build\*.cmake"
+  where /Q /R "%OCPN_DIR%\build" *.txt && del /Q "%OCPN_DIR%\build\*.txt"
+  where /Q /R "%OCPN_DIR%\build" *.in && del /Q "%OCPN_DIR%\build\*.in"
+  where /Q /R "%OCPN_DIR%\build" *.xml && del /Q "%OCPN_DIR%\build\*.xml"
+  where /Q /R "%OCPN_DIR%\build" *.rc && del /Q "%OCPN_DIR%\build\*.rc"
+  where /Q /R "%OCPN_DIR%\build" *.user && del /Q "%OCPN_DIR%\build\*.user"
+  where /Q /R "%OCPN_DIR%\build" *.sln && del /Q "%OCPN_DIR%\build\*.sln"
+  where /Q /R "%OCPN_DIR%\build" *.mo && del /Q "%OCPN_DIR%\build\*.mo"
+  where /Q /R "%OCPN_DIR%\build" *.vcxproj && del /Q "%OCPN_DIR%\build\*.vcxproj"
+  where /Q /R "%OCPN_DIR%\build" *.filters && del /Q "%OCPN_DIR%\build\*.filters"
+  where /Q /R "%OCPN_DIR%\build" *.log && del /Q "%OCPN_DIR%\build\*.log"
   @echo Finished rebuild cleanout
 )
 ::-------------------------------------------------------------
 :: Save user configuration data and wipe the build folder
 ::-------------------------------------------------------------
+:: Check if network is available
+set netok=0
+if not ["%gitcmd%"]==[] (
+  @echo Checking network connection...
+  @echo %cd%
+  "%gitcmd%" fetch --dry-run >nul 2>&1 && set netok=1
+)
+@echo netok=%netok%
 if [%ocpn_clean%]==[1] (
   if [%netok%]==[1] echo Network ok
   if [%netok%]==[0] echo Network not working
 
   set ocpn_clean=0
   set ocpn_rebuild=0
-  if [%netok%]==[0] (
+  if %netok%==0 (
     if not [%quiet%]==[Y] (
       @echo [101;93mThe --clean option requires an internet connection.[0m
       @echo The internet connection appears to be down. Proceed with caution.
@@ -431,82 +393,32 @@ if [%ocpn_clean%]==[1] (
     @echo Cleared %OCPN_DIR%\build OK.
   )
 
-  set "target=%CACHE_DIR%" & call :removeTarget
-  set "target=%wxDIR%\build\msw\*.obj" & call :removeTarget
-  set "target=%buildWINtmp%" & call :removeTarget
-  set "target=%OCPN_DIR%\.git\hooks\pre-commit" & call :removeTarget
-  if not [%quiet%]==[Y] (timeout /T 5)
+  if exist "%CACHE_DIR%" (rmdir /s /q "%CACHE_DIR%" && echo Cleared %CACHE_DIR%)
+  if exist "%wxDIR%" (rmdir /s /q "%wxDIR%" && echo Cleared %wxDIR%)
+  if exist "%buildWINtmp%" (rmdir /s /q "%buildWINtmp%" && echo Cleared %buildWINtmp%)
+  if not [%quiet%]==[Y] (
+    timeout /T 5
+  )
 )
 ::-------------------------------------------------------------
 :: Create needed folders
 ::-------------------------------------------------------------
-::-------------------------------------------------------------
-:: Initialize folders needed to run OpenCPN
-::-------------------------------------------------------------
-@echo ocpn_relwithdebinfo=%ocpn_relwithdebinfo%
-@echo ocpn_release=%ocpn_release%
-@echo ocpn_debug=%ocpn_debug%
-@echo ocpn_minsizerel=%ocpn_minsizerel%
-@echo ocpn_all=%ocpn_all%
-@echo ocpn_clean=%ocpn_clean%
-@echo setting up folders
-if [%ocpn_debug%]==[1] (
-  if not exist "%OCPN_DIR%\build\.Debug" (
-    mkdir "%OCPN_DIR%\build\.Debug"
-    if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.Debug\.Pack")
-    if [%ocpn_cmake%]==[1] (mkdir "%OCPN_DIR%\build\.Debug\.CMake")
-  )
-)
-if [%ocpn_release%]==[1] (
-  if not exist "%OCPN_DIR%\build\.Release" (
-    mkdir "%OCPN_DIR%\build\.Release"
-  )
-  if exist "%OCPN_DIR%\build\.Release" (
-    if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.Release\.Pack")
-    if [%ocpn_cmake%]==[1] (mkdir "%OCPN_DIR%\build\.Release\.CMake")
-  )
-)
-if [%ocpn_relwithdebinfo%]==[1] (
-  if not exist "%OCPN_DIR%\build\.RelWithDebInfo" (
-    mkdir "%OCPN_DIR%\build\.RelWithDebInfo"
-  )
-  if exist "%OCPN_DIR%\build\.RelWithDebInfo" (
-    if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.RelWithDebInfo\.Pack")
-    if [%ocpn_cmake%]==[1] (mkdir "%OCPN_DIR%\build\.RelWithDebInfo\.CMake")
-  )
-)
-if [%ocpn_minsizerel%]==[1] (
-  if not exist "%OCPN_DIR%\build\.MinSizeRel" (
-    mkdir "%OCPN_DIR%\build\.MinSizeRel"
-  )
-  if exist "%OCPN_DIR%\build\.MinSizeRel" (
-    if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.MinSizeRel\.Pack")
-    if [%ocpn_cmake%]==[1] (mkdir "%OCPN_DIR%\build\.MinSizeRel\.CMake")
-  )
-)
-if exist "%OCPN_DIR%\build\.Release\.CMake" (set ocpn_cmake=1)
-if exist "%OCPN_DIR%\build\.RelWithDebInfo\.CMake" (set ocpn_cmake=1)
-if exist "%OCPN_DIR%\build\.MinSizeRel\.CMake" (set ocpn_cmake=1)
-if exist "%OCPN_DIR%\build\.Debug\.CMake" (set ocpn_cmake=1)
-@echo Finished setting up folders
-if not exist "%CACHE_DIR%\" (mkdir "%CACHE_DIR%")
-if not exist "%CACHE_DIR%\buildwin\" (mkdir "%CACHE_DIR%\buildwin")
-if not exist "%buildWINtmp%\" (mkdir "%buildWINtmp%")
+if not exist "%OCPN_DIR%\build" (mkdir "%OCPN_DIR%\build")
+if not exist "%CACHE_DIR%" (mkdir "%CACHE_DIR%")
+if not exist "%CACHE_DIR%\buildwin" (mkdir "%CACHE_DIR%\buildwin")
+if not exist "%buildWINtmp%" (mkdir "%buildWINtmp%")
 ::-------------------------------------------------------------
 :: Install nuget
 ::-------------------------------------------------------------
-@echo Looking for nuget
-where /Q /R %CACHE_DIR% nuget.exe >nul && "%CACHE_DIR%\nuget.exe" >nul && goto :skipnuget
+where /Q /R %CACHE_DIR% nuget.exe && "%CACHE_DIR%\nuget.exe" >nul && goto :skipnuget
 @echo Downloading nuget
 set "URL=https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 set "DEST=%CACHE_DIR%\nuget.exe"
 call :download
-if errorlevel 1 (if not [%quiet%]==[Y] pause)
 where /Q /R %CACHE_DIR% nuget.exe && goto :skipnuget
 @echo Error: Could not download nuget.exe
 goto :usage
 :skipnuget
-@echo nuget is present
 
 :: Is CMake present and the correct version?
 where /Q cmake.exe && goto :skipcmake
@@ -548,32 +460,25 @@ goto :usage
 :: Install pre-commit hooks if not already installed
 :: This will only run once
 ::-------------------------------------------------------------
-set PYAPP=
-if not exist ".\.git\hooks\pre-commit" (
-  @echo Installing python into %CACHE_DIR%
-  pushd %CACHE_DIR%
-  .\nuget install python
-  for /f "delims=" %%G in ('where /r . /f python.exe') do (
-    set PYAPP=%%G
-    set PYFLDR=%%~pG
-  )
-  popd
+if exist ".\.git\hooks\pre-commit" (set PRECOMMIT_OK=1)
+if DEFINED PRECOMMIT_OK (goto :skipPreCommit)
+@echo Installing python
+pushd cache
+%CACHE_DIR%\nuget install python
+for /f "delims=" %%G in ('where /r . /f python.exe') do (
+  set "PYAPP=%%G"
+  set "PYFLDR=%%~pG"
 )
-if not exist ".\.git\hooks\pre-commit" (
-  if not [%PYAPP%]==[] (
-    pushd %CACHE_DIR%
-    @echo Installing pre-commit hooks using "%PYAPP%"
-    %PYAPP% -m pip install --no-warn-script-location --upgrade pip
-    %PYAPP% -m pip install --no-warn-script-location -q pre-commit
-    for /f "delims=" %%P in ('where /R . /F pre-commit.exe') do (%%P install -f)
-  ) else (
-    @echo Warning: Could not find Python application
-    if not [%quiet%]==[Y] pause
-  )
-  popd
+if DEFINED PYAPP (
+  @echo Installing pre-commit hooks
+  %PYAPP% -m pip install --no-warn-script-location --upgrade pip
+  %PYAPP% -m pip install --no-warn-script-location -q pre-commit
+  for /f "delims=" %%P in ('where /R . /F pre-commit.exe') do (%%P install -f && set PRECOMMIT_OK=1)
 )
-if not exist ".\.git\hooks\pre-commit" (
-  @echo Error: Could not find pre-commit tool.
+popd
+:skipPreCommit
+if not DEFINED PRECOMMIT_OK (.
+  @echo Error: Could not find Python and/or pre-commit tool.
   if not [%quiet%]==[Y] pause
 )
 
@@ -581,11 +486,10 @@ if not exist ".\.git\hooks\pre-commit" (
 :: Download OpenCPN Core dependencies
 ::-------------------------------------------------------------
 if exist "%buildWINtmp%\OCPNWindowsCoreBuildSupport.zip" (goto :skipbuildwin)
-@echo Downloading Windows dependencies from OpenCPN repository
+@echo Downloading Windows depencencies from OpenCPN repository
 set "URL=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport/archive/refs/tags/v0.5.zip"
 set "DEST=%buildWINtmp%\OCPNWindowsCoreBuildSupport.zip"
 call :download
-if errorlevel 1 (if not [%quiet%]==[Y] pause)
 
 @echo Exploding Windows dependencies
 set "SOURCE=%DEST%"
@@ -601,12 +505,11 @@ if errorlevel 1 (echo [101;93mNOT OK[0m ) else (
   )
 )
 :skipbuildwin
-set "URL=https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.4.zip"
+set URL="https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.4.zip"
 set "DEST=%CACHE_DIR%\QuickStartManual.zip"
 if not exist "%DEST%" (
   @echo Downloading quickstart manual
   call :download
-  if errorlevel 1 (if not [%quiet%]==[Y] pause)
   if exist "%CACHE_DIR%\..\data\doc\local" rmdir /s /q "%CACHE_DIR%\..\data\doc\local"
   mkdir "%CACHE_DIR%\..\data\doc\local"
   set "SOURCE=%DEST%"
@@ -614,11 +517,11 @@ if not exist "%DEST%" (
   @echo Exploding quickstart manual
   call :explode
 )
-if exist "%VCToolsRedistDir%\x86\Microsoft.VC%VCtool%.CRT\msvcp140.dll" (
+if exist "%VCToolsRedistDir%\x86\Microsoft.VC143.CRT\msvcp140.dll" (
   @echo Updating VC runtime ...
   if not exist "%CACHE_DIR%\buildwin" mkdir "%CACHE_DIR%\buildwin"
   if not exist "%CACHE_DIR%\buildwin\vc" mkdir "%CACHE_DIR%\buildwin\vc"
-  cmake -E copy_directory_if_different "%VCToolsRedistDir%\x86\Microsoft.VC%VCtool%.CRT" "%CACHE_DIR%\buildwin\vc"
+  cmake -E copy_directory_if_different "%VCToolsRedistDir%\x86\Microsoft.VC143.CRT" "%CACHE_DIR%\buildwin\vc"
   if errorlevel 1 (
     @echo [101;93mNOT OK[0m
     if not [%quiet%]==[Y] pause
@@ -626,57 +529,163 @@ if exist "%VCToolsRedistDir%\x86\Microsoft.VC%VCtool%.CRT\msvcp140.dll" (
     echo OK
   )
 )
+:: Remove old wxWidgets build folder if present
+if exist "%CACHE_DIR%\buildwxWidgets" (rmdir /s /q "%CACHE_DIR%\buildwxWidgets" && echo buildwxWidgets cleared)
 ::-------------------------------------------------------------
 :: Download wxWidgets sources
 ::-------------------------------------------------------------
-if exist "%wxSourceDir%\.git" goto :skipwxDL
+if exist "%wxDIR%\build\msw\wx_vc%VCver%.sln" (goto :skipwxDL)
+@echo INFO: Could not find "%wxDIR%\build\msw\wx_vc%VCver%.sln"
 @echo Downloading wxWidgets sources
 if "[%gitcmd%]"=="[]" (
-  if not exist "%wxSourceDir%" (mkdir "%wxSourceDir%")
+  if not exist "%wxDIR%" (mkdir "%wxDIR%")
+  :: set "URL=https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.4/wxWidgets-3.2.4.zip"
   set "URL=https://github.com/wxWidgets/wxWidgets/releases/download/%wxVER%/wxWidgets-%wxVER%.zip"
-  set "DEST=%wxSourceDir%\wxWidgets-%wxVER%.zip"
+  set "DEST=%wxDIR%\wxWidgets-%wxVER%.zip"
   call :download
-  if errorlevel 1 (echo Download %DEST& [101;93mNOT OK[0m ) else (echo Download %DEST% OK )
+  if errorlevel 1 (echo [101;93mNOT OK[0m ) else (echo Download %DEST% OK )
 
   @echo exploding wxWidgets
-  set "SOURCE=%wxSourceDir%\wxWidgets-%wxVER%.zip"
-  set "DEST=%wxSourceDir%"
+  set "SOURCE=%wxDIR%\wxWidgets-%wxVER%.zip"
+  set "DEST=%wxDIR%"
   call :explode
   if errorlevel 1 (echo [101;93mNOT OK[0m ) else (echo Explode wxWidgets OK )
 ) else (
   @echo %gitcmd% clone --jobs 2 --depth 1 --recurse-submodules --shallow-submodules ^
-         --branch %wxVER% "%wxWidgetsURL%" "%wxSourceDir%"
+         --branch %wxVer% "%wxWidgetsURL%" "%wxDIR%"
   "%gitcmd%" clone --jobs 2 --depth 1 --recurse-submodules --shallow-submodules ^
-   --branch %wxVER% "%wxWidgetsURL%" "%wxSourceDir%"
+   --branch %wxVer% "%wxWidgetsURL%" "%wxDIR%"
   if errorlevel 1 (echo Git clone [101;93mNOT OK[0m&&goto :fail )
 )
 :skipwxDL
-if exist "%wxSourceDir%\build\3rdparty\webview2" goto :wxBuild
+if exist "%wxDIR%\build\3rdparty\webview2" goto :wxBuild
 @echo Downloading Windows WebView2 kit
 set "URL=https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2"
-set "DEST=%wxSourceDir%\webview2.zip"
+set "DEST=%wxDIR%\webview2.zip"
 call :download
 if errorlevel 1 (echo [101;93mNOT OK[0m ) else (echo Download %DEST% OK )
 
 @echo Exploding WebView2
-set "SOURCE=%wxSourceDir%\webview2.zip"
-set "DEST=%wxSourceDir%\build\3rdparty\webview2"
+set "SOURCE=%wxDIR%\webview2.zip"
+set "DEST=%wxDIR%\build\3rdparty\webview2"
 call :explode
 if errorlevel 1 (echo [101;93mNOT OK[0m ) else (echo Explode WebView2 OK )
+
 :wxBuild
+::-------------------------------------------------------------
+:: Build wxWidgets from sources
+::-------------------------------------------------------------
+if exist "%wxDIR%\.git" (
+  if not "[%gitcmd%]"=="[]" (
+    pushd "%wxDIR%"
+    "%gitcmd%" submodule update
+    "%gitcmd%" fetch --recurse-submodules
+    "%gitcmd%" checkout "%wxVer%" --recurse-submodules --force
+    popd
+  )
+)
+if not exist "%wxDIR%\lib\vc_dll" (
+  mkdir "%wxDIR%\lib\vc_dll"
+  @echo Building wxWidgets libraries...
+  set wxVerb=minimal
+) else (
+  @echo Checking wxWidgets libraries...this may take a few minutes...
+  set wxVerb=quiet
+)
+msbuild "%wxDIR%\build\msw\wx_vc%VCver%.sln" ^
+  -noLogo -verbosity:%wxVerb% -maxCpuCount ^
+  -property:UseMultiToolTask=true ^
+  -property:EnableClServerMode=true ^
+  -property:BuildPassReferences=true ^
+  -property:"Configuration=DLL Debug";Platform=Win32 ^
+  -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
+  -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxDIR%\lib\vc_dll\MSBuild_DEBUG_WIN32.log"
+if errorlevel 1 (
+  echo wxWidgets Debug build [101;93mNOT OK[0m
+  goto :buildErr
+)
+echo wxWidgets Debug build OK
+msbuild "%wxDIR%\build\msw\wx_vc%VCver%.sln" ^
+  -noLogo -verbosity:%wxVerb% -maxCpuCount ^
+  -property:DebugSymbols=true^
+  -property:DebugType=pdbonly^
+  -property:UseMultiToolTask=true^
+  -property:EnableClServerMode=true ^
+  -property:BuildPassReferences=true ^
+  -property:"Configuration=DLL Release";Platform=Win32 ^
+  -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
+  -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxDIR%\lib\vc_dll\MSBuild_RELEASE_WIN32.log"
+if errorlevel 1 (
+  echo wxWidgets Release build [101;93mNOT OK[0m
+  goto :buildErr
+)
+echo wxWidgets Release build OK
+
+for /f "tokens=*" %%p in ('dir "%WXDIR%\lib\vc_dll\wxmsw32*.dll" /b') do (
+  ::@echo  copy_if_different "%WXDIR%\lib\vc_dll\%%p" "%CACHE_DIR%\buildwin\wxWidgets\%%~np%%~xp"
+  cmake -E copy_if_different "%WXDIR%\lib\vc_dll\%%p" "%CACHE_DIR%\buildwin\wxWidgets\%%~np%%~xp"
+  if errorlevel 1 (
+    echo wxWidgets is broken and [101;93mNOT OK[0m
+    goto :buildErr
+  )
+)
+for /f "tokens=*" %%p in ('dir "%WXDIR%\lib\vc_dll\wxmsw32*.pdb" /b') do (
+  ::@echo  copy_if_different "%WXDIR%\lib\vc_dll\%%p" "%CACHE_DIR%\buildwin\wxWidgets\%%~np%%~xp"
+  cmake -E copy_if_different "%WXDIR%\lib\vc_dll\%%p" "%CACHE_DIR%\buildwin\wxWidgets\%%~np%%~xp"
+  if errorlevel 1 (
+    echo wxWidgets is broken and [101;93mNOT OK[0m
+    goto :buildErr
+  )
+)
+@echo Copying wxWidgets libraries
+cmake -E copy_directory_if_different "%WXDIR%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets"
+if errorlevel 1 (
+  echo wxWidgets library copy [101;93mNOT OK[0m
+  goto :buildErr
+)
+@echo Copying wxWidgets locale
+cmake -E copy_directory_if_different "%WXDIR%\locale" "%CACHE_DIR%\buildwin\wxWidgets\locale"
+if errorlevel 1 (
+  echo locale copy [101;93mNOT OK[0m
+  goto :buildErr
+)
+::-------------------------------------------------------------
+:: Initialize folders needed to run OpenCPN
+::-------------------------------------------------------------
+@echo ocpn_relwithdebinfo=%ocpn_relwithdebinfo%
+@echo ocpn_release=%ocpn_release%
+@echo ocpn_debug=%ocpn_debug%
+@echo ocpn_minsizerel=%ocpn_minsizerel%
+
+if [%ocpn_debug%]==[1] (
+  if not exist "%OCPN_DIR%\build\.Debug" (mkdir "%OCPN_DIR%\build\.Debug")
+  if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.Debug\.Pack")
+  )
+if [%ocpn_release%]==[1] (
+  if not exist "%OCPN_DIR%\build\.Release" (mkdir "%OCPN_DIR%\build\.Release")
+  if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.Release\.Pack")
+  )
+if [%ocpn_relwithdebinfo%]==[1] (
+  if not exist "%OCPN_DIR%\build\.RelWithDebInfo" (mkdir "%OCPN_DIR%\build\.RelWithDebInfo")
+  if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.RelWithDebInfo\.Pack")
+  )
+if [%ocpn_minsizerel%]==[1] (
+  if not exist "%OCPN_DIR%\build\.MinSizeRel" (mkdir "%OCPN_DIR%\build\.MinSizeRel")
+  if [%ocpn_package%]==[1] (mkdir "%OCPN_DIR%\build\.MinSizeRel\.Pack")
+)
 ::-------------------------------------------------------------
 :: Download and initialize build dependencies
 ::-------------------------------------------------------------
 set "IPHDEST=%CACHE_DIR%\buildwin"
-set "DEST=%CACHE_DIR%\buildwin\iphlpapi.lib"
+set "DEST=%CACHE_DIR%\buildwin\iphlpapi.lib
 if not exist "%DEST%" (
-  if exist "%WindowsSdkDir%\lib\%WindowsSdkVersion%\um\x86\iphlpapi.lib" (
+  if exist "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" (
     if not exist "%IPHDEST%\include" mkdir "%IPHDEST%\include"
     if not exist "%DEST%" (
-    @echo cmake -E copy_if_different "%WindowsSdkDir%\lib\%WindowsSdkVersion%\um\x86\iphlpapi.lib" "%IPHDEST%"
-    cmake -E copy_if_different "%WindowsSdkDir%\lib\%WindowsSdkVersion%\um\x86\iphlpapi.lib" "%IPHDEST%"
-    @echo cmake -E copy_if_different "%WindowsSdkDir%\include\%WindowsSdkVersion%\um\iphlpapi.h" "%IPHDEST%\include"
-    cmake -E copy_if_different "%WindowsSdkDir%\include\%WindowsSdkVersion%\um\iphlpapi.h" "%IPHDEST%\include"
+    @echo cmake -E copy_if_different "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" "%IPHDEST%"
+    cmake -E copy_if_different "%WindowsSdkDir%\lib\%WindowsSdkLibVersion%\um\x86\iphlpapi.lib" "%IPHDEST%"
+    @echo cmake -E copy_if_different "%WindowsSdkDir%\include\%WindowsSdkLibVersion%\um\iphlpapi.h" "%IPHDEST%\include"
+    cmake -E copy_if_different "%WindowsSdkDir%\include\%WindowsSdkLibVersion%\um\iphlpapi.h" "%IPHDEST%\include"
     )
   ) else (
     @echo [101;93mCould not find local copy of iphlpapi library so will try to download one.[0m
@@ -686,7 +695,6 @@ if not exist "%DEST%" (
     set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
     set "URL=%opencpn_support_base%/opencpn-support/raw/files/iphlpapi.lib"
     call :download
-    if errorlevel 1 (if not [%quiet%]==[Y] pause)
   )
   if not exist "%DEST%" (
     echo [101;93mDownload %DEST% failed.[0m
@@ -718,155 +726,23 @@ for /D %%D in (NSIS-Package*) do (set "nsispath=%%~fD")
 @echo nsispath=%nsispath%
 popd
 ::-------------------------------------------------------------
-:: Restore build foldder configuration
-::-------------------------------------------------------------
-
-::-------------------------------------------------------------
-:: Build wxWidgets from sources
-::-------------------------------------------------------------
-if exist "%wxSourceDir%\.git" (
-  if not "[%gitcmd%]"=="[]" (
-    pushd "%wxSourceDir%"
-    "%gitcmd%" submodule update
-    "%gitcmd%" fetch origin %wxVER% --recurse-submodules
-    "%gitcmd%" checkout "%wxVER%" --recurse-submodules
-    popd
-  )
-) else (
-  @echo %wxSourceDir%\.git" not found, skipping git update
-)
-if not exist "%wxDir%" (
-  @echo Error: %wxDir% not found...
-  goto :buildErr
-)
-@echo if not exist "%wxBuildDir%"
-if not exist "%wxBuildDir%" (
-  @echo robocopy /E %wxSourceDir%\build %wxBuildDir%
-  robocopy /E %wxSourceDir%\build %wxBuildDir%
-  @echo Robocopy finished
-)
-@echo Checking wxWidgets libraries...this may take a few minutes...
-set wxVerb=minimal
-@echo ocpn_cmake=%ocpn_cmake%
-if "[%ocpn_cmake%]"=="[1]" (
-  @echo cmake -S "%wxSourceDir%" -B "%wxBuildDir%" -G "%VCstr%" -A Win32 -DwxBUILD_SHARED=ON -DwxBUILD_SAMPLES=OFF -DwxBUILD_TESTS=OFF -DwxBUILD_VENDOR=14x -T v%VCtool% -DCMAKE_CONFIGURATION_TYPES="Debug;RelWithDebInfo" -DCMAKE_CXX_FLAGS=/EHa
-  cmake -S "%wxSourceDir%" -B "%wxBuildDir%" -G "%VCstr%" -A Win32 -DwxBUILD_SHARED=ON -DwxBUILD_SAMPLES=OFF -DwxBUILD_TESTS=OFF -DwxBUILD_VENDOR=14x -T v%VCtool% -DCMAKE_CONFIGURATION_TYPES="Debug;RelWithDebInfo" -DCMAKE_CXX_FLAGS=/EHa
-  if ERRORLEVEL 1 goto :buildErr
-  rem If debug is required build it now
-  if exist "%OCPN_DIR%\build\.Debug" (
-    cmake --build %wxBuildDir% --config=Debug -- /v:%wxVerb% /m:%NUMBER_OF_PROCESSORS% /p:UseMultiToolTask=true;BuildPassReferences=true;EnableClServerMode=true;wxVendor=14x;wxVersionString=32;wxToolKitDllNameSuffix=_vc14x ^
-        /l:FileLogger,Microsoft.Build.Engine;logfile="%wxSourceDir%\MSBuild_Debug_WIN32.log"
-    if ERRORLEVEL 1 (
-      if not [%quiet%]==[Y] pause
-      exit /b 1
-    )
-  )
-  rem Always build config RelWithDebInfo
-  cmake --build %wxBuildDir% --config=RelWithDebInfo -- /v:%wxVerb% /m:%NUMBER_OF_PROCESSORS% /p:UseMultiToolTask=true;BuildPassReferences=true;EnableClServerMode=true;wxVendor=14x;wxVersionString=32;wxToolKitDllNameSuffix=_vc14x ^
-      /l:FileLogger,Microsoft.Build.Engine;logfile="%wxSourceDir%\MSBuild_RelWithDebInfo_WIN32.log"
-  if ERRORLEVEL 1 (
-    if not [%quiet%]==[Y] pause
-    exit /b 1
-  )
-) else (
-  if exist "%wxSourceDir%\build\msw\wx_vc%VCver%.sln" (set "wxSLN=%wxSourceDir%\build\msw\wx_vc%VCver%.sln" && goto :msbuildWX)
-  if exist "%wxSourceDir%\build\msw\wx_vc%VCver%.slnx" (set "wxSLN=%wxSourceDir%\build\msw\wx_vc%VCver%.slnx" && goto :msbuildWX)
-  rem Until wxWidgets catches up with VS2026 we can use the VS2022 solution
-  if exist "%wxSourceDir%\build\msw\wx_vc17.sln" (set "wxSLN=%wxSourceDir%\build\msw\wx_vc17.sln" && goto :msbuildWX)
-  @echo INFO: Could not find "%wxSourceDir%\build\msw\wx_vc%VCver%.sln?"
-  goto :buildErr
-:msbuildWX
-  if exist "%OCPN_DIR%\build\.Debug" (
-    msbuild "%wxSLN%" ^
-      -noLogo -verbosity:%wxVerb% -maxCpuCount ^
-      -property:PlatformToolset=v%VCtool% ^
-      -property:AdditionalOptions="/EHa" ^
-      -property:UseMultiToolTask=true ^
-      -property:EnableClServerMode=true ^
-      -property:BuildPassReferences=true ^
-      -property:"Configuration=DLL Debug";Platform=Win32 ^
-      -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
-      -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxSourceDir%\MSBuild_DEBUG_WIN32.log"
-    if errorlevel 1 (
-      echo wxWidgets Debug build [101;93mNOT OK[0m
-      goto :buildErr
-    )
-    @echo wxWidgets Debug build OK
-  )
-  msbuild "%wxSLN%" ^
-    -noLogo -verbosity:%wxVerb% -maxCpuCount ^
-    -property:PlatformToolset=v%VCtool% ^
-    -property:AdditionalOptions="/EHa" ^
-    -property:Optimize=true ^
-    -property:LinkIncremental=false ^
-    -property:UseMultiToolTask=true ^
-    -property:EnableClServerMode=true ^
-    -property:BuildPassReferences=true ^
-    -property:"Configuration=DLL Release";Platform=Win32 ^
-    -property:wxVendor=14x;wxVersionString=32;wxToolkitDllNameSuffix=_vc14x ^
-    -logger:FileLogger,Microsoft.Build.Engine;logfile="%wxSourceDir%\MSBuild_RELEASE_WIN32.log"
-  if errorlevel 1 (
-    echo wxWidgets Release build [101;93mNOT OK[0m
-    goto :buildErr
-  )
-  echo wxWidgets Release build OK
-)
-robocopy "%wxBuildDir%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets" wxmsw32*.dll /S /E /NFL /NDL /NJH /NJS /NP >NUL
-if %errorlevel% GEQ 8 (
-  @echo Error: robocopy "%wxBuildDir%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets" wxmsw32*.dll /S /E /NFL /NDL /NJH /NJS /NP
-  @echo wxWidgets is broken and [101;93mNOT OK[0m
-  if not [%quiet%]==[Y] pause
-  goto :buildErr
-)
-robocopy "%wxBuildDir%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets" wxbase32*.dll /S /E /NFL /NDL /NJH /NJS /NP >NUL
-if %errorlevel% GEQ 8 (
-  @echo Error: robocopy "%wxBuildDir%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets" wxbase32*.dll /S /E /NFL /NDL /NJH /NJS /NP
-  @echo wxWidgets is broken and [101;93mNOT OK[0m
-  if not [%quiet%]==[Y] pause
-  goto :buildErr
-)
-robocopy "%wxBuildDir%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets" wxmsw32*.pdb /S /E /NFL /NDL /NJH /NJS /NP >NUL
-if %errorlevel% GEQ 8 (
-  @echo Error: robocopy "%wxBuildDir%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets" wxmsw32*.pdb /S /E /NFL /NDL /NJH /NJS /NP
-  @echo wxWidgets is broken and [101;93mNOT OK[0m
-  if not [%quiet%]==[Y] pause
-  goto :buildErr
-)
-robocopy "%wxBuildDir%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets" wxbase32*.pdb /S /E /NFL /NDL /NJH /NJS /NP >NUL
-if %errorlevel% GEQ 8 (
-  @echo Error: robocopy "%wxBuildDir%\lib\vc_dll" "%CACHE_DIR%\buildwin\wxWidgets" wxbase32*.pdb /S /E /NFL /NDL /NJH /NJS /NP
-  @echo wxWidgets is broken and [101;93mNOT OK[0m
-  if not [%quiet%]==[Y] pause
-  goto :buildErr
-)
-robocopy /S /E "%wxBuildDir%\locale" "%CACHE_DIR%\buildwin\wxWidgets\locale" *.* /S /E /NFL /NDL /NJH /NJS /NP >NUL
-if %errorlevel% GEQ 8 (
-  @echo Error: robocopy /S /E "%wxBuildDir%\build\locale" "%CACHE_DIR%\buildwin\wxWidgets\locale" /S /E /NFL /NDL /NJH /NJS /NP
-  @echo wxWidgets is broken and [101;93mNOT OK[0m
-  if not [%quiet%]==[Y] pause
-  goto :buildErr
-)
-@echo wxWidgets builds seem ok
-::-------------------------------------------------------------
 :: Finalize local environment helper script
 ::-------------------------------------------------------------
 @echo Finishing %OCPN_DIR%\buildwin\configdev.bat
-if "[%nsispath%]"=="[]" (goto :addGettext)
+if "[%nsispath%]"==[] (goto :addGettext)
 set "_addpath=%nsispath%\NSIS\;%nsispath%\NSIS\bin\"
 :addGettext
-if "[%gettextpath%]"=="[]" (goto :addPath)
+if "[%gettextpath%]"==[] (goto :addPath)
 set "_addpath=%_addpath%;%gettextpath%\tools\bin\"
 :addPath
 if "[%_addpath%]"=="[]" (goto :skipAddPath)
 @echo path^|find /i "%_addpath%"    ^>nul ^|^| set "path=%path%;%_addpath%" >> "%OCPN_DIR%\buildwin\configdev.bat"
-:skipAddPath
 @echo goto :EOF>> "%OCPN_DIR%\buildwin\configdev.bat"
-@echo type "%OCPN_DIR%\buildwin\configdev.bat"
-type "%OCPN_DIR%\buildwin\configdev.bat"
+:skipAddPath
+endlocal
 ::-------------------------------------------------------------
 :: Setup environment
 ::-------------------------------------------------------------
-endlocal
 if exist "%~dp0..\buildwin\configdev.bat" (call "%~dp0..\buildwin\configdev.bat") else (echo Cannot find configdev.bat&& goto :fail)
 ::-------------------------------------------------------------
 :: Build Release and Debug executables
@@ -876,7 +752,6 @@ if exist "%~dp0..\build\.RelWithDebInfo" (
   set build_type=RelWithDebInfo
   call :ocpnConfig
   if errorlevel 1 (
-    @echo :ocpnConfig->RelWithDebInfo failed
     goto :fail
   )
   set buildTarget=Build
@@ -887,7 +762,6 @@ if exist "%~dp0..\build\.RelWithDebInfo" (
     call :ocpnBuild
   )
   if errorlevel 1 (
-    @echo :ocpnBuild->RelWithDebInfo failed
     goto :fail
   )
   call :restore
@@ -898,7 +772,6 @@ if exist "%~dp0..\build\.Release" (
   set build_type=Release
   call :ocpnConfig
   if errorlevel 1 (
-    @echo :ocpnConfig->Release failed
     goto :fail
   )
   set buildTarget=Build
@@ -909,7 +782,6 @@ if exist "%~dp0..\build\.Release" (
     call :ocpnBuild
   )
   if errorlevel 1 (
-    @echo :ocpnBuild->Release failed
     goto :fail
   )
   call :restore
@@ -918,6 +790,7 @@ if exist "%~dp0..\build\.Release" (
   "%bashcmd%" -c ^
     "tar czf opencpn+%GITHUB_SHA:~0,8%.pdb.tar.gz %CONFIGURATION%/opencpn.pdb"
   @echo off
+
 )
 
 if exist "%~dp0..\build\.Debug" (
@@ -929,8 +802,8 @@ if exist "%~dp0..\build\.Debug" (
   )
   set buildTarget=Build
   if exist "%~dp0..\build\.Debug\.Pack" (
-    rmdir "%~dp0..\build\.Debug\.Pack"
     call :ocpnPack
+    rmdir "%~dp0..\build\.Debug\.Pack"
   ) else (
     call :ocpnBuild
   )
@@ -959,124 +832,63 @@ if exist "%~dp0..\build\.MinSizeRel" (
   )
   call :restore
 )
-
 popd
+set build_type=
+goto :hint
 ::-------------------------------------------------------------
 :: Offer some helpful hints
 ::-------------------------------------------------------------
 :hint
-@echo.
 set build_type=
 set buildTarget=
 set wxVerb=
-set EXE_NAME=devenv.exe
-tasklist /FI "IMAGENAME eq %EXE_NAME%" | find /I "%EXE_NAME%" >nul
-if %ERRORLEVEL%==0 (
-    @echo %EXE_NAME% is running
-    @echo.
-    goto :success
-) else (
-  if exist "%~dp0..\build\OpenCPN.sln" (devenv "%~dp0..\build\OpenCPN.sln" && goto :success)
-  if exist "%~dp0..\build\OpenCPN.slnx" (devenv "%~dp0..\build\OpenCPN.slnx" && goto :success)
-)
-@echo To debug OpenCPN in Visual Studio, do this:
+@echo To build OpenCPN for debugging at command line do this in the folder
+@echo OpenCPN
 @echo.
-if exist "%~dp0..\build\OpenCPN.slnx" (
-  @echo %CD%^> devenv .\build\opencpn.slnx
-) else (
-  @echo %CD%^> devenv .\build\opencpn.sln
-)
-@echo.
-@echo or you can start Visual Studio like this:
-@echo.
-@echo %CD%^> devenv
+@echo  .\buildwin\configdev.bat
+::-------------------------------------------------------------
+@echo  msbuild /noLogo /m -p:Configuration=Debug;Platform=Win32 .\build\opencpn.sln
+@echo  .\build\opencpn.sln
 @echo.
 @echo Now you are ready to start debugging
 @echo.
-rem @echo [101;93mIf you close this CMD prompt and open another be sure to run:[0m
-rem @echo  %CD%\buildwin\configdev.bat
-rem @echo [101;93mfirst, before starting Visual Studio[0m.
+@echo [101;93mIf you close this CMD prompt and open another be sure to run:[0m
+@echo  %CD%\buildwin\configdev.bat
+@echo [101;93mfirst, before starting Visual Studio[0m.
 goto :success
 ::-------------------------------------------------------------
 :: Local subroutines
 ::-------------------------------------------------------------
 :removeTarget
-::-------------------------------------------------------------
-:: Removes a folder or file recursively defined by %target%
-:: If locked (usually by VS/OpenCPN), in interactive mode it will
-:: repeatedly pause and let the user close VS before retrying.
-:: In --Y (non-interactive) mode it tries once and continues with a warning.
-::-------------------------------------------------------------
-@echo Removing %target%
-if not exist "%target%" goto :EOF
-
-:: Initial attempt
-if exist "%target%\" (
-    rd /s /q "%target%" >nul 2>&1
-) else (
-    del /f /q "%target%" >nul 2>&1
+if exist "%target%" echo Removing "%target%"
+if exist "%target%" rmdir /s /q "%target%"
+if exist "%target%" (
+  @echo Could not remove "%target%" folder
+  if [%quiet%]==[Y] (goto :fail)
+  @echo Is Visual Studio IDE or OpenCPN running? If so, please close so we can try again.
+  if not [%quiet%]==[Y] pause
+  @echo Retrying...
+  rmdir /s /q "%target%"
+  if exist "%target%" (
+    @echo Could not remove "%target%". Continuing...
+    exit /b 0
+  ) else (
+    @echo Ok, removed "%target%"
+    exit /b 0
+  )
 )
-if not exist "%target%" ( goto :EOF )
-
-:: If we get here the item is locked
-if [%quiet%]==[Y] (
-    @echo "*** WARNING: Skipped locked item (non-interactive mode): "%target%" ***"
-    goto :EOF
-)
-:: Interactive mode - keep asking user to close VS until it succeeds or they abort with Ctrl+C
-@echo Entering interactive mode
-
-set Retrying=0
-:interactiveRetry
-echo.
-echo ╔═══════════════════════════════════════════════════════════════════╗
-echo ║                                                                   ║
-echo ║   Cannot delete: "%target%"                              ║
-echo ║                                                                   ║
-echo ║   VISUAL STUDIO (or a running OpenCPN instance) is locking it.    ║
-echo ║                                                                   ║
-echo ║   →→→ CLOSE VISUAL STUDIO AND MAKE SURE OPENCPN is shut down ←←←  ║
-echo ║                                                                   ║
-echo ║   The clean/rebuild CANNOT continue properly until this is gone.  ║
-echo ║   Leaving garbage behind may corrupt your next build.             ║
-echo ║                                                                   ║
-echo ╚═══════════════════════════════════════════════════════════════════╝
-echo.
-echo     Press any key to retry deletion (after you have closed VS)...
-echo     Or press Ctrl+C to abort the entire script.
-echo.
-pause >nul
-
-if exist "%target%\" (
-    rd /s /q "%target%" >nul 2>&1
-) else (
-    del /f /q "%target%" >nul 2>&1
-)
-
-set /a Retrying+=1
-if %Retrying% gtr 4 (
-  @echo ╔════════════════════════════════════════╗
-  @echo ║  Warning: Could not delete %target%.   ║
-  @echo ║  Build process may be unstable.        ║
-  @echo ╚════════════════════════════════════════╝
-  goto :EOF
-)
-if exist "%target%" goto :interactiveRetry
-echo     Success - %target% deleted.
-goto :EOF
-
+exit /b 0
 ::-------------------------------------------------------------
 :: Config and build
 ::-------------------------------------------------------------
 :ocpnConfig
-cmake -A Win32 -T v%VCtool% -G "%VCstr%" -S "%~dp0.." -B "%~dp0..\build" ^
+cmake -A Win32 -G "%VCstr%" -S "%~dp0.." -B "%~dp0..\build" ^
   -DCMAKE_GENERATOR_PLATFORM=Win32 ^
   -DCMAKE_BUILD_TYPE=%build_type% ^
   -DwxWidgets_LIB_DIR="%wxWidgets_LIB_DIR%" ^
   -DwxWidgets_ROOT_DIR="%wxWidgets_ROOT_DIR%" ^
-  -DCMAKE_CXX_FLAGS="/MP /EHa /DWIN32" ^
+  -DCMAKE_CXX_FLAGS="/MP /EHsc /DWIN32" ^
   -DCMAKE_C_FLAGS="/MP" ^
-  -DCMAKE_EXE_LINKER_FLAGS="/MAP" ^
   -DOCPN_CI_BUILD:BOOL=OFF ^
   -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
   -DOCPN_BUNDLE_WXDLLS:BOOL=ON ^
@@ -1086,15 +898,16 @@ cmake -A Win32 -T v%VCtool% -G "%VCstr%" -S "%~dp0.." -B "%~dp0..\build" ^
   -DOCPN_BUNDLE_DOCS:BOOL=ON ^
   -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=OFF ^
   -DOCPN_ENABLE_PORTAUDIO:BOOL=OFF ^
-  -DCMAKE_INSTALL_PREFIX="%~dp0..\build\%build_type%" || (
-  cmake -A Win32 -T v%VCtool% -G "%VCstr%" -S "%~dp0.." -B "%~dp0..\build" --debug-find ^
+  -DOCPN_BUILD_TEST:BOOL=OFF ^
+  -DCMAKE_INSTALL_PREFIX="%~dp0..\build\%build_type%"
+if errorlevel 1 (
+  cmake -A Win32 -G "%VCstr%" -S "%~dp0.." -B "%~dp0..\build" --debug-find ^
     -DCMAKE_GENERATOR_PLATFORM=Win32 ^
     -DCMAKE_BUILD_TYPE=%build_type% ^
     -DwxWidgets_LIB_DIR="%wxWidgets_LIB_DIR%" ^
     -DwxWidgets_ROOT_DIR="%wxWidgets_ROOT_DIR%" ^
-    -DCMAKE_CXX_FLAGS="/MP /EHa /DWIN32" ^
+    -DCMAKE_CXX_FLAGS="/MP /EHsc /DWIN32" ^
     -DCMAKE_C_FLAGS="/MP" ^
-    -DCMAKE_EXE_LINKER_FLAGS="/MAP" ^
     -DOCPN_CI_BUILD:BOOL=OFF ^
     -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
     -DOCPN_BUNDLE_WXDLLS:BOOL=ON ^
@@ -1104,32 +917,15 @@ cmake -A Win32 -T v%VCtool% -G "%VCstr%" -S "%~dp0.." -B "%~dp0..\build" ^
     -DOCPN_BUNDLE_DOCS:BOOL=ON ^
     -DOCPN_ENABLE_SYSTEM_CMD_SOUND:BOOL=OFF ^
     -DOCPN_ENABLE_PORTAUDIO:BOOL=OFF ^
-    -DCMAKE_INSTALL_PREFIX="%~dp0..\build\%build_type%" || goto :cmakeErr
+    -DOCPN_BUILD_TEST:BOOL=OFF ^
+    -DCMAKE_INSTALL_PREFIX="%~dp0..\build\%build_type%"
+  if errorlevel 1 goto :cmakeErr
 )
-goto :EOF
-
+exit /b 0
 :ocpnBuild
 @echo build_type=%build_type%
-if exist "%~dp0..\build\ALL_BUILD.vcxproj" (set oBLD="%~dp0..\build\ALL_BUILD.vcxproj" && goto :slnGo)
-@echo [101;93mNO PROJECT FOUND[0m
-goto :buildErr
-:slnGo
 msbuild ^
-  -property:Configuration=%build_type%;Platform=Win32;GenerateMapFile=true ^
-  -target:%buildTarget% ^
-  -noLogo ^
-  -verbosity:minimal ^
-  -maxCpuCount ^
-  -property:UseMultiToolTask=true ^
-  -property:EnableClServerMode=true ^
-  -property:BuildPassReferences=true ^
-  -property:CL="/arch:SSE" ^
-  /l:FileLogger,Microsoft.Build.Engine;logfile=%CD%\MSBuild_%build_type%_WIN32_Debug.log ^
-  "%oBLD%"
-if errorlevel 1 (@echo msbuild %oBLD% problem & goto :buildErr)
-@echo Install local/portable environment
-msbuild ^
-  -property:Configuration=%build_type%;Platform=Win32;GenerateMapFile=true ^
+  -property:Configuration=%build_type%;Platform=Win32 ^
   -target:%buildTarget% ^
   -noLogo ^
   -verbosity:minimal ^
@@ -1140,7 +936,7 @@ msbuild ^
   -property:CL="/arch:SSE" ^
   /l:FileLogger,Microsoft.Build.Engine;logfile=%CD%\MSBuild_%build_type%_WIN32_Debug.log ^
   "%~dp0..\build\INSTALL.vcxproj"
-if errorlevel 1 (@echo msbuild "%~dp0..\build\INSTALL.vcxproj" problem & goto :buildErr)
+if errorlevel 1 goto :buildErr
 ::
 :: Delete the .mo files because they are only valid for this build Configuration.
 :: They will not be rebuilt for a different configuration unless we delete them.
@@ -1148,15 +944,10 @@ del /F "%~dp0..\build\*.mo"
 set buildTarget=
 @echo OpenCPN %build_type% build successful!
 @echo.
-goto :EOF
+exit /b 0
 
 :ocpnPack
 @echo build_type=%build_type%
-if exist "%~dp0..\build\OpenCPN.vcxproj" (set oBLD="%~dp0..\build\ALL_BUILD.vcxproj" && goto :pckGo)
-@echo [101;93mNO ALL_BUILD PROJECT FOUND[0m
-goto :buildErr
-:pckGo
-@echo build_type=%build_type%
 msbuild ^
   -property:Configuration=%build_type%;Platform=Win32 ^
   -target:%buildTarget% ^
@@ -1168,19 +959,8 @@ msbuild ^
   -property:BuildPassReferences=true ^
   -property:CL="/arch:SSE" ^
   /l:FileLogger,Microsoft.Build.Engine;logfile=%CD%\MSBuild_%build_type%_WIN32_Debug.log ^
-  "%oBLD%" || goto :buildErr
-msbuild ^
-  -property:Configuration=%build_type%;Platform=Win32 ^
-  -target:%buildTarget% ^
-  -noLogo ^
-  -verbosity:minimal ^
-  -maxCpuCount ^
-  -property:UseMultiToolTask=true ^
-  -property:EnableClServerMode=true ^
-  -property:BuildPassReferences=true ^
-  -property:CL="/arch:SSE" ^
-  /l:FileLogger,Microsoft.Build.Engine;logfile=%CD%\MSBuild_%build_type%_WIN32_Debug.log ^
-  "%~dp0..\build\PACKAGE.vcxproj" || goto :buildErr
+  "%~dp0..\build\PACKAGE.vcxproj"
+if errorlevel 1 goto :buildErr
 :: Move the build package file to config build folder
 move "%~dp0..\build\*.exe" "%~dp0..\build\%build_type%"
 ::
@@ -1190,7 +970,7 @@ del /F "%~dp0..\build\*.mo"
 set buildTarget=
 @echo OpenCPN %build_type% build successful!
 @echo.
-goto :EOF
+exit /b 0
 
 ::-------------------------------------------------------------
 :: CMake failed
@@ -1219,13 +999,11 @@ exit /b 1
 :: Backup user configuration
 ::-------------------------------------------------------------
 :backup
-if not exist "%~dp0..\build\%folder%\" goto :bexit
+if not exist "%~dp0..\build\%folder%" goto :bexit
 @echo Backing up %~dp0..\build\%folder%
 if not exist "%~dp0..\tmp" (mkdir "%~dp0..\tmp")
 if not exist "%~dp0..\tmp\%folder%" (mkdir "%~dp0..\tmp\%folder%")
 @echo backing up %folder%
-if exist "%~dp0..\build\.%folder%\" mkdir "%~dp0..\tmp\.%folder%"
-if exist "%~dp0..\build\.%folder%\.Cmake\" mkdir "%~dp0..\tmp\.%folder%\.Cmake"
 if exist "%~dp0..\build\%folder%\opencpn.ini" (xcopy /Q /Y "%~dp0..\build\%folder%\opencpn.ini" "%~dp0..\tmp\%folder%")
 if errorlevel 1 (
   @echo xcopy /Q /Y "%~dp0..\build\%folder%\opencpn.ini" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
@@ -1247,14 +1025,13 @@ if errorlevel 1 (
 ) else (
   echo xcopy /Q /Y "%~dp0..\build\%folder%\*.log" "%~dp0..\tmp\%folder%" OK
 )
-REM Don't archive the chart database as it can (should?) be recreated after full rebuild
-REM xcopy /Q /Y "%~dp0..\build\%folder%\*" "%~dp0..\tmp\%folder%"
-REM if errorlevel 1 (
-  REM @echo xcopy /Q /Y "%~dp0..\build\%folder%\*.dat" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
-  REM if not [%quiet%]==[Y] pause
-REM ) else (
-  REM echo xcopy /Q /Y "%~dp0..\build\%folder%\*.dat" "%~dp0..\tmp\%folder%" OK
-REM )
+xcopy /Q /Y "%~dp0..\build\%folder%\*.dat" "%~dp0..\tmp\%folder%"
+if errorlevel 1 (
+  @echo xcopy /Q /Y "%~dp0..\build\%folder%\*.dat" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
+  if not [%quiet%]==[Y] pause
+) else (
+  echo xcopy /Q /Y "%~dp0..\build\%folder%\*.dat" "%~dp0..\tmp\%folder%" OK
+)
 xcopy /Q /Y "%~dp0..\build\%folder%\*.csv" "%~dp0..\tmp\%folder%"
 if errorlevel 1 (
   @echo xcopy /Q /Y "%~dp0..\build\%folder%\*.csv" "%~dp0..\tmp\%folder%" [101;93mNOT OK[0m
@@ -1296,7 +1073,7 @@ if errorlevel 1 (
 :breturn
 @echo Backup returning
 :bexit
-goto :EOF
+exit /b 0
 ::-------------------------------------------------------------
 :: Restore user configuration to build folder
 ::-------------------------------------------------------------
@@ -1304,37 +1081,37 @@ goto :EOF
 :: Called from withing build folder
 if not exist "%~dp0..\tmp\%build_type%" (
   @echo INFO: Did not find "%~dp0..\tmp\%build_type%"
-  goto :EOF
+  exit /b 0
 )
 @echo Restoring %build_type% settings from "%~dp0..\tmp\%build_type%"
 cmake -E copy_directory "%~dp0..\tmp\%build_type%" "%~dp0..\build\%build_type%"
 if errorlevel 1 (
   @echo Restore %build_type% failed
   if not [%quiet%]==[Y] pause
-  goto :EOF
+  exit /b 0
 ) else (
   @echo Restore successful
   rmdir /s /q "%~dp0..\tmp\%build_type%"
 )
 :rreturn
 @echo restore returning
-goto :EOF
+exit /b 0
 ::-------------------------------------------------------------
 :: Download URL to a DEST folder
 ::-------------------------------------------------------------
 :download
 @echo URL=%URL%
 @echo DEST=%DEST%
-if exist ""%DEST%"" (
+if exist %DEST% (
   echo Download %DEST% already exists.
-  exit /b 1
+  exit /b 0
 )
-"%PSH%" -Command [System.Net.ServicePointManager]::MaxServicePointIdleTime = 5000000; ^
+%PSH% -Command [System.Net.ServicePointManager]::MaxServicePointIdleTime = 5000000; ^
   if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; ^
   Invoke-WebRequest '%URL%' -OutFile '%DEST%'; ^
   exit $LASTEXITCODE
 if errorlevel 1 (echo Download failed && exit /b 1) else (echo Download OK)
-goto :EOF
+exit /b 0
 ::-------------------------------------------------------------
 :: Explode SOURCE zip file to DEST folder
 ::-------------------------------------------------------------
@@ -1342,19 +1119,18 @@ goto :EOF
 @echo SOURCE=%SOURCE%
 @echo DEST=%DEST%
 :: @echo "%PSH% -Command if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; Expand-Archive -Force -Path '%SOURCE%' -DestinationPath '%DEST%';
-%PSH% -Command ^
-  if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; ^
-  Expand-Archive -Force -Path '%SOURCE%' -DestinationPath '%DEST%'; ^
-  exit $LASTEXITCODE
+
+
+%PSH% -Command if ($PSVersionTable.PSVersion.Major -lt 6) { $ProgressPreference = 'SilentlyContinue' }; Expand-Archive -Force -Path '%SOURCE%' -DestinationPath '%DEST%'; exit $LASTEXITCODE
 if errorlevel 1 (echo Explode failed && exit /b 1) else (echo Unzip OK)
-goto :EOF
+exit /b 0
 ::-------------------------------------------------------------
 :: Execution time measuring functions
 ::-------------------------------------------------------------
 :StartTimer
 :: Store start time
-set winConfigStartTime=%TIME%
-for /f "usebackq tokens=1-4 delims=:., " %%f in (`echo %winConfigStartTime: =0%`) do set /a Start100S=1%%f*360000+1%%g*6000+1%%h*100+1%%i-36610100
+set winConfigStartTIME=%TIME%
+for /f "usebackq tokens=1-4 delims=:., " %%f in (`echo %winConfigStartTIME: =0%`) do set /a Start100S=1%%f*360000+1%%g*6000+1%%h*100+1%%i-36610100
 goto :EOF
 
 :StopTimer
@@ -1365,7 +1141,7 @@ for /f "usebackq tokens=1-4 delims=:., " %%f in (`echo %winConfigStopTIME: =0%`)
 if %Stop100S% LSS %Start100S% set /a Stop100S+=8640000
 set /a winConfigTookTime=%Stop100S%-%Start100S%
 set winConfigTookTimePadded=0%winConfigTookTime%
-goto :EOF
+exit /b 0
 
 :DisplayTimerResult
 :: Show timer start/stop/delta
@@ -1376,7 +1152,7 @@ set winConfigStartTime=
 set winConfigStopTime=
 set winConfigTookTime=
 set winConfigTookTimePadded=
-goto :EOF
+exit /b 0
 
 :: Failure exit
 :fail
@@ -1388,7 +1164,7 @@ exit /b 1
 :success
 call :StopTimer
 call :DisplayTimerResult
-goto :EOF
+exit /b 0
 :: ***********
 :: * THE END *
 :: ***********

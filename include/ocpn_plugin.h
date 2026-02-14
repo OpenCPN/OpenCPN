@@ -43,28 +43,23 @@
 #define DECL_IMP
 #endif
 
-#include <cstdint>
-#include <functional>
-#include <memory>
-#include <string>
-#include <vector>
-#include <unordered_map>
-
-#include <wx/arrstr.h>
-#include <wx/aui/framemanager.h>
-#include <wx/bitmap.h>
-#include <wx/colour.h>
-#include <wx/cursor.h>
+#include <wx/xml/xml.h>
 #include <wx/dcmemory.h>
 #include <wx/dialog.h>
 #include <wx/event.h>
-#include <wx/fileconf.h>
-#include <wx/gdicmn.h>
 #include <wx/menuitem.h>
-#include <wx/notebook.h>
-#include <wx/region.h>
-#include <wx/scrolwin.h>
-#include <wx/xml/xml.h>
+#include <wx/gdicmn.h>
+
+#ifdef ocpnUSE_SVG
+#include <wx/bitmap.h>
+#endif  // ocpnUSE_SVG
+
+#include <cstdint>
+#include <memory>
+#include <vector>
+#include <unordered_map>
+
+class wxGLContext;
 
 //    This is the most modern API Version number
 //    It is expected that the API will remain downward compatible, meaning that
@@ -73,10 +68,12 @@
 #define API_VERSION_MAJOR 1
 #define API_VERSION_MINOR 21
 
-//  Using the correct #include <wx/glcanvas.h> causes compilation errors
-//  on windows, probably errors in bundled and partly modified GL headers.
-//  For now, use this as work around.
-class wxGLContext;
+//    Fwd Definitions
+class wxFileConfig;
+class wxNotebook;
+class wxFont;
+class wxAuiManager;
+class wxScrolledWindow;
 class wxGLCanvas;
 
 //---------------------------------------------------------------------------------------------------------
@@ -163,8 +160,6 @@ class wxGLCanvas;
     Allows plugins to clean up resources and save state. */
 #define WANTS_PRESHUTDOWN_HOOK 0x00400000
 
-#define WANTS_TIDECURRENT_CLICK 0x00800000
-
 /**
  * Overlay rendering priorities determine the layering order of plugin graphics.
  *
@@ -219,32 +214,22 @@ class wxGLCanvas;
  */
 #define OVERLAY_OVER_UI 128
 
-/**
- * Lowest priority for overlays to render above all basic charts.
- */
-#define OVERLAY_CHARTS 256
-
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
 //----------------------------------------------------------------------------------------------------------
 /**
- * Color schemes for different lighting conditions.
- *
- * @note: When implementing SetColorScheme(), use GetGlobalColor() with
- * predefined color names for automatic adaptation across all schemes.
+ * Enumeration of color schemes.
  */
 enum PI_ColorScheme {
-  /** RGB color scheme, unmodified colors. */
-  PI_GLOBAL_COLOR_SCHEME_RGB,
-  /** Day color scheme, optimized for bright ambient light. */
-  PI_GLOBAL_COLOR_SCHEME_DAY,
-  /** Dusk color scheme, optimized for low ambient light. */
-  PI_GLOBAL_COLOR_SCHEME_DUSK,
-  /** Night/dark color scheme, optimized for dark conditions with minimal impact
-     on night vision. */
-  PI_GLOBAL_COLOR_SCHEME_NIGHT,
-  /** Number of color schemes, used for bounds checking. */
-  PI_N_COLOR_SCHEMES
+  PI_GLOBAL_COLOR_SCHEME_RGB,    //!< RGB color scheme, unmodified colors
+  PI_GLOBAL_COLOR_SCHEME_DAY,    //!< Day color scheme, optimized for bright
+                                 //!< ambient light
+  PI_GLOBAL_COLOR_SCHEME_DUSK,   //!< Dusk color scheme, optimized for low
+                                 //!< ambient light
+  PI_GLOBAL_COLOR_SCHEME_NIGHT,  //!< Night color scheme, optimized for dark
+                                 //!< conditions with minimal impact on night
+                                 //!< vision
+  PI_N_COLOR_SCHEMES  //!< Number of color schemes, used for bounds checking
 };
 
 /**
@@ -565,11 +550,11 @@ public:
    * (day/dusk/night). Chart plugins should update their rendering colors and
    * styles to match the specified scheme.
    *
-   * @param cs New color scheme to use:
-   *   - PI_GLOBAL_COLOR_SCHEME_RGB: RGB color scheme
-   *   - PI_GLOBAL_COLOR_SCHEME_DAY: Day color scheme
-   *   - PI_GLOBAL_COLOR_SCHEME_DUSK: Dusk/twilight color scheme
-   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT: Night/dark color scheme
+   * @param cs Color scheme to use:
+   *        - PI_GLOBAL_COLOR_SCHEME_RGB (0): RGB color scheme
+   *        - PI_GLOBAL_COLOR_SCHEME_DAY (1): Day color scheme
+   *        - PI_GLOBAL_COLOR_SCHEME_DUSK (2): Dusk/twilight color scheme
+   *        - PI_GLOBAL_COLOR_SCHEME_NIGHT (3): Night/dark color scheme
    * @param bApplyImmediate True to immediately refresh display, False to defer
    *
    * @note If bApplyImmediate is true, any cached rendering should be
@@ -1268,28 +1253,6 @@ protected:
 //    Declare an array of PlugIn_AIS_Targets
 WX_DEFINE_ARRAY_PTR(PlugIn_AIS_Target *, ArrayOfPlugIn_AIS_Targets);
 
-// Support for plugin Tide/Current access
-typedef enum TideStationType {
-  TIDE_STATION = 0,
-  CURRENT_STATION
-} _TideStationType;
-
-struct TCClickInfo {
-  TideStationType point_type;
-  int index;
-  std::string name;
-  int tz_offset_minutes;
-  std::function<bool(time_t, int, float &, float &)> getTide;
-};
-
-// Tide query API for plugins
-struct PlugIn_TideStation {
-  int index;
-  char name[90];
-  double lat;
-  double lon;
-};
-
 /**
  * Base class for OpenCPN plugins.
  *
@@ -1685,12 +1648,9 @@ public:
    * modes. Plugins should update their UI colors to match the new scheme.
    *
    * @param cs New color scheme to use:
-   *   - PI_GLOBAL_COLOR_SCHEME_RGB: Unmodified RGB colors
-   *   - PI_GLOBAL_COLOR_SCHEME_DAY: Optimized for bright conditions
-   *   - PI_GLOBAL_COLOR_SCHEME_DUSK: Optimized for low light
-   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT: Optimized for dark conditions
-   *
-   * @note Follow the patterns documented in the PI_ColorScheme enum.
+   *   - PI_GLOBAL_COLOR_SCHEME_DAY
+   *   - PI_GLOBAL_COLOR_SCHEME_DUSK
+   *   - PI_GLOBAL_COLOR_SCHEME_NIGHT
    */
   virtual void SetColorScheme(PI_ColorScheme cs);
 
@@ -2301,7 +2261,6 @@ class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
 public:
   opencpn_plugin_121(void *pmgr);
   virtual void UpdateFollowState(int canvas_index, bool state);
-  virtual void OnTideCurrentClick(TCClickInfo info);
 };
 
 //------------------------------------------------------------------
@@ -2603,19 +2562,13 @@ extern "C" DECL_EXP wxFileConfig *GetOCPNConfigObject(void);
 extern "C" DECL_EXP void RequestRefresh(wxWindow *);
 
 /**
- * Gets a functionally-named color for a specific UI purpose.
+ * Gets a global color value.
  *
- * Retrieves colors by their functional role (e.g., "DILG3" for text, "URED"
- * for vessels) that automatically adapt to current lighting conditions
- * (Day/Dusk/Night modes).
+ * Retrieves color values from OpenCPN's color scheme system.
  *
- * @param colorName Functional color identifier.
- * @param pcolour Pointer to wxColour to receive the adapted color value.
- * @return True if color was found and retrieved successfully, false if color
- *         name is unknown (returns grey fallback color).
- *
- * @see gui/src/ocpn_frame.cpp for color scheme definitions and available color
- * names.
+ * @param colorName Name of the color to retrieve
+ * @param pcolour Pointer to wxColour to receive the color value
+ * @return True if color was found, false if not
  */
 extern "C" DECL_EXP bool GetGlobalColor(wxString colorName, wxColour *pcolour);
 
@@ -3221,35 +3174,6 @@ extern DECL_EXP double toUsrDepth_Plugin(double m_depth, int unit = -1);
  * @return Depth in meters
  */
 extern DECL_EXP double fromUsrDepth_Plugin(double usr_depth, int unit = -1);
-
-/**
- * Gets display string for user's preferred height unit.
- *
- * @param unit Override unit choice (-1 for user preference):
- *             0=meters, 1=feet
- * @return Localized unit string (e.g. "m", "ft")
- */
-extern DECL_EXP wxString getUsrHeightUnit_Plugin(int unit = -1);
-
-/**
- * Converts meters to user's preferred height unit.
- *
- * @param m_height Height in meters
- * @param unit Override unit choice (-1 for user preference):
- *             0=meters, 1=feet
- * @return Height in user's preferred unit
- */
-extern DECL_EXP double toUsrHeight_Plugin(double m_height, int unit = -1);
-
-/**
- * Converts from user's preferred height unit to meters.
- *
- * @param usr_height Height in user's unit
- * @param unit Override unit choice (-1 for user preference):
- *             0=meters, 1=feet
- * @return Height in meters
- */
-extern DECL_EXP double fromUsrHeight_Plugin(double usr_height, int unit = -1);
 
 /**
  * Parse a formatted coordinate string to get decimal degrees.
@@ -6462,20 +6386,10 @@ GetAttributes(DriverHandle handle);
 /**
  * Send a non-NMEA2000 message. The call is not blocking.
  * @param handle Obtained from GetActiveDrivers()
- * @param payload Message data, for example a complete Nmea0183 message.<br/>
+ * @param payload Message data, for example a complete Nmea0183 message.
  *        From 1.19: if the handle "protocol" attribute is "internal" it is
  *        parsed as <id><space><message> where the id is used when listening/
- *        subscribing to message.<br/>
- *        From 5.12.4: if handle "protocol" attribute is "loopback" it is
- *        parsed as one of
- *          - "signalk" <source> <context_self> <json payload>
- *          - "nmea0183" <source> <0183id> <n0183 sentence>
- *          - "nmea2000" <source> <PGN> <hex encoded 2000 payload> <br/><br/>
- *        <source> is the interface which is tagged as receiving interface.
- *        must not contain spaces <br/>
- *        <hex encoded payload> is bytes separated by space e.g. "0f ff 8 3e"
- *        <br/>
- *
+ *        subscribing to message.
  * @return value number of bytes queued for transmission.
  */
 extern DECL_EXP CommDriverResult WriteCommDriver(
@@ -7224,157 +7138,74 @@ extern DECL_EXP PI_Comm_Status GetConnState(const std::string &iface,
 extern "C" DECL_EXP int AddCanvasContextMenuItemExt(
     wxMenuItem *pitem, opencpn_plugin *pplugin, const std::string object_type);
 
-/** Empty, virtual base class for HostApi versions. */
-class HostApi {
-public:
-  virtual ~HostApi() = default;
-};
+//  Plugin API121 Utility functions
 
-/**
- * HostApi factory,
- * @return Last known HostApi instance.
- */
-extern DECL_EXP std::unique_ptr<HostApi> GetHostApi();
+extern DECL_EXP wxString DropMarkPI(double lat, double lon);
+extern DECL_EXP wxString RouteCreatePI(int canvas_index, bool start);
+extern DECL_EXP wxString NavToHerePI(double lat, double lon);
+extern DECL_EXP bool ActivateRoutePI(wxString route_guid, bool activate);
 
-// To gain access to api121, do something like this:
-// auto host_api = std::move(GetHostApi());
-// auto api_121 = std::dynamic_pointer_cast<HostApi121>(host_api);
+extern DECL_EXP void EnableDefaultConsole(bool enable);
+extern DECL_EXP void EnableDefaultContextMenus(bool enable);
 
-class HostApi121 : public HostApi {
-public:
-  HostApi121()
-      : HostApi(),
-        kContextMenuDisableWaypoint(1),
-        kContextMenuDisableRoute(2),
-        kContextMenuDisableTrack(4),
-        kContextMenuDisableAistarget(8) {}
-  ~HostApi121() override = default;
+extern DECL_EXP void SetMinZoomScale(double min_scale);
+extern DECL_EXP void SetMaxZoomScale(double max_scale);
 
-  const int kContextMenuDisableWaypoint;
-  const int kContextMenuDisableRoute;
-  const int kContextMenuDisableTrack;
-  const int kContextMenuDisableAistarget;
+extern DECL_EXP wxBitmap GetObjectIcon_PlugIn(const wxString &name);
 
-  enum class PiContextObjectType {
-    kObjectChart = 0,
-    kObjectRoutepoint,
-    kObjectRoutesegment,
-    kObjectTracksegment,
-    kObjectAisTarget,
-    kObjectUnknown
-  };
+extern DECL_EXP void SetDepthUnitVisible(bool bviz);
+extern DECL_EXP void SetOverzoomFlagVisible(bool bviz);
 
-  struct PiPointContext {
-    PiContextObjectType object_type;
-    std::string object_ident;
-  };
+extern DECL_EXP bool IsRouteActive(wxString route_guid);
+extern DECL_EXP void SetBoatPosition(double zlat, double zlon);
 
-  // Extended plugin route
-  class Route : public PlugIn_Route_ExV2 {
-  public:
-    Route()
-        : m_PlannedSpeed(0),
-          m_Colour(""),
-          m_style(wxPENSTYLE_SOLID),
-          m_PlannedDeparture(wxDateTime::Now()),
-          m_TimeDisplayFormat("UTC") {}
+extern DECL_EXP void RouteInsertWaypoint(int canvas_index, wxString route_guid,
+                                         double zlat, double zlon);
+extern DECL_EXP void RouteAppendWaypoint(int canvas_index, wxString route_guid);
+extern DECL_EXP void FinishRoute(int canvas_index);
+extern DECL_EXP bool IsRouteBeingCreated(int canvas_index);
+extern DECL_EXP bool AreRouteWaypointNamesVisible(wxString route_guid);
+extern DECL_EXP void ShowRouteWaypointNames(wxString route_guid, bool show);
+extern DECL_EXP void NavigateToWaypoint(wxString waypoint_guid);
+extern DECL_EXP bool DoMeasurePI(int canvas_index, bool start);
+extern DECL_EXP bool IsMeasureActive(int canvas_index);
+extern DECL_EXP void CancelMeasure(int canvas_index);
 
-    ~Route() override {
-      if (pWaypointList) {
-        pWaypointList->DeleteContents(true);
-        delete pWaypointList;
-        pWaypointList = NULL;
-      }
-    }
+// AIS related
+extern DECL_EXP bool IsAISTrackVisible(
+    wxString ais_mmsi);  // for Show/Hide Target Track
+extern DECL_EXP void AISToggleShowTrack(
+    wxString ais_mmsi);  // for Show/Hide Target Track
+extern DECL_EXP bool IsAIS_CPAVisible(
+    wxString ais_mmsi);  // for Show/Hide Target CPA
+extern DECL_EXP void AISToggleShowCPA(
+    wxString ais_mmsi);  // for Show/Hide Target CPA
+extern DECL_EXP void ShowAISTargetQueryDialog(
+    int canvas_index,
+    wxString ais_mmsi);                                    // for Target Query
+extern DECL_EXP void ShowAISTargetList(int canvas_index);  // for Target List
 
-    double m_PlannedSpeed;
-    wxString m_Colour;
-    wxPenStyle m_style;
-    wxDateTime m_PlannedDeparture;
-    wxString m_TimeDisplayFormat;
-  };
+//  Plugin Context Menu support
+typedef enum _PI_ContextObjectType {
+  OBJECT_CHART = 0,
+  OBJECT_ROUTEPOINT,
+  OBJECT_ROUTESEGMENT,
+  OBJECT_AISTARGET,
+  OBJECT_UNKNOWN
+} PI_ContextObjectType;
 
-  virtual wxString DropMarkPI(double lat, double lon);
-  virtual wxString RouteCreatePI(int canvas_index, bool start);
-  virtual wxString NavToHerePI(double lat, double lon);
-  virtual bool ActivateRoutePI(wxString route_guid, bool activate);
+typedef struct _PI_PointContext {
+  _PI_ContextObjectType object_type;
+  std::string object_ident;
+} PI_PointContext;
 
-  virtual void EnableDefaultConsole(bool enable);
-  virtual void EnableDefaultContextMenus(bool enable);
+extern DECL_EXP std::shared_ptr<PI_PointContext> GetContextAtPoint(
+    int x, int y, int canvas_index);
 
-  virtual void SetMinZoomScale(double min_scale);
-  virtual void SetMaxZoomScale(double max_scale);
-
-  virtual wxBitmap GetObjectIcon_PlugIn(const wxString &name);
-
-  virtual void SetDepthUnitVisible(bool bviz);
-  virtual void SetOverzoomFlagVisible(bool bviz);
-
-  virtual bool IsRouteActive(wxString route_guid);
-  virtual void SetBoatPosition(double zlat, double zlon);
-
-  virtual void RouteInsertWaypoint(int canvas_index, wxString route_guid,
-                                   double zlat, double zlon);
-  virtual void RouteAppendWaypoint(int canvas_index, wxString route_guid);
-  virtual void FinishRoute(int canvas_index);
-  virtual bool IsRouteBeingCreated(int canvas_index);
-  virtual bool AreRouteWaypointNamesVisible(wxString route_guid);
-  virtual void ShowRouteWaypointNames(wxString route_guid, bool show);
-  virtual void NavigateToWaypoint(wxString waypoint_guid);
-  virtual bool DoMeasurePI(int canvas_index, bool start);
-  virtual bool IsMeasureActive(int canvas_index);
-  virtual void CancelMeasure(int canvas_index);
-
-  // AIS related
-  // for Show/Hide Target Track
-  virtual bool IsAISTrackVisible(const wxString &ais_mmsi) const;
-  // for Show/Hide Target Track
-  virtual void AISToggleShowTrack(const wxString &ais_mmsi);
-  // for Show/Hide Target CPA
-  virtual bool IsAIS_CPAVisible(const wxString &ais_mmsi) const;
-  // for Show/Hide Target CPA
-  virtual void AISToggleShowCPA(const wxString &ais_mmsi);
-  // for Target Query
-  virtual void ShowAISTargetQueryDialog(int canvas_index,
-                                        const wxString &ais_mmsi);
-  // for Target List
-  virtual void ShowAISTargetList(int canvas_index);
-  virtual std::shared_ptr<PiPointContext> GetContextAtPoint(int x, int y,
-                                                            int canvas_index);
-
-  // Extended Chart table management support
-  virtual void AddNoShowDirectory(std::string chart_dir);
-  virtual void RemoveNoShowDirectory(std::string chart_dir);
-  virtual void ClearNoShowVector();
-  virtual const std::vector<std::string> &GetNoShowVector();
-  virtual bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family);
-
-  // Enhanced AIS Target List support
-  virtual void CenterToAisTarget(wxString ais_mmsi);
-  virtual void AisTargetCreateWpt(wxString ais_mmsi);
-  virtual void AisShowAllTracks(bool show);
-  virtual void AisToggleTrack(wxString ais_mmsi);
-
-  virtual int GetContextMenuMask();
-  virtual void SetContextMenuMask(int mask);
-
-  // Enhanced Track support
-  virtual void SetTrackVisibiiity(const wxString &track_GUID, bool viz);
-
-  // Extended plugin route, V3
-  /** Add route to database, updated version of AddPlugInRouteExV2. */
-  virtual bool AddRoute(Route *route, bool permanent = true);
-
-  /** Update database route, updated version of UpdatePlugInRouteExV2 */
-  virtual bool UpdateRoute(Route *route);
-
-  /** Retrieve route from database */
-  virtual std::unique_ptr<HostApi121::Route> GetRoute(const wxString &guid);
-
-  // Enhanced Tide query support.
-  virtual bool GetNearestTideStation(double lat, double lon,
-                                     PlugIn_TideStation *station);
-  virtual bool GetTideHeight(int stationIndex, time_t time, float *height);
-};
+// Extended Chart table management support
+extern DECL_EXP void AddNoShowDirectory(std::string chart_dir);
+extern DECL_EXP void RemoveNoShowDirectory(std::string chart_dir);
+extern DECL_EXP void ClearNoShowVector();
+extern DECL_EXP const std::vector<std::string> &GetNoShowVector();
 
 #endif  //_PLUGIN_H_

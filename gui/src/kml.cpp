@@ -1,6 +1,12 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Read and write KML Format
+ *(http://en.wikipedia.org/wiki/Keyhole_Markup_Language) Author:   Jesper
+ *Weissglas
+ *
+ ***************************************************************************
  *   Copyright (C) 2012 by David S. Register                               *
- *   Copyright (C) 2012 Jesper Weissglass                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,16 +22,12 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- **************************************************************************/
-
-/**
- * \file
+ ***************************************************************************
  *
- * Implement kml.h -- Read and write KML language
+ *
  */
 
 #include "config.h"
-#include "gl_headers.h"  // Must come before anything using GL stuff
 
 #include <wx/wxprec.h>
 
@@ -34,23 +36,19 @@
 #endif
 
 #include <vector>
-#include <sstream>
-#include <string>
 
-#include <wx/clipbrd.h>
-#include <wx/datetime.h>
 #include <wx/file.h>
-#include <wx/log.h>
-#include <wx/string.h>
+#include <wx/datetime.h>
+#include <wx/clipbrd.h>
 
 #include "model/ocpn_types.h"
-#include "model/own_ship.h"
-#include "model/route.h"
-#include "model/track.h"
-
-#include "kml.h"
 #include "navutil.h"
 #include "tinyxml.h"
+#include "kml.h"
+#include "model/track.h"
+#include "model/route.h"
+#include "ocpn_frame.h"
+#include "model/own_ship.h"
 
 int Kml::seqCounter = 0;
 bool Kml::insertQtVlmExtendedData = false;
@@ -58,7 +56,7 @@ bool Kml::insertQtVlmExtendedData = false;
 int Kml::ParseCoordinates(TiXmlNode* node, dPointList& points) {
   TiXmlElement* e = node->FirstChildElement("coordinates");
   if (!e) {
-    wxString msg("KML Parser found no <coordinates> for the element: ");
+    wxString msg(_T("KML Parser found no <coordinates> for the element: "));
     msg << wxString(node->ToElement()->Value(), wxConvUTF8);
     wxLogMessage(msg);
     return 0;
@@ -131,7 +129,7 @@ KmlPastebufferType Kml::ParseTrack(TiXmlNode* node, wxString& name) {
       trackpoint = parsedTrack->GetPoint(i);
       if (!trackpoint) continue;
       whenTime.ParseFormat(wxString(when->GetText(), wxConvUTF8),
-                           "%Y-%m-%dT%H:%M:%SZ");
+                           _T("%Y-%m-%dT%H:%M:%SZ"));
       trackpoint->SetCreateTime(whenTime);
       i++;
     }
@@ -152,15 +150,15 @@ KmlPastebufferType Kml::ParseOnePlacemarkPoint(TiXmlNode* node,
   }
 
   if (newLat == 0.0 && newLon == 0.0) {
-    wxString msg("KML Parser failed to convert <Point> coordinates.");
+    wxString msg(_T("KML Parser failed to convert <Point> coordinates."));
     wxLogMessage(msg);
     return KML_PASTE_INVALID;
   }
-  wxString pointName = "";
+  wxString pointName = wxEmptyString;
   TiXmlElement* e = node->Parent()->FirstChild("name")->ToElement();
   if (e) pointName = wxString(e->GetText(), wxConvUTF8);
 
-  wxString pointDescr = "";
+  wxString pointDescr = wxEmptyString;
   e = node->Parent()->FirstChildElement("description");
 
   // If the <description> is an XML element we must convert it to text,
@@ -210,7 +208,7 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
   kmlText = data.GetText();
   wxTheClipboard->Close();
 
-  if (kmlText.Find("<kml") == wxNOT_FOUND) return KML_PASTE_INVALID;
+  if (kmlText.Find(_T("<kml")) == wxNOT_FOUND) return KML_PASTE_INVALID;
 
   TiXmlDocument doc;
   if (!doc.Parse(kmlText.mb_str(wxConvUTF8), 0, TIXML_ENCODING_UTF8)) {
@@ -229,7 +227,7 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
     placemark = docHandle.FirstChild("Placemark").ToElement();
   }
   if (!placemark) {
-    wxString msg("KML Parser found no <Placemark> tag in the KML.");
+    wxString msg(_T("KML Parser found no <Placemark> tag in the KML."));
     wxLogMessage(msg);
     return KML_PASTE_INVALID;
   }
@@ -273,8 +271,8 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
     if (element) return ParseTrack(element, name);
 
     wxString msg(
-        "KML Parser found a single <Placemark> in the KML, but no useable "
-        "data in it.");
+        _T("KML Parser found a single <Placemark> in the KML, but no useable ")
+        _T("data in it."));
     wxLogMessage(msg);
     return KML_PASTE_INVALID;
   }
@@ -315,7 +313,8 @@ KmlPastebufferType Kml::ParsePasteBuffer() {
   }
 
   if (foundPoints && parsedRoute->GetnPoints() < 2) {
-    wxString msg("KML Parser did not find enough <Point>s to make a route.");
+    wxString msg(
+        _T("KML Parser did not find enough <Point>s to make a route."));
     wxLogMessage(msg);
     foundPoints = false;
   }
@@ -382,7 +381,7 @@ std::string Kml::PointPlacemark(TiXmlElement* document,
         if (!seq) {
           seq = new TiXmlElement("vlm:sequence");
           TiXmlText* snVal = new TiXmlText(
-              wxString::Format("%04d", seqCounter).mb_str(wxConvUTF8));
+              wxString::Format(_T("%04d"), seqCounter).mb_str(wxConvUTF8));
           seq->LinkEndChild(snVal);
           descrDoc.RootElement()->LinkEndChild(seq);
         }
@@ -397,7 +396,7 @@ std::string Kml::PointPlacemark(TiXmlElement* document,
       TiXmlElement* seq = new TiXmlElement("vlm:sequence");
       extendedData->LinkEndChild(seq);
       TiXmlText* snVal = new TiXmlText(
-          wxString::Format("%04d", seqCounter).mb_str(wxConvUTF8));
+          wxString::Format(_T("%04d"), seqCounter).mb_str(wxConvUTF8));
       seq->LinkEndChild(snVal);
 
       if (routepoint->m_MarkDescription.Length()) {
@@ -413,7 +412,7 @@ std::string Kml::PointPlacemark(TiXmlElement* document,
     }
     if (extendedData && seqCounter == 0) {
       const wxCharBuffer ownshipPos =
-          wxString::Format("%f %f", gLon, gLat).mb_str(wxConvUTF8);
+          wxString::Format(_T("%f %f"), gLon, gLat).mb_str(wxConvUTF8);
       TiXmlHandle h(extendedData);
       TiXmlElement* route = h.FirstChild("vlm:route").ToElement();
       TiXmlElement* ownship =
@@ -476,9 +475,15 @@ wxString Kml::MakeKmlFromRoute(Route* route, bool insertSeq) {
   std::stringstream lineStringCoords;
 
   RoutePointList* pointList = route->pRoutePointList;
-  for (RoutePoint* routepoint : *pointList) {
+  wxRoutePointListNode* pointnode = pointList->GetFirst();
+  RoutePoint* routepoint;
+
+  while (pointnode) {
+    routepoint = pointnode->GetData();
+
     lineStringCoords << PointPlacemark(document, routepoint);
     seqCounter++;
+    pointnode = pointnode->GetNext();
   }
 
   TiXmlElement* pmPath = new TiXmlElement("Placemark");
@@ -531,8 +536,8 @@ wxString Kml::MakeKmlFromTrack(Track* track) {
     gxTrack->LinkEndChild(when);
 
     wxDateTime whenTime(trackpoint->GetCreateTime());
-    TiXmlText* whenVal =
-        new TiXmlText(whenTime.Format("%Y-%m-%dT%H:%M:%SZ").mb_str(wxConvUTF8));
+    TiXmlText* whenVal = new TiXmlText(
+        whenTime.Format(_T("%Y-%m-%dT%H:%M:%SZ")).mb_str(wxConvUTF8));
     when->LinkEndChild(whenVal);
   }
 
@@ -542,7 +547,7 @@ wxString Kml::MakeKmlFromTrack(Track* track) {
     TiXmlElement* coord = new TiXmlElement("gx:coord");
     gxTrack->LinkEndChild(coord);
     wxString coordStr =
-        wxString::Format("%f %f 0.0", trackpoint->m_lon, trackpoint->m_lat);
+        wxString::Format(_T("%f %f 0.0"), trackpoint->m_lon, trackpoint->m_lat);
     TiXmlText* coordVal = new TiXmlText(coordStr.mb_str(wxConvUTF8));
     coord->LinkEndChild(coordVal);
   }

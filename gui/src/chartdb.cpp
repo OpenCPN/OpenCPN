@@ -1,4 +1,10 @@
-/**************************************************************************
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Chart Database Object
+ * Author:   David Register, Mark A Sikes
+ *
+ ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,85 +18,71 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-/**
- * \file
- *
- * Implement chartdb.h -- chart database management
- */
-
-#include "chartdb.h"
-
-#include <stdio.h>
-#include <math.h>
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif
+#endif  // precompiled headers
 
-#include <wx/dir.h>
-#include <wx/progdlg.h>
-#include <wx/regex.h>
 #include <wx/stopwatch.h>
+#include <wx/regex.h>
 #include <wx/tokenzr.h>
+#include <wx/dir.h>
 
-#include <model/base_platform.h>
-#include <model/ocpn_utils.h>
-
-#include "canvas_config.h"
-#include "chartimg.h"
-#include "chcanv.h"
-#include "cm93.h"
-#include "config.h"
-#include "config_mgr.h"
 #include "dychart.h"
-#include "mbtiles.h"
-#include "s57chart.h"
-#include "s57_load.h"
-#include "thumbwin.h"
-#include "user_colors.h"
 
-#ifdef __ANDROID__
+#include "config.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "thumbwin.h"
+#include "mbtiles.h"
+#include "CanvasConfig.h"
+#include "ConfigMgr.h"
+#include "ocpn_frame.h"  //FIXME (dave) LoadS57
+#ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #endif
 
 #ifdef ocpnUSE_GL
-#include "gl_chart_canvas.h"
+#include "glChartCanvas.h"
 #endif
 
-extern ColorScheme GetColorScheme();  // library dependency
+#include <stdio.h>
+#include <math.h>
+
+#include <wx/progdlg.h>
+
+#include "chcanv.h"
+
+#include "s57chart.h"
+#include "cm93.h"
+
+extern ColorScheme GetColorScheme();
 
 class s52plib;
-extern s52plib *ps52plib;  // library dependency
 
-ChartDB *ChartData;
-
-std::vector<std::string> ChartDirectoryExcludedVector;
+extern ThumbWin *pthumbwin;
+extern int g_nCacheLimit;
+extern int g_memCacheLimit;
+extern s52plib *ps52plib;
+extern ChartDB *ChartData;
+extern unsigned int g_canvasConfig;
+extern std::vector<std::string> ChartDirectoryExcludedVector;
 
 bool G_FloatPtInPolygon(MyFlPoint *rgpts, int wnumpts, float x, float y);
+bool GetMemoryStatus(int *mem_total, int *mem_used);
 
-static bool IsSingleChart(ChartBase *chart) {
-  if (chart == nullptr) return false;
-
-  // ..For each canvas...
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc && cc->m_singleChart == chart) {
-      return true;
-    }
-  }
-  return false;
-}
 // ============================================================================
 // ChartStack implementation
 // ============================================================================
 
-int ChartStack::GetCurrentEntrydbIndex() {
+int ChartStack::GetCurrentEntrydbIndex(void) {
   if (nEntry && (CurrentStackEntry >= 0) /*&& b_valid*/)
     return DBIndex[CurrentStackEntry];
   else
@@ -147,15 +139,15 @@ void ChartStack::AddChart(int db_add) {
   //    and skip the test in this case
   for (int id = 0; id < j - 1; id++) {
     if (GetDBIndex(id) != -1) {
-      auto &pm = ChartData->GetChartTableEntry(GetDBIndex(id));
+      ChartTableEntry *pm = ChartData->GetpChartTableEntry(GetDBIndex(id));
 
       for (int jd = id + 1; jd < j; jd++) {
         if (GetDBIndex(jd) != -1) {
-          auto &pn = ChartData->GetChartTableEntry(GetDBIndex(jd));
-          if (pm.GetFileTime() && pn.GetFileTime()) {
-            if (labs(pm.GetFileTime() - pn.GetFileTime()) <
+          ChartTableEntry *pn = ChartData->GetpChartTableEntry(GetDBIndex(jd));
+          if (pm->GetFileTime() && pn->GetFileTime()) {
+            if (labs(pm->GetFileTime() - pn->GetFileTime()) <
                 60) {  // simple test
-              if (pn.GetpFileName()->IsSameAs(*(pm.GetpFileName())))
+              if (pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
                 SetDBIndex(jd, -1);  // mark to remove
             }
           }
@@ -212,18 +204,18 @@ ChartDB::ChartDB() {
   SetValid(false);  // until loaded or created
   UnLockCache();
 
-  SetBusy(false);
+  m_b_busy = false;
   m_ticks = 0;
 
   //    Report cache policy
   if (g_memCacheLimit) {
     wxString msg;
-    msg.Printf("ChartDB Cache policy:  Application target is %d MBytes",
+    msg.Printf(_T("ChartDB Cache policy:  Application target is %d MBytes"),
                g_memCacheLimit / 1024);
     wxLogMessage(msg);
   } else {
     wxString msg;
-    msg.Printf("ChartDB Cache policy:  Max open chart limit is %d.",
+    msg.Printf(_T("ChartDB Cache policy:  Max open chart limit is %d."),
                g_nCacheLimit);
     wxLogMessage(msg);
   }
@@ -252,7 +244,7 @@ void ChartDB::DeleteCacheEntry(CacheEntry *pce, bool bDelTexture,
   ChartBase *ch = (ChartBase *)pce->pChart;
 
   if (msg != wxEmptyString) {
-    wxLogMessage("%s%s", msg.c_str(), ch->GetFullPath().c_str());
+    wxLogMessage(_T("%s%s"), msg.c_str(), ch->GetFullPath().c_str());
   }
 
   // If this chart should happen to be in the thumbnail window....
@@ -278,7 +270,7 @@ void ChartDB::DeleteCacheEntry(int i, bool bDelTexture, const wxString &msg) {
 
 void ChartDB::PurgeCache() {
   //    Empty the cache
-  // wxLogMessage("Chart cache purge");
+  // wxLogMessage(_T("Chart cache purge"));
 
   if (wxMUTEX_NO_ERROR == m_cache_mutex.Lock()) {
     unsigned int nCache = pChartCache->GetCount();
@@ -293,7 +285,7 @@ void ChartDB::PurgeCache() {
 
 void ChartDB::PurgeCachePlugins() {
   //    Empty the cache
-  wxLogMessage("Chart cache PlugIn purge");
+  wxLogMessage(_T("Chart cache PlugIn purge"));
 
   if (wxMUTEX_NO_ERROR == m_cache_mutex.Lock()) {
     unsigned int nCache = pChartCache->GetCount();
@@ -316,7 +308,7 @@ void ChartDB::PurgeCachePlugins() {
   }
 }
 
-void ChartDB::ClearCacheInUseFlags() {
+void ChartDB::ClearCacheInUseFlags(void) {
   if (wxMUTEX_NO_ERROR == m_cache_mutex.Lock()) {
     unsigned int nCache = pChartCache->GetCount();
     for (unsigned int i = 0; i < nCache; i++) {
@@ -336,12 +328,12 @@ void ChartDB::PurgeCacheUnusedCharts(double factor) {
     if (wxMUTEX_NO_ERROR == m_cache_mutex.TryLock()) {
       //    Check memory status to see if above limit
       int mem_used;
-      platform::GetMemoryStatus(0, &mem_used);
+      GetMemoryStatus(0, &mem_used);
       int mem_limit = g_memCacheLimit * factor;
 
       int nl = pChartCache->GetCount();  // max loop count, by definition
 
-      wxString msg("Purging unused chart from cache: ");
+      wxString msg(_T("Purging unused chart from cache: "));
       // printf("Try Purge count:  %d\n", nl);
       while ((mem_used > mem_limit) && (nl > 0)) {
         if (pChartCache->GetCount() < 2) {
@@ -358,7 +350,7 @@ void ChartDB::PurgeCacheUnusedCharts(double factor) {
           break;
         }
 
-        platform::GetMemoryStatus(0, &mem_used);
+        GetMemoryStatus(0, &mem_used);
 
         nl--;
       }
@@ -375,7 +367,7 @@ void ChartDB::PurgeCacheUnusedCharts(double factor) {
 
       int nl = pChartCache->GetCount();  // max loop count, by definition
 
-      wxString msg("Purging unused chart from cache: ");
+      wxString msg(_T("Purging unused chart from cache: "));
       while ((nl > chart_limit) && (nl > 0)) {
         if (pChartCache->GetCount() < 2) {
           nl = 0;
@@ -409,7 +401,7 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath,
   if (!fn.FileExists()) {
     //    Might be a directory
     if (!wxDir::Exists(theFilePath)) {
-      wxLogMessage("   ...file does not exist: %s", theFilePath);
+      wxLogMessage(wxT("   ...file does not exist: %s"), theFilePath);
       return NULL;
     }
   }
@@ -417,20 +409,20 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath,
 
   wxString chartExt = fn.GetExt().Upper();
 
-  if (chartExt == "XZ") {
+  if (chartExt == wxT("XZ")) {
     wxString npath = theFilePath;
     npath = npath.Left(npath.length() - 3);
     wxFileName fn(npath);
     chartExt = fn.GetExt().Upper();
   }
 
-  if (chartExt == "KAP") {
+  if (chartExt == wxT("KAP")) {
     pch = new ChartKAP;
-  } else if (chartExt == "GEO") {
+  } else if (chartExt == wxT("GEO")) {
     pch = new ChartGEO;
-  } else if (chartExt == "MBTILES") {
+  } else if (chartExt == wxT("MBTILES")) {
     pch = new ChartMbTiles;
-  } else if (chartExt == "000" || chartExt == "S57") {
+  } else if (chartExt == wxT("000") || chartExt == wxT("S57")) {
     LoadS57();
     pch = new s57chart;
   } else if (chart_desc.m_descriptor_type == PLUGIN_DESCRIPTOR) {
@@ -440,8 +432,8 @@ ChartBase *ChartDB::GetChart(const wxChar *theFilePath,
   }
 
   else {
-    wxRegEx rxName("[0-9]+");
-    wxRegEx rxExt("[A-G]");
+    wxRegEx rxName(wxT("[0-9]+"));
+    wxRegEx rxExt(wxT("[A-G]"));
     if (rxName.Matches(fn.GetName()) && rxExt.Matches(chartExt))
       pch = new cm93compchart;
     else {
@@ -505,7 +497,7 @@ int ChartDB::BuildChartStack(ChartStack *cstk, float lat, float lon,
     bool b_writable_add = true;
     //  On android, SDK > 29, we require that the directory of charts be
     //  "writable" as determined by Android Java file system
-#ifdef __ANDROID__
+#ifdef __OCPN__ANDROID__
     wxFileName fn(cte.GetFullSystemPath());
     if (!androidIsDirWritable(fn.GetPath())) b_writable_add = false;
 #endif
@@ -1024,13 +1016,13 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate(bool blog) {
 
   unsigned int nCache = pChartCache->GetCount();
   if (nCache > 1) {
-    if (blog) wxLogMessage("Searching chart cache for oldest entry");
+    if (blog) wxLogMessage(_T("Searching chart cache for oldest entry"));
     int LRUTime = m_ticks;
     int iOldest = 0;
     for (unsigned int i = 0; i < nCache; i++) {
       CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
       if (pce->RecentTime < LRUTime && !pce->n_lock) {
-        if (!IsSingleChart((ChartBase *)(pce->pChart))) {
+        if (!isSingleChart((ChartBase *)(pce->pChart))) {
           LRUTime = pce->RecentTime;
           iOldest = i;
         }
@@ -1041,14 +1033,14 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate(bool blog) {
     CacheEntry *pce = (CacheEntry *)(pChartCache->Item(iOldest));
     ChartBase *pDeleteCandidate = (ChartBase *)(pce->pChart);
 
-    if (!pce->n_lock && !IsSingleChart(pDeleteCandidate)) {
+    if (!pce->n_lock && !isSingleChart(pDeleteCandidate)) {
       if (blog)
-        wxLogMessage("Oldest unlocked cache index is %d, delta t is %d",
+        wxLogMessage(_T("Oldest unlocked cache index is %d, delta t is %d"),
                      iOldest, dt);
 
       pret = pce;
     } else
-      wxLogMessage("All chart in cache locked, size: %d", nCache);
+      wxLogMessage(_T("All chart in cache locked, size: %d"), nCache);
   }
 
   return pret;
@@ -1065,7 +1057,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
   ChartFamilyEnum chart_family = (ChartFamilyEnum)cte.GetChartFamily();
 
   wxString msg1;
-  msg1.Printf("OpenChartUsingCache:  type %d  ", chart_type);
+  msg1.Printf(_T("OpenChartUsingCache:  type %d  "), chart_type);
   //      wxLogMessage(msg1 + ChartFullPath);
 
   if (cte.GetLatMax() > 90.0)  // Chart has been disabled...
@@ -1094,7 +1086,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
 
     if (bInCache) {
       wxString msg;
-      msg.Printf("OpenChartUsingCache, IN cache: cache size: %d\n",
+      msg.Printf(_T("OpenChartUsingCache, IN cache: cache size: %d\n"),
                  (int)pChartCache->GetCount());
       //          wxLogMessage(msg);
       if (FULL_INIT == init_flag)  // asking for full init?
@@ -1127,25 +1119,26 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
 
     if (!bInCache)  // not in cache
     {
-      SetBusy(true);
+      m_b_busy = true;
       if (!m_b_locked) {
         //    Use memory limited cache policy, if defined....
         if (g_memCacheLimit) {
           //    Check memory status to see if enough room to open another chart
           int mem_used;
-          platform::GetMemoryStatus(0, &mem_used);
+          GetMemoryStatus(0, &mem_used);
 
           wxString msg;
-          msg.Printf("OpenChartUsingCache, NOT in cache:   cache size: %d\n",
-                     (int)pChartCache->GetCount());
+          msg.Printf(
+              _T("OpenChartUsingCache, NOT in cache:   cache size: %d\n"),
+              (int)pChartCache->GetCount());
           wxLogMessage(msg);
           wxString msg1;
-          msg1.Printf("   OpenChartUsingCache:  type %d  ", chart_type);
+          msg1.Printf(_T("   OpenChartUsingCache:  type %d  "), chart_type);
           wxLogMessage(msg1 + ChartFullPath);
 
           if ((mem_used > g_memCacheLimit * 8 / 10) &&
               (pChartCache->GetCount() > 2)) {
-            wxString msg("Removing oldest chart from cache: ");
+            wxString msg(_T("Removing oldest chart from cache: "));
             while (1) {
               CacheEntry *pce = FindOldestDeleteCandidate(true);
               if (pce == 0) break;  // no possible delete candidate
@@ -1153,7 +1146,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
               // purge texture cache, really need memory here
               DeleteCacheEntry(pce, true, msg);
 
-              platform::GetMemoryStatus(0, &mem_used);
+              GetMemoryStatus(0, &mem_used);
               if ((mem_used < g_memCacheLimit * 8 / 10) ||
                   (pChartCache->GetCount() <= 2))
                 break;
@@ -1168,7 +1161,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
           //      needed
           unsigned int nCache = pChartCache->GetCount();
           if (nCache > (unsigned int)g_nCacheLimit && nCache > 2) {
-            wxString msg("Removing oldest chart from cache: ");
+            wxString msg(_T("Removing oldest chart from cache: "));
             while (nCache > (unsigned int)g_nCacheLimit) {
               CacheEntry *pce = FindOldestDeleteCandidate(true);
               if (pce == 0) break;
@@ -1184,7 +1177,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
 
   if (!bInCache)  // not in cache
   {
-    wxLogMessage("Creating new chart");
+    wxLogMessage(_T("Creating new chart"));
 
     if (chart_type == CHART_TYPE_KAP)
       Ch = new ChartKAP();
@@ -1250,7 +1243,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
     else if (chart_type == CHART_TYPE_PLUGIN) {
       wxFileName fn(ChartFullPath);
       wxString ext = fn.GetExt();
-      ext.Prepend("*.");
+      ext.Prepend(_T("*."));
       wxString ext_upper = ext.MakeUpper();
       wxString ext_lower = ext.MakeLower();
       wxString chart_class_name;
@@ -1285,7 +1278,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
 
     else {
       Ch = NULL;
-      wxLogMessage("Unknown chart type");
+      wxLogMessage(_T("Unknown chart type"));
     }
 
     if (Ch) {
@@ -1293,18 +1286,19 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
 
       s52plib *plib = ps52plib;
       wxString msg_fn(ChartFullPath);
-      msg_fn.Replace("%", "%%");
+      msg_fn.Replace(_T("%"), _T("%%"));
 
       //    Vector charts need a PLIB for useful display....
       if ((chart_family != CHART_FAMILY_VECTOR) ||
           ((chart_family == CHART_FAMILY_VECTOR) && plib)) {
-        wxLogMessage(wxString::Format("Initializing Chart %s", msg_fn.c_str()));
+        wxLogMessage(
+            wxString::Format(_T("Initializing Chart %s"), msg_fn.c_str()));
 
         ir = Ch->Init(ChartFullPath, init_flag);  // using the passed flag
-        Ch->SetColorScheme(user_colors::GetColorScheme());
+        Ch->SetColorScheme(/*pParent->*/ GetColorScheme());
       } else {
-        wxLogMessage(wxString::Format("   No PLIB, Skipping vector chart  %s",
-                                      msg_fn.c_str()));
+        wxLogMessage(wxString::Format(
+            _T("   No PLIB, Skipping vector chart  %s"), msg_fn.c_str()));
 
         ir = INIT_FAIL_REMOVE;
       }
@@ -1408,8 +1402,8 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
         }
       } else if (INIT_FAIL_REMOVE == ir)  // some problem in chart Init()
       {
-        wxLogMessage(
-            wxString::Format("Problem initializing Chart %s", msg_fn.c_str()));
+        wxLogMessage(wxString::Format(_T("Problem initializing Chart %s"),
+                                      msg_fn.c_str()));
 
         delete Ch;
         Ch = NULL;
@@ -1422,7 +1416,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
                   ir))  // recoverable problem in chart Init()
       {
         wxLogMessage(wxString::Format(
-            "Recoverable problem initializing Chart %s", msg_fn.c_str()));
+            _T("Recoverable problem initializing Chart %s"), msg_fn.c_str()));
         delete Ch;
         Ch = NULL;
       }
@@ -1430,14 +1424,14 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
       if (INIT_OK != ir) {
         if (1 /*INIT_FAIL_NOERROR != ir*/) {
           wxLogMessage(
-              wxString::Format("   OpenChartFromStack... Error opening "
-                               "chart %s ... return code %d",
+              wxString::Format(_T("   OpenChartFromStack... Error opening ")
+                               _T("chart %s ... return code %d"),
                                msg_fn.c_str(), ir));
         }
       }
     }
 
-    SetBusy(false);
+    m_b_busy = false;
 
     return Ch;
   }
@@ -1450,7 +1444,7 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate) {
   bool retval = false;
 
   if (wxMUTEX_NO_ERROR == m_cache_mutex.Lock()) {
-    if (!IsSingleChart(pDeleteCandidate)) {
+    if (!isSingleChart(pDeleteCandidate)) {
       // Find the chart in the cache
       CacheEntry *pce = NULL;
       for (unsigned int i = 0; i < pChartCache->GetCount(); i++) {
@@ -1480,10 +1474,6 @@ bool ChartDB::DeleteCacheChart(ChartBase *pDeleteCandidate) {
 void ChartDB::ApplyColorSchemeToCachedCharts(ColorScheme cs) {
   ChartBase *Ch;
   CacheEntry *pce;
-#ifdef ocpnUSE_GL
-  // The background texture cache threads might be running
-  if (g_glTextureManager) g_glTextureManager->PurgeJobList();
-#endif
   //    Search the cache
 
   if (wxMUTEX_NO_ERROR == m_cache_mutex.Lock()) {
@@ -1564,208 +1554,210 @@ wxXmlDocument ChartDB::GetXMLDescription(int dbIndex, bool b_getGeom) {
   const ChartTableEntry &cte = GetChartTableEntry(dbIndex);
 
   if (CHART_FAMILY_RASTER == (ChartFamilyEnum)cte.GetChartFamily()) {
-    pcell_node = new wxXmlNode(wxXML_ELEMENT_NODE, "chart");
+    pcell_node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "chart" ));
 
     wxString path = GetDBChartFileName(dbIndex);
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "path");
+    node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "path" ));
     pcell_node->AddChild(node);
-    tnode = new wxXmlNode(wxXML_TEXT_NODE, "", path);
+    tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), path);
     node->AddChild(tnode);
 
     wxFileName name(path);
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "name");
+    node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "name" ));
     pcell_node->AddChild(node);
-    tnode = new wxXmlNode(wxXML_TEXT_NODE, "", name.GetName());
+    tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), name.GetName());
     node->AddChild(tnode);
 
     if (pc) {
-      node = new wxXmlNode(wxXML_ELEMENT_NODE, "lname");
+      node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "lname" ));
       pcell_node->AddChild(node);
-      tnode = new wxXmlNode(wxXML_TEXT_NODE, "", pc->GetName());
+      tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), pc->GetName());
       node->AddChild(tnode);
     }
 
     wxString scale;
-    scale.Printf("%d", cte.GetScale());
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "cscale");
+    scale.Printf(_T("%d"), cte.GetScale());
+    node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "cscale" ));
     pcell_node->AddChild(node);
-    tnode = new wxXmlNode(wxXML_TEXT_NODE, "", scale);
+    tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), scale);
     node->AddChild(tnode);
 
     wxDateTime file_date(cte.GetFileTime());
     file_date.MakeUTC();
     wxString sfile_date = file_date.FormatISODate();
-    sfile_date += "T";
+    sfile_date += _T("T");
     sfile_date += file_date.FormatISOTime();
-    sfile_date += "Z";
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "local_file_datetime_iso8601");
+    sfile_date += _T("Z");
+    node =
+        new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "local_file_datetime_iso8601" ));
     pcell_node->AddChild(node);
-    tnode = new wxXmlNode(wxXML_TEXT_NODE, "", sfile_date);
+    tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), sfile_date);
     node->AddChild(tnode);
 
     if (pc) {
-      node = new wxXmlNode(wxXML_ELEMENT_NODE, "source_edition");
+      node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "source_edition" ));
       pcell_node->AddChild(node);
-      tnode = new wxXmlNode(wxXML_TEXT_NODE, "", pc->GetSE());
+      tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), pc->GetSE());
       node->AddChild(tnode);
 
       wxDateTime sdt = pc->GetEditionDate();
-      wxString ssdt = "Unknown";
-      if (sdt.IsValid()) ssdt = sdt.Format("%Y%m%d");
+      wxString ssdt = _T("Unknown");
+      if (sdt.IsValid()) ssdt = sdt.Format(_T("%Y%m%d"));
 
-      node = new wxXmlNode(wxXML_ELEMENT_NODE, "source_date");
+      node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "source_date" ));
       pcell_node->AddChild(node);
-      tnode = new wxXmlNode(wxXML_TEXT_NODE, "", ssdt);
+      tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), ssdt);
       node->AddChild(tnode);
     }
 
     /*
-                if (s == "number")
-    ///            if (s == "source_edition")
-                if (s == "raster_edition")
-                if (s == "ntm_edition")
-    ///            if (s == "source_date")
-                if (s == "ntm_date")
-                if (s == "source_edition_last_correction")
-                if (s == "raster_edition_last_correction")
-                if (s == "ntm_edition_last_correction")
+                if (s == _T("number"))
+    ///            if (s == _T("source_edition"))
+                if (s == _T("raster_edition"))
+                if (s == _T("ntm_edition"))
+    ///            if (s == _T("source_date"))
+                if (s == _T("ntm_date"))
+                if (s == _T("source_edition_last_correction"))
+                if (s == _T("raster_edition_last_correction"))
+                if (s == _T("ntm_edition_last_correction"))
     */
   }
 
   else if (CHART_FAMILY_VECTOR == (ChartFamilyEnum)cte.GetChartFamily()) {
-    pcell_node = new wxXmlNode(wxXML_ELEMENT_NODE, "cell");
+    pcell_node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "cell" ));
 
     wxString path = GetDBChartFileName(dbIndex);
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "path");
+    node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "path" ));
     pcell_node->AddChild(node);
-    tnode = new wxXmlNode(wxXML_TEXT_NODE, "", path);
+    tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), path);
     node->AddChild(tnode);
 
     wxFileName name(path);
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "name");
+    node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "name" ));
     pcell_node->AddChild(node);
-    tnode = new wxXmlNode(wxXML_TEXT_NODE, "", name.GetName());
+    tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), name.GetName());
     node->AddChild(tnode);
 
     wxString scale;
-    scale.Printf("%d", cte.GetScale());
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "cscale");
+    scale.Printf(_T("%d"), cte.GetScale());
+    node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "cscale" ));
     pcell_node->AddChild(node);
-    tnode = new wxXmlNode(wxXML_TEXT_NODE, "", scale);
+    tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), scale);
     node->AddChild(tnode);
 
     wxDateTime file_date(cte.GetFileTime());
     file_date.MakeUTC();
     wxString sfile_date = file_date.FormatISODate();
-    sfile_date += "T";
+    sfile_date += _T("T");
     sfile_date += file_date.FormatISOTime();
-    sfile_date += "Z";
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "local_file_datetime_iso8601");
+    sfile_date += _T("Z");
+    node =
+        new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "local_file_datetime_iso8601" ));
     pcell_node->AddChild(node);
-    tnode = new wxXmlNode(wxXML_TEXT_NODE, "", sfile_date);
+    tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), sfile_date);
     node->AddChild(tnode);
 
     if (pc) {
-      node = new wxXmlNode(wxXML_ELEMENT_NODE, "edtn");
+      node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "edtn" ));
       pcell_node->AddChild(node);
-      tnode = new wxXmlNode(wxXML_TEXT_NODE, "", pc->GetSE());
+      tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), pc->GetSE());
       node->AddChild(tnode);
     }
 
     s57chart *pcs57 = dynamic_cast<s57chart *>(pc);
     if (pcs57) {
-      node = new wxXmlNode(wxXML_ELEMENT_NODE, "isdt");
+      node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "isdt" ));
       pcell_node->AddChild(node);
-      tnode = new wxXmlNode(wxXML_TEXT_NODE, "", pcs57->GetISDT());
+      tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), pcs57->GetISDT());
       node->AddChild(tnode);
 
       wxString LastUpdateDate;
       int updn =
-          pcs57->ValidateAndCountUpdates(path, "", LastUpdateDate, false);
+          pcs57->ValidateAndCountUpdates(path, _T(""), LastUpdateDate, false);
 
       wxString supdn;
-      supdn.Printf("%d", updn);
-      node = new wxXmlNode(wxXML_ELEMENT_NODE, "updn");
+      supdn.Printf(_T("%d"), updn);
+      node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "updn" ));
       pcell_node->AddChild(node);
-      tnode = new wxXmlNode(wxXML_TEXT_NODE, "", supdn);
+      tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), supdn);
       node->AddChild(tnode);
 
-      node = new wxXmlNode(wxXML_ELEMENT_NODE, "uadt");
+      node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "uadt" ));
       pcell_node->AddChild(node);
-      tnode = new wxXmlNode(wxXML_TEXT_NODE, "", LastUpdateDate);
+      tnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), LastUpdateDate);
       node->AddChild(tnode);
     }
   }
 
   if (pcell_node && b_getGeom) {
-    node = new wxXmlNode(wxXML_ELEMENT_NODE, "cov");
+    node = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "cov" ));
     pcell_node->AddChild(node);
 
     //    Primary table
     if (cte.GetnPlyEntries()) {
-      wxXmlNode *panelnode = new wxXmlNode(wxXML_ELEMENT_NODE, "panel");
+      wxXmlNode *panelnode = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "panel" ));
       node->AddChild(panelnode);
 
       wxString panel_no;
-      panel_no.Printf("%d", 0);
-      wxXmlNode *anode = new wxXmlNode(wxXML_TEXT_NODE, "", panel_no);
+      panel_no.Printf(_T("%d"), 0);
+      wxXmlNode *anode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), panel_no);
       panelnode->AddChild(anode);
 
       float *pf = cte.GetpPlyTable();
       for (int j = 0; j < cte.GetnPlyEntries(); j++) {
-        wxXmlNode *vnode = new wxXmlNode(wxXML_ELEMENT_NODE, "vertex");
+        wxXmlNode *vnode = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "vertex" ));
         panelnode->AddChild(vnode);
 
-        wxXmlNode *latnode = new wxXmlNode(wxXML_ELEMENT_NODE, "lat");
+        wxXmlNode *latnode = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "lat" ));
         vnode->AddChild(latnode);
 
         float l = *pf++;
         wxString sl;
-        sl.Printf("%.5f", l);
-        wxXmlNode *vtnode = new wxXmlNode(wxXML_TEXT_NODE, "", sl);
+        sl.Printf(_T("%.5f"), l);
+        wxXmlNode *vtnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), sl);
         latnode->AddChild(vtnode);
 
-        wxXmlNode *lonnode = new wxXmlNode(wxXML_ELEMENT_NODE, "lon");
+        wxXmlNode *lonnode = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "lon" ));
         vnode->AddChild(lonnode);
 
         float ll = *pf++;
         wxString sll;
-        sll.Printf("%.5f", ll);
-        wxXmlNode *vtlnode = new wxXmlNode(wxXML_TEXT_NODE, "", sll);
+        sll.Printf(_T("%.5f"), ll);
+        wxXmlNode *vtlnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), sll);
         lonnode->AddChild(vtlnode);
       }
     }
 
     for (int i = 0; i < cte.GetnAuxPlyEntries(); i++) {
-      wxXmlNode *panelnode = new wxXmlNode(wxXML_ELEMENT_NODE, "panel");
+      wxXmlNode *panelnode = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "panel" ));
       node->AddChild(panelnode);
 
       wxString panel_no;
-      panel_no.Printf("%d", i + 1);
-      wxXmlNode *anode = new wxXmlNode(wxXML_TEXT_NODE, "", panel_no);
+      panel_no.Printf(_T("%d"), i + 1);
+      wxXmlNode *anode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), panel_no);
       panelnode->AddChild(anode);
 
       float *pf = cte.GetpAuxPlyTableEntry(i);
       for (int j = 0; j < cte.GetAuxCntTableEntry(i); j++) {
-        wxXmlNode *vnode = new wxXmlNode(wxXML_ELEMENT_NODE, "vertex");
+        wxXmlNode *vnode = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "vertex" ));
         panelnode->AddChild(vnode);
 
-        wxXmlNode *latnode = new wxXmlNode(wxXML_ELEMENT_NODE, "lat");
+        wxXmlNode *latnode = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "lat" ));
         vnode->AddChild(latnode);
 
         float l = *pf++;
         wxString sl;
-        sl.Printf("%.5f", l);
-        wxXmlNode *vtnode = new wxXmlNode(wxXML_TEXT_NODE, "", sl);
+        sl.Printf(_T("%.5f"), l);
+        wxXmlNode *vtnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), sl);
         latnode->AddChild(vtnode);
 
-        wxXmlNode *lonnode = new wxXmlNode(wxXML_ELEMENT_NODE, "lon");
+        wxXmlNode *lonnode = new wxXmlNode(wxXML_ELEMENT_NODE, _T ( "lon" ));
         vnode->AddChild(lonnode);
 
         float ll = *pf++;
         wxString sll;
-        sll.Printf("%.5f", ll);
-        wxXmlNode *vtlnode = new wxXmlNode(wxXML_TEXT_NODE, "", sll);
+        sll.Printf(_T("%.5f"), ll);
+        wxXmlNode *vtlnode = new wxXmlNode(wxXML_TEXT_NODE, _T ( "" ), sll);
         lonnode->AddChild(vtlnode);
       }
     }

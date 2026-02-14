@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "chartbase.h"
-#include "gl_chart_canvas.h"
+#include "glChartCanvas.h"
 #include "observable_evtvar.h"
 
 class MbTileDescriptor;  // forward

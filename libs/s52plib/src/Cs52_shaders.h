@@ -133,7 +133,7 @@ public:
       glUniformMatrix4fv(matloc, 1, GL_FALSE, value);
     }
 
-    void SetAttributePointerf( const std::string &name, float *value ){
+    void SetAttributePointerf( const char *name, float *value ){
       GLint aloc = getAttributeLocation( name);
       glVertexAttribPointer(aloc, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), value);
       glEnableVertexAttribArray(aloc);
@@ -157,15 +157,6 @@ public:
     GLuint programId() const { return programId_; }
     bool isOK() const { return linked_; }
 
-    GLint getUniformLocation(const std::string &name) {
-      if(m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
-        return m_uniformLocationCache[name];
-
-      GLint loc = glGetUniformLocation(programId_, name.c_str());
-      m_uniformLocationCache[name] = loc;
-      return loc;
-    }
-
 private:
     std::unordered_map<std::string, GLint> m_uniformLocationCache;
     std::unordered_map<std::string, GLint> m_attribLocationCache;
@@ -174,6 +165,14 @@ private:
     GLint success;
     GLint linkSuccess;
 
+    GLint getUniformLocation(const std::string &name) {
+      if(m_uniformLocationCache.find(name) != m_uniformLocationCache.end())
+        return m_uniformLocationCache[name];
+
+      GLint loc = glGetUniformLocation(programId_, name.c_str());
+      m_uniformLocationCache[name] = loc;
+      return loc;
+    }
 
 };
 

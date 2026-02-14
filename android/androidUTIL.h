@@ -35,10 +35,9 @@
 #include <QString>
 #include <string>
 
-#include "o_sound/o_sound.h"
+#include "OCPN_Sound.h"
 #include "android_jvm.h"
 #include "model/datetime.h"
-#include "model/base_platform.h"
 
 class ArrayOfCDI;
 
@@ -68,7 +67,8 @@ extern bool androidUtilInit(void);
 
 extern wxString androidGetDeviceInfo();
 extern void CheckMigrateCharts();
-extern void DoImportGPX();
+
+extern bool androidGetMemoryStatus(int *mem_total, int *mem_used);
 
 extern double GetAndroidDisplaySize();
 extern double getAndroidDPmm();
@@ -79,9 +79,6 @@ extern void androidConfirmSizeCorrection();
 extern void androidForceFullRepaint(bool bskipConfirm = false);
 extern int androidGetVersionCode();
 extern wxString androidGetVersionName();
-
-extern int g_Android_SDK_Version;
-extern bool g_running;
 
 extern bool LoadQtStyleSheet(wxString &sheet_file);
 extern QString getQtStyleSheet(void);
@@ -154,7 +151,8 @@ void resizeAndroidPersistents();
 bool AndroidSecureCopyFile(wxString in, wxString out);
 void AndroidRemoveSystemFile(wxString file);
 
-bool androidPlaySound(const wxString soundfile, o_sound::Sound *sound);
+class AndroidSound;
+bool androidPlaySound(const wxString soundfile, AndroidSound *sound);
 
 bool androidGetFullscreen();
 bool androidSetFullscreen(bool bFull);
@@ -199,8 +197,6 @@ void androidEnableRotation(void);
 void androidDisableRotation(void);
 int androidGetScreenOrientation();
 
-bool androidGetMemoryStatus(int *mem_total, int *mem_used);
-
 void androidEnableMulticast(bool benable);
 void androidLastCall();
 wxString androidGetIpV4Address(void);
@@ -217,7 +213,6 @@ bool androidIsDirWritable(wxString dir);
 wxArrayString GetConfigChartDirectories();
 wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
                                      wxDateTime time);
-void PrepareImportAndroid(bool isLayer, bool isPersistent);
 
 class InProgressIndicator : public wxGauge {
   DECLARE_EVENT_TABLE()

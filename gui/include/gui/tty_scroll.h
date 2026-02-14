@@ -12,17 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
- *
- * Scrolled tty like window for logging.
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  */
 
-#ifndef TTYSCROLL_H_
-#define TTYSCROLL_H_
+#ifndef __TTYSCROLL_H__
+#define __TTYSCROLL_H__
 
 #include <deque>
 #include <memory>
@@ -30,7 +27,6 @@
 #include <wx/scrolwin.h>
 #include <wx/textctrl.h>
 
-#include "model/gui_vars.h"
 #include "model/nmea_log.h"
 #include "model/navmsg_filter.h"
 
@@ -38,6 +34,16 @@
  * \file
  * Scrolled TTY-like window for logging, related utilities
  */
+
+extern const wxString kUtfCheckMark;
+extern const wxString kUtfCircledDivisionSlash;
+extern const wxString kUtfFallingDiagonal;
+extern const wxString kUtfIdenticalTo;
+extern const wxString kUtfLeftArrow;
+extern const wxString kUtfLeftRightArrow;
+extern const wxString kUtfLeftwardsArrowToBar;
+extern const wxString kUtfMultiplicationX;
+extern const wxString kUtfRightArrow;
 
 /** Functor returning log foreground color for given state. */
 class ColorByState {
@@ -65,16 +71,6 @@ public:
   wxColor operator()(NavmsgStatus ns);
 };
 
-class UserColorsByState : public ColorByState {
-public:
-  UserColorsByState() {};
-
-  wxColor operator()(NavmsgStatus ns);
-
-private:
-  StdColorsByState defaults;
-};
-
 /** Scrolled TTY-like window for logging, etc. */
 class TtyScroll : public wxScrolledWindow {
 public:
@@ -93,9 +89,6 @@ public:
    * discarding argument line.
    */
   virtual void Add(const Logline& line);
-
-  /** Clear the log window */
-  virtual void Clear();
 
   /** Set the window to ignore Add() or not depending on pause. */
   void Pause(bool pause) { m_is_paused = pause; }
@@ -131,4 +124,4 @@ protected:
   void OnSize(wxSizeEvent& event);
 };
 
-#endif  // TTYSCROLL_H_
+#endif

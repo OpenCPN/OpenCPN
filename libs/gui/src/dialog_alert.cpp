@@ -25,11 +25,11 @@
 
 #include "dialog_alert.h"
 
-static void EnsureBtnSize(wxWindow* btn, int font_height) {
+static void EnsureBtnSize(wxWindow* btn) {
   if (wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS)
     btn->SetMinSize(btn->GetSize());
   else
-    btn->SetMinSize(wxSize(-1, font_height * 3));
+    btn->SetMinSize(wxSize(-1, btn->GetCharHeight() * 4));
 }
 
 AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
@@ -37,29 +37,26 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
     : BaseDialog(parent, title, wxSTAY_ON_TOP | wxCAPTION),
       m_action(action),
       m_listener(nullptr) {
-
-  if (!parent) {
-    wxFont *myFont = wxTheFontList->FindOrCreateFont(12, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
-                  wxFONTWEIGHT_NORMAL);
-    SetFont(*myFont);
-  }
-  int href;
-  GetTextExtent("W", NULL, &href, NULL, NULL);
-
   DialogFooter* footer = new DialogFooter();
 
   if (action.empty()) {
     wxButton* close_button = new wxButton(this, wxID_CLOSE, _("Close"));
-    EnsureBtnSize(close_button, href);
+
+    // Fix button height in footer when dialog has no parent.
+    if (!parent) EnsureBtnSize(close_button);
 
     close_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this, wxID_CLOSE);
     footer->SetCancelButton(close_button);
     footer->Realize();
   } else {
     wxButton* ok_button = new wxButton(this, wxID_OK, m_action);
-    EnsureBtnSize(ok_button, href);
     wxButton* cancel_button = new wxButton(this, wxID_CANCEL, _("Cancel"));
-    EnsureBtnSize(cancel_button, href);
+
+    // Fix button height in footer when dialog has no parent.
+    if (!parent) {
+      EnsureBtnSize(ok_button);
+      EnsureBtnSize(cancel_button);
+    }
 
     ok_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
     cancel_button->Bind(wxEVT_BUTTON, &AlertDialog::OnClick, this);
@@ -106,10 +103,6 @@ void AlertDialog::SetCancelLabel(const std::string& label) {
   auto* cancel = dynamic_cast<wxButton*>(FindWindowById(wxID_CANCEL));
   assert(cancel && "AlertDialog: Cancel button not found");
   cancel->SetLabel(label);
-  // In case label is larger/smaller that "Cancel"
-  cancel->InvalidateBestSize();
-  cancel->SetMinSize(cancel->GetBestSize());
-  if (auto* s = cancel->GetContainingSizer()) s->Layout();
 }
 
 int AlertDialog::GetConfirmation(wxWindow* parent, const std::string& title,

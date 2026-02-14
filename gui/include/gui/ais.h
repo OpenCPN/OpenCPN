@@ -28,29 +28,29 @@
 #ifndef __AIS_H__
 #define __AIS_H__
 
-#include <vector>
-
 #include <wx/wxprec.h>
+
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif
+#endif  // precompiled headers
 
-#include <wx/aui/aui.h>
 #include <wx/datetime.h>
 #include <wx/listctrl.h>
-#include <wx/sound.h>
 #include <wx/spinctrl.h>
+#include <wx/aui/aui.h>
 #include <wx/wxhtml.h>
 
-#include "o_sound/o_sound.h"
+#include <vector>
 
-#include "model/ais_bitstring.h"
-#include "model/ais_target_data.h"
-#include "model/ais_defs.h"
+#include <wx/sound.h>
 
-#include "ais_target_list_dlg.h"
 #include "gui_lib.h"
 #include "navutil.h"
+#include "OCPN_Sound.h"
+#include "model/ais_bitstring.h"
+#include "AISTargetListDialog.h"
+#include "model/ais_target_data.h"
+#include "model/ais_defs.h"
 
 //  FWD definitions
 class ChartCanvas;

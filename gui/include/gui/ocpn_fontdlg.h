@@ -1,31 +1,28 @@
 /////////////////////////////////////////////////////////////////////////////
+// Name:        ocpn_fontdlg.h
+// Purpose:     Generic font dialog for OpenCPN
 // Author:      Julian Smart
 // Modified by: David S Register
 // Created:     04/01/98
 // Copyright:   (c) Julian Smart, David S Register
 // Licence:     wxWindows licence
 
-/**
- * \file
- *
- * Generic font dialog for OpenCPN
- */
-
 #ifndef _OCPN_GENERIC_FONTDLGG_H
 #define _OCPN_GENERIC_FONTDLGG_H
 
-#include <wx/gdicmn.h>
-#include <wx/font.h>
-#include <wx/choice.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
+#include "wx/gdicmn.h"
+#include "wx/font.h"
 
 #define USE_SPINCTRL_FOR_POINT_SIZE 0
 
 /*
  * FONT DIALOG
  */
-class OCPNFontPreviewer;  // forward in .cpp file
+
+class WXDLLIMPEXP_FWD_CORE wxChoice;
+class WXDLLIMPEXP_FWD_CORE wxText;
+class WXDLLIMPEXP_FWD_CORE wxCheckBox;
+class WXDLLIMPEXP_FWD_CORE OCPNFontPreviewer;
 
 enum {
   wxID_FONT_UNDERLINE = 3000,

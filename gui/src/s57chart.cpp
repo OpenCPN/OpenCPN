@@ -1,4 +1,10 @@
-/**************************************************************************
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  S57 Chart Object
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,27 +18,10 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-/**
- * \file
- *
- * Implement s57chart.h -- S57 Chart Object
- */
-
-#include <algorithm>  // for std::sort
-#include <list>
-#include <map>
-#include <vector>
-
-#ifdef __ANDROID__
-#include "crashlytics.h"
-#endif
-
-#ifdef __MSVC__
-#define strncasecmp(x, y, z) _strnicmp(x, y, z)
-#endif
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -41,82 +30,110 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include <wx/image.h>  // for some reason, needed for msvc???
-#include <wx/tokenzr.h>
+#include "wx/image.h"  // for some reason, needed for msvc???
+#include "wx/tokenzr.h"
 #include <wx/textfile.h>
 #include <wx/filename.h>
 
-#include <wx/listimpl.cpp>
+#include "dychart.h"
+#include "OCPNPlatform.h"
+
+#include "s52s57.h"
+#include "s52plib.h"
+
+#include "s57chart.h"
+
+#include "mygeom.h"
+#include "model/cutil.h"
+#include "model/georef.h"
+#include "navutil.h"  // for LogMessageOnce
+#include "model/navutil_base.h"
+#include "model/plugin_comm.h"
+#include "ocpn_pixel.h"
+#include "ocpndc.h"
+#include "s52utils.h"
+#include "model/wx28compat.h"
+#include "model/chartdata_input_stream.h"
+
+#include "gdal/cpl_csv.h"
+#include "setjmp.h"
+
+#include "ogr_s57.h"
+
+#include "pluginmanager.h"  // for S57 lights overlay
+
+#include "Osenc.h"
+#include "chcanv.h"
+#include "SencManager.h"
+#include "gui_lib.h"
+#include "model/logger.h"
+#include "Quilt.h"
+#include "ocpn_frame.h"
 
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
 #endif
 
-#include "s57chart.h"
-
-#include "model/chartdata_input_stream.h"
-#include "model/cutil.h"
-#include "model/georef.h"
-#include "model/logger.h"
-#include "model/navutil_base.h"
-#include "model/plugin_comm.h"
-
-#include "gdal/cpl_csv.h"
-#include "ssl/sha1.h"
-
-#include "chart_ctx_factory.h"
-#include "chcanv.h"
-#include "dychart.h"
-#include "gui_lib.h"
-#include "mygeom.h"
-#include "navutil.h"  // for LogMessageOnce
-#include "ocpndc.h"
-#include "ocpn_pixel.h"
-#include "ocpn_platform.h"
-#include "ogr_s57.h"
-#include "o_senc.h"
-#include "pluginmanager.h"  // for S57 lights overlay
-#include "quilt.h"
-#include "s52plib.h"
-#include "s52s57.h"
-#include "s52utils.h"
-#include "s57class_registrar.h"
-#include "senc_manager.h"
-#include "setjmp.h"
-#include "top_frame.h"
-#include "user_colors.h"
-
 #ifdef ocpnUSE_GL
-#include "gl_chart_canvas.h"
+#include "glChartCanvas.h"
 #include "linmath.h"
 #endif
 
+#include <algorithm>  // for std::sort
+#include <map>
+
+#include "ssl/sha1.h"
 #ifdef ocpnUSE_GL
 #include "shaders.h"
 #endif
+#include "chart_ctx_factory.h"
 
-#define S57_THUMB_SIZE 200
+#ifdef __MSVC__
+#define strncasecmp(x, y, z) _strnicmp(x, y, z)
+#endif
 
-#include <wx/arrimpl.cpp>
+#ifdef __ANDROID__
+#include "crashlytics.h"
+#endif
 
+extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName,
+                          double &val);  // found in s52cnsy
+
+void OpenCPN_OGRErrorHandler(
+    CPLErr eErrClass, int nError,
+    const char *pszErrorMsg);  // installed GDAL OGR library error handler
+
+extern s52plib *ps52plib;
+extern S57ClassRegistrar *g_poRegistrar;
+extern wxString g_csv_locn;
+extern wxString g_SENCPrefix;
+extern bool g_bGDAL_Debug;
+extern bool g_bDebugS57;
+extern MyFrame *gFrame;
+extern PlugInManager *g_pi_manager;
+extern bool g_b_overzoom_x;
+extern bool g_b_EnableVBO;
+extern OCPNPlatform *g_Platform;
+extern SENCThreadManager *g_SencThreadManager;
+
+int g_SENC_LOD_pixels;
+
+static jmp_buf env_ogrf;  // the context saved by setjmp();
+
+#include <wx/arrimpl.cpp>  // Implement an array of S57 Objects
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
+#include <wx/listimpl.cpp>
 WX_DEFINE_LIST(ListOfPI_S57Obj);
 
 WX_DEFINE_LIST(ListOfObjRazRules);  // Implement a list ofObjRazRules
 
-static wxCriticalSection GDALcriticalSection;
+#define S57_THUMB_SIZE 200
 
 static int s_bInS57;  // Exclusion flag to prvent recursion in this class init
                       // call. Init() is not reentrant due to static
                       // wxProgressDialog callback....
-static int s_cnt;
-
-static jmp_buf env_ogrf;  // the context saved by setjmp();
-
-static void OpenCPN_OGRErrorHandler(
-    CPLErr eErrClass, int nError,
-    const char *pszErrorMsg);  // installed GDAL OGR library error handler
+int s_cnt;
 
 static uint64_t hash_fast64(const void *buf, size_t len, uint64_t seed) {
   const uint64_t m = 0x880355f21e6d1965ULL;
@@ -181,7 +198,7 @@ unsigned long connector_key::hash() const {
 
 render_canvas_parms::render_canvas_parms() { pix_buff = NULL; }
 
-render_canvas_parms::~render_canvas_parms() {}
+render_canvas_parms::~render_canvas_parms(void) {}
 
 static void PrepareForRender(ViewPort *pvp, s52plib *plib) {
   if (!plib) return;
@@ -216,7 +233,7 @@ s57chart::s57chart() {
 
   m_tmpup_array = NULL;
 
-  m_DepthUnits = "METERS";
+  m_DepthUnits = _T("METERS");
   m_depth_unit_id = DEPTH_UNIT_METERS;
 
   bGLUWarningSent = false;
@@ -653,7 +670,7 @@ void s57chart::LoadThumb() {
   tsfn.SetFullName(fn.GetFullName());
 
   wxFileName ThumbFileNameLook(tsfn);
-  ThumbFileNameLook.SetExt("BMP");
+  ThumbFileNameLook.SetExt(_T("BMP"));
 
   wxBitmap *pBMP;
   if (ThumbFileNameLook.FileExists()) {
@@ -724,9 +741,9 @@ void s57chart::SetFullExtent(Extent &ext) {
   m_bExtentSet = true;
 }
 
-void s57chart::ForceEdgePriorityEvaluate() { m_bLinePrioritySet = false; }
+void s57chart::ForceEdgePriorityEvaluate(void) { m_bLinePrioritySet = false; }
 
-void s57chart::SetLinePriorities() {
+void s57chart::SetLinePriorities(void) {
   if (!ps52plib) return;
 
   //      If necessary.....
@@ -962,7 +979,7 @@ typedef struct segment_pair {
   float e0, n0, e1, n1;
 } _segment_pair;
 
-void s57chart::AssembleLineGeometry() {
+void s57chart::AssembleLineGeometry(void) {
   // Walk the hash tables to get the required buffer size
 
   //  Start with the edge hash table
@@ -1369,7 +1386,7 @@ void s57chart::AssembleLineGeometry() {
 #endif
 }
 
-void s57chart::BuildLineVBO() {
+void s57chart::BuildLineVBO(void) {
 #ifdef ocpnUSE_GL
   if (!g_b_EnableVBO) return;
 
@@ -1422,7 +1439,7 @@ void s57chart::BuildLineVBO() {
     GLenum err = glGetError();
     if (err) {
       wxString msg;
-      msg.Printf("S57 VBO Error 1: %d", err);
+      msg.Printf(_T("S57 VBO Error 1: %d"), err);
       wxLogMessage(msg);
       printf("S57 VBO Error 1: %d", err);
     }
@@ -1434,7 +1451,7 @@ void s57chart::BuildLineVBO() {
     err = glGetError();
     if (err) {
       wxString msg;
-      msg.Printf("S57 VBO Error 2: %d", err);
+      msg.Printf(_T("S57 VBO Error 2: %d"), err);
       wxLogMessage(msg);
       printf("S57 VBO Error 2: %d", err);
     }
@@ -1468,7 +1485,7 @@ void s57chart::BuildLineVBO() {
     err = glGetError();
     if (err) {
       wxString msg;
-      msg.Printf("S57 VBO Error 3: %d", err);
+      msg.Printf(_T("S57 VBO Error 3: %d"), err);
       wxLogMessage(msg);
       printf("S57 VBO Error 3: %d", err);
     }
@@ -1994,7 +2011,7 @@ bool s57chart::DoRenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
 
     //    Create a mask
     if (b_overlay) {
-      wxColour nodat = GetGlobalColor("NODTA");
+      wxColour nodat = GetGlobalColor(_T ( "NODTA" ));
       wxColour nodat_sub = nodat;
 
 #ifdef ocpnUSE_ocpnBitmap
@@ -2271,7 +2288,7 @@ int s57chart::DCRenderRect(wxMemoryDC &dcinput, const ViewPort &vp,
 
   //    This does not work due to some issue with ref data of allocated
   //    buffer..... render_canvas_parms pb_spec( rect->x, rect->y, rect->width,
-  //    rect->height,  GetGlobalColor ( "NODTA" ));
+  //    rect->height,  GetGlobalColor ( _T ( "NODTA" ) ));
 
   render_canvas_parms pb_spec;
 
@@ -2292,7 +2309,7 @@ int s57chart::DCRenderRect(wxMemoryDC &dcinput, const ViewPort &vp,
 #endif
 
   // Preset background
-  wxColour color = GetGlobalColor("NODTA");
+  wxColour color = GetGlobalColor(_T ( "NODTA" ));
   unsigned char r, g, b;
   if (color.IsOk()) {
     r = color.Red();
@@ -2518,8 +2535,8 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
   //    Use a static semaphore flag to prevent recursion
   if (s_bInS57) {
     //          printf("s57chart::Init() recursion..., retry\n");
-    //          wxLogMessage("Recursion");
-    // return INIT_FAIL_NOERROR;
+    //          wxLogMessage(_T("Recursion"));
+    return INIT_FAIL_NOERROR;
   }
 
   s_bInS57++;
@@ -2547,7 +2564,7 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
   }
 
   if (flags == HEADER_ONLY) {
-    if (ext == "000") {
+    if (ext == _T("000")) {
       if (!GetBaseFileAttr(fn.GetFullPath()))
         ret_value = INIT_FAIL_REMOVE;
       else {
@@ -2556,7 +2573,7 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
         else
           ret_value = INIT_OK;
       }
-    } else if (ext == "S57") {
+    } else if (ext == _T("S57")) {
       m_SENCFileName = m_TempFilePath;
       if (!CreateHeaderDataFromSENC())
         ret_value = INIT_FAIL_REMOVE;
@@ -2577,7 +2594,7 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
       m_bbase_file_attr_known = true;
   }
 
-  if (ext == "000") {
+  if (ext == _T("000")) {
     if (m_bbase_file_attr_known) {
       int sret = FindOrCreateSenc(m_FullPath);
       if (sret == BUILD_SENC_PENDING) {
@@ -2596,7 +2613,7 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
 
   }
 
-  else if (ext == "S57") {
+  else if (ext == _T("S57")) {
     m_SENCFileName = m_TempFilePath;
     ret_value = PostInit(flags, m_global_color_scheme);
   }
@@ -2607,7 +2624,7 @@ InitReturn s57chart::Init(const wxString &name, ChartInitFlag flags) {
 
 wxString s57chart::buildSENCName(const wxString &name) {
   wxFileName fn(name);
-  fn.SetExt("S57");
+  fn.SetExt(_T("S57"));
   wxString file_name = fn.GetFullName();
 
   //      Set the proper directory for the SENC files
@@ -2625,10 +2642,10 @@ wxString s57chart::buildSENCName(const wxString &name) {
   wxString sha1;
   for (unsigned int i = 0; i < 6; i++) {
     wxString s;
-    s.Printf("%02X", sha1_out[i]);
+    s.Printf(_T("%02X"), sha1_out[i]);
     sha1 += s;
   }
-  sha1 += "_";
+  sha1 += _T("_");
   file_name.Prepend(sha1);
 #endif
 
@@ -2683,7 +2700,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
 
   //      Look for SENC file in the target directory
 
-  wxString msg("S57chart::Checking SENC file: ");
+  wxString msg(_T("S57chart::Checking SENC file: "));
   msg.Append(m_SENCFileName);
   wxLogMessage(msg);
 
@@ -2695,7 +2712,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
       Osenc senc;
       if (senc.ingestHeader(m_SENCFileName)) {
         bbuild_new_senc = true;
-        wxLogMessage("    Rebuilding SENC due to ingestHeader failure.");
+        wxLogMessage(_T("    Rebuilding SENC due to ingestHeader failure."));
       } else {
         int senc_file_version = senc.getSencReadVersion();
 
@@ -2703,7 +2720,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
 
         wxString str = senc.getSENCFileCreateDate();
         wxDateTime SENCCreateDate;
-        SENCCreateDate.ParseFormat(str, "%Y%m%d");
+        SENCCreateDate.ParseFormat(str, _T("%Y%m%d"));
 
         if (SENCCreateDate.IsValid())
           SENCCreateDate.ResetTime();  // to midnight
@@ -2722,7 +2739,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
         //  SENC file version has to be correct for other tests to make sense
         if (senc_file_version != CURRENT_SENC_FORMAT_VERSION) {
           bbuild_new_senc = true;
-          wxLogMessage("    Rebuilding SENC due to SENC format update.");
+          wxLogMessage(_T("    Rebuilding SENC due to SENC format update."));
         }
 
         //  Senc EDTN must be the same as .000 file EDTN.
@@ -2731,11 +2748,11 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
 
         else if (ifile_edition > isenc_edition) {
           bbuild_new_senc = true;
-          wxLogMessage("    Rebuilding SENC due to cell edition update.");
+          wxLogMessage(_T("    Rebuilding SENC due to cell edition update."));
           wxString msg;
-          msg = "    Last edition recorded in SENC: ";
+          msg = _T("    Last edition recorded in SENC: ");
           msg += senc_base_edtn;
-          msg += "  most recent edition cell file: ";
+          msg += _T("  most recent edition cell file: ");
           msg += m_edtn000;
           wxLogMessage(msg);
         } else {
@@ -2747,11 +2764,11 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
             if (most_recent_update_file > last_update) {
               bbuild_new_senc = true;
               wxLogMessage(
-                  "    Rebuilding SENC due to incremental cell update.");
+                  _T("    Rebuilding SENC due to incremental cell update."));
               wxString msg;
               msg.Printf(
-                  "    Last update recorded in SENC: %d   most recent "
-                  "update file: %d",
+                  _T("    Last update recorded in SENC: %d   most recent ")
+                  _T("update file: %d"),
                   last_update, most_recent_update_file);
               wxLogMessage(msg);
             }
@@ -2766,20 +2783,20 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
           if (SENCCreateDate.IsValid()) {
             if (OModTime000.IsLaterThan(SENCCreateDate)) {
               wxLogMessage(
-                  "    Rebuilding SENC due to Senc vs cell file time "
-                  "check.");
+                  _T("    Rebuilding SENC due to Senc vs cell file time ")
+                  _T("check."));
               bbuild_new_senc = true;
             }
           } else {
             bbuild_new_senc = true;
             wxLogMessage(
-                "    Rebuilding SENC due to SENC create time invalid.");
+                _T("    Rebuilding SENC due to SENC create time invalid."));
           }
 
           //                     int Osize000l = FileName000.GetSize().GetLo();
           //                     int Osize000h = FileName000.GetSize().GetHi();
           //                     wxString t;
-          //                     t.Printf("%d%d", Osize000h, Osize000l);
+          //                     t.Printf(_T("%d%d"), Osize000h, Osize000l);
           //                     if( !t.IsSameAs( ssize000) )
           //                         bbuild_new_senc = true;
         }
@@ -2788,7 +2805,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
       }
     } else if (!::wxFileExists(m_SENCFileName))  // SENC file does not exist
     {
-      wxLogMessage("    Rebuilding SENC due to missing SENC file.");
+      wxLogMessage(_T("    Rebuilding SENC due to missing SENC file."));
       bbuild_new_senc = true;
     }
   }
@@ -2809,7 +2826,7 @@ int s57chart::FindOrCreateSenc(const wxString &name, bool b_progress) {
 InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
   //    SENC file is ready, so build the RAZ structure
   if (0 != BuildRAZFromSENCFile(m_SENCFileName)) {
-    wxString msg("   Cannot load SENC file ");
+    wxString msg(_T("   Cannot load SENC file "));
     msg.Append(m_SENCFileName);
     wxLogMessage(msg);
 
@@ -2824,7 +2841,7 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
     SENCdir.Append(wxFileName::GetPathSeparator());
 
   wxFileName s57File(m_SENCFileName);
-  wxFileName ThumbFileName(SENCdir, s57File.GetName().Mid(13), "BMP");
+  wxFileName ThumbFileName(SENCdir, s57File.GetName().Mid(13), _T("BMP"));
 
   if (!ThumbFileName.FileExists() || m_bneed_new_thumbnail) {
     BuildThumbnail(ThumbFileName.GetFullPath());
@@ -2863,7 +2880,7 @@ InitReturn s57chart::PostInit(ChartInitFlag flags, ColorScheme cs) {
   return INIT_OK;
 }
 
-void s57chart::ClearDepthContourArray() {
+void s57chart::ClearDepthContourArray(void) {
   if (m_nvaldco_alloc) {
     free(m_pvaldco_array);
   }
@@ -2872,7 +2889,7 @@ void s57chart::ClearDepthContourArray() {
   m_pvaldco_array = (double *)calloc(m_nvaldco_alloc, sizeof(double));
 }
 
-void s57chart::BuildDepthContourArray() {
+void s57chart::BuildDepthContourArray(void) {
   //    Build array of contour values for later use by conditional symbology
 
   if (0 == m_nvaldco_alloc) {
@@ -2914,7 +2931,7 @@ void s57chart::BuildDepthContourArray() {
   SetSafetyContour();
 }
 
-void s57chart::SetSafetyContour() {
+void s57chart::SetSafetyContour(void) {
   // Iterate through the array of contours in this cell, choosing the best one
   // to render as a bold "safety contour" in the PLIB.
 
@@ -2987,7 +3004,7 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
   //      Make the target directory if needed
   if (true != ThumbFileName.DirExists(ThumbFileName.GetPath())) {
     if (!ThumbFileName.Mkdir(ThumbFileName.GetPath())) {
-      wxLogMessage("   Cannot create BMP file directory for " +
+      wxLogMessage(_T("   Cannot create BMP file directory for ") +
                    ThumbFileName.GetFullPath());
       return false;
     }
@@ -3132,12 +3149,19 @@ bool s57chart::BuildThumbnail(const wxString &bmpname) {
   return ret_code;
 }
 
+#include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY_PTR(float *, MyFloatPtrArray);
-static int depth = 0;  // Tracks re-entry depth
-static bool isProcessing = false;
 
 //    Read the .000 ENC file and create required Chartbase data structures
-bool s57chart::CreateHeaderDataFromENC() {
+bool s57chart::CreateHeaderDataFromENC(void) {
+  if (!InitENCMinimal(m_TempFilePath)) {
+    wxString msg(_T("   Cannot initialize ENC file "));
+    msg.Append(m_TempFilePath);
+    wxLogMessage(msg);
+
+    return false;
+  }
+
   OGRFeature *pFeat;
   int catcov;
   float LatMax, LatMin, LonMax, LonMin;
@@ -3149,101 +3173,78 @@ bool s57chart::CreateHeaderDataFromENC() {
   m_pCOVRTablePoints = NULL;
   m_pCOVRTable = NULL;
 
-  if (!InitENCMinimal(m_TempFilePath)) {
-    wxString msg("   Cannot initialize ENC file ");
-    msg.Append(m_TempFilePath);
-    wxLogMessage(msg);
-
-    return false;
-  }
-
   //  Create arrays to hold geometry objects temporarily
   MyFloatPtrArray *pAuxPtrArray = new MyFloatPtrArray;
   std::vector<int> auxCntArray, noCovrCntArray;
+
   MyFloatPtrArray *pNoCovrPtrArray = new MyFloatPtrArray;
 
-  {
-    wxCriticalSectionLocker enter(GDALcriticalSection);
-    if (isProcessing) int yyp = 4;
-    isProcessing = true;
+  // Get the first M_COVR object
+  pFeat = GetChartFirstM_COVR(catcov);
 
-    depth++;
-    // Print thread ID and current depth
-    // printf("Enter [Thread %ld] (Depth: %d)\n",
-    // (long)wxThread::GetCurrentId(), depth);
+  while (pFeat) {
+    //    Get the next M_COVR feature, and create possible additional entries
+    //    for COVR
+    OGRPolygon *poly = (OGRPolygon *)(pFeat->GetGeometryRef());
+    OGRLinearRing *xring = poly->getExteriorRing();
 
-    // Get the first M_COVR object
-    pFeat = GetChartFirstM_COVR(catcov);
+    int npt = xring->getNumPoints();
+    int usedpts = 0;
 
-    while (pFeat) {
-      //    Get the next M_COVR feature, and create possible additional entries
-      //    for COVR
-      OGRPolygon *poly = (OGRPolygon *)(pFeat->GetGeometryRef());
-      OGRLinearRing *xring = poly->getExteriorRing();
+    float *pf = NULL;
+    float *pfr = NULL;
 
-      int npt = xring->getNumPoints();
-      int usedpts = 0;
+    if (npt >= 3) {
+      // pf = (float *) malloc( 2 * sizeof(float) );
 
-      float *pf = NULL;
-      float *pfr = NULL;
-
-      if (npt >= 3) {
-        // pf = (float *) malloc( 2 * sizeof(float) );
-
-        OGRPoint last_p;
-        OGRPoint p;
-        for (int i = 0; i < npt; i++) {
-          xring->getPoint(i, &p);
-          if (i >
-              3) {  // We need at least 3 points, so make sure the first 3 pass
-            float xdelta =
-                fmax(last_p.getX(), p.getX()) - fmin(last_p.getX(), p.getX());
-            float ydelta =
-                fmax(last_p.getY(), p.getY()) - fmin(last_p.getY(), p.getY());
-            if (xdelta < 0.001 &&
-                ydelta < 0.001) {  // Magic number, 0.001 degrees ~= 111 meters
-                                   // on the equator...
-              continue;
-            }
+      OGRPoint last_p;
+      OGRPoint p;
+      for (int i = 0; i < npt; i++) {
+        xring->getPoint(i, &p);
+        if (i >
+            3) {  // We need at least 3 points, so make sure the first 3 pass
+          float xdelta =
+              fmax(last_p.getX(), p.getX()) - fmin(last_p.getX(), p.getX());
+          float ydelta =
+              fmax(last_p.getY(), p.getY()) - fmin(last_p.getY(), p.getY());
+          if (xdelta < 0.001 &&
+              ydelta < 0.001) {  // Magic number, 0.001 degrees ~= 111 meters on
+                                 // the equator...
+            continue;
           }
-          last_p = p;
-          usedpts++;
-          pf = (float *)realloc(pf, 2 * usedpts * sizeof(float));
-          pfr = &pf[2 * (usedpts - 1)];
-
-          if (catcov == 1) {
-            LatMax = fmax(LatMax, p.getY());
-            LatMin = fmin(LatMin, p.getY());
-            LonMax = fmax(LonMax, p.getX());
-            LonMin = fmin(LonMin, p.getX());
-          }
-
-          pfr[0] = p.getY();  // lat
-          pfr[1] = p.getX();  // lon
         }
+        last_p = p;
+        usedpts++;
+        pf = (float *)realloc(pf, 2 * usedpts * sizeof(float));
+        pfr = &pf[2 * (usedpts - 1)];
 
         if (catcov == 1) {
-          pAuxPtrArray->Add(pf);
-          auxCntArray.push_back(usedpts);
-        } else if (catcov == 2) {
-          pNoCovrPtrArray->Add(pf);
-          noCovrCntArray.push_back(usedpts);
+          LatMax = fmax(LatMax, p.getY());
+          LatMin = fmin(LatMin, p.getY());
+          LonMax = fmax(LonMax, p.getX());
+          LonMin = fmin(LonMin, p.getX());
         }
+
+        pfr[0] = p.getY();  // lat
+        pfr[1] = p.getX();  // lon
       }
 
-      delete pFeat;
-      pFeat = GetChartNextM_COVR(catcov);
-      DEBUG_LOG << "used " << usedpts << " points";
+      if (catcov == 1) {
+        pAuxPtrArray->Add(pf);
+        auxCntArray.push_back(usedpts);
+      } else if (catcov == 2) {
+        pNoCovrPtrArray->Add(pf);
+        noCovrCntArray.push_back(usedpts);
+      }
+    }
 
-    }  // while
-    // printf("     Leave [Thread %ld] (Depth: %d)\n",
-    // (long)wxThread::GetCurrentId(), depth);
-    depth--;
-    isProcessing = false;
-
-  }  // CriticalSection
+    delete pFeat;
+    pFeat = GetChartNextM_COVR(catcov);
+    DEBUG_LOG << "used " << usedpts << " points";
+  }  // while
 
   //    Allocate the storage
+
   m_nCOVREntries = auxCntArray.size();
 
   //    Create new COVR entries
@@ -3260,7 +3261,7 @@ bool s57chart::CreateHeaderDataFromENC() {
 
   else  // strange case, found no CATCOV=1 M_COVR objects
   {
-    wxString msg("   ENC contains no useable M_COVR, CATCOV=1 features:  ");
+    wxString msg(_T("   ENC contains no useable M_COVR, CATCOV=1 features:  "));
     msg.Append(m_TempFilePath);
     wxLogMessage(msg);
   }
@@ -3286,11 +3287,11 @@ bool s57chart::CreateHeaderDataFromENC() {
   delete pNoCovrPtrArray;
 
   if (0 == m_nCOVREntries) {  // fallback
-    wxString msg("   ENC contains no M_COVR features:  ");
+    wxString msg(_T("   ENC contains no M_COVR features:  "));
     msg.Append(m_TempFilePath);
     wxLogMessage(msg);
 
-    msg = "   Calculating Chart Extents as fallback.";
+    msg = _T("   Calculating Chart Extents as fallback.");
     wxLogMessage(msg);
 
     OGREnvelope Env;
@@ -3325,7 +3326,7 @@ bool s57chart::CreateHeaderDataFromENC() {
       *pfe++ = LonMin;
 
     } else {
-      wxString msg("   Cannot calculate Extents for ENC:  ");
+      wxString msg(_T("   Cannot calculate Extents for ENC:  "));
       msg.Append(m_TempFilePath);
       wxLogMessage(msg);
 
@@ -3343,22 +3344,22 @@ bool s57chart::CreateHeaderDataFromENC() {
   //    Set the chart scale
   m_Chart_Scale = GetENCScale();
 
-  // wxString nice_name;
-  // GetChartNameFromTXT(m_TempFilePath, nice_name);
-  // m_Name = nice_name;
+  wxString nice_name;
+  GetChartNameFromTXT(m_TempFilePath, nice_name);
+  m_Name = nice_name;
 
   return true;
 }
 
 //    Read the .S57 oSENC file (CURRENT_SENC_FORMAT_VERSION >= 200) and create
 //    required Chartbase data structures
-bool s57chart::CreateHeaderDataFromoSENC() {
+bool s57chart::CreateHeaderDataFromoSENC(void) {
   bool ret_val = true;
 
   wxFFileInputStream fpx(m_SENCFileName);
   if (!fpx.IsOk()) {
     if (!::wxFileExists(m_SENCFileName)) {
-      wxString msg("   Cannot open SENC file ");
+      wxString msg(_T("   Cannot open SENC file "));
       msg.Append(m_SENCFileName);
       wxLogMessage(msg);
     }
@@ -3427,8 +3428,8 @@ bool s57chart::CreateHeaderDataFromoSENC() {
 
     //  Misc
     m_SE = m_edtn000;
-    m_datum_str = "WGS84";
-    m_SoundingsDatum = "MEAN LOWER LOW WATER";
+    m_datum_str = _T("WGS84");
+    m_SoundingsDatum = _T("MEAN LOWER LOW WATER");
 
     int senc_file_version = senc.getSencReadVersion();
 
@@ -3436,7 +3437,7 @@ bool s57chart::CreateHeaderDataFromoSENC() {
 
     wxString str = senc.getSENCFileCreateDate();
     wxDateTime SENCCreateDate;
-    SENCCreateDate.ParseFormat(str, "%Y%m%d");
+    SENCCreateDate.ParseFormat(str, _T("%Y%m%d"));
 
     if (SENCCreateDate.IsValid()) SENCCreateDate.ResetTime();  // to midnight
 
@@ -3447,7 +3448,7 @@ bool s57chart::CreateHeaderDataFromoSENC() {
 }
 
 //    Read the .S57 SENC file and create required Chartbase data structures
-bool s57chart::CreateHeaderDataFromSENC() {
+bool s57chart::CreateHeaderDataFromSENC(void) {
   if (CURRENT_SENC_FORMAT_VERSION >= 200) return CreateHeaderDataFromoSENC();
 
   return false;
@@ -3571,7 +3572,7 @@ void s57chart::GetChartNameFromTXT(const wxString &FullPath, wxString &Name) {
 
   for (unsigned int j = 0; j < FileList.GetCount(); j++) {
     wxFileName file(FileList[j]);
-    if (((file.GetExt()).MakeUpper()) == "TXT") {
+    if (((file.GetExt()).MakeUpper()) == _T("TXT")) {
       //  Look for the line beginning with the name of the .000 file
       wxTextFile text_file(file.GetFullPath());
 
@@ -3598,7 +3599,7 @@ void s57chart::GetChartNameFromTXT(const wxString &FullPath, wxString &Name) {
           }
         }
       } else {
-        wxString msg("   Error Reading ENC .TXT file: ");
+        wxString msg(_T("   Error Reading ENC .TXT file: "));
         msg.Append(file.GetFullPath());
         wxLogMessage(msg);
       }
@@ -3643,7 +3644,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
   wxDir dir(DirName000);
   if (!dir.IsOpened()) {
     DirName000.Prepend(wxFileName::GetPathSeparator());
-    DirName000.Prepend(".");
+    DirName000.Prepend(_T("."));
     dir.Open(DirName000);
     if (!dir.IsOpened()) {
       return 0;
@@ -3679,7 +3680,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
     dummy_array = UpFiles;
 
   wxArrayString possibleFiles;
-  wxDir::GetAllFiles(DirName000, &possibleFiles, "", flags);
+  wxDir::GetAllFiles(DirName000, &possibleFiles, wxEmptyString, flags);
 
   for (unsigned int i = 0; i < possibleFiles.GetCount(); i++) {
     wxString filename(possibleFiles[i]);
@@ -3696,7 +3697,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
       wxCharBuffer buffer =
           FileToAdd.ToUTF8();  // Check file namme for convertability
 
-      if (buffer.data() && !filename.IsSameAs("CATALOG.031",
+      if (buffer.data() && !filename.IsSameAs(_T("CATALOG.031"),
                                               false))  // don't process catalogs
       {
         //          We must check the update file for validity
@@ -3711,7 +3712,7 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
         DDFModule *poModule = new DDFModule();
         if (!poModule->Open(FileToAdd.mb_str())) {
           wxString msg(
-              "   s57chart::BuildS57File  Unable to open update file ");
+              _T("   s57chart::BuildS57File  Unable to open update file "));
           msg.Append(FileToAdd);
           wxLogMessage(msg);
         } else {
@@ -3734,16 +3735,17 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
             }
           } else {
             wxString msg(
-                "   s57chart::BuildS57File  DDFRecord 0 does not contain "
-                "DSID:ISDT in update file ");
+                _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
+                _T("DSID:ISDT in update file "));
             msg.Append(FileToAdd);
             wxLogMessage(msg);
 
-            sumdate = "20000101";  // backstop, very early, so wont be used
+            sumdate = _T("20000101");  // backstop, very early, so wont be used
           }
 
-          umdate.ParseFormat(sumdate, "%Y%m%d");
-          if (!umdate.IsValid()) umdate.ParseFormat("20000101", "%Y%m%d");
+          umdate.ParseFormat(sumdate, _T("%Y%m%d"));
+          if (!umdate.IsValid())
+            umdate.ParseFormat(_T("20000101"), _T("%Y%m%d"));
 
           umdate.ResetTime();
           if (!umdate.IsValid()) int yyp = 4;
@@ -3757,12 +3759,12 @@ int s57chart::GetUpdateFileArray(const wxFileName file000,
             }
           } else {
             wxString msg(
-                "   s57chart::BuildS57File  DDFRecord 0 does not contain "
-                "DSID:EDTN in update file ");
+                _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
+                _T("DSID:EDTN in update file "));
             msg.Append(FileToAdd);
             wxLogMessage(msg);
 
-            umedtn = "1";  // backstop
+            umedtn = _T("1");  // backstop
           }
         }
 
@@ -3826,7 +3828,7 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
       for (int iff = 0; iff < retval + 1; iff++) {
         wxFileName ufile(m_TempFilePath);
         wxString sext;
-        sext.Printf("%03d", iff);
+        sext.Printf(_T("%03d"), iff);
         ufile.SetExt(sext);
 
         //      Create the target update file name
@@ -3853,9 +3855,9 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
           //      Copy the valid file to the SENC directory
           bool cpok = wxCopyFile(ufile.GetFullPath(), cp_ufile);
           if (!cpok) {
-            wxString msg("   Cannot copy temporary working ENC file ");
+            wxString msg(_T("   Cannot copy temporary working ENC file "));
             msg.Append(ufile.GetFullPath());
-            msg.Append(" to ");
+            msg.Append(_T(" to "));
             msg.Append(cp_ufile);
             wxLogMessage(msg);
           }
@@ -3877,14 +3879,14 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
           }
 
           wxString msg(
-              "WARNING---ENC Update chain incomplete. Substituting NULL "
-              "update file: ");
+              _T("WARNING---ENC Update chain incomplete. Substituting NULL ")
+              _T("update file: "));
           msg += ufile.GetFullName();
           wxLogMessage(msg);
-          wxLogMessage("   Subsequent ENC updates may produce errors.");
+          wxLogMessage(_T("   Subsequent ENC updates may produce errors."));
           wxLogMessage(
-              "   This ENC exchange set should be updated and SENCs "
-              "rebuilt.");
+              _T("   This ENC exchange set should be updated and SENCs ")
+              _T("rebuilt."));
 
           bool bstat;
           DDFModule *dupdate = new DDFModule;
@@ -3893,7 +3895,7 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
           delete dupdate;
 
           if (!bstat) {
-            wxString msg("   Error creating dummy update file: ");
+            wxString msg(_T("   Error creating dummy update file: "));
             msg.Append(cp_ufile);
             wxLogMessage(msg);
           }
@@ -3908,7 +3910,7 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
 
     wxFileName lastfile(m_TempFilePath);
     wxString last_sext;
-    last_sext.Printf("%03d", retval);
+    last_sext.Printf(_T("%03d"), retval);
     lastfile.SetExt(last_sext);
 
     bool bSuccess;
@@ -3936,7 +3938,7 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
         }
       } else {
         wxDateTime now = wxDateTime::Now();
-        LastUpdateDate = now.Format("%Y%m%d");
+        LastUpdateDate = now.Format(_T("%Y%m%d"));
       }
     }
   }
@@ -3945,11 +3947,11 @@ int s57chart::ValidateAndCountUpdates(const wxFileName file000,
   return retval;
 }
 
-wxString s57chart::GetISDT() {
+wxString s57chart::GetISDT(void) {
   if (m_date000.IsValid())
-    return m_date000.Format("%Y%m%d");
+    return m_date000.Format(_T("%Y%m%d"));
   else
-    return "Unknown";
+    return _T("Unknown");
 }
 
 bool s57chart::GetBaseFileAttr(const wxString &file000) {
@@ -3958,7 +3960,7 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
   wxString FullPath000 = file000;
   DDFModule *poModule = new DDFModule();
   if (!poModule->Open(FullPath000.mb_str())) {
-    wxString msg("   s57chart::BuildS57File  Unable to open ");
+    wxString msg(_T("   s57chart::BuildS57File  Unable to open "));
     msg.Append(FullPath000);
     wxLogMessage(msg);
     delete poModule;
@@ -3978,8 +3980,8 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
   m_nGeoRecords = pr->GetIntSubfield("DSSI", 0, "NOGR", 0);
   if (!m_nGeoRecords) {
     wxString msg(
-        "   s57chart::BuildS57File  DDFRecord 0 does not contain "
-        "DSSI:NOGR ");
+        _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
+        _T("DSSI:NOGR "));
     wxLogMessage(msg);
 
     m_nGeoRecords = 1;  // backstop
@@ -3993,15 +3995,15 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
     date000 = wxString(u, wxConvUTF8);
   else {
     wxString msg(
-        "   s57chart::BuildS57File  DDFRecord 0 does not contain "
-        "DSID:ISDT ");
+        _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
+        _T("DSID:ISDT "));
     wxLogMessage(msg);
 
     date000 =
-        "20000101";  // backstop, very early, so any new files will update?
+        _T("20000101");  // backstop, very early, so any new files will update?
   }
-  m_date000.ParseFormat(date000, "%Y%m%d");
-  if (!m_date000.IsValid()) m_date000.ParseFormat("20000101", "%Y%m%d");
+  m_date000.ParseFormat(date000, _T("%Y%m%d"));
+  if (!m_date000.IsValid()) m_date000.ParseFormat(_T("20000101"), _T("%Y%m%d"));
 
   m_date000.ResetTime();
 
@@ -4011,11 +4013,11 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
     m_edtn000 = wxString(u, wxConvUTF8);
   else {
     wxString msg(
-        "   s57chart::BuildS57File  DDFRecord 0 does not contain "
-        "DSID:EDTN ");
+        _T("   s57chart::BuildS57File  DDFRecord 0 does not contain ")
+        _T("DSID:EDTN "));
     wxLogMessage(msg);
 
-    m_edtn000 = "1";  // backstop
+    m_edtn000 = _T("1");  // backstop
   }
 
   m_SE = m_edtn000;
@@ -4029,7 +4031,7 @@ bool s57chart::GetBaseFileAttr(const wxString &file000) {
     }
   }
   if (!m_native_scale) {
-    wxString msg("   s57chart::BuildS57File  ENC not contain DSPM:CSCL ");
+    wxString msg(_T("   s57chart::BuildS57File  ENC not contain DSPM:CSCL "));
     wxLogMessage(msg);
 
     m_native_scale = 1000;  // backstop
@@ -4127,7 +4129,7 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   //    Create a hash map of VE_Element pointers as a chart class member
   int n_ve_elements = VEs.size();
 
-  double scale = top_frame::Get()->GetBestVPScale(this);
+  double scale = gFrame->GetBestVPScale(this);
   int nativescale = GetNativeScale();
 
   for (int i = 0; i < n_ve_elements; i++) {
@@ -4224,7 +4226,7 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
     if (NULL == LUP) {
       if (g_bDebugS57) {
         wxString msg(obj->FeatureName, wxConvUTF8);
-        msg.Prepend("   Could not find LUP for ");
+        msg.Prepend(_T("   Could not find LUP for "));
         LogMessageOnce(msg);
       }
       delete obj;
@@ -4282,21 +4284,21 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   //   Decide on pub date to show
 
   wxDateTime d000;
-  d000.ParseFormat(sencfile.getBaseDate(), "%Y%m%d");
-  if (!d000.IsValid()) d000.ParseFormat("20000101", "%Y%m%d");
+  d000.ParseFormat(sencfile.getBaseDate(), _T("%Y%m%d"));
+  if (!d000.IsValid()) d000.ParseFormat(_T("20000101"), _T("%Y%m%d"));
 
   wxDateTime updt;
-  updt.ParseFormat(sencfile.getUpdateDate(), "%Y%m%d");
-  if (!updt.IsValid()) updt.ParseFormat("20000101", "%Y%m%d");
+  updt.ParseFormat(sencfile.getUpdateDate(), _T("%Y%m%d"));
+  if (!updt.IsValid()) updt.ParseFormat(_T("20000101"), _T("%Y%m%d"));
 
   if (updt.IsLaterThan(d000))
-    m_PubYear.Printf("%4d", updt.GetYear());
+    m_PubYear.Printf(_T("%4d"), updt.GetYear());
   else
-    m_PubYear.Printf("%4d", d000.GetYear());
+    m_PubYear.Printf(_T("%4d"), d000.GetYear());
 
   //    Set some base class values
   wxDateTime upd = updt;
-  if (!upd.IsValid()) upd.ParseFormat("20000101", "%Y%m%d");
+  if (!upd.IsValid()) upd.ParseFormat(_T("20000101"), _T("%Y%m%d"));
 
   upd.ResetTime();
   m_EdDate = upd;
@@ -4304,12 +4306,12 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
   m_SE = sencfile.getSENCReadBaseEdition();
 
   wxString supdate;
-  supdate.Printf(" / %d", sencfile.getSENCReadLastUpdate());
+  supdate.Printf(_T(" / %d"), sencfile.getSENCReadLastUpdate());
   m_SE += supdate;
 
-  m_datum_str = "WGS84";
+  m_datum_str = _T("WGS84");
 
-  m_SoundingsDatum = "MEAN LOWER LOW WATER";
+  m_SoundingsDatum = _T("MEAN LOWER LOW WATER");
   m_ID = sencfile.getReadID();
   m_Name = sencfile.getReadName();
 
@@ -4669,9 +4671,9 @@ ListOfObjRazRules *s57chart::GetLightsObjRuleListVisibleAtLatLon(
                     wxString value = s57chart::GetAttributeValueAsString(
                         pAttrVal, curAttrName);
 
-                    if (curAttrName == "LITVIS") {
-                      if (value.StartsWith("obsc")) bviz = false;
-                    } else if (curAttrName == "VALNMR")
+                    if (curAttrName == _T("LITVIS")) {
+                      if (value.StartsWith(_T("obsc"))) bviz = false;
+                    } else if (curAttrName == _T("VALNMR"))
                       value.ToDouble(&valnmr);
 
                     attrCounter++;
@@ -5010,16 +5012,16 @@ bool s57chart::DoesLatLonSelectObject(float lat, float lon, float select_radius,
 }
 
 wxString s57chart::GetAttributeDecode(wxString &att, int ival) {
-  wxString ret_val = "";
+  wxString ret_val = _T("");
 
   //  Get the attribute code from the acronym
   const char *att_code;
 
   wxString file(g_csv_locn);
-  file.Append("/s57attributes.csv");
+  file.Append(_T("/s57attributes.csv"));
 
   if (!wxFileName::FileExists(file)) {
-    wxString msg("   Could not open ");
+    wxString msg(_T("   Could not open "));
     msg.Append(file);
     wxLogMessage(msg);
 
@@ -5035,10 +5037,10 @@ wxString s57chart::GetAttributeDecode(wxString &att, int ival) {
 
   // Ingest, and get a pointer to the ingested table for "Expected Input" file
   wxString ei_file(g_csv_locn);
-  ei_file.Append("/s57expectedinput.csv");
+  ei_file.Append(_T("/s57expectedinput.csv"));
 
   if (!wxFileName::FileExists(ei_file)) {
-    wxString msg("   Could not open ");
+    wxString msg(_T("   Could not open "));
     msg.Append(ei_file);
     wxLogMessage(msg);
 
@@ -5260,26 +5262,26 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
         long ival;
         if (val_str.ToLong(&ival)) {
           if (0 == ival)
-            value = "Unknown";
+            value = _T("Unknown");
           else {
             wxString decode_val = GetAttributeDecode(curAttrName, ival);
             if (!decode_val.IsEmpty()) {
               value = decode_val;
               wxString iv;
-              iv.Printf(" (%d)", (int)ival);
+              iv.Printf(_T(" (%d)"), (int)ival);
               value.Append(iv);
             } else
-              value.Printf("%d", (int)ival);
+              value.Printf(_T("%d"), (int)ival);
           }
         }
 
         else if (val_str.IsEmpty())
-          value = "Unknown";
+          value = _T("Unknown");
 
         else {
           value.Clear();
           wxString value_increment;
-          wxStringTokenizer tk(val_str, ",");
+          wxStringTokenizer tk(val_str, wxT(","));
           int iv = 0;
           if (tk.HasMoreTokens()) {
             while (tk.HasMoreTokens()) {
@@ -5288,15 +5290,15 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
               if (token.ToLong(&ival)) {
                 wxString decode_val = GetAttributeDecode(curAttrName, ival);
 
-                value_increment.Printf(" (%d)", (int)ival);
+                value_increment.Printf(_T(" (%d)"), (int)ival);
 
                 if (!decode_val.IsEmpty()) value_increment.Prepend(decode_val);
 
-                if (iv) value_increment.Prepend(", ");
+                if (iv) value_increment.Prepend(wxT(", "));
                 value.Append(value_increment);
 
               } else {
-                if (iv) value.Append(",");
+                if (iv) value.Append(_T(","));
                 value.Append(token);
               }
 
@@ -5306,7 +5308,7 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
             value.Append(val_str);
         }
       } else
-        value = "[NULL VALUE]";
+        value = _T("[NULL VALUE]");
 
       break;
     }
@@ -5318,10 +5320,10 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
       if (!decode_val.IsEmpty()) {
         value = decode_val;
         wxString iv;
-        iv.Printf("(%d)", ival);
+        iv.Printf(_T("(%d)"), ival);
         value.Append(iv);
       } else
-        value.Printf("(%d)", ival);
+        value.Printf(_T("(%d)"), ival);
 
       break;
     }
@@ -5330,73 +5332,63 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
 
     case OGR_REAL: {
       double dval = *((double *)pval->value);
-      wxString val_suffix = " m";
-      bool has_preformatted = false;
-      wxString preformatted;
+      wxString val_suffix = _T(" m");
 
-      // Unit customizations for height attributes:
-      // - VERCOP: Vertical clearance when bridge/obstruction is in open
-      // position
-      // - VERCLR: Vertical clearance under fixed bridge/cable/pipeline
-      // - VERCCL: Vertical clearance when bridge/obstruction is in closed
-      // position
-      // - HEIGHT: Height of structure/object above chart datum or terrain
-      // - ELEVAT: Elevation of terrain/landmark above chart datum
-      // - VERCSA: Safe vertical clearance for navigation
-      if ((curAttrName == "VERCLR") || (curAttrName == "VERCCL") ||
-          (curAttrName == "VERCOP") || (curAttrName == "HEIGHT") ||
-          (curAttrName == "ELEVAT") || (curAttrName == "VERCSA")) {
-        // Vertical attributes: use Height units (meters/feet)
-        double usr = toUsrHeight(dval, -1);  // input meters
-        dval = usr;
-        wxString unit = getUsrHeightUnit(-1);
-        val_suffix = wxString::Format(" %s", unit.c_str());
-      } else if (curAttrName == "HORCLR") {
-        // Horizontal clearance: format adaptively using distance settings
-        // Input ENC value is meters; convert to nautical miles first
-        double nm = dval / 1852.0;  // meters -> nautical miles
-        preformatted = FormatDistanceAdaptive(nm);
-        has_preformatted = true;
+      //    As a special case, convert some attribute values to feet.....
+      if ((curAttrName == _T("VERCLR")) || (curAttrName == _T("VERCCL")) ||
+          (curAttrName == _T("VERCOP")) || (curAttrName == _T("HEIGHT")) ||
+          (curAttrName == _T("HORCLR")) || (curAttrName == _T("ELEVAT"))) {
+        switch (ps52plib->m_nDepthUnitDisplay) {
+          case 0:                          // feet
+          case 2:                          // fathoms
+            dval = dval * 3 * 39.37 / 36;  // feet
+            val_suffix = _T(" ft");
+            break;
+          default:
+            break;
+        }
       }
 
-      else if ((curAttrName == "VALSOU") || (curAttrName == "DRVAL1") ||
-               (curAttrName == "DRVAL2") || (curAttrName == "VALDCO")) {
-        // VALSOU: Value of sounding - water depth at specific location
-        // DRVAL1: Depth range value 1 - minimum depth in depth area
-        // DRVAL2: Depth range value 2 - maximum depth in depth area
-        // VALDCO: Value of depth contour - depth value of contour line
-        double usr = toUsrDepth(dval, -1);  // input meters
-        dval = usr;
-        wxString unit = getUsrDepthUnit(-1);
-        val_suffix = wxString::Format(" %s", unit.c_str());
+      else if ((curAttrName == _T("VALSOU")) || (curAttrName == _T("DRVAL1")) ||
+               (curAttrName == _T("DRVAL2")) || (curAttrName == _T("VALDCO"))) {
+        switch (ps52plib->m_nDepthUnitDisplay) {
+          case 0:                          // feet
+            dval = dval * 3 * 39.37 / 36;  // feet
+            val_suffix = _T(" ft");
+            break;
+          case 2:                          // fathoms
+            dval = dval * 3 * 39.37 / 36;  // fathoms
+            dval /= 6.0;
+            val_suffix = _T(" fathoms");
+            break;
+          default:
+            break;
+        }
       }
 
-      else if (curAttrName == "SECTR1")
-        val_suffix = "&deg;";
-      else if (curAttrName == "SECTR2")
-        val_suffix = "&deg;";
-      else if (curAttrName == "ORIENT")
-        val_suffix = "&deg;";
-      else if (curAttrName == "VALNMR")
-        val_suffix = " Nm";
-      else if (curAttrName == "SIGPER")
-        val_suffix = "s";
-      else if (curAttrName == "VALACM")
-        val_suffix = " Minutes/year";
-      else if (curAttrName == "VALMAG")
-        val_suffix = "&deg;";
-      else if (curAttrName == "CURVEL")
-        val_suffix = " kt";
+      else if (curAttrName == _T("SECTR1"))
+        val_suffix = _T("&deg;");
+      else if (curAttrName == _T("SECTR2"))
+        val_suffix = _T("&deg;");
+      else if (curAttrName == _T("ORIENT"))
+        val_suffix = _T("&deg;");
+      else if (curAttrName == _T("VALNMR"))
+        val_suffix = _T(" Nm");
+      else if (curAttrName == _T("SIGPER"))
+        val_suffix = _T("s");
+      else if (curAttrName == _T("VALACM"))
+        val_suffix = _T(" Minutes/year");
+      else if (curAttrName == _T("VALMAG"))
+        val_suffix = _T("&deg;");
+      else if (curAttrName == _T("CURVEL"))
+        val_suffix = _T(" kt");
 
-      if (has_preformatted) {
-        value = preformatted;
-      } else {
-        if (dval - floor(dval) < 0.01)
-          value.Printf("%2.0f", dval);
-        else
-          value.Printf("%4.1f", dval);
-        value << val_suffix;
-      }
+      if (dval - floor(dval) < 0.01)
+        value.Printf(_T("%2.0f"), dval);
+      else
+        value.Printf(_T("%4.1f"), dval);
+
+      value << val_suffix;
 
       break;
     }
@@ -5410,7 +5402,7 @@ wxString s57chart::GetObjectAttributeValueAsString(S57Obj *obj, int iatt,
 
 wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
                                              wxString AttrName) {
-  if (NULL == pAttrVal) return "";
+  if (NULL == pAttrVal) return _T("");
 
   wxString value;
   switch (pAttrVal->valType) {
@@ -5420,26 +5412,26 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
         long ival;
         if (val_str.ToLong(&ival)) {
           if (0 == ival)
-            value = "Unknown";
+            value = _T("Unknown");
           else {
             wxString decode_val = GetAttributeDecode(AttrName, ival);
             if (!decode_val.IsEmpty()) {
               value = decode_val;
               wxString iv;
-              iv.Printf("(%d)", (int)ival);
+              iv.Printf(_T("(%d)"), (int)ival);
               value.Append(iv);
             } else
-              value.Printf("%d", (int)ival);
+              value.Printf(_T("%d"), (int)ival);
           }
         }
 
         else if (val_str.IsEmpty())
-          value = "Unknown";
+          value = _T("Unknown");
 
         else {
           value.Clear();
           wxString value_increment;
-          wxStringTokenizer tk(val_str, ",");
+          wxStringTokenizer tk(val_str, wxT(","));
           int iv = 0;
           while (tk.HasMoreTokens()) {
             wxString token = tk.GetNextToken();
@@ -5449,9 +5441,9 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
               if (!decode_val.IsEmpty())
                 value_increment = decode_val;
               else
-                value_increment.Printf(" %d", (int)ival);
+                value_increment.Printf(_T(" %d"), (int)ival);
 
-              if (iv) value_increment.Prepend(", ");
+              if (iv) value_increment.Prepend(wxT(", "));
             }
             value.Append(value_increment);
 
@@ -5460,7 +5452,7 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
           value.Append(val_str);
         }
       } else
-        value = "[NULL VALUE]";
+        value = _T("[NULL VALUE]");
 
       break;
     }
@@ -5472,10 +5464,10 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
       if (!decode_val.IsEmpty()) {
         value = decode_val;
         wxString iv;
-        iv.Printf("(%d)", ival);
+        iv.Printf(_T("(%d)"), ival);
         value.Append(iv);
       } else
-        value.Printf("(%d)", ival);
+        value.Printf(_T("(%d)"), ival);
 
       break;
     }
@@ -5484,60 +5476,63 @@ wxString s57chart::GetAttributeValueAsString(S57attVal *pAttrVal,
 
     case OGR_REAL: {
       double dval = *((double *)pAttrVal->value);
-      wxString val_suffix = " m";
-      bool has_preformatted = false;
-      wxString preformatted;
+      wxString val_suffix = _T(" m");
 
-      // Use unit customizations for special attributes
-      if ((AttrName == "VERCLR") || (AttrName == "VERCCL") ||
-          (AttrName == "VERCOP") || (AttrName == "HEIGHT") ||
-          (AttrName == "ELEVAT")) {
-        // Vertical attributes: use Height units
-        double usr = toUsrHeight(dval, -1);  // input meters
-        dval = usr;
-        wxString unit = getUsrHeightUnit(-1);
-        val_suffix = wxString::Format(" %s", unit.c_str());
-      } else if (AttrName == "HORCLR") {
-        // Horizontal clearance: format adaptively using distance settings
-        double nm = dval / 1852.0;  // meters -> nautical miles
-        preformatted = FormatDistanceAdaptive(nm);
-        has_preformatted = true;
+      //    As a special case, convert some attribute values to feet.....
+      if ((AttrName == _T("VERCLR")) || (AttrName == _T("VERCCL")) ||
+          (AttrName == _T("VERCOP")) || (AttrName == _T("HEIGHT")) ||
+          (AttrName == _T("HORCLR")) || (AttrName == _T("ELEVAT"))) {
+        switch (ps52plib->m_nDepthUnitDisplay) {
+          case 0:                          // feet
+          case 2:                          // fathoms
+            dval = dval * 3 * 39.37 / 36;  // feet
+            val_suffix = _T(" ft");
+            break;
+          default:
+            break;
+        }
       }
 
-      else if ((AttrName == "VALSOU") || (AttrName == "DRVAL1") ||
-               (AttrName == "DRVAL2")) {
-        double usr = toUsrDepth(dval, -1);  // input meters
-        dval = usr;
-        wxString unit = getUsrDepthUnit(-1);
-        val_suffix = wxString::Format(" %s", unit.c_str());
+      else if ((AttrName == _T("VALSOU")) || (AttrName == _T("DRVAL1")) ||
+               (AttrName == _T("DRVAL2"))) {
+        switch (ps52plib->m_nDepthUnitDisplay) {
+          case 0:                          // feet
+            dval = dval * 3 * 39.37 / 36;  // feet
+            val_suffix = _T(" ft");
+            break;
+          case 2:                          // fathoms
+            dval = dval * 3 * 39.37 / 36;  // fathoms
+            dval /= 6.0;
+            val_suffix = _T(" fathoms");
+            break;
+          default:
+            break;
+        }
       }
 
-      else if (AttrName == "SECTR1")
-        val_suffix = "&deg;";
-      else if (AttrName == "SECTR2")
-        val_suffix = "&deg;";
-      else if (AttrName == "ORIENT")
-        val_suffix = "&deg;";
-      else if (AttrName == "VALNMR")
-        val_suffix = " Nm";
-      else if (AttrName == "SIGPER")
-        val_suffix = "s";
-      else if (AttrName == "VALACM")
-        val_suffix = " Minutes/year";
-      else if (AttrName == "VALMAG")
-        val_suffix = "&deg;";
-      else if (AttrName == "CURVEL")
-        val_suffix = " kt";
+      else if (AttrName == _T("SECTR1"))
+        val_suffix = _T("&deg;");
+      else if (AttrName == _T("SECTR2"))
+        val_suffix = _T("&deg;");
+      else if (AttrName == _T("ORIENT"))
+        val_suffix = _T("&deg;");
+      else if (AttrName == _T("VALNMR"))
+        val_suffix = _T(" Nm");
+      else if (AttrName == _T("SIGPER"))
+        val_suffix = _T("s");
+      else if (AttrName == _T("VALACM"))
+        val_suffix = _T(" Minutes/year");
+      else if (AttrName == _T("VALMAG"))
+        val_suffix = _T("&deg;");
+      else if (AttrName == _T("CURVEL"))
+        val_suffix = _T(" kt");
 
-      if (has_preformatted) {
-        value = preformatted;
-      } else {
-        if (dval - floor(dval) < 0.01)
-          value.Printf("%2.0f", dval);
-        else
-          value.Printf("%4.1f", dval);
-        value << val_suffix;
-      }
+      if (dval - floor(dval) < 0.01)
+        value.Printf(_T("%2.0f"), dval);
+      else
+        value.Printf(_T("%4.1f"), dval);
+
+      value << val_suffix;
 
       break;
     }
@@ -5553,8 +5548,8 @@ bool s57chart::CompareLights(const S57Light *l1, const S57Light *l2) {
   int positionDiff = l1->position.Cmp(l2->position);
   if (positionDiff < 0) return false;
 
-  int attrIndex1 = l1->attributeNames.Index("SECTR1");
-  int attrIndex2 = l2->attributeNames.Index("SECTR1");
+  int attrIndex1 = l1->attributeNames.Index(_T("SECTR1"));
+  int attrIndex2 = l2->attributeNames.Index(_T("SECTR1"));
 
   // This should put Lights without sectors last in the list.
   if (attrIndex1 == wxNOT_FOUND && attrIndex2 == wxNOT_FOUND) return false;
@@ -5628,7 +5623,7 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
     const char *name_desc;
     if (g_csv_locn.Len()) {
       wxString oc_file(g_csv_locn);
-      oc_file.Append("/s57objectclasses.csv");
+      oc_file.Append(_T("/s57objectclasses.csv"));
       name_desc = MyCSVGetField(oc_file.mb_str(), "Acronym",     // match field
                                 current->obj->FeatureName,       // match value
                                 CC_ExactString, "ObjectClass");  // return field
@@ -5649,33 +5644,33 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
     if (g_bDebugS57) {
       wxString index;
 
-      classAttributes = "";
-      index.Printf("Feature Index: %d<br>", current->obj->Index);
+      classAttributes = _T("");
+      index.Printf(_T("Feature Index: %d<br>"), current->obj->Index);
       classAttributes << index;
 
       wxString LUPstring;
-      LUPstring.Printf("LUP RCID:  %d<br>", current->LUP->RCID);
+      LUPstring.Printf(_T("LUP RCID:  %d<br>"), current->LUP->RCID);
       classAttributes << LUPstring;
 
       wxString Bbox;
       LLBBox bbox = current->obj->BBObj;
-      Bbox.Printf("Lat/Lon box:  %g %g %g %g<br>", bbox.GetMinLat(),
+      Bbox.Printf(_T("Lat/Lon box:  %g %g %g %g<br>"), bbox.GetMinLat(),
                   bbox.GetMaxLat(), bbox.GetMinLon(), bbox.GetMaxLon());
       classAttributes << Bbox;
 
       wxString Type;
-      Type.Printf(" Type:  %s<br>", type2str(current->obj->Primitive_type));
+      Type.Printf(_T(" Type:  %s<br>"), type2str(current->obj->Primitive_type));
       classAttributes << Type;
 
-      LUPstring = "    LUP ATTC: ";
+      LUPstring = _T("    LUP ATTC: ");
       if (current->LUP->ATTArray.size())
         LUPstring += wxString(current->LUP->ATTArray[0].c_str(), wxConvUTF8);
-      LUPstring += "<br>";
+      LUPstring += _T("<br>");
       classAttributes << LUPstring;
 
-      LUPstring = "    LUP INST: ";
+      LUPstring = _T("    LUP INST: ");
       LUPstring += current->LUP->INST;
-      LUPstring += "<br><br>";
+      LUPstring += _T("<br><br>");
       classAttributes << LUPstring;
     }
 
@@ -5689,7 +5684,7 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
 
       positionString.Clear();
       positionString += toSDMM(1, lat);
-      positionString << " ";
+      positionString << _T(" ");
       positionString += toSDMM(2, lon);
 
       if (isLight) {
@@ -5709,10 +5704,10 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
 
       wxString attribStr;
       int noAttr = 0;
-      attribStr << "<table border=0 cellspacing=0 cellpadding=0>";
+      attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
 
       if (g_bDebugS57) {
-        ret_val << "<p>" << classAttributes;
+        ret_val << _T("<p>") << classAttributes;
       }
 
       bool inDepthRange = false;
@@ -5728,26 +5723,26 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         if (isLight) {
           assert(curLight != nullptr);
           curLight->attributeNames.Add(curAttrName);
-          if (curAttrName.StartsWith("SECTR")) curLight->hasSectors = true;
+          if (curAttrName.StartsWith(_T("SECTR"))) curLight->hasSectors = true;
         } else {
-          if (curAttrName == "DRVAL1") {
-            attribStr << "<tr><td><font size=-1>";
+          if (curAttrName == _T("DRVAL1")) {
+            attribStr << _T("<tr><td><font size=-1>");
             inDepthRange = true;
-          } else if (curAttrName == "DRVAL2") {
-            attribStr << " - ";
+          } else if (curAttrName == _T("DRVAL2")) {
+            attribStr << _T(" - ");
             inDepthRange = false;
           } else {
             if (inDepthRange) {
-              attribStr << "</font></td></tr>\n";
+              attribStr << _T("</font></td></tr>\n");
               inDepthRange = false;
             }
-            attribStr << "<tr><td valign=top><font size=-2>";
-            if (curAttrName == "catgeo")
-              attribStr << "CATGEO";
+            attribStr << _T("<tr><td valign=top><font size=-2>");
+            if (curAttrName == _T("catgeo"))
+              attribStr << _T("CATGEO");
             else
               attribStr << curAttrName;
-            attribStr << "</font></td><td>&nbsp;&nbsp;</td><td "
-                         "valign=top><font size=-1>";
+            attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td ")
+                         _T("valign=top><font size=-1>");
           }
         }
 
@@ -5764,10 +5759,10 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         // If the atribute value is a filename, change the value into a link to
         // that file
         wxString AttrNamesFiles =
-            "PICREP,TXTDSC,NTXTDS";  // AttrNames that might have a filename
-                                     // as value
+            _T("PICREP,TXTDSC,NTXTDS");  // AttrNames that might have a filename
+                                         // as value
         if (AttrNamesFiles.Find(curAttrName) != wxNOT_FOUND)
-          if (value.Find(".XML") == wxNOT_FOUND) {  // Don't show xml files
+          if (value.Find(_T(".XML")) == wxNOT_FOUND) {  // Don't show xml files
             file.Assign(GetFullPath());
             file.Assign(file.GetPath(), value);
             file.Normalize();
@@ -5789,57 +5784,59 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
             if (file.IsOk()) {
               if (file.Exists())
                 value =
-                    wxString::Format("<a href=\"%s\">%s</a>",
+                    wxString::Format(_T("<a href=\"%s\">%s</a>"),
                                      file.GetFullPath(), file.GetFullName());
               else
-                value = value + "&nbsp;&nbsp;<font color=\"red\">[ " +
-                        _("this file is not available") + " ]</font>";
+                value = value + _T("&nbsp;&nbsp;<font color=\"red\">[ ") +
+                        _("this file is not available") + _T(" ]</font>");
             }
           }
         AttrNamesFiles =
-            "DATEND,DATSTA,PEREND,PERSTA";  // AttrNames with date info
+            _T("DATEND,DATSTA,PEREND,PERSTA");  // AttrNames with date info
         if (AttrNamesFiles.Find(curAttrName) != wxNOT_FOUND) {
           bool d = true;
           bool m = true;
           wxString ts = value;
 
-          ts.Replace("--",
-                     "0000");     // make a valid year entry if not available
-          if (ts.Length() < 5) {  //(no month set)
+          ts.Replace(wxT("--"),
+                     wxT("0000"));  // make a valid year entry if not available
+          if (ts.Length() < 5) {    //(no month set)
             m = false;
-            ts.Append("01");  // so we add a fictive month to get a valid date
+            ts.Append(
+                wxT("01"));  // so we add a fictive month to get a valid date
           }
           if (ts.Length() < 7) {  //(no day set)
             d = false;
-            ts.Append("01");  // so we add a fictive day to get a valid date
+            ts.Append(
+                wxT("01"));  // so we add a fictive day to get a valid date
           }
           wxString::const_iterator end;
           wxDateTime dt;
           if (dt.ParseFormat(ts, "%Y%m%d", &end)) {
             ts.Empty();
             if (m) ts = wxDateTime::GetMonthName(dt.GetMonth());
-            if (d) ts.Append(wxString::Format(" %d", dt.GetDay()));
+            if (d) ts.Append(wxString::Format(wxT(" %d"), dt.GetDay()));
             if (dt.GetYear() > 0)
-              ts.Append(wxString::Format(",  %i", dt.GetYear()));
-            if (curAttrName == "PEREND")
-              ts = _("Period ends: ") + ts + "  (" + value + ")";
-            if (curAttrName == "PERSTA")
-              ts = _("Period starts: ") + ts + "  (" + value + ")";
-            if (curAttrName == "DATEND")
-              ts = _("Date ending: ") + ts + "  (" + value + ")";
-            if (curAttrName == "DATSTA")
-              ts = _("Date starting: ") + ts + "  (" + value + ")";
+              ts.Append(wxString::Format(wxT(",  %i"), dt.GetYear()));
+            if (curAttrName == _T("PEREND"))
+              ts = _("Period ends: ") + ts + wxT("  (") + value + wxT(")");
+            if (curAttrName == _T("PERSTA"))
+              ts = _("Period starts: ") + ts + wxT("  (") + value + wxT(")");
+            if (curAttrName == _T("DATEND"))
+              ts = _("Date ending: ") + ts + wxT("  (") + value + wxT(")");
+            if (curAttrName == _T("DATSTA"))
+              ts = _("Date starting: ") + ts + wxT("  (") + value + wxT(")");
             value = ts;
           }
         }
-        if (curAttrName == "TS_TSP") {  // Tidal current applet
+        if (curAttrName == _T("TS_TSP")) {  // Tidal current applet
           wxArrayString as;
           wxString ts, ts1;
           // value does look like: , 310, 310, 44, 44, 116, 116, 119, 119, 122,
           // 122, 125, 125, 130, 130, 270, 270, 299, 299, 300, 300, 301, 301,
           // 303, 303, 307,307509A,Helgoland,HW,310,0.9,044,0.2,116,1.5,
           // 119,2.2,122,1.9,125,1.5,130,0.9,270,0.1,299,1.4,300,2.1,301,2.0,303,1.7,307,1.2
-          wxStringTokenizer tk(value, ",");
+          wxStringTokenizer tk(value, wxT(","));
           ts1 =
               tk.GetNextToken();  // get first token this will be skipped always
           long l;
@@ -5848,15 +5845,15 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
             // some harbourID do have an alpha extension, therefore only check
             // the left(2)
           } while ((ts1.Left(2).ToLong(&l)));
-          ts = "Tidal Streams referred to<br><b>";
-          ts.Append(tk.GetNextToken()).Append("</b> at <b>").Append(ts1);
-          ts.Append("</b><br><table >");
+          ts = _T("Tidal Streams referred to<br><b>");
+          ts.Append(tk.GetNextToken()).Append(_T("</b> at <b>")).Append(ts1);
+          ts.Append(_T("</b><br><table >"));
           int i = -6;
           while (tk.HasMoreTokens()) {  // fill the current table
-            ts.Append("<tr><td>");
-            wxString s1(wxString::Format("%+dh ", i));
+            ts.Append(_T("<tr><td>"));
+            wxString s1(wxString::Format(_T("%+dh "), i));
             ts.Append(s1);
-            ts.Append("</td><td>");
+            ts.Append(_T("</td><td>"));
             s1 = tk.GetNextToken();
             ts.Append(s1);
             s1 = "&#176</td><td>";
@@ -5864,10 +5861,10 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
             s1 = tk.GetNextToken();
             ts.Append(s1);
             ts.Append(" kn");
-            ts.Append("</td></tr>");
+            ts.Append(_T("</td></tr>"));
             i++;
           }
-          ts.Append("</table>");
+          ts.Append(_T("</table>"));
           value = ts;
         }
 
@@ -5875,16 +5872,16 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
           assert(curLight != nullptr);
           curLight->attributeValues.Add(value);
         } else {
-          if (curAttrName == "INFORM" || curAttrName == "NINFOM")
-            value.Replace("|", "<br>");
+          if (curAttrName == _T("INFORM") || curAttrName == _T("NINFOM"))
+            value.Replace(_T("|"), _T("<br>"));
 
-          if (curAttrName == "catgeo")
+          if (curAttrName == _T("catgeo"))
             attribStr << type2str(current->obj->Primitive_type);
           else
             attribStr << value;
 
-          if (!(curAttrName == "DRVAL1")) {
-            attribStr << "</font></td></tr>\n";
+          if (!(curAttrName == _T("DRVAL1"))) {
+            attribStr << _T("</font></td></tr>\n");
           }
         }
 
@@ -5894,18 +5891,19 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
       }  // while attrCounter < current->obj->n_attr
 
       if (!isLight) {
-        attribStr << "</table>\n";
+        attribStr << _T("</table>\n");
 
-        objText += "<b>" + classDesc + "</b> <font size=-2>(" + className +
-                   ")</font>" + "<br>";
+        objText += _T("<b>") + classDesc + _T("</b> <font size=-2>(") +
+                   className + _T(")</font>") + _T("<br>");
 
         if (positionString.Length())
-          objText << "<font size=-2>" << positionString << "</font><br>\n";
+          objText << _T("<font size=-2>") << positionString
+                  << _T("</font><br>\n");
 
         if (noAttr > 0) objText << attribStr;
 
-        if (node != rule_list->GetFirst()) objText += "<hr noshade>";
-        objText += "<br>";
+        if (node != rule_list->GetFirst()) objText += _T("<hr noshade>");
+        objText += _T("<br>");
         ret_val << objText;
       }
     }
@@ -5928,164 +5926,164 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
         lastPos = thisLight->position;
 
         if (thisLight != *lights.begin())
-          lightsHtml << "</table>\n<hr noshade>\n";
+          lightsHtml << _T("</table>\n<hr noshade>\n");
 
-        lightsHtml << "<b>Light</b> <font size=-2>(LIGHTS)</font><br>";
-        lightsHtml << "<font size=-2>" << thisLight->position
-                   << "</font><br>\n";
+        lightsHtml << _T("<b>Light</b> <font size=-2>(LIGHTS)</font><br>");
+        lightsHtml << _T("<font size=-2>") << thisLight->position
+                   << _T("</font><br>\n");
 
         if (curLight->hasSectors)
           lightsHtml << _(
               "<font size=-2>(Sector angles are True Bearings from "
               "Seaward)</font><br>");
 
-        lightsHtml << "<table>";
+        lightsHtml << _T("<table>");
       }
 
-      lightsHtml << "<tr>";
-      lightsHtml << "<td><font size=-1>";
+      lightsHtml << _T("<tr>");
+      lightsHtml << _T("<td><font size=-1>");
 
       wxString colorStr;
-      attrIndex = thisLight->attributeNames.Index("COLOUR");
+      attrIndex = thisLight->attributeNames.Index(_T("COLOUR"));
       if (attrIndex != wxNOT_FOUND) {
         wxString color = thisLight->attributeValues.Item(attrIndex);
-        if (color == "red (3)" || color == "red(3)")
+        if (color == _T("red (3)") || color == _T("red(3)"))
           colorStr =
-              "<table border=0><tr><td "
-              "bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
-        else if (color == "green (4)" || color == "green(4)")
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=red>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+        else if (color == _T("green (4)") || color == _T("green(4)"))
           colorStr =
-              "<table border=0><tr><td "
-              "bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
-        else if (color == "white (1)" || color == "white(1)")
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=green>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+        else if (color == _T("white (1)") || color == _T("white(1)"))
           colorStr =
-              "<table border=0><tr><td "
-              "bgcolor=white>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
-        else if (color == "yellow (6)" || color == "yellow(6)")
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=white>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+        else if (color == _T("yellow (6)") || color == _T("yellow(6)"))
           colorStr =
-              "<table border=0><tr><td "
-              "bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
-        else if (color == "blue (5)" || color == "blue(5)")
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=yellow>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+        else if (color == _T("blue (5)") || color == _T("blue(5)"))
           colorStr =
-              "<table border=0><tr><td "
-              "bgcolor=blue>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
-        else if (color == "magenta (12)" || color == "magenta(12)")
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=blue>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+        else if (color == _T("magenta (12)") || color == _T("magenta(12)"))
           colorStr =
-              "<table border=0><tr><td "
-              "bgcolor=magenta>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=magenta>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
         else
           colorStr =
-              "<table border=0><tr><td "
-              "bgcolor=grey>&nbsp;?&nbsp;</td></tr></table> ";
+              _T("<table border=0><tr><td ")
+              _T("bgcolor=grey>&nbsp;?&nbsp;</td></tr></table> ");
       }
 
-      int visIndex = thisLight->attributeNames.Index("LITVIS");
+      int visIndex = thisLight->attributeNames.Index(_T("LITVIS"));
       if (visIndex != wxNOT_FOUND) {
         wxString vis = thisLight->attributeValues.Item(visIndex);
-        if (vis.Contains("8")) {
+        if (vis.Contains(_T("8"))) {
           if (attrIndex != wxNOT_FOUND) {
             wxString color = thisLight->attributeValues.Item(attrIndex);
-            if ((color == "red (3)" || color == "red(3)"))
+            if ((color == _T("red (3)") || color == _T("red(3)")))
               colorStr =
-                  "<table border=0><tr><td "
-                  "bgcolor=DarkRed>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
-            if ((color == "green (4)" || color == "green(4)"))
+                  _T("<table border=0><tr><td ")
+                  _T("bgcolor=DarkRed>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+            if ((color == _T("green (4)") || color == _T("green(4)")))
               colorStr =
-                  "<table border=0><tr><td "
-                  "bgcolor=DarkGreen>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
-            if ((color == "white (1)" || color == "white(1)"))
+                  _T("<table border=0><tr><td ")
+                  _T("bgcolor=DarkGreen>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
+            if ((color == _T("white (1)") || color == _T("white(1)")))
               colorStr =
-                  "<table border=0><tr><td "
-                  "bgcolor=GoldenRod>&nbsp;&nbsp;&nbsp;</td></tr></table> ";
+                  _T("<table border=0><tr><td ")
+                  _T("bgcolor=GoldenRod>&nbsp;&nbsp;&nbsp;</td></tr></table> ");
           }
         }
       }
 
       lightsHtml << colorStr;
 
-      lightsHtml << "</font></td><td><font size=-1><nobr><b>";
+      lightsHtml << _T("</font></td><td><font size=-1><nobr><b>");
 
-      attrIndex = thisLight->attributeNames.Index("LITCHR");
+      attrIndex = thisLight->attributeNames.Index(_T("LITCHR"));
       if (attrIndex != wxNOT_FOUND) {
         wxString character = thisLight->attributeValues[attrIndex];
-        lightsHtml << character.BeforeFirst(wxChar('(')) << " ";
+        lightsHtml << character.BeforeFirst(wxChar('(')) << _T(" ");
       }
 
-      attrIndex = thisLight->attributeNames.Index("SIGGRP");
+      attrIndex = thisLight->attributeNames.Index(_T("SIGGRP"));
       if (attrIndex != wxNOT_FOUND) {
         lightsHtml << thisLight->attributeValues[attrIndex];
-        lightsHtml << " ";
+        lightsHtml << _T(" ");
       }
 
-      attrIndex = thisLight->attributeNames.Index("COLOUR");
+      attrIndex = thisLight->attributeNames.Index(_T("COLOUR"));
       if (attrIndex != wxNOT_FOUND) {
-        lightsHtml << " "
+        lightsHtml << _T(" ")
                    << thisLight->attributeValues.Item(attrIndex).Upper()[0];
-        lightsHtml << " ";
+        lightsHtml << _T(" ");
       }
 
-      attrIndex = thisLight->attributeNames.Index("SIGPER");
+      attrIndex = thisLight->attributeNames.Index(_T("SIGPER"));
       if (attrIndex != wxNOT_FOUND) {
         lightsHtml << thisLight->attributeValues[attrIndex];
-        lightsHtml << " ";
+        lightsHtml << _T(" ");
       }
 
-      attrIndex = thisLight->attributeNames.Index("HEIGHT");
+      attrIndex = thisLight->attributeNames.Index(_T("HEIGHT"));
       if (attrIndex != wxNOT_FOUND) {
         lightsHtml << thisLight->attributeValues[attrIndex];
-        lightsHtml << " ";
+        lightsHtml << _T(" ");
       }
 
-      attrIndex = thisLight->attributeNames.Index("VALNMR");
+      attrIndex = thisLight->attributeNames.Index(_T("VALNMR"));
       if (attrIndex != wxNOT_FOUND) {
         lightsHtml << thisLight->attributeValues[attrIndex];
-        lightsHtml << " ";
+        lightsHtml << _T(" ");
       }
 
-      lightsHtml << "</b>";
+      lightsHtml << _T("</b>");
 
-      attrIndex = thisLight->attributeNames.Index("SECTR1");
+      attrIndex = thisLight->attributeNames.Index(_T("SECTR1"));
       if (attrIndex != wxNOT_FOUND) {
-        lightsHtml << "(" << thisLight->attributeValues[attrIndex];
-        lightsHtml << " - ";
-        attrIndex = thisLight->attributeNames.Index("SECTR2");
-        lightsHtml << thisLight->attributeValues[attrIndex] << ") ";
+        lightsHtml << _T("(") << thisLight->attributeValues[attrIndex];
+        lightsHtml << _T(" - ");
+        attrIndex = thisLight->attributeNames.Index(_T("SECTR2"));
+        lightsHtml << thisLight->attributeValues[attrIndex] << _T(") ");
       }
 
-      lightsHtml << "</nobr>";
+      lightsHtml << _T("</nobr>");
 
-      attrIndex = thisLight->attributeNames.Index("CATLIT");
+      attrIndex = thisLight->attributeNames.Index(_T("CATLIT"));
       if (attrIndex != wxNOT_FOUND) {
-        lightsHtml << "<nobr>";
+        lightsHtml << _T("<nobr>");
         lightsHtml << thisLight->attributeValues[attrIndex].BeforeFirst(
             wxChar('('));
-        lightsHtml << "</nobr> ";
+        lightsHtml << _T("</nobr> ");
       }
 
-      attrIndex = thisLight->attributeNames.Index("EXCLIT");
+      attrIndex = thisLight->attributeNames.Index(_T("EXCLIT"));
       if (attrIndex != wxNOT_FOUND) {
-        lightsHtml << "<nobr>";
+        lightsHtml << _T("<nobr>");
         lightsHtml << thisLight->attributeValues[attrIndex].BeforeFirst(
             wxChar('('));
-        lightsHtml << "</nobr> ";
+        lightsHtml << _T("</nobr> ");
       }
 
-      attrIndex = thisLight->attributeNames.Index("OBJNAM");
+      attrIndex = thisLight->attributeNames.Index(_T("OBJNAM"));
       if (attrIndex != wxNOT_FOUND) {
-        lightsHtml << "<br><nobr>";
+        lightsHtml << _T("<br><nobr>");
         lightsHtml << thisLight->attributeValues[attrIndex].Left(1).Upper();
         lightsHtml << thisLight->attributeValues[attrIndex].Mid(1);
-        lightsHtml << "</nobr> ";
+        lightsHtml << _T("</nobr> ");
       }
 
-      lightsHtml << "</font></td>";
-      lightsHtml << "</tr>";
+      lightsHtml << _T("</font></td>");
+      lightsHtml << _T("</tr>");
 
       thisLight->attributeNames.Clear();
       thisLight->attributeValues.Clear();
       delete thisLight;
     }
-    lightsHtml << "</table><hr noshade>\n";
+    lightsHtml << _T("</table><hr noshade>\n");
     ret_val = lightsHtml << ret_val;
 
     lights.clear();
@@ -6102,7 +6100,7 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
 //------------------------------------------------------------------------
 bool s57chart::InitENCMinimal(const wxString &FullPath) {
   if (NULL == g_poRegistrar) {
-    wxLogMessage("   Error: No ClassRegistrar in InitENCMinimal.");
+    wxLogMessage(_T("   Error: No ClassRegistrar in InitENCMinimal."));
     return false;
   }
 
@@ -6116,8 +6114,9 @@ bool s57chart::InitENCMinimal(const wxString &FullPath) {
   S57Reader *pENCReader = m_pENCDS->GetModule(0);
   pENCReader->SetClassBased(g_poRegistrar);
 
-  int rc = pENCReader->Ingest();
-  return (rc == 0);  // true;
+  pENCReader->Ingest();
+
+  return true;
 }
 
 OGRFeature *s57chart::GetChartFirstM_COVR(int &catcov) {
@@ -6129,11 +6128,8 @@ OGRFeature *s57chart::GetChartFirstM_COVR(int &catcov) {
     g_poRegistrar->SelectClass("M_COVR");
 
     //      Build a new feature definition for this class
-    //    OGRFeatureDefn *poDefn = S57GenerateObjectClassDefn(
-    //        g_poRegistrar, g_poRegistrar->GetOBJL(),
-    //        pENCReader->GetOptionFlags());
-    //  Expedited version, hard coded index 302 from registrar data files
-    OGRFeatureDefn *poDefn = S57GenerateObjectClassDefnM_COVR(302);
+    OGRFeatureDefn *poDefn = S57GenerateObjectClassDefn(
+        g_poRegistrar, g_poRegistrar->GetOBJL(), pENCReader->GetOptionFlags());
 
     //      Add this feature definition to the reader
     pENCReader->AddFeatureDefn(poDefn);
@@ -6178,7 +6174,7 @@ OGRFeature *s57chart::GetChartNextM_COVR(int &catcov) {
     return NULL;
 }
 
-int s57chart::GetENCScale() {
+int s57chart::GetENCScale(void) {
   if (NULL == m_pENCDS) return 0;
 
   //    Assume that chart has been initialized for minimal ENC access
@@ -6199,8 +6195,8 @@ int s57chart::GetENCScale() {
 /*                       Use Global wxLog Class                         */
 /************************************************************************/
 
-static void OpenCPN_OGRErrorHandler(CPLErr eErrClass, int nError,
-                                    const char *pszErrorMsg) {
+void OpenCPN_OGRErrorHandler(CPLErr eErrClass, int nError,
+                             const char *pszErrorMsg) {
 #define ERR_BUF_LEN 2000
 
   char buf[ERR_BUF_LEN + 1];
@@ -6270,7 +6266,7 @@ const char *MyCSVGetField(const char *pszFilename, const char *pszKeyFieldName,
 // Get Chart Extents
 //----------------------------------------------------------------------------------
 
-static bool s57_GetChartExtent(const wxString &FullPath, Extent *pext) {
+bool s57_GetChartExtent(const wxString &FullPath, Extent *pext) {
   //   Fix this  find extents of which?? layer??
   /*
    OGRS57DataSource *poDS = new OGRS57DataSource;
@@ -6758,33 +6754,33 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
             wxString value =
                 s57chart::GetAttributeValueAsString(pAttrVal, curAttrName);
 
-            if (curAttrName == "LITVIS") {
-              if (value.StartsWith("obsc")) bviz = false;
+            if (curAttrName == _T("LITVIS")) {
+              if (value.StartsWith(_T("obsc"))) bviz = false;
             }
-            if (curAttrName == "SECTR1") value.ToDouble(&sectr1);
-            if (curAttrName == "SECTR2") value.ToDouble(&sectr2);
-            if (curAttrName == "VALNMR") value.ToDouble(&valnmr);
-            if (curAttrName == "COLOUR") {
-              if (value == "red(3)") {
+            if (curAttrName == _T("SECTR1")) value.ToDouble(&sectr1);
+            if (curAttrName == _T("SECTR2")) value.ToDouble(&sectr2);
+            if (curAttrName == _T("VALNMR")) value.ToDouble(&valnmr);
+            if (curAttrName == _T("COLOUR")) {
+              if (value == _T("red(3)")) {
                 color = wxColor(255, 0, 0, opacity);
                 sector.iswhite = false;
                 bhas_red_green = true;
               }
 
-              if (value == "green(4)") {
+              if (value == _T("green(4)")) {
                 color = wxColor(0, 255, 0, opacity);
                 sector.iswhite = false;
                 bhas_red_green = true;
               }
             }
 
-            if (curAttrName == "EXCLIT") {
-              if (value.Find("(3)")) valnmr = 1.0;  // Fog lights.
+            if (curAttrName == _T("EXCLIT")) {
+              if (value.Find(_T("(3)"))) valnmr = 1.0;  // Fog lights.
             }
 
-            if (curAttrName == "CATLIT") {
-              if (value.Upper().StartsWith("DIRECT") ||
-                  value.Upper().StartsWith("LEAD"))
+            if (curAttrName == _T("CATLIT")) {
+              if (value.Upper().StartsWith(_T("DIRECT")) ||
+                  value.Upper().StartsWith(_T("LEAD")))
                 bleading_attribute = true;
             }
 

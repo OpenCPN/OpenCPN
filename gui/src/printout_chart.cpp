@@ -13,30 +13,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * \file
- *
- * Implement printout_chart.h -- Print chart canvas mix-in
- */
-
-#include <wx/dc.h>
-#include <wx/utils.h>
-
-#include "model/config_vars.h"
-
 #include "chcanv.h"
-#include "gl_chart_canvas.h"
+#include "glChartCanvas.h"
+#include "ocpn_frame.h"
 #include "printout_chart.h"
-#include "top_frame.h"
+
+extern bool g_bopengl;
+extern MyFrame* gFrame;
+
+class ChartCanvas;
+ChartCanvas* GetFocusCanvas();
 
 void ChartPrintout::DrawPage(wxDC* dc, int page) {
   // Get the Size of the Chart Canvas
   int sx, sy;
-  top_frame::Get()->GetAbstractPrimaryCanvas()->GetClientSize(&sx, &sy);
-  // of the canvas
+  gFrame->GetFocusCanvas()->GetClientSize(&sx, &sy);  // of the canvas
 
   float max_x = sx;
   float max_y = sy;
@@ -85,11 +81,10 @@ void ChartPrintout::DrawPage(wxDC* dc, int page) {
   } else {
     //  And Blit/scale it onto the Printer DC
     wxMemoryDC mdc;
-    wxBitmap* scratch_bitmap =
-        top_frame::Get()->GetAbstractPrimaryCanvas()->GetScratchBitmap();
-    mdc.SelectObject(*scratch_bitmap);
-    dc->Blit(0, 0, scratch_bitmap->GetWidth(), scratch_bitmap->GetHeight(),
-             &mdc, 0, 0);
+    mdc.SelectObject(*(gFrame->GetFocusCanvas()->pscratch_bm));
+
+    dc->Blit(0, 0, gFrame->GetFocusCanvas()->pscratch_bm->GetWidth(),
+             gFrame->GetFocusCanvas()->pscratch_bm->GetHeight(), &mdc, 0, 0);
 
     mdc.SelectObject(wxNullBitmap);
   }
@@ -98,8 +93,8 @@ void ChartPrintout::DrawPage(wxDC* dc, int page) {
 void ChartPrintout::GenerateGLbmp() {
   if (g_bopengl) {
 #ifdef ocpnUSE_GL
-    int gsx = top_frame::Get()->GetWxGlCanvas()->GetSize().x;
-    int gsy = top_frame::Get()->GetWxGlCanvas()->GetSize().y;
+    int gsx = gFrame->GetFocusCanvas()->GetglCanvas()->GetSize().x;
+    int gsy = gFrame->GetFocusCanvas()->GetglCanvas()->GetSize().y;
 
     unsigned char* buffer = (unsigned char*)malloc(gsx * gsy * 4);
     glReadPixels(0, 0, gsx, gsy, GL_RGBA, GL_UNSIGNED_BYTE, buffer);

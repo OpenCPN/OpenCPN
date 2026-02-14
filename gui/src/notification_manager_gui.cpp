@@ -1,4 +1,10 @@
-/**************************************************************************
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Notification Manager GUI
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2025 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,45 +18,29 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-/**
- * \file
- *
- * Implement notification_manager_gui.h  -- Notification Manager GUI
- */
-
 #include <cmath>
 #include <memory>
 #include <vector>
-
-#include <wx/arrstr.h>
-#include <wx/colour.h>
-#include <wx/datetime.h>
-#include <wx/filename.h>
-#include <wx/image.h>
-#include <wx/sizer.h>
 #include <wx/statline.h>
-#include <wx/stattext.h>
-#include <wx/string.h>
 #include <wx/textwrapper.h>
 
 #include "notification_manager_gui.h"
-
-#include "model/datetime.h"
-#include "model/notification.h"
 #include "model/notification_manager.h"
-#include "model/svg_utils.h"
-
-#include "chcanv.h"
-#include "color_handler.h"
-#include "gl_chart_canvas.h"
-#include "gui_lib.h"
-#include "navutil.h"
+#include "model/notification.h"
 #include "observable_globvar.h"
-#include "ocpn_platform.h"
+#include "color_handler.h"
 #include "styles.h"
+#include "OCPNPlatform.h"
+#include "chcanv.h"
+#include "glChartCanvas.h"
+#include "gui_lib.h"
+#include "model/svg_utils.h"
+#include "model/datetime.h"
+#include "navutil.h"
 
 // This window style value has slipped from the headers, but is useful
 //  on MSW...
@@ -59,6 +49,9 @@
 #else
 #define wxFULL_PAINT_ON_RESIZE 0
 #endif
+
+extern OCPNPlatform* g_Platform;
+extern ocpnStyle::StyleManager* g_StyleManager;
 
 class PanelHardBreakWrapper : public wxTextWrapper {
 public:
@@ -388,7 +381,7 @@ NotificationButton::NotificationButton(ChartCanvas* parent) {
   m_parent = parent;
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  _img_gpsRed = style->GetIcon("gpsRed");
+  _img_gpsRed = style->GetIcon(_T("gpsRed"));
 
   m_pStatBoxToolStaticBmp = NULL;
 
@@ -521,7 +514,7 @@ void NotificationButton::SetColorScheme(ColorScheme cs) {
   UpdateStatus(true);
 }
 
-wxRect NotificationButton::GetLogicalRect() const {
+wxRect NotificationButton::GetLogicalRect(void) const {
 #ifdef wxHAS_DPI_INDEPENDENT_PIXELS
 #if wxCHECK_VERSION(3, 1, 6)
   wxRect logicalRect = wxRect(m_parent->FromPhys(m_rect.GetPosition()),
@@ -661,11 +654,11 @@ void NotificationButton::CreateBmp(bool newColorScheme) {
 
   wxMemoryDC mdc;
   mdc.SelectObject(m_StatBmp);
-  mdc.SetBackground(wxBrush(GetGlobalColor("COMP1"), wxBRUSHSTYLE_SOLID));
+  mdc.SetBackground(wxBrush(GetGlobalColor(_T("COMP1")), wxBRUSHSTYLE_SOLID));
   mdc.Clear();
 
-  mdc.SetPen(wxPen(GetGlobalColor("UITX1"), 1));
-  mdc.SetBrush(wxBrush(GetGlobalColor("UITX1"), wxBRUSHSTYLE_TRANSPARENT));
+  mdc.SetPen(wxPen(GetGlobalColor(_T("UITX1")), 1));
+  mdc.SetBrush(wxBrush(GetGlobalColor(_T("UITX1")), wxBRUSHSTYLE_TRANSPARENT));
 
   if (!style->marginsInvisible)
     mdc.DrawRoundedRectangle(0, 0, m_StatBmp.GetWidth(), m_StatBmp.GetHeight(),

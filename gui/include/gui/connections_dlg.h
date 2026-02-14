@@ -18,8 +18,7 @@
 
 /**
  * \file
- *
- * %Options | %Connections GUI tab managing connections
+ * The ConnectionsDlg class
  */
 #ifndef CONNECT_NEW_DLG_
 #define CONNECT_NEW_DLG_

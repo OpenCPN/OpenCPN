@@ -1,6 +1,11 @@
 /***************************************************************************
- *   Copyright (C) 2010 Jesper Weissglas                                   *
- *   Copyright (C) 2010 by David S. Register  bdbcat@yahoo.com             *
+ *
+ * Project:  OpenCPN
+ * Purpose:  Chart Symbols
+ * Author:   Jesper Weissglas
+ *
+ ***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -13,19 +18,11 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-/**
- * \file
- *
- * Implement styles.h -- Chart Symbols
- */
-
-#include <stdlib.h>
-
 #include "config.h"
-#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <wx/wxprec.h>
 
@@ -33,31 +30,28 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/brush.h>
 #include <wx/filename.h>
 #include <wx/dir.h>
-#include <wx/image.h>
-#include <wx/log.h>
-#include <wx/dcmemory.h>
+#include <stdlib.h>
+#include "OCPNPlatform.h"
 
 #include "styles.h"
+#include "model/wx28compat.h"
 #include "model/svg_utils.h"
 #include "color_handler.h"
-#include "ocpn_platform.h"
 #include "tinyxml.h"
-
-#ifdef __ANDROID__
+#ifdef __OCPN__ANDROID__
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
 
-ocpnStyle::StyleManager* g_StyleManager;
+extern OCPNPlatform* g_Platform;
 
 using namespace ocpnStyle;
 
-static void bmdump(wxBitmap bm, wxString name) {
+void bmdump(wxBitmap bm, wxString name) {
   wxImage img = bm.ConvertToImage();
-  img.SaveFile(name << ".png", wxBITMAP_TYPE_PNG);
+  img.SaveFile(name << _T(".png"), wxBITMAP_TYPE_PNG);
 }
 
 // This function can be used to create custom bitmap blending for all platforms
@@ -225,7 +219,7 @@ bool Style::NativeToolIconExists(const wxString& name) {
 wxBitmap Style::GetIconScaled(const wxString& name, double scaleFactor,
                               bool bforceReload) {
   if (iconIndex.find(name) == iconIndex.end()) {
-    wxString msg("The requested icon was not found in the style: ");
+    wxString msg(_T("The requested icon was not found in the style: "));
     msg += name;
     wxLogMessage(msg);
     return wxBitmap(GetToolSize().x, GetToolSize().y);  // Prevents crashing.
@@ -244,7 +238,7 @@ wxBitmap Style::GetIconScaled(const wxString& name, double scaleFactor,
 wxBitmap Style::GetIcon(const wxString& name, int width, int height,
                         bool bforceReload) {
   if (iconIndex.find(name) == iconIndex.end()) {
-    wxString msg("The requested icon was not found in the style: ");
+    wxString msg(_T("The requested icon was not found in the style: "));
     msg += name;
     wxLogMessage(msg);
     return wxBitmap(GetToolSize().x, GetToolSize().y);  // Prevents crashing.
@@ -264,11 +258,11 @@ wxBitmap Style::GetIcon(const wxString& name, int width, int height,
   wxBitmap bm;
 #ifdef ocpnUSE_SVG
   wxString fullFilePath = myConfigFileDir + this->sysname +
-                          wxFileName::GetPathSeparator() + name + ".svg";
+                          wxFileName::GetPathSeparator() + name + _T(".svg");
   if (wxFileExists(fullFilePath))
     bm = LoadSVG(fullFilePath, retSize.x, retSize.y);
   else {
-///        wxLogMessage( "Can't find SVG icon: " + fullFilePath );
+///        wxLogMessage( _T("Can't find SVG icon: ") + fullFilePath );
 #endif  // ocpnUSE_SVG
     wxRect location(icon->iconLoc, icon->size);
     bm = graphics->GetSubBitmap(location);
@@ -332,17 +326,17 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
       if (rollover) {
         fullFilePath = myConfigFileDir + this->sysname +
                        wxFileName::GetPathSeparator() + toolname +
-                       "_rollover.svg";
+                       _T("_rollover.svg");
         if (!wxFileExists(fullFilePath))
           fullFilePath = myConfigFileDir + this->sysname +
-                         wxFileName::GetPathSeparator() + toolname + ".svg";
+                         wxFileName::GetPathSeparator() + toolname + _T(".svg");
       } else
         fullFilePath = myConfigFileDir + this->sysname +
-                       wxFileName::GetPathSeparator() + toolname + ".svg";
+                       wxFileName::GetPathSeparator() + toolname + _T(".svg");
       if (wxFileExists(fullFilePath))
         bm = LoadSVG(fullFilePath, retSize.x, retSize.y);
       else {
-        /// wxLogMessage( "Can't find SVG: " + fullFilePath );
+        /// wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
 #endif  // ocpnUSE_SVG
         bm = graphics->GetSubBitmap(location);
 
@@ -352,7 +346,7 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
           wxBitmap bg(GetToolSize().x, GetToolSize().y);
           wxMemoryDC mdc(bg);
           mdc.SetBackground(
-              wxBrush(GetGlobalColor("GREY2"), wxBRUSHSTYLE_SOLID));
+              wxBrush(GetGlobalColor(_T("GREY2")), wxBRUSHSTYLE_SOLID));
           mdc.Clear();
           mdc.SelectObject(wxNullBitmap);
           bm = MergeBitmaps(bg, bm, wxSize(0, 0));
@@ -373,7 +367,7 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
         tool->rolloverLoaded = true;
         return tool->rollover;
       } else {
-        if (toolname == "mob_btn") {
+        if (toolname == _T("mob_btn")) {
           double dimLevel = 1.0;
           if (colorscheme == GLOBAL_COLOR_SCHEME_DUSK)
             dimLevel = 0.5;
@@ -409,11 +403,11 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
       if (rollover)
         fullFilePath = myConfigFileDir + this->sysname +
                        wxFileName::GetPathSeparator() + toolname +
-                       "_rollover_toggled.svg";
+                       _T("_rollover_toggled.svg");
       else
         fullFilePath = myConfigFileDir + this->sysname +
                        wxFileName::GetPathSeparator() + toolname +
-                       "_toggled.svg";
+                       _T("_toggled.svg");
       if (wxFileExists(fullFilePath))
         bm = LoadSVG(fullFilePath, retSize.x, retSize.y);
       else {
@@ -421,10 +415,10 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
         if (rollover)
           fullFilePath = myConfigFileDir + this->sysname +
                          wxFileName::GetPathSeparator() + toolname +
-                         "_rollover.svg";
+                         _T("_rollover.svg");
         else
           fullFilePath = myConfigFileDir + this->sysname +
-                         wxFileName::GetPathSeparator() + toolname + ".svg";
+                         wxFileName::GetPathSeparator() + toolname + _T(".svg");
 
         if (wxFileExists(fullFilePath)) {
           bm = LoadSVG(fullFilePath, retSize.x, retSize.y);
@@ -470,11 +464,11 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
 #ifdef ocpnUSE_SVG
       wxString fullFilePath = myConfigFileDir + this->sysname +
                               wxFileName::GetPathSeparator() + toolname +
-                              "_disabled.svg";
+                              _T("_disabled.svg");
       if (wxFileExists(fullFilePath))
         bm = LoadSVG(fullFilePath, retSize.x, retSize.y);
       else {
-        /// wxLogMessage( "Can't find SVG: " + fullFilePath );
+        /// wxLogMessage( _T("Can't find SVG: ") + fullFilePath );
 #endif  // ocpnUSE_SVG
         bm = graphics->GetSubBitmap(location);
 
@@ -500,7 +494,7 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
     }
   }
   wxString msg(
-      "A requested icon type for this tool was not found in the style: ");
+      _T("A requested icon type for this tool was not found in the style: "));
   msg += toolname;
   wxLogMessage(msg);
   return wxBitmap(GetToolSize().x, GetToolSize().y);  // Prevents crashing.
@@ -552,7 +546,8 @@ wxBitmap Style::BuildPluginIcon(wxBitmap& bm, int iconType, double factor) {
         wxMemoryDC mdc(bg);
         wxSize offset = GetToolSize() - wxSize(bm.GetWidth(), bm.GetHeight());
         offset /= 2;
-        mdc.SetBackground(wxBrush(GetGlobalColor("GREY2"), wxBRUSHSTYLE_SOLID));
+        mdc.SetBackground(
+            wxBrush(GetGlobalColor(_T("GREY2")), wxBRUSHSTYLE_SOLID));
         mdc.Clear();
         mdc.SelectObject(wxNullBitmap);
         iconbm = MergeBitmaps(bg, bm, offset);
@@ -723,7 +718,7 @@ void Style::Unload() {
   }
 }
 
-Style::Style() {
+Style::Style(void) {
   graphics = NULL;
   currentOrientation = 0;
   colorscheme = GLOBAL_COLOR_SCHEME_DAY;
@@ -732,7 +727,7 @@ Style::Style() {
   chartStatusIconWidth = 0;
   chartStatusWindowTransparent = false;
   embossHeight = 40;
-  embossFont = "";
+  embossFont = wxEmptyString;
 
   //  Set compass window style defauilts
   compassMarginTop = 4;
@@ -750,7 +745,7 @@ Style::Style() {
   }
 }
 
-Style::~Style() {
+Style::~Style(void) {
   for (unsigned int i = 0; i < tools.Count(); i++) {
     delete (Tool*)(tools[i]);
   }
@@ -767,18 +762,19 @@ Style::~Style() {
   iconIndex.clear();
 }
 
-StyleManager::StyleManager() {
+StyleManager::StyleManager(void) {
   isOK = false;
   currentStyle = NULL;
-  Init(g_Platform->GetSharedDataDir() + "uidata" +
+  Init(g_Platform->GetSharedDataDir() + _T("uidata") +
        wxFileName::GetPathSeparator());
   Init(g_Platform->GetHomeDir());
-  Init(g_Platform->GetHomeDir() + ".opencpn" + wxFileName::GetPathSeparator());
-  SetStyle("");
+  Init(g_Platform->GetHomeDir() + _T(".opencpn") +
+       wxFileName::GetPathSeparator());
+  SetStyle(_T(""));
 #ifdef ocpnUSE_SVG
-  wxLogMessage("Using SVG Icons");
+  wxLogMessage(_T("Using SVG Icons"));
 #else
-  wxLogMessage("Using PNG Icons");
+  wxLogMessage(_T("Using PNG Icons"));
 #endif
 }
 
@@ -786,10 +782,10 @@ StyleManager::StyleManager(const wxString& configDir) {
   isOK = false;
   currentStyle = NULL;
   Init(configDir);
-  SetStyle("");
+  SetStyle(_T(""));
 }
 
-StyleManager::~StyleManager() {
+StyleManager::~StyleManager(void) {
   for (unsigned int i = 0; i < styles.Count(); i++) {
     delete (Style*)(styles[i]);
   }
@@ -800,7 +796,7 @@ void StyleManager::Init(const wxString& fromPath) {
   TiXmlDocument doc;
 
   if (!wxDir::Exists(fromPath)) {
-    wxString msg = "No styles found at: ";
+    wxString msg = _T("No styles found at: ");
     msg << fromPath;
     wxLogMessage(msg);
     return;
@@ -814,10 +810,10 @@ void StyleManager::Init(const wxString& fromPath) {
   // We allow any number of styles to load from files called
   // style<something>.xml
 
-  bool more = dir.GetFirst(&filename, "style*.xml", wxDIR_FILES);
+  bool more = dir.GetFirst(&filename, _T("style*.xml"), wxDIR_FILES);
 
   if (!more) {
-    wxString msg = "No styles found at: ";
+    wxString msg = _T("No styles found at: ");
     msg << fromPath;
     wxLogMessage(msg);
     return;
@@ -834,28 +830,29 @@ void StyleManager::Init(const wxString& fromPath) {
     wxString fullFilePath = fromPath + filename;
 
     if (!doc.LoadFile((const char*)fullFilePath.mb_str())) {
-      wxString msg("Attempt to load styles from this file failed: ");
+      wxString msg(_T("Attempt to load styles from this file failed: "));
       msg += fullFilePath;
       wxLogMessage(msg);
       continue;
     }
 
-    wxString msg("Styles loading from ");
+    wxString msg(_T("Styles loading from "));
     msg += fullFilePath;
     wxLogMessage(msg);
 
     TiXmlHandle hRoot(doc.RootElement());
 
     wxString root = wxString(doc.RootElement()->Value(), wxConvUTF8);
-    if (root != "styles") {
-      wxLogMessage("    StyleManager: Expected XML Root <styles> not found.");
+    if (root != _T("styles" )) {
+      wxLogMessage(
+          _T("    StyleManager: Expected XML Root <styles> not found."));
       continue;
     }
 
     TiXmlElement* styleElem = hRoot.FirstChild().Element();
 
     for (; styleElem; styleElem = styleElem->NextSiblingElement()) {
-      if (wxString(styleElem->Value(), wxConvUTF8) == "style") {
+      if (wxString(styleElem->Value(), wxConvUTF8) == _T("style")) {
         Style* style = new Style();
         styles.Add(style);
 
@@ -868,36 +865,36 @@ void StyleManager::Init(const wxString& fromPath) {
         for (; subNode; subNode = subNode->NextSiblingElement()) {
           wxString nodeType(subNode->Value(), wxConvUTF8);
 
-          if (nodeType == "description") {
+          if (nodeType == _T("description")) {
             style->description = wxString(subNode->GetText(), wxConvUTF8);
             continue;
           }
-          if (nodeType == "chart-status-icon") {
+          if (nodeType == _T("chart-status-icon")) {
             int w = 0;
             subNode->QueryIntAttribute("width", &w);
             style->chartStatusIconWidth = w;
             continue;
           }
-          if (nodeType == "chart-status-window") {
+          if (nodeType == _T("chart-status-window")) {
             style->chartStatusWindowTransparent =
                 wxString(subNode->Attribute("transparent"), wxConvUTF8)
                     .Lower()
-                    .IsSameAs("true");
+                    .IsSameAs(_T("true"));
             continue;
           }
-          if (nodeType == "embossed-indicators") {
+          if (nodeType == _T("embossed-indicators")) {
             style->embossFont =
                 wxString(subNode->Attribute("font"), wxConvUTF8);
             subNode->QueryIntAttribute("size", &(style->embossHeight));
             continue;
           }
-          if (nodeType == "graphics-file") {
+          if (nodeType == _T("graphics-file")) {
             style->graphicsFile =
                 wxString(subNode->Attribute("name"), wxConvUTF8);
             isOK = true;  // If we got this far we are at least partially OK...
             continue;
           }
-          if (nodeType == "active-route") {
+          if (nodeType == _T("active-route")) {
             TiXmlHandle handle(subNode);
             TiXmlElement* tag = handle.Child("font-color", 0).ToElement();
             if (tag) {
@@ -919,12 +916,12 @@ void StyleManager::Init(const wxString& fromPath) {
             }
             continue;
           }
-          if (nodeType == "icons") {
+          if (nodeType == _T("icons")) {
             TiXmlElement* iconNode = subNode->FirstChild()->ToElement();
 
             for (; iconNode; iconNode = iconNode->NextSiblingElement()) {
               wxString nodeType(iconNode->Value(), wxConvUTF8);
-              if (nodeType == "icon") {
+              if (nodeType == _T("icon")) {
                 Icon* icon = new Icon();
                 style->icons.Add(icon);
                 icon->name = wxString(iconNode->Attribute("name"), wxConvUTF8);
@@ -948,25 +945,25 @@ void StyleManager::Init(const wxString& fromPath) {
               }
             }
           }
-          if (nodeType == "tools") {
+          if (nodeType == _T("tools")) {
             TiXmlElement* toolNode = subNode->FirstChild()->ToElement();
 
             for (; toolNode; toolNode = toolNode->NextSiblingElement()) {
               wxString nodeType(toolNode->Value(), wxConvUTF8);
 
-              if (nodeType == "horizontal" || nodeType == "vertical") {
+              if (nodeType == _T("horizontal") || nodeType == _T("vertical")) {
                 int orientation = 0;
-                if (nodeType == "vertical") orientation = 1;
+                if (nodeType == _T("vertical")) orientation = 1;
 
                 TiXmlElement* attrNode = toolNode->FirstChild()->ToElement();
                 for (; attrNode; attrNode = attrNode->NextSiblingElement()) {
                   wxString nodeType(attrNode->Value(), wxConvUTF8);
-                  if (nodeType == "separation") {
+                  if (nodeType == _T("separation")) {
                     attrNode->QueryIntAttribute(
                         "distance", &style->toolSeparation[orientation]);
                     continue;
                   }
-                  if (nodeType == "margin") {
+                  if (nodeType == _T("margin")) {
                     attrNode->QueryIntAttribute(
                         "top", &style->toolMarginTop[orientation]);
                     attrNode->QueryIntAttribute(
@@ -977,11 +974,11 @@ void StyleManager::Init(const wxString& fromPath) {
                         "left", &style->toolMarginLeft[orientation]);
                     wxString invis =
                         wxString(attrNode->Attribute("invisible"), wxConvUTF8);
-                    style->marginsInvisible = (invis.Lower() == "true");
+                    style->marginsInvisible = (invis.Lower() == _T("true"));
                     continue;
                     ;
                   }
-                  if (nodeType == "toggled-location") {
+                  if (nodeType == _T("toggled-location")) {
                     int x, y;
                     attrNode->QueryIntAttribute("x", &x);
                     attrNode->QueryIntAttribute("y", &y);
@@ -993,7 +990,7 @@ void StyleManager::Init(const wxString& fromPath) {
                     style->toggledBGSize[orientation] = wxSize(x, y);
                     continue;
                   }
-                  if (nodeType == "toolbar-start") {
+                  if (nodeType == _T("toolbar-start")) {
                     int x, y;
                     attrNode->QueryIntAttribute("x", &x);
                     attrNode->QueryIntAttribute("y", &y);
@@ -1005,7 +1002,7 @@ void StyleManager::Init(const wxString& fromPath) {
                     style->toolbarStartSize[orientation] = wxSize(x, y);
                     continue;
                   }
-                  if (nodeType == "toolbar-end") {
+                  if (nodeType == _T("toolbar-end")) {
                     int x, y;
                     attrNode->QueryIntAttribute("x", &x);
                     attrNode->QueryIntAttribute("y", &y);
@@ -1017,13 +1014,13 @@ void StyleManager::Init(const wxString& fromPath) {
                     style->toolbarEndSize[orientation] = wxSize(x, y);
                     continue;
                   }
-                  if (nodeType == "toolbar-corners") {
+                  if (nodeType == _T("toolbar-corners")) {
                     int r;
                     attrNode->QueryIntAttribute("radius", &r);
                     style->cornerRadius[orientation] = r;
                     continue;
                   }
-                  if (nodeType == "background-location") {
+                  if (nodeType == _T("background-location")) {
                     int x, y;
                     attrNode->QueryIntAttribute("x", &x);
                     attrNode->QueryIntAttribute("y", &y);
@@ -1031,21 +1028,21 @@ void StyleManager::Init(const wxString& fromPath) {
                     style->HasBackground(true);
                     continue;
                   }
-                  if (nodeType == "active-location") {
+                  if (nodeType == _T("active-location")) {
                     int x, y;
                     attrNode->QueryIntAttribute("x", &x);
                     attrNode->QueryIntAttribute("y", &y);
                     style->activeBGlocation[orientation] = wxPoint(x, y);
                     continue;
                   }
-                  if (nodeType == "size") {
+                  if (nodeType == _T("size")) {
                     int x, y;
                     attrNode->QueryIntAttribute("x", &x);
                     attrNode->QueryIntAttribute("y", &y);
                     style->toolSize[orientation] = wxSize(x, y);
                     continue;
                   }
-                  if (nodeType == "icon-offset") {
+                  if (nodeType == _T("icon-offset")) {
                     int x, y;
                     attrNode->QueryIntAttribute("x", &x);
                     attrNode->QueryIntAttribute("y", &y);
@@ -1055,11 +1052,11 @@ void StyleManager::Init(const wxString& fromPath) {
                 }
                 continue;
               }
-              if (nodeType == "compass") {
+              if (nodeType == _T("compass")) {
                 TiXmlElement* attrNode = toolNode->FirstChild()->ToElement();
                 for (; attrNode; attrNode = attrNode->NextSiblingElement()) {
                   wxString nodeType(attrNode->Value(), wxConvUTF8);
-                  if (nodeType == "margin") {
+                  if (nodeType == _T("margin")) {
                     attrNode->QueryIntAttribute("top",
                                                 &style->compassMarginTop);
                     attrNode->QueryIntAttribute("right",
@@ -1070,13 +1067,13 @@ void StyleManager::Init(const wxString& fromPath) {
                                                 &style->compassMarginLeft);
                     continue;
                   }
-                  if (nodeType == "compass-corners") {
+                  if (nodeType == _T("compass-corners")) {
                     int r;
                     attrNode->QueryIntAttribute("radius", &r);
                     style->compasscornerRadius = r;
                     continue;
                   }
-                  if (nodeType == "offset") {
+                  if (nodeType == _T("offset")) {
                     attrNode->QueryIntAttribute("x", &style->compassXoffset);
                     attrNode->QueryIntAttribute("y", &style->compassYoffset);
                     continue;
@@ -1084,7 +1081,7 @@ void StyleManager::Init(const wxString& fromPath) {
                 }
               }
 
-              if (nodeType == "tool") {
+              if (nodeType == _T("tool")) {
                 Tool* tool = new Tool();
                 style->tools.Add(tool);
                 tool->name = wxString(toolNode->Attribute("name"), wxConvUTF8);
@@ -1168,7 +1165,7 @@ void StyleManager::SetStyle(wxString name) {
                               style->graphicsFile;
 
       if (!wxFileName::FileExists(fullFilePath)) {
-        wxString msg("Styles Graphics File not found: ");
+        wxString msg(_T("Styles Graphics File not found: "));
         msg += fullFilePath;
         wxLogMessage(msg);
         ok = false;
@@ -1179,7 +1176,7 @@ void StyleManager::SetStyle(wxString name) {
       wxImage img;  // Only image does PNG LoadFile properly on GTK.
 
       if (!img.LoadFile(fullFilePath, wxBITMAP_TYPE_PNG)) {
-        wxString msg("Styles Graphics File failed to load: ");
+        wxString msg(_T("Styles Graphics File failed to load: "));
         msg += fullFilePath;
         wxLogMessage(msg);
         ok = false;
@@ -1193,7 +1190,7 @@ void StyleManager::SetStyle(wxString name) {
   }
 
   if (!ok || !currentStyle->graphics) {
-    wxString msg("The requested style was not found: ");
+    wxString msg(_T("The requested style was not found: "));
     msg += name;
     wxLogMessage(msg);
     return;

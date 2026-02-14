@@ -78,8 +78,6 @@ NMEA0183::NMEA0183(const NmeaContext& ctx) : caller_ctx(ctx)
    response_table.Append( (RESPONSE *) &Hdm );
    response_table.Append( (RESPONSE *) &Hdg );
    response_table.Append( (RESPONSE *) &Hdt );
-   response_table.Append( (RESPONSE *) &Hvd );
-   response_table.Append( (RESPONSE *) &Ths );
    response_table.Append( (RESPONSE *) &Rmb );
    response_table.Append( (RESPONSE *) &Rmc );
    response_table.Append( (RESPONSE *) &Wpl );

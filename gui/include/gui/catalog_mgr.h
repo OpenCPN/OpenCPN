@@ -1,4 +1,8 @@
-/***************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ *
+ ***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,13 +16,10 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- ***************************************************************************/
-
-/**
- * \file
- *
- * Catalog options dialog, by default disabled.
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  */
 
 #ifndef CATALOG_MGR_H__
@@ -26,8 +27,9 @@
 
 #include <wx/dialog.h>
 #include <wx/frame.h>
+#include <wx/window.h>
 
-/** Catalog options GUI.  */
+/** Catalog handler GUI.  */
 class AdvancedCatalogDialog : public wxFrame {
 public:
   /**

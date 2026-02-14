@@ -23,12 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *
- */
-
-/**
- * \file
- *
- * Scalable Screen Font renderer in a single ANSI C/C++ header
+ * @brief Scalable Screen Font renderer in a single ANSI C/C++ header
  *
  */
 

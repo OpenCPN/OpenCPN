@@ -61,13 +61,12 @@
 
 #include "TexFont.h"
 #include "linmath.h"
+#include "ocpn_plugin.h"
 #ifdef ocpnUSE_GL
     #include "Cs52_shaders.h"
 
 CGLShaderProgram *m_TexFontShader;
 #endif
-
-#include "s52_plib_utils.h"
 
 TexFont::TexFont() {
   texobj = 0;
@@ -96,7 +95,11 @@ void TexFont::Build(wxFont &font, double scale_factor, double dpi_factor, bool b
   double scaler = scale_factor / dpi_factor;
   scaler /= m_ContentScaleFactor;
 
-  wxFont *scaled_font = GetS52Utils()->GetFont(&font, scaler);
+  wxFont *scaled_font =
+          FindOrCreateFont_PlugIn(font.GetPointSize() * scaler,
+                                  font.GetFamily(), font.GetStyle(),
+                                  font.GetWeight(), false,
+                                  font.GetFaceName());
   wxScreenDC sdc;
   sdc.SetFont(*scaled_font);
 

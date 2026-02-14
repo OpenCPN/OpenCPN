@@ -1,4 +1,10 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Optimized wxBitmap Object
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,13 +18,11 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  *
- *  Implement ocpn_pixmap.h -- Optimized wxBitmap Object
  */
 
 //      Original comment header for xshm test code
@@ -37,11 +41,53 @@
  * Brian Paul  Sep, 20, 1995  brianp@ssec.wisc.edu
  */
 
+// ============================================================================
+// declarations
+// ============================================================================
 // ----------------------------------------------------------------------------
 // headers
 // ----------------------------------------------------------------------------
 
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include "dychart.h"
+#include "ocpn_pixel.h"
+
+#ifndef WX_PRECOMP
 #include <stdio.h>
+
+#include <wx/list.h>
+#include <wx/utils.h>
+#include <wx/app.h>
+#include <wx/palette.h>
+#include <wx/dcmemory.h>
+#include <wx/bitmap.h>
+#include <wx/icon.h>
+#endif
+
+#ifdef __WXMSW__
+#include <wx/msw/private.h>
+#include <wx/log.h>
+#include <wx/msw/dib.h>
+#endif
+
+#include <wx/bitmap.h>
+#include <wx/icon.h>
+#include <wx/log.h>
+#include <wx/image.h>
+#include <wx/app.h>
+#include <wx/math.h>
+#include <wx/gdicmn.h>
+#include <wx/palette.h>
+
+// missing from mingw32 header
+#ifndef CLR_INVALID
+#define CLR_INVALID ((COLORREF) - 1)
+#endif  // no CLR_INVALID
 
 #ifdef ocpnUSE_ocpnBitmap
 #ifdef __WXX11__
@@ -50,37 +96,6 @@
 #include <X11/extensions/XShm.h>
 #endif
 #endif
-
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif
-
-#include <wx/app.h>
-#include <wx/bitmap.h>
-#include <wx/dcmemory.h>
-#include <wx/gdicmn.h>
-#include <wx/icon.h>
-#include <wx/image.h>
-#include <wx/list.h>
-#include <wx/log.h>
-#include <wx/math.h>
-#include <wx/palette.h>
-#include <wx/utils.h>
-
-#ifdef __WXMSW__
-#include <wx/msw/private.h>
-#include <wx/msw/dib.h>
-#endif
-
-#include "dychart.h"
-#include "ocpn_pixel.h"
-
-// missing from mingw32 header
-#ifndef CLR_INVALID
-#define CLR_INVALID ((COLORREF) - 1)
-#endif  // no CLR_INVALID
 
 #ifdef __WXX11__
 
@@ -93,7 +108,7 @@ static int HandleXError(Display *dpy, XErrorEvent *event) {
   MITErrorFlag = 1;
   return 0;
 }
-#endif  // ocpUSE_MITSHM
+#endif
 
 //---------------------------------------------------------------------------------------------------------
 //              Private Memory Management
@@ -104,7 +119,7 @@ static void *x_malloc(size_t t) {
 
   //      malloc fails
   if (NULL == pr) {
-    wxLogMessage("x_malloc...malloc fails with request of %d bytes.", t);
+    wxLogMessage(_T("x_malloc...malloc fails with request of %d bytes."), t);
 
     // Cat the /proc/meminfo file
 
@@ -170,7 +185,7 @@ ocpnXImage::ocpnXImage(int width, int height) {
     m_img = XShmCreateImage(xdisplay, xvisual, bpp, ZPixmap, NULL, &shminfo,
                             width, height);
     if (m_img == NULL) {
-      wxLogError("XShmCreateImage failed!");
+      wxLogError(_T("XShmCreateImage failed!"));
       goto after_check;
     }
 
@@ -181,7 +196,7 @@ ocpnXImage::ocpnXImage(int width, int height) {
       XDestroyImage(m_img);
       m_img = NULL;
       wxLogMessage(
-          "alloc_back_buffer: Shared memory error (shmget), disabling.");
+          _T("alloc_back_buffer: Shared memory error (shmget), disabling."));
       goto after_check;
     }
 
@@ -190,7 +205,7 @@ ocpnXImage::ocpnXImage(int width, int height) {
     if (shminfo.shmaddr == (char *)-1) {
       XDestroyImage(m_img);
       m_img = NULL;
-      wxLogMessage("shmat failed");
+      wxLogMessage(_T("shmat failed"));
       goto after_check;
     }
 
@@ -231,7 +246,7 @@ after_check:
     if (m_img->data == NULL) {
       XDestroyImage(m_img);
       m_img = NULL;
-      wxLogError("ocpn_Bitmap:Cannot malloc for data image.");
+      wxLogError(wxT("ocpn_Bitmap:Cannot malloc for data image."));
     }
   }
 }
@@ -354,7 +369,7 @@ PixelCache::~PixelCache() {
 #endif
 }
 
-size_t PixelCache::GetLength() {
+size_t PixelCache::GetLength(void) {
 #ifdef __PIX_CACHE_WXIMAGE__
   return m_width * m_height * 3;
 #else
@@ -362,7 +377,7 @@ size_t PixelCache::GetLength() {
 #endif
 }
 
-void PixelCache::Update() {
+void PixelCache::Update(void) {
 #ifdef __PIX_CACHE_WXIMAGE__
   delete m_pbm;  // kill the old one
   m_pbm = NULL;
@@ -402,7 +417,7 @@ void PixelCache::SelectIntoDC(wxMemoryDC &dc) {
 #endif  //__PIX_CACHE_PIXBUF__
 }
 
-unsigned char *PixelCache::GetpData() const { return pData; }
+unsigned char *PixelCache::GetpData(void) const { return pData; }
 
 #ifdef ocpnUSE_ocpnBitmap
 //-----------------------------------------------------------------------------
@@ -714,7 +729,7 @@ bool ocpnBitmap::CreateFromData(void *pPix, int width, int height, int depth) {
   // create a DIB header
   int headersize = sizeof(BITMAPINFOHEADER);
   BITMAPINFO *lpDIBh = (BITMAPINFO *)malloc(headersize);
-  wxCHECK_MSG(lpDIBh, FALSE, "could not allocate memory for DIB header");
+  wxCHECK_MSG(lpDIBh, FALSE, wxT("could not allocate memory for DIB header"));
   // Fill in the DIB header
   lpDIBh->bmiHeader.biSize = headersize;
   lpDIBh->bmiHeader.biWidth = (DWORD)width;
@@ -734,7 +749,7 @@ bool ocpnBitmap::CreateFromData(void *pPix, int width, int height, int depth) {
   unsigned char *lpBits;
   lpBits = (unsigned char *)malloc(lpDIBh->bmiHeader.biSizeImage);
   if (!lpBits) {
-    wxFAIL_MSG("could not allocate memory for DIB");
+    wxFAIL_MSG(wxT("could not allocate memory for DIB"));
     free(lpDIBh);
     return FALSE;
   }
@@ -806,7 +821,7 @@ bool ocpnBitmap::CreateFromData(void *pPix, int width, int height, int depth) {
 // ----------------------------------------------------------------------------
 
 bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
-  //    wxCHECK_MSG( image.Ok(), FALSE, "invalid image" )
+  //    wxCHECK_MSG( image.Ok(), FALSE, wxT("invalid image") )
 
   m_refData = CreateData();  // found in wxBitmap
 
@@ -839,7 +854,7 @@ bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
   }
 
   // set bitmap parameters
-  wxCHECK_MSG(image.Ok(), FALSE, "invalid image");
+  wxCHECK_MSG(image.Ok(), FALSE, wxT("invalid image"));
   SetWidth(width);
   SetHeight(bmpHeight);
   if (depth == -1) depth = wxDisplayDepth();
@@ -853,7 +868,7 @@ bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
   // create a DIB header
   int headersize = sizeof(BITMAPINFOHEADER);
   BITMAPINFO *lpDIBh = (BITMAPINFO *)malloc(headersize);
-  wxCHECK_MSG(lpDIBh, FALSE, "could not allocate memory for DIB header");
+  wxCHECK_MSG(lpDIBh, FALSE, wxT("could not allocate memory for DIB header"));
   // Fill in the DIB header
   lpDIBh->bmiHeader.biSize = headersize;
   lpDIBh->bmiHeader.biWidth = (DWORD)width;
@@ -873,7 +888,7 @@ bool ocpnBitmap::CreateFromImage(const wxImage &image, int depth) {
   unsigned char *lpBits;
   lpBits = (unsigned char *)malloc(lpDIBh->bmiHeader.biSizeImage);
   if (!lpBits) {
-    wxFAIL_MSG("could not allocate memory for DIB");
+    wxFAIL_MSG(wxT("could not allocate memory for DIB"));
     free(lpDIBh);
     return FALSE;
   }
@@ -1064,7 +1079,7 @@ void ocpnMemDC::SelectObject(wxDIB &dib) {
   // check for whether the bitmap is already selected into a device context
   //    wxASSERT_MSG( !bitmap.GetSelectedInto() ||
   //                  (bitmap.GetSelectedInto() == this),
-  //                  _T("Bitmap is selected in another wxMemoryDC, delete the
+  //                  wxT("Bitmap is selected in another wxMemoryDC, delete the
   //                  first wxMemoryDC or use SelectObject(NULL)") );
 
   /*
@@ -1086,9 +1101,9 @@ void ocpnMemDC::SelectObject(wxDIB &dib) {
   hDIB = (HBITMAP)::SelectObject(GetHdc(), hDIB);
 
   if (!hDIB) {
-    wxLogLastError("SelectObject(ocpnMemDC, DIB)");
+    wxLogLastError(wxT("SelectObject(ocpnMemDC, DIB)"));
 
-    wxFAIL_MSG("Couldn't select a DIB into ocpnMemDC");
+    wxFAIL_MSG(wxT("Couldn't select a DIB into ocpnMemDC"));
   }
 
   else if (!m_oldBitmap) {

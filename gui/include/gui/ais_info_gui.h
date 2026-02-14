@@ -20,15 +20,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-#ifndef _AIS_INFO_GUI_H
-#define _AIS_INFO_GUI_H
 
-#include "o_sound/o_sound.h"
 #include "model/ais_target_data.h"
 #include "observable.h"
-
-class AisInfoGui;             // forward
-extern AisInfoGui* g_pAISGUI; /**< Global instance */
+#include "OCPN_Sound.h"
 
 /**
  * Handles the AIS information GUI and sound alerts. Manages the display of AIS
@@ -45,15 +40,10 @@ public:
 
   bool m_bAIS_Audio_Alert_On;
   bool m_bAIS_AlertPlaying;
-  int m_alarm_defer_count;
-  int m_lastMMSI;
-  wxDateTime m_lastMMSItime;
-
-  o_sound::Sound* m_AIS_Sound;
+  OcpnSound* m_AIS_Sound;
   ObservableListener ais_info_listener;
   ObservableListener ais_touch_listener;
   ObservableListener ais_wp_listener;
   ObservableListener ais_new_track_listener;
   ObservableListener ais_del_track_listener;
 };
-#endif  // ais_info_gui

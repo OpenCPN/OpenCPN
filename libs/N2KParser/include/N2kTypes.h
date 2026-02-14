@@ -299,7 +299,6 @@ enum tN2kMagneticVariation {
                             N2kmagvar_WMM2010=6,
                             N2kmagvar_WMM2015=7,
                             N2kmagvar_WMM2020=8,
-                            N2kmagvar_WMM2025=9,
                           };
 
 enum tN2kOnOff  {
@@ -537,3 +536,4 @@ using tN2kSpeedType = tN2kDD488;
 
 
 #endif
+

@@ -12,6 +12,9 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
 #include <iomanip>
@@ -24,12 +27,10 @@
 
 #include <wx/clipbrd.h>
 #include <wx/dcclient.h>
-#include <wx/gdicmn.h>
 #include <wx/string.h>
 #include <wx/textctrl.h>
 
 #include "tty_scroll.h"
-#include "model/config_vars.h"
 #include "observable.h"
 
 // Recursive include of winsock2.h -> redefined DrawText.
@@ -43,18 +44,20 @@
  * Implement tty_scroll.h
  */
 
+const wxString kUtfCheckMark = wxString::FromUTF8(u8"\u2713");
+const wxString kUtfCircledDivisionSlash = wxString::FromUTF8(u8"\u2298");
+const wxString kUtfFallingDiagonal = wxString::FromUTF8(u8"\u269F");
+const wxString kUtfIdenticalTo = wxString::FromUTF8(u8"\u2261");
+const wxString kUtfLeftArrow = wxString::FromUTF8(u8"\u2190");
+const wxString kUtfLeftRightArrow = wxString::FromUTF8(u8"\u2194");
+const wxString kUtfLeftwardsArrowToBar = wxString::FromUTF8(u8"\u21E4");
+const wxString kUtfMultiplicationX = wxString::FromUTF8(u8"\u2716");
+const wxString kUtfRightArrow = wxString::FromUTF8(u8"\u2192");
+
 /** Return true if s matches ll's source interface or message. */
 static bool IsFilterMatch(const struct Logline& ll, const std::string& s) {
   if (ll.navmsg->source->iface.find(s) != std::string::npos) return true;
   return ll.message.find(s) != std::string::npos;
-}
-
-static void UpdateColor(wxColour& colour, unsigned rgb) {
-  if (rgb == kUndefinedColor) {
-    colour = wxNullColour;
-  } else {
-    colour.SetRGB(rgb);
-  }
 }
 
 static std::string Timestamp(const NavmsgTimePoint& when) {
@@ -95,37 +98,18 @@ wxColor StdColorsByState::operator()(NavmsgStatus ns) {
     color = wxColour("MAROON");
   else if (ns.direction == NavmsgStatus::Direction::kOutput)
     color = wxColour("BLUE");
-  else if (ns.direction == NavmsgStatus::Direction::kHandled)
-    color = kDarkGreen;
-  else  // input event
-    color = wxColour("ORANGE");
-  return color;
-}
-
-wxColor UserColorsByState::operator()(NavmsgStatus ns) {
-  wxColour color;
-  if (ns.status != NavmsgStatus::State::kOk)
-    UpdateColor(color, g_dm_not_ok);
-  else if (ns.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
-    UpdateColor(color, g_dm_filtered);
-  else if (ns.accepted == NavmsgStatus::Accepted::kFilteredDropped)
-    UpdateColor(color, g_dm_dropped);
-  else if (ns.direction == NavmsgStatus::Direction::kOutput)
-    UpdateColor(color, g_dm_output);
   else if (ns.direction == NavmsgStatus::Direction::kInput)
-    UpdateColor(color, g_dm_input);
+    color = wxColour("ORANGE");
   else
-    UpdateColor(color, g_dm_ok);
-  return color.IsOk() ? color : defaults(ns);
+    color = kDarkGreen;
+  return color;
 }
 
 /** Draw a single line in the log window. */
 void TtyScroll::DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y) {
   wxString ws;
   if (!ll.message.empty()) ws << Timestamp(ll.navmsg->created_at) << " ";
-  if (ll.message.empty())
-    ;
-  else if (ll.state.direction == NavmsgStatus::Direction::kOutput)
+  if (ll.state.direction == NavmsgStatus::Direction::kOutput)
     ws << " " << kUtfRightArrow << " ";
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
     ws << " " << kUtfLeftwardsArrowToBar << " ";
@@ -134,9 +118,7 @@ void TtyScroll::DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y) {
   else
     ws << " " << kUtfLeftArrow << " ";
 
-  if (ll.message.empty())
-    ;
-  else if (ll.state.status != NavmsgStatus::State::kOk)
+  if (ll.state.status != NavmsgStatus::State::kOk)
     ws << kUtfMultiplicationX;
   else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
     ws << kUtfFallingDiagonal;
@@ -170,7 +152,7 @@ TtyScroll::TtyScroll(wxWindow* parent, int n_lines)
   dc.GetTextExtent("Line Height", NULL, &m_line_height);
   SetScrollRate(m_line_height, m_line_height);
   for (unsigned i = 0; i < m_n_lines; i++) m_lines.push_back(Logline());
-  SetColors(std::make_unique<UserColorsByState>());
+  SetColors(std::make_unique<StdColorsByState>());
   Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) { OnSize(ev); });
 }
 
@@ -178,12 +160,6 @@ void TtyScroll::OnSize(wxSizeEvent& ev) {
   m_n_lines = ev.GetSize().y / GetCharHeight();
   while (m_lines.size() < m_n_lines) m_lines.push_back(Logline());
   ev.Skip();
-}
-
-void TtyScroll::Clear() {
-  m_lines.clear();
-  for (size_t i = 0; i < m_n_lines; ++i) m_lines.push_back(Logline());
-  Refresh(true);
 }
 
 void TtyScroll::Add(const Logline& ll) {

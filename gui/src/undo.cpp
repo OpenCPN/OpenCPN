@@ -1,4 +1,10 @@
-/***************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Framework for Undo features
+ * Author:   Jesper Weissglas
+ *
+ ***************************************************************************
  *   Copyright (C) 2012 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,39 +18,44 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- ***************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  *
- * Implement undo.h -- framework for Undo features
+ *
  */
 
 #include "config.h"
-#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <wx/wxprec.h>
+
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
 
+#include <wx/file.h>
+#include <wx/datetime.h>
 #include <wx/clipbrd.h>
-#include <wx/dynarray.h>
-#include <wx/gdicmn.h>
 
-#include "model/navobj_db.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
 
 #include "chcanv.h"
-#include "mark_info.h"
+#include "MarkInfo.h"
 #include "navutil.h"
+#include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "styles.h"
-#include "top_frame.h"
 #include "undo.h"
+#include "model/navobj_db.h"
+
+extern Routeman* g_pRouteMan;
+extern MyConfig* pConfig;
+extern MyFrame* gFrame;
+extern RouteManagerDialog* pRouteManagerDialog;
+extern MarkInfoDlg* g_pMarkInfoDialog;
 
 Undo::Undo(ChartCanvas* parent) {
   m_parent = parent;
@@ -80,7 +91,7 @@ wxString UndoAction::Description() {
       descr = _("Append Waypoint");
       break;
     default:
-      descr = "";
+      descr = _T("");
       break;
   }
   return descr;
@@ -148,7 +159,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
     noRouteLeftToRedo = true;
 
   g_pRouteMan->RemovePointFromRoute(point, route, cc->m_routeState);
-  top_frame::Get()->InvalidateAllGL();
+  gFrame->InvalidateAllGL();
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
     NavObj_dB::GetInstance().DeleteRoutePoint(point);

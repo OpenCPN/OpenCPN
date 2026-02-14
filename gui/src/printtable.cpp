@@ -1,6 +1,11 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  OpenCPN Route table printout
+ * Author:   Pavel Saviankou
+ *
+ ***************************************************************************
  *   Copyright (C) 2012 by David S. Register                               *
- *   Copyright (C) 2012 Pavel Saviankou                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -13,42 +18,24 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  *
- *  Implement printtable.h -- OpenCPN Route table printout
  */
-
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <algorithm>
 
-#ifdef __WXMSW__
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
-#include <psapi.h>
-#endif
-
-#ifndef __WXMSW__
-#include <signal.h>
-#include <setjmp.h>
-#endif
-
-#include "gl_headers.h"  // Must be included before anything using GL stuff
-
-#ifdef __WXMSW__
-// #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
-#endif
-
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
+#endif  // precompiled headers
+#ifdef __WXMSW__
+// #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
 #include <wx/print.h>
@@ -64,8 +51,27 @@
 #include <wx/colour.h>
 #include <wx/tokenzr.h>
 
-#include "printtable.h"
+#if wxCHECK_VERSION(2, 9, 0)
+#include <wx/dialog.h>
+#else
+//  #include "scrollingdialog.h"
+#endif
+
 #include "dychart.h"
+
+#ifdef __WXMSW__
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+#include <psapi.h>
+#endif
+
+#ifndef __WXMSW__
+#include <signal.h>
+#include <setjmp.h>
+#endif
+
+#include "printtable.h"
 
 using namespace std;
 
@@ -89,7 +95,7 @@ void PrintCell::Adjust() {
   dc->SetFont(_font);
   vector<wxString> list;
   list.push_back(wxString());
-  wxString separator = " ";
+  wxString separator = wxT(" ");
   wxStringTokenizer tokenizer(content, separator, wxTOKEN_RET_DELIMS);
   int words_number = 0;
   while (tokenizer.HasMoreTokens()) {
@@ -108,7 +114,7 @@ void PrintCell::Adjust() {
   }
 
   for (size_t i = 0; i < list.size() - 1; i++) {
-    modified_content = modified_content + list[i] + '\n';
+    modified_content = modified_content + list[i] + _T('\n');
   }
   // now add last element without new line
   modified_content = modified_content + list[list.size() - 1];

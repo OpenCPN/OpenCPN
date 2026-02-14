@@ -26,16 +26,12 @@ SET(SRC
     src/wpl.cpp
     src/rte.hpp
     src/rte.cpp
-    src/ths.hpp
-    src/ths.cpp
     src/hdt.hpp
     src/hdt.cpp
     src/hdg.hpp
     src/hdg.cpp
     src/hdm.hpp
     src/hdm.cpp
-    src/hvd.hpp
-    src/hvd.cpp
     src/gll.hpp
     src/gll.cpp
     src/vtg.hpp

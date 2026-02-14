@@ -1,4 +1,10 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,30 +18,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
- *
- * Input priorities management dialog
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  */
 
 #ifndef _PRIORITY_DIALOG_H
 #define _PRIORITY_DIALOG_H
 
-#include <string>
 #include <vector>
-
-#include <wx/button.h>
 #include <wx/checkbox.h>
-#include <wx/dialog.h>
-#include <wx/event.h>
-#include <wx/font.h>
 #include <wx/listctrl.h>
 #include <wx/radiobut.h>
 #include <wx/stattext.h>
-#include <wx/string.h>
 #include <wx/timer.h>
 #include <wx/treectrl.h>
 

@@ -1,4 +1,10 @@
-/**************************************************************************
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2022 by David Register                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,14 +18,10 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-/**
- * \file
- *
- * Confirm peer transfer PIN code dialog
- */
 
 #ifndef _PEER__CLIENT_DLG_H
 #define _PEER__CLIENT_DLG_H
@@ -73,4 +75,4 @@ private:
   wxString m_checkbox1_msg;
 };
 
-#endif  // _PEER__CLIENT_DLG_H
+#endif  // guard

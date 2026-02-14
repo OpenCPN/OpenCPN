@@ -1,4 +1,10 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Chart Thumbnail Object
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,18 +18,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ ***************************************************************************
  *
- * Implement thumbwin.h -- Chart thumbnail object
+ *
  */
-
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
 
 #include <wx/wxprec.h>
 
@@ -31,14 +32,16 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "thumbwin.h"
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
-#include "chartdb.h"
-#include "color_handler.h"
 #include "dychart.h"
 
-ThumbWin *pthumbwin;
-
+#include "thumbwin.h"
+#include "chartdb.h"
+#include "model/wx28compat.h"
+#include "color_handler.h"
 //------------------------------------------------------------------------------
 //    Thumbwin Implementation
 //------------------------------------------------------------------------------
@@ -58,7 +61,7 @@ ThumbWin::ThumbWin(wxWindow *parent)
 
 ThumbWin::~ThumbWin() {}
 
-void ThumbWin::Resize() {
+void ThumbWin::Resize(void) {
   if (pThumbChart) {
     if (pThumbChart->GetThumbData()->pDIBThumb) {
       int newheight = std::min(
@@ -80,9 +83,9 @@ void ThumbWin::OnPaint(wxPaintEvent &event) {
       if (pThumbChart->GetThumbData()->pDIBThumb)
         dc.DrawBitmap(*(pThumbChart->GetThumbData()->pDIBThumb), 0, 0, false);
 
-      wxPen ppPen(GetGlobalColor("CHBLK"), 1, wxPENSTYLE_SOLID);
+      wxPen ppPen(GetGlobalColor(_T("CHBLK")), 1, wxPENSTYLE_SOLID);
       dc.SetPen(ppPen);
-      wxBrush yBrush(GetGlobalColor("CHYLW"), wxBRUSHSTYLE_SOLID);
+      wxBrush yBrush(GetGlobalColor(_T("CHYLW")), wxBRUSHSTYLE_SOLID);
       dc.SetBrush(yBrush);
       dc.DrawCircle(pThumbChart->GetThumbData()->ShipX,
                     pThumbChart->GetThumbData()->ShipY, 6);
@@ -90,7 +93,7 @@ void ThumbWin::OnPaint(wxPaintEvent &event) {
   }
 }
 
-const wxBitmap &ThumbWin::GetBitmap() {
+const wxBitmap &ThumbWin::GetBitmap(void) {
   if (pThumbChart) {
     if (pThumbChart->GetThumbData()) {
       if (pThumbChart->GetThumbData()->pDIBThumb)

@@ -28,7 +28,7 @@
 #include "s52plibGL.h"
 
 #include "DepthFont.h"
-#include "s52_plib_utils.h"
+#include "ocpn_plugin.h"
 
 DepthFont::DepthFont() {
   texobj = 0;
@@ -52,7 +52,11 @@ void DepthFont::Build(wxFont *font, double scale, double dip_factor) {
 
   double scaler = m_ContentScaleFactor * dip_factor;
 
-  wxFont *scaled_font = GetS52Utils()->GetFont(font, scaler);
+  wxFont *scaled_font =
+          FindOrCreateFont_PlugIn(font->GetPointSize() / scaler,
+                                  font->GetFamily(), font->GetStyle(),
+                                  font->GetWeight(), false,
+                                  font->GetFaceName());
   wxScreenDC sdc;
   sdc.SetFont(*scaled_font);
 
@@ -178,3 +182,4 @@ bool DepthFont::GetGLTextureRect(wxRect &texrect, int symIndex) {
     return false;
   }
 }
+

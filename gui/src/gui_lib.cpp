@@ -12,36 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
 /**
  *  \file
- *
- *  Implement gui_lib.h
+ *  Implements gui_lib.h
  */
 
 #include <wx/artprov.h>
-#include <wx/bitmap.h>
 #include <wx/dialog.h>
-#include <wx/font.h>
-#include <wx/msgdlg.h>
 #include <wx/sizer.h>
 #include <wx/statbmp.h>
 #include <wx/statline.h>
-#include <wx/string.h>
-#include <wx/textctrl.h>
-#include <wx/utils.h>
 
-#include "gl_headers.h"  // Must come before anything using GL stuff
-
-#include "model/config_vars.h"
 #include "model/gui_events.h"
-
 #include "gui_lib.h"
 #include "timers.h"
-#include "font_mgr.h"
-#include "ocpn_platform.h"
+#include "FontMgr.h"
+#include "OCPNPlatform.h"
 #include "ocpn_plugin.h"
 #include "displays.h"
 
@@ -49,6 +40,10 @@
 #include "androidUTIL.h"
 #include "qdebug.h"
 #endif
+
+extern bool g_bresponsive;
+extern OCPNPlatform* g_Platform;
+extern int g_GUIScaleFactor;
 
 CopyableText::CopyableText(wxWindow* parent, const char* text)
     : wxTextCtrl(parent, wxID_ANY, text, wxDefaultPosition, wxDefaultSize,
@@ -117,7 +112,7 @@ wxFont GetOCPNGUIScaledFont(wxString item) {
 int OCPNMessageBox(wxWindow* parent, const wxString& message,
                    const wxString& caption, int style, int timeout_sec, int x,
                    int y) {
-#ifdef __ANDROID__
+#ifdef __OCPN__ANDROID__
   androidDisableRotation();
   int style_mod = style;
 
@@ -173,7 +168,7 @@ OCPNMessageDialog::OCPNMessageDialog(wxWindow* parent, const wxString& message,
     wxBitmap bitmap;
     switch (style & wxICON_MASK) {
       default:
-        wxFAIL_MSG("incorrect log style");
+        wxFAIL_MSG(_T("incorrect log style"));
         // fall through
 
       case wxICON_ERROR:

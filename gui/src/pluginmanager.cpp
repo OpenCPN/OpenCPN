@@ -21,33 +21,60 @@
  * \file
  * Implement pluginmanager.h
  */
-
 #include <algorithm>
+#include <archive.h>
 #include <cstdio>
 #include <cstdio>
+#include <errno.h>
+#include <fcntl.h>
 #include <fstream>
+#include <iostream>
 #include <iostream>
 #include <memory>
 #include <set>
 #include <sstream>
+#include <stdint.h>
 #include <string>
-#include <typeinfo>
 #include <unordered_map>
-
-#include "gl_headers.h"  // Must be included before anything using GL stuff
-
-#ifdef _WIN32
-#include <winsock2.h>
-#include <windows.h>
-#endif
 
 #ifdef __MINGW32__
 #undef IPV6STRICT  // mingw FTBS fix:  missing struct ip_mreq
+#include <windows.h>
 #endif
 
-#ifndef _WIN32
-#include <cxxabi.h>
+#include <typeinfo>
+#if defined(__linux__) && !defined(__ANDROID__)
+#include <wordexp.h>
 #endif
+#include <wx/wx.h>
+#include <wx/dir.h>
+#include <wx/event.h>
+#include <wx/filename.h>
+#include <wx/aui/aui.h>
+#include <wx/platinfo.h>
+#include <wx/popupwin.h>
+#include <wx/progdlg.h>
+#include <wx/statline.h>
+#include <wx/tokenzr.h>
+#include <wx/tooltip.h>
+#include <wx/app.h>
+#include <wx/hashset.h>
+#include <wx/hashmap.h>
+#include <wx/jsonval.h>
+#include <wx/jsonreader.h>
+#include <wx/uri.h>
+#include <wx/zipstrm.h>
+#include <wx/zstream.h>
+#include <wx/tarstrm.h>
+#include <wx/textwrapper.h>
+#include <wx/app.h>
+
+#ifndef __WXMSW__
+#include <cxxabi.h>
+#endif  // __WXMSW__
+
+#include <archive_entry.h>
+typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
 
 #ifdef USE_LIBELF
 #include <elf.h>
@@ -55,45 +82,8 @@
 #include <gelf.h>
 #endif
 
-#if defined(__linux__) && !defined(__ANDROID__)
-#include <wordexp.h>
-#endif
-
-#include <archive.h>
-#include <archive_entry.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <stdint.h>
-
-#include <wx/app.h>
-#include <wx/aui/aui.h>
-#include <wx/dir.h>
-#include <wx/event.h>
-#include <wx/filename.h>
-#include <wx/hashmap.h>
-#include <wx/hashset.h>
-#include <wx/jsonreader.h>
-#include <wx/jsonval.h>
-#include <wx/listimpl.cpp>
-#include <wx/platinfo.h>
-#include <wx/popupwin.h>
-#include <wx/progdlg.h>
-#include <wx/statline.h>
-#include <wx/tarstrm.h>
-#include <wx/textwrapper.h>
-#include <wx/tokenzr.h>
-#include <wx/tooltip.h>
-#include <wx/uri.h>
-#include <wx/wx.h>
-#include <wx/zipstrm.h>
-#include <wx/zstream.h>
-
 #include "config.h"
-#include "pluginmanager.h"
 
-#include "o_sound/o_sound.h"
-
-#include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
 #include "model/catalog_handler.h"
 #include "model/comm_drv_n0183_net.h"
@@ -106,7 +96,6 @@
 #include "model/datetime.h"
 #include "model/downloader.h"
 #include "model/georef.h"
-#include "model/gui_vars.h"
 #include "model/json_event.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
@@ -126,7 +115,7 @@
 #include "model/track.h"
 
 #include "ais.h"
-#include "canvas_menu.h"
+#include "canvasMenu.h"
 #include "cat_settings.h"
 #include "chartbase.h"  // for ChartPlugInWrapper
 #include "chartdb.h"
@@ -135,29 +124,33 @@
 #include "config.h"
 #include "download_mgr.h"
 #include "dychart.h"
-#include "font_mgr.h"
+#include "FontMgr.h"
 #include "gshhs.h"
+#include "model/ais_decoder.h"
 #include "mygeom.h"
 #include "navutil.h"
 #include "observable_confvar.h"
 #include "observable_globvar.h"
-#include "ocpn_aui_manager.h"
+#include "ocpn_app.h"
+#include "OCPN_AUIManager.h"
 #include "ocpndc.h"
+#include "ocpn_frame.h"
 #include "ocpn_pixel.h"
-#include "ocpn_platform.h"
-#include "ocpn_region.h"
+#include "OCPNPlatform.h"
+#include "OCPNRegion.h"
 #include "options.h"
 #include "piano.h"
+#include "pluginmanager.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "SoundFactory.h"
 #include "styles.h"
 #include "model/svg_utils.h"
+#include "SystemCmdSound.h"
 #include "toolbar.h"
-#include "top_frame.h"
 #include "update_mgr.h"
-#include "user_colors.h"
 #include "waypointman_gui.h"
 
 #ifdef __ANDROID__
@@ -166,20 +159,61 @@
 #endif
 
 #ifdef ocpnUSE_GL
-#include "gl_chart_canvas.h"
+#include "glChartCanvas.h"
 #endif
-
-typedef __LA_INT64_T la_int64_t;  //  "older" libarchive versions support
-enum { CurlThreadId = wxID_HIGHEST + 1 };
+extern MyConfig* pConfig;
+extern OCPN_AUIManager* g_pauimgr;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale* plocale_def_lang;
 #endif
 
-PlugInManager* g_pi_manager;
+extern OCPNPlatform* g_Platform;
+extern ChartDB* ChartData;
+extern MyFrame* gFrame;
+extern ocpnStyle::StyleManager* g_StyleManager;
+extern options* g_pOptions;
+extern Multiplexer* g_pMUX;
+extern bool g_bShowChartBar;
+extern Routeman* g_pRouteMan;
+extern Select* pSelect;
+extern RouteManagerDialog* pRouteManagerDialog;
+extern RouteList* pRouteList;
+extern std::vector<Track*> g_TrackList;
+extern PlugInManager* g_pi_manager;
+extern s52plib* ps52plib;
+extern wxString ChartListFileName;
+extern options* g_options;
+extern ColorScheme global_color_scheme;
+extern wxArrayString g_locale_catalog_array;
+extern int g_GUIScaleFactor;
+extern int g_ChartScaleFactor;
+extern wxString g_locale;
+extern ocpnFloatingToolbarDialog* g_MainToolbar;
+
+extern int g_chart_zoom_modifier_raster;
+extern int g_chart_zoom_modifier_vector;
+extern double g_display_size_mm;
+extern bool g_bopengl;
+
+extern ChartGroupArray* g_pGroupArray;
+extern unsigned int g_canvasConfig;
+
+extern wxString g_CmdSoundString;
+
+extern unsigned int gs_plib_flags;
+extern ChartCanvas* g_focusCanvas;
+extern ChartCanvas* g_overlayCanvas;
+extern bool g_bquiting;
+
+WX_DEFINE_ARRAY_PTR(ChartCanvas*, arrayofCanvasPtr);
+extern arrayofCanvasPtr g_canvasArray;
 
 void NotifySetupOptionsPlugin(const PlugInData* pic);
 
+enum { CurlThreadId = wxID_HIGHEST + 1 };
+
+#include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
 WX_DEFINE_LIST(Plugin_HyperlinkList);
 
@@ -205,9 +239,9 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   wxLongLong t = ::wxGetLocalTimeMillis();
 
   jMsg[wxS("Source")] = wxS("AisDecoder");
-  jMsg["Type"] = "Information";
-  jMsg["Msg"] = wxS("AIS Target");
-  jMsg["MsgId"] = t.GetValue();
+  jMsg[wxT("Type")] = wxT("Information");
+  jMsg[wxT("Msg")] = wxS("AIS Target");
+  jMsg[wxT("MsgId")] = t.GetValue();
   jMsg[wxS("lat")] = pTarget->Lat;
   jMsg[wxS("lon")] = pTarget->Lon;
   jMsg[wxS("sog")] = pTarget->SOG;
@@ -229,18 +263,7 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   }
   jMsg[wxS("callsign")] = l_CallSign;
   jMsg[wxS("removed")] = pTarget->b_removed;
-  SendJSONMessageToAllPlugins("AIS", jMsg);
-}
-
-static bool ReloadLocale() {
-  bool ret = false;
-
-#if wxUSE_XLOCALE
-  ret =
-      (!g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang)
-            .IsEmpty());
-#endif
-  return ret;
+  SendJSONMessageToAllPlugins(wxT("AIS"), jMsg);
 }
 
 static int ComparePlugins(PlugInContainer** p1, PlugInContainer** p2) {
@@ -534,8 +557,6 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
 
   wxLogMessage("Installing %s", update.name.c_str());
 
-  g_Platform->ShowBusySpinner();
-
   auto pluginHandler = PluginHandler::GetInstance();
   auto path = ocpn::lookup_tarball(update.tarball_url.c_str());
   if (uninstall && path != "") {
@@ -580,11 +601,11 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
   //  Check the library compatibility of the subject plugin
   //  Find the plugin library file, looking for "_pi.{dll/so/dylib file}
 #ifdef __WXMSW__
-  wxString pispec = "_pi.dll";
+  wxString pispec = _T("_pi.dll");
 #elif defined(__WXOSX__)
-  wxString pispec = "_pi.dylib";
+  wxString pispec = _T("_pi.dylib");
 #else
-  wxString pispec = "_pi.so";
+  wxString pispec = _T("_pi.so");
 #endif
 
   std::string manifestPath = PluginHandler::FileListPath(update.name);
@@ -633,7 +654,6 @@ static void run_update_dialog(PluginListPanel* parent, const PlugInData* pic,
   LoadAllPlugIns(false);
 
   parent->ReloadPluginPanels();
-  g_Platform->HideBusySpinner();
 }
 
 static PlugIn_ViewPort CreatePlugInViewport(const ViewPort& vp) {
@@ -679,8 +699,8 @@ static ViewPort CreateCompatibleViewport(const PlugIn_ViewPort& pivp) {
   vp.b_quilt = pivp.b_quilt;
   vp.m_projection_type = pivp.m_projection_type;
 
-  if (top_frame::Get()->GetAbstractPrimaryCanvas())
-    vp.ref_scale = top_frame::Get()->GetCanvasRefScale();
+  if (gFrame->GetPrimaryCanvas())
+    vp.ref_scale = gFrame->GetPrimaryCanvas()->GetVP().ref_scale;
   else
     vp.ref_scale = vp.chart_scale;
 
@@ -770,6 +790,8 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
     }
 
     case ActionVerb::UNINSTALL_MANAGED_VERSION: {
+      PluginLoader::GetInstance()->DeactivatePlugIn(*actionPIC);
+
       // Capture the confirmation dialog contents before the plugin goes away
       wxString message;
       message.Printf("%s %s\n", actionPIC->m_managed_metadata.name.c_str(),
@@ -780,13 +802,16 @@ void pluginUtilHandler::OnPluginUtilAction(wxCommandEvent& event) {
                    actionPIC->m_managed_metadata.name.c_str());
 
       PluginHandler::GetInstance()->Uninstall(
-          actionPIC->m_managed_metadata.name);  // embeds Deactivate()
+          actionPIC->m_managed_metadata.name);
 
       //  Reload all plugins, which will bring in the action results.
+      auto loader = PluginLoader::GetInstance();
       LoadAllPlugIns(false);
       plugin_list_panel->ReloadPluginPanels();
-      OCPNMessageBox(wxTheApp->GetTopWindow(), message,
-                     _("Un-Installation complete"), wxICON_INFORMATION | wxOK);
+
+      OCPNMessageBox(gFrame, message, _("Un-Installation complete"),
+                     wxICON_INFORMATION | wxOK);
+
       break;
     }
 
@@ -867,16 +892,18 @@ static void OnLoadPlugin(const PlugInContainer* pic) {
   }
 }
 
-PlugInManager::PlugInManager(AbstractTopFrame* parent) {
+PlugInManager::PlugInManager(MyFrame* parent) {
 #if !defined(__ANDROID__) && defined(OCPN_USE_CURL)
   m_pCurlThread = NULL;
   m_pCurl = 0;
 #endif
+  pParent = parent;
   s_ppim = this;
-  m_parent = parent;
-  if (m_parent) {
+
+  MyFrame* pFrame = GetParentFrame();
+  if (pFrame) {
     m_plugin_menu_item_id_next = CanvasMenuHandler::GetNextContextMenuId();
-    m_plugin_tool_id_next = top_frame::Get()->GetNextToolbarToolId();
+    m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
   }
 
 #ifdef __ANDROID__
@@ -885,11 +912,11 @@ PlugInManager::PlugInManager(AbstractTopFrame* parent) {
   //  even if stubs.
   //
   //  Here is where we do that....
-  if (parent) {
+  if (pFrame) {
     wxArrayString as;
-    as.Add("Item0");
+    as.Add(_T("Item0"));
     wxRadioBox* box =
-        new wxRadioBox(parent, -1, "", wxPoint(0, 0), wxSize(-1, -1), as);
+        new wxRadioBox(pFrame, -1, _T(""), wxPoint(0, 0), wxSize(-1, -1), as);
     delete box;
   }
 
@@ -938,7 +965,7 @@ PlugInManager::~PlugInManager() {
   delete m_utilHandler;
 }
 
-void PlugInManager::InitCommListeners() {
+void PlugInManager::InitCommListeners(void) {
   // Initialize the comm listener to support
   // void SetNMEASentence(wxString &sentence);
 
@@ -999,7 +1026,7 @@ void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
   ;
 
   int errors = jsonReader.Parse(msgTerminated, &root);
-  if (errors == 0) SendJSONMessageToAllPlugins("OCPN_CORE_SIGNALK", root);
+  if (errors == 0) SendJSONMessageToAllPlugins(wxT("OCPN_CORE_SIGNALK"), root);
 }
 
 /**
@@ -1020,11 +1047,8 @@ wxDEFINE_EVENT(EVT_PLUGIN_LOADALL_FINALIZE, wxCommandEvent);
 void PlugInManager::HandlePluginLoaderEvents() {
   auto loader = PluginLoader::GetInstance();
 
-  loader->SetOnActivateCb(
-      [&](const PlugInContainer* pic) { OnPluginActivate(pic); });
   loader->SetOnDeactivateCb(
       [&](const PlugInContainer* pic) { OnPluginDeactivate(pic); });
-
   evt_pluglist_change_listener.Listen(loader->evt_pluglist_change, this,
                                       EVT_PLUGLIST_CHANGE);
   Bind(EVT_PLUGLIST_CHANGE, [&](wxCommandEvent&) {
@@ -1083,7 +1107,7 @@ void PlugInManager::HandlePluginHandlerEvents() {
                                       EVT_DOWNLOAD_FAILED);
   Bind(EVT_DOWNLOAD_FAILED, [&](wxCommandEvent& ev) {
     wxString message = _("Please check system log for more info.");
-    OCPNMessageBox(wxTheApp->GetTopWindow(), message, _("Installation error"),
+    OCPNMessageBox(gFrame, message, _("Installation error"),
                    wxICON_ERROR | wxOK | wxCENTRE);
   });
 
@@ -1092,13 +1116,12 @@ void PlugInManager::HandlePluginHandlerEvents() {
   Bind(EVT_DOWNLOAD_OK, [&](wxCommandEvent& ev) {
     wxString message(ev.GetString());
     message += _(" successfully installed from cache");
-    OCPNMessageBox(wxTheApp->GetTopWindow(), message,
-                   _("Installation complete"),
+    OCPNMessageBox(gFrame, message, _("Installation complete"),
                    wxICON_INFORMATION | wxOK | wxCENTRE);
   });
 }
 
-bool PlugInManager::CallLateInit() {
+bool PlugInManager::CallLateInit(void) {
   bool bret = true;
 
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
@@ -1136,28 +1159,14 @@ void PlugInManager::ProcessLateInit(const PlugInContainer* pic) {
     if (ppi) ppi->LateInit();
   }
 }
-void PlugInManager::OnPluginActivate(const PlugInContainer* pic) {
-  // Inform Plugin of OpenGL configuration, if enabled
-#ifdef ocpnUSE_GL
-  if (g_bopengl) {
-    if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
-        (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
-      if (top_frame::Get()->GetWxGlCanvas()) {
-        top_frame::Get()->SendGlJsonConfigMsg();
-        SendS52ConfigToAllPlugIns(true);
-      }
-    }
-  }
-#endif
-}
 
 void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
   // Unload chart cache if this plugin is responsible for any charts
   if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
       (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
-    ChartData->PurgeCachePlugins();  // This will delete the plugin's charts.
+    ChartData->PurgeCachePlugins();
+    gFrame->InvalidateAllQuilts();
   }
-
   //    Deactivate (Remove) any ToolbarTools added by this PlugIn
   for (unsigned int i = 0; i < m_PlugInToolbarTools.GetCount(); i++) {
     PlugInToolbarToolContainer* pttc = m_PlugInToolbarTools[i];
@@ -1215,7 +1224,6 @@ bool PlugInManager::UpDateChartDataTypes() {
         bret = true;
     }
   }
-  bret = true;
 
   if (bret) ChartData->UpdateChartClassDescriptorArray();
 
@@ -1236,7 +1244,8 @@ void PlugInManager::FinalizePluginLoadall() {
   // Inform Plugins of OpenGL configuration, if enabled
 #ifdef ocpnUSE_GL
   if (g_bopengl) {
-    top_frame::Get()->SendGlJsonConfigMsg();
+    if (gFrame->GetPrimaryCanvas()->GetglCanvas())
+      gFrame->GetPrimaryCanvas()->GetglCanvas()->SendJSONConfigMessage();
   }
 #endif
 
@@ -1263,8 +1272,8 @@ wxString PlugInManager::GetPluginOrder() {
 }
 
 bool PlugInManager::UpdateConfig() {
-  //    pConfig->SetPath( "/PlugIns/" );
-  //    pConfig->Write( "PluginOrder", GetPluginOrder() );
+  //    pConfig->SetPath( _T("/PlugIns/") );
+  //    pConfig->Write( _T("PluginOrder"), GetPluginOrder() );
 
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
@@ -1700,7 +1709,7 @@ void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs) {
 }
 
 void PlugInManager::PrepareAllPluginContextMenus() {
-  int canvasIndex = top_frame::Get()->GetCanvasIndexUnderMouse();
+  int canvasIndex = gFrame->GetCanvasIndexUnderMouse();
   if (canvasIndex < 0) return;
 
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
@@ -1731,94 +1740,95 @@ void PlugInManager::PrepareAllPluginContextMenus() {
 void PlugInManager::SendSKConfigToAllPlugIns() {
   // Send the current ownship MMSI, encoded as sK,  to all PlugIns
   wxJSONValue v;
-  v["self"] = g_ownshipMMSI_SK;
+  v[_T("self")] = g_ownshipMMSI_SK;
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OCPN_CORE_SIGNALK"), out);
+  SendMessageToAllPlugins(wxString(_T("OCPN_CORE_SIGNALK")), out);
 }
 
 void PlugInManager::SendBaseConfigToAllPlugIns() {
   // Send the current run-time configuration to all PlugIns
   wxJSONValue v;
-  v["OpenCPN Version Major"] = VERSION_MAJOR;
-  v["OpenCPN Version Minor"] = VERSION_MINOR;
-  v["OpenCPN Version Patch"] = VERSION_PATCH;
-  v["OpenCPN Version Date"] = VERSION_DATE;
-  v["OpenCPN Version Full"] = VERSION_FULL;
+  v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
+  v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
+  v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
+  v[_T("OpenCPN Version Date")] = VERSION_DATE;
+  v[_T("OpenCPN Version Full")] = VERSION_FULL;
 
   // Some useful display metrics
   if (g_MainToolbar) {
-    v["OpenCPN Toolbar Width"] = g_MainToolbar->GetToolbarRect().width;
-    v["OpenCPN Toolbar Height"] = g_MainToolbar->GetToolbarRect().height;
-    v["OpenCPN Toolbar PosnX"] = g_MainToolbar->GetToolbarRect().x;
-    v["OpenCPN Toolbar PosnY"] = g_MainToolbar->GetToolbarRect().y;
+    v[_T("OpenCPN Toolbar Width")] = g_MainToolbar->GetToolbarRect().width;
+    v[_T("OpenCPN Toolbar Height")] = g_MainToolbar->GetToolbarRect().height;
+    v[_T("OpenCPN Toolbar PosnX")] = g_MainToolbar->GetToolbarRect().x;
+    v[_T("OpenCPN Toolbar PosnY")] = g_MainToolbar->GetToolbarRect().y;
   }
 
   // Some rendering parameters
-  v["OpenCPN Zoom Mod Vector"] = g_chart_zoom_modifier_vector;
-  v["OpenCPN Zoom Mod Other"] = g_chart_zoom_modifier_raster;
-  v["OpenCPN Scale Factor Exp"] =
+  v[_T("OpenCPN Zoom Mod Vector")] = g_chart_zoom_modifier_vector;
+  v[_T("OpenCPN Zoom Mod Other")] = g_chart_zoom_modifier_raster;
+  v[_T("OpenCPN Scale Factor Exp")] =
       g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
-  v["OpenCPN Display Width"] = (int)g_display_size_mm;
-  v["OpenCPN Content Scale Factor"] = OCPN_GetDisplayContentScaleFactor();
-  v["OpenCPN Display DIP Scale Factor"] = OCPN_GetWinDIPScaleFactor();
+  v[_T("OpenCPN Display Width")] = (int)g_display_size_mm;
+  v[_T("OpenCPN Content Scale Factor")] = OCPN_GetDisplayContentScaleFactor();
+  v[_T("OpenCPN Display DIP Scale Factor")] = OCPN_GetWinDIPScaleFactor();
 
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
+  SendMessageToAllPlugins(wxString(_T("OpenCPN Config")), out);
 }
 
 void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
   // Send the current run-time configuration to all PlugIns
   wxJSONValue v;
-  v["OpenCPN Version Major"] = VERSION_MAJOR;
-  v["OpenCPN Version Minor"] = VERSION_MINOR;
-  v["OpenCPN Version Patch"] = VERSION_PATCH;
-  v["OpenCPN Version Date"] = VERSION_DATE;
-  v["OpenCPN Version Full"] = VERSION_FULL;
+  v[_T("OpenCPN Version Major")] = VERSION_MAJOR;
+  v[_T("OpenCPN Version Minor")] = VERSION_MINOR;
+  v[_T("OpenCPN Version Patch")] = VERSION_PATCH;
+  v[_T("OpenCPN Version Date")] = VERSION_DATE;
+  v[_T("OpenCPN Version Full")] = VERSION_FULL;
 
   //  S52PLIB state
   if (ps52plib) {
-    //         v["OpenCPN S52PLIB ShowText"] = ps52plib->GetShowS57Text();
-    //         v["OpenCPN S52PLIB ShowSoundings"] =
-    //         ps52plib->GetShowSoundings(); v["OpenCPN S52PLIB ShowLights"]
+    //         v[_T("OpenCPN S52PLIB ShowText")] = ps52plib->GetShowS57Text();
+    //         v[_T("OpenCPN S52PLIB ShowSoundings")] =
+    //         ps52plib->GetShowSoundings(); v[_T("OpenCPN S52PLIB ShowLights")]
     //         = !ps52plib->GetLightsOff();
-    v["OpenCPN S52PLIB ShowAnchorConditions"] = ps52plib->GetAnchorOn();
-    v["OpenCPN S52PLIB ShowQualityOfData"] = ps52plib->GetQualityOfData();
-    //         v["OpenCPN S52PLIB DisplayCategory"] =
+    v[_T("OpenCPN S52PLIB ShowAnchorConditions")] = ps52plib->GetAnchorOn();
+    v[_T("OpenCPN S52PLIB ShowQualityOfData")] = ps52plib->GetQualityOfData();
+    //         v[_T("OpenCPN S52PLIB DisplayCategory")] =
     //         ps52plib->GetDisplayCategory();
 
     // Global parameters
-    v["OpenCPN S52PLIB MetaDisplay"] = ps52plib->m_bShowMeta;
-    v["OpenCPN S52PLIB DeclutterText"] = ps52plib->m_bDeClutterText;
-    v["OpenCPN S52PLIB ShowNationalText"] = ps52plib->m_bShowNationalTexts;
-    v["OpenCPN S52PLIB ShowImportantTextOnly"] =
+    v[_T("OpenCPN S52PLIB MetaDisplay")] = ps52plib->m_bShowMeta;
+    v[_T("OpenCPN S52PLIB DeclutterText")] = ps52plib->m_bDeClutterText;
+    v[_T("OpenCPN S52PLIB ShowNationalText")] = ps52plib->m_bShowNationalTexts;
+    v[_T("OpenCPN S52PLIB ShowImportantTextOnly")] =
         ps52plib->m_bShowS57ImportantTextOnly;
-    v["OpenCPN S52PLIB UseSCAMIN"] = ps52plib->m_bUseSCAMIN;
-    v["OpenCPN S52PLIB UseSUPER_SCAMIN"] = ps52plib->m_bUseSUPER_SCAMIN;
-    v["OpenCPN S52PLIB SymbolStyle"] = ps52plib->m_nSymbolStyle;
-    v["OpenCPN S52PLIB BoundaryStyle"] = ps52plib->m_nBoundaryStyle;
-    v["OpenCPN S52PLIB ColorShades"] = S52_getMarinerParam(S52_MAR_TWO_SHADES);
-    v["OpenCPN S52PLIB Safety Depth"] =
+    v[_T("OpenCPN S52PLIB UseSCAMIN")] = ps52plib->m_bUseSCAMIN;
+    v[_T("OpenCPN S52PLIB UseSUPER_SCAMIN")] = ps52plib->m_bUseSUPER_SCAMIN;
+    v[_T("OpenCPN S52PLIB SymbolStyle")] = ps52plib->m_nSymbolStyle;
+    v[_T("OpenCPN S52PLIB BoundaryStyle")] = ps52plib->m_nBoundaryStyle;
+    v[_T("OpenCPN S52PLIB ColorShades")] =
+        S52_getMarinerParam(S52_MAR_TWO_SHADES);
+    v[_T("OpenCPN S52PLIB Safety Depth")] =
         (double)S52_getMarinerParam(S52_MAR_SAFETY_DEPTH);
-    v["OpenCPN S52PLIB Shallow Contour"] =
+    v[_T("OpenCPN S52PLIB Shallow Contour")] =
         (double)S52_getMarinerParam(S52_MAR_SHALLOW_CONTOUR);
-    v["OpenCPN S52PLIB Deep Contour"] =
+    v[_T("OpenCPN S52PLIB Deep Contour")] =
         (double)S52_getMarinerParam(S52_MAR_DEEP_CONTOUR);
   }
 
   // Notify plugins that S52PLIB may have reconfigured global options
-  v["OpenCPN S52PLIB GlobalReconfig"] = bReconfig;
+  v[_T("OpenCPN S52PLIB GlobalReconfig")] = bReconfig;
 
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
+  SendMessageToAllPlugins(wxString(_T("OpenCPN Config")), out);
 }
 
-void PlugInManager::NotifyAuiPlugIns() {
+void PlugInManager::NotifyAuiPlugIns(void) {
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
@@ -1838,7 +1848,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap* bitmap,
 
   if (!bitmap->IsOk()) {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    pttc->bitmap_day = new wxBitmap(style->GetIcon("default_pi"));
+    pttc->bitmap_day = new wxBitmap(style->GetIcon(_T("default_pi")));
   } else {
     //  Force a non-reference copy of the bitmap from the PlugIn
     pttc->bitmap_day = new wxBitmap(*bitmap);
@@ -1847,7 +1857,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap* bitmap,
 
   if (!bmpRollover->IsOk()) {
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    pttc->bitmap_Rollover_day = new wxBitmap(style->GetIcon("default_pi"));
+    pttc->bitmap_Rollover_day = new wxBitmap(style->GetIcon(_T("default_pi")));
   } else {
     //  Force a non-reference copy of the bitmap from the PlugIn
     pttc->bitmap_Rollover_day = new wxBitmap(*bmpRollover);
@@ -1895,7 +1905,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxString SVGfile,
   // Build a set of bitmaps based on the generic "puzzle piece" icon,
   // In case there is some problem with the SVG file(s) specified.
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  pttc->bitmap_day = new wxBitmap(style->GetIcon("default_pi"));
+  pttc->bitmap_day = new wxBitmap(style->GetIcon(_T("default_pi")));
   pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
   pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
   pttc->bitmap_Rollover_day = new wxBitmap(*pttc->bitmap_day);
@@ -1933,7 +1943,7 @@ void PlugInManager::RemoveToolbarTool(int tool_id) {
       }
     }
   }
-  m_parent->RequestNewToolbars();
+  pParent->RequestNewToolbars();
 }
 
 void PlugInManager::SetToolbarToolViz(int item, bool viz) {
@@ -1942,7 +1952,7 @@ void PlugInManager::SetToolbarToolViz(int item, bool viz) {
     {
       if (pttc->id == item) {
         pttc->b_viz = viz;
-        m_parent->RequestNewToolbars();  //      Apply the change
+        pParent->RequestNewToolbars();  //      Apply the change
         break;
       }
     }
@@ -1955,7 +1965,7 @@ void PlugInManager::SetToolbarItemState(int item, bool toggle) {
     {
       if (pttc->id == item) {
         pttc->b_toggle = toggle;
-        m_parent->SetMasterToolbarItemState(item, toggle);
+        pParent->SetMasterToolbarItemState(item, toggle);
         break;
       }
     }
@@ -1975,7 +1985,7 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap* bitmap,
 
         if (!bitmap->IsOk()) {
           ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-          pttc->bitmap_day = new wxBitmap(style->GetIcon("default_pi"));
+          pttc->bitmap_day = new wxBitmap(style->GetIcon(_T("default_pi")));
         } else {
           //  Force a non-reference copy of the bitmap from the PlugIn
           pttc->bitmap_day = new wxBitmap(*bitmap);
@@ -1985,7 +1995,7 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap* bitmap,
         if (!bmpRollover->IsOk()) {
           ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
           pttc->bitmap_Rollover_day =
-              new wxBitmap(style->GetIcon("default_pi"));
+              new wxBitmap(style->GetIcon(_T("default_pi")));
         } else {
           //  Force a non-reference copy of the bitmap from the PlugIn
           pttc->bitmap_Rollover_day = new wxBitmap(*bmpRollover);
@@ -1995,8 +2005,8 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap* bitmap,
         pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
         pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
 
-        m_parent->SetToolbarItemBitmaps(item, pttc->bitmap_day,
-                                        pttc->bitmap_Rollover_day);
+        pParent->SetToolbarItemBitmaps(item, pttc->bitmap_day,
+                                       pttc->bitmap_Rollover_day);
         break;
       }
     }
@@ -2013,9 +2023,9 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxString SVGfile,
         pttc->pluginNormalIconSVG = SVGfile;
         pttc->pluginRolloverIconSVG = SVGfileRollover;
         pttc->pluginToggledIconSVG = SVGfileToggled;
-        m_parent->SetToolbarItemSVG(item, pttc->pluginNormalIconSVG,
-                                    pttc->pluginRolloverIconSVG,
-                                    pttc->pluginToggledIconSVG);
+        pParent->SetToolbarItemSVG(item, pttc->pluginNormalIconSVG,
+                                   pttc->pluginRolloverIconSVG,
+                                   pttc->pluginToggledIconSVG);
         break;
       }
     }
@@ -2090,7 +2100,7 @@ wxBitmap* PlugInManager::BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
   return ptoolBarBitmap;
 }
 
-wxArrayString PlugInManager::GetPlugInChartClassNameArray() {
+wxArrayString PlugInManager::GetPlugInChartClassNameArray(void) {
   wxArrayString array;
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
@@ -2127,29 +2137,6 @@ wxArrayString PlugInManager::GetPlugInChartClassNameArray() {
   return array;
 }
 
-opencpn_plugin* PlugInManager::GetProvidingPlugin(
-    const wxString& ChartClassName) {
-  opencpn_plugin* plugin = nullptr;
-  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
-  for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
-    PlugInContainer* pic = plugin_array->Item(i);
-    if (pic && pic->m_enabled && pic->m_init_state &&
-        ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
-         (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL))) {
-      wxArrayString carray = pic->m_pplugin->GetDynamicChartClassNameArray();
-
-      for (unsigned int j = 0; j < carray.GetCount(); j++) {
-        if (carray[j].IsSameAs(ChartClassName)) {
-          plugin = pic->m_pplugin;
-          break;
-        }
-      }
-      if (plugin) break;
-    }
-  }
-  return plugin;
-}
-
 //-------------------------------------------------------------------------------
 //    PluginListPanel & PluginPanel Implementation
 //-------------------------------------------------------------------------------
@@ -2178,7 +2165,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
 
 #ifndef __ANDROID__
   // First line
-  m_catalogText = new wxStaticText(this, wxID_STATIC, "");
+  m_catalogText = new wxStaticText(this, wxID_STATIC, _T(""));
   itemStaticBoxSizer4->Add(m_catalogText,
                            wxSizerFlags().Border().Proportion(1));
   m_catalogText->SetLabel(GetCatalogText(false));
@@ -2320,7 +2307,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   if (!AndroidSecureCopyFile(wxString(filePath.c_str()),
                              g_Platform->GetPrivateDataDir() +
                                  wxFileName::GetPathSeparator() +
-                                 "ocpn-plugins.xml")) {
+                                 _T("ocpn-plugins.xml"))) {
     OCPNMessageBox(this, _("Unable to copy catalog file"),
                    _("OpenCPN Catalog update"), wxICON_ERROR | wxOK);
     return;
@@ -2329,7 +2316,8 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   // Copy the downloaded file to proper local location
   if (!wxCopyFile(wxString(filePath.c_str()),
                   g_Platform->GetPrivateDataDir() +
-                      wxFileName::GetPathSeparator() + "ocpn-plugins.xml")) {
+                      wxFileName::GetPathSeparator() +
+                      _T("ocpn-plugins.xml"))) {
     OCPNMessageBox(this, _("Unable to copy catalog file"),
                    _("OpenCPN Catalog update"), wxICON_ERROR | wxOK);
     return;
@@ -2346,7 +2334,7 @@ void CatalogMgrPanel::OnUpdateButton(wxCommandEvent& event) {
   }
 
   // Record in the config file the name of the catalog downloaded
-  pConfig->SetPath("/PlugIns/");
+  pConfig->SetPath(_T("/PlugIns/"));
   pConfig->Write("LatestCatalogDownloaded", catalog.c_str());
   pConfig->Flush();
 
@@ -2433,18 +2421,19 @@ void CatalogMgrPanel::OnTarballButton(wxCommandEvent& event) {
   m_PluginListPanel->ReloadPluginPanels();
   wxString ws(_("Plugin"));
   ws += metadata.name + _(" successfully imported");
-  OCPNMessageBox(wxTheApp->GetTopWindow(), ws, _("Installation complete"),
+  OCPNMessageBox(gFrame, ws, _("Installation complete"),
                  wxICON_INFORMATION | wxOK | wxCENTRE);
 }
 
 wxString CatalogMgrPanel::GetCatalogText(bool updated) {
   wxString catalog;
   catalog = updated ? _("Active Catalog") : _("Last Catalog");
-  catalog += ": ";
+  catalog += _T(": ");
 
   // Check the config file to learn what was the last catalog downloaded.
-  pConfig->SetPath("/PlugIns/");
-  wxString latestCatalog = pConfig->Read("LatestCatalogDownloaded", "default");
+  pConfig->SetPath(_T("/PlugIns/"));
+  wxString latestCatalog =
+      pConfig->Read(_T("LatestCatalogDownloaded"), _T("default"));
   catalog += latestCatalog;
 
 #ifndef __ANDROID__
@@ -2454,7 +2443,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
   std::string date = pluginHandler->GetCatalogData()->date;
 
   catalog += wxString("  ") + _("Last change: ") + " " + date;
-  if (!updated) catalog += "  : " + _("Please Update Plugin Catalog.");
+  if (!updated) catalog += _T("  : ") + _("Please Update Plugin Catalog.");
 #endif
 
   return catalog;
@@ -2462,7 +2451,7 @@ wxString CatalogMgrPanel::GetCatalogText(bool updated) {
 
 void CatalogMgrPanel::SetUpdateButtonLabel() {
   wxString label = _("Update Plugin Catalog");
-  label += ": ";
+  label += _T(": ");
   label += g_catalog_channel == "" ? "master" : g_catalog_channel;
   m_updateButton->SetLabel(label);
   Layout();
@@ -2470,10 +2459,10 @@ void CatalogMgrPanel::SetUpdateButtonLabel() {
 
 wxString CatalogMgrPanel::GetImportInitDir() {
   // Check the config file for the last Import path.
-  pConfig->SetPath("/PlugIns/");
+  pConfig->SetPath(_T("/PlugIns/"));
   wxString lastImportDir;
-  lastImportDir =
-      pConfig->Read("LatestImportDir", g_Platform->GetWritableDocumentsDir());
+  lastImportDir = pConfig->Read(_T("LatestImportDir"),
+                                g_Platform->GetWritableDocumentsDir());
   if (wxDirExists(lastImportDir)) {
     return lastImportDir;
   }
@@ -2815,9 +2804,9 @@ PluginPanel::PluginPanel(wxPanel* parent, const std::string& name)
                       2);
   auto uninstall = [&](wxCommandEvent ev) {
     auto n = m_pName->GetLabel().ToStdString();
-    int result = OCPNMessageBox(
-        wxTheApp->GetTopWindow(), std::string(_("Uninstall plugin ")) + n + "?",
-        _("Un-Installation"), wxICON_QUESTION | wxOK | wxCANCEL);
+    int result =
+        OCPNMessageBox(gFrame, std::string(_("Uninstall plugin ")) + n + "?",
+                       _("Un-Installation"), wxICON_QUESTION | wxOK | wxCANCEL);
     if (result != wxID_OK) return;
     PluginHandler::GetInstance()->ClearInstallData(n);
     m_PluginListPanel->ReloadPluginPanels();
@@ -2909,7 +2898,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
     sl1->AddGrowableCol(1);
     itemBoxSizer02->Add(sl1, 0, wxEXPAND);
 
-    m_pVersion = new wxStaticText(this, wxID_ANY, "X.YY.ZZ.AA");
+    m_pVersion = new wxStaticText(this, wxID_ANY, _T("X.YY.ZZ.AA"));
     sl1->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 5);
     if (m_plugin.m_status == PluginStatus::ManagedInstallAvailable) {
       m_pVersion->Hide();
@@ -2959,7 +2948,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
 
     itemBoxSizer03->Add(m_pName, 0, /*wxEXPAND|*/ wxALL, 10);
 
-    m_pVersion = new wxStaticText(this, wxID_ANY, "X.YY.ZZ.AA");
+    m_pVersion = new wxStaticText(this, wxID_ANY, _T("X.YY.ZZ.AA"));
     itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 10);
     if (m_plugin.m_status == PluginStatus::ManagedInstallAvailable ||
         m_plugin.m_status == PluginStatus::System ||
@@ -3052,7 +3041,7 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
   }
   if (!ok) {
     auto style = g_StyleManager->GetCurrentStyle();
-    statusBitmap = wxBitmap(style->GetIcon("default_pi", bmsize, bmsize));
+    statusBitmap = wxBitmap(style->GetIcon(_T("default_pi"), bmsize, bmsize));
     wxLogMessage("Icon: %s not found.", path.GetFullPath());
   }
 
@@ -3341,7 +3330,6 @@ void PluginPanel::OnPluginPreferences(wxCommandEvent& event) {
 }
 
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent& event) {
-  g_Platform->ShowBusySpinner();
   SetEnabled(event.IsChecked());
   m_pVersion->SetLabel(
       PluginLoader::GetPluginVersion(m_plugin, GetMetadataByName));
@@ -3350,7 +3338,6 @@ void PluginPanel::OnPluginEnableToggle(wxCommandEvent& event) {
     // the EventVar should really only be notified from within PluginLoader.
     PluginLoader::GetInstance()->evt_pluglist_change.Notify();
   }
-  g_Platform->HideBusySpinner();
 }
 
 void PluginPanel::OnPluginUninstall(wxCommandEvent& event) {
@@ -3465,7 +3452,7 @@ PlugInChartBase::PlugInChartBase() { m_Chart_Error_Factor = 0.; }
 
 PlugInChartBase::~PlugInChartBase() {}
 
-wxString PlugInChartBase::GetFileSearchMask() { return ""; }
+wxString PlugInChartBase::GetFileSearchMask(void) { return _T(""); }
 
 int PlugInChartBase::Init(const wxString& name, int init_flags) { return 0; }
 
@@ -3548,7 +3535,7 @@ ListOfPI_S57Obj* PlugInChartBaseGL::GetObjRuleListAtLatLon(
 }
 
 wxString PlugInChartBaseGL::CreateObjDescriptions(ListOfPI_S57Obj* obj_list) {
-  return "";
+  return _T("");
 }
 
 int PlugInChartBaseGL::GetNoCOVREntries() { return 0; }
@@ -3604,7 +3591,7 @@ ListOfPI_S57Obj* PlugInChartBaseExtended::GetObjRuleListAtLatLon(
 
 wxString PlugInChartBaseExtended::CreateObjDescriptions(
     ListOfPI_S57Obj* obj_list) {
-  return "";
+  return _T("");
 }
 
 int PlugInChartBaseExtended::GetNoCOVREntries() { return 0; }
@@ -3662,11 +3649,11 @@ ChartPlugInWrapper::~ChartPlugInWrapper() {
   if (m_ppicb) delete m_ppicb;
 }
 
-wxString ChartPlugInWrapper::GetFileSearchMask() {
+wxString ChartPlugInWrapper::GetFileSearchMask(void) {
   if (m_ppicb)
     return m_ppicb->GetFileSearchMask();
   else
-    return "";
+    return _T("");
 }
 
 InitReturn ChartPlugInWrapper::Init(const wxString& name,
@@ -4294,11 +4281,11 @@ int OCPNMessageBox_PlugIn(wxWindow* parent, const wxString& message,
   return OCPNMessageBox(parent, message, caption, style, 100, x, y);
 }
 
-wxString GetOCPN_ExePath() { return g_Platform->GetExePath(); }
+wxString GetOCPN_ExePath(void) { return g_Platform->GetExePath(); }
 
 wxString* GetpPlugInLocation() { return g_Platform->GetPluginDirPtr(); }
 
-wxString GetWritableDocumentsDir() {
+wxString GetWritableDocumentsDir(void) {
   return g_Platform->GetWritableDocumentsDir();
 }
 
@@ -4364,7 +4351,7 @@ wxString PlugInManager::CreateObjDescriptions(ChartPlugInWrapper* target,
 
 //      API 1.11 Access to S52 PLIB
 wxString PI_GetPLIBColorScheme() {
-  return "";  // ps52plib->GetPLIBColorScheme()
+  return _T("");  // ps52plib->GetPLIBColorScheme()
 }
 
 int PI_GetPLIBDepthUnitInt() {
@@ -4714,7 +4701,7 @@ void PI_PLIBSetLineFeaturePriority(PI_S57Obj* pObj, int prio) {
   }
 }
 
-void PI_PLIBPrepareForNewRender() {
+void PI_PLIBPrepareForNewRender(void) {
   if (ps52plib) {
     ps52plib->PrepareForRender();
     ps52plib->ClearTextList();
@@ -5142,7 +5129,7 @@ void PI_DLEvtHandler::onTimerEvent(wxTimerEvent& event) {
     ev.setDLEventStatus(OCPN_DL_FAILED);
     ev.setDLEventCondition(OCPN_DL_EVENT_TYPE_END);
   } else {
-    wxStringTokenizer tk(sstat, ";");
+    wxStringTokenizer tk(sstat, _T(";"));
     if (tk.HasMoreTokens()) {
       wxString token = tk.GetNextToken();
       token.ToLong(&state);
@@ -5203,9 +5190,9 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString& url,
                                  long style, int timeout_secs) {
 #ifdef __ANDROID__
 
-  wxString msg = "Downloading file synchronously: ";
+  wxString msg = _T("Downloading file synchronously: ");
   msg += url;
-  msg += " to: ";
+  msg += _T(" to: ");
   msg += outputFile;
   wxLogMessage(msg);
 
@@ -5230,8 +5217,8 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString& url,
 
   // Make sure the outputfile is a file URI
   wxString fURI = outputFile;
-  if (!fURI.StartsWith("file://")) {
-    fURI.Prepend("file://");
+  if (!fURI.StartsWith(_T("file://"))) {
+    fURI.Prepend(_T("file://"));
   }
 
   int res = startAndroidFileDownload(url, fURI, g_piEventHandler, &dl_ID);
@@ -5343,9 +5330,9 @@ _OCPN_DLStatus OCPN_downloadFileBackground(const wxString& url,
                                            wxEvtHandler* handler,
                                            long* handle) {
 #ifdef __ANDROID__
-  wxString msg = "Downloading file asynchronously: ";
+  wxString msg = _T("Downloading file asynchronously: ");
   msg += url;
-  msg += " to: ";
+  msg += _T(" to: ");
   msg += outputFile;
   wxLogMessage(msg);
 
@@ -5459,7 +5446,7 @@ _OCPN_DLStatus OCPN_postDataHttp(const wxString& url,
 #ifdef __ANDROID__
   wxString lparms = parameters;
   wxString postResult = doAndroidPOST(url, lparms, timeout_secs * 1000);
-  if (postResult.IsSameAs("NOK")) return OCPN_DL_FAILED;
+  if (postResult.IsSameAs(_T("NOK"))) return OCPN_DL_FAILED;
 
   result = postResult;
   return OCPN_DL_NO_ERROR;
@@ -5491,7 +5478,7 @@ bool OCPN_isOnline() {
   if (wxDateTime::GetTimeNow() >
       g_pi_manager->m_last_online_chk + ONLINE_CHECK_RETRY) {
     wxCurlHTTP get;
-    get.Head("http://yahoo.com/");
+    get.Head(_T("http://yahoo.com/"));
     g_pi_manager->m_last_online = get.GetResponseCode() > 0;
 
     g_pi_manager->m_last_online_chk = wxDateTime::GetTimeNow();

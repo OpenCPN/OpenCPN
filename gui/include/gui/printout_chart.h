@@ -13,14 +13,10 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-/**
- * \file
- *
- * Print chart canvas mix-in
- */
 
 #ifndef PRINTOUT_CHART_H
 #define PRINTOUT_CHART_H
@@ -32,7 +28,7 @@ public:
   ChartPrintout() : BasePrintout(_("Chart Print").ToStdString()) {};
 
   /**
-   * In OpenGL mode, make the bitmap capture of the screen before the print
+   * In OperGL mode, make the bitmap capture of the screen before the print
    * method starts as to be sure the "Abort..." dialog does not appear on the
    * image.
    */

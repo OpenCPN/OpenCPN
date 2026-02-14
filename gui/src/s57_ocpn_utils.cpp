@@ -13,14 +13,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- *  \file
- *
- *  Implement s57_ocpn_utils.h -- S57 utilities with core opencpn dependencies.
- */
+/** \file s57_ocpn_util.cpp Implement s57_ocpn_util.h */
 
 #include "s57_ocpn_utils.h"
 
@@ -28,8 +26,11 @@
 #include "chcanv.h"
 #include "ocpn_plugin.h"
 #include "pluginmanager.h"
-#include "quilt.h"
+#include "Quilt.h"
 #include "s52plib.h"
+
+extern PlugInManager *g_pi_manager;  // FIXME: MOve to header
+extern s52plib *ps52plib;            // FIXME: MOve to header
 
 bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
                                 ViewPort &viewport,
@@ -192,33 +193,33 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
             wxString value =
                 s57chart::GetAttributeValueAsString(pAttrVal, curAttrName);
 
-            if (curAttrName == "LITVIS") {
-              if (value.StartsWith("obsc")) bviz = false;
+            if (curAttrName == _T("LITVIS")) {
+              if (value.StartsWith(_T("obsc"))) bviz = false;
             }
-            if (curAttrName == "SECTR1") value.ToDouble(&sectr1);
-            if (curAttrName == "SECTR2") value.ToDouble(&sectr2);
-            if (curAttrName == "VALNMR") value.ToDouble(&valnmr);
-            if (curAttrName == "COLOUR") {
-              if (value == "red(3)") {
+            if (curAttrName == _T("SECTR1")) value.ToDouble(&sectr1);
+            if (curAttrName == _T("SECTR2")) value.ToDouble(&sectr2);
+            if (curAttrName == _T("VALNMR")) value.ToDouble(&valnmr);
+            if (curAttrName == _T("COLOUR")) {
+              if (value == _T("red(3)")) {
                 color = wxColor(255, 0, 0, opacity);
                 sector.iswhite = false;
                 bhas_red_green = true;
               }
 
-              if (value == "green(4)") {
+              if (value == _T("green(4)")) {
                 color = wxColor(0, 255, 0, opacity);
                 sector.iswhite = false;
                 bhas_red_green = true;
               }
             }
 
-            if (curAttrName == "EXCLIT") {
-              if (value.Find("(3)")) valnmr = 1.0;  // Fog lights.
+            if (curAttrName == _T("EXCLIT")) {
+              if (value.Find(_T("(3)"))) valnmr = 1.0;  // Fog lights.
             }
 
-            if (curAttrName == "CATLIT") {
-              if (value.Upper().StartsWith("DIRECT") ||
-                  value.Upper().StartsWith("LEAD"))
+            if (curAttrName == _T("CATLIT")) {
+              if (value.Upper().StartsWith(_T("DIRECT")) ||
+                  value.Upper().StartsWith(_T("LEAD")))
                 bleading_attribute = true;
             }
 

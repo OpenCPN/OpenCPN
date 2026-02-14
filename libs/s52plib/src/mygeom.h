@@ -73,6 +73,8 @@ typedef void (*  _GLUfuncptr)();
 #endif
 
 
+#include "bbox.h"
+
 class OGRGeometry;
 class OGRPolygon;
 

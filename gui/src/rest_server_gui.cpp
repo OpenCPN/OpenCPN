@@ -1,4 +1,8 @@
-/**************************************************************************
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ *
+ ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,10 +16,11 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- ***************************************************************************/
-
-#include "gl_headers.h"  // Must be included before anything using GL stuff
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
+ */
 
 #include <wx/arrstr.h>
 #include <wx/button.h>
@@ -29,13 +34,15 @@
 #include <wx/string.h>
 #include <wx/window.h>
 
-#include "font_mgr.h"
+#include "FontMgr.h"
 #include "rest_server_gui.h"
 #include "routemanagerdialog.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"
 #endif
+
+extern RouteManagerDialog* pRouteManagerDialog;
 
 static wxDialog* DisplayDlg(const std::string& msg, const std::string& txt1) {
   auto dlg = new PINCreateDialog(
@@ -271,7 +278,7 @@ void PINCreateDialog::CreateControls(const wxString& hint) {
       this, -1, "A loooooooooooooooooooooooooooooooooooooooooooooong line\n");
   itemBoxSizer2->Add(premtext, 0, wxEXPAND | wxALL, 10);
 
-  m_pText1 = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
+  m_pText1 = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
                             wxDefaultSize, wxTE_READONLY | wxTE_CENTRE);
   itemBoxSizer2->Add(m_pText1, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5);
   m_pText1->SetMinSize(wxSize(7 * GetCharWidth(), -1));

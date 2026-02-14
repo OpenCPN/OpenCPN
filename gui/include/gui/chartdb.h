@@ -1,4 +1,10 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Chart Database Object
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,13 +18,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ ***************************************************************************
  *
- * %Charts database management
+ *
+ *
  */
 
 #ifndef __CHARTDB_H__
@@ -27,9 +33,7 @@
 #include <wx/xml/xml.h>
 
 #include "chartbase.h"
-#include "chartbase.h"
 #include "chartdbs.h"
-#include "chartimg.h"
 
 #define MAXSTACK 100
 
@@ -42,17 +46,13 @@ typedef struct {
   float x;
 } MyFlPoint;
 
-class ChartDB;              // forward
-extern ChartDB *ChartData;  ///< Global instance
+// ----------------------------------------------------------------------------
+//    Fwd Declarations
+// ----------------------------------------------------------------------------
+class ChartBase;
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
-
-/** Global instance */
-extern std::vector<std::string> ChartDirectoryExcludedVector;
-
-class ChartDB;              // forward
-extern ChartDB *ChartData;  ///< Global instance
 
 class ChartStack {
 public:
@@ -164,7 +164,6 @@ public:
   void PurgeCacheUnusedCharts(double factor);
 
   bool IsBusy() { return m_b_busy; }
-  void SetBusy(bool _busy) { m_b_busy = _busy; }
   bool CheckExclusiveTileGroup(int canvasIndex);
   bool CheckAnyCanvasExclusiveTileGroup();
 

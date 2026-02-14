@@ -1,4 +1,10 @@
-/***************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Chart Thumbnail Object
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,17 +18,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  *
- * Chart thumbnail object
  */
 
-#ifndef thumbwin_H_
-#define thumbwin_H_
+//
+
+#ifndef __thumbwin_H__
+#define __thumbwin_H__
 
 // Include wxWindows' headers
 
@@ -32,14 +38,17 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include "chartbase.h"
+// #include "ocpn_pixel.h"
+
+//----------------------------------------------------------------------------
+//   constants
+//----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
 // Fwd declarations
 //----------------------------------------------------------------------------
 
-class ThumbWin;              // forward
-extern ThumbWin *pthumbwin;  ///< Global instance
+class ChartBase;
 
 /**
  * Window for displaying chart thumbnails.
@@ -50,9 +59,9 @@ public:
   ThumbWin(wxWindow *parent);
   virtual ~ThumbWin();
 
-  void Resize();
+  void Resize(void);
   void SetMaxSize(wxSize const &max_size);
-  const wxBitmap &GetBitmap();
+  const wxBitmap &GetBitmap(void);
 
   wxBitmap m_bitmap;
   ChartBase *pThumbChart;

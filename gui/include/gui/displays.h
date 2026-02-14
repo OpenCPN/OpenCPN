@@ -1,4 +1,10 @@
-/**************************************************************************
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  OpenCPN Display utilities
+ * Author:   David Register
+ *
+ ***************************************************************************
  *   Copyright (C) 2024 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,14 +18,10 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-/**
- * \file
- *
- * Display utilities
- */
 
 #ifndef OCPN_DISPLAYS_H
 #define OCPN_DISPLAYS_H
@@ -27,39 +29,40 @@
 #include <string>
 #include <vector>
 
-///  Structure to hold information about a monitor
+/// @brief Structure to hold information about a monitor
 struct OCPN_MonitorInfo {
-  ///  Name of the monitor
+  /// @brief Name of the monitor
   std::string name;
-
-  ///  Width of the monitor in millimeters
+  /// @brief Width of the monitor in millimeters
   size_t width_mm;
-
-  ///  Height of the monitor in millimeters
+  /// @brief Height of the monitor in millimeters
   size_t height_mm;
-
-  ///  Width of the monitor in pixels
+  /// @brief Width of the monitor in pixels
   size_t width;
-
-  ///  Height of the monitor in pixels
+  /// @brief Height of the monitor in pixels
   size_t height;
-
-  ///  Width of the monitor in physical pixels, on eg. Apple Retina
+  /// @brief Width of the monitor in physical pixels, on eg. Apple Retina
   /// displays this value differs
   size_t width_px;
-
-  ///  Height of the monitor in physical pixels, on eg. Apple Retina
+  /// @brief Height of the monitor in physical pixels, on eg. Apple Retina
   /// displays this value differs
   size_t height_px;
-
-  ///  Scaling factor in percent
+  /// @brief Scaling factor in percent
   size_t scale;
 };
 
-///  Information about the monitors connected to the system
+/// @brief Number of monitors connected to the system
+extern size_t g_num_monitors;
+/// @brief Current monitor displaying the main application frame
+extern size_t g_current_monitor;
+/// @brief ratio to convert between DIP and physical pixels
+/// This is important while using OpenGL canvas on macOS with Retina displays,
+/// where this ratio is 2.0
+extern double g_current_monitor_dip_px_ratio;
+/// @brief Information about the monitors connected to the system
 extern std::vector<OCPN_MonitorInfo> g_monitor_info;
 
-///  Enumerate the monitors connected to the system
+/// @brief Enumerate the monitors connected to the system
 void EnumerateMonitors();
 
 #endif  // OCPN_DISPLAYS_H

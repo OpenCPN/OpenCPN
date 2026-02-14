@@ -55,7 +55,6 @@ endif ()
 target_link_libraries(opencpn-cmd PRIVATE ocpn::serial)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::tinyxml)
 target_link_libraries(opencpn-cmd PRIVATE ocpn::filesystem)
-target_link_libraries(opencpn-cmd PRIVATE ocpn::gl-headers)
 
 if (HAVE_LIBUDEV)
   target_link_libraries(opencpn-cmd PRIVATE ocpn::libudev)

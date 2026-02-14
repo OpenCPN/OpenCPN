@@ -1,6 +1,11 @@
-/**************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *   Copyright (C) 2022 Alec Leamas                                        *
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Routeman drawing stuff
+ * Author:   David Register, Alec Leamas
+ *
+ ***************************************************************************
+ *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,12 +23,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * \file
- *
- * Routeman drawing stuff
- */
-
 #ifndef _ROUTEMAN_GUI_H
 #define _ROUTEMAN_GUI_H
 
@@ -40,7 +39,7 @@ public:
   bool UpdateProgress();
 
 private:
-  void DoAdvance();
+  void DoAdvance(void);
 
   Routeman& m_routeman;
 };

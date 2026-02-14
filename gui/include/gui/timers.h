@@ -1,4 +1,8 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ *
+ ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,19 +16,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
- *
- * Timer identification constants
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  */
 
-#ifndef TIMERS_H_
-#define TIMERS_H_
+#ifndef __TIMERS_H__
+#define __TIMERS_H__
 
-#define RESCALE_TIMER 1  // Not used
+#define RESCALE_TIMER 1
 #define PAN_TIMER 2
 #define CURTRACK_TIMER 3
 #define ROT_TIMER 4
@@ -42,6 +43,5 @@
 #define DRAG_INERTIA_TIMER 16
 #define JUMP_EASE_TIMER 17
 #define TCWIN_TIME_INDICATOR_TIMER 18
-#define MENU_TIMER 19
-#define TAP_TIMER 20
+
 #endif

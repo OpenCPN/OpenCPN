@@ -1,4 +1,8 @@
-/**************************************************************************
+/******************************************************************************
+ *
+ * Project:  OpenCPN
+ *
+ ***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,19 +16,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- **************************************************************************/
-
-/**
- * \file
- *
- * Implement download_mgr.h -- generic GUI downloads tool.
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************
  */
 
-#include "gl_headers.h"  // Must come before anything including GL stuff
-
 #include "config.h"
-#include "download_mgr.h"
 
 #include <fstream>
 #include <set>
@@ -42,18 +40,22 @@
 #include <wx/statline.h>
 #include <wx/uri.h>
 
+#include "catalog_mgr.h"
+#include "download_mgr.h"
+#include "expand_icon.h"
 #include "model/downloader.h"
-#include "model/plugin_cache.h"
+#include "OCPNPlatform.h"
+#include "picosha2.h"
 #include "model/plugin_handler.h"
+#include "model/plugin_cache.h"
+#include "pluginmanager.h"
 #include "model/semantic_vers.h"
+#include "styles.h"
 #include "model/svg_utils.h"
 
-#include "catalog_mgr.h"
-#include "expand_icon.h"
-#include "ocpn_platform.h"
-#include "picosha2.h"
-#include "pluginmanager.h"
-#include "styles.h"
+extern PlugInManager* g_pi_manager;
+extern ocpnStyle::StyleManager* g_StyleManager;
+extern OCPNPlatform* g_Platform;
 
 #undef major  // Work around gnu's major() and minor() macros.
 #undef minor
@@ -130,7 +132,7 @@ std::string GuiDownloader::run(wxWindow* parent, bool remove_current) {
     m_dialog =
         new wxProgressDialog(_("Downloading"), label.c_str(), size, parent,
                              wxPD_AUTO_HIDE | wxPD_APP_MODAL | wxPD_CAN_ABORT);
-#ifdef __ANDROID__
+#ifdef __OCPN__ANDROID__
     m_dialog->SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
 #endif
     ok = download(path);

@@ -1,6 +1,12 @@
-/**************************************************************************
- *   Copyright (C) 2010 Jesper Weissglas                                   *
- *   Copyright (C) 2010 by David S. Register  bdbcat@yahoo.com             *
+/***************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  Chart Symbols
+ * Author:   Jesper Weissglas
+ *
+ ***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *   bdbcat@yahoo.com                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -13,17 +19,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * \file
- *
- * Chart Symbols
- */
-
-#ifndef STYLES_H_
-#define STYLES_H_
+#ifndef _STYLES_H__
+#define _STYLES_H__
 
 #include <wx/bitmap.h>
 #include <wx/colour.h>
@@ -32,6 +34,7 @@
 #include <wx/string.h>
 
 #include "model/ocpn_types.h"
+// #include "tinyxml.h"
 #include "color_types.h"
 
 enum StyleToolIconTypes {
@@ -41,21 +44,13 @@ enum StyleToolIconTypes {
   TOOLICON_ACTIVE
 };
 
-namespace ocpnStyle {
-
-class StyleManager;  // forward
-
-WX_DECLARE_STRING_HASH_MAP(int, intHash);
-
-}  // namespace ocpnStyle
-
-extern ocpnStyle::StyleManager* g_StyleManager; /**< Global instance */
-
+void bmdump(wxBitmap bm, wxString name);
 wxBitmap MergeBitmaps(wxBitmap back, wxBitmap front, wxSize offset);
-
 wxBitmap ConvertTo24Bit(wxColor bgColor, wxBitmap front);
 
 namespace ocpnStyle {
+
+WX_DECLARE_STRING_HASH_MAP(int, intHash);
 
 class Tool {
 public:
@@ -78,7 +73,7 @@ public:
   bool toggledLoaded;
   wxSize customSize;
 
-  void Unload() {
+  void Unload(void) {
     iconLoaded = false;
     rolloverLoaded = false;
     rolloverToggledLoaded = false;
@@ -88,7 +83,7 @@ public:
     customSize = wxSize(32, 32);
   }
 
-  Tool() { Unload(); }
+  Tool(void) { Unload(); }
 };
 
 class Icon {
@@ -99,15 +94,15 @@ public:
   wxBitmap icon;
   bool loaded;
 
-  void Unload() { loaded = false; }
+  void Unload(void) { loaded = false; }
 
-  Icon() { Unload(); }
+  Icon(void) { Unload(); }
 };
 
 class Style {
 public:
-  Style();
-  ~Style();
+  Style(void);
+  ~Style(void);
 
   wxBitmap GetNormalBG();
   wxBitmap GetActiveBG();
@@ -222,8 +217,8 @@ private:
 
 class StyleManager {
 public:
-  StyleManager();
-  ~StyleManager();
+  StyleManager(void);
+  ~StyleManager(void);
   StyleManager(const wxString& configDir);
 
   bool IsOK() const { return isOK; }
@@ -245,4 +240,4 @@ private:
 
 }  // namespace ocpnStyle
 
-#endif  // STYLES_H_
+#endif  // _STYLES_H__

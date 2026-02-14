@@ -12,14 +12,10 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
-/**
- * \file
- *
- * Implement hotkeys.h -- hotkeys help dialog ('?' button).
- */
 
 #include <array>
 #include <string>
@@ -111,7 +107,8 @@ private:
                                    _("Toggle range rings"), "R"},
        {_("Toggle chart bar"), "Ctrl B",
                                    _("Change color scheme"), "Ctrl-G, F5"},
-       {_("Toggle full screen"),   "F11", "Toggle menu bar", "Alt"},
+       {_("Toggle full screen"), "F11",
+                                   "", ""},
        {"", "", "", ""},
        {_("Start measure mode"), "M, F4",
                                    _("Stop measure mode"), "Esc"},

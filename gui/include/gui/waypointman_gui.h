@@ -1,6 +1,11 @@
 /***************************************************************************
- *   Copyright (C) 2022 by David Register                                  *
- *   Copyright (C) 2022 Alec Leamas                                        *
+ *
+ * Project:  OpenCPN
+ * Purpose:  WaypoinrMan drawing stuff
+ * Author:   David Register, Alec Leamas
+ *
+ ***************************************************************************
+ *   Copyright (C) 2022 by David Register, Alec Leamas                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -13,17 +18,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/**
- * \file
- *
- * WaypointMan drawing stuff
- */
-
-#ifndef WAYPOINT_GUI_H_
-#define WAYPOINT_GUI_H_
+#ifndef _WAYPOINT_GUI_H__
+#define _WAYPOINT_GUI_H__
 
 #include "model/routeman.h"
 #include "styles.h"
@@ -52,4 +53,4 @@ private:
   WayPointman &m_waypoint_man;
 };
 
-#endif  // WAYPOINT_GUI_H_
+#endif  // _WAYPOINT_GUI_H__
