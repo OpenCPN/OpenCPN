@@ -1868,16 +1868,18 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
       byteSum += (uint8_t)msg->priority;
 
       // PGN
-      uint32_t pgn = (uint32_t) msg->PGN.pgn;
-      ovec.push_back((unsigned char)((pgn >> 16) & 0xFF));
-      byteSum += ((pgn >> 16) & 0xFF);
-      ovec.push_back((unsigned char)((pgn >> 8) & 0xFF));
-      byteSum += ((pgn >> 8) & 0xFF);
+      uint32_t pgn = (uint32_t)msg->PGN.pgn;
+      ovec.push_back((unsigned char)(pgn & 0xFF));
+      byteSum += (pgn & 0xFF);
+      pgn >>= 8;
+      ovec.push_back((unsigned char)(pgn & 0xFF));
+      byteSum += (pgn & 0xFF);
+      pgn >>= 8;
       ovec.push_back((unsigned char)(pgn & 0xFF));
       byteSum += (pgn & 0xFF);
 
-      //destination
-      ovec.push_back(dest_addr->address); 
+      // destination
+      ovec.push_back(dest_addr->address);
       byteSum += dest_addr->address;
 
       // source ... like erverywere set to 1
@@ -1888,14 +1890,17 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
       // Time 4 Bytes
       wxDateTime now = wxDateTime::Now();
       unsigned long Time = now.GetValue().ToLong();
-      ovec.push_back((unsigned char)((Time >> 24) & 0xFF));
-      byteSum += (Time >> 24 & 0xFF);
-      ovec.push_back((unsigned char)((Time >> 16) & 0xFF));
-      byteSum += (Time >> 16 & 0xFF);
-      ovec.push_back((unsigned char)((Time >> 8) & 0xFF));
-      byteSum += (Time >> 8 & 0xFF);
       ovec.push_back((unsigned char)(Time & 0xFF));
-      byteSum += (Time & 0xFF);     
+      byteSum += (Time & 0xFF);
+      Time >>= 8;
+      ovec.push_back((unsigned char)(Time & 0xFF));
+      byteSum += (Time & 0xFF);
+      Time >>= 8;
+      ovec.push_back((unsigned char)(Time & 0xFF));
+      byteSum += (Time & 0xFF);
+      Time >>= 8;
+      ovec.push_back((unsigned char)(Time & 0xFF));
+      byteSum += (Time & 0xFF);    
 
       // Payload length
       ovec.push_back((uint8_t)msg->payload.size());
