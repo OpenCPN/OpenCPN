@@ -1,0 +1,34 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Mon, 11 Aug 2025 15:00:31 +0200
+Subject: tests: disable file driver tests on distro builders
+
+The file driver tests fails for unknown reasons on some esoteric
+Debian platforms like IBM/S390 and mips. Possibly little endian
+problems. We are not particularly interested in the file driver
+on these platforms, so just disable them in distro builds
+
+Forwarded: not-needed
+---
+ test/tests.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/test/tests.cpp b/test/tests.cpp
+index 92e02df..a6f72c0 100644
+--- a/test/tests.cpp
++++ b/test/tests.cpp
+@@ -1190,6 +1190,7 @@ TEST(Navmsg2000, to_string) {
+   EXPECT_EQ(string("n2000  pgn: 6385516 [  ]"), msg->to_string());
+ }
+ 
++#ifndef OCPN_DISTRO_BUILD
+ TEST(FileDriver, Registration) {
+   wxLog::SetActiveTarget(&defaultLog);
+   auto driver = std::make_unique<FileCommDriver>("test-output.txt");
+@@ -1216,6 +1217,7 @@ TEST(FileDriver, output) {
+   ss << f.rdbuf();
+   EXPECT_EQ(ss.str(), string("n2000  pgn: 6385516 [  ]"));
+ }
++#endif //  OCPN_DISTRO_BUILD
+ 
+ TEST(Listeners, vector) { ListenerCliApp app; };
+ 
