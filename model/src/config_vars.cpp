@@ -262,6 +262,7 @@ wxString g_datetime_format;
 wxString g_default_font_facename;
 wxString g_default_routepoint_icon;
 wxString g_default_wp_icon;
+wxString g_dm_logfile;
 wxString g_GPS_Ident;
 wxString g_gpx_path;
 wxString g_hostname;
@@ -285,6 +286,8 @@ wxString g_winPluginDir;
 wxString gWorldMapLocation;
 wxString gWorldShapefileLocation;
 
+std::vector<size_t> g_config_display_size_mm;
+
 static wxConfigBase* the_base_config = 0;
 
 wxConfigBase* TheBaseConfig() {
@@ -292,5 +295,3 @@ wxConfigBase* TheBaseConfig() {
   return the_base_config;
 }
 void InitBaseConfig(wxConfigBase* cfg) { the_base_config = cfg; }
-
-std::vector<size_t> g_config_display_size_mm;

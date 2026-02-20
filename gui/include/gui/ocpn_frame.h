@@ -41,6 +41,7 @@
 
 #include "model/ais_target_data.h"
 #include "model/gui.h"
+#include "model/idents.h"
 #include "model/ocpn_types.h"
 #include "model/track.h"
 #include "model/comm_appmsg_bus.h"
@@ -161,7 +162,7 @@ public:
   }
 
   void SwitchKBFocus(AbstractChartCanvas* acc) override {
-    return SwitchKBFocus(dynamic_cast<ChartCanvas*>(acc));
+    return SwitchKBFocusCanvas(dynamic_cast<ChartCanvas*>(acc));
   }
 
   double GetCanvasTrueScale() override {
@@ -275,7 +276,7 @@ public:
   wxString GetGlVersionString() override { return ""; }
   wxGLCanvas* GetWxGlCanvas() override { return nullptr; }
 #endif
-  void SwitchKBFocus(ChartCanvas* pCanvas);
+  void SwitchKBFocusCanvas(ChartCanvas* pCanvas);
   int GetNextToolbarToolId() override {
     return m_next_available_plugin_tool_id;
   }
@@ -307,12 +308,24 @@ public:
   virtual void TouchAISActive() override;
   virtual void UpdateAISMOBRoute(const AisTargetData* ptarget) override;
   virtual void ActivateAISMOBRoute(const AisTargetData* ptarget) override;
+  void EnableSettingsTool(bool _enable) override {
+    if (g_MainToolbar) {
+      g_MainToolbar->EnableTool(ID_SETTINGS, _enable);
+      g_MainToolbar->GetToolbar()->SetDirty(true);
+      g_MainToolbar->RefreshToolbar();
+    }
+  }
   void OnToolLeftClick(wxCommandEvent& event) override;
 
   void SetENCDisplayCategory(ChartCanvas* cc, enum _DisCat nset);
   void ToggleQuiltMode(ChartCanvas* cc);
 
   wxFont* GetFont(wxFont* font, double scale) override;
+  wxFont* GetDefaultFont(wxString label, int Ptsize) override;
+  wxFont* GetScaledFont(int pointSize, wxFontFamily family, wxFontStyle style,
+                        wxFontWeight weight, const wxString faceName,
+                        double scale) override;
+
   int GetApplicationMemoryUse(void);
 
   void OnEraseBackground(wxEraseEvent& event);
@@ -440,7 +453,6 @@ public:
 
   void DestroyPersistentDialogs();
   void UpdateAISTool(void);
-
   wxMenuBar* m_pMenuBar;
   bool m_bTimeIsSet;
 

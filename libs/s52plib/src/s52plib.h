@@ -103,7 +103,6 @@ typedef void (*PFNGLBINDFRAMEBUFFEREXTPROC)(GLenum target, GLuint framebuffer);
 #include <wx/hashmap.h>
 class RuleHash;
 
-
 WX_DECLARE_HASH_MAP(wxString, Rule *, wxStringHash, wxStringEqual, RuleHash);
 
 WX_DEFINE_SORTED_ARRAY(LUPrec *, wxArrayOfLUPrec);
@@ -150,7 +149,7 @@ typedef struct _LUPHashIndex {
 
 WX_DECLARE_STRING_HASH_MAP(LUPHashIndex *, LUPArrayIndexHash);
 
-class s52plib;   // Forward
+class s52plib;             // Forward
 extern s52plib *ps52plib;  ///< Global instance
 
 /** in s52cnsy */
@@ -169,8 +168,7 @@ private:
   LUPArrayIndexHash IndexHash;
 };
 
-class VPointCompat
-{
+class VPointCompat {
 public:
   int pix_width;
   int pix_height;
@@ -190,10 +188,10 @@ typedef struct {
 } TexFontCache;
 
 void toSM_plib(double lat, double lon, double lat0, double lon0, double *x,
-          double *y);
+               double *y);
 
 void fromSM_plib(double x, double y, double lat0, double lon0, double *lat,
-            double *lon) ;
+                 double *lon);
 //-----------------------------------------------------------------------------
 //    s52plib definition
 //-----------------------------------------------------------------------------
@@ -202,7 +200,8 @@ public:
   s52plib(const wxString &PLib, bool b_forceLegacy = false);
   ~s52plib();
 
-  // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by pointing them to info about current monitor
+  // TODO: SetPPM, SetDisplayWidth etc. should be combined to be set together by
+  // pointing them to info about current monitor
   /**
    * Set pixels per millimeter for symbol rendering.
    * @param ppmm Logical pixels per millimeter of display.
@@ -210,8 +209,8 @@ public:
   void SetPPMM(float ppmm);
   void SetDisplayWidth(size_t pixels) { m_display_width = pixels; }
   float GetPPMM() { return canvas_pix_per_mm; }
-  void SetDIPFactor( double factor);
-  void SetContentScaleFactor( double factor);
+  void SetDIPFactor(double factor);
+  void SetContentScaleFactor(double factor);
 
   void SetOCPNVersion(int major, int minor, int patch);
 
@@ -229,21 +228,19 @@ public:
   void GenerateStateHash();
   long GetStateHash() { return m_state_hash; }
 
-  void SetPLIBColorScheme(wxString scheme, const ChartCtx& ctx);
-  void SetPLIBColorScheme(ColorScheme cs, const ChartCtx& ctx);
+  void SetPLIBColorScheme(wxString scheme, const ChartCtx &ctx);
+  void SetPLIBColorScheme(ColorScheme cs, const ChartCtx &ctx);
   wxString GetPLIBColorScheme(void) { return m_ColorScheme; }
 
   void SetGLRendererString(const wxString &renderer);
-  wxString GetGLRendererString() {return m_renderer_string;}
+  wxString GetGLRendererString() { return m_renderer_string; }
   void SetGLOptions(bool b_useStencil, bool b_useStencilAP, bool b_useScissors,
                     bool b_useFBO, bool b_useVBO, int nTextureFormat,
-                    float MinCartographicLineWidth,
-                    float MinSymbolLineWidth);
+                    float MinCartographicLineWidth, float MinSymbolLineWidth);
   void SetUseGLSL(bool useGLSL) { m_useGLSL = useGLSL; }
 
   bool ObjectRenderCheck(ObjRazRules *rzRules);
-  bool ObjectRenderCheckRules(ObjRazRules *rzRules,
-                              bool check_noshow = false);
+  bool ObjectRenderCheckRules(ObjRazRules *rzRules, bool check_noshow = false);
   bool ObjectRenderCheckPos(ObjRazRules *rzRules);
   bool ObjectRenderCheckPosReduced(ObjRazRules *rzRules);
   bool ObjectRenderCheckCat(ObjRazRules *rzRules);
@@ -265,7 +262,7 @@ public:
   void AdjustTextList(int dx, int dy, int screenw, int screenh);
   void ClearTextList(void);
   int SetLineFeaturePriority(ObjRazRules *rzRules, int npriority);
-  void FlushSymbolCaches(const ChartCtx& ctx);
+  void FlushSymbolCaches(const ChartCtx &ctx);
 
   //    For DC's
   int RenderObjectToDC(wxDC *pdc, ObjRazRules *rzRules);
@@ -342,13 +339,10 @@ public:
   void SaveObjNoshow() { m_saved_noshow = m_noshow_array; };
   void RestoreObjNoshow() { m_noshow_array = m_saved_noshow; };
 
-  void SetVPointCompat(int pix_width,int pix_height,
-                      double view_scale_ppm, double rotation,
-                      double clat, double clon,
-                      double chart_scale,
-                      wxRect rv_rect, LLBBox &bbox,
-                      double ref_scale, double display_scale
-                      );
+  void SetVPointCompat(int pix_width, int pix_height, double view_scale_ppm,
+                       double rotation, double clat, double clon,
+                       double chart_scale, wxRect rv_rect, LLBBox &bbox,
+                       double ref_scale, double display_scale);
 
   // Todo accessors
   LUPname m_nSymbolStyle;
@@ -417,10 +411,10 @@ public:
   wxArrayPtrVoid *pOBJLArray;  // Used for Display Filtering
   std::vector<wxString> OBJLDescriptions;
 
-  RuleHash *_symb_sym;         // symbol symbolisation rules
+  RuleHash *_symb_sym;  // symbol symbolisation rules
   std::unordered_map<int, std::string> m_natsur_hash;
-                                // hash table for cacheing NATSUR string values
-                                // from int attributes
+  // hash table for cacheing NATSUR string values
+  // from int attributes
 
   int m_myConfig;
 
@@ -433,12 +427,14 @@ public:
 
   void PLIB_LoadS57GlobalConfig(wxFileConfig *pconfig);
   void PLIB_LoadS57ObjectConfig(wxFileConfig *pconfig);
-  void SetReducedBBox(LLBBox box){ reducedBBox = box;}
+  void SetReducedBBox(LLBBox box) { reducedBBox = box; }
 
-  void RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
-                          float scale, double rot_angle, float sym_len, float sym_height, float seg_len);
-  int BuildLCSymbolTexture(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
-                                     float scale, float sym_len, float sym_height);
+  void RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot,
+                 wxPoint origin, float scale, double rot_angle, float sym_len,
+                 float sym_height, float seg_len);
+  int BuildLCSymbolTexture(char *str, char *col, wxPoint &r, wxPoint &pivot,
+                           wxPoint origin, float scale, float sym_len,
+                           float sym_height);
 
 private:
   int S52_load_Plib(const wxString &PLib, bool b_forceLegacy);
@@ -498,8 +494,7 @@ private:
   void DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
 
   render_canvas_parms *CreatePatternBufferSpec(ObjRazRules *rzRules,
-                                               Rules *rules,
-                                               bool b_revrgb,
+                                               Rules *rules, bool b_revrgb,
                                                bool b_pot = false);
 
   void RenderToBufferFilledPolygon(ObjRazRules *rzRules, S57Obj *obj,
@@ -507,26 +502,24 @@ private:
                                    render_canvas_parms *patt_spec);
 
   void draw_lc_poly_texture(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
-                    int *mask, int npt, float sym_len, float sym_height, float sym_factor,
-                    Rule *draw_rule);
+                            int *mask, int npt, float sym_len, float sym_height,
+                            float sym_factor, Rule *draw_rule);
   void draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
-                             int *mask, int npt, float sym_len, float sym_height,
-                                                       float sym_factor,
-                             Rule *draw_rule);
+                    int *mask, int npt, float sym_len, float sym_height,
+                    float sym_factor, Rule *draw_rule);
 
   bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
                   float rot_angle = 0., double uScale = 1.0);
   bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                           float rot_angle = 0.);
   bool RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
-                  float rot_angle, double uScale);
-  int BuildHPGLTexture(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
                                 float rot_angle, double uScale);
+  int BuildHPGLTexture(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
+                       float rot_angle, double uScale);
 
   void SetupSoundingFont();
   bool RenderSoundingSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
-                            wxColor symColor,
-                            float rot_angle = 0.);
+                            wxColor symColor, float rot_angle = 0.);
   wxImage RuleXBMToImage(Rule *prule);
 
   bool RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn,
@@ -568,13 +561,15 @@ private:
   bool GetPointPixSingle(ObjRazRules *rzRules, float north, float east,
                          wxPoint *r);
   void GetPixPointSingle(int pixx, int pixy, double *plat, double *plon);
-  void GetPixPointSingleNoRotate(int pixx, int pixy, double *plat, double *plon);
+  void GetPixPointSingleNoRotate(int pixx, int pixy, double *plat,
+                                 double *plon);
 
   void GetLLFromPix(const wxPoint2DDouble &p, double *lat, double *lon);
   wxPoint GetPixFromLL(double lat, double lon);
   wxPoint GetPixFromLLROT(double lat, double lon, double rotation);
   wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
-  wxPoint2DDouble GetDoublePixFromLLROT(double lat, double lon, double rotation);
+  wxPoint2DDouble GetDoublePixFromLLROT(double lat, double lon,
+                                        double rotation);
 
   LLBBox &GetBBox() { return BBox; }
   LLBBox GetReducedBBox() { return reducedBBox; }
@@ -598,9 +593,9 @@ private:
 
   wxDC *m_pdc;  // The current DC
 
-  //#ifdef ocpnUSE_GL
+  // #ifdef ocpnUSE_GL
   wxGLContext *m_glcc;
-  //#endif
+  // #endif
 
   int *ledge;
   int *redge;
@@ -651,16 +646,16 @@ private:
 
   double m_displayScale;
 
-  VPointCompat  vp_plib;
+  VPointCompat vp_plib;
   LLBBox BBox;
-  #define TXF_CACHE 8
+#define TXF_CACHE 8
   TexFontCache s_txf[TXF_CACHE];
   wxString m_renderer_string;
+  wxFont *ChartTextDefaultFont;
 
   LLBBox reducedBBox;
-  std::unordered_map<std::string, int>vector_symbol_cache;
-  std::unordered_map<std::string, int>lc_vector_symbol_cache;
-
+  std::unordered_map<std::string, int> vector_symbol_cache;
+  std::unordered_map<std::string, int> lc_vector_symbol_cache;
 };
 
 #define HPGL_FILLED true
@@ -676,7 +671,7 @@ public:
   void SetTargetGCDC(wxGCDC *gdc);
 #endif
   void SetVP(VPointCompat *pVP) { m_vp = pVP; }
-  void SetContentScaleFactor(double factor){ m_content_scale_factor = factor; }
+  void SetContentScaleFactor(double factor) { m_content_scale_factor = factor; }
   bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
               float scale, double rot_angle, bool bSymbol);
   wxBrush *getBrush() { return brush; }

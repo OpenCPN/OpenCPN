@@ -177,7 +177,11 @@ bool RoutemanGui::UpdateProgress() {
     // Allow DirectShipToActivePoint line (distance XTE in mm is > 3 (arbitrary)
     // or when active point is the first
     if (g_bShowShipToActive) {
-      if (m_routeman.pActiveRoute->GetIndexOf(m_routeman.pActivePoint) == 1)
+      int active_index =
+          m_routeman.pActiveRoute->GetIndexOf(m_routeman.pActivePoint);
+      if (active_index < 0)
+        g_bAllowShipToActive = false;
+      else if (active_index == 0)
         g_bAllowShipToActive = true;
       else {
         // compute XTE in pixels

@@ -182,7 +182,8 @@ void AisInfoGui::ShowAisInfo(
   m_lastMMSI = palert_target->MMSI;
   m_lastMMSItime = wxDateTime::Now();
 
-  // printf("defer count: %d\n", m_alarm_defer_count);
+  // Display all SART/MOB Alerts immediately.
+  if (palert_target->Class == AIS_SART) m_alarm_defer_count = 1;
 
   // If no alert dialog shown yet...
   if (!g_pais_alert_dialog_active) {

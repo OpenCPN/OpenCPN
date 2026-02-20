@@ -170,8 +170,7 @@ SendToPeerDlg::SendToPeerDlg() {
   m_bScanOnCreate = false;
 
   // Get our own local ipv4 address, for filtering
-  std::vector<std::string> ipv4_addrs = get_local_ipv4_addresses();
-  if (ipv4_addrs.size()) m_ownipAddr = ipv4_addrs[0];
+  m_own_ip_addresses = get_local_ipv4_addresses();
 
 #ifdef __ANDROID__
   androidDisableRotation();
@@ -216,6 +215,11 @@ bool SendToPeerDlg::Create(wxWindow* parent, wxWindowID id,
   return true;
 }
 
+bool SendToPeerDlg::IsOwnAddress(const std::string& address) const {
+  const auto& v = m_own_ip_addresses;
+  return std::find(v.begin(), v.end(), address) != v.end();
+}
+
 bool SendToPeerDlg::EnableActivateChkbox() {
   return m_RouteList.size() == 1 && m_RoutePointList.empty() &&
          m_TrackList.empty();
@@ -242,13 +246,10 @@ void SendToPeerDlg::CreateControls(const wxString&) {
     wxString item(entry.hostname.c_str());
 
     // skip "self"
-    if (!g_hostname.IsSameAs(item.BeforeFirst('.')) ||
-        (m_ownipAddr != entry.ip)) {
-      item += " {";
-      item += entry.ip.c_str();
-      item += "}";
-      m_PeerListBox->Append(item);
-    }
+    if (g_hostname == item.BeforeFirst('.')) continue;
+    if (IsOwnAddress(entry.ip)) continue;
+    item += std::string(" {") + entry.ip.c_str() + "}";
+    m_PeerListBox->Append(item);
   }
 
   if (m_PeerListBox->GetCount()) m_PeerListBox->SetSelection(0);
@@ -362,7 +363,7 @@ void SendToPeerDlg::OnTimerScanTick(wxTimerEvent&) {
     //    Fill in the wxComboBox with all detected peers besides own host
     using namespace ocpn;
     for (const MdnsCache::Entry& e : MdnsCache::GetInstance().GetCache()) {
-      if (g_hostname != split(e.hostname, ".")[0] || m_ownipAddr != e.ip) {
+      if (g_hostname != split(e.hostname, ".")[0] || !IsOwnAddress(e.ip)) {
         m_PeerListBox->Append(e.hostname + " {" + e.ip.c_str() + "}");
       }
     }
