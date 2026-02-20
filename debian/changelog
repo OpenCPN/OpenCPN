@@ -1,3 +1,9 @@
+opencpn (1:5.14.1+dfsg~beta2-1~bpo22.04~ppa2) jammy; urgency=medium
+ 
+  *  New upload
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Feb 2026 17:51:23 +0100
+
 opencpn (1:5.14.1+dfsg~beta2-1~bpo22.04~ppa1) jammy; urgency=medium
 
   * New upstream release 
