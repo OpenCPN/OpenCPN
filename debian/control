@@ -28,15 +28,15 @@ Build-Depends: debhelper-compat (= 13),
  libtinyxml-dev,
  libudev-dev,
  libusb-1.0-0-dev,
- libwxsvg-dev (>= 2:1.5.21),
+ libwxsvg-dev,
  libwxgtk3.2-dev,
  libwxgtk-webview3.2-dev,
  lsb-release,
  portaudio19-dev,
  rapidjson-dev
-Standards-Version: 4.7.0
+Standards-Version: 4.7.2
 Vcs-Browser: https://github.com/opencpn/opencpn
-Vcs-Git: https://github.com/opencpn/opencpn.git -b debian/trixie-backports
+Vcs-Git: https://github.com/opencpn/opencpn.git -b debian/sid
 Homepage: https://opencpn.org
 Rules-Requires-Root: no
 
@@ -48,17 +48,8 @@ Depends: opencpn-data (>= ${source:Version}),
  libjs-highlight.js,
  ${shlibs:Depends},
  ${misc:Depends}
-Recommends: wx3.2-i18n, xdg-utils, libusb-0.1-4,
- opencpn-sglock-amd64[amd64],
- opencpn-sglock-arm64[arm64],
- opencpn-sglock-arm32[arm32]
+Recommends: wx3.2-i18n, xdg-utils, libusb-0.1-4
 Suggests: binutils
-Breaks: opencpn-plugins (<< 4.8.8~),
- opencpn-gshhs-crude (<< 1:1),
- opencpn-tcdata (<< 1:1)
-Replaces: opencpn-plugins (<< 4.8.8~),
- opencpn-gshhs-crude(<< 1:1),
- opencpn-tcdata(<< 1:1)
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
  or as a planning tool. Developed by a team of active sailors using real
