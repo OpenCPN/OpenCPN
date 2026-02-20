@@ -1,6 +1,6 @@
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Wed, 17 Apr 2024 14:03:26 +0200
-Subject: [PATCH 1/6] build: Drop removed
+Subject: [PATCH 3/3] build: Drop removed
  CoC-1973_2018-InlandECDIS_20220912.pdf
 
 Remove references to pdf file without sources which is

@@ -1,6 +1,6 @@
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Fri, 16 Aug 2024 20:26:11 +0200
-Subject: [PATCH 5/6] build: add -latomic linkage
+Subject: build: add  -latomic linkage
 
 Fix armel build.
 

@@ -1,6 +1,6 @@
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 10 Jun 2024 09:58:18 +0200
-Subject: [PATCH 2/6] Add missing libs like tinyxml Debian work-around
+Subject: Add missing libs like tinyxml Debian work-around
 
 Since we remove some bundled libs when repacking the sources,
 references to these libs causes build problems which must
