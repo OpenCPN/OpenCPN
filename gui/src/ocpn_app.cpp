@@ -1013,7 +1013,6 @@ bool MyApp::OnInit() {
 
   if (g_kiosk_startup) {
     g_wallpaper = new WallpaperFrame();
-    g_wallpaper->ShowFullScreen(true);  // For a kiosk app, make it fullscreen
     g_wallpaper->Show();
   }
 
@@ -1336,7 +1335,6 @@ void MyApp::OnWallpaperStable() {
     // Hide the old frame and show the new one.
     g_wallpaper->Show(false);
     /// wxTheApp->SetTopWindow(gFrame);
-    gFrame->ShowFullScreen(true);
     g_bFullscreen = true;
 
     // Cleanup the wallpaper frame.

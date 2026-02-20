@@ -27,6 +27,8 @@
 #include <iostream>
 #include <string.h>
 
+#include <openssl/err.h>
+#include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/x509.h>
 #include <openssl/x509v3.h>
@@ -132,8 +134,15 @@ X509 *generate_x509(EVP_PKEY *pkey, string ip_v4) {
   X509_set_issuer_name(x509, name);
 
   /* Actually sign the certificate with our key. */
-  if (!X509_sign(x509, pkey, EVP_sha1())) {
-    cerr << "Error signing certificate." << endl;
+#if OPENSSL_VERSION_MAJOR * 10 + OPENSSL_VERSION_MINOR >= 32
+  const EVP_MD *evp_md = EVP_MD_fetch(0, "SHA-256", 0);
+#else
+  const EVP_MD *evp_md = EVP_sha1();
+#endif
+  if (!X509_sign(x509, pkey, evp_md)) {
+    unsigned long error = ERR_peek_error();
+    char *errmsg = ERR_error_string(error, 0);
+    cerr << "Error signing certificate:" << errmsg << endl;
     X509_free(x509);
     return NULL;
   }

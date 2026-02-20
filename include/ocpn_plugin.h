@@ -1282,6 +1282,14 @@ struct TCClickInfo {
   std::function<bool(time_t, int, float &, float &)> getTide;
 };
 
+// Tide query API for plugins
+struct PlugIn_TideStation {
+  int index;
+  char name[90];
+  double lat;
+  double lon;
+};
+
 /**
  * Base class for OpenCPN plugins.
  *
@@ -7362,6 +7370,11 @@ public:
 
   /** Retrieve route from database */
   virtual std::unique_ptr<HostApi121::Route> GetRoute(const wxString &guid);
+
+  // Enhanced Tide query support.
+  virtual bool GetNearestTideStation(double lat, double lon,
+                                     PlugIn_TideStation *station);
+  virtual bool GetTideHeight(int stationIndex, time_t time, float *height);
 };
 
 #endif  //_PLUGIN_H_

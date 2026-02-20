@@ -44,6 +44,7 @@
 
 #include "chcanv.h"
 #include "ocpn_plugin.h"
+#include "tcmgr.h"
 
 // translate O route class to PlugIn_Waypoint_ExV2
 static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
@@ -830,6 +831,37 @@ static void SetTrackVisibility(const wxString& track_GUID, bool viz) {
   }
 }
 
+// Tide query API for plugins
+
+bool GetNearestTideStation(double lat, double lon,
+                           PlugIn_TideStation* station) {
+  if (!ptcmgr || !ptcmgr->IsReady() || !station) return false;
+
+  auto stations = ptcmgr->GetStationsForLL(lat, lon);
+  for (auto& [dist, pIDX] : stations) {
+    if (pIDX->IDX_type == 'T' || pIDX->IDX_type == 't') {
+      // Find the array index for this IDX_entry pointer
+      for (int i = 1; i <= ptcmgr->Get_max_IDX(); i++) {
+        if (ptcmgr->GetIDX_entry(i) == pIDX) {
+          station->index = i;
+          strncpy(station->name, pIDX->IDX_station_name, 89);
+          station->name[89] = '\0';
+          station->lat = pIDX->IDX_lat;
+          station->lon = pIDX->IDX_lon;
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+bool GetTideHeight(int stationIndex, time_t time, float* height) {
+  if (!ptcmgr || !ptcmgr->IsReady() || !height) return false;
+  float dir = 0.0f;
+  return ptcmgr->GetTideOrCurrent(time, stationIndex, *height, dir);
+}
+
 std::unique_ptr<HostApi> GetHostApi() {
   return std::make_unique<HostApi121>(HostApi121());
 }
@@ -1029,4 +1061,13 @@ void HostApi121::SetContextMenuMask(int mask) { ::SetContextMenuMask(mask); }
 
 void HostApi121::SetTrackVisibiiity(const wxString& track_GUID, bool viz) {
   ::SetTrackVisibility(track_GUID, viz);
+}
+
+bool HostApi121::GetNearestTideStation(double lat, double lon,
+                                       PlugIn_TideStation* station) {
+  return ::GetNearestTideStation(lat, lon, station);
+}
+
+bool HostApi121::GetTideHeight(int stationIndex, time_t time, float* height) {
+  return ::GetTideHeight(stationIndex, time, height);
 }

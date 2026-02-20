@@ -99,6 +99,7 @@ private:
   void OnTimerScanTick(wxTimerEvent& event);
   void DoScan();
   bool EnableActivateChkbox();
+  bool IsOwnAddress(const std::string& addr) const;
 
   std::vector<Route*> m_RouteList;
   std::vector<RoutePoint*> m_RoutePointList;
@@ -112,7 +113,7 @@ private:
   wxCheckBox* m_activate_chkbox;
   EventVar progress;
   ObsListener progress_listener;
-  std::string m_ownipAddr;
+  std::vector<std::string> m_own_ip_addresses;
 
   wxTimer m_autoScanTimer;
   wxTimer m_ScanTickTimer;

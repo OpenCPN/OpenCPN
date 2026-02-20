@@ -6,8 +6,12 @@
 /** Interface implemented by calling code */
 class S52PlibUtils {
 public:
-    /** Get a scaled font based on given; created if not already existing. */
-    virtual wxFont* GetFont(wxFont*  font, double scale) = 0;
+  /** Get a scaled font based on given; created if not already existing. */
+  virtual wxFont* GetFont(wxFont* font, double scale) = 0;
+  virtual wxFont* GetDefaultFont(wxString label, int Ptsize) = 0;
+  virtual wxFont* GetScaledFont(int pointSize, wxFontFamily family,
+                                wxFontStyle style, wxFontWeight weight,
+                                const wxString faceName, double scale) = 0;
 };
 
 S52PlibUtils* GetS52Utils();
