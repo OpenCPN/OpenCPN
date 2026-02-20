@@ -1,4 +1,16 @@
-opencpn (1:5.14.1+dfsg~beta1-1~bpo13+1) trixie-backports; urgency=medium
+opencpn (1:5.14.1+dfsg~beta2-1~bpo13+1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Feb 2026 16:18:12 +0100
+
+opencpn (1:5.14.1+dfsg~beta2-1) sid; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Feb 2026 09:32:09 +0100
+
+opencpn (1:5.14.1+dfsg~beta1-1) unstable; urgency=medium
 
   * New upstream beta release
   * d/copyright: Updated for new sources
@@ -6,32 +18,3 @@ opencpn (1:5.14.1+dfsg~beta1-1~bpo13+1) trixie-backports; urgency=medium
 
  -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 19:28:58 +0100
 
-opencpn (1:5.12.2+dfsg-3~bpo13+1) trixie-backports; urgency=medium
-
-  * Trixie backport of current sid version
-
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 26 Aug 2025 20:24:40 +0200
-
-opencpn (1:5.12.2+dfsg-3) unstable; urgency=medium
-
-  * Completely disable tests on unused and untestable arches
-
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 12 Aug 2025 21:02:51 +0200
-
-opencpn (1:5.12.2+dfsg-2) unstable; urgency=medium
-
-  * New patch: Remove some useless and failing tests.
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 11 Aug 2025 15:05:07 +0200
-
-opencpn (1:5.12.2+dfsg-1) unstable; urgency=medium
-
-  * New upstream release
-  * Drop upstreamed patches:
-     - 0007-chartdldr-Don-t-use-unarr-for-libarchive-3.7.4-4005.patch
-  * Rebase other patches
-  * Update d/copyright to reflect new source
-  * lintian-overrides: drop obsolete entries, add new for appstreamcli
-  * d/opencpn-data-install: Authors.html -> authors.html
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 10 Aug 2025 21:35:45 +0200
