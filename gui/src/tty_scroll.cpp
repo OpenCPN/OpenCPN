@@ -123,7 +123,9 @@ wxColor UserColorsByState::operator()(NavmsgStatus ns) {
 void TtyScroll::DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y) {
   wxString ws;
   if (!ll.message.empty()) ws << Timestamp(ll.navmsg->created_at) << " ";
-  if (ll.state.direction == NavmsgStatus::Direction::kOutput)
+  if (ll.message.empty())
+    ;
+  else if (ll.state.direction == NavmsgStatus::Direction::kOutput)
     ws << " " << kUtfRightArrow << " ";
   else if (ll.state.direction == NavmsgStatus::Direction::kInput)
     ws << " " << kUtfLeftwardsArrowToBar << " ";
@@ -132,7 +134,9 @@ void TtyScroll::DrawLine(wxDC& dc, const Logline& ll, int data_pos, int y) {
   else
     ws << " " << kUtfLeftArrow << " ";
 
-  if (ll.state.status != NavmsgStatus::State::kOk)
+  if (ll.message.empty())
+    ;
+  else if (ll.state.status != NavmsgStatus::State::kOk)
     ws << kUtfMultiplicationX;
   else if (ll.state.accepted == NavmsgStatus::Accepted::kFilteredNoOutput)
     ws << kUtfFallingDiagonal;
@@ -174,6 +178,12 @@ void TtyScroll::OnSize(wxSizeEvent& ev) {
   m_n_lines = ev.GetSize().y / GetCharHeight();
   while (m_lines.size() < m_n_lines) m_lines.push_back(Logline());
   ev.Skip();
+}
+
+void TtyScroll::Clear() {
+  m_lines.clear();
+  for (size_t i = 0; i < m_n_lines; ++i) m_lines.push_back(Logline());
+  Refresh(true);
 }
 
 void TtyScroll::Add(const Logline& ll) {

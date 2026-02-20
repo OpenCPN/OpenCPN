@@ -463,6 +463,15 @@ wxFont *MyFrame::GetFont(wxFont *font, double scale) {
                                  font->GetFamily(), font->GetStyle(),
                                  font->GetWeight(), false, font->GetFaceName());
 }
+wxFont *MyFrame::GetScaledFont(int pointSize, wxFontFamily family,
+                               wxFontStyle style, wxFontWeight weight,
+                               const wxString faceName, double scale) {
+  return FindOrCreateFont_PlugIn(pointSize / scale, family, style, weight,
+                                 false, faceName);
+}
+wxFont *MyFrame::GetDefaultFont(wxString label, int Ptsize) {
+  return GetOCPNScaledFont_PlugIn(label, Ptsize);
+}
 
 //------------------------------------------------------------------------------
 // MyFrame
@@ -1420,7 +1429,7 @@ bool MyFrame::DropMarker(bool atOwnShip) {
   return true;
 }
 
-void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
+void MyFrame::SwitchKBFocusCanvas(ChartCanvas *pCanvas) {
   if (g_canvasConfig != 0) {  // multi-canvas?
     canvasConfig *cc;
     int nTarget = -1;
@@ -3978,9 +3987,12 @@ void MyFrame::PrepareOptionsClose(options *settings,
   androidEnableRotation();
 #endif
   ThawCharts();
+  EnableSettingsTool(true);
 }
 
 void MyFrame::DoOptionsDialog() {
+  EnableSettingsTool(false);
+
   if (NULL == g_options) {
     AbstractPlatform::ShowBusySpinner();
 
@@ -4551,6 +4563,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
   switch (m_iInitCount++) {
     case 0: {
+      EnableSettingsTool(false);
+
       FontMgr::Get()
           .ScrubList();  // Clean the font list, removing nonsensical entries
 
@@ -4818,10 +4832,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       GetPrimaryCanvas()->Enable();
       g_focusCanvas = GetPrimaryCanvas();
 
-#ifndef __ANDROID__
-      // gFrame->Raise();
-#endif
-
       if (b_reloadForPlugins) {
         //  If any PlugIn implements PlugIn Charts, we need to re-run the
         //  initial chart load logic to select the correct chart as saved from
@@ -4855,8 +4865,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       androidLastCall();
 #endif
 
-      // if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
-
       if (g_start_fullscreen && !IsFullScreen()) ToggleFullScreen();
 
       UpdateStatusBar();
@@ -4879,6 +4887,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
   RefreshAllCanvas(true);
   UsbWatchDaemon::GetInstance().Start();
+  EnableSettingsTool(true);
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
@@ -5447,7 +5456,8 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
       if (cc) {
         if (g_bopengl) {
           if (cc->GetUpMode() != NORTH_UP_MODE || cc->m_bFollow) {
-            cc->DoCanvasUpdate();
+            bool bnew = cc->DoCanvasUpdate();
+            if (!bnew) cc->UpdateShips();  // Ensure ownship HDT is rendered.
           } else
             cc->Refresh(false);  // Process ownship motion at 10 Hz.
         }
@@ -5753,7 +5763,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
           // Rotation is handled by 10Hz timer, do not duplicate here
           bool b_rotate = cc->GetUpMode() != NORTH_UP_MODE;
           if (!b_rotate) {
-            if (!g_btenhertz) {
+            if ((!g_btenhertz)) {
               if (cc->m_bFollow) {
                 cc->DoCanvasUpdate();
                 if (bnew_view)

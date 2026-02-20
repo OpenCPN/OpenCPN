@@ -6,6 +6,7 @@ name: Windows
   push:
     branches:
       - master
+      - v5.14.x
     paths-ignore:
       - 'buildandroid/**'
   pull_request:

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 16:56-0400\n"
-"PO-Revision-Date: 2025-06-24 20:31\n"
+"POT-Creation-Date: 2026-02-09 10:26-0500\n"
+"PO-Revision-Date: 2026-02-13 20:43\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -17,91 +17,91 @@ msgstr ""
 "X-Crowdin-File: /plugins/grib_pi/po/grib_pi.pot\n"
 "X-Crowdin-File-ID: 114\n"
 
-#: src/GribUIDialog.cpp:421
+#: src/GribUIDialog.cpp:427
 msgid "Start a download request"
 msgstr "Запрос на загрузку"
 
-#: src/GribUIDialog.cpp:460
+#: src/GribUIDialog.cpp:466
 msgid "File: "
 msgstr "Файл: "
 
-#: src/GribUIDialog.cpp:465
+#: src/GribUIDialog.cpp:471
 msgid "Error! "
 msgstr "Ошибка! "
 
-#: src/GribUIDialog.cpp:465
+#: src/GribUIDialog.cpp:471
 msgid " contains no valid data!"
 msgstr " не содержит допустимые данные!"
 
-#: src/GribUIDialog.cpp:500
+#: src/GribUIDialog.cpp:506
 msgid "No valid GRIB file"
 msgstr "Недопустимый файл"
 
-#: src/GribUIDialog.cpp:721 src/GribUIDialog.cpp:990
+#: src/GribUIDialog.cpp:727 src/GribUIDialog.cpp:996
 msgid "Hide data at cursor"
 msgstr "Скрыть данные под курсором"
 
-#: src/GribUIDialog.cpp:722 src/GribUIDialog.cpp:990
+#: src/GribUIDialog.cpp:728 src/GribUIDialog.cpp:996
 msgid "Show data at cursor"
 msgstr "Показать данные под курсором"
 
-#: src/GribUIDialog.cpp:723 src/GribUIDialog.cpp:997 src/GribUIDialog.cpp:1321
+#: src/GribUIDialog.cpp:729 src/GribUIDialog.cpp:1003 src/GribUIDialog.cpp:1328
 msgid "Start play back"
 msgstr "Начать воспроизведение"
 
-#: src/GribUIDialog.cpp:980
+#: src/GribUIDialog.cpp:986
 msgid "Select geopotential altitude"
 msgstr "Выбор высоты геопотенциала"
 
-#: src/GribUIDialog.cpp:984 src/GribUIDialogBase.cpp:81
-#: src/GribUIDialogBase.cpp:204 src/GribUIDialogBase.cpp:1714
+#: src/GribUIDialog.cpp:990 src/GribUIDialogBase.cpp:81
+#: src/GribUIDialogBase.cpp:205 src/GribUIDialogBase.cpp:1712
 msgid "Now"
 msgstr "Сейчас"
 
-#: src/GribUIDialog.cpp:986 src/GribUIDialogBase.cpp:88
-#: src/GribUIDialogBase.cpp:211
+#: src/GribUIDialog.cpp:992 src/GribUIDialogBase.cpp:88
+#: src/GribUIDialogBase.cpp:212
 msgid "Zoom To Center"
 msgstr "Центрировать и приблизить"
 
-#: src/GribUIDialog.cpp:997 src/GribUIDialog.cpp:1281
+#: src/GribUIDialog.cpp:1003 src/GribUIDialog.cpp:1288
 msgid "Stop play back"
 msgstr "Остановить воспроизведение"
 
-#: src/GribUIDialog.cpp:1003 src/GribUIDialogBase.cpp:236
+#: src/GribUIDialog.cpp:1009 src/GribUIDialogBase.cpp:237
 msgid "Open a new file"
 msgstr "Открыть файл"
 
-#: src/GribUIDialog.cpp:1006 src/GribUIDialogBase.cpp:118
-#: src/GribUIDialogBase.cpp:243 src/GribUIDialogBase.cpp:1837
+#: src/GribUIDialog.cpp:1012 src/GribUIDialogBase.cpp:118
+#: src/GribUIDialogBase.cpp:244 src/GribUIDialogBase.cpp:1835
 #: src/GribUIDialogBase.h:412
 msgid "Settings"
 msgstr "Настройки"
 
-#: src/GribUIDialog.cpp:1013
+#: src/GribUIDialog.cpp:1019
 msgid "Request forecast data"
 msgstr "Запрос прогноза погоды"
 
-#: src/GribUIDialog.cpp:1015
+#: src/GribUIDialog.cpp:1021
 msgid "Draw requested Area or Click here to stop request"
 msgstr "Выделите запрашиваемую область или Нажмите здесь, чтобы остановить запрос"
 
-#: src/GribUIDialog.cpp:1016
+#: src/GribUIDialog.cpp:1022
 msgid "Valid Area and Continue"
 msgstr "Подтвердить выбор области и продолжить"
 
-#: src/GribUIDialog.cpp:1676 src/GribUIDialog.cpp:1703
+#: src/GribUIDialog.cpp:1683 src/GribUIDialog.cpp:1710
 msgid "Select a GRIB file"
 msgstr "Выберите GRIB-файл"
 
-#: src/GribUIDialog.cpp:2013
+#: src/GribUIDialog.cpp:2020
 msgid " files don't exist!"
 msgstr " файл не существует!"
 
-#: src/GribUIDialog.cpp:2034
+#: src/GribUIDialog.cpp:2041
 msgid " can't be read!"
 msgstr " не удается прочитать!"
 
-#: src/GribUIDialog.cpp:2381 src/GribUIDialog.cpp:2385
+#: src/GribUIDialog.cpp:2388 src/GribUIDialog.cpp:2392
 #: src/GribUIDialogBase.h:241
 msgid "GRIB Display Control"
 msgstr "GRIB — Управление отображением"
@@ -174,41 +174,41 @@ msgstr "Дж/кг"
 msgid "dBZ"
 msgstr "dBZ"
 
-#: src/GribSettingsDialog.cpp:59 src/GribUIDialogBase.cpp:648
-#: src/GribUIDialogBase.cpp:1390 src/GribUIDialogBase.cpp:2868
+#: src/GribSettingsDialog.cpp:59 src/GribUIDialogBase.cpp:646
+#: src/GribUIDialogBase.cpp:1388 src/GribUIDialogBase.cpp:2876
 #: src/GribOverlayFactory.cpp:1471
 msgid "Wind"
 msgstr "Ветер"
 
-#: src/GribSettingsDialog.cpp:60 src/GribUIDialogBase.cpp:667
-#: src/GribUIDialogBase.cpp:2876
+#: src/GribSettingsDialog.cpp:60 src/GribUIDialogBase.cpp:665
+#: src/GribUIDialogBase.cpp:2884
 msgid "Wind Gust"
 msgstr "Порыв ветра"
 
-#: src/GribSettingsDialog.cpp:61 src/GribUIDialogBase.cpp:680
-#: src/GribUIDialogBase.cpp:2872 src/GribTable.cpp:122
+#: src/GribSettingsDialog.cpp:61 src/GribUIDialogBase.cpp:678
+#: src/GribUIDialogBase.cpp:2880 src/GribTable.cpp:122
 msgid "Pressure"
 msgstr "Давление"
 
-#: src/GribSettingsDialog.cpp:62 src/GribUIDialogBase.cpp:695
-#: src/GribUIDialogBase.cpp:2917
+#: src/GribSettingsDialog.cpp:62 src/GribUIDialogBase.cpp:693
+#: src/GribUIDialogBase.cpp:2925
 msgid "Waves"
 msgstr "Волны"
 
-#: src/GribSettingsDialog.cpp:63 src/GribUIDialogBase.cpp:720
-#: src/GribUIDialogBase.cpp:1391 src/GribUIDialogBase.cpp:2908
+#: src/GribSettingsDialog.cpp:63 src/GribUIDialogBase.cpp:718
+#: src/GribUIDialogBase.cpp:1389 src/GribUIDialogBase.cpp:2916
 msgid "Current"
 msgstr "Течение"
 
-#: src/GribSettingsDialog.cpp:64 src/GribUIDialogBase.cpp:740
-#: src/GribUIDialogBase.cpp:1391 src/GribUIDialogBase.cpp:2880
+#: src/GribSettingsDialog.cpp:64 src/GribUIDialogBase.cpp:738
+#: src/GribUIDialogBase.cpp:1389 src/GribUIDialogBase.cpp:2888
 #: src/GribTable.cpp:159
 msgid "Rainfall"
 msgstr "Осадки"
 
-#: src/GribSettingsDialog.cpp:65 src/GribUIDialogBase.cpp:755
-#: src/GribUIDialogBase.cpp:761 src/GribUIDialogBase.cpp:1391
-#: src/GribUIDialogBase.cpp:2884 src/GribTable.cpp:168
+#: src/GribSettingsDialog.cpp:65 src/GribUIDialogBase.cpp:753
+#: src/GribUIDialogBase.cpp:759 src/GribUIDialogBase.cpp:1389
+#: src/GribUIDialogBase.cpp:2892 src/GribTable.cpp:168
 msgid "Cloud Cover"
 msgstr "Облачность"
 
@@ -220,8 +220,8 @@ msgstr "Температура воздуха"
 msgid "Sea Temperature"
 msgstr "Температура воды"
 
-#: src/GribSettingsDialog.cpp:68 src/GribUIDialogBase.cpp:797
-#: src/GribUIDialogBase.cpp:1391 src/GribUIDialogBase.cpp:2894
+#: src/GribSettingsDialog.cpp:68 src/GribUIDialogBase.cpp:795
+#: src/GribUIDialogBase.cpp:1389 src/GribUIDialogBase.cpp:2902
 #: src/GribTable.cpp:196
 msgid "CAPE"
 msgstr "CAPE"
@@ -268,7 +268,7 @@ msgid "Display Comp. Reflectivity"
 msgstr "Отображение REFC"
 
 #: src/GribSettingsDialog.cpp:1007 src/GribSettingsDialog.cpp:1084
-#: src/GribUIDialogBase.cpp:1279
+#: src/GribUIDialogBase.cpp:1277
 msgid "Spacing"
 msgstr "Интервал"
 
@@ -295,7 +295,7 @@ msgstr "Вы активировали интерполяцию данных.\n"
 "будут интерполированными, а не реальными!"
 
 #: src/GribSettingsDialog.cpp:1135 src/GribSettingsDialog.cpp:1184
-#: src/grib_pi.cpp:883 src/GribRequestDialog.cpp:1419
+#: src/grib_pi.cpp:887 src/GribRequestDialog.cpp:1427
 msgid "Warning!"
 msgstr "Внимание!"
 
@@ -307,635 +307,639 @@ msgstr "Вы активировали интерполяцию данных.\n"
 "Имейте в виду, что отображаемые данные\n"
 "будут интерполированными, а не реальными!"
 
-#: src/GribUIDialog.h:289 src/GribUIDialogBase.cpp:2367
+#: src/GribUIDialog.h:289 src/GribUIDialogBase.cpp:2374
 msgid "Choose GRIB File Directory"
 msgstr "Выбор каталога для файлов GRIB"
 
-#: src/GribUIDialogBase.cpp:49 src/GribUIDialogBase.cpp:173
+#: src/GribUIDialogBase.cpp:49 src/GribUIDialogBase.cpp:174
 msgid "Previous"
 msgstr "Предыдущий"
 
-#: src/GribUIDialogBase.cpp:64 src/GribUIDialogBase.cpp:188
+#: src/GribUIDialogBase.cpp:64 src/GribUIDialogBase.cpp:189
 msgid "Next"
 msgstr "Следующий"
 
-#: src/GribUIDialogBase.cpp:74 src/GribUIDialogBase.cpp:197
+#: src/GribUIDialogBase.cpp:74 src/GribUIDialogBase.cpp:198
 msgid "Select geoptential altitude"
 msgstr "Выбор высоты геопотенциала"
 
-#: src/GribUIDialogBase.cpp:634
+#: src/GribUIDialogBase.cpp:632
 msgid "MyLabel"
 msgstr "МояМетка"
 
-#: src/GribUIDialogBase.cpp:687
+#: src/GribUIDialogBase.cpp:685
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Давление над уровнем моря"
 
-#: src/GribUIDialogBase.cpp:702
+#: src/GribUIDialogBase.cpp:700
 msgid "Significant Wave Height"
 msgstr "Значительная высота волн"
 
-#: src/GribUIDialogBase.cpp:709
+#: src/GribUIDialogBase.cpp:707
 msgid "Waves period"
 msgstr "Период волнения"
 
-#: src/GribUIDialogBase.cpp:716
+#: src/GribUIDialogBase.cpp:714
 msgid "Waves Direction"
 msgstr "Направление волн"
 
-#: src/GribUIDialogBase.cpp:727
+#: src/GribUIDialogBase.cpp:725
 msgid "Surface Current Speed"
 msgstr "Скорость поверхностного течения"
 
-#: src/GribUIDialogBase.cpp:734
+#: src/GribUIDialogBase.cpp:732
 msgid "Surface Current Direction"
 msgstr "Направление поверхностного течения"
 
-#: src/GribUIDialogBase.cpp:747
+#: src/GribUIDialogBase.cpp:745
 msgid "Cumulative Rainfall per Hour"
 msgstr "Объём осадков за час"
 
-#: src/GribUIDialogBase.cpp:769 src/GribUIDialogBase.cpp:1390
+#: src/GribUIDialogBase.cpp:767 src/GribUIDialogBase.cpp:1388
 msgid "Air Temp"
 msgstr "Темп. возд."
 
-#: src/GribUIDialogBase.cpp:782 src/GribUIDialogBase.cpp:1390
+#: src/GribUIDialogBase.cpp:780 src/GribUIDialogBase.cpp:1388
 msgid "Sea Temp"
 msgstr "Темп. воды"
 
-#: src/GribUIDialogBase.cpp:789
+#: src/GribUIDialogBase.cpp:787
 msgid "Sea or Air Temperature at Surface Level"
 msgstr "Температура моря или воздуха на уровне поверхности"
 
-#: src/GribUIDialogBase.cpp:803
+#: src/GribUIDialogBase.cpp:801
 msgid "Convective Available Potential Energy"
 msgstr "Потенциальная энергия конвекции (CAPE)"
 
-#: src/GribUIDialogBase.cpp:811
+#: src/GribUIDialogBase.cpp:809
 msgid "Comp. Refl."
 msgstr "Отраж. Спос."
 
-#: src/GribUIDialogBase.cpp:817
+#: src/GribUIDialogBase.cpp:815
 msgid "Composite Reflectivity"
 msgstr "Отражательная способность"
 
-#: src/GribUIDialogBase.cpp:825 src/CursorData.cpp:313
+#: src/GribUIDialogBase.cpp:823 src/CursorData.cpp:313
 msgid "Altitude"
 msgstr "Высота"
 
-#: src/GribUIDialogBase.cpp:843
+#: src/GribUIDialogBase.cpp:841
 msgid "Temp."
 msgstr "Темп."
 
-#: src/GribUIDialogBase.cpp:860
+#: src/GribUIDialogBase.cpp:858
 msgid "Relat. Hum."
 msgstr "Относ. Влажность."
 
-#: src/GribUIDialogBase.cpp:1178
+#: src/GribUIDialogBase.cpp:1176
 msgid "Data Display Options"
 msgstr "Параметры отображения данных"
 
-#: src/GribUIDialogBase.cpp:1194
+#: src/GribUIDialogBase.cpp:1192
 msgid "Units"
 msgstr "Единицы измерения"
 
-#: src/GribUIDialogBase.cpp:1209 src/CursorData.cpp:649
+#: src/GribUIDialogBase.cpp:1207 src/CursorData.cpp:649
 msgid "Barbed Arrows"
 msgstr "Стрелки-флюгеры"
 
-#: src/GribUIDialogBase.cpp:1217
+#: src/GribUIDialogBase.cpp:1215
 msgid "Default Color"
 msgstr "Цвет по умолчанию"
 
-#: src/GribUIDialogBase.cpp:1218
+#: src/GribUIDialogBase.cpp:1216
 msgid "Controlled Colors"
 msgstr "Контролируемые цвета"
 
-#: src/GribUIDialogBase.cpp:1234 src/GribUIDialogBase.cpp:1338
-#: src/GribUIDialogBase.cpp:1411
+#: src/GribUIDialogBase.cpp:1232 src/GribUIDialogBase.cpp:1336
+#: src/GribUIDialogBase.cpp:1409
 msgid "Spacing (pixels)"
 msgstr "Интервал (пикс)"
 
-#: src/GribUIDialogBase.cpp:1240 src/GribUIDialogBase.cpp:1343
-#: src/GribUIDialogBase.cpp:1416
+#: src/GribUIDialogBase.cpp:1238 src/GribUIDialogBase.cpp:1341
+#: src/GribUIDialogBase.cpp:1414
 msgid "Fixed"
 msgstr "Зафиксировано"
 
-#: src/GribUIDialogBase.cpp:1247 src/GribUIDialogBase.cpp:1350
-#: src/GribUIDialogBase.cpp:1422
+#: src/GribUIDialogBase.cpp:1245 src/GribUIDialogBase.cpp:1348
+#: src/GribUIDialogBase.cpp:1420
 msgid "Minimum"
 msgstr "Минимально"
 
-#: src/GribUIDialogBase.cpp:1260 src/GribUIDialogBase.cpp:1296
+#: src/GribUIDialogBase.cpp:1258 src/GribUIDialogBase.cpp:1294
 msgid "Always visible"
 msgstr "Отображать всегда"
 
-#: src/GribUIDialogBase.cpp:1271
+#: src/GribUIDialogBase.cpp:1269
 msgid "IsoBars"
 msgstr "Изобары"
 
-#: src/GribUIDialogBase.cpp:1305
+#: src/GribUIDialogBase.cpp:1303
 msgid "Abbreviated Numbers"
 msgstr "Сокращения названий"
 
-#: src/GribUIDialogBase.cpp:1312 src/CursorData.cpp:685 src/CursorData.cpp:690
+#: src/GribUIDialogBase.cpp:1310 src/CursorData.cpp:685 src/CursorData.cpp:690
 msgid "Direction Arrows"
 msgstr "Стрелки направления"
 
-#: src/GribUIDialogBase.cpp:1321
+#: src/GribUIDialogBase.cpp:1319
 msgid "Single Arrow"
 msgstr "Одиночная стрелка"
 
-#: src/GribUIDialogBase.cpp:1321
+#: src/GribUIDialogBase.cpp:1319
 msgid "Double Arrow"
 msgstr "Двойная стрелка"
 
-#: src/GribUIDialogBase.cpp:1321
+#: src/GribUIDialogBase.cpp:1319
 msgid "Proportional Arrow"
 msgstr "Пропорциональная стрелка"
 
-#: src/GribUIDialogBase.cpp:1362
+#: src/GribUIDialogBase.cpp:1360
 msgid "Default Size"
 msgstr "Размер по умолчанию"
 
-#: src/GribUIDialogBase.cpp:1363
+#: src/GribUIDialogBase.cpp:1361
 msgid "Small Size"
 msgstr "Малый размер"
 
-#: src/GribUIDialogBase.cpp:1379 src/CursorData.cpp:651 src/CursorData.cpp:657
+#: src/GribUIDialogBase.cpp:1377 src/CursorData.cpp:651 src/CursorData.cpp:657
 #: src/CursorData.cpp:671 src/CursorData.cpp:676 src/CursorData.cpp:681
 #: src/CursorData.cpp:686 src/CursorData.cpp:691
 msgid "OverlayMap"
 msgstr "Наложение Метео-Карты"
 
-#: src/GribUIDialogBase.cpp:1384
+#: src/GribUIDialogBase.cpp:1382
 msgid "Color scheme"
 msgstr "Цветовая схема"
 
-#: src/GribUIDialogBase.cpp:1390
+#: src/GribUIDialogBase.cpp:1388
 msgid "Generic"
 msgstr "Общий"
 
-#: src/GribUIDialogBase.cpp:1392
+#: src/GribUIDialogBase.cpp:1390
 msgid "REFC"
 msgstr "REFC"
 
-#: src/GribUIDialogBase.cpp:1392
+#: src/GribUIDialogBase.cpp:1390
 msgid "Windy"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:1401 src/CursorData.cpp:652 src/CursorData.cpp:658
+#: src/GribUIDialogBase.cpp:1399 src/CursorData.cpp:652 src/CursorData.cpp:658
 #: src/CursorData.cpp:663 src/CursorData.cpp:672 src/CursorData.cpp:677
 #: src/CursorData.cpp:682 src/CursorData.cpp:687 src/CursorData.cpp:692
 msgid "Numbers"
 msgstr "Значения"
 
-#: src/GribUIDialogBase.cpp:1433 src/CursorData.cpp:653 src/CursorData.cpp:693
+#: src/GribUIDialogBase.cpp:1431 src/CursorData.cpp:653 src/CursorData.cpp:693
 msgid "Particle Map"
 msgstr "Карта Частиц"
 
-#: src/GribUIDialogBase.cpp:1437
+#: src/GribUIDialogBase.cpp:1435
 msgid "Density"
 msgstr "Плотность"
 
-#: src/GribUIDialogBase.cpp:1462
+#: src/GribUIDialogBase.cpp:1460
 msgid "Transparency for all Overlay Maps"
 msgstr "Прозрачность для всех Наложенных Метео-Карт"
 
-#: src/GribUIDialogBase.cpp:1471
+#: src/GribUIDialogBase.cpp:1469
 msgid "Overlay Transparency (%)"
 msgstr "Прозрачность (%)"
 
-#: src/GribUIDialogBase.cpp:1490
+#: src/GribUIDialogBase.cpp:1488
 msgid "Data"
 msgstr "Визуализация данных"
 
-#: src/GribUIDialogBase.cpp:1503
+#: src/GribUIDialogBase.cpp:1501
 msgid "Playback Options"
 msgstr "Настройка воспроизведения"
 
-#: src/GribUIDialogBase.cpp:1513
+#: src/GribUIDialogBase.cpp:1511
 msgid "Speed Control"
 msgstr "Контроль скорости"
 
-#: src/GribUIDialogBase.cpp:1526
+#: src/GribUIDialogBase.cpp:1524
 msgid "Slow"
 msgstr "Медленно"
 
-#: src/GribUIDialogBase.cpp:1537
+#: src/GribUIDialogBase.cpp:1535
 msgid "Fast"
 msgstr "Быстро"
 
-#: src/GribUIDialogBase.cpp:1544
+#: src/GribUIDialogBase.cpp:1542
 msgid "Loop Mode"
 msgstr "Повторять многократно"
 
-#: src/GribUIDialogBase.cpp:1556
+#: src/GribUIDialogBase.cpp:1554
 msgid "Loop Start"
 msgstr "Начало повтора"
 
-#: src/GribUIDialogBase.cpp:1561
+#: src/GribUIDialogBase.cpp:1559
 msgid "Top of Grib File"
 msgstr "Начало файла данных"
 
-#: src/GribUIDialogBase.cpp:1562
+#: src/GribUIDialogBase.cpp:1560
 msgid "Current time forecast"
 msgstr "Текущий прогноз"
 
-#: src/GribUIDialogBase.cpp:1574
+#: src/GribUIDialogBase.cpp:1572
 msgid "Interpolate between gribs"
 msgstr "Интерполировать во времени"
 
-#: src/GribUIDialogBase.cpp:1586
+#: src/GribUIDialogBase.cpp:1584
 msgid "Time Interval"
 msgstr "Временной интервал"
 
-#: src/GribUIDialogBase.cpp:1607 src/GribUIDialogBase.cpp:1777
+#: src/GribUIDialogBase.cpp:1605 src/GribUIDialogBase.cpp:1775
 msgid "Playback"
 msgstr "Воспроизведение"
 
-#: src/GribUIDialogBase.cpp:1620
+#: src/GribUIDialogBase.cpp:1618
 msgid "Dialogs Style"
 msgstr "Отображение окна"
 
-#: src/GribUIDialogBase.cpp:1630
+#: src/GribUIDialogBase.cpp:1628
 msgid "Data at cursor dialog is attached to icons bar - with a title/drag bar"
 msgstr "Окно данные под курсором крепится к панели управления - (с панелью перетаскивания и заголовком)"
 
-#: src/GribUIDialogBase.cpp:1637
+#: src/GribUIDialogBase.cpp:1635
 msgid "Data at cursor dialog is attached to icons bar - without a title/drag bar"
 msgstr "Окно данные под курсором крепится к панели управления - (без панели перетаскивания и заголовка)"
 
-#: src/GribUIDialogBase.cpp:1644
+#: src/GribUIDialogBase.cpp:1642
 msgid "Data at cursor dialog is isolated and displayed horizontally"
 msgstr "Окно данные под курсором откреплено от панели управления - (расположено горизонтально)"
 
-#: src/GribUIDialogBase.cpp:1650
+#: src/GribUIDialogBase.cpp:1648
 msgid "Data at cursor dialog is isolated and displayed vertically"
 msgstr "Окно данные под курсором откреплено от панели управления - (расположено вертикально)"
 
-#: src/GribUIDialogBase.cpp:1662
+#: src/GribUIDialogBase.cpp:1660
 msgid "Buttons Visibility"
 msgstr "Видимые кнопки"
 
-#: src/GribUIDialogBase.cpp:1676
+#: src/GribUIDialogBase.cpp:1674
 msgid "Attached icon bar"
 msgstr "Прикреплено к панели управления"
 
-#: src/GribUIDialogBase.cpp:1683
+#: src/GribUIDialogBase.cpp:1681
 msgid "Isolated icon bar"
 msgstr "Откреплено от панели управления"
 
-#: src/GribUIDialogBase.cpp:1694
+#: src/GribUIDialogBase.cpp:1692
 msgid "Geopot. Height Choice"
 msgstr "Выбор Геопотен. Высоты"
 
-#: src/GribUIDialogBase.cpp:1735
+#: src/GribUIDialogBase.cpp:1733
 msgid "Zoom to Center"
 msgstr "Центрировать и приблизить"
 
-#: src/GribUIDialogBase.cpp:1757
+#: src/GribUIDialogBase.cpp:1755
 msgid "Show Cursor Data"
 msgstr "Данные под курсором"
 
-#: src/GribUIDialogBase.cpp:1797
+#: src/GribUIDialogBase.cpp:1795
 msgid "Time Slider"
 msgstr "Ползунок времени"
 
-#: src/GribUIDialogBase.cpp:1817
+#: src/GribUIDialogBase.cpp:1815
 msgid "Open File"
 msgstr "Открыть файл"
 
-#: src/GribUIDialogBase.cpp:1857
+#: src/GribUIDialogBase.cpp:1855
 msgid "Request"
 msgstr "Запросить"
 
-#: src/GribUIDialogBase.cpp:1879
+#: src/GribUIDialogBase.cpp:1877
 msgid "GUI"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:1888 src/GribUIDialogBase.cpp:2129
-#: src/GribUIDialogBase.cpp:3070 src/GribRequestDialog.cpp:606
-#: src/GribRequestDialog.cpp:812 src/GribRequestDialog.cpp:865
-#: src/GribRequestDialog.cpp:2087
+#: src/GribUIDialogBase.cpp:1886 src/GribUIDialogBase.cpp:2127
+#: src/GribUIDialogBase.cpp:3078 src/GribRequestDialog.cpp:614
+#: src/GribRequestDialog.cpp:820 src/GribRequestDialog.cpp:873
+#: src/GribRequestDialog.cpp:2110
 msgid "Cancel"
 msgstr "Отмена"
 
-#: src/GribUIDialogBase.cpp:2144 src/GribUIDialogBase.cpp:2275
+#: src/GribUIDialogBase.cpp:2142 src/GribUIDialogBase.cpp:2282
 msgid "General Options"
 msgstr "Основные Настройки"
 
-#: src/GribUIDialogBase.cpp:2152 src/GribUIDialogBase.cpp:2280
+#: src/GribUIDialogBase.cpp:2150 src/GribUIDialogBase.cpp:2287
 msgid "Use High Definition Graphics"
 msgstr "Рисовать с высоким качеством"
 
-#: src/GribUIDialogBase.cpp:2157 src/GribUIDialogBase.cpp:2285
+#: src/GribUIDialogBase.cpp:2155 src/GribUIDialogBase.cpp:2292
 msgid "Use Gradual Colors"
 msgstr "Рисовать с переливами цветов"
 
-#: src/GribUIDialogBase.cpp:2162 src/GribUIDialogBase.cpp:2290
+#: src/GribUIDialogBase.cpp:2160 src/GribUIDialogBase.cpp:2297
 msgid "Copy First Cumulative Missing Record"
 msgstr "Копировать первую отсутствующую накопительную запись"
 
-#: src/GribUIDialogBase.cpp:2167 src/GribUIDialogBase.cpp:2295
+#: src/GribUIDialogBase.cpp:2165 src/GribUIDialogBase.cpp:2302
 msgid "Copy Missing Wave Records"
 msgstr "Копировать отсутствующие данные о волнах"
 
-#: src/GribUIDialogBase.cpp:2172 src/GribUIDialogBase.cpp:2300
+#: src/GribUIDialogBase.cpp:2170 src/GribUIDialogBase.cpp:2307
 msgid "Draw Barbed Arrows Head"
 msgstr "Направление Ветра Стрелкой"
 
-#: src/GribUIDialogBase.cpp:2177 src/GribUIDialogBase.cpp:2305
+#: src/GribUIDialogBase.cpp:2175 src/GribUIDialogBase.cpp:2312
 msgid "Zoom to file center when opened"
 msgstr "Приблизить к центру файла при открытии"
 
-#: src/GribUIDialogBase.cpp:2186 src/GribUIDialogBase.cpp:2310
+#: src/GribUIDialogBase.cpp:2184 src/GribUIDialogBase.cpp:2317
 msgid "Load the More Recent File in Directory"
 msgstr "Загружать наиболее свежий файл из папки"
 
-#: src/GribUIDialogBase.cpp:2187 src/GribUIDialogBase.cpp:2311
+#: src/GribUIDialogBase.cpp:2185 src/GribUIDialogBase.cpp:2318
 msgid "Load the Last Opened File"
 msgstr "Загружать последний открытый файл"
 
-#: src/GribUIDialogBase.cpp:2191 src/GribUIDialogBase.cpp:2315
+#: src/GribUIDialogBase.cpp:2189 src/GribUIDialogBase.cpp:2322
 msgid "Load File Options"
 msgstr "Параметры загрузки файла"
 
-#: src/GribUIDialogBase.cpp:2198 src/GribUIDialogBase.cpp:2322
+#: src/GribUIDialogBase.cpp:2197
+msgid "Grib File Directory"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:2204
+msgid "Browse..."
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:2210 src/GribUIDialogBase.cpp:2329
 msgid "Start at the first forecast in GRIB file"
 msgstr "Начинать с первого прогноза в файле"
 
-#: src/GribUIDialogBase.cpp:2199 src/GribUIDialogBase.cpp:2323
+#: src/GribUIDialogBase.cpp:2211 src/GribUIDialogBase.cpp:2330
 msgid "Start at the nearest forecast to current time"
 msgstr "Начинать с наиболее актуального прогноза"
 
-#: src/GribUIDialogBase.cpp:2200 src/GribUIDialogBase.cpp:2324
+#: src/GribUIDialogBase.cpp:2212 src/GribUIDialogBase.cpp:2331
 msgid "Authorize Interpolation to start at current time"
 msgstr "Разрешить интерполяцию с текущего времени"
 
-#: src/GribUIDialogBase.cpp:2204 src/GribUIDialogBase.cpp:2328
+#: src/GribUIDialogBase.cpp:2216 src/GribUIDialogBase.cpp:2335
 msgid "Start Options"
 msgstr "Параметры инициализации"
 
-#: src/GribUIDialogBase.cpp:2215
+#: src/GribUIDialogBase.cpp:2227
 msgid "Icons Size Factor"
 msgstr "Размер иконок"
 
-#: src/GribUIDialogBase.cpp:2226
-msgid "Select GRIB download directory"
-msgstr "Выберите каталог загрузок GRIB"
-
-#: src/GribUIDialogBase.cpp:2261
+#: src/GribUIDialogBase.cpp:2268
 msgid "GRIB PlugIn Preferences"
 msgstr "Настройки модуля GRIB"
 
-#: src/GribUIDialogBase.cpp:2378
+#: src/GribUIDialogBase.cpp:2386
 msgid "Area Selection"
 msgstr "Выбор области"
 
-#: src/GribUIDialogBase.cpp:2392
+#: src/GribUIDialogBase.cpp:2400
 msgid "Current View"
 msgstr "Текущий вид"
 
-#: src/GribUIDialogBase.cpp:2394
+#: src/GribUIDialogBase.cpp:2402
 msgid "Manual Selection"
 msgstr "Ручной выбор области"
 
-#: src/GribUIDialogBase.cpp:2416
+#: src/GribUIDialogBase.cpp:2424
 msgid "Click to select the download area, or Shift + Click + Drag on the canvas"
 msgstr "Щелкните, чтобы выбрать область загрузки, выделите курсором область покрытия прогноза погоды на карте."
 
-#: src/GribUIDialogBase.cpp:2427
+#: src/GribUIDialogBase.cpp:2435
 msgid "Max Lat"
 msgstr "Макс. Широта"
 
-#: src/GribUIDialogBase.cpp:2436 src/GribRequestDialog.cpp:500
-#: src/GribRequestDialog.cpp:503
+#: src/GribUIDialogBase.cpp:2444 src/GribRequestDialog.cpp:506
+#: src/GribRequestDialog.cpp:509
 msgid "N"
 msgstr "C"
 
-#: src/GribUIDialogBase.cpp:2441
+#: src/GribUIDialogBase.cpp:2449
 msgid "Max Long"
 msgstr "Макс. Долгота"
 
-#: src/GribUIDialogBase.cpp:2450 src/GribRequestDialog.cpp:501
-#: src/GribRequestDialog.cpp:502
+#: src/GribUIDialogBase.cpp:2458 src/GribRequestDialog.cpp:507
+#: src/GribRequestDialog.cpp:508
 msgid "E"
 msgstr "В"
 
-#: src/GribUIDialogBase.cpp:2456
+#: src/GribUIDialogBase.cpp:2464
 msgid "Min Lat"
 msgstr "Мин. Широта"
 
-#: src/GribUIDialogBase.cpp:2465 src/GribRequestDialog.cpp:500
-#: src/GribRequestDialog.cpp:503
+#: src/GribUIDialogBase.cpp:2473 src/GribRequestDialog.cpp:506
+#: src/GribRequestDialog.cpp:509
 msgid "S"
 msgstr "Ю"
 
-#: src/GribUIDialogBase.cpp:2471
+#: src/GribUIDialogBase.cpp:2479
 msgid "Min Long"
 msgstr "Мин. Долгота"
 
-#: src/GribUIDialogBase.cpp:2480 src/GribRequestDialog.cpp:501
-#: src/GribRequestDialog.cpp:502
+#: src/GribUIDialogBase.cpp:2488 src/GribRequestDialog.cpp:507
+#: src/GribRequestDialog.cpp:508
 msgid "W"
 msgstr "З"
 
-#: src/GribUIDialogBase.cpp:2489
+#: src/GribUIDialogBase.cpp:2497
 msgid "Use Always this Area"
 msgstr "Использовать эту области всегда"
 
-#: src/GribUIDialogBase.cpp:2512 src/GribUIDialogBase.cpp:2588
-#: src/GribRequestDialog.cpp:778
+#: src/GribUIDialogBase.cpp:2520 src/GribUIDialogBase.cpp:2596
+#: src/GribRequestDialog.cpp:786
 msgid "Download grib..."
 msgstr "Загрузить grib..."
 
-#: src/GribUIDialogBase.cpp:2521
+#: src/GribUIDialogBase.cpp:2529
 msgid "Forecast length"
 msgstr "Длина прогноза"
 
-#: src/GribUIDialogBase.cpp:2526
+#: src/GribUIDialogBase.cpp:2534
 msgid "24 hours"
 msgstr "24 часа"
 
-#: src/GribUIDialogBase.cpp:2526
+#: src/GribUIDialogBase.cpp:2534
 msgid "3 days"
 msgstr "3 дня"
 
-#: src/GribUIDialogBase.cpp:2527
+#: src/GribUIDialogBase.cpp:2535
 msgid "Maximum"
 msgstr "Максимум"
 
-#: src/GribUIDialogBase.cpp:2536
+#: src/GribUIDialogBase.cpp:2544
 msgid "Model"
 msgstr "Модель"
 
-#: src/GribUIDialogBase.cpp:2554 src/GribUIDialogBase.cpp:2603
-#: src/GribRequestDialog.cpp:593 src/GribRequestDialog.cpp:667
-#: src/GribRequestDialog.cpp:799 src/GribRequestDialog.cpp:838
-#: src/GribRequestDialog.cpp:852 src/GribRequestDialog.cpp:873
-#: src/GribRequestDialog.cpp:929 src/GribRequestDialog.cpp:992
-#: src/GribRequestDialog.cpp:2062 src/GribRequestDialog.cpp:2123
-#: src/GribRequestDialog.cpp:2157 src/GribRequestDialog.cpp:2183
-#: src/GribRequestDialog.cpp:2215
+#: src/GribUIDialogBase.cpp:2562 src/GribUIDialogBase.cpp:2611
+#: src/GribRequestDialog.cpp:601 src/GribRequestDialog.cpp:675
+#: src/GribRequestDialog.cpp:807 src/GribRequestDialog.cpp:846
+#: src/GribRequestDialog.cpp:860 src/GribRequestDialog.cpp:881
+#: src/GribRequestDialog.cpp:937 src/GribRequestDialog.cpp:1000
+#: src/GribRequestDialog.cpp:2085 src/GribRequestDialog.cpp:2146
+#: src/GribRequestDialog.cpp:2180 src/GribRequestDialog.cpp:2206
+#: src/GribRequestDialog.cpp:2238
 msgid "Download"
 msgstr "Загрузить"
 
-#: src/GribUIDialogBase.cpp:2597
+#: src/GribUIDialogBase.cpp:2605
 msgid "Update Catalog"
 msgstr "Обновить каталог"
 
-#: src/GribUIDialogBase.cpp:2633
+#: src/GribUIDialogBase.cpp:2641
 msgid "Profile"
 msgstr "Профиль запроса"
 
-#: src/GribUIDialogBase.cpp:2647
+#: src/GribUIDialogBase.cpp:2655
 msgid "Sender eMail Address"
 msgstr "Адрес отправителя"
 
-#: src/GribUIDialogBase.cpp:2681
+#: src/GribUIDialogBase.cpp:2689
 msgid "Mail To "
 msgstr "Поставщик данных"
 
-#: src/GribUIDialogBase.cpp:2694
+#: src/GribUIDialogBase.cpp:2702
 msgid "Forecast Model "
 msgstr "Модель прогноза"
 
-#: src/GribUIDialogBase.cpp:2714
+#: src/GribUIDialogBase.cpp:2722
 msgid "Moving Grib"
 msgstr "Данные для рейса"
 
-#: src/GribUIDialogBase.cpp:2723 src/GribUIDialogBase.cpp:3659
+#: src/GribUIDialogBase.cpp:2731 src/GribUIDialogBase.cpp:3671
 msgid "Speed"
 msgstr "Скорость"
 
-#: src/GribUIDialogBase.cpp:2734
+#: src/GribUIDialogBase.cpp:2742
 msgid "Kts"
 msgstr "уз."
 
-#: src/GribUIDialogBase.cpp:2741 src/GribUIDialogBase.cpp:3650
+#: src/GribUIDialogBase.cpp:2749 src/GribUIDialogBase.cpp:3662
 msgid "Course"
 msgstr "Курс"
 
-#: src/GribUIDialogBase.cpp:2751 src/GribUIDialogBase.cpp:2807
+#: src/GribUIDialogBase.cpp:2759 src/GribUIDialogBase.cpp:2815
 msgid "Deg"
 msgstr "°"
 
-#: src/GribUIDialogBase.cpp:2766
+#: src/GribUIDialogBase.cpp:2774
 msgid "zyGrib Login"
 msgstr "Учётная запись zyGRIB"
 
-#: src/GribUIDialogBase.cpp:2776
+#: src/GribUIDialogBase.cpp:2784
 msgid "zyGrib Code"
 msgstr "Персональный код zyGRIB"
 
-#: src/GribUIDialogBase.cpp:2796
+#: src/GribUIDialogBase.cpp:2804
 msgid "Resolution"
 msgstr "Разрешение"
 
-#: src/GribUIDialogBase.cpp:2813
+#: src/GribUIDialogBase.cpp:2821
 msgid "Interval"
 msgstr "Интервал"
 
-#: src/GribUIDialogBase.cpp:2825
+#: src/GribUIDialogBase.cpp:2833
 msgid "Hours"
 msgstr "ч"
 
-#: src/GribUIDialogBase.cpp:2832
+#: src/GribUIDialogBase.cpp:2840
 msgid "Time Range"
 msgstr "Диапазон времени"
 
-#: src/GribUIDialogBase.cpp:2843
+#: src/GribUIDialogBase.cpp:2851
 msgid "Days"
 msgstr "дн."
 
-#: src/GribUIDialogBase.cpp:2860
+#: src/GribUIDialogBase.cpp:2868
 msgid "Data Selection"
 msgstr "Выбор данных"
 
-#: src/GribUIDialogBase.cpp:2889
+#: src/GribUIDialogBase.cpp:2897
 msgid "Air Temperature(2m)"
 msgstr "Температура воздуха (2 м)"
 
-#: src/GribUIDialogBase.cpp:2899
+#: src/GribUIDialogBase.cpp:2907
 msgid "Comp. Reflect."
 msgstr "Отраж. Спос."
 
-#: src/GribUIDialogBase.cpp:2904
+#: src/GribUIDialogBase.cpp:2912
 msgid "Sea Temperature(surf.)"
 msgstr "Температура воды (0 м)"
 
-#: src/GribUIDialogBase.cpp:2935
+#: src/GribUIDialogBase.cpp:2943
 msgid "Geopotential Height"
 msgstr "Геопотенциальная Высота"
 
-#: src/GribUIDialogBase.cpp:2945
+#: src/GribUIDialogBase.cpp:2953
 msgid "850 hPa"
 msgstr "850 гПа"
 
-#: src/GribUIDialogBase.cpp:2950
+#: src/GribUIDialogBase.cpp:2958
 msgid "700 hPa"
 msgstr "700 гПа"
 
-#: src/GribUIDialogBase.cpp:2955
+#: src/GribUIDialogBase.cpp:2963
 msgid "500 hPa"
 msgstr "500 гПа"
 
-#: src/GribUIDialogBase.cpp:2959
+#: src/GribUIDialogBase.cpp:2967
 msgid "300 hPa"
 msgstr "300 гПа"
 
-#: src/GribUIDialogBase.cpp:2971
+#: src/GribUIDialogBase.cpp:2979
 msgid "Mail"
 msgstr "Почта"
 
-#: src/GribUIDialogBase.cpp:2999
+#: src/GribUIDialogBase.cpp:3007
 msgid "Estimated File Size"
 msgstr "Приблизительный размер файла"
 
-#: src/GribUIDialogBase.cpp:3009
+#: src/GribUIDialogBase.cpp:3017
 msgid " (Max size )"
 msgstr " (макс. размер)"
 
-#: src/GribUIDialogBase.cpp:3018 src/GribRequestDialog.cpp:248
-#: src/GribRequestDialog.cpp:1823
+#: src/GribUIDialogBase.cpp:3026 src/GribRequestDialog.cpp:254
+#: src/GribRequestDialog.cpp:1831
 msgid "Send"
 msgstr "Отправить"
 
-#: src/GribUIDialogBase.cpp:3043
+#: src/GribUIDialogBase.cpp:3051
 msgid "World"
 msgstr "Весь мир"
 
-#: src/GribUIDialogBase.cpp:3047
+#: src/GribUIDialogBase.cpp:3055
 msgid "Local models"
 msgstr "Локальные модели"
 
-#: src/GribUIDialogBase.cpp:3051
+#: src/GribUIDialogBase.cpp:3059
 msgid "e-mail"
 msgstr "эл. почта"
 
-#: src/GribUIDialogBase.cpp:3058
+#: src/GribUIDialogBase.cpp:3066
 msgid "XyGrib"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:3575
+#: src/GribUIDialogBase.cpp:3583
 msgid "Data at Position:"
 msgstr "Данные в позиции:"
 
-#: src/GribUIDialogBase.cpp:3606
+#: src/GribUIDialogBase.cpp:3614
 msgid "Close"
 msgstr "Закрыть"
 
-#: src/GribUIDialogBase.cpp:3607 src/grib_pi.h:130
+#: src/GribUIDialogBase.cpp:3615 src/GribUIDialogBase.cpp:3650 src/grib_pi.h:130
 #: src/GribOverlayFactory.cpp:378 src/GribOverlayFactory.cpp:380
-#: src/GribOverlayFactory.cpp:2045 src/grib_pi.cpp:476 src/GribTable.cpp:50
-#: src/GribTable.cpp:60 src/GribTable.cpp:61 src/GribRequestDialog.cpp:256
-#: src/GribRequestDialog.cpp:346 src/GribRequestDialog.cpp:1245
+#: src/GribOverlayFactory.cpp:2045 src/grib_pi.cpp:480 src/GribTable.cpp:50
+#: src/GribTable.cpp:60 src/GribTable.cpp:61 src/GribRequestDialog.cpp:262
+#: src/GribRequestDialog.cpp:352 src/GribRequestDialog.cpp:1253
 #: src/CursorData.cpp:145
 msgid "Dialog"
 msgstr "Диалог"
 
-#: src/GribUIDialogBase.cpp:3645
+#: src/GribUIDialogBase.cpp:3657
 msgid "Project position"
 msgstr "Проекция позиции"
 
@@ -943,15 +947,15 @@ msgstr "Проекция позиции"
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr "Ошибка: почтовая библиотека MAPI32.DLL не установлена или неисправна."
 
-#: src/GribUIDialogBase.h:446
+#: src/GribUIDialogBase.h:447
 msgid "Preferences"
 msgstr "Настройки"
 
-#: src/GribUIDialogBase.h:602
+#: src/GribUIDialogBase.h:603
 msgid "Get forecast..."
 msgstr "Получить прогноз..."
 
-#: src/GribUIDialogBase.h:630
+#: src/GribUIDialogBase.h:631
 msgid "Grib Data Table"
 msgstr "Таблица метео данных Grib"
 
@@ -995,11 +999,11 @@ msgstr "Метео-Данные - не удается вычислить раз�
 msgid "Grib"
 msgstr "Метеокарты GRIB"
 
-#: src/grib_pi.cpp:199
+#: src/grib_pi.cpp:202
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "Модуль «GRIB» для OpenCPN"
 
-#: src/grib_pi.cpp:203
+#: src/grib_pi.cpp:206
 msgid "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types\n"
 "and a request function to get GRIB files by eMail.\n\n"
@@ -1018,11 +1022,11 @@ msgid "GRIB PlugIn for OpenCPN\n"
 msgstr "Модуль «GRIB» для OpenCPN\n"
 "Запрашивает прогноз погоды и отображает его поверх карты."
 
-#: src/grib_pi.cpp:444
+#: src/grib_pi.cpp:448
 msgid "Weather table"
 msgstr "Таблица прогноза погоды"
 
-#: src/grib_pi.cpp:880
+#: src/grib_pi.cpp:884
 msgid "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but Recomputed\n"
 "This can decrease accuracy!"
@@ -1074,102 +1078,98 @@ msgstr "Течение, Направление"
 msgid "Current,Speed"
 msgstr "Течение, Скорость"
 
-#: src/GribRequestDialog.cpp:92
+#: src/GribRequestDialog.cpp:98
 msgid "<h1>OpenCPN ECMWF forecast</h1><p>Free service based on ECMWF Open Data published under the terms of Creative Commons CC-4.0-BY license</p><p>The IFS model GRIB files include information about surface temperature, atmospheric pressure, wind strength, wind direction, wave height and direction for the whole world on a 0.25 degree resolution grid with 3 hour step in the first 144 hours and 6 hour step up to 10 days.</p>The AIFS model contains data for wind, pressure and temperature on a 0.25 degree grid with 6 hour step for up to 15 days<p>The data is updated twice a day as soon as the 00z and 12z model runs finish and the results are published by ECMWF, which usually means new forecast data is available shortly after 8AM and 8PM UTC.</p><p>The grib downloaded covers the area of the primary chart canvas.</p><p>The service is provided on best effort basis and comes with no guarantees. The server is hosted by a volunteer and the service is provided free of charge and without accepting any liability whatsoever for its continuous availability, or for any loss or damage arising from its use. If you find the service useful, please consider making a donation to the OpenCPN project.</p><p>This service is based on data and products of the European Centre for Medium-Range Weather Forecasts (ECMWF).</p><p>Source: www.ecmwf.int</p><p>Disclaimer: ECMWF does not accept any liability whatsoever for any error or omission in the data, their availability, or for any loss or damage arising from their use.</p></font></body></html>"
 msgstr "<h1>Прогноз ECMWF</h1><p>Бесплатный сервис на основе открытых данных ECMWF, опубликованных в соответствии с условиями лицензии Creative Commons CC-4.0-BY</p><p>Файлы GRIB модели IFS включают информацию о температуре поверхности, атмосферном давлении, скорости и направлении ветра, высоте и направлении волн для всего мира на сетке с разрешением 0,25 градуса с шагом 3 часа в первые 144 часа и шагом 6 часов до 10 дней.</p>Модель AIFS содержит данные о ветре, давлении и температуре на сетке 0,25 градуса с шагом 6 часов до 15 дней<p>Данные обновляются дважды в день, как только заканчиваются прогоны модели 00z и 12z, а результаты публикуются ECMWF, что обычно означает, что новые данные прогноза становятся доступны вскоре после 8:00 и 20:00 UTC.</p><p>Загруженный GRIB охватывает область текущего вида карты.</p><p>Услуга предоставляется по принципу \"как есть\" и не имеет никаких гарантий. Услуга предоставляется бесплатно и без принятия какой-либо ответственности за ее постоянную доступность или за любые убытки или ущерб, возникающие в результате ее использования. Если вы найдете услугу полезной, пожалуйста, рассмотрите возможность сделать пожертвование проекту OpenCPN.</p><p>Эта услуга основана на данных и продуктах Европейского центра среднесрочных прогнозов погоды (ECMWF).</p><p>Источник: www.ecmwf.int</p><p>Отказ от ответственности: ECMWF не несет никакой ответственности за любые ошибки или упущения в данных, их доступности или за любые убытки или ущерб, возникающие в результате их использования.</p></font></body></html>"
 
-#: src/GribRequestDialog.cpp:133
+#: src/GribRequestDialog.cpp:139
 msgid "<h1>Grib weather forecasts</h1><p>Collection of local weather models from various sources available for download over the internet.</p></font></body></html>"
 msgstr "<h1>Прогнозы погоды Grib</h1><p>Коллекция локальных моделей погоды из различных источников, доступных для скачивания в интернете.</p></font></body></html>"
 
-#: src/GribRequestDialog.cpp:249
+#: src/GribRequestDialog.cpp:255
 msgid "OK"
 msgstr "Ок"
 
-#: src/GribRequestDialog.cpp:268
+#: src/GribRequestDialog.cpp:274
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr "Адрес, используемый при отправке (для Linux — обязательно)"
 
-#: src/GribRequestDialog.cpp:269
+#: src/GribRequestDialog.cpp:275
 msgid "This is your zyGrib's forum access Login"
 msgstr "Имя вашей учётной записи на форуме zyGRIB"
 
-#: src/GribRequestDialog.cpp:271
+#: src/GribRequestDialog.cpp:277
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr "Ваш код (не пароль!), полученный на форуме zyGRIB"
 
-#: src/GribRequestDialog.cpp:272
+#: src/GribRequestDialog.cpp:278
 msgid "Enter your forescasted Speed (in Knots)"
 msgstr "Ваша прогнозируемая скорость"
 
-#: src/GribRequestDialog.cpp:273
+#: src/GribRequestDialog.cpp:279
 msgid "Enter your forecasted Course"
 msgstr "Ваш прогнозируемый курс"
 
-#: src/GribRequestDialog.cpp:538 src/GribRequestDialog.cpp:544
+#: src/GribRequestDialog.cpp:535
 #, c-format
-msgid "Downloading... %li / %li"
-msgstr "Загрузка... %li / %li"
+msgid "Downloading... %s kB / %s kB (%li%%)"
+msgstr ""
 
-#: src/GribRequestDialog.cpp:554 src/GribRequestDialog.cpp:2189
-msgid "Downloading GRIB file"
-msgstr "Загрузка GRIB файла"
-
-#: src/GribRequestDialog.cpp:565 src/GribRequestDialog.cpp:570
+#: src/GribRequestDialog.cpp:540
 #, c-format
-msgid "Downloading... %li / ???"
-msgstr "Загрузка... %li / ???"
+msgid "Downloading... %s kB / ???"
+msgstr ""
 
-#: src/GribRequestDialog.cpp:594 src/GribRequestDialog.cpp:800
-#: src/GribRequestDialog.cpp:853 src/GribRequestDialog.cpp:904
+#: src/GribRequestDialog.cpp:602 src/GribRequestDialog.cpp:808
+#: src/GribRequestDialog.cpp:861 src/GribRequestDialog.cpp:912
 msgid "Download canceled"
 msgstr "Загрузка отменена"
 
-#: src/GribRequestDialog.cpp:607
+#: src/GribRequestDialog.cpp:615
 msgid "Preparing data on server..."
 msgstr "Подготовка данных на сервере..."
 
-#: src/GribRequestDialog.cpp:651 src/GribRequestDialog.cpp:975
+#: src/GribRequestDialog.cpp:659 src/GribRequestDialog.cpp:983
 #, c-format
 msgid "Download complete: %s"
 msgstr "Загрузка завершена: %s"
 
-#: src/GribRequestDialog.cpp:664 src/GribRequestDialog.cpp:835
-#: src/GribRequestDialog.cpp:900 src/GribRequestDialog.cpp:916
-#: src/GribRequestDialog.cpp:930 src/GribRequestDialog.cpp:989
-#: src/GribRequestDialog.cpp:2234
+#: src/GribRequestDialog.cpp:672 src/GribRequestDialog.cpp:843
+#: src/GribRequestDialog.cpp:908 src/GribRequestDialog.cpp:924
+#: src/GribRequestDialog.cpp:938 src/GribRequestDialog.cpp:997
+#: src/GribRequestDialog.cpp:2257
 msgid "Download failed"
 msgstr "Ошибка загрузки"
 
-#: src/GribRequestDialog.cpp:706
+#: src/GribRequestDialog.cpp:714
 msgid "Local high resolution forecasts"
 msgstr "Локальные прогнозы высокого разрешения"
 
-#: src/GribRequestDialog.cpp:782
+#: src/GribRequestDialog.cpp:790
 msgid "Select grib..."
 msgstr "Выберите Grib..."
 
-#: src/GribRequestDialog.cpp:813
+#: src/GribRequestDialog.cpp:821
 msgid "Downloading catalog update..."
 msgstr "Загрузка обновления каталога..."
 
-#: src/GribRequestDialog.cpp:833
+#: src/GribRequestDialog.cpp:841
 msgid "Catalog update complete."
 msgstr "Загрузка каталога завершена"
 
-#: src/GribRequestDialog.cpp:866
+#: src/GribRequestDialog.cpp:874
 msgid "Downloading grib..."
 msgstr "Загрузка grib..."
 
-#: src/GribRequestDialog.cpp:872
+#: src/GribRequestDialog.cpp:880
 msgid "Download can't be started."
 msgstr "Загрузка не может быть начата."
 
-#: src/GribRequestDialog.cpp:973
+#: src/GribRequestDialog.cpp:981
 msgid "Grib download complete."
 msgstr "Загрузка Grib завершена."
 
-#: src/GribRequestDialog.cpp:1176
+#: src/GribRequestDialog.cpp:1184
 msgid "Sorry...\n"
 "ZyGrib momentary stopped providing this service...\n"
 "Only Saildocs option is available"
@@ -1177,20 +1177,20 @@ msgstr "Извините...\n"
 "ZyGrib прекратил предоставление этого сервиса...\n"
 "Доступно только Saildocs"
 
-#: src/GribRequestDialog.cpp:1178
+#: src/GribRequestDialog.cpp:1186
 msgid "Warning"
 msgstr "Внимание"
 
-#: src/GribRequestDialog.cpp:1258
+#: src/GribRequestDialog.cpp:1266
 msgid "Coord. "
 msgstr "Коорд. "
 
-#: src/GribRequestDialog.cpp:1264 src/GribRequestDialog.cpp:1694
-#: src/GribRequestDialog.cpp:1698
+#: src/GribRequestDialog.cpp:1272 src/GribRequestDialog.cpp:1702
+#: src/GribRequestDialog.cpp:1706
 msgid "MB"
 msgstr "Мбайт"
 
-#: src/GribRequestDialog.cpp:1414
+#: src/GribRequestDialog.cpp:1422
 msgid "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
 "Don't forget that beyond the first 8 days, the resolution will be only 2.5°x2.5°\n"
@@ -1200,87 +1200,100 @@ msgstr "Вы запрашиваете прогноз более чем на 8 �
 "Имейте в виду, что после первых 8-ми дней\n"
 "разрешение будет 2,5°×2,5° с интервалом 12 ч."
 
-#: src/GribRequestDialog.cpp:1697
+#: src/GribRequestDialog.cpp:1705
 msgid "Max"
 msgstr "макс."
 
-#: src/GribRequestDialog.cpp:1837
+#: src/GribRequestDialog.cpp:1845
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr "Для отправки сообщения в службу zyGRIB вам необходимо ввести учётные данные.\n"
 "Зайдите на сайт www.zygrib.org и следуйте инструкциям для регистрации."
 
-#: src/GribRequestDialog.cpp:1839
+#: src/GribRequestDialog.cpp:1847
 msgid "Too big file! zyGrib limit is 2Mb!"
 msgstr "Слишком большой файл! zyGrib предел составляет 2 Мб!"
 
-#: src/GribRequestDialog.cpp:1840
+#: src/GribRequestDialog.cpp:1848
 msgid "Error! Max Lat lower than Min Lat or Max Lon lower than Min Lon!"
 msgstr "Ошибка! Выбрана слишком маленькая территория!"
 
-#: src/GribRequestDialog.cpp:1841
+#: src/GribRequestDialog.cpp:1849
 msgid "Too large area! Each side must be less than 180°!"
 msgstr "Слишком большой площадь! Каждая сторона должна быть меньше чем 180°!"
 
-#: src/GribRequestDialog.cpp:1842
+#: src/GribRequestDialog.cpp:1850
 msgid "Too small area for this resolution!"
 msgstr "Слишком маленькая территория для этого разрешения!"
 
-#: src/GribRequestDialog.cpp:1857 src/GribRequestDialog.cpp:1918
+#: src/GribRequestDialog.cpp:1865 src/GribRequestDialog.cpp:1941
 msgid "Continue..."
 msgstr "Продолжить…"
 
-#: src/GribRequestDialog.cpp:1895 src/GribRequestDialog.cpp:1901
+#: src/GribRequestDialog.cpp:1886
+msgid "Sender or recipient e-mail address seems invalid.\n"
+"Please correct it in the configuration file."
+msgstr ""
+
+#: src/GribRequestDialog.cpp:1888
+msgid "Error"
+msgstr ""
+
+#: src/GribRequestDialog.cpp:1918 src/GribRequestDialog.cpp:1924
 msgid "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
 msgstr "Ваш запрос сформирован и помещён в почтовую программу.\n"
 "Нужно проверить сообщение и отправить его."
 
-#: src/GribRequestDialog.cpp:1906
+#: src/GribRequestDialog.cpp:1929
 msgid "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
 msgstr "Ваш запрос был отправлен (если ваша почтовая система настроена)."
 
-#: src/GribRequestDialog.cpp:1913
+#: src/GribRequestDialog.cpp:1936
 msgid "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
 msgstr "Не удаётся отправить запрос. Проверьте параметры вашей почтовой системы.\n"
 "Записи в журнале работы могут помочь выяснить причину отказа."
 
-#: src/GribRequestDialog.cpp:2063
+#: src/GribRequestDialog.cpp:2086
 msgid "Download cancelled"
 msgstr "Загрузка отменена"
 
-#: src/GribRequestDialog.cpp:2074
+#: src/GribRequestDialog.cpp:2097
 #, c-format
 msgid "Can't download GRIB file bigger than %d MB"
 msgstr "Невозможно загрузить GRIB файл больше, чем %d МБ"
 
-#: src/GribRequestDialog.cpp:2089
+#: src/GribRequestDialog.cpp:2112
 msgid "Preparing GRIB file on server..."
 msgstr "Подготовка GRIB файла на сервере..."
 
-#: src/GribRequestDialog.cpp:2122
+#: src/GribRequestDialog.cpp:2145
 msgid "Grib request failed"
 msgstr "Ошибка запроса Grib"
 
-#: src/GribRequestDialog.cpp:2156
+#: src/GribRequestDialog.cpp:2179
 msgid "Server Error"
 msgstr "Ошибка сервера"
 
-#: src/GribRequestDialog.cpp:2182
+#: src/GribRequestDialog.cpp:2205
 msgid "Error parsing XML file from server"
 msgstr "Ошибка чтения XML-файла с сервера"
 
-#: src/GribRequestDialog.cpp:2220
+#: src/GribRequestDialog.cpp:2212
+msgid "Downloading GRIB file"
+msgstr "Загрузка GRIB файла"
+
+#: src/GribRequestDialog.cpp:2243
 msgid "Download complete"
 msgstr "Загрузка завершена"
 
-#: src/GribRequestDialog.cpp:2329 src/GribRequestDialog.cpp:2335
-#: src/GribRequestDialog.cpp:2460 src/GribRequestDialog.cpp:2466
+#: src/GribRequestDialog.cpp:2352 src/GribRequestDialog.cpp:2358
+#: src/GribRequestDialog.cpp:2483 src/GribRequestDialog.cpp:2489
 msgid "Latest"
 msgstr "Последние"
 
