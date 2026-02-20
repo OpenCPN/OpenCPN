@@ -1,0 +1,25 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Fri, 20 Feb 2026 10:19:26 +0100
+Subject: base_platform: Add homedir environment override
+
+When running tests in constrained environment we need a
+usable home directory location
+---
+ model/src/base_platform.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/model/src/base_platform.cpp b/model/src/base_platform.cpp
+index 0d50126..fc64b17 100644
+--- a/model/src/base_platform.cpp
++++ b/model/src/base_platform.cpp
+@@ -202,6 +202,10 @@ wxString AbstractPlatform::NormalizePath(const wxString& full_path) {
+ wxString& AbstractPlatform::GetHomeDir() {
+   if (m_homeDir.IsEmpty()) {
+     //      Establish a "home" location
++    if (getenv("OCPN_TEST_HOMEDIR")) {
++      m_homeDir = getenv("OCPN_TEST_HOMEDIR");
++      return m_homeDir;
++    }
+     wxStandardPaths& std_path = GetStdPaths();
+     // TODO  Why is the following preferred?  Will not compile with gcc...
+     //    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();

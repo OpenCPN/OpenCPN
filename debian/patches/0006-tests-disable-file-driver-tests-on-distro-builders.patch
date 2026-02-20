@@ -13,7 +13,7 @@ Forwarded: not-needed
  1 file changed, 2 insertions(+)
 
 diff --git a/test/tests.cpp b/test/tests.cpp
-index 4c15b63..99974e2 100644
+index 92e02df..a6f72c0 100644
 --- a/test/tests.cpp
 +++ b/test/tests.cpp
 @@ -1190,6 +1190,7 @@ TEST(Navmsg2000, to_string) {
