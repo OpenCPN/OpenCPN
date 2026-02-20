@@ -590,13 +590,6 @@ wxString AisTargetData::BuildQueryResult() {
       navStatStr.Clear();
     }
 
-    if (Class == AIS_SART) {
-      if (MSG_14_text.Len()) {
-        html << rowStart << _("Safety Broadcast Message") << rowEnd << rowStartH
-             << "<b>" << MSG_14_text << rowEnd;
-      }
-    }
-
     //  Dimensions
 
     if (NavStatus != ATON_VIRTUAL && Class != AIS_ARPA && Class != AIS_APRS &&
@@ -680,6 +673,13 @@ wxString AisTargetData::BuildQueryResult() {
     if (UNTypeStr.Length()) html << " (UN Type " << UNTypeStr << ")";
     html << rowEnd << "<tr><td colspan=2>"
          << "<b>" << sizeString << rowEnd;
+  }
+
+  if (MSG_14_text.Len()) {
+    // The safety message is displayed for all target's AIS Query
+    // For an Active SART a Target Alert is also created.
+    html << rowStart << "<tr><td colspan=1>" << _("Safety Broadcast Message")
+         << rowEnd << rowStartH << "<b>" << MSG_14_text << "</b>" << rowEnd;
   }
 
   if (b_positionOnceValid) {

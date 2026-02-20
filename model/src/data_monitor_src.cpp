@@ -101,8 +101,5 @@ void DataMonitorSrc::OnNewMessage() {
 
 void DataMonitorSrc::OnMessage(ObservedEvt& ev) {
   auto ptr = UnpackEvtPointer<NavMsg>(ev);
-  if (ptr && ptr->to_string() != m_last_payload) {
-    m_last_payload = ptr->to_string();
-    m_sink_func(ptr);
-  }
+  m_sink_func(ptr);
 }

@@ -1526,11 +1526,14 @@ bool ChartCanvas::DoCanvasUpdate() {
 
   ChartStack WorkStack;
 
+  if (!GetVP().IsValid()) return false;
   if (bDBUpdateInProgress) return false;
   if (!ChartData) return false;
 
   if (ChartData->IsBusy()) return false;
+  // Do not disturb any existing animations
   if (m_chart_drag_inertia_active) return false;
+  if (m_animationActive) return false;
 
   //    Startup case:
   //    Quilting is enabled, but the last chart seen was not quiltable
@@ -1723,17 +1726,7 @@ bool ChartCanvas::DoCanvasUpdate() {
       double pixlg = fabs(vpLon - m_vLon) * 1852 * 60 * GetVPScale();
       if (wxMax(pixlt, pixlg) > GetCanvasWidth()) super_jump = true;
     }
-#if 0
-    if (m_bFollow && g_btenhertz && !super_jump && !m_bLookAhead && !g_btouch && !m_bzooming) {
-      int nstep = 5;
-      if (blong_jump) nstep = 20;
-      StartTimedMovementVP(vpLat, vpLon, nstep);
-    } else
-#endif
-    {
-      bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
-    }
-
+    bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(), 0, GetVPRotation());
     goto update_finish;
   }
 
@@ -1811,7 +1804,7 @@ bool ChartCanvas::DoCanvasUpdate() {
       bNewChart = false;
     }
 
-    else  // m_singleChart is NOT in new stack
+    else  // m_singleChart is NOT in new stack, or m_singlechart not yet set
     {     // So, need to open a new chart
       //      Find the largest scale raster chart that opens OK
 
@@ -1830,33 +1823,46 @@ bool ChartCanvas::DoCanvasUpdate() {
           start_index = m_pCurrentStack->nEntry - 1;
         }
 
-        //    Another special case, open specified index on program start
+        //    Another special case, open specified db index on program start
         if (bOpenSpecified) {
-          search_direction = false;
-          start_index = 0;
-          if ((start_index < 0) | (start_index >= m_pCurrentStack->nEntry))
-            start_index = 0;
+          if (m_restore_dbindex >= 0) {
+            pProposed =
+                ChartData->OpenChartFromDB(m_restore_dbindex, FULL_INIT);
+            std::vector<int> one_array;
+            one_array.push_back(m_restore_dbindex);
+            m_Piano->SetActiveKeyArray(one_array);
+            if (m_pCurrentStack) m_pCurrentStack->b_valid = false;
+            m_restore_dbindex = -1;  // Mark as used...
+          }
 
-          new_open_type = CHART_TYPE_DONTCARE;
+          if (!pProposed) {
+            search_direction = false;
+            start_index = m_restore_dbindex;
+            if ((start_index < 0) | (start_index >= m_pCurrentStack->nEntry))
+              start_index = 0;
+
+            new_open_type = CHART_TYPE_DONTCARE;
+          }
         }
 
-        pProposed = ChartData->OpenStackChartConditional(
-            m_pCurrentStack, start_index, search_direction, new_open_type,
-            new_open_family);
-
-        //    Try to open other types/families of chart in some priority
-        if (NULL == pProposed)
+        if (!pProposed) {
           pProposed = ChartData->OpenStackChartConditional(
-              m_pCurrentStack, start_index, search_direction,
-              CHART_TYPE_CM93COMP, CHART_FAMILY_VECTOR);
+              m_pCurrentStack, start_index, search_direction, new_open_type,
+              new_open_family);
 
-        if (NULL == pProposed)
-          pProposed = ChartData->OpenStackChartConditional(
-              m_pCurrentStack, start_index, search_direction,
-              CHART_TYPE_CM93COMP, CHART_FAMILY_RASTER);
+          //    Try to open other types/families of chart in some priority
+          if (NULL == pProposed)
+            pProposed = ChartData->OpenStackChartConditional(
+                m_pCurrentStack, start_index, search_direction,
+                CHART_TYPE_CM93COMP, CHART_FAMILY_VECTOR);
 
-        bNewChart = true;
+          if (NULL == pProposed)
+            pProposed = ChartData->OpenStackChartConditional(
+                m_pCurrentStack, start_index, search_direction,
+                CHART_TYPE_CM93COMP, CHART_FAMILY_RASTER);
 
+          bNewChart = true;
+        }
       }  // bCanvasChartAutoOpen
 
       else
@@ -1892,45 +1898,39 @@ bool ChartCanvas::DoCanvasUpdate() {
       //      Setup the view using the current scale
       double set_scale = GetVPScale();
 
-      //    If the current viewpoint is invalid, set the default scale to
-      //    something reasonable.
-      if (!GetVP().IsValid())
-        set_scale = 1. / 20000.;
-      else {  // otherwise, match scale if elected.
-        double proposed_scale_onscreen;
+      double proposed_scale_onscreen;
 
-        if (m_bFollow) {  // autoset the scale only if in autofollow
-          double new_scale_ppm =
-              m_singleChart->GetNearestPreferredScalePPM(GetVPScale());
-          proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
-        } else
-          proposed_scale_onscreen = GetCanvasScaleFactor() / set_scale;
+      if (m_bFollow) {  // autoset the scale only if in autofollow
+        double new_scale_ppm =
+            m_singleChart->GetNearestPreferredScalePPM(GetVPScale());
+        proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+      } else
+        proposed_scale_onscreen = GetCanvasScaleFactor() / set_scale;
 
-        //  This logic will bring a new chart onscreen at roughly twice the true
-        //  paper scale equivalent. Note that first chart opened on application
-        //  startup (bOpenSpecified = true) will open at the config saved scale
-        if (bNewChart && !g_bPreserveScaleOnX && !bOpenSpecified) {
-          proposed_scale_onscreen = m_singleChart->GetNativeScale() / 2;
-          double equivalent_vp_scale =
-              GetCanvasScaleFactor() / proposed_scale_onscreen;
-          double new_scale_ppm =
-              m_singleChart->GetNearestPreferredScalePPM(equivalent_vp_scale);
-          proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
-        }
-
-        if (m_bFollow) {  // bounds-check the scale only if in autofollow
-          proposed_scale_onscreen =
-              wxMin(proposed_scale_onscreen,
-                    m_singleChart->GetNormalScaleMax(GetCanvasScaleFactor(),
-                                                     GetCanvasWidth()));
-          proposed_scale_onscreen =
-              wxMax(proposed_scale_onscreen,
-                    m_singleChart->GetNormalScaleMin(GetCanvasScaleFactor(),
-                                                     g_b_overzoom_x));
-        }
-
-        set_scale = GetCanvasScaleFactor() / proposed_scale_onscreen;
+      //  This logic will bring a new chart onscreen at roughly twice the true
+      //  paper scale equivalent. Note that first chart opened on application
+      //  startup (bOpenSpecified = true) will open at the config saved scale
+      if (bNewChart && !g_bPreserveScaleOnX && !bOpenSpecified) {
+        proposed_scale_onscreen = m_singleChart->GetNativeScale() / 2;
+        double equivalent_vp_scale =
+            GetCanvasScaleFactor() / proposed_scale_onscreen;
+        double new_scale_ppm =
+            m_singleChart->GetNearestPreferredScalePPM(equivalent_vp_scale);
+        proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
       }
+
+      if (m_bFollow) {  // bounds-check the scale only if in autofollow
+        proposed_scale_onscreen =
+            wxMin(proposed_scale_onscreen,
+                  m_singleChart->GetNormalScaleMax(GetCanvasScaleFactor(),
+                                                   GetCanvasWidth()));
+        proposed_scale_onscreen =
+            wxMax(proposed_scale_onscreen,
+                  m_singleChart->GetNormalScaleMin(GetCanvasScaleFactor(),
+                                                   g_b_overzoom_x));
+      }
+
+      set_scale = GetCanvasScaleFactor() / proposed_scale_onscreen;
 
       bNewView |= SetViewPoint(vpLat, vpLon, set_scale,
                                m_singleChart->GetChartSkew() * PI / 180.,
@@ -1940,6 +1940,7 @@ bool ChartCanvas::DoCanvasUpdate() {
 
   else  // No change in Chart Stack
   {
+    double s = GetVPScale();
     if ((m_bFollow) && m_singleChart)
       bNewView |= SetViewPoint(vpLat, vpLon, GetVPScale(),
                                m_singleChart->GetChartSkew() * PI / 180.,
@@ -2088,8 +2089,10 @@ void ChartCanvas::SetupCanvasQuiltMode() {
     if (IsChartQuiltableRef(target_new_dbindex))
       SelectQuiltRefdbChart(target_new_dbindex,
                             false);  // Try not to allow a scale change
-    else
-      SelectQuiltRefdbChart(-1, false);
+    else {  // fall back to last selected no-quilt chart as new reference
+      int stack_index = m_pCurrentStack->CurrentStackEntry;
+      SelectQuiltRefdbChart(m_pCurrentStack->GetDBIndex(stack_index), false);
+    }
 
     m_singleChart = NULL;  // Bye....
 
@@ -2137,43 +2140,55 @@ void ChartCanvas::SetupCanvasQuiltMode() {
       }
 
       if (!m_singleChart) {
-        // Build a temporary chart stack based on tLat, tLon
-        ChartStack TempStack;
-        ChartData->BuildChartStack(&TempStack, tLat, tLon, g_sticky_chart,
-                                   m_groupIndex);
-
-        //    Iterate over the quilt charts actually shown, looking for the
-        //    largest scale chart that will be in the new chartstack.... This
-        //    will (almost?) always be the reference chart....
-
-        ChartBase *Candidate_Chart = NULL;
-        int cur_max_scale = (int)1e8;
-
-        ChartBase *pChart = GetFirstQuiltChart();
-        while (pChart) {
-          //  Is this pChart in new stack?
-          int tEntry =
-              ChartData->GetStackEntry(&TempStack, pChart->GetFullPath());
-          if (tEntry != -1) {
-            if (pChart->GetNativeScale() < cur_max_scale) {
-              Candidate_Chart = pChart;
-              cur_max_scale = pChart->GetNativeScale();
-            }
-          }
-          pChart = GetNextQuiltChart();
+        // First choice is to adopt the outgoing quilt reference chart
+        if (GetQuiltReferenceChartIndex() >= 0) {
+          m_singleChart = ChartData->OpenChartFromDB(
+              GetQuiltReferenceChartIndex(), FULL_INIT);
         }
+        // Second choice is to use any "no-quilt restore index", if available
+        else if (m_restore_dbindex >= 0) {
+          m_singleChart =
+              ChartData->OpenChartFromDB(m_restore_dbindex, FULL_INIT);
+        }
+        // Final choice it to pick a suitable chart based on current stack.
+        else {
+          // Build a temporary chart stack based on tLat, tLon
+          ChartStack TempStack;
+          ChartData->BuildChartStack(&TempStack, tLat, tLon, g_sticky_chart,
+                                     m_groupIndex);
 
-        m_singleChart = Candidate_Chart;
+          //    Iterate over the quilt charts actually shown, looking for the
+          //    largest scale chart that will be in the new chartstack.... This
+          //    will (almost?) always be the reference chart....
 
-        //    If the quilt is empty, there is no "best" chart.
-        //    So, open the smallest scale chart in the current stack
-        if (NULL == m_singleChart) {
-          m_singleChart = ChartData->OpenStackChartConditional(
-              &TempStack, TempStack.nEntry - 1, true, CHART_TYPE_DONTCARE,
-              CHART_FAMILY_DONTCARE);
+          ChartBase *Candidate_Chart = NULL;
+          int cur_max_scale = (int)1e8;
+
+          ChartBase *pChart = GetFirstQuiltChart();
+          while (pChart) {
+            //  Is this pChart in new stack?
+            int tEntry =
+                ChartData->GetStackEntry(&TempStack, pChart->GetFullPath());
+            if (tEntry != -1) {
+              if (pChart->GetNativeScale() < cur_max_scale) {
+                Candidate_Chart = pChart;
+                cur_max_scale = pChart->GetNativeScale();
+              }
+            }
+            pChart = GetNextQuiltChart();
+          }
+
+          m_singleChart = Candidate_Chart;
+
+          //    If the quilt is empty, there is no "best" chart.
+          //    So, open the smallest scale chart in the current stack
+          if (NULL == m_singleChart) {
+            m_singleChart = ChartData->OpenStackChartConditional(
+                &TempStack, TempStack.nEntry - 1, true, CHART_TYPE_DONTCARE,
+                CHART_FAMILY_DONTCARE);
+          }
         }
       }
-
       //  Invalidate all the charts in the quilt,
       // as any cached data may be region based and not have fullscreen coverage
       InvalidateAllQuiltPatchs();
@@ -2189,9 +2204,10 @@ void ChartCanvas::SetupCanvasQuiltMode() {
         GetVP().SetProjectionType(m_singleChart->GetChartProjectionType());
       }
     }
-    //    Invalidate the current stack so that it will be rebuilt on next tick
-    if (m_pCurrentStack) m_pCurrentStack->b_valid = false;
   }
+  //    Invalidate the current stack so that it will be rebuilt on next tick
+  if (m_pCurrentStack) m_pCurrentStack->b_valid = false;
+  SetVPScale(GetVPScale() * 1.0001);
 }
 
 bool ChartCanvas::IsTempMenuBarEnabled() {
@@ -8671,7 +8687,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                                            // route?
                     dmsg = _("Insert this route in the new route?");
 
-                  if (tail->GetIndexOf(pMousePoint) != 1) {  // Anything to do?
+                  if (tail->GetIndexOf(pMousePoint) > 0) {  // Anything to do?
                     dlg_return = OCPNMessageBox(
                         this, dmsg, _("OpenCPN Route Create"),
                         (long)wxYES_NO | wxCANCEL | wxYES_DEFAULT);
@@ -8731,9 +8747,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         if (m_pMouseRoute) {
           if (m_routeState == 1) {
-            // First point in the route.
+            // First point in the new route.
             m_pMouseRoute->AddPoint(pMousePoint);
-            // NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
           } else {
             if (m_pMouseRoute->m_NextLegGreatCircle) {
               double rhumbBearing, rhumbDist, gcBearing, gcDist;
@@ -8825,7 +8840,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (appending ||
             inserting) {  // Appending a route or making a new route
           int connect = tail->GetIndexOf(pMousePoint);
-          if (connect == 1) {
+          if (connect == 0) {
             inserting = false;  // there is nothing to insert
             appending = true;   // so append
           }
@@ -8838,10 +8853,9 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             stop = length;
           } else {  // inserting
             start = 1;
-            stop = connect;
-            m_pMouseRoute->RemovePoint(
-                m_pMouseRoute
-                    ->GetLastPoint());  // Remove the first and only point
+            stop = connect + 1;
+            // Remove the first and only point of the new route
+            m_pMouseRoute->RemovePoint(m_pMouseRoute->GetLastPoint());
           }
           for (i = start; i <= stop; i++) {
             m_pMouseRoute->AddPointAndSegment(tail->GetPoint(i), false);

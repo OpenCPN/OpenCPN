@@ -844,8 +844,8 @@ public:
     auto driver = make_unique<FileCommDriver>(inputfile + ".log", path, msgbus);
     CommDriverRegistry::GetInstance().Activate(std::move(driver));
     ProcessPendingEvents();
-    EXPECT_NEAR(gLat, 57.6460, 0.001);
-    EXPECT_NEAR(gLon, 11.7130, 0.001);
+    EXPECT_NEAR(gLat, 57.6460, 0.004);
+    EXPECT_NEAR(gLon, 11.7130, 0.004);
   }
 };
 

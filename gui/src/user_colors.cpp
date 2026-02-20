@@ -166,10 +166,10 @@ static const char *const usercolors[] = {
     "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;",
     "YELO1;  60; 65; 12;", "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;",
     "GREEN5; 44; 64; 0;", "COMPT;  48; 49; 51",
-    "DILG0;  80; 80; 80;",  // Dialog Background
-    "DILG1;  80; 80; 80;",  // Dialog Background
-    "DILG2;   0;  0;  0;",  // Control Background
-    "DILG3;  65; 65; 65;",  // Text
+    "DILG0;  80; 80; 80;",     // Dialog Background
+    "DILG1;  80; 80; 80;",     // Dialog Background
+    "DILG2;   0;  0;  0;",     // Control Background
+    "DILG3;  180; 180; 180;",  // Text
     "DILG4; 220;220;220;",
     "UITX1;  31; 34; 35;",  // Menu text color
     "UDKRD;  50;  0;  0;",  // Dark red variant - reduced visibility alternative
