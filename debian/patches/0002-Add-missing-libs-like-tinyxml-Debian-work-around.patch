@@ -1,7 +1,6 @@
-From f18ae5a5f30de735cef5503fe74c10652e3e1e20 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Sat, 21 Feb 2026 22:21:21 +0100
-Subject: [PATCH 2/3] Add missing libs like tinyxml Debian work-around
+Date: Sat, 21 Feb 2026 22:36:33 +0100
+Subject: Add missing libs like tinyxml Debian work-around
 
 Since we remove some bundled libs when repacking the sources,
 references to these libs causes build problems which must
@@ -17,13 +16,13 @@ the sources.
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1d2c4b6b3..b61d4d1f6 100644
+index 8bdba4c..2d0e4d0 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1427,8 +1427,10 @@ if (OCPN_USE_SVG)
+@@ -1448,8 +1448,10 @@ if (OCPN_USE_SVG)
    endif ()
  endif ()
-
+ 
 +include(SystemLibs)
 +
  if (OCPN_USE_NEWSERIAL)
@@ -32,17 +31,17 @@ index 1d2c4b6b3..b61d4d1f6 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif ()
-@@ -1502,7 +1504,6 @@ message(STATUS "    Adding local LIBTESS2")
+@@ -1523,7 +1525,6 @@ message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
-
+ 
 -add_subdirectory(libs/tinyxml)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tinyxml)
-
+ 
  message(STATUS "    Adding local wxserverdisc")
 diff --git a/cmake/SystemLibs.cmake b/cmake/SystemLibs.cmake
 new file mode 100644
-index 000000000..473722c1b
+index 0000000..473722c
 --- /dev/null
 +++ b/cmake/SystemLibs.cmake
 @@ -0,0 +1,28 @@
@@ -75,16 +74,14 @@ index 000000000..473722c1b
 +find_path(HAVE_STDINT_H NAMES stdint.h)
 +find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 993fcdb52..b80194454 100644
+index 25ec4ee..19c2647 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
-@@ -47,6 +47,7 @@
+@@ -45,6 +45,7 @@
  #cmakedefine HAVE_SYS_TYPES_H
  #cmakedefine HAVE_SYS_FCNTL_H
  #cmakedefine HAVE_SYS_IOCTL_H
 +#cmakedefine HAVE_STDINT_H
  #cmakedefine OCPN_DISTRO_BUILD
-
+ 
  // The os compatible plugins are are built for
---
-2.52.0
