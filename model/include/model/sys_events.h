@@ -12,14 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/** \file sys_event.h Suspend/resum and new devices events exchange point */
+/**
+ * \file
+ *
+ *  Suspend/resume and new devices events exchange point
+ */
 
-#
 #ifndef SYS__EVENTS_H_
 #define SYS__EVENTS_H_
 #include "observable_evtvar.h"
@@ -47,4 +48,4 @@ private:
   SystemEvents() = default;
 };
 
-#endif   // define SYS__EVENTS_H_
+#endif  // define SYS__EVENTS_H_

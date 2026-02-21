@@ -20,7 +20,7 @@
 
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 CMAKE_POLICY(SET CMP0043 NEW)
 
 PROJECT(dashboard_pi)
@@ -50,6 +50,7 @@ IF( APPLE )
     ADD_COMPILE_OPTIONS("-Wno-unused" "-Wno-overloaded-virtual")
    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
 ENDIF( APPLE )
+
 
 # Add some definitions to satisfy MSVC
 IF(MSVC)
@@ -185,12 +186,18 @@ SET(SRC_NMEA0183
     src/nmea0183/xdr.cpp
     src/nmea0183/xdr.hpp
 )
-##INCLUDE_DIRECTORIES(src/nmea0183)
 
 
 SET_PROPERTY(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 SET(BUILD_SHARED_LIBS "ON")
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183} )
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183})
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|GNU")  # Apple is AppleClang
+  target_compile_options(${PACKAGE_NAME} PRIVATE -fvisibility=hidden)
+endif ()
+
+# FIXME (leamas) Remove horrible hack MSVC vs others
+
 target_include_directories(${PACKAGE_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include/wx
@@ -199,6 +206,7 @@ target_include_directories(${PACKAGE_NAME} PRIVATE
 )
 target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
 target_link_libraries(${PACKAGE_NAME} ocpn::N2KParser )
+target_link_libraries(${PACKAGE_NAME} ocpn::manual )
 
 IF (WIN32 AND NOT MSVC)
   SET( CMAKE_SHARED_LINKER_FLAGS "-L../../" )

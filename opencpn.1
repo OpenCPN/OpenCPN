@@ -129,6 +129,13 @@ the --loglevel option for allowed values.
 .TP
 .B OPENCPN_FATAL_ERROR
 If defined, displays the message and exits on startup.
+.TP
+.B OPENCPN_COMPAT_TARGET
+Opencpn normally only loads plugins with a specific ABI.
+\fIOPENCPN_COMPAT_TARGET\fR overrides the built-in default and makes it
+possible to load plugins with another ABI.
+The format is platform:version , for example \fIdebian:13\fR. 
+Note that attempts to load plugins this way may crash opencpn on start.
 
 .SH FILES
 .TP

@@ -12,15 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
- * \file linux_watch_daemon.h
- * Listen for Linux DBus  events like suspend/resume and new devices and notify
- * SystemEvents
+ * \file
+ *
+ * Implement linux_usb_watch.h -- iisten for Linux DBus events like
+ * suspend/resume and new devices and notify SystemEvents,
  */
 
 #include "model/linux_usb_watch.h"
@@ -80,12 +79,12 @@ void LinuxUsbWatchDaemon::Start() {
   g_dbus_connection_signal_subscribe(
       m_conn, kDevSender, kDevInterface, kDevRemoveMember, 0, 0,
       G_DBUS_SIGNAL_FLAGS_NONE, dev_signal_cb, this, 0);
-  g_dbus_connection_signal_subscribe(
-      m_conn, kResSender, kResInterface, kResMember, 0, 0,
-      G_DBUS_SIGNAL_FLAGS_NONE, prepare_for_sleep_cb, this, 0);
+  g_dbus_connection_signal_subscribe(m_conn, kResSender, kResInterface,
+                                     kResMember, 0, 0, G_DBUS_SIGNAL_FLAGS_NONE,
+                                     prepare_for_sleep_cb, this, 0);
   m_worker_context = g_main_context_new();
   m_main_loop = g_main_loop_new(m_worker_context, false);
-  m_thread = std::thread([&]{ DoStart(); });
+  m_thread = std::thread([&] { DoStart(); });
 }
 
 void LinuxUsbWatchDaemon::Stop() {

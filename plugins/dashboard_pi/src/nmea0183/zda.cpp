@@ -39,102 +39,96 @@
 ** You can use it any way you like.
 */
 
-//IMPLEMENT_DYNAMIC( ZDA, RESPONSE )
+// IMPLEMENT_DYNAMIC( ZDA, RESPONSE )
 
-ZDA::ZDA()
-{
-   Mnemonic = _T("ZDA");
-   Empty();
+ZDA::ZDA() {
+  Mnemonic = _T("ZDA");
+  Empty();
 }
 
-ZDA::~ZDA()
-{
-   Mnemonic.Empty();
-   Empty();
+ZDA::~ZDA() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void ZDA::Empty( void )
-{
-//   ASSERT_VALID( this );
+void ZDA::Empty(void) {
+  //   ASSERT_VALID( this );
 
-   UTCTime.Empty();
-   Day                   = 0;
-   Month                 = 0;
-   Year                  = 0;
-   LocalHourDeviation    = 0;
-   LocalMinutesDeviation = 0;
+  UTCTime.Empty();
+  Day = 0;
+  Month = 0;
+  Year = 0;
+  LocalHourDeviation = 0;
+  LocalMinutesDeviation = 0;
 }
 
-bool ZDA::Parse( const SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool ZDA::Parse(const SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** ZDA - Time & Date
-   ** UTC, day, month, year and local time zone
-   **
-   ** $--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh<CR><LF>
-   **        |         |  |  |    |  |
-   **        |         |  |  |    |  +- Local zone minutes description, same sign as local hours
-   **        |         |  |  |    +- Local zone description, 00 to +- 13 hours
-   **        |         |  |  +- Year
-   **        |         |  +- Month, 01 to 12
-   **        |         +- Day, 01 to 31
-   **        +- Universal Time Coordinated (UTC)
-   */
+  /*
+  ** ZDA - Time & Date
+  ** UTC, day, month, year and local time zone
+  **
+  ** $--ZDA,hhmmss.ss,xx,xx,xxxx,xx,xx*hh<CR><LF>
+  **        |         |  |  |    |  |
+  **        |         |  |  |    |  +- Local zone minutes description, same sign
+  *as local hours
+  **        |         |  |  |    +- Local zone description, 00 to +- 13 hours
+  **        |         |  |  +- Year
+  **        |         |  +- Month, 01 to 12
+  **        |         +- Day, 01 to 31
+  **        +- Universal Time Coordinated (UTC)
+  */
 
-   /*
-   ** First we check the checksum...
-   */
+  /*
+  ** First we check the checksum...
+  */
 
-   if ( sentence.IsChecksumBad( 7 ) == TRUE )
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
+  if (sentence.IsChecksumBad(7) == TRUE) {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
 
-   UTCTime               = sentence.Field( 1 );
-   Day                   = sentence.Integer( 2 );
-   Month                 = sentence.Integer( 3 );
-   Year                  = sentence.Integer( 4 );
-   LocalHourDeviation    = sentence.Integer( 5 );
-   LocalMinutesDeviation = sentence.Integer( 6 );
+  UTCTime = sentence.Field(1);
+  Day = sentence.Integer(2);
+  Month = sentence.Integer(3);
+  Year = sentence.Integer(4);
+  LocalHourDeviation = sentence.Integer(5);
+  LocalMinutesDeviation = sentence.Integer(6);
 
-   return( TRUE );
+  return (TRUE);
 }
 
-bool ZDA::Write( SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool ZDA::Write(SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Let the parent do its thing
-   */
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += UTCTime;
-   sentence += Day;
-   sentence += Month;
-   sentence += Year;
-   sentence += LocalHourDeviation;
-   sentence += LocalMinutesDeviation;
+  sentence += UTCTime;
+  sentence += Day;
+  sentence += Month;
+  sentence += Year;
+  sentence += LocalHourDeviation;
+  sentence += LocalMinutesDeviation;
 
-   sentence.Finish();
+  sentence.Finish();
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const ZDA& ZDA::operator = ( const ZDA& source )
-{
-//   ASSERT_VALID( this );
+const ZDA& ZDA::operator=(const ZDA& source) {
+  //   ASSERT_VALID( this );
 
-   UTCTime               = source.UTCTime;
-   Day                   = source.Day;
-   Month                 = source.Month;
-   Year                  = source.Year;
-   LocalHourDeviation    = source.LocalHourDeviation;
-   LocalMinutesDeviation = source.LocalMinutesDeviation;
+  UTCTime = source.UTCTime;
+  Day = source.Day;
+  Month = source.Month;
+  Year = source.Year;
+  LocalHourDeviation = source.LocalHourDeviation;
+  LocalMinutesDeviation = source.LocalMinutesDeviation;
 
-   return( *this );
+  return (*this);
 }

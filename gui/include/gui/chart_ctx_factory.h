@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Wrapper for creating a ChartCtx based on global vars
- * Author:   Alec Leamas
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2023 by Alec Leamas
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,28 +12,37 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Wrapper for creating a ChartCtx based on global vars
+ */
+
 #ifndef _CHART_CTX_FACTORY_H__
 #define _CHART_CTX_FACTORY_H__
 
+#include "model/config_vars.h"
 #include "s52plib.h"
 
-extern bool g_bopengl;
+#ifdef ocpnUSE_GL
+#include "gl_headers.h"
+#endif
 
 #ifdef ocpnUSE_GL
+
 extern GLenum g_texture_rectangle_format;
 
 /** Return a ChartCtx reflecting caller's opengl context */
 static ChartCtx ChartCtxFactory() {
-   return ChartCtx(g_bopengl, g_texture_rectangle_format);
+  return ChartCtx(g_bopengl, g_texture_rectangle_format);
 }
 #else
 
 /** Return a ChartCtx reflecting caller's context not using opengl */
 static ChartCtx ChartCtxFactory() { return ChartCtx(g_bopengl); }
-#endif
+#endif  // ocpnUSE_GL
 
-#endif   //  _CHART_CTX_FACTORY_H__
+#endif  //  _CHART_CTX_FACTORY_H__

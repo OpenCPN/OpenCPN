@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  WaypoinrMan drawing stuff
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,20 +13,24 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _WAYPOINT_GUI_H__
-#define _WAYPOINT_GUI_H__
+/**
+ * \file
+ *
+ * WaypointMan drawing stuff
+ */
+
+#ifndef WAYPOINT_GUI_H_
+#define WAYPOINT_GUI_H_
 
 #include "model/routeman.h"
 #include "styles.h"
 
 class WayPointmanGui {
 public:
-  WayPointmanGui(WayPointman& waypoint_man) : m_waypoint_man(waypoint_man) {}
+  WayPointmanGui(WayPointman &waypoint_man) : m_waypoint_man(waypoint_man) {}
 
   void SetColorScheme(ColorScheme cs, double displayDPmm);
   void ReloadAllIcons(double displayDPmm);
@@ -46,13 +45,11 @@ public:
 
 private:
   MarkIcon *ProcessLegacyIcon(wxString fileName, const wxString &key,
-                              const wxString &description,
-                              double displayDPmm);
+                              const wxString &description, double displayDPmm);
   MarkIcon *ProcessExtendedIcon(wxImage &image, const wxString &key,
                                 const wxString &description);
   wxRect CropImageOnAlpha(wxImage &image);
-  WayPointman& m_waypoint_man;
+  WayPointman &m_waypoint_man;
 };
 
-
-#endif   // _WAYPOINT_GUI_H__
+#endif  // WAYPOINT_GUI_H_

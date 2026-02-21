@@ -39,103 +39,96 @@
 ** You can use it any way you like.
 */
 
-//IMPLEMENT_DYNAMIC( VHW, RESPONSE )
+// IMPLEMENT_DYNAMIC( VHW, RESPONSE )
 
-VHW::VHW()
-{
-   Mnemonic = _T("VHW");
-   Empty();
+VHW::VHW() {
+  Mnemonic = _T("VHW");
+  Empty();
 }
 
-VHW::~VHW()
-{
-   Mnemonic.Empty();
-   Empty();
+VHW::~VHW() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void VHW::Empty( void )
-{
-//   ASSERT_VALID( this );
+void VHW::Empty(void) {
+  //   ASSERT_VALID( this );
 
-   DegreesTrue       = 0.0;
-   DegreesMagnetic   = 0.0;
-   Knots             = 0.0;
-   KilometersPerHour = 0.0;
+  DegreesTrue = 0.0;
+  DegreesMagnetic = 0.0;
+  Knots = 0.0;
+  KilometersPerHour = 0.0;
 }
 
-bool VHW::Parse( const SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool VHW::Parse(const SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** VHW - Water speed and heading
-   **
-   **        1   2 3   4 5   6 7   8 9
-   **        |   | |   | |   | |   | |
-   ** $--VHW,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
-   **
-   ** Field Number:
-   **  1) Degress True
-   **  2) T = True
-   **  3) Degrees Magnetic
-   **  4) M = Magnetic
-   **  5) Knots (speed of vessel relative to the water)
-   **  6) N = Knots
-   **  7) Kilometers (speed of vessel relative to the water)
-   **  8) K = Kilometers
-   **  9) Checksum
-   */
+  /*
+  ** VHW - Water speed and heading
+  **
+  **        1   2 3   4 5   6 7   8 9
+  **        |   | |   | |   | |   | |
+  ** $--VHW,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
+  **
+  ** Field Number:
+  **  1) Degress True
+  **  2) T = True
+  **  3) Degrees Magnetic
+  **  4) M = Magnetic
+  **  5) Knots (speed of vessel relative to the water)
+  **  6) N = Knots
+  **  7) Kilometers (speed of vessel relative to the water)
+  **  8) K = Kilometers
+  **  9) Checksum
+  */
 
-   /*
-   ** First we check the checksum...
-   */
+  /*
+  ** First we check the checksum...
+  */
 
-   if ( sentence.IsChecksumBad( 9 ) == TRUE )
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
+  if (sentence.IsChecksumBad(9) == TRUE) {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
 
-   DegreesTrue       = sentence.Double( 1 );
-   DegreesMagnetic   = sentence.Double( 3 );
-   Knots             = sentence.Double( 5 );
-   KilometersPerHour = sentence.Double( 7 );
+  DegreesTrue = sentence.Double(1);
+  DegreesMagnetic = sentence.Double(3);
+  Knots = sentence.Double(5);
+  KilometersPerHour = sentence.Double(7);
 
-   return( TRUE );
+  return (TRUE);
 }
 
-bool VHW::Write( SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool VHW::Write(SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Let the parent do its thing
-   */
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += DegreesTrue;
-   sentence += _T("T");
-   sentence += DegreesMagnetic;
-   sentence += _T("M");
-   sentence += Knots;
-   sentence += _T("N");
-   sentence += KilometersPerHour;
-   sentence += _T("K");
+  sentence += DegreesTrue;
+  sentence += _T("T");
+  sentence += DegreesMagnetic;
+  sentence += _T("M");
+  sentence += Knots;
+  sentence += _T("N");
+  sentence += KilometersPerHour;
+  sentence += _T("K");
 
-   sentence.Finish();
+  sentence.Finish();
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const VHW& VHW::operator = ( const VHW& source )
-{
-//   ASSERT_VALID( this );
+const VHW& VHW::operator=(const VHW& source) {
+  //   ASSERT_VALID( this );
 
-   DegreesTrue       = source.DegreesTrue;
-   DegreesMagnetic   = source.DegreesMagnetic;
-   Knots             = source.Knots;
-   KilometersPerHour = source.KilometersPerHour;
+  DegreesTrue = source.DegreesTrue;
+  DegreesMagnetic = source.DegreesMagnetic;
+  Knots = source.Knots;
+  KilometersPerHour = source.KilometersPerHour;
 
-   return( *this );
+  return (*this);
 }

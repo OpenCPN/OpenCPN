@@ -1,0 +1,44 @@
+1.4.3
+
+Fixed a possible buffer overflow in txt record parse
+
+Fixed parsing boolean txt records (keys without value)
+
+Ignore questions field in query receive, allowing replies with multiple questions
+
+
+1.4.2
+
+Add mdns_goodbye_multicast function to send end of service announcement
+
+Fix the rclass and TTL for announce and goodbye to avoid flush flag on shared records
+
+Fixed an issue with parsing multiple answer records in discovery
+
+All authority and additional records are now sent to service callback function
+
+Various code cleanups, making all functions inline declared.
+
+Added a dump mode to the example application for listing all mDNS traffic on port 5353
+
+
+1.4.1
+
+Use const pointers in socket open and setup functions.
+
+Avoid null pointer arithmetics for standard compliance.
+
+
+1.4
+
+Returning non-zero from callback function during record parsing immedediately stops parsing and returns the number of records parsed so far.
+
+The function to send a query answer has been split in two, one for unicast answer and one for multicast.
+
+The functions to send query answers have been generalized to send any number of records.
+
+Added new function to do multicast announce on start/wake-up (unsolicited answer).
+
+Added parsing of ANY question records and DNS-SD queries with multiple questions
+
+Removed mdns_discovery_answer in favour of the new generalized answer functions, to handle both unicast and multicast response

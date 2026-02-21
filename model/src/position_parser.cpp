@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement position_parser.h -- string positions parsing
+ */
 
 #include <wx/tokenzr.h>
 #include <wx/string.h>
@@ -39,7 +39,7 @@ PositionParser::PositionParser(const wxString& src) {
 
 bool PositionParser::FindSeparator(const wxString& src) {
   // Used when format is similar to "12 34.56 N 12 34.56 E"
-  wxString posPartOfSeparator = _T("");
+  wxString posPartOfSeparator = "";
 
   // First the XML case:
   // Generalized XML tag format, accepts anything like <XXX yyy="<lat>"
@@ -53,7 +53,8 @@ bool PositionParser::FindSeparator(const wxString& src) {
 #endif
 
   regex.Compile(
-      _T( "<[a-z,A-Z]*\\s*[a-z,A-Z]*=\"([0-9,.]*)\"\\s*[a-z,A-Z]*=\"([-,0-9,.]*)\"\\s*/*>" ),
+      "<[a-z,A-Z]*\\s*[a-z,A-Z]*=\"([0-9,.]*)\"\\s*[a-z,A-Z]*=\"([-,0-9,.]*)"
+      "\"\\s*/*>",
       re_compile_flags);
 
   if (regex.IsValid()) {
@@ -71,7 +72,7 @@ bool PositionParser::FindSeparator(const wxString& src) {
 
   // Now try various separators.
 
-  separator = _T(", ");
+  separator = ", ";
   wxStringTokenizer tk1(src, separator);
   if (tk1.CountTokens() == 2) {
     latitudeString = tk1.GetNextToken();
@@ -84,7 +85,7 @@ bool PositionParser::FindSeparator(const wxString& src) {
     return true;
   }
 
-  separator = _T(",");
+  separator = ",";
   wxStringTokenizer tk2(src, separator);
   if (tk2.CountTokens() == 2) {
     latitudeString = tk2.GetNextToken();
@@ -97,7 +98,7 @@ bool PositionParser::FindSeparator(const wxString& src) {
     return true;
   }
 
-  separator = _T(" ");
+  separator = " ";
   wxStringTokenizer tk3(src, separator);
   if (tk3.CountTokens() == 2) {
     latitudeString = tk3.GetNextToken();
@@ -110,7 +111,7 @@ bool PositionParser::FindSeparator(const wxString& src) {
     return true;
   }
 
-  separator = _T("\t");
+  separator = "\t";
   wxStringTokenizer tk4(src, separator);
   if (tk4.CountTokens() == 2) {
     latitudeString = tk4.GetNextToken();
@@ -123,7 +124,7 @@ bool PositionParser::FindSeparator(const wxString& src) {
     return true;
   }
 
-  separator = _T("\n");
+  separator = "\n";
   wxStringTokenizer tk5(src, separator);
   if (tk5.CountTokens() == 2) {
     latitudeString = tk5.GetNextToken();
@@ -136,8 +137,8 @@ bool PositionParser::FindSeparator(const wxString& src) {
     return true;
   }
 
-  separator = _T("N");
-  posPartOfSeparator = _T("N");
+  separator = "N";
+  posPartOfSeparator = "N";
   wxStringTokenizer tk6(src, separator);
   if (tk6.CountTokens() == 2) {
     latitudeString = tk6.GetNextToken() << posPartOfSeparator;
@@ -150,8 +151,8 @@ bool PositionParser::FindSeparator(const wxString& src) {
     return true;
   }
 
-  separator = _T("S");
-  posPartOfSeparator = _T("S");
+  separator = "S";
+  posPartOfSeparator = "S";
   wxStringTokenizer tk7(src, separator);
   if (tk7.CountTokens() == 2) {
     latitudeString = tk7.GetNextToken() << posPartOfSeparator;

@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Generic GUI downloads tool
  */
 
 #ifndef DOWNLOAD_MGR_H__
@@ -35,6 +34,9 @@
 // Accepted by PluginDownloadDialog, reloads plugin list.
 wxDECLARE_EVENT(EVT_PLUGINS_RELOAD, wxCommandEvent);
 
+/**
+ * Dialog for downloading plugins.
+ */
 class PluginDownloadDialog : public wxDialog {
 public:
   PluginDownloadDialog(wxWindow* parent);
@@ -42,8 +44,9 @@ public:
   wxWindow* GetRealParent() { return m_parent; }
 };
 
-/** Add progress and final message dialogs to the basic Downloader. */
-
+/**
+ * Downloader with progress and final message dialogs.
+ */
 class GuiDownloader : public Downloader {
 private:
   long m_downloaded;

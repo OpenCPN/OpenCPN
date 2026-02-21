@@ -1,7 +1,8 @@
 #include "model/semantic_vers.h"
 #include <iostream>
 
-// c++   -I../include -I../build/include  testvers.cpp semantic_vers.cpp
+// c++   -I../model/include -I../build/include  testvers.cpp \
+//     ../model/src/semantic_vers.cpp
 // a.out 1.4.6 7.8.9+deadbee
 
 int main(int argc, char** argv) {

@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Nmea2000 serial driver
+ */
 
 #ifndef _COMMDRIVERN2KSERIAL_H
 #define _COMMDRIVERN2KSERIAL_H
@@ -33,13 +32,14 @@
 #include "config.h"
 #include "model/comm_drv_n2k.h"
 #include "model/conn_params.h"
+#include "model/comm_drv_stats.h"
 
 #ifndef __ANDROID__
 #include "serial/serial.h"
 #endif
 
-#define OUT_QUEUE_LENGTH                20
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH    200
+#define OUT_QUEUE_LENGTH 20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH 200
 
 #define ESCAPE 0x10
 #define STARTOFTEXT 0x02
@@ -48,26 +48,29 @@
 #define MsgTypeN2kData 0x93
 #define MsgTypeN2kRequest 0x94
 
-class CommDriverN2KSerialThread;  // fwd
-class CommDriverN2KSerialEvent;
+using namespace std::literals::chrono_literals;
 
-class CommDriverN2KSerial : public CommDriverN2K, public wxEvtHandler {
+class CommDriverN2KSerialThread;  // forward
+class CommDriverN2KSerialEvent;   // forward in .cpp file
+
+class CommDriverN2KSerial : public CommDriverN2K,
+                            public wxEvtHandler,
+                            public DriverStatsProvider {
 public:
   CommDriverN2KSerial();
   CommDriverN2KSerial(const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN2KSerial();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-
-  void SetListener(DriverListener& l) override{};
+  void SetListener(DriverListener& l) override {};
 
   bool Open();
   void Close();
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
-                    std::shared_ptr<const NavAddr> addr) override;
+                   std::shared_ptr<const NavAddr> addr) override;
+
+  void AddTxPGN(int pgn);
 
   int SetTXPGN(int pgn) override;
 
@@ -89,13 +92,21 @@ public:
   void handle_N2K_SERIAL_RAW(CommDriverN2KSerialEvent& event);
   int GetMfgCode();
 
+  DriverStats GetDriverStats() const override;
+
   std::atomic_int m_Thread_run_flag;
+  ConnectionParams m_params;
 
 private:
-  void ProcessManagementPacket(std::vector<unsigned char> *payload);
-  int SendMgmtMsg( unsigned char *string, size_t string_size,
-                   unsigned char cmd_code,
-                   int timeout_msec, bool *response_flag);
+  void ProcessManagementPacket(std::vector<unsigned char>* payload);
+  /**
+   * Sends a management message over NMEA 2000 serial interface.
+   *
+   * @note This implementation is excluded on Android platforms
+   */
+  int SendMgmtMsg(unsigned char* string, size_t string_size,
+                  unsigned char cmd_code, int timeout_msec,
+                  bool* response_flag);
 
   bool m_bok;
   std::string m_portstring;
@@ -105,7 +116,6 @@ private:
   CommDriverN2KSerialThread* m_pSecondary_Thread;
   bool m_bsec_thread_active;
 
-  ConnectionParams m_params;
   DriverListener& m_listener;
 
   bool m_bmg47_resp;
@@ -118,7 +128,10 @@ private:
   uint64_t NAME;
   int m_manufacturers_code;
   bool m_got_mfg_code;
-
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
+  std::vector<int> pgn_tx_list;
+  bool m_closing;
 };
 
 #endif  // guard

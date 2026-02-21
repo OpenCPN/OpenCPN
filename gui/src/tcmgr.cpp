@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Tide and Current Manager
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,27 +12,34 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Tide and Current Manager
+ */
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif  // precompiled headers
-#include <wx/datetime.h>
 #include <wx/hashmap.h>
 
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 
-#include "gui_lib.h"
-#include "dychart.h"
-#include "tcmgr.h"
 #include "model/georef.h"
 #include "model/logger.h"
+
+#include "gui_lib.h"
+#include "dychart.h"
+#include "navutil.h"
+#include "tcmgr.h"
+
+TCMgr *ptcmgr;  ///< Global instance
 
 //-----------------------------------------------------------------------------------
 //    TIDELIB
@@ -46,16 +47,18 @@
 
 //      Static variables for the TIDELIB
 
-time_t s_next_epoch = TIDE_BAD_TIME; /* next years newyears */
-time_t s_this_epoch = TIDE_BAD_TIME; /* this years newyears */
-int s_this_year = -1;
+static time_t s_next_epoch = TIDE_BAD_TIME; /* next years newyears */
+static time_t s_this_epoch = TIDE_BAD_TIME; /* this years newyears */
+static int s_this_year = -1;
 
-double time2dt_tide(time_t t, int deriv, IDX_entry *pIDX);
-int yearoftimet(time_t t);
-void happy_new_year(IDX_entry *pIDX, int new_year);
-void set_epoch(IDX_entry *pIDX, int year);
+static double time2dt_tide(time_t t, int deriv, IDX_entry *pIDX);
+static int yearoftimet(time_t t);
+static void happy_new_year(IDX_entry *pIDX, int new_year);
+static void set_epoch(IDX_entry *pIDX, int year);
 
-double time2tide(time_t t, IDX_entry *pIDX) { return time2dt_tide(t, 0, pIDX); }
+static double time2tide(time_t t, IDX_entry *pIDX) {
+  return time2dt_tide(t, 0, pIDX);
+}
 
 /** BOGUS amplitude stuff - Added mgh
  * For knots^2 current stations, returns square root of (value * amplitude),
@@ -487,7 +490,7 @@ double blend_tide(time_t t, unsigned int deriv, int first_year, double blend,
   return f;
 }
 
-double time2dt_tide(time_t t, int deriv, IDX_entry *pIDX) {
+static double time2dt_tide(time_t t, int deriv, IDX_entry *pIDX) {
   int new_year;
   int yott = yearoftimet(t);
   new_year = yott;
@@ -609,10 +612,10 @@ time_t tm2gmt(struct tm *ht) {
   return guess;
 }
 
-int yearoftimet(time_t t) { return ((gmtime(&t))->tm_year) + 1900; }
+static int yearoftimet(time_t t) { return ((gmtime(&t))->tm_year) + 1900; }
 
 /* Calculate time_t of the epoch. */
-void set_epoch(IDX_entry *pIDX, int year) {
+static void set_epoch(IDX_entry *pIDX, int year) {
   struct tm ht;
 
   ht.tm_year = year - 1900;
@@ -622,7 +625,7 @@ void set_epoch(IDX_entry *pIDX, int year) {
 }
 
 /* Re-initialize for a different year */
-void happy_new_year(IDX_entry *pIDX, int new_year) {
+static void happy_new_year(IDX_entry *pIDX, int new_year) {
   pIDX->epoch_year = new_year;
   figure_multipliers(pIDX, new_year);
   set_epoch(pIDX, new_year);
@@ -654,13 +657,12 @@ TC_Error_Code TCMgr::LoadDataSources(std::vector<std::string> &sources) {
     TC_Error_Code r = s->LoadData(src);
     if (r != TC_NO_ERROR) {
       wxString msg;
-      msg.Printf(_T("   Error loading Tide/Currect data source %s "),
-                 src.c_str());
+      msg.Printf("   Error loading Tide/Currect data source %s ", src.c_str());
       if (r == TC_FILE_NOT_FOUND)
-        msg += _T("Error Code: TC_FILE_NOT_FOUND");
+        msg += "Error Code: TC_FILE_NOT_FOUND";
       else {
         wxString msg1;
-        msg1.Printf(_T("Error code: %d"), r);
+        msg1.Printf("Error code: %d", r);
         msg += msg1;
       }
       wxLogMessage(msg);
@@ -781,6 +783,27 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float &dir) {
   tcvalue = level;
 
   return (true);  // Got it!
+}
+
+bool TCMgr::GetTideOrCurrentMeters(time_t t, int idx, float &tcvalue,
+                                   float &dir) {
+  float val_from_index;
+  bool bret = GetTideOrCurrent(t, idx, val_from_index, dir);
+  if (!bret) return false;
+
+  //    Load up this location data
+  IDX_entry *pIDX = m_Combined_IDX_array[idx];  // point to the index entry
+  Station_Data *pmsd = pIDX->pref_sta_data;
+  if (pmsd) {
+    // Convert from station units to meters
+    int unit_c = TCDataFactory::findunit(pmsd->unit);
+    if (unit_c >= 0) {
+      val_from_index *= TCDataFactory::known_units[unit_c].conv_factor;
+    }
+    tcvalue = val_from_index;
+    return true;
+  } else
+    return false;
 }
 
 extern wxDateTime gTimeSource;
@@ -993,6 +1016,31 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx) {
   }
 }
 
+std::wstring TCMgr::GetTidalEventStr(int station_id, wxDateTime ref_dt,
+                                     double lat, double lon, int dt_type) {
+  IDX_entry *idx = (IDX_entry *)GetIDX_entry(station_id);
+  time_t dtmtt = ref_dt.FromUTC().GetTicks();
+  int event = GetNextBigEvent(&dtmtt, station_id);
+  wxDateTime event_dt = wxDateTime(dtmtt).MakeUTC();
+
+  std::wstring event_str;
+  if (event == 1) {
+    event_str = _("LW").ToStdWstring();
+  } else if (event == 2) {
+    event_str = _("HW").ToStdWstring();
+  } else {
+    event_str = _("Unavailable").ToStdWstring();
+  }
+
+  if (event > 0) {
+    event_str.append(L": ");
+    event_str.append(
+        toUsrDateTime(event_dt, dt_type, lon).FormatISOCombined(' '));
+  }
+
+  return event_str;
+}
+
 std::map<double, const IDX_entry *> TCMgr::GetStationsForLL(double xlat,
                                                             double xlon) const {
   std::map<double, const IDX_entry *> x;
@@ -1050,8 +1098,8 @@ int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
   wxString locn;
   double distx = 100000.;
 
-  // if (prp->m_MarkName.Find(_T("@~~")) != wxNOT_FOUND) {
-  // tide_form = prp->m_MarkName.Mid(prp->m_MarkName.Find(_T("@~~"))+3);
+  // if (prp->m_MarkName.Find("@~~") != wxNOT_FOUND) {
+  // tide_form = prp->m_MarkName.Mid(prp->m_MarkName.Find("@~~")+3);
   int jmax = Get_max_IDX();
 
   for (int j = 1; j < Get_max_IDX() + 1; j++) {
@@ -1074,7 +1122,7 @@ int TCMgr::GetStationIDXbyNameType(const wxString &prefix, double xlat,
 
 /* $Id: tide_db_default.h 1092 2006-11-16 03:02:42Z flaterco $ */
 
-//#include "tcd.h"
+// #include "tcd.h"
 
 /*****************************************************************************
  *
@@ -1904,9 +1952,9 @@ NV_CHAR tzfile[DEFAULT_TZFILES][DEFAULT_TZFILE_SIZE] = {
 
 /* $Id: tide_db.c 3744 2010-08-17 22:34:46Z flaterco $ */
 
-//#include "tcd.h"
-//#include "tide_db_header.h"
-//#include "tide_db_default.h"
+// #include "tcd.h"
+// #include "tide_db_header.h"
+// #include "tide_db_default.h"
 
 /* This should be done with stdbool.h, but VC doesn't have it. */
 /* Using crappy old int, must be careful not to 'require' a 64-bit value. */
@@ -2274,7 +2322,7 @@ static void chk_fread(void *ptr, size_t size, size_t nmemb, FILE *stream) {
   if (ret != nmemb) {
     //        LOG_ERROR ("libtcd unexpected error: fread failed\n");
     //        LOG_ERROR ("nmemb = %lu, got %lu\n", nmemb, ret);
-    abort();
+    throw std::runtime_error("tcmgr file read exception");
   }
 }
 
@@ -2286,7 +2334,7 @@ static void chk_fwrite(const void *ptr, size_t size, size_t nmemb,
     //        LOG_ERROR ("libtcd unexpected error: fwrite failed\n");
     //        LOG_ERROR ("nmemb = %lu, got %lu\n", nmemb, ret);
     //        LOG_ERROR ("The database is probably corrupt now.\n");
-    abort();
+    throw std::runtime_error("tcmgr file read exception");
   }
 }
 
@@ -7216,6 +7264,10 @@ void bit_pack(NV_U_BYTE buffer[], NV_U_INT32 start, NV_U_INT32 numbits,
   /*  If the value covers more than 1 byte, store it.                     */
 
   else {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+    // Compiler is confused about bit manipulated index, but it looks ok.
+
     /*  Here we mask out data prior to the start bit of the first byte. */
 
     buffer[start_byte] &= mask[start_bit];
@@ -7250,6 +7302,7 @@ void bit_pack(NV_U_BYTE buffer[], NV_U_INT32 start, NV_U_INT32 numbits,
     /*  bits in the value so that it will fit in the last byte.         */
 
     buffer[start_byte] |= (value << (8 - end_bit));
+#pragma GCC diagnostic pop
   }
 }
 
@@ -7337,7 +7390,8 @@ NV_U_INT32 bit_unpack(NV_U_BYTE buffer[], NV_U_INT32 start,
     /*  For the last byte we mask out anything after the end bit and    */
     /*  then shift to the right (8 - end_bit) bits.                     */
     if (mask[end_bit]) {
-      value += (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
+      value +=
+          (NV_U_INT32)(buffer[start_byte] & mask[end_bit]) >> (8 - end_bit);
     }
   }
 

@@ -27,6 +27,12 @@
  *
  */
 
+// Disable the maybe-uninitialized warning as it triggers in std::regex and
+// makes the build with sanitizers impossible
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
+#include "gl_headers.h"  // Must be included before anything using GL stuff
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -38,14 +44,14 @@
 #include <wx/jsonval.h>
 #include <wx/jsonreader.h>
 #include "wiz_ui.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "model/comm_drv_signalk_net.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/conn_params.h"
 #include "model/logger.h"
-#include "model/mDNS_query.h"
+#include "model/mdns_query.h"
 #include "navutil.h"
-#include "svg_utils.h"
+#include "model/svg_utils.h"
 #ifndef __ANDROID__
 #include "serial/serial.h"
 #include "dnet.h"
@@ -56,10 +62,10 @@
 extern OCPNPlatform* g_Platform;
 extern std::vector<ocpn_DNS_record_t> g_sk_servers;
 
-FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, MyConfig *pConfig,
-                                 wxWindowID id,
-                                 const wxString& title, const wxBitmap& bitmap,
-                                 const wxPoint& pos, long style)
+FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, MyConfig* pConfig,
+                                 wxWindowID id, const wxString& title,
+                                 const wxBitmap& bitmap, const wxPoint& pos,
+                                 long style)
     : FirstUseWiz(parent, id, title, bitmap, pos, style) {
   m_pConfig = pConfig;
 
@@ -109,8 +115,7 @@ FirstUseWizImpl::~FirstUseWizImpl() = default;
 void FirstUseWizImpl::OnWizardFinished(wxWizardEvent& event) {
   auto cfg = m_pConfig;
 
-  if (!cfg)
-    cfg = g_Platform->GetConfigObject();
+  if (!cfg) cfg = g_Platform->GetConfigObject();
 
   // Units
   cfg->SetPath(_T("/Settings"));
@@ -172,8 +177,11 @@ NMEA0183Flavor FirstUseWizImpl::SeemsN0183(std::string& data) {
     std::regex nmea_crc_regex(".*[\\$!]([a-zA-Z]{5,6})(,.*)(\\*[0-9A-Z]{2})");
     while (std::getline(ss, to, '\n')) {
       if (std::regex_search(to, nmea_regex) &&
-          to.find("$PCDIN") == std::string::npos && // It also must not be SeaSmart encoded NMEA2000
-          to.find("$MXPGN") == std::string::npos) { // or Shipmodul MiniPlex encoded NMEA2000
+          to.find("$PCDIN") ==
+              std::string::npos &&  // It also must not be SeaSmart encoded
+                                    // NMEA2000
+          to.find("$MXPGN") ==
+              std::string::npos) {  // or Shipmodul MiniPlex encoded NMEA2000
         DEBUG_LOG << "Looks like NMEA0183: " << to;
         if (std::regex_search(to, nmea_crc_regex)) {
           DEBUG_LOG << "Has CRC: " << to;
@@ -215,7 +223,8 @@ bool FirstUseWizImpl::SeemsN2000(std::string& data) {
         // Actisense/YD N2K mode - All the binary formats enclose
         // the payload between 0x10 0x02 and 0x10 0x03
         data[0] == ESCAPE && data[1] == STARTOFTEXT &&
-        data[data.length() - 1] == ENDOFTEXT && data[data.length() - 2] == ESCAPE) {
+        data[data.length() - 1] == ENDOFTEXT &&
+        data[data.length() - 2] == ESCAPE) {
       DEBUG_LOG << "Looks like NMEA2000: " << to;
       return true;
     }
@@ -372,8 +381,9 @@ void FirstUseWizImpl::EnumerateUDP() {
     sock->SetTimeout(1);
     sock->WaitForRead(1, 0);
     sock->Read(&buffer, len);
-    // Binary protocols may contain 0x00 bytes, so we have to treat the buffer as such and avoid string conversion
-    while (len > 0 && buffer[len-1] == 0x00) {
+    // Binary protocols may contain 0x00 bytes, so we have to treat the buffer
+    // as such and avoid string conversion
+    while (len > 0 && buffer[len - 1] == 0x00) {
       len--;
     }
     if (len > 0) {
@@ -486,14 +496,16 @@ void FirstUseWizImpl::EnumerateTCP() {
         memset(buffer, 0, len);
         client->WaitForRead(1, 0);
         client->Read(&buffer, len);
-        // Binary protocols may contain 0x00 bytes, so we have to treat the buffer as such and avoid string conversion
-        while (len > 0 && buffer[len-1] == 0x00) {
+        // Binary protocols may contain 0x00 bytes, so we have to treat the
+        // buffer as such and avoid string conversion
+        while (len > 0 && buffer[len - 1] == 0x00) {
           len--;
         }
         if (len > 0) {
           std::string data(buffer, len);
           DEBUG_LOG << "Read: " << data;
-          if (auto flavor = SeemsN0183(data); flavor != NMEA0183Flavor::INVALID) {
+          if (auto flavor = SeemsN0183(data);
+              flavor != NMEA0183Flavor::INVALID) {
             ConnectionParams params;
             params.Type = ConnectionType::NETWORK;
             params.NetProtocol = NetworkProtocol::TCP;
@@ -506,8 +518,8 @@ void FirstUseWizImpl::EnumerateTCP() {
             }
             params.NetworkAddress = ip;
             params.NetworkPort = port;
-            params.UserComment =
-                wxString::Format(_("NMEA0183: %s TCP port %d"), ip.c_str(), port);
+            params.UserComment = wxString::Format(_("NMEA0183: %s TCP port %d"),
+                                                  ip.c_str(), port);
             m_detected_connections.push_back(params);
             continue;
           } else if (SeemsN2000(data)) {
@@ -518,8 +530,8 @@ void FirstUseWizImpl::EnumerateTCP() {
             params.LastDataProtocol = DataProtocol::PROTO_NMEA2000;
             params.NetworkAddress = ip;
             params.NetworkPort = port;
-            params.UserComment =
-                wxString::Format(_("NMEA2000: %s TCP port %d"), ip.c_str(), port);
+            params.UserComment = wxString::Format(_("NMEA2000: %s TCP port %d"),
+                                                  ip.c_str(), port);
             m_detected_connections.push_back(params);
             continue;
           }
@@ -545,22 +557,22 @@ void FirstUseWizImpl::EnumerateCAN() {
   wxArrayString output;
   if (long res = wxExecute(cmd, output); res != 0) {
     DEBUG_LOG << "Network interface evaluation failed with exit code " << res;
-    for (const auto &l : output) {
+    for (const auto& l : output) {
       DEBUG_LOG << " - " << l;
     }
     return;
   }
 
   wxString fis;
-  for (const auto &l : output) {
+  for (const auto& l : output) {
     fis.Append(l);
   }
   wxJSONReader reader;
   wxJSONValue root;
   reader.Parse(fis, &root);
-  if (reader.GetErrorCount() > 0){
+  if (reader.GetErrorCount() > 0) {
     DEBUG_LOG << "Failed to parse JSON output from ip.";
-    for(const auto &l : reader.GetErrors()) {
+    for (const auto& l : reader.GetErrors()) {
       DEBUG_LOG << " - " << l;
     }
     return;
@@ -568,8 +580,7 @@ void FirstUseWizImpl::EnumerateCAN() {
   if (root.IsArray()) {
     for (int i = 0; i < root.Size(); i++) {
       const wxJSONValue iface = root[i];
-      if (iface.HasMember("ifname") &&
-          iface.HasMember("link_type")) {
+      if (iface.HasMember("ifname") && iface.HasMember("link_type")) {
         wxString ifname = iface.Get("ifname", "").AsString();
         wxString link_type = iface.Get("link_type", "").AsString();
         if (link_type == "can") {
@@ -627,7 +638,8 @@ void FirstUseWizImpl::EnumerateDatasources() {
   m_rtConnectionInfo->Clear();
   wxTheApp->ProcessPendingEvents();
   wxYield();
-  m_rtConnectionInfo->WriteText(_("Looking for navigation data sources, this may take a while..."));
+  m_rtConnectionInfo->WriteText(
+      _("Looking for navigation data sources, this may take a while..."));
   m_rtConnectionInfo->Newline();
   m_rtConnectionInfo->WriteText(_("Scanning USB devices..."));
   m_rtConnectionInfo->Newline();

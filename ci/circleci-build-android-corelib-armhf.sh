@@ -27,9 +27,15 @@ cd $builddir && rm -rf *
 cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -DOCPN_TARGET_TUPLE:STRING="Android-armhf;16;armhf" \
+  -DOCPN_BUILD_SAMPLE=ON \
   -Dtool_base="$HOME/android-sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/linux-x86_64"\
   ..
 
+#  This step should not be necessary, but works in CCI to prove the build
+#  TODO:  Figure out why this is necessary.
+make lunasvg
+
+#  Build target OpenCPN library.
 make VERBOSE=1
 
 # Make sure that the upload script finds the files

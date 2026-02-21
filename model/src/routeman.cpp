@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Route Manager
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,34 +12,37 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
-#include <cmath>
-#include <memory>
-#include <vector>
 
-#include <math.h>
+/**
+ * \file
+ *
+ * Implement routeman.h -- route manager.
+ */
+
+#include <algorithm>
+#include <cmath>
+#include <list>
+#include <memory>
 #include <stdlib.h>
 #include <time.h>
+#include <vector>
 
 #include <wx/wxprec.h>
-
 #include <wx/image.h>
 #include <wx/jsonval.h>
-#include <wx/listimpl.cpp>
-#include <wx/tokenzr.h>
 
 #include "model/ais_decoder.h"
+#include "model/autopilot_output.h"
 #include "model/base_platform.h"
+#include "model/comm_drv_n0183_serial.h"
 #include "model/comm_n0183_output.h"
-#include "model/comm_vars.h"
 #include "model/config_vars.h"
-#include "model/cutil.h"
 #include "model/georef.h"
 #include "model/nav_object_database.h"
 #include "model/navutil_base.h"
+#include "model/navobj_db.h"
 #include "model/nmea_ctx_factory.h"
 #include "model/own_ship.h"
 #include "model/route.h"
@@ -58,10 +55,9 @@
 #include "androidUTIL.h"
 #endif
 
-
 bool g_bPluginHandleAutopilotRoute;
 
-Routeman* g_pRouteMan;
+Routeman *g_pRouteMan;
 Route *pAISMOBRoute;
 
 RoutePoint *pAnchorWatchPoint1;
@@ -71,52 +67,38 @@ RouteList *pRouteList;
 
 float g_ChartScaleFactorExp;
 
-//    List definitions for Waypoint Manager Icons
-WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
-WX_DECLARE_LIST(wxString, markicon_key_list_type);
-WX_DECLARE_LIST(wxString, markicon_description_list_type);
-
-//    List implementation for Waypoint Manager Icons
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST(markicon_bitmap_list_type);
-WX_DEFINE_LIST(markicon_key_list_type);
-WX_DEFINE_LIST(markicon_description_list_type);
-
 // Helper conditional file name dir slash
 void appendOSDirSlash(wxString *pString);
 
-static void ActivatePersistedRoute(Routeman* routeman) {
+static void ActivatePersistedRoute(Routeman *routeman) {
   if (g_active_route == "") {
     wxLogWarning("\"Persist route\" but no persisted route configured");
     return;
   }
-  Route* route = routeman->FindRouteByGUID(g_active_route);
+  Route *route = routeman->FindRouteByGUID(g_active_route);
   if (!route) {
     wxLogWarning("Persisted route GUID not available");
     return;
   }
-  routeman->ActivateRoute(route);   // FIXME (leamas) better start point
+  routeman->ActivateRoute(route);  // FIXME (leamas) better start point
 }
-
 
 //--------------------------------------------------------------------------------
 //      Routeman   "Route Manager"
 //--------------------------------------------------------------------------------
 
 Routeman::Routeman(struct RoutePropDlgCtx ctx,
-                   struct RoutemanDlgCtx route_dlg_ctx,
-                   NmeaLog& nmea_log)
+                   struct RoutemanDlgCtx route_dlg_ctx)
     : pActiveRoute(0),
       pActivePoint(0),
       pRouteActivatePoint(0),
       m_NMEA0183(NmeaCtxFactory()),
       m_prop_dlg_ctx(ctx),
-      m_route_dlg_ctx(route_dlg_ctx),
-      m_nmea_log(nmea_log) {
-
+      m_route_dlg_ctx(route_dlg_ctx) {
   GlobalVar<wxString> active_route(&g_active_route);
-  auto route_action = [&] (wxCommandEvent) {
-      if (g_persist_active_route) ActivatePersistedRoute(this); };
+  auto route_action = [&](wxCommandEvent) {
+    if (g_persist_active_route) ActivatePersistedRoute(this);
+  };
   active_route_listener.Init(active_route, route_action);
 }
 
@@ -125,28 +107,28 @@ Routeman::~Routeman() {
 }
 
 bool Routeman::IsRouteValid(Route *pRoute) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    if (pRoute == node->GetData()) return true;
-    node = node->GetNext();
+  for (Route *route : *pRouteList) {
+    if (pRoute == route) return true;
   }
   return false;
 }
 
 //    Make a 2-D search to find the route containing a given waypoint
 Route *Routeman::FindRouteContainingWaypoint(RoutePoint *pWP) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
-
-    wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
+  for (Route *proute : *pRouteList) {
+    for (RoutePoint *prp : *proute->pRoutePointList) {
       if (prp == pWP) return proute;
-      pnode = pnode->GetNext();
     }
+  }
+  return NULL;  // not found
+}
 
-    node = node->GetNext();
+//    Make a 2-D search to find the route containing a given waypoint, by GUID
+Route *Routeman::FindRouteContainingWaypoint(const std::string &guid) {
+  for (Route *proute : *pRouteList) {
+    for (RoutePoint *prp : *proute->pRoutePointList) {
+      if (prp->m_GUID == guid) return proute;
+    }
   }
 
   return NULL;  // not found
@@ -154,19 +136,12 @@ Route *Routeman::FindRouteContainingWaypoint(RoutePoint *pWP) {
 
 //    Make a 2-D search to find the visual route containing a given waypoint
 Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
+  for (Route *proute : *pRouteList) {
     if (proute->IsVisible()) {
-      wxRoutePointListNode *pnode = (proute->pRoutePointList)->GetFirst();
-      while (pnode) {
-        RoutePoint *prp = pnode->GetData();
+      for (RoutePoint *prp : *proute->pRoutePointList) {
         if (prp == pWP) return proute;
-        pnode = pnode->GetNext();
       }
     }
-
-    node = node->GetNext();
   }
 
   return NULL;  // not found
@@ -175,23 +150,14 @@ Route *Routeman::FindVisibleRouteContainingWaypoint(RoutePoint *pWP) {
 wxArrayPtrVoid *Routeman::GetRouteArrayContaining(RoutePoint *pWP) {
   wxArrayPtrVoid *pArray = new wxArrayPtrVoid;
 
-  wxRouteListNode *route_node = pRouteList->GetFirst();
-  while (route_node) {
-    Route *proute = route_node->GetData();
-
-    wxRoutePointListNode *waypoint_node = (proute->pRoutePointList)->GetFirst();
-    while (waypoint_node) {
-      RoutePoint *prp = waypoint_node->GetData();
+  for (Route *proute : *pRouteList) {
+    for (RoutePoint *prp : *proute->pRoutePointList) {
       if (prp == pWP) {  // success
         pArray->Add((void *)proute);
         break;  // only add a route to the array once, even if there are
                 // duplicate points in the route...See FS#1743
       }
-
-      waypoint_node = waypoint_node->GetNext();  // next waypoint
     }
-
-    route_node = route_node->GetNext();  // next route
   }
 
   if (pArray->GetCount())
@@ -214,18 +180,16 @@ void Routeman::RemovePointFromRoute(RoutePoint *point, Route *route,
   //  Check for 1 point routes. If we are creating a route, this is an undo, so
   //  keep the 1 point.
   if (route->GetnPoints() <= 1 && route_state == 0) {
-    NavObjectChanges::getInstance()->DeleteConfigRoute(route);
-    g_pRouteMan->DeleteRoute(route, NavObjectChanges::getInstance());
+    g_pRouteMan->DeleteRoute(route);
     route = NULL;
   }
   //  Add this point back into the selectables
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
 
-  //if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
-  //  pRoutePropDialog->SetRouteAndUpdate(route, true);
-  //}
+  // if (pRoutePropDialog && (pRoutePropDialog->IsShown())) {
+  //   pRoutePropDialog->SetRouteAndUpdate(route, true);
+  // }
   m_prop_dlg_ctx.set_route_and_update(route);
-
 }
 
 RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
@@ -236,10 +200,7 @@ RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
   RoutePoint *best_point = NULL;
   double min_time_found = 1e6;
 
-  wxRoutePointListNode *node = (pR->pRoutePointList)->GetFirst();
-  while (node) {
-    RoutePoint *pn = node->GetData();
-
+  for (RoutePoint *pn : *pR->pRoutePointList) {
     double brg, dist;
     DistanceBearingMercator(pn->m_lat, pn->m_lon, lat, lon, &brg, &dist);
 
@@ -254,7 +215,6 @@ RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
         best_point = pn;
       }
     }
-    node = node->GetNext();
   }
   return best_point;
 }
@@ -262,10 +222,43 @@ RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
 bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   g_bAllowShipToActive = false;
   wxJSONValue v;
-  v[_T("Route_activated")] = pRouteToActivate->m_RouteNameString;
-  v[_T("GUID")] = pRouteToActivate->m_GUID;
+  v["Route_activated"] = pRouteToActivate->m_RouteNameString;
+  v["GUID"] = pRouteToActivate->m_GUID;
   json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ACTIVATED");
   if (g_bPluginHandleAutopilotRoute) return true;
+
+  // Capture and maintain a list of data connections configured as "output"
+  // This is performed on "Activate()" to allow dynamic re-config of drivers
+  m_have_n0183_out = false;
+  m_have_n2000_out = false;
+
+  m_output_drivers.clear();
+  for (const auto &handle : GetActiveDrivers()) {
+    const auto &attributes = GetAttributes(handle);
+    if (attributes.find("protocol") == attributes.end()) continue;
+    if (attributes.at("protocol") == "nmea0183") {
+      if (attributes.find("ioDirection") != attributes.end()) {
+        if ((attributes.at("ioDirection") == "IN/OUT") ||
+            (attributes.at("ioDirection") == "OUT")) {
+          m_output_drivers.push_back(handle);
+          m_have_n0183_out = true;
+        }
+      }
+      continue;
+    }
+    // Check N2K dirvers for OUTPUT configuration
+    if (attributes.find("protocol") == attributes.end()) continue;
+    if (attributes.at("protocol") == "nmea2000") {
+      if (attributes.find("ioDirection") != attributes.end()) {
+        if ((attributes.at("ioDirection") == "IN/OUT") ||
+            (attributes.at("ioDirection") == "OUT")) {
+          m_output_drivers.push_back(handle);
+          m_have_n2000_out = true;
+        }
+      }
+      continue;
+    }
+  }
 
   pActiveRoute = pRouteToActivate;
   g_active_route = pActiveRoute->GetGUID();
@@ -273,8 +266,7 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   if (pStartPoint) {
     pActivePoint = pStartPoint;
   } else {
-    wxRoutePointListNode *node = (pActiveRoute->pRoutePointList)->GetFirst();
-    pActivePoint = node->GetData();  // start at beginning
+    pActivePoint = *pActiveRoute->pRoutePointList->begin();
   }
 
   ActivateRoutePoint(pRouteToActivate, pActivePoint);
@@ -294,8 +286,8 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
 bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   g_bAllowShipToActive = false;
   wxJSONValue v;
-  v[_T("GUID")] = pRP_target->m_GUID;
-  v[_T("WP_activated")] = pRP_target->GetName();
+  v["GUID"] = pRP_target->m_GUID;
+  v["WP_activated"] = pRP_target->GetName();
 
   json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ACTIVATED");
 
@@ -306,17 +298,13 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   pActivePoint = pRP_target;
   pActiveRoute->m_pRouteActivePoint = pRP_target;
 
-  wxRoutePointListNode *node = (pActiveRoute->pRoutePointList)->GetFirst();
-  while (node) {
-    RoutePoint *pn = node->GetData();
+  for (RoutePoint *pn : *pActiveRoute->pRoutePointList) {
     pn->m_bBlink = false;  // turn off all blinking points
     pn->m_bIsActive = false;
-
-    node = node->GetNext();
   }
 
-  node = (pActiveRoute->pRoutePointList)->GetFirst();
-  RoutePoint *prp_first = node->GetData();
+  auto node = (pActiveRoute->pRoutePointList)->begin();
+  RoutePoint *prp_first = *node;
 
   //  If activating first point in route, create a "virtual" waypoint at present
   //  position
@@ -324,8 +312,8 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
     if (pRouteActivatePoint) delete pRouteActivatePoint;
 
     pRouteActivatePoint =
-        new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("")),
-                       wxEmptyString, false);  // Current location
+        new RoutePoint(gLat, gLon, wxString(""), wxString("Begin"), "",
+                       false);  // Current location
     pRouteActivatePoint->m_bShowName = false;
 
     pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
@@ -333,17 +321,17 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
 
   else {
     prp_first->m_bBlink = false;
-    node = node->GetNext();
+    ++node;
     RoutePoint *np_prev = prp_first;
-    while (node) {
-      RoutePoint *pnext = node->GetData();
+    while (node != pActiveRoute->pRoutePointList->end()) {
+      RoutePoint *pnext = *node;
       if (pnext == pRP_target) {
         pActiveRouteSegmentBeginPoint = np_prev;
         break;
       }
 
       np_prev = pnext;
-      node = node->GetNext();
+      ++node;
     }
   }
 
@@ -369,30 +357,41 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
 bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
   g_bAllowShipToActive = false;
   wxJSONValue v;
+  bool result = false;
   if (pActivePoint) {
     pActivePoint->m_bBlink = false;
     pActivePoint->m_bIsActive = false;
 
-    v[_T("isSkipped")] = skipped;
-    v[_T("GUID")] = pActivePoint->m_GUID;
-    v[_T("GUID_WP_arrived")] = pActivePoint->m_GUID;
-    v[_T("WP_arrived")] = pActivePoint->GetName();
+    v["isSkipped"] = skipped;
+    v["GUID"] = pActivePoint->m_GUID;
+    v["GUID_WP_arrived"] = pActivePoint->m_GUID;
+    v["WP_arrived"] = pActivePoint->GetName();
   }
   int n_index_active = pActiveRoute->GetIndexOf(pActivePoint);
-  if ((n_index_active + 1) <= pActiveRoute->GetnPoints()) {
-    pActiveRouteSegmentBeginPoint = pActivePoint;
-
-    pActiveRoute->m_pRouteActivePoint =
-        pActiveRoute->GetPoint(n_index_active + 1);
-
-    pActivePoint = pActiveRoute->GetPoint(n_index_active + 1);
-    v[_T("Next_WP")] = pActivePoint->GetName();
-    v[_T("GUID_Next_WP")] = pActivePoint->m_GUID;
+  if (n_index_active < 0) return false;
+  int step = 1;
+  while (n_index_active == pActiveRoute->GetIndexOf(pActivePoint)) {
+    int candidate = n_index_active + step;
+    if (candidate < pActiveRoute->GetnPoints()) {
+      int candidate_point = candidate + 1;  // GetPoint expects 1-based
+      pActiveRouteSegmentBeginPoint = pActivePoint;
+      pActiveRoute->m_pRouteActivePoint =
+          pActiveRoute->GetPoint(candidate_point);
+      pActivePoint = pActiveRoute->GetPoint(candidate_point);
+      step++;
+      result = true;
+    } else {
+      n_index_active = -1;  // stop the while loop
+      result = false;
+    }
+  }
+  if (result) {
+    v["Next_WP"] = pActivePoint->GetName();
+    v["GUID_Next_WP"] = pActivePoint->m_GUID;
 
     pActivePoint->m_bBlink = true;
     pActivePoint->m_bIsActive = true;
     g_blink_rect = pActivePoint->CurrentRect_in_DC;  // set up global blinker
-
     m_bArrival = false;
     m_arrival_min = 1e6;
     m_arrival_test = 0;
@@ -406,10 +405,8 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     m_prop_dlg_ctx.set_enroute_point(pr, pActivePoint);
 
     json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ARRIVED");
-    return true;
   }
-
-  return false;
+  return result;
 }
 
 bool Routeman::DeactivateRoute(bool b_arrival) {
@@ -425,12 +422,12 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 
     wxJSONValue v;
     if (!b_arrival) {
-      v[_T("Route_deactivated")] = pActiveRoute->m_RouteNameString;
-      v[_T("GUID")] = pActiveRoute->m_GUID;
+      v["Route_deactivated"] = pActiveRoute->m_RouteNameString;
+      v["GUID"] = pActiveRoute->m_GUID;
       json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_DEACTIVATED");
     } else {
-      v[_T("GUID")] = pActiveRoute->m_GUID;
-      v[_T("Route_ended")] = pActiveRoute->m_RouteNameString;
+      v["GUID"] = pActiveRoute->m_GUID;
+      v["Route_ended"] = pActiveRoute->m_RouteNameString;
       json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ENDED");
     }
   }
@@ -449,8 +446,38 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
 }
 
 bool Routeman::UpdateAutopilot() {
-  if (!bGPSValid)
-    return false;
+  if (!pActiveRoute) return false;
+
+  if (!bGPSValid) return false;
+  bool rv = false;
+
+  // Set max WP name length
+  int maxName = 6;
+  if ((g_maxWPNameLength >= 3) && (g_maxWPNameLength <= 32))
+    maxName = g_maxWPNameLength;
+
+  if (m_have_n0183_out) rv |= UpdateAutopilotN0183(*this);
+  if (m_have_n2000_out) rv |= UpdateAutopilotN2K(*this);
+
+  // Route may have been deactivated or deleted during the
+  // N2K port setup conversation.  The message loop runs...
+  if (!pActiveRoute) return false;
+
+  // Send active leg info directly to plugins
+  ActiveLegDat leg_info;
+  leg_info.Btw = CurrentBrgToActivePoint;
+  leg_info.Dtw = CurrentRngToActivePoint;
+  leg_info.Xte = CurrentXTEToActivePoint;
+  if (XTEDir < 0) {
+    leg_info.Xte = -leg_info.Xte;  // Left side of the track -> negative XTE
+  }
+  leg_info.wp_name = pActivePoint->GetName().Truncate(maxName);
+  leg_info.arrival = m_bArrival;
+
+  json_leg_info.Notify(std::make_shared<ActiveLegDat>(leg_info), "");
+
+#if 0
+
 
   // Send all known Autopilot messages upstream
 
@@ -490,25 +517,24 @@ bool Routeman::UpdateAutopilot() {
     m_NMEA0183.Rmb.BearingToDestinationDegreesTrue = CurrentBrgToActivePoint;
 
     if (pActivePoint->m_lat < 0.)
-      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(
-        -pActivePoint->m_lat, "S");
+      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(-pActivePoint->m_lat,
+                                                      "S");
     else
-      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(
-        pActivePoint->m_lat, "N");
+      m_NMEA0183.Rmb.DestinationPosition.Latitude.Set(pActivePoint->m_lat, "N");
 
     if (pActivePoint->m_lon < 0.)
-      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(
-         -pActivePoint->m_lon, "W");
+      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(-pActivePoint->m_lon,
+                                                       "W");
     else
-      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(
-         pActivePoint->m_lon, "E");
+      m_NMEA0183.Rmb.DestinationPosition.Longitude.Set(pActivePoint->m_lon,
+                                                       "E");
 
     m_NMEA0183.Rmb.DestinationClosingVelocityKnots =
         r_Sog * cos((r_Cog - CurrentBrgToActivePoint) * PI / 180.0);
     m_NMEA0183.Rmb.IsArrivalCircleEntered = m_bArrival ? NTrue : NFalse;
     m_NMEA0183.Rmb.FAAModeIndicator = bGPSValid ? "A" : "N";
-      // RMB is close to NMEA0183 length limit
-      // Restrict WP names further if necessary
+    // RMB is close to NMEA0183 length limit
+    // Restrict WP names further if necessary
     int wp_len = maxName;
     do {
       m_NMEA0183.Rmb.To = pActivePoint->GetName().Truncate(wp_len);
@@ -518,27 +544,26 @@ bool Routeman::UpdateAutopilot() {
       wp_len -= 1;
     } while (snt.Sentence.size() > 82 && wp_len > 0);
 
-    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
+    BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
   }
 
   // RMC
   {
-    m_NMEA0183.TalkerID = _T("EC");
+    m_NMEA0183.TalkerID = "EC";
 
     SENTENCE snt;
     m_NMEA0183.Rmc.IsDataValid = NTrue;
-    if (!bGPSValid)
-      m_NMEA0183.Rmc.IsDataValid = NFalse;
+    if (!bGPSValid) m_NMEA0183.Rmc.IsDataValid = NFalse;
 
     if (gLat < 0.)
-      m_NMEA0183.Rmc.Position.Latitude.Set(-gLat, _T("S"));
+      m_NMEA0183.Rmc.Position.Latitude.Set(-gLat, "S");
     else
-      m_NMEA0183.Rmc.Position.Latitude.Set(gLat, _T("N"));
+      m_NMEA0183.Rmc.Position.Latitude.Set(gLat, "N");
 
     if (gLon < 0.)
-      m_NMEA0183.Rmc.Position.Longitude.Set(-gLon, _T("W"));
+      m_NMEA0183.Rmc.Position.Longitude.Set(-gLon, "W");
     else
-      m_NMEA0183.Rmc.Position.Longitude.Set(gLon, _T("E"));
+      m_NMEA0183.Rmc.Position.Longitude.Set(gLon, "E");
 
     m_NMEA0183.Rmc.SpeedOverGroundKnots = r_Sog;
     m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue = r_Cog;
@@ -562,34 +587,32 @@ bool Routeman::UpdateAutopilot() {
     } else {
       wxDateTime now = wxDateTime::Now();
       wxDateTime utc = now.ToUTC();
-      wxString time = utc.Format(_T("%H%M%S"));
+      wxString time = utc.Format("%H%M%S");
       m_NMEA0183.Rmc.UTCTime = time;
-      wxString date = utc.Format(_T("%d%m%y"));
+      wxString date = utc.Format("%d%m%y");
       m_NMEA0183.Rmc.Date = date;
     }
 
     m_NMEA0183.Rmc.FAAModeIndicator = "A";
-    if (!bGPSValid)
-      m_NMEA0183.Rmc.FAAModeIndicator = "N";
+    if (!bGPSValid) m_NMEA0183.Rmc.FAAModeIndicator = "N";
 
     m_NMEA0183.Rmc.Write(snt);
 
-    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
+    BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
   }
 
   // APB
   {
-    m_NMEA0183.TalkerID = _T("EC");
+    m_NMEA0183.TalkerID = "EC";
 
     SENTENCE snt;
 
-    m_NMEA0183.Apb.IsLoranBlinkOK = NTrue;  // considered as "generic invalid fix" flag
-    if (!bGPSValid)
-      m_NMEA0183.Apb.IsLoranBlinkOK = NFalse;
+    m_NMEA0183.Apb.IsLoranBlinkOK =
+        NTrue;  // considered as "generic invalid fix" flag
+    if (!bGPSValid) m_NMEA0183.Apb.IsLoranBlinkOK = NFalse;
 
     m_NMEA0183.Apb.IsLoranCCycleLockOK = NTrue;
-    if (!bGPSValid)
-      m_NMEA0183.Apb.IsLoranCCycleLockOK = NFalse;
+    if (!bGPSValid) m_NMEA0183.Apb.IsLoranCCycleLockOK = NFalse;
 
     m_NMEA0183.Apb.CrossTrackErrorMagnitude = CurrentXTEToActivePoint;
 
@@ -598,7 +621,7 @@ bool Routeman::UpdateAutopilot() {
     else
       m_NMEA0183.Apb.DirectionToSteer = Right;
 
-    m_NMEA0183.Apb.CrossTrackUnits = _T("N");
+    m_NMEA0183.Apb.CrossTrackUnits = "N";
 
     if (m_bArrival)
       m_NMEA0183.Apb.IsArrivalCircleEntered = NTrue;
@@ -625,42 +648,41 @@ bool Routeman::UpdateAutopilot() {
                         : (CurrentBrgToActivePoint - gVar + 360.);
 
       m_NMEA0183.Apb.BearingOriginToDestination = brg1m;
-      m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("M");
+      m_NMEA0183.Apb.BearingOriginToDestinationUnits = "M";
 
       m_NMEA0183.Apb.BearingPresentPositionToDestination = bapm;
-      m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _T("M");
+      m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = "M";
 
       m_NMEA0183.Apb.HeadingToSteer = bapm;
-      m_NMEA0183.Apb.HeadingToSteerUnits = _T("M");
+      m_NMEA0183.Apb.HeadingToSteerUnits = "M";
     } else {
       m_NMEA0183.Apb.BearingOriginToDestination = brg1;
-      m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("T");
+      m_NMEA0183.Apb.BearingOriginToDestinationUnits = "T";
 
       m_NMEA0183.Apb.BearingPresentPositionToDestination =
           CurrentBrgToActivePoint;
-      m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _T("T");
+      m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = "T";
 
       m_NMEA0183.Apb.HeadingToSteer = CurrentBrgToActivePoint;
-      m_NMEA0183.Apb.HeadingToSteerUnits = _T("T");
+      m_NMEA0183.Apb.HeadingToSteerUnits = "T";
     }
 
     m_NMEA0183.Apb.Write(snt);
-    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
+    BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
   }
 
   // XTE
   {
-    m_NMEA0183.TalkerID = _T("EC");
+    m_NMEA0183.TalkerID = "EC";
 
     SENTENCE snt;
 
-    m_NMEA0183.Xte.IsLoranBlinkOK = NTrue;  // considered as "generic invalid fix" flag
-    if (!bGPSValid)
-      m_NMEA0183.Xte.IsLoranBlinkOK = NFalse;
+    m_NMEA0183.Xte.IsLoranBlinkOK =
+        NTrue;  // considered as "generic invalid fix" flag
+    if (!bGPSValid) m_NMEA0183.Xte.IsLoranBlinkOK = NFalse;
 
     m_NMEA0183.Xte.IsLoranCCycleLockOK = NTrue;
-    if (!bGPSValid)
-      m_NMEA0183.Xte.IsLoranCCycleLockOK = NFalse;
+    if (!bGPSValid) m_NMEA0183.Xte.IsLoranCCycleLockOK = NFalse;
 
     m_NMEA0183.Xte.CrossTrackErrorDistance = CurrentXTEToActivePoint;
 
@@ -669,11 +691,12 @@ bool Routeman::UpdateAutopilot() {
     else
       m_NMEA0183.Xte.DirectionToSteer = Right;
 
-    m_NMEA0183.Xte.CrossTrackUnits = _T("N");
+    m_NMEA0183.Xte.CrossTrackUnits = "N";
 
     m_NMEA0183.Xte.Write(snt);
-    BroadcastNMEA0183Message(snt.Sentence, m_nmea_log, on_message_sent);
+    BroadcastNMEA0183Message(snt.Sentence, *m_nmea_log, on_message_sent);
   }
+#endif
 
   return true;
 }
@@ -682,13 +705,9 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
   if (pRoute) {
     // walk the route, looking at each point to see if it is used by another
     // route or is isolated
-    wxRoutePointListNode *pnode = (pRoute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
-
+    for (RoutePoint *prp : *pRoute->pRoutePointList) {
       // check all other routes to see if this point appears in any other route
       wxArrayPtrVoid *pRA = GetRouteArrayContaining(prp);
-
       if (pRA) {
         for (unsigned int ir = 0; ir < pRA->GetCount(); ir++) {
           Route *pr = (Route *)pRA->Item(ir);
@@ -697,18 +716,13 @@ bool Routeman::DoesRouteContainSharedPoints(Route *pRoute) {
           else
             return true;
         }
+        delete pRA;
       }
-
-      if (pnode) pnode = pnode->GetNext();
     }
 
-    //      Now walk the route again, looking for isolated type shared waypoints
-    pnode = (pRoute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
+    // Now walk the route again, looking for isolated type shared waypoints
+    for (RoutePoint *prp : *pRoute->pRoutePointList) {
       if (prp->IsShared()) return true;
-
-      if (pnode) pnode = pnode->GetNext();
     }
   }
 
@@ -724,7 +738,7 @@ bool Routeman::DeleteTrack(Track *pTrack) {
     int count = pTrack->GetnPoints();
     if (count > 10000) {
       pprog = new wxGenericProgressDialog(
-          _("OpenCPN Track Delete"), _T("0/0"), count, NULL,
+          _("OpenCPN Track Delete"), "0/0", count, NULL,
           wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME |
               wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME);
       pprog->SetSize(400, wxDefaultCoord);
@@ -742,13 +756,13 @@ bool Routeman::DeleteTrack(Track *pTrack) {
 
     ::wxEndBusyCursor();
 
-    //delete pprog;
+    // delete pprog;
     return true;
   }
   return false;
 }
 
-bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
+bool Routeman::DeleteRoute(Route *pRoute) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {
       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
@@ -770,19 +784,21 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
     /// }
     m_prop_dlg_ctx.hide(pRoute);
 
-    nav_obj_changes->DeleteConfigRoute(pRoute);
+    // if (nav_obj_changes) nav_obj_changes->DeleteConfigRoute(pRoute);
 
     //    Remove the route from associated lists
     pSelect->DeleteAllSelectableRouteSegments(pRoute);
-    pRouteList->DeleteObject(pRoute);
+    auto pos = std::find(pRouteList->begin(), pRouteList->end(), pRoute);
+    if (pos != pRouteList->end()) pRouteList->erase(pos);
 
     m_route_dlg_ctx.route_mgr_dlg_update_list_ctrl();
 
     // walk the route, tentatively deleting/marking points used only by this
     // route
-    wxRoutePointListNode *pnode = (pRoute->pRoutePointList)->GetFirst();
-    while (pnode) {
-      RoutePoint *prp = pnode->GetData();
+    auto &list = pRoute->pRoutePointList;
+    auto pnode = list->begin();
+    while (pnode != list->end()) {
+      RoutePoint *prp = *pnode;
 
       // check all other routes to see if this point appears in any other route
       Route *pcontainer_route = FindRouteContainingWaypoint(prp);
@@ -791,33 +807,31 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
         prp->m_bIsInRoute =
             false;  // Take this point out of this (and only) route
         if (!prp->IsShared()) {
-          //    This does not need to be done with navobj.xml storage, since the
-          //    waypoints are stored with the route
-          //                              pConfig->DeleteWayPoint(prp);
-
           pSelect->DeleteSelectablePoint(prp, SELTYPE_ROUTEPOINT);
 
           // Remove all instances of this point from the list.
-          wxRoutePointListNode *pdnode = pnode;
-          while (pdnode) {
-            pRoute->pRoutePointList->DeleteNode(pdnode);
-            pdnode = pRoute->pRoutePointList->Find(prp);
+          auto pdnode = pnode;
+          while (pdnode != list->end()) {
+            pRoute->pRoutePointList->erase(pdnode);
+            pdnode = std::find(list->begin(), list->end(), prp);
           }
 
-          pnode = NULL;
+          pnode = list->end();
+          NavObj_dB::GetInstance().DeleteRoutePoint(prp);
           delete prp;
         } else {
-          prp->m_bDynamicName = false;
           prp->m_bIsolatedMark = true;  // This has become an isolated mark
           prp->SetShared(false);        // and is no longer part of a route
+          NavObj_dB::GetInstance().UpdateRoutePoint(prp);
         }
       }
-      if (pnode)
-        pnode = pnode->GetNext();
+      if (pnode != list->end())
+        ++pnode;
       else
-        pnode = pRoute->pRoutePointList->GetFirst();  // restart the list
+        pnode = list->begin();
     }
 
+    NavObj_dB::GetInstance().DeleteRoute(pRoute);
     delete pRoute;
 
     ::wxEndBusyCursor();
@@ -825,33 +839,25 @@ bool Routeman::DeleteRoute(Route *pRoute, NavObjectChanges* nav_obj_changes) {
   return true;
 }
 
-void Routeman::DeleteAllRoutes(NavObjectChanges* nav_obj_changes) {
+void Routeman::DeleteAllRoutes() {
   ::wxBeginBusyCursor();
 
   //    Iterate on the RouteList
-  wxRouteListNode *node = pRouteList->GetFirst();
-  while (node) {
-    Route *proute = node->GetData();
+  for (Route *proute : *pRouteList) {
     if (proute == pAISMOBRoute) {
-       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
-         return;
-       }
+      if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
+        return;
+      }
       pAISMOBRoute = 0;
       ::wxBeginBusyCursor();
     }
-
-    node = node->GetNext();
     if (proute->m_bIsInLayer) continue;
 
-    nav_obj_changes->m_bSkipChangeSetUpdate = true;
-    nav_obj_changes->DeleteConfigRoute(proute);
-    DeleteRoute(proute, nav_obj_changes);
-    nav_obj_changes->m_bSkipChangeSetUpdate = false;
+    DeleteRoute(proute);
   }
 
   ::wxEndBusyCursor();
 }
-
 
 void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
   // Re-Create the pens and colors
@@ -859,8 +865,8 @@ void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
   int scaled_line_width = g_route_line_width;
   int track_scaled_line_width = g_track_line_width;
   if (g_btouch) {
-    // 0.2 mm nominal, but not less than 1 pixel
-    double nominal_line_width_pix = wxMax(1.5, floor(displayDPmm / 5.0));
+    // 0.4 mm nominal, but not less than 2 pixel
+    double nominal_line_width_pix = wxMax(2.0, floor(displayDPmm * 0.4));
 
     double sline_width = wxMax(nominal_line_width_pix, g_route_line_width);
     sline_width *= g_ChartScaleFactorExp;
@@ -878,18 +884,18 @@ void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
 
   //    Or in something like S-52 compliance
 
-  m_pRoutePen = wxThePenList->FindOrCreatePen(
-      m_route_dlg_ctx.get_global_colour("UINFB"), scaled_line_width,
-                                        wxPENSTYLE_SOLID);
-  m_pSelectedRoutePen = wxThePenList->FindOrCreatePen(
-      m_route_dlg_ctx.get_global_colour("UINFO"), scaled_line_width,
-                                        wxPENSTYLE_SOLID);
-  m_pActiveRoutePen = wxThePenList->FindOrCreatePen(
-      m_route_dlg_ctx.get_global_colour("UARTE"), scaled_line_width,
-                                        wxPENSTYLE_SOLID);
-  m_pTrackPen = wxThePenList->FindOrCreatePen(
-      m_route_dlg_ctx.get_global_colour("CHMGD"), track_scaled_line_width,
-                                        wxPENSTYLE_SOLID);
+  m_pRoutePen =
+      wxThePenList->FindOrCreatePen(m_route_dlg_ctx.get_global_colour("UINFB"),
+                                    scaled_line_width, wxPENSTYLE_SOLID);
+  m_pSelectedRoutePen =
+      wxThePenList->FindOrCreatePen(m_route_dlg_ctx.get_global_colour("UINFO"),
+                                    scaled_line_width, wxPENSTYLE_SOLID);
+  m_pActiveRoutePen =
+      wxThePenList->FindOrCreatePen(m_route_dlg_ctx.get_global_colour("UARTE"),
+                                    scaled_line_width, wxPENSTYLE_SOLID);
+  m_pTrackPen =
+      wxThePenList->FindOrCreatePen(m_route_dlg_ctx.get_global_colour("CHMGD"),
+                                    track_scaled_line_width, wxPENSTYLE_SOLID);
   m_pRouteBrush = wxTheBrushList->FindOrCreateBrush(
       m_route_dlg_ctx.get_global_colour("UINFB"), wxBRUSHSTYLE_SOLID);
   m_pSelectedRouteBrush = wxTheBrushList->FindOrCreateBrush(
@@ -898,44 +904,37 @@ void Routeman::SetColorScheme(ColorScheme cs, double displayDPmm) {
       m_route_dlg_ctx.get_global_colour("PLRTE"), wxBRUSHSTYLE_SOLID);
 }
 
-wxString Routeman::GetRouteReverseMessage(void) {
+wxString Routeman::GetRouteReverseMessage() {
   return wxString(
       _("Waypoints can be renamed to reflect the new order, the names will be "
         "'001', '002' etc.\n\nDo you want to rename the waypoints?"));
 }
 
-wxString Routeman::GetRouteResequenceMessage(void) {
+wxString Routeman::GetRouteResequenceMessage() {
   return wxString(
       _("Waypoints will be renamed to reflect the natural order, the names "
         "will be '001', '002' etc.\n\nDo you want to rename the waypoints?"));
 }
 
 Route *Routeman::FindRouteByGUID(const wxString &guid) {
-  wxRouteListNode *node1 = pRouteList->GetFirst();
-  while (node1) {
-    Route *pRoute = node1->GetData();
-
+  for (Route *pRoute : *pRouteList) {
     if (pRoute->m_GUID == guid) return pRoute;
-    node1 = node1->GetNext();
   }
-
   return NULL;
 }
 
 Track *Routeman::FindTrackByGUID(const wxString &guid) {
-  for (Track* pTrack : g_TrackList) {
+  for (Track *pTrack : g_TrackList) {
     if (pTrack->m_GUID == guid) return pTrack;
   }
-
   return NULL;
 }
 
 void Routeman::ZeroCurrentXTEToActivePoint() {
   // When zeroing XTE create a "virtual" waypoint at present position
   if (pRouteActivatePoint) delete pRouteActivatePoint;
-  pRouteActivatePoint =
-      new RoutePoint(gLat, gLon, wxString(_T("")), wxString(_T("")),
-                     wxEmptyString, false);  // Current location
+  pRouteActivatePoint = new RoutePoint(gLat, gLon, wxString(""), wxString(""),
+                                       "", false);  // Current location
   pRouteActivatePoint->m_bShowName = false;
 
   pActiveRouteSegmentBeginPoint = pRouteActivatePoint;
@@ -947,12 +946,12 @@ void Routeman::ZeroCurrentXTEToActivePoint() {
 //--------------------------------------------------------------------------------
 
 WayPointman::WayPointman(GlobalColourFunc color_func)
-      : m_get_global_colour(color_func) {
+    : m_get_global_colour(color_func) {
   m_pWayPointList = new RoutePointList;
 
   pmarkicon_image_list = NULL;
 
-  //ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+  // ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
   m_pIconArray = new ArrayOfMarkIcon;
   m_pLegacyIconArray = NULL;
   m_pExtendedIconArray = NULL;
@@ -972,18 +971,14 @@ WayPointman::~WayPointman() {
 
   RoutePointList temp_list;
 
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
-    temp_list.Append(pr);
-    node = node->GetNext();
+  for (RoutePoint *pr : *m_pWayPointList) {
+    temp_list.push_back(pr);
   }
 
-  temp_list.DeleteContents(true);
-  temp_list.Clear();
+  for (RoutePoint *rp : temp_list) delete rp;
+  temp_list.clear();
 
-  m_pWayPointList->Clear();
+  m_pWayPointList->clear();
   delete m_pWayPointList;
 
   for (unsigned int i = 0; i < m_pIconArray->GetCount(); i++) {
@@ -997,17 +992,21 @@ WayPointman::~WayPointman() {
 
   if (pmarkicon_image_list) pmarkicon_image_list->RemoveAll();
   delete pmarkicon_image_list;
-  m_pLegacyIconArray->Clear();
-  delete m_pLegacyIconArray;
-  m_pExtendedIconArray->Clear();
-  delete m_pExtendedIconArray;
+  if (m_pLegacyIconArray) {
+    m_pLegacyIconArray->Clear();
+    delete m_pLegacyIconArray;
+  }
+  if (m_pExtendedIconArray) {
+    m_pExtendedIconArray->Clear();
+    delete m_pExtendedIconArray;
+  }
 }
 
 bool WayPointman::AddRoutePoint(RoutePoint *prp) {
   if (!prp) return false;
 
-  wxRoutePointListNode *prpnode = m_pWayPointList->Append(prp);
-  prp->SetManagerListNode(prpnode);
+  m_pWayPointList->push_back(prp);
+  prp->SetManagerListNode(prp);
 
   return true;
 }
@@ -1015,13 +1014,16 @@ bool WayPointman::AddRoutePoint(RoutePoint *prp) {
 bool WayPointman::RemoveRoutePoint(RoutePoint *prp) {
   if (!prp) return false;
 
-  wxRoutePointListNode *prpnode =
-      (wxRoutePointListNode *)prp->GetManagerListNode();
+  auto *prpnode = (RoutePoint *)(prp->GetManagerListNode());
 
-  if (prpnode)
-    delete prpnode;
-  else
-    m_pWayPointList->DeleteObject(prp);
+  if (prpnode) {
+    auto pos =
+        std::find(m_pWayPointList->begin(), m_pWayPointList->end(), prpnode);
+    if (pos != m_pWayPointList->end()) m_pWayPointList->erase(pos);
+  } else {
+    auto pos = std::find(m_pWayPointList->begin(), m_pWayPointList->end(), prp);
+    if (pos != m_pWayPointList->end()) m_pWayPointList->erase(pos);
+  }
 
   prp->SetManagerListNode(NULL);
 
@@ -1100,7 +1102,7 @@ bool WayPointman::DoesIconExist(const wxString &icon_key) const {
   return false;
 }
 
-wxBitmap *WayPointman::GetIconBitmap(const wxString &icon_key) {
+wxBitmap *WayPointman::GetIconBitmap(const wxString &icon_key) const {
   wxBitmap *pret = NULL;
   MarkIcon *pmi = NULL;
   unsigned int i;
@@ -1115,7 +1117,7 @@ wxBitmap *WayPointman::GetIconBitmap(const wxString &icon_key) {
     // find and return bitmap for "circle"
     for (i = 0; i < m_pIconArray->GetCount(); i++) {
       pmi = (MarkIcon *)m_pIconArray->Item(i);
-      //            if( pmi->icon_name.IsSameAs( _T("circle") ) )
+      //            if( pmi->icon_name.IsSameAs( "circle" ) )
       //                break;
     }
   }
@@ -1136,7 +1138,7 @@ wxBitmap *WayPointman::GetIconBitmap(const wxString &icon_key) {
   return pret;
 }
 
-bool WayPointman::GetIconPrescaled(const wxString &icon_key) {
+bool WayPointman::GetIconPrescaled(const wxString &icon_key) const {
   MarkIcon *pmi = NULL;
   unsigned int i;
 
@@ -1150,7 +1152,7 @@ bool WayPointman::GetIconPrescaled(const wxString &icon_key) {
     // find and return bitmap for "circle"
     for (i = 0; i < m_pIconArray->GetCount(); i++) {
       pmi = (MarkIcon *)m_pIconArray->Item(i);
-      //            if( pmi->icon_name.IsSameAs( _T("circle") ) )
+      //            if( pmi->icon_name.IsSameAs( "circle" ) )
       //                break;
     }
   }
@@ -1164,7 +1166,7 @@ bool WayPointman::GetIconPrescaled(const wxString &icon_key) {
     return false;
 }
 
-wxBitmap WayPointman::GetIconBitmapForList(int index, int height) {
+wxBitmap WayPointman::GetIconBitmapForList(int index, int height) const {
   wxBitmap pret;
   MarkIcon *pmi;
 
@@ -1206,7 +1208,7 @@ wxBitmap WayPointman::GetIconBitmapForList(int index, int height) {
   return pret;
 }
 
-wxString *WayPointman::GetIconDescription(int index) {
+wxString *WayPointman::GetIconDescription(int index) const {
   wxString *pret = NULL;
 
   if (index >= 0) {
@@ -1216,7 +1218,7 @@ wxString *WayPointman::GetIconDescription(int index) {
   return pret;
 }
 
-wxString WayPointman::GetIconDescription(wxString icon_key) {
+wxString WayPointman::GetIconDescription(wxString icon_key) const {
   MarkIcon *pmi;
   unsigned int i;
 
@@ -1226,10 +1228,10 @@ wxString WayPointman::GetIconDescription(wxString icon_key) {
       return wxString(pmi->icon_description);
   }
 
-  return wxEmptyString;
+  return "";
 }
 
-wxString *WayPointman::GetIconKey(int index) {
+wxString *WayPointman::GetIconKey(int index) const {
   wxString *pret = NULL;
 
   if ((index >= 0) && ((unsigned int)index < m_pIconArray->GetCount())) {
@@ -1239,7 +1241,7 @@ wxString *WayPointman::GetIconKey(int index) {
   return pret;
 }
 
-int WayPointman::GetIconIndex(const wxBitmap *pbm) {
+int WayPointman::GetIconIndex(const wxBitmap *pbm) const {
   unsigned int ret = 0;
   MarkIcon *pmi;
 
@@ -1255,7 +1257,7 @@ int WayPointman::GetIconIndex(const wxBitmap *pbm) {
   return ret;
 }
 
-int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
+int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) const {
   MarkIcon *pmi = (MarkIcon *)m_pIconArray->Item(GetIconIndex(pbm));
 
   // Build a "list - sized" image
@@ -1270,8 +1272,10 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
       icon_larger = pmi->iconImage.Resize(
           wxSize(w, h), wxPoint(w / 2 - w0 / 2, h / 2 - h0 / 2));
     } else {
-      // We want to maintain the aspect ratio of the original image, but need the canvas to fit the fixed cell size
-      // rescale in one or two directions to avoid cropping, then resize to fit to cell (Adds border/croops as necessary)
+      // We want to maintain the aspect ratio of the original image, but need
+      // the canvas to fit the fixed cell size rescale in one or two directions
+      // to avoid cropping, then resize to fit to cell (Adds border/croops as
+      // necessary)
       int h1 = h;
       int w1 = w;
       if (h0 > h)
@@ -1280,8 +1284,8 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
       else if (w0 > w)
         h1 = wxRound((double)h0 * ((double)w / (double)w0));
 
-      icon_larger = pmi->iconImage.Rescale(w1, h1).Resize(wxSize(w, h),
-                                       wxPoint(w / 2 - w1 / 2, h / 2 - h1 / 2));
+      icon_larger = pmi->iconImage.Rescale(w1, h1).Resize(
+          wxSize(w, h), wxPoint(w / 2 - w1 / 2, h / 2 - h1 / 2));
     }
 
     int index = pmarkicon_image_list->Add(wxBitmap(icon_larger));
@@ -1347,41 +1351,23 @@ int WayPointman::GetIconImageListIndex(const wxBitmap *pbm) {
   return pmi->listIndex;
 }
 
-int WayPointman::GetXIconImageListIndex(const wxBitmap *pbm) {
-  return GetIconImageListIndex(pbm) +
-         1;  // index of "X-ed out" icon in the image list
+int WayPointman::GetXIconImageListIndex(const wxBitmap *pbm) const {
+  return GetIconImageListIndex(pbm) + 1;
 }
 
-int WayPointman::GetFIconImageListIndex(const wxBitmap *pbm) {
-  return GetIconImageListIndex(pbm) +
-         2;  // index of "fixed viz" icon in the image list
+int WayPointman::GetFIconImageListIndex(const wxBitmap *pbm) const {
+  return GetIconImageListIndex(pbm) + 2;
 }
 
 //  Create the unique identifier
 wxString WayPointman::CreateGUID(RoutePoint *pRP) {
-  // FIXME: this method is not needed at all (if GetUUID works...)
-  /*wxDateTime now = wxDateTime::Now();
-   time_t ticks = now.GetTicks();
-   wxString GUID;
-   GUID.Printf(_T("%d-%d-%d-%d"), ((int)fabs(pRP->m_lat * 1e4)),
-   ((int)fabs(pRP->m_lon * 1e4)), (int)ticks, m_nGUID);
-
-   m_nGUID++;
-
-   return GUID;*/
   return GpxDocument::GetUUID();
 }
 
 RoutePoint *WayPointman::FindRoutePointByGUID(const wxString &guid) {
-  wxRoutePointListNode *prpnode = m_pWayPointList->GetFirst();
-  while (prpnode) {
-    RoutePoint *prp = prpnode->GetData();
-
+  for (RoutePoint *prp : *m_pWayPointList) {
     if (prp->m_GUID == guid) return (prp);
-
-    prpnode = prpnode->GetNext();  // RoutePoint
   }
-
   return NULL;
 }
 
@@ -1389,17 +1375,12 @@ RoutePoint *WayPointman::GetNearbyWaypoint(double lat, double lon,
                                            double radius_meters) {
   //    Iterate on the RoutePoint list, checking distance
 
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
+  for (RoutePoint *pr : *m_pWayPointList) {
     double a = lat - pr->m_lat;
     double b = lon - pr->m_lon;
     double l = sqrt((a * a) + (b * b));
 
     if ((l * 60. * 1852.) < radius_meters) return pr;
-
-    node = node->GetNext();
   }
   return NULL;
 }
@@ -1409,35 +1390,26 @@ RoutePoint *WayPointman::GetOtherNearbyWaypoint(double lat, double lon,
                                                 const wxString &guid) {
   //    Iterate on the RoutePoint list, checking distance
 
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
+  for (RoutePoint *pr : *m_pWayPointList) {
     double a = lat - pr->m_lat;
     double b = lon - pr->m_lon;
     double l = sqrt((a * a) + (b * b));
 
     if ((l * 60. * 1852.) < radius_meters)
       if (pr->m_GUID != guid) return pr;
-
-    node = node->GetNext();
   }
   return NULL;
 }
 
 bool WayPointman::IsReallyVisible(RoutePoint *pWP) {
-  if (pWP->m_bIsolatedMark)
-    return pWP->IsVisible();  // isolated point
-  else {
-    wxRouteListNode *node = pRouteList->GetFirst();
-    while (node) {
-      Route *proute = node->GetData();
-      if (proute && proute->pRoutePointList) {
-        if (proute->pRoutePointList->IndexOf(pWP) != wxNOT_FOUND) {
-          if (proute->IsVisible()) return true;
-        }
+  if (pWP->m_bIsolatedMark) return pWP->IsVisible();  // isolated point
+  for (Route *proute : *pRouteList) {
+    if (proute && proute->pRoutePointList) {
+      auto &list = proute->pRoutePointList;
+      auto pos = std::find(list->begin(), list->end(), pWP);
+      if (pos != list->end()) {
+        if (proute->IsVisible()) return true;
       }
-      node = node->GetNext();
     }
   }
   if (pWP->IsShared())  // is not visible as part of route, but still exists as
@@ -1447,64 +1419,49 @@ bool WayPointman::IsReallyVisible(RoutePoint *pWP) {
   return false;
 }
 
-void WayPointman::ClearRoutePointFonts(void) {
+void WayPointman::ClearRoutePointFonts() {
   //    Iterate on the RoutePoint list, clearing Font pointers
   //    This is typically done globally after a font switch
-
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *pr = node->GetData();
-
+  for (RoutePoint *pr : *m_pWayPointList) {
     pr->m_pMarkFont = NULL;
-    node = node->GetNext();
   }
 }
 
 bool WayPointman::SharedWptsExist() {
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  for (RoutePoint *prp : *m_pWayPointList) {
     if (prp->IsShared() && (prp->m_bIsInRoute || prp == pAnchorWatchPoint1 ||
                             prp == pAnchorWatchPoint2))
       return true;
-    node = node->GetNext();
   }
   return false;
 }
 
 void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
   //    Iterate on the RoutePoint list, deleting all
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  auto it = m_pWayPointList->begin();
+  while (it != m_pWayPointList->end()) {
+    RoutePoint *prp = *it;
     // if argument is false, then only delete non-route waypoints
-    if (!prp->m_bIsInLayer && (prp->GetIconName() != _T("mob")) &&
+    if (!prp->m_bIsInLayer && (prp->GetIconName() != "mob") &&
         ((b_delete_used && prp->IsShared()) ||
          ((!prp->m_bIsInRoute) && !(prp == pAnchorWatchPoint1) &&
           !(prp == pAnchorWatchPoint2)))) {
       DestroyWaypoint(prp);
       delete prp;
-      node = m_pWayPointList->GetFirst();
+      it = m_pWayPointList->begin();
     } else
-      node = node->GetNext();
+      ++it;
   }
   return;
 }
 
-RoutePoint* WayPointman::FindWaypointByGuid(const std::string& guid) {
-  wxRoutePointListNode *node = m_pWayPointList->GetFirst();
-  while (node) {
-    RoutePoint* rp  = node->GetData();
+RoutePoint *WayPointman::FindWaypointByGuid(const std::string &guid) {
+  for (RoutePoint *rp : *m_pWayPointList) {
     if (guid == rp->m_GUID) return rp;
-    node = node->GetNext();
   }
   return 0;
 }
 void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
-  if (!b_update_changeset)
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-    // turn OFF change-set updating if requested
-
   if (pRp) {
     // Get a list of all routes containing this point
     // and remove the point from them all
@@ -1524,12 +1481,7 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
       for (unsigned int ir = 0; ir < proute_array->GetCount(); ir++) {
         Route *pr = (Route *)proute_array->Item(ir);
         if (pr->GetnPoints() < 2) {
-          bool prev_bskip =
-              NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate;
-          NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = true;
-          NavObjectChanges::getInstance()->DeleteConfigRoute(pr);
-          g_pRouteMan->DeleteRoute(pr, NavObjectChanges::getInstance());
-          NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = prev_bskip;
+          g_pRouteMan->DeleteRoute(pr);
         }
       }
 
@@ -1537,8 +1489,7 @@ void WayPointman::DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset) {
     }
 
     // Now it is safe to delete the point
-    NavObjectChanges::getInstance()->DeleteWayPoint(pRp);
-    NavObjectChanges::getInstance()->m_bSkipChangeSetUpdate = false;
+    NavObj_dB::GetInstance().DeleteRoutePoint(pRp);
 
     pSelect->DeleteSelectableRoutePoint(pRp);
 

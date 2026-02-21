@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_n0183_android_bt.h -- Nmea 0183 driver.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2023 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register                                  *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,21 +13,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
+/**
+ * \file
+ *
+ * Implement comm_drv_n0183_android_bt.h -- Android bluettooth Nmea0183
+ * driver.
+ */
 
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 #include <vector>
+
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
 
 #include <wx/event.h>
 #include <wx/log.h>
@@ -48,12 +47,14 @@
 #include "androidUTIL.h"
 #endif
 
+using namespace std::literals::chrono_literals;
+
 typedef enum DS_ENUM_BUFFER_STATE {
   DS_RX_BUFFER_EMPTY,
   DS_RX_BUFFER_FULL
 } _DS_ENUM_BUFFER_STATE;
 
-class CommDriverN0183AndroidBT;  // fwd
+class CommDriverN0183AndroidBT;  // forward
 
 #define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
@@ -90,29 +91,34 @@ private:
   mutable std::mutex m_mutex;
 };
 
-#define OUT_QUEUE_LENGTH                20
-#define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
+#define OUT_QUEUE_LENGTH 20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH 100
 
-wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_BT, CommDriverN0183AndroidBTEvent);
+wxDEFINE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_BT,
+               CommDriverN0183AndroidBTEvent);
 
-CommDriverN0183AndroidBTEvent::CommDriverN0183AndroidBTEvent( wxEventType commandType, int id = 0)
-      : wxEvent(id, commandType){};
+CommDriverN0183AndroidBTEvent::CommDriverN0183AndroidBTEvent(
+    wxEventType commandType, int id = 0)
+    : wxEvent(id, commandType) {};
 
-CommDriverN0183AndroidBTEvent::~CommDriverN0183AndroidBTEvent(){};
+CommDriverN0183AndroidBTEvent::~CommDriverN0183AndroidBTEvent() {};
 
-void CommDriverN0183AndroidBTEvent::SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = data;
+void CommDriverN0183AndroidBTEvent::SetPayload(
+    std::shared_ptr<std::vector<unsigned char>> data) {
+  m_payload = data;
 }
-std::shared_ptr<std::vector<unsigned char>> CommDriverN0183AndroidBTEvent::GetPayload() { return m_payload; }
+std::shared_ptr<std::vector<unsigned char>>
+CommDriverN0183AndroidBTEvent::GetPayload() {
+  return m_payload;
+}
 
-  // required for sending with wxPostEvent()
+// required for sending with wxPostEvent()
 wxEvent* CommDriverN0183AndroidBTEvent::Clone() const {
-    CommDriverN0183AndroidBTEvent* newevent =
-        new CommDriverN0183AndroidBTEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
+  CommDriverN0183AndroidBTEvent* newevent =
+      new CommDriverN0183AndroidBTEvent(*this);
+  newevent->m_payload = this->m_payload;
+  return newevent;
 };
-
 
 template <class T>
 class circular_buffer {
@@ -166,26 +172,23 @@ private:
   bool full_ = 0;
 };
 
-CommDriverN0183AndroidBT::CommDriverN0183AndroidBT(const ConnectionParams* params,
-                                             DriverListener& listener)
-    : CommDriverN0183(NavAddr::Bus::N0183,
-                      ((ConnectionParams*)params)->GetStrippedDSPort()),
+CommDriverN0183AndroidBT::CommDriverN0183AndroidBT(
+    const ConnectionParams* params, DriverListener& listener)
+    : CommDriverN0183(NavAddr::Bus::N0183, params->GetStrippedDSPort()),
       m_bok(false),
       m_portstring(params->GetDSPort()),
       m_params(*params),
-      m_listener(listener) {
-  //m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
+      m_listener(listener),
+      m_stats_timer(*this, 2s) {
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  dsPortType iosel = params->IOSelect;
-  std::string s_iosel = std::string("IN");
-  if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "OUT";}
-  else if (iosel == DS_TYPE_INPUT_OUTPUT) {s_iosel = "IN/OUT";}
-  this->attributes["ioDirection"] = s_iosel;
+  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+  m_driver_stats.driver_bus = NavAddr::Bus::N0183;
+  m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_N0183_ANDROID_BT, &CommDriverN0183AndroidBT::handle_N0183_MSG,
-       this);
+  Bind(wxEVT_COMMDRIVER_N0183_ANDROID_BT,
+       &CommDriverN0183AndroidBT::handle_N0183_MSG, this);
 
   Open();
 }
@@ -198,63 +201,41 @@ bool CommDriverN0183AndroidBT::Open() {
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
-  androidStartBT( this, port_uc );
+  androidStartBT(this, port_uc);
+  m_driver_stats.available = true;
+
   return true;
 }
 
 void CommDriverN0183AndroidBT::Close() {
   wxLogMessage(
-      wxString::Format(_T("Closing NMEA BT Driver %s"), m_portstring.c_str()));
+      wxString::Format("Closing NMEA BT Driver %s", m_portstring.c_str()));
+  m_stats_timer.Stop();
 
   androidStopBT();
+  m_driver_stats.available = false;
 
-  Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_BT, &CommDriverN0183AndroidBT::handle_N0183_MSG,
-       this);
+  Unbind(wxEVT_COMMDRIVER_N0183_ANDROID_BT,
+         &CommDriverN0183AndroidBT::handle_N0183_MSG, this);
 }
 
-
-void CommDriverN0183AndroidBT::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
-}
-
-bool CommDriverN0183AndroidBT::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                        std::shared_ptr<const NavAddr> addr) {
-
+bool CommDriverN0183AndroidBT::SendMessage(
+    std::shared_ptr<const NavMsg> msg, std::shared_ptr<const NavAddr> addr) {
   auto msg_0183 = std::dynamic_pointer_cast<const Nmea0183Msg>(msg);
   wxString sentence(msg_0183->payload.c_str());
+  m_driver_stats.tx_count += sentence.Length();
 
   wxString payload = sentence;
-  if( !sentence.EndsWith(_T("\r\n")) )
-        payload += _T("\r\n");
+  if (!sentence.EndsWith("\r\n")) payload += "\r\n";
 
   androidSendBTMessage(payload);
   return true;
 }
 
-
-
 void CommDriverN0183AndroidBT::handle_N0183_MSG(
     CommDriverN0183AndroidBTEvent& event) {
   auto p = event.GetPayload();
   std::vector<unsigned char>* payload = p.get();
-
-  // Extract the NMEA0183 sentence
-  std::string full_sentence = std::string(payload->begin(), payload->end());
-
-  if ((full_sentence[0] == '$') || (full_sentence[0] == '!')) {  // Sanity check
-    std::string identifier;
-    // We notify based on full message, including the Talker ID
-    identifier = full_sentence.substr(1, 5);
-
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
-    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
-                                                   GetAddress());
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
-    if (m_params.SentencePassesFilter(full_sentence, FILTER_INPUT))
-      m_listener.Notify(std::move(msg));
-
-    m_listener.Notify(std::move(msg_all));
-  }
+  m_driver_stats.rx_count += payload->size();
+  SendToListener({payload->begin(), payload->end()}, m_listener, m_params);
 }

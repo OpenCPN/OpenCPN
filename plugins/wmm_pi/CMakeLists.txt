@@ -1,9 +1,11 @@
 # ---------------------------------------------------------------------------
-# Author:      nohal aka. Pavel Kalian Copyright: License:     wxWidgets License
+# Author:    nohal aka. Pavel Kalian
+# Copyright: 2012-2025, Pavel Kalian
+# License:   wxWidgets License
 # ---------------------------------------------------------------------------
 
 # define minimum cmake version
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 cmake_policy(SET CMP0043 NEW)
 
 project(wmm_pi)
@@ -28,7 +30,6 @@ if (NOT CMAKE_BUILD_TYPE)
   )
 endif (NOT CMAKE_BUILD_TYPE)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
 
 if (APPLE)
   include_directories(${CMAKE_SOURCE_DIR}/buildosx/include)
@@ -66,18 +67,11 @@ if (QT_ANDROID)
   set(SRC_WMM ${SRC_WMM} src/pi_shaders.cpp)
 endif (QT_ANDROID)
 
-set(SRC_JSON
-    src/json_defs.h
-    src/jsonreader.h
-    src/jsonval.h
-    src/jsonwriter.h
-    src/jsonreader.cpp
-    src/jsonval.cpp
-    src/jsonwriter.cpp
+add_library(${PACKAGE_NAME} SHARED ${SRC_WMM})
+
+target_include_directories(
+  ${PACKAGE_NAME} BEFORE PRIVATE ${CMAKE_CURRENT_LIST_DIR}/include
 )
-
-add_library(${PACKAGE_NAME} SHARED ${SRC_WMM} ${SRC_JSON})
-
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::opencpn)
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
@@ -128,6 +122,7 @@ if (APPLE)
 endif (APPLE)
 
 # target_link_libraries(${PACKAGE_NAME} ocpn::opencpn )
+target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::manual)
 
 # Copy shared library to execution folder for debugging if not CI build
 if (NOT OCPN_CI_BUILD)

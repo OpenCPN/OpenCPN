@@ -24,7 +24,6 @@
  ***************************************************************************
  */
 
-
 #ifndef __BBOX_H__
 #define __BBOX_H__
 
@@ -103,29 +102,80 @@ protected:
   bool m_validbbox;
 };
 
-//    A class derived from BoundingBox
-//    that is assummed to be a geographic area, with coordinates
-//    expressed in Lat/Lon.
-//    This class understands the International Date Line (E/W Longitude)
-
+/**
+ * A class that represents a geographic area with coordinates expressed in
+ * Lat/Lon. This class understands the International Date Line (E/W Longitude)
+ * and handles calculations across it properly.
+ */
 class LLBBox {
 public:
   LLBBox() : m_valid(FALSE) {}
+  /**
+   * Sets the boundaries of the bounding box with the given coordinates.
+   * The box is considered valid only if minlat <= maxlat and minlon <= maxlon.
+   *
+   * @param minlat Minimum latitude (southern boundary)
+   * @param minlon Minimum longitude (western boundary)
+   * @param maxlat Maximum latitude (northern boundary)
+   * @param maxlon Maximum longitude (eastern boundary)
+   */
   void Set(double minlat, double minlon, double maxlat, double maxlon);
+  /**
+   * Creates a bounding box from a line segment defined by two geographic
+   * points. This method automatically determines the most efficient
+   * representation of the longitude range, handling cases that cross the
+   * International Date Line by choosing the representation with the smallest
+   * longitude span.
+   *
+   * @param lat1 Latitude of the first point
+   * @param lon1 Longitude of the first point
+   * @param lat2 Latitude of the second point
+   * @param lon2 Longitude of the second point
+   */
   void SetFromSegment(double lat1, double lon1, double lat2, double lon2);
+  /**
+   * Expands this bounding box to include the area of another bounding box.
+   * If this bounding box is invalid, it becomes a copy of the provided box.
+   * This method properly handles expansion across the International Date Line
+   * by evaluating different longitude representations to find the one with the
+   * smallest span.
+   *
+   * @param bbox The bounding box to include in this one
+   */
   void Expand(const LLBBox& bbox);
   bool Contains(double Lat, double Lon) const;
+  /**
+   * Determines if a geographic point is contained within the bounding box,
+   * with an optional margin added to the box boundaries. This method handles
+   * points near the International Date Line correctly.
+   *
+   * @param Lat Latitude of the point to test
+   * @param Lon Longitude of the point to test
+   * @param Marge Margin to add to the box boundaries (in degrees)
+   * @return true if the point is inside the expanded box, false otherwise
+   */
   bool ContainsMarge(double Lat, double Lon, double Marge) const;
   bool GetValid() const { return m_valid; }
   void Invalidate() { m_valid = false; }
-
+  /**
+   * Tests if another bounding box is completely contained within this box.
+   * Returns false if either box is invalid. This method handles boxes that
+   * cross the International Date Line.
+   *
+   * @param other The bounding box to test for containment
+   * @return true if other is completely inside this box, false otherwise
+   */
   bool IntersectIn(const LLBBox& other) const;
 
-  //  Add some epsilon to the equality measurement
-  //  This class is concerned with lat/lon, in degrees
-  //  So here we can arbitrarily establish epsilon as 1e-6 degrees,
-  //  which is about 300 mm at the equator.
-  //  This is judged close enough for geometric region calculations
+  /**
+   * Tests if another bounding box is completely outside this box.
+   * It is optimized for determining non-intersection across the International
+   * Date Line. Uses a small epsilon value (1e-6 degrees) for floating-point
+   * comparison tolerance. epsilon is about 300 mm at the equator.
+   *
+   * @param other The bounding box to test for non-intersection
+   * @return TRUE if boxes do not intersect, FALSE otherwise
+   */
   inline bool IntersectOut(const LLBBox& other) const {
     // allow -180 to 180 or 0 to 360
     if (!GetValid() || !other.GetValid()) return true;

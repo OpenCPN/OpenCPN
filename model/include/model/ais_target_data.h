@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * AIS target definitions
  */
 
-#ifndef _AIS_TARGET_DATA_H__
-#define _AIS_TARGET_DATA_H__
+#ifndef AIS_TARGET_DATA_H_
+#define AIS_TARGET_DATA_H_
 
 #include <functional>
 #include <memory>
@@ -73,7 +72,6 @@ typedef enum ais_nav_status {
 
 } _ais_nav_status;
 
-
 //      Describe Transponder Class
 typedef enum ais_transponder_class {
   AIS_CLASS_A = 0,
@@ -85,9 +83,9 @@ typedef enum ais_transponder_class {
   AIS_SART,        // SART
   AIS_ARPA,        // ARPA radar target
   AIS_APRS,        // APRS position report
-  AIS_METEO        // Meteorological and Hydrographic data
+  AIS_METEO,       // Meteorological and Hydrographic data
+  AIS_BUOY         // Buoy or a similar non standard target
 } _ais_transponder_class;
-
 
 //    Describe AIS Alert state
 typedef enum ais_alert_type {
@@ -147,12 +145,11 @@ struct Ais8_001_22 {
 
 struct AisTargetCallbacks {
   std::function<double(double)> get_mag;
-  AisTargetCallbacks(): get_mag([](double a) { return toMagnetic(a); }) {}
+  AisTargetCallbacks() : get_mag([](double a) { return toMagnetic(a); }) {}
 };
 
-
 class AisTargetData {
-friend class AisTargetDataMaker;
+  friend class AisTargetDataMaker;
 
 public:
   AisTargetData(AisTargetCallbacks callbacks);
@@ -227,16 +224,16 @@ public:
   bool b_positionOnceValid;
   bool b_nameValid;
   bool b_isFollower;
-  bool b_isDSCtarget; // DSC flag to a possible simultaneous AIS target
-  int  m_dscNature;
-  int  m_dscTXmmsi;   // MMSI for the DSC relay issuer
+  bool b_isDSCtarget;  // DSC flag to a possible simultaneous AIS target
+  int m_dscNature;
+  int m_dscTXmmsi;  // MMSI for the DSC relay issuer
   long dsc_NatureOfDistress;
 
-    // MMSI Properties
+  // MMSI Properties
   bool b_NoTrack;
   bool b_OwnShip;
-  bool b_PersistTrack; // For AIS target query
-  bool b_mPropPersistTrack; // For mmsi_prop
+  bool b_PersistTrack;       // For AIS target query
+  bool b_mPropPersistTrack;  // For mmsi_prop
 
   int m_utc_hour;
   int m_utc_min;
@@ -251,12 +248,13 @@ public:
 
   wxString MSG_14_text;
 
-   // Per target collision parameters
+  // Per target collision parameters
   bool bCPA_Valid;
-  double TCPA;  // Minutes
-  double CPA;   // Nautical Miles
+  double TCPA;          // Minutes
+  double CPA;           // Nautical Miles
   bool b_show_AIS_CPA;  // TR 2012.06.28: Show AIS-CPA
   bool b_show_track;
+  bool b_show_track_old;  // Previous state of b_show_track
 
   AisMeteoData met_data;
   std::vector<AISTargetTrackPoint> m_ptrack;
@@ -289,8 +287,9 @@ public:
   AisTargetDataMaker(const AisTargetDataMaker&) = delete;
   AisTargetDataMaker& operator=(const AisTargetDataMaker&) = delete;
 
-
-  std::shared_ptr<AisTargetData> GetTargetData() { return std::make_shared<AisTargetData>(m_callbacks); }
+  std::shared_ptr<AisTargetData> GetTargetData() {
+    return std::make_shared<AisTargetData>(m_callbacks);
+  }
   void SetCallbacks(AisTargetCallbacks callbacks) { m_callbacks = callbacks; }
 
 private:
@@ -298,8 +297,7 @@ private:
   AisTargetCallbacks m_callbacks;
 };
 
-
-wxString trimAISField(char *data);
+wxString trimAISField(char* data);
 wxString ais_get_status(int index);
 
 wxString ais_get_type(int index);

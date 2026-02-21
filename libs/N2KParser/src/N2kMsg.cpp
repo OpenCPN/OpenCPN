@@ -587,7 +587,7 @@ void SetBuf8ByteDouble(double v, double precision, int &index, unsigned char *bu
 //*****************************************************************************
 void SetBuf4ByteDouble(double v, double precision, int &index, unsigned char *buf) {
   double vd=round(v/precision);
-  int32_t vi = (vd>=N2kInt32Min && vd<N2kInt32OR)?(int32_t)vd:N2kInt32OR;
+  int32_t vi = (vd>=(int32_t)N2kInt32Min && vd<N2kInt32OR)?(int32_t)vd:N2kInt32OR;
   SetBuf<int32_t>(vi, 4, index, buf);
 }
 

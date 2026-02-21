@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  AIS info GUI parts.
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
@@ -19,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * AIS info GUI parts.
+ */
 
 #include <memory>
 
@@ -33,24 +31,27 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-
 #include <wx/datetime.h>
 #include <wx/event.h>
 #include <wx/string.h>
 
+#include "o_sound/o_sound.h"
+#include "gl_headers.h"  // Must be before anything including GL stuff
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
+#include "model/gui_vars.h"
+#include "model/navobj_db.h"
 #include "model/route_point.h"
 
 #include "ais_info_gui.h"
-#include "AISTargetAlertDialog.h"
+#include "ais_target_alert_dlg.h"
 #include "chcanv.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "routemanagerdialog.h"
-#include "SoundFactory.h"
+#include "top_frame.h"
 #include "undo.h"
 
 wxDEFINE_EVENT(EVT_AIS_DEL_TRACK, wxCommandEvent);
@@ -60,91 +61,82 @@ wxDEFINE_EVENT(EVT_AIS_TOUCH, wxCommandEvent);
 wxDEFINE_EVENT(EVT_AIS_WP, wxCommandEvent);
 wxDEFINE_EVENT(SOUND_PLAYED_EVTYPE, wxCommandEvent);
 
-extern ArrayOfMmsiProperties g_MMSI_Props_Array;
-extern bool g_bquiting;
-extern int g_iSoundDeviceIndex;
-extern OCPNPlatform *g_Platform;
-extern Route *pAISMOBRoute;
-extern wxString g_CmdSoundString;
-extern MyConfig* pConfig;
-extern RouteManagerDialog *pRouteManagerDialog;
-extern MyFrame* gFrame;
-extern AisInfoGui *g_pAISGUI;
+AisInfoGui *g_pAISGUI;  // global instance
 
 static void onSoundFinished(void *ptr) {
   if (!g_bquiting) {
     wxCommandEvent ev(SOUND_PLAYED_EVTYPE);
-    wxPostEvent(g_pAISGUI, ev);   // FIXME(leamas): Review sound handling.
+    wxPostEvent(g_pAISGUI, ev);  // FIXME(leamas): Review sound handling.
   }
 }
 
-static void OnNewAisWaypoint(RoutePoint* pWP) {
-  pConfig->AddNewWayPoint(pWP, -1);  // , -1 use auto next num
+static void OnNewAisWaypoint(RoutePoint *pWP) {
+  NavObj_dB::GetInstance().InsertRoutePoint(pWP);
+
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
-  if (gFrame->GetPrimaryCanvas()) {
-    gFrame->GetPrimaryCanvas()->undo->BeforeUndoableAction(
-        Undo_CreateWaypoint, pWP, Undo_HasParent, NULL);
-    gFrame->GetPrimaryCanvas()->undo->AfterUndoableAction(NULL);
-    gFrame->RefreshAllCanvas(false);
-    gFrame->InvalidateAllGL();
+  if (top_frame::Get()->GetAbstractPrimaryCanvas()) {
+    top_frame::Get()->BeforeUndoableAction(Undo_CreateWaypoint, pWP,
+                                           Undo_HasParent, NULL);
+    top_frame::Get()->AfterUndoableAction(NULL);
+    top_frame::Get()->RefreshAllCanvas(false);
+    top_frame::Get()->InvalidateAllGL();
   }
 }
 
-const static char* const kDeleteTrackPrompt =
-_(R"(
+const static char *const kDeleteTrackPrompt = _(R"(
 This AIS target has Persistent Tracking selected by MMSI properties
 A Persistent track recording will therefore be restarted for this target.
 
 Do you instead want to stop Persistent Tracking for this target?
 )");
 
-
-static void OnDeleteTrack(MmsiProperties* props) {
+static void OnDeleteTrack(MmsiProperties *props) {
   if (wxID_NO == OCPNMessageBox(NULL, kDeleteTrackPrompt, _("OpenCPN Info"),
-                                wxYES_NO | wxCENTER, 60))
-  {
+                                wxYES_NO | wxCENTER, 60)) {
     props->m_bPersistentTrack = true;
   }
 }
-
 
 AisInfoGui::AisInfoGui() {
   ais_info_listener.Listen(g_pAIS->info_update, this, EVT_AIS_INFO);
 
   Bind(EVT_AIS_INFO, [&](ObservedEvt &ev) {
-        auto ptr = ev.GetSharedPtr();
-        auto palert_target = std::static_pointer_cast<const AisTargetData>(ptr);
-        ShowAisInfo(palert_target); }
-       );
+    auto ptr = ev.GetSharedPtr();
+    auto palert_target = std::static_pointer_cast<const AisTargetData>(ptr);
+    ShowAisInfo(palert_target);
+  });
 
   ais_touch_listener.Listen(g_pAIS->touch_state, this, EVT_AIS_TOUCH);
-  Bind(EVT_AIS_TOUCH, [&](wxCommandEvent ev) { gFrame->TouchAISActive(); });
+  Bind(EVT_AIS_TOUCH,
+       [&](wxCommandEvent ev) { top_frame::Get()->TouchAISActive(); });
 
   ais_wp_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_WP);
   Bind(EVT_AIS_WP, [&](wxCommandEvent ev) {
-       auto pWP = static_cast<RoutePoint*>(ev.GetClientData());
-       OnNewAisWaypoint(pWP); });
+    auto pWP = static_cast<RoutePoint *>(ev.GetClientData());
+    OnNewAisWaypoint(pWP);
+  });
 
-  ais_new_track_listener.Listen(g_pAIS->new_ais_wp, this,
-                                EVT_AIS_NEW_TRACK);
+  ais_new_track_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_NEW_TRACK);
   Bind(EVT_AIS_NEW_TRACK, [&](wxCommandEvent ev) {
-       auto t = static_cast<Track*>(ev.GetClientData());
-       pConfig->AddNewTrack(t); });
+    auto t = static_cast<Track *>(ev.GetClientData());
+    NavObj_dB::GetInstance().InsertTrack(t);
+  });
 
-  ais_del_track_listener.Listen(g_pAIS->new_ais_wp, this,
-                                EVT_AIS_DEL_TRACK);
+  ais_del_track_listener.Listen(g_pAIS->new_ais_wp, this, EVT_AIS_DEL_TRACK);
   Bind(EVT_AIS_DEL_TRACK, [&](wxCommandEvent ev) {
-       auto t = static_cast< MmsiProperties*>(ev.GetClientData());
-       OnDeleteTrack(t); });
+    auto t = static_cast<MmsiProperties *>(ev.GetClientData());
+    OnDeleteTrack(t);
+  });
 
-  Bind(SOUND_PLAYED_EVTYPE, [&](wxCommandEvent ev) {
-       OnSoundFinishedAISAudio(ev); });
+  Bind(SOUND_PLAYED_EVTYPE,
+       [&](wxCommandEvent ev) { OnSoundFinishedAISAudio(ev); });
 
   m_AIS_Sound = 0;
   m_bAIS_Audio_Alert_On = false;
   m_bAIS_AlertPlaying = false;
-
+  m_alarm_defer_count = -1;
+  m_lastMMSItime = wxDateTime::Now();
 }
 
 void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
@@ -157,12 +149,13 @@ void AisInfoGui::OnSoundFinishedAISAudio(wxCommandEvent &event) {
   m_bAIS_AlertPlaying = false;
 }
 
-void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target) {
-   if (!palert_target) return;
+void AisInfoGui::ShowAisInfo(
+    std::shared_ptr<const AisTargetData> palert_target) {
+  if (!palert_target) return;
 
-   int audioType = AISAUDIO_NONE;
+  int audioType = AISAUDIO_NONE;
 
-   switch (palert_target->Class){
+  switch (palert_target->Class) {
     case AIS_DSC:
       audioType = AISAUDIO_DSC;
       break;
@@ -172,10 +165,37 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
     default:
       audioType = AISAUDIO_CPA;
       break;
-   }
+  }
 
-   // If no alert dialog shown yet...
-   if (!g_pais_alert_dialog_active) {
+  // Maybe Reset deferral counter
+  // Arrange to reset deferral counter if 5 seconds have passed without an alarm
+  int last_alert_MMSI = m_lastMMSI;
+  wxDateTime last_alert_time = m_lastMMSItime;
+
+  if (palert_target->MMSI != last_alert_MMSI) {
+    wxTimeSpan dt = wxDateTime::Now() - last_alert_time;
+    if (dt.GetSeconds() > 5) {
+      m_alarm_defer_count = -1;  // reset the counter
+    }
+  }
+
+  m_lastMMSI = palert_target->MMSI;
+  m_lastMMSItime = wxDateTime::Now();
+
+  // Display all SART/MOB Alerts immediately.
+  if (palert_target->Class == AIS_SART) m_alarm_defer_count = 1;
+
+  // If no alert dialog shown yet...
+  if (!g_pais_alert_dialog_active) {
+    // Manage deferred Alarm dialog and sound
+    if (m_alarm_defer_count < 0) {
+      m_alarm_defer_count = g_AIS_alert_delay;
+    } else {
+      if (m_alarm_defer_count >= 1) {
+        m_alarm_defer_count--;
+      }
+    }
+    if (m_alarm_defer_count == 0) {  // Fire the Alarm, with sound
       bool b_jumpto = (palert_target->Class == AIS_SART) ||
                       (palert_target->Class == AIS_DSC);
       bool b_createWP = palert_target->Class == AIS_DSC;
@@ -192,14 +212,14 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       //      icon from the taskbar. (on the next timer tick, probably)
 
 #ifndef __ANDROID__
-      if (gFrame->IsIconized() || !gFrame->IsActive())
-        gFrame->RequestUserAttention();
+//      if (gFrame->IsIconized() || !gFrame->IsActive())
+//        gFrame->RequestUserAttention();
 #endif
 
-      if (!gFrame->IsIconized()) {
+      if (!top_frame::Get()->IsIconized()) {
         AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
-        pAISAlertDialog->Create(palert_target->MMSI, gFrame, g_pAIS,
-                                b_jumpto, b_createWP, b_ack, -1,
+        pAISAlertDialog->Create(palert_target->MMSI, wxTheApp->GetTopWindow(),
+                                g_pAIS, b_jumpto, b_createWP, b_ack, -1,
                                 _("AIS Alert"));
 
         g_pais_alert_dialog_active = pAISAlertDialog;
@@ -207,7 +227,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
         wxTimeSpan alertLifeTime(0, 1, 0,
                                  0);  // Alert default lifetime, 1 minute.
         auto alert_dlg_active =
-            dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
+            dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
         alert_dlg_active->dtAlertExpireTime = wxDateTime::Now() + alertLifeTime;
         g_Platform->PositionAISAlert(pAISAlertDialog);
 
@@ -217,7 +237,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       //    Audio alert if requested
       m_bAIS_Audio_Alert_On = true;  // always on when alert is first shown
     }
-
+  }
 
   //    The AIS Alert dialog is already shown.  If the  dialog MMSI number is
   //    still alerted, update the dialog otherwise, destroy the dialog
@@ -225,8 +245,8 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
     // Find the target with shortest CPA, ignoring DSC and SART targets
     double tcpa_min = 1e6;  // really long
     AisTargetData *palert_target_lowestcpa = NULL;
-    const auto& current_targets = g_pAIS->GetTargetList();
-    for (auto& it : current_targets) {
+    const auto &current_targets = g_pAIS->GetTargetList();
+    for (auto &it : current_targets) {
       auto td = it.second;
       if (td) {
         if ((td->Class != AIS_SART) && (td->Class != AIS_DSC)) {
@@ -244,9 +264,9 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
 
     // Get the target currently displayed
     auto alert_dlg_active =
-        dynamic_cast<AISTargetAlertDialog*>(g_pais_alert_dialog_active);
-    palert_target = g_pAIS->Get_Target_Data_From_MMSI(
-        alert_dlg_active->Get_Dialog_MMSI());
+        dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
+    palert_target =
+        g_pAIS->Get_Target_Data_From_MMSI(alert_dlg_active->Get_Dialog_MMSI());
 
     //  If the currently displayed target is not alerted, it must be in "expiry
     //  delay" We should cancel that alert display now, and pick up the more
@@ -256,6 +276,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
         if (palert_target_lowestcpa) {
           palert_target = NULL;
         }
+        m_alarm_defer_count = -1;
       }
     }
 
@@ -263,7 +284,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       wxDateTime now = wxDateTime::Now();
       if (((AIS_ALERT_SET == palert_target->n_alert_state) &&
            !palert_target->b_in_ack_timeout) ||
-          (palert_target->Class == AIS_SART) ) {
+          (palert_target->Class == AIS_SART)) {
         alert_dlg_active->UpdateText();
         // Retrigger the alert expiry timeout if alerted now
         wxTimeSpan alertLifeTime(0, 1, 0,
@@ -277,6 +298,7 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
       } else {
         alert_dlg_active->Close();
         m_bAIS_Audio_Alert_On = false;
+        m_alarm_defer_count = -1;
       }
 
       if (true == palert_target->b_suppress_audio)
@@ -286,57 +308,64 @@ void AisInfoGui::ShowAisInfo(std::shared_ptr<const AisTargetData> palert_target)
     } else {  // this should not happen, however...
       alert_dlg_active->Close();
       m_bAIS_Audio_Alert_On = false;
+      m_alarm_defer_count = -1;
     }
   }
 
-  //    At this point, the audio flag is set
+  //    At this point, the audio flag (m_bAIS_Audio_Alert_On) is set
   //    Honor the global flag
   if (!g_bAIS_CPA_Alert_Audio) m_bAIS_Audio_Alert_On = false;
 
-  if (m_bAIS_Audio_Alert_On) {
-    if (!m_AIS_Sound) {
-      m_AIS_Sound = SoundFactory(/*g_CmdSoundString.mb_str(wxConvUTF8)*/);
-    }
-    if (!AIS_AlertPlaying()) {
-      m_bAIS_AlertPlaying = true;
-      wxString soundFile;
-      switch (audioType) {
-        case AISAUDIO_DSC:
-          if (g_bAIS_DSC_Alert_Audio) soundFile = g_DSC_sound_file;
-          break;
-        case AISAUDIO_SART:
-          if (g_bAIS_SART_Alert_Audio) soundFile = g_SART_sound_file;
-          break;
-        case AISAUDIO_CPA:
-        default:
-          if (g_bAIS_GCPA_Alert_Audio) soundFile = g_AIS_sound_file;
-          break;
+  // Ensure that an Alert dialog in visible before activating sound
+  auto alert_dlg_active_audio_check =
+      dynamic_cast<AISTargetAlertDialog *>(g_pais_alert_dialog_active);
+  if (alert_dlg_active_audio_check && alert_dlg_active_audio_check->IsShown()) {
+    if (m_bAIS_Audio_Alert_On) {
+      if (!m_AIS_Sound) {
+        m_AIS_Sound = o_sound::Factory();
       }
+      if (!AIS_AlertPlaying()) {
+        m_bAIS_AlertPlaying = true;
+        wxString soundFile;
+        switch (audioType) {
+          case AISAUDIO_DSC:
+            if (g_bAIS_DSC_Alert_Audio) soundFile = g_DSC_sound_file;
+            break;
+          case AISAUDIO_SART:
+            if (g_bAIS_SART_Alert_Audio) soundFile = g_SART_sound_file;
+            break;
+          case AISAUDIO_CPA:
+          default:
+            if (g_bAIS_GCPA_Alert_Audio) soundFile = g_AIS_sound_file;
+            break;
+        }
 
-      m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
-      if (m_AIS_Sound->IsOk()) {
-        m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
-        if (!m_AIS_Sound->Play()){
+        m_AIS_Sound->Load(soundFile, g_iSoundDeviceIndex);
+        if (m_AIS_Sound->IsOk()) {
+          m_AIS_Sound->SetFinishedCallback(onSoundFinished, this);
+          if (!m_AIS_Sound->Play()) {
+            delete m_AIS_Sound;
+            m_AIS_Sound = 0;
+            m_bAIS_AlertPlaying = false;
+          }
+        } else {
           delete m_AIS_Sound;
           m_AIS_Sound = 0;
           m_bAIS_AlertPlaying = false;
         }
-      } else {
-        delete m_AIS_Sound;
-        m_AIS_Sound = 0;
-        m_bAIS_AlertPlaying = false;
       }
     }
   }
+
   //  If a SART Alert is active, check to see if the MMSI has special properties
   //  set indicating that this Alert is a MOB for THIS ship.
   if (palert_target && (palert_target->Class == AIS_SART)) {
     for (unsigned int i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
       if (palert_target->MMSI == g_MMSI_Props_Array[i]->MMSI) {
         if (pAISMOBRoute)
-          gFrame->UpdateAISMOBRoute(palert_target.get());
+          top_frame::Get()->UpdateAISMOBRoute(palert_target.get());
         else
-          gFrame->ActivateAISMOBRoute(palert_target.get());
+          top_frame::Get()->ActivateAISMOBRoute(palert_target.get());
         break;
       }
     }

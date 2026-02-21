@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Framework for Undo features
- * Author:   Jesper Weissglas
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2012 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,43 +12,39 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Implement undo.h -- framework for Undo features
  */
 
 #include "config.h"
+#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <wx/wxprec.h>
-
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
 
-#include <wx/file.h>
-#include <wx/datetime.h>
 #include <wx/clipbrd.h>
+#include <wx/dynarray.h>
+#include <wx/gdicmn.h>
 
+#include "model/navobj_db.h"
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/select.h"
 
 #include "chcanv.h"
-#include "MarkInfo.h"
+#include "mark_info.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "styles.h"
+#include "top_frame.h"
 #include "undo.h"
-
-extern Routeman* g_pRouteMan;
-extern MyConfig* pConfig;
-extern MyFrame* gFrame;
-extern RouteManagerDialog* pRouteManagerDialog;
-extern MarkInfoDlg* g_pMarkInfoDialog;
 
 Undo::Undo(ChartCanvas* parent) {
   m_parent = parent;
@@ -90,7 +80,7 @@ wxString UndoAction::Description() {
       descr = _("Append Waypoint");
       break;
     default:
-      descr = _T("");
+      descr = "";
       break;
   }
   return descr;
@@ -122,7 +112,7 @@ void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
       Route* pr = (Route*)routeArray->Item(ir);
       pr->FinalizeForRendering();
       pr->UpdateSegmentDistances();
-      pConfig->UpdateRoute(pr);
+      NavObj_dB::GetInstance().UpdateRoute(pr);
     }
     delete routeArray;
   }
@@ -131,7 +121,10 @@ void doUndoMoveWaypoint(UndoAction* action, ChartCanvas* cc) {
 void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
   pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
-  pConfig->AddNewWayPoint(point, -1);
+  NavObj_dB::GetInstance().InsertRoutePoint(point);
+
+  // transfer ownership to WayPointman which eventually deletes it.
+  // This is certainly not how things should be and needs an overhaul.
   if (NULL != pWayPointMan) pWayPointMan->AddRoutePoint(point);
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
     pRouteManagerDialog->UpdateWptListCtrl();
@@ -139,7 +132,7 @@ void doUndoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
 
 void doRedoDeleteWaypoint(UndoAction* action, ChartCanvas* cc) {
   RoutePoint* point = (RoutePoint*)action->before[0];
-  pConfig->DeleteWayPoint(point);
+  NavObj_dB::GetInstance().DeleteRoutePoint(point);
   pSelect->DeleteSelectablePoint(point, SELTYPE_ROUTEPOINT);
   if (NULL != pWayPointMan) pWayPointMan->RemoveRoutePoint(point);
   if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
@@ -155,10 +148,10 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
     noRouteLeftToRedo = true;
 
   g_pRouteMan->RemovePointFromRoute(point, route, cc->m_routeState);
-  gFrame->InvalidateAllGL();
+  top_frame::Get()->InvalidateAllGL();
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
-    pConfig->DeleteWayPoint(point);
+    NavObj_dB::GetInstance().DeleteRoutePoint(point);
     pSelect->DeleteSelectablePoint(point, SELTYPE_ROUTEPOINT);
     if (NULL != pWayPointMan) pWayPointMan->RemoveRoutePoint(point);
   }
@@ -167,7 +160,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
     cc->undo->InvalidateRedo();
   }
 
-  if(RouteManagerDialog::getInstanceFlag()){
+  if (RouteManagerDialog::getInstanceFlag()) {
     if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
       pRouteManagerDialog->UpdateWptListCtrl();
   }
@@ -186,7 +179,7 @@ void doRedoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
   Route* route = (Route*)action->after[0];
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
-    pConfig->AddNewWayPoint(point, -1);
+    NavObj_dB::GetInstance().InsertRoutePoint(point);
     pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
   }
 

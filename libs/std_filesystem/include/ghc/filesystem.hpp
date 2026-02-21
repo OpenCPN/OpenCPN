@@ -147,7 +147,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#ifdef GHC_OS_ANDROID
+#ifdef GHC_OS_ANDROID_NOT_NEEDED_FOR_NDK_GE_22
 #include <android/api-level.h>
 #if __ANDROID_API__ < 12
 #include <sys/syscall.h>

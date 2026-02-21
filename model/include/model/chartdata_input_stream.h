@@ -1,11 +1,6 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Support XZ compressed charts
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
- *   Copyright (C) 2016 by David S. Register                               *
+/**************************************************************************
+ *   Copyright (C) 2016  David S. Register                                 *
+ *   Copyright (C) 2016  Sean D'Epagnier                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,20 +13,30 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ *  XZ compressed charts support
  */
 
-#include "config.h"
+#ifndef CHARTDATA_INPUT_STREAM_H_
+#define CHARTDATA_INPUT_STREAM_H_
+
 #include <wx/ffile.h>
+#include <wx/string.h>
+#include <wx/wfstream.h>
+
+#include "config.h"
 
 #ifdef OCPN_USE_LZMA
 #include <lzma.h>
 
-// this implements a non-seekable input stream of xz compressed file
+/**
+ *  A non-seekable compressed xz file input stream
+ */
 class wxCompressedFFileInputStream : public wxInputStream {
 public:
   wxCompressedFFileInputStream(const wxString &fileName);
@@ -110,3 +115,5 @@ typedef wxFFileInputStream ChartDataNonSeekableInputStream;
 #endif  // OCPN_USE_LZMA
 
 bool DecompressXZFile(const wxString &input_path, const wxString &output_path);
+
+#endif  // CHARTDATA_INPUT_STREAM_H_

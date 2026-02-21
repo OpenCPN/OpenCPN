@@ -1,10 +1,4 @@
-/****************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Toolbar
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,22 +12,37 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _TOOLBAR_H__
-#define _TOOLBAR_H__
+/**
+ * \file
+ *
+ * OpenCPN Toolbar
+ */
 
-#include <wx/tbarbase.h>
-#include <wx/dynarray.h>
-#include "styles.h"
+#ifndef TOOLBAR_H_
+#define TOOLBAR_H_
+
 #include <vector>
+
+#include <wx/bitmap.h>
+#include <wx/dynarray.h>
+#include <wx/string.h>
+#include <wx/tbarbase.h>
+#include <wx/menuitem.h>
+
+#include "abstract_chart_canv.h"
 #include "ocpndc.h"
+#include "tooltip.h"
+#include "styles.h"
 
-class ocpnFloatingToolbarDialog;
+class ocpnFloatingToolbarDialog;                  // forward
+extern ocpnFloatingToolbarDialog *g_MainToolbar;  ///< Global instance
 
+/**
+ * Container for toolbar item properties.
+ */
 class ToolbarItemContainer {
 public:
   ToolbarItemContainer();
@@ -93,11 +102,10 @@ enum {
 class ToolTipWin;
 class ocpnToolBarTool;
 
-// ----------------------------------------------------------------------------
-// ocpnToolBarSimple is a generic toolbar implementation in pure wxWidgets
-//    Adapted from wxToolBarSimple( deprecated )
-// ----------------------------------------------------------------------------
-
+/**
+ * Generic toolbar implementation in pure wxWidgets adapted from wxToolBarSimple
+ * (deprecated).
+ */
 class ocpnToolBarSimple : public wxEvtHandler {
 public:
   // ctors and dtor
@@ -106,10 +114,8 @@ public:
   ocpnToolBarSimple(ocpnFloatingToolbarDialog *parent, wxWindowID winid,
                     const wxPoint &pos = wxDefaultPosition,
                     const wxSize &size = wxDefaultSize,
-                    long style = wxNO_BORDER,
-                    int orient = wxTB_HORIZONTAL)
+                    long style = wxNO_BORDER, int orient = wxTB_HORIZONTAL)
       : m_one_shot(500) {
-
     Init();
 
     Create(parent, winid, pos, size, style, orient);
@@ -117,8 +123,7 @@ public:
 
   bool Create(ocpnFloatingToolbarDialog *parent, wxWindowID winid,
               const wxPoint &pos = wxDefaultPosition,
-              const wxSize &size = wxDefaultSize,
-              long style = wxNO_BORDER,
+              const wxSize &size = wxDefaultSize, long style = wxNO_BORDER,
               int orient = wxTB_HORIZONTAL);
 
   virtual ~ocpnToolBarSimple();
@@ -126,8 +131,8 @@ public:
   virtual void SetToggledBackgroundColour(wxColour c) {
     m_toggle_bg_color = c;
   };
-  virtual void SetBackgroundColour(wxColour c) {m_background_color = c; }
-  virtual wxColour GetBackgroundColour() { return m_background_color;}
+  virtual void SetBackgroundColour(wxColour c) { m_background_color = c; }
+  virtual wxColour GetBackgroundColour() { return m_background_color; }
   virtual void SetColorScheme(ColorScheme cs);
 
   // event handlers
@@ -139,13 +144,13 @@ public:
                              const wxBitmap &bitmap,
                              const wxBitmap &bmpDisabled,
                              wxItemKind kind = wxITEM_NORMAL,
-                             const wxString &shortHelp = wxEmptyString,
-                             const wxString &longHelp = wxEmptyString,
+                             const wxString &shortHelp = "",
+                             const wxString &longHelp = "",
                              wxObject *data = NULL);
 
   wxToolBarToolBase *AddTool(int toolid, const wxString &label,
                              const wxBitmap &bitmap,
-                             const wxString &shortHelp = wxEmptyString,
+                             const wxString &shortHelp = "",
                              wxItemKind kind = wxITEM_NORMAL) {
     return AddTool(toolid, label, bitmap, wxNullBitmap, kind, shortHelp);
   }
@@ -166,8 +171,8 @@ public:
 
   virtual void DoPluginToolUp();
 
-  bool IsDirty(){ return m_dirty; }
-  void SetDirty( bool value ){ m_dirty = value; }
+  bool IsDirty() { return m_dirty; }
+  void SetDirty(bool value) { m_dirty = value; }
 
   size_t GetToolsCount() const { return m_tools.GetCount(); }
   void SetToolShowCount(int count) { m_nShowTools = count; }
@@ -184,7 +189,7 @@ public:
     m_tbenableRolloverBitmaps = enable;
   }
 
-  wxBitmap &GetBitmap(){ return m_bitmap; }
+  wxBitmap &GetBitmap() { return m_bitmap; }
 
   // get the control with the given id or return NULL
   virtual wxControl *FindControl(int toolid);
@@ -285,7 +290,7 @@ public:
   // the list of all our tools
   wxToolBarToolsList m_tools;
 
-  ocpnFloatingToolbarDialog * m_parentContainer;
+  ocpnFloatingToolbarDialog *m_parentContainer;
 
   // the maximum number of toolbar rows/columns
   int m_maxRows;
@@ -310,9 +315,9 @@ protected:
   virtual wxToolBarToolBase *DoAddTool(
       int toolid, const wxString &label, const wxBitmap &bitmap,
       const wxBitmap &bmpDisabled, wxItemKind kind,
-      const wxString &shortHelp = wxEmptyString,
-      const wxString &longHelp = wxEmptyString, wxObject *clientData = NULL,
-      wxCoord xPos = wxDefaultCoord, wxCoord yPos = wxDefaultCoord);
+      const wxString &shortHelp = "", const wxString &longHelp = "",
+      wxObject *clientData = NULL, wxCoord xPos = wxDefaultCoord,
+      wxCoord yPos = wxDefaultCoord);
 
   virtual bool DoInsertTool(size_t pos, wxToolBarToolBase *tool);
   virtual bool DoDeleteTool(size_t pos, wxToolBarToolBase *tool);
@@ -345,7 +350,6 @@ protected:
   wxColour m_toolOutlineColour;
   wxColour m_background_color;
 
-  ToolTipWin *m_pToolTipWin;
   ocpnToolBarTool *m_last_ro_tool;
 
   ColorScheme m_currentColorScheme;
@@ -369,8 +373,13 @@ protected:
   bool m_tbenableRolloverBitmaps;
 
   wxBitmap m_bitmap;
+
 private:
   DECLARE_EVENT_TABLE()
+};
+
+struct ToolbarDlgCallbacks {
+  std::function<void(ocpnDC &, float *, float *)> render_gl_textures;
 };
 
 //----------------------------------------------------------------------------------------------------------
@@ -380,11 +389,13 @@ private:
 #define FADE_TIMER 2
 #define DESTROY_TIMER 3
 
-class ocpnFloatingToolbarDialog : public wxEvtHandler{
-
+/**
+ * Floating toolbar dialog for OpenCPN.
+ */
+class ocpnFloatingToolbarDialog : public wxEvtHandler {
 public:
   ocpnFloatingToolbarDialog(wxWindow *parent, wxPoint position, long orient,
-                            float size_factor);
+                            float size_factor, ToolbarDlgCallbacks callbacks);
   ~ocpnFloatingToolbarDialog();
 
   void OnClose(wxCloseEvent &event);
@@ -458,10 +469,10 @@ public:
 
   size_t GetToolCount();
   void SetToolShowMask(wxString mask);
-  wxString GetToolShowMask(void) { return m_toolShowMask; }
+  wxString GetToolShowMask() { return m_toolShowMask; }
 
   void SetToolShowCount(int count);
-  int GetToolShowCount(void);
+  int GetToolShowCount();
 
   bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
   bool AddDefaultPositionPlugInTools(ocpnToolBarSimple *tb);
@@ -503,6 +514,7 @@ private:
 
   wxWindow *m_pparent;
   wxBoxSizer *m_topSizer;
+  ToolbarDlgCallbacks m_callbacks;
 
   long m_orient;
   wxTimer m_fade_timer;
@@ -555,14 +567,13 @@ public:
   wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU | wxCLOSE_BOX
 
 class ToolbarChoicesDialog : public wxDialog {
-  DECLARE_DYNAMIC_CLASS(ToolbarChoicesDialog)
   DECLARE_EVENT_TABLE()
 
 public:
   /// Constructors
   ToolbarChoicesDialog();
-  ToolbarChoicesDialog(wxWindow *parent, ocpnFloatingToolbarDialog *sponsor, wxWindowID id = -1,
-                       const wxString &caption = _T(""),
+  ToolbarChoicesDialog(wxWindow *parent, ocpnFloatingToolbarDialog *sponsor,
+                       wxWindowID id = -1, const wxString &caption = "",
                        const wxPoint &pos = wxDefaultPosition,
                        const wxSize &size = wxDefaultSize,
                        long style = SYMBOL_ToolbarChoices_STYLE);
@@ -570,7 +581,7 @@ public:
   ~ToolbarChoicesDialog();
 
   void SetColorScheme(ColorScheme cs);
-  void RecalculateSize(void);
+  void RecalculateSize();
   void CreateControls();
 
   void OnCancelClick(wxCommandEvent &event);

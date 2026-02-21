@@ -11,7 +11,7 @@ name: cmake
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-          
+
 jobs:
     build:
         runs-on: ubuntu-${{ matrix.ubuntu_version }}
@@ -35,7 +35,7 @@ jobs:
 
 
           - name: Configure
-            run: cmake -DCMAKE_BUILD_TYPE="${{env.BUILD_TYPE}}" -DBUILD_SHARED_LIBS=${{ matrix.shared }} -B "${{github.workspace}}/build" 
+            run: cmake -DCMAKE_BUILD_TYPE="${{env.BUILD_TYPE}}" -DBUILD_SHARED_LIBS=${{ matrix.shared }} -B "${{github.workspace}}/build"
 
           - name: Build
             run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}

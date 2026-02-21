@@ -1,16 +1,7 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GSHHS Chart Object (Global Self-consistent, Hierarchical,
- *High-resolution Shoreline) Author:   Jesper Weissglas for the OpenCPN port.
- *
- *           Derived from http://www.zygrib.org/ and
- *http://sourceforge.net/projects/qtvlm/ which has the original copyright:
- *   zUGrib: meteorologic GRIB file data viewer
- *   Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org
- *
- ***************************************************************************
- *   Copyright (C) 2012 by David S. Register                               *
+/**************************************************************************
+ *   Copyright (C) 2008 Jacques Zaninetti - http://www.zygrib.org          *
+ *   Copyright (C) 2012 Jesper Weissglass                                  *
+ *   Copyright (C) 2012 David S. Register                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -26,28 +17,28 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ *  GSHHS Chart Object (Global Self-consistent, Hierarchical,
+ *  High-resolution Shoreline)
+ *  Derived from http://www.zygrib.org/ and
+ *  http://sourceforge.net/projects/qtvlm/ which have the original copyrights
  */
 
 #ifndef GSHHS_H
 #define GSHHS_H
 
-#include <stdio.h>
 #include <string>
-#include <math.h>
-#include <assert.h>
 #include <vector>
 
-#include <wx/geometry.h>
-
-#include "model/ocpn_types.h"
-//#include "ocpndc.h"
 #include "viewport.h"
-#include "model/cutil.h"
 #include "poly_math.h"
 #include "color_types.h"
+
+#include "ocpndc.h"
 
 #ifdef __MSVC__
 #pragma warning(disable : 4251)  // relates to std::string fpath
@@ -76,18 +67,21 @@ public:
 };
 
 struct PolygonFileHeader {
-  int version;
-  int pasx;
-  int pasy;
-  int xmin;
-  int ymin;
-  int xmax;
-  int ymax;
-  int p1;
-  int p2;
-  int p3;
-  int p4;
-  int p5;
+  int version;  // Version number of the GSHHS data format
+  int pasx;     // Longitude step size for cells (1/10th degree)
+  int pasy;     // Latitude step size for cells (1/10th degree)
+  // xmin, ymin, xmax, ymax define the bounding box of the entire grid in 1/10th
+  // of a degree. This allows for quick determination of whether a given point
+  // is within the covered area.
+  int xmin;  // Minimum longitude of the grid (1/10th degree)
+  int ymin;  // Minimum latitude of the grid (1/10th degree)
+  int xmax;  // Maximum longitude of the grid (1/10th degree)
+  int ymax;  // Maximum latitude of the grid (1/10th degree)
+  int p1;    // Spare (reserved for future use)
+  int p2;    // Spare (reserved for future use)
+  int p3;    // Spare (reserved for future use)
+  int p4;    // Spare (reserved for future use)
+  int p5;    // Spare (reserved for future use)
 };
 
 typedef std::vector<wxRealPoint> contour;
@@ -131,8 +125,9 @@ private:
   void DrawPolygonFilled(ocpnDC &pnt, contour_list *poly, double dx,
                          ViewPort &vp, wxColor const &color);
 #ifdef ocpnUSE_GL
-  void DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt **pv, int *pvc,
-                           ViewPort &vp, wxColor const &color, bool idl);
+  void DrawPolygonFilledGL(ocpnDC &pnt, contour_list *p, float_2Dpt **pv,
+                           int *pvc, ViewPort &vp, wxColor const &color,
+                           bool idl);
 #endif
   void DrawPolygonContour(ocpnDC &pnt, contour_list *poly, double dx,
                           ViewPort &vp);
@@ -249,6 +244,7 @@ public:
 
   //    bool crossing( wxLineF traject, wxLineF trajectWorld ) const;
   bool crossing1(wxLineF trajectWorld);
+  // Open the polygon file, read and return the version from the header.
   int ReadPolyVersion();
   bool qualityAvailable[6];
 
@@ -259,6 +255,20 @@ public:
 private:
   int quality;  // 5 levels: 0=low ... 4=full
   int selectBestQuality(void);
+  /**
+   * @brief Selects the best available quality level for GSHHS data based on the
+   * scale in the ViewPort.
+   *
+   * This function determines the optimal quality level for GSHHS data based on
+   * the viewport scale. It considers both the desired quality at the current
+   * scale in the ViewPort and the actual availability of quality levels.
+   *
+   * @param vp The current ViewPort, containing information about the current
+   * chart scale display.
+   * @return int The selected quality level, ranging from 0 (lowest) to 4
+   * (highest). Returns the best available quality if the ideal quality is not
+   * available. Returns -1 if no quality level is available at all.
+   */
   int selectBestQuality(ViewPort &vp);
 
   int maxQualityAvailable;
@@ -308,8 +318,20 @@ private:
   GshhsReader *reader;
 };
 
+/*
+ * Create a GSHHS singleton for detecting land crossing and load the data
+ * from GSHHS files on disk.
+ */
 void gshhsCrossesLandInit();
+/*
+ * Reset the GSHHS singleton and reload the data from the GSHHS files on disk.
+ * For example, this should be invoked when new GSHHS files have been installed.
+ */
 void gshhsCrossesLandReset();
+/*
+ * Detects if the rectangle specified with the coordinates crosses land.
+ * The best available quality is used, regardless of the chart scale.
+ */
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2);
 
 #endif

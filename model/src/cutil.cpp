@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Extern C Linked Utilities
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,12 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ * Implement cutil.h -- extern C linked Utilities
  */
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
@@ -32,10 +29,10 @@
 
 #include "model/cutil.h"
 
-
 double round_msvc(double x) { return (floor(x + 0.5)); }
 
 #ifdef __MSVC__
+#include <winsock2.h>
 #include <windows.h>
 #include <float.h>  // for _clear87()
 
@@ -84,3 +81,25 @@ int NextPow2(int size) {
 
   return n + 1;
 }
+#ifdef __WXMSW__
+extern "C" int clock_gettime_monotonic(struct timespec *tv) {
+  static LARGE_INTEGER ticksPerSec;
+  LARGE_INTEGER ticks;
+
+  if (!ticksPerSec.QuadPart) {
+    QueryPerformanceFrequency(&ticksPerSec);
+    if (!ticksPerSec.QuadPart) {
+      errno = ENOTSUP;
+      return -1;
+    }
+  }
+
+  QueryPerformanceCounter(&ticks);
+
+  tv->tv_sec = (long)(ticks.QuadPart / ticksPerSec.QuadPart);
+  tv->tv_nsec = (long)(((ticks.QuadPart % ticksPerSec.QuadPart) * 1e9) /
+                       ticksPerSec.QuadPart);
+
+  return 0;
+}
+#endif

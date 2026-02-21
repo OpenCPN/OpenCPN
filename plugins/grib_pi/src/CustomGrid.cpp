@@ -1,10 +1,4 @@
-/************************************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  personalized GRID
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,9 +15,13 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref CustomGrid.h
  */
+
+#include "pi_gl.h"  // Must included before anything using GL stuff
 
 #include "CustomGrid.h"
 
@@ -62,10 +60,10 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
     m_NumRowVal.push_back(std::vector<double>());
   }
   // init labels attr
-  wxFont labelfont = GetOCPNGUIScaledFont_PlugIn(_T("Dialog")).MakeBold();
+  wxFont labelfont = GetOCPNGUIScaledFont_PlugIn(_("Dialog")).MakeBold();
   SetLabelFont(labelfont);
   wxColour colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
-  if(colour.Red() > 128) {
+  if (colour.Red() > 128) {
     GetGlobalColor(_T("DILG0"), &colour);
     GetGlobalColor(_T("GREEN1"), &m_greenColour);
     GetGlobalColor(_T("DILG1"), &m_greyColour);
@@ -76,7 +74,7 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   SetLabelBackgroundColour(colour);
   // set row label size
   int w;
-  GetTextExtent(_T("Ab"), &w, NULL, 0, 0, &labelfont);
+  GetTextExtent(_T("Ab"), &w, nullptr, 0, 0, &labelfont);
   double x = (double)w * 6.5;
   SetRowLabelSize((int)x);
 
@@ -86,21 +84,24 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
   // connect events at dialog level
   Connect(wxEVT_SCROLLWIN_THUMBTRACK,
-          wxScrollEventHandler(CustomGrid::OnScroll), NULL, this);
-  Connect(wxEVT_SIZE, wxSizeEventHandler(CustomGrid::OnResize), NULL, this);
+          wxScrollEventHandler(CustomGrid::OnScroll), nullptr, this);
+  Connect(wxEVT_SIZE, wxSizeEventHandler(CustomGrid::OnResize), nullptr, this);
   Connect(wxEVT_GRID_LABEL_LEFT_CLICK,
-          wxGridEventHandler(CustomGrid::OnLabeClick), NULL, this);
+          wxGridEventHandler(CustomGrid::OnLabeClick), nullptr, this);
   // connect events at grid level
   GetGridWindow()->Connect(wxEVT_LEFT_DOWN,
-                           wxMouseEventHandler(CustomGrid::OnMouseEvent), NULL,
-                           this);
-  GetGridWindow()->Connect(
-      wxEVT_LEFT_UP, wxMouseEventHandler(CustomGrid::OnMouseEvent), NULL, this);
-  GetGridWindow()->Connect(
-      wxEVT_MOTION, wxMouseEventHandler(CustomGrid::OnMouseEvent), NULL, this);
+                           wxMouseEventHandler(CustomGrid::OnMouseEvent),
+                           nullptr, this);
+  GetGridWindow()->Connect(wxEVT_LEFT_UP,
+                           wxMouseEventHandler(CustomGrid::OnMouseEvent),
+                           nullptr, this);
+  GetGridWindow()->Connect(wxEVT_MOTION,
+                           wxMouseEventHandler(CustomGrid::OnMouseEvent),
+                           nullptr, this);
   // timer event
-  m_tRefreshTimer.Connect(
-      wxEVT_TIMER, wxTimerEventHandler(CustomGrid::OnRefreshTimer), NULL, this);
+  m_tRefreshTimer.Connect(wxEVT_TIMER,
+                          wxTimerEventHandler(CustomGrid::OnRefreshTimer),
+                          nullptr, this);
 }
 
 CustomGrid::~CustomGrid() {
@@ -129,8 +130,9 @@ void CustomGrid::DrawColLabel(wxDC& dc, int col) {
   // draw lines aroud label
   dc.SetPen(GetDefaultGridLinePen());
   dc.DrawLine(GetColLeft(col) - 1, 0, GetColRight(col), 0);
-  if (col > -1 && (col == 0 || GetColLabelValue(col).BeforeFirst('-') !=
-                                   GetColLabelValue(col - 1).BeforeFirst('-')))
+  // Increase line width to highlight "day" change at midnight
+  if (col > -1 && (col == 0 || GetColLabelValue(col).BeforeFirst(' ') !=
+                                   GetColLabelValue(col - 1).BeforeFirst(' ')))
     dc.SetPen(wxPen(*wxBLACK, 4));
   dc.DrawLine(GetColLeft(col) - 1, 0, GetColLeft(col) - 1, m_colLabelHeight);
   if (col == m_numCols - 1) {
@@ -408,8 +410,8 @@ void CustomRenderer::Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
 
 #if wxUSE_GRAPHICS_CONTEXT
     wxGraphicsContext* gdc;
-    wxClientDC* cdc = new wxClientDC(wxDynamicCast(&grid, wxWindow));
-    cdc = wxDynamicCast(&dc, wxClientDC);
+    wxClientDC* cdc = new wxClientDC(dynamic_cast<wxWindow*>(&grid));
+    cdc = dynamic_cast<wxClientDC*>(&dc);
     if (cdc) {
       gdc = wxGraphicsContext::Create(*cdc);
 #ifdef __WXGTK__

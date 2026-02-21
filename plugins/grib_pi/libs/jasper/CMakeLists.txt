@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 SET(SRC
     src/base/jas_cm.c
@@ -100,6 +100,12 @@ target_compile_definitions(JASPER
   PUBLIC
     -DJASPER
 )
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  # We trust this old and well tested code
+  target_compile_options(JASPER PRIVATE -Wno-stringop-overflow)
+endif ()
+
 
 # FIXME: this hides some nasty warnings, some of which fixed upstream.
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")

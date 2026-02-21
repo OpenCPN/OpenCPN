@@ -15,6 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
+/**
+ * \file
+ * \implements \ref IsoLine.h
+ */
+
+#include "pi_gl.h"  // Must included before anything using GL stuff
 
 #include "wx/wxprec.h"
 
@@ -22,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-//#include "chcanv.h"
-//#include "model/georef.h"
+// #include "chcanv.h"
+// #include "model/georef.h"
 #include <wx/graphics.h>
 
 #include "IsoLine.h"
@@ -229,7 +235,7 @@ IsoLine::~IsoLine() {
   std::list<Segment *>::iterator it;
   for (it = trace.begin(); it != trace.end(); it++) {
     delete *it;
-    *it = NULL;
+    *it = nullptr;
   }
   trace.clear();
 
@@ -289,7 +295,7 @@ MySegList *IsoLine::BuildContinuousSegment(void) {
     if (badded == true)
       tseg = seg;
     else
-      tseg = NULL;
+      tseg = nullptr;
   }
 
   //     Build a chain extending from the "1" end of the target segment
@@ -337,7 +343,7 @@ MySegList *IsoLine::BuildContinuousSegment(void) {
     if (badded == true)
       tseg = seg;
     else
-      tseg = NULL;
+      tseg = nullptr;
   }
 
   //     Now have two lists...
@@ -374,7 +380,7 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc,
   GetGlobalColor(_T ( "UITX1" ), &isoLineColor);
 
 #if wxUSE_GRAPHICS_CONTEXT
-  wxGraphicsContext *pgc = NULL;
+  wxGraphicsContext *pgc = nullptr;
 #endif
 
   if (dc) {
@@ -382,28 +388,28 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc,
 
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc;
-    pmdc = wxDynamicCast(dc, wxMemoryDC);
+    pmdc = dynamic_cast<wxMemoryDC *>(dc);
     pgc = wxGraphicsContext::Create(*pmdc);
     pgc->SetPen(ppISO);
 #endif
     dc->SetPen(ppISO);
   } else { /* opengl */
 #ifdef ocpnUSE_GL
-    //#ifndef USE_ANDROID_GLES2
-    //           if(m_pixelMM > 0.2){        // pixel size large enough to
-    //           render well
-    //           //      Enable anti-aliased lines, at best quality
-    //             glEnable( GL_LINE_SMOOTH );
-    //             glEnable( GL_BLEND );
-    //             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    //             glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-    //             glLineWidth( 2 );
-    //           }
-    //           else{
-    //             glLineWidth( 0.4/m_pixelMM);        //  set a target line
-    //             width by MM
-    //           }
-    //#else
+    // #ifndef USE_ANDROID_GLES2
+    //            if(m_pixelMM > 0.2){        // pixel size large enough to
+    //            render well
+    //            //      Enable anti-aliased lines, at best quality
+    //              glEnable( GL_LINE_SMOOTH );
+    //              glEnable( GL_BLEND );
+    //              glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    //              glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+    //              glLineWidth( 2 );
+    //            }
+    //            else{
+    //              glLineWidth( 0.4/m_pixelMM);        //  set a target line
+    //              width by MM
+    //            }
+    // #else
     if (pof->m_oDC) {
       wxPen ppISO(isoLineColor, 2);
       pof->m_oDC->SetPen(ppISO);
@@ -559,7 +565,7 @@ void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp,
 #if 1
           prev = r;
           if (pof->m_oDC) {
-            //pof->m_oDC->SetFont( *mfont );
+            // pof->m_oDC->SetFont( *mfont );
             pof->m_oDC->SetPen(*wxBLACK_PEN);
             pof->m_oDC->SetBrush(color);
             pof->m_oDC->DrawRectangle(x, y, w, h);
@@ -875,7 +881,7 @@ void GenSpline(wxList *points) {
 
   while ((node = node->GetNext())
 #if !wxUSE_STL
-         != NULL
+         != nullptr
 #endif  // !wxUSE_STL
   ) {
     p = (wxPoint *)node->GetData();

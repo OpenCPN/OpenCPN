@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10)
 
 if (TARGET ocpn::mipmap)
   return ()
@@ -37,8 +37,8 @@ if( NOT QT_ANDROID)
   if (NOT MSVC)
       set_property(TARGET MIPMAP PROPERTY COMPILE_FLAGS "-fvisibility=hidden -O3")
       if (NOT APPLE)
-          set_source_files_properties(
-            src/mipmap.c PROPERTIES COMPILE_FLAGS "-march=native")
+          # set_source_files_properties(
+          #   src/mipmap.c PROPERTIES COMPILE_FLAGS "-march=native")
       endif()
       if (HAVE_MSSE)
           message(STATUS "mipmap SSE support enabled")

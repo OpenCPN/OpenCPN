@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 if (TARGET ocpn::wxcurl)
     return ()
 endif ()
 
 if (POLICY CMP0077)
-    CMAKE_POLICY(SET CMP0077 OLD)
+  CMAKE_POLICY(SET CMP0077 NEW)
 endif ()
 
 set(SRC
@@ -55,3 +55,10 @@ endif ()
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
     target_compile_options(WXCURL PRIVATE "-Wno-varargs")
 endif()
+
+target_compile_definitions(
+  WXCURL PRIVATE
+  WXCURL_OCPN_VERSION="${WXCURL_OCPN_VERSION}"
+  WXCURL_ABI="${WXCURL_ABI}"
+  WXCURL_ABI_VERSION="${WXCURL_ABI_VERSION}"
+)

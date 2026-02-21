@@ -12,12 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/** \file Local communications factories
+/**
+ * \file
+ *
+ * Implement ipc_factories.h -- local communications factories.
  *
  * Factory methods which returns dbus or wxwidgets based implementations
  * of instance checkers, servers and clients.
@@ -26,16 +27,16 @@
 #include <stdlib.h>
 
 #include "model/ipc_api.h"
-#include "model/wx_instance_chk.h"
+#include "model/std_instance_chk.h"
 
-#if defined(__linux__)  && !defined(__ANDROID__)
+#if defined(__linux__) && !defined(__ANDROID__)
 #include "model/dbus_client.h"
 #include "model/dbus_server.h"
 #endif
 
-static InstanceCheck& GetWxInstanceChk() {
-  static WxInstanceCheck wx_check;
-  return wx_check;
+static InstanceCheck& GetStdInstanceChk() {
+  static StdInstanceCheck std_check;
+  return std_check;
 }
 
 #ifdef __ANDROID__
@@ -44,7 +45,7 @@ std::unique_ptr<LocalClientApi> LocalClientApi::GetClient() {
   return std::unique_ptr<LocalClientApi>(new DummyIpcClient());
 }
 
-LocalServerApi& LocalServerApi:: GetInstance() {
+LocalServerApi& LocalServerApi::GetInstance() {
   return DummyIpcServer::GetInstance();
 }
 
@@ -53,7 +54,6 @@ void LocalServerApi::ReleaseInstance() {}
 InstanceCheck& InstanceCheck::GetInstance() {
   return DummyInstanceChk::GetInstance();
 }
-
 
 #elif defined(__linux__)
 static bool UseDbus() {
@@ -68,7 +68,7 @@ std::unique_ptr<LocalClientApi> LocalClientApi::GetClient() {
   }
 }
 
-LocalServerApi& LocalServerApi:: GetInstance() {
+LocalServerApi& LocalServerApi::GetInstance() {
   return UseDbus() ? DbusServer::GetInstance() : IpcConnection::GetInstance();
 }
 
@@ -78,7 +78,7 @@ InstanceCheck& InstanceCheck::GetInstance() {
   if (UseDbus())
     return DbusServer::GetInstance();
   else
-    return GetWxInstanceChk();
+    return GetStdInstanceChk();
 }
 
 #else  // __linux__ nor __ANDROID__
@@ -86,14 +86,12 @@ std::unique_ptr<LocalClientApi> LocalClientApi::GetClient() {
   return std::unique_ptr<LocalClientApi>(new IpcClient());
 }
 
-LocalServerApi& LocalServerApi:: GetInstance() {
+LocalServerApi& LocalServerApi::GetInstance() {
   return IpcConnection::GetInstance();
 }
 
 void LocalServerApi::ReleaseInstance() { IpcConnection::ReleaseInstance(); }
 
-InstanceCheck& InstanceCheck::GetInstance() {
-  return GetWxInstanceChk();
-}
+InstanceCheck& InstanceCheck::GetInstance() { return GetStdInstanceChk(); }
 
-#endif    // __linux__
+#endif  // __linux__

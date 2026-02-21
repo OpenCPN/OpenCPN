@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin Freinds
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2014 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,9 +15,23 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * GRIB Data Visualization and Rendering Factory.
+ *
+ * Provides comprehensive visualization capabilities for GRIB weather data in
+ * OpenCPN, including:
+ * - Wind barbs and particle animations
+ * - Pressure isobars and directional arrows
+ * - Color-coded overlay maps for various parameters
+ * - Numerical data displays and labels
+ *
+ * The factory manages both OpenGL and bitmap-based rendering paths, handles
+ * resource allocation, and provides efficient caching of rendered elements.
+ * It serves as the central hub for converting raw GRIB data into meaningful
+ * visual representations for mariners.
  */
-
 #ifndef _GRIBOVERLAYFACTORY_H_
 #define _GRIBOVERLAYFACTORY_H_
 
@@ -36,15 +44,18 @@
 #include "pi_ocpndc.h"
 #include "pi_TexFont.h"
 
-//----------------------------------------------------------------------------------------------------------
-//    Grib Overlay Specification
-//----------------------------------------------------------------------------------------------------------
-
+/**
+ * Container for rendered GRIB data visualizations in texture or bitmap form.
+ *
+ * This class manages the rendered representation of GRIB weather data,
+ * supporting both OpenGL texture-based rendering and bitmap-based rendering. It
+ * handles resource allocation and cleanup for both rendering paths.
+ */
 class GribOverlay {
 public:
   GribOverlay(void) {
     m_iTexture = 0;
-    m_pDCBitmap = NULL, m_pRGBA = NULL;
+    m_pDCBitmap = nullptr, m_pRGBA = nullptr;
   }
 
   ~GribOverlay(void) {
@@ -71,7 +82,14 @@ public:
 #define MAX_PARTICLE_HISTORY 8
 #include <vector>
 #include <list>
+/**
+ * Individual particle for wind/current animation.
+ *
+ * Represents a single particle in the animation system with position history
+ * and rendering attributes.
+ */
 struct Particle {
+  /** Duration this particle should exist in animation cycles. */
   int m_Duration;
 
   // history is a ringbuffer.. because so many particles are
@@ -84,15 +102,20 @@ struct Particle {
   } m_History[MAX_PARTICLE_HISTORY];
 };
 
+/**
+ * Manager for particle animation system.
+ *
+ * Handles collections of particles and their rendering data arrays.
+ */
 struct ParticleMap {
 public:
   ParticleMap(int settings)
       : m_Setting(settings),
         history_size(0),
         array_size(0),
-        color_array(NULL),
-        vertex_array(NULL),
-        color_float_array(NULL) {
+        color_array(nullptr),
+        vertex_array(nullptr),
+        color_float_array(nullptr) {
     // XXX should be done in default PlugIn_ViewPort CTOR
     last_viewport.bValid = false;
   }
@@ -122,7 +145,7 @@ class LineBuffer {
 public:
   LineBuffer() {
     count = 0;
-    lines = NULL;
+    lines = nullptr;
   }
   ~LineBuffer() { delete[] lines; }
 
@@ -139,14 +162,17 @@ private:
   std::list<float> buffer;
 };
 
-//----------------------------------------------------------------------------------------------------------
-//    Grib Overlay Factory Specification
-//----------------------------------------------------------------------------------------------------------
-
 class GRIBUICtrlBar;
 class GribRecord;
 class GribTimelineRecordSet;
 
+/**
+ * Factory class for creating and managing GRIB data visualizations.
+ *
+ * This class is responsible for rendering all GRIB weather data visualizations
+ * in OpenCPN. It handles multiple visualization types including wind barbs,
+ * isobars, particles, directional arrows, and numeric overlays.
+ */
 class GRIBOverlayFactory : public wxEvtHandler {
 public:
   GRIBOverlayFactory(GRIBUICtrlBar &dlg);
@@ -161,7 +187,6 @@ public:
   }
   void SetMessageFont();
   void SetMessage(wxString message) { m_Message = message; }
-  void SetTimeZone(int TimeZone) { m_TimeZone = TimeZone; }
   void SetParentSize(int w, int h) {
     m_ParentSize.SetWidth(w);
     m_ParentSize.SetHeight(h);
@@ -176,7 +201,7 @@ public:
   void ClearCachedLabel(void) { m_labelCache.clear(); }
   void ClearParticles() {
     delete m_ParticleMap;
-    m_ParticleMap = NULL;
+    m_ParticleMap = nullptr;
   }
 
   GribTimelineRecordSet *m_pGribTimelineRecordSet;
@@ -195,14 +220,92 @@ private:
 
   void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar);
   bool DoRenderGribOverlay(PlugIn_ViewPort *vp);
+  /**
+   * Renders wind or current barbed arrows on the chart.
+   *
+   * This function draws barbed arrows representing wind or current directions
+   * and magnitudes. The barbs change appearance based on speed (more barbs for
+   * higher speed). The arrows can be drawn using fixed spacing (grid) or
+   * minimum spacing modes.
+   *
+   * @param settings The settings index identifying the data type (WIND,
+   * CURRENT, etc.)
+   * @param pGR Array of GribRecord pointers containing the data
+   * @param vp Current viewport for rendering
+   */
   void RenderGribBarbedArrows(int config, GribRecord **pGR,
                               PlugIn_ViewPort *vp);
+  /**
+   * Renders isobars (lines of equal value) for pressure or other scalar fields.
+   *
+   * This function draws isobar lines at specific intervals defined in the
+   * settings. It also handles label placement along the isobars. For pressure,
+   * the function supports different unit conversions. The implementation caches
+   * isobar calculations to improve performance.
+   *
+   * @param settings The settings index identifying the data type (PRESSURE,
+   * etc.)
+   * @param pGR Array of GribRecord pointers containing the data
+   * @param pIsobarArray Array of cached isobar objects for reuse
+   * @param vp Current viewport for rendering
+   */
   void RenderGribIsobar(int config, GribRecord **pGR,
                         wxArrayPtrVoid **pIsobarArray, PlugIn_ViewPort *vp);
+  /**
+   * Renders direction arrows for vector fields like wind or current.
+   *
+   * This function draws arrows showing flow direction for vector data. The
+   * arrows can be single, double, or width-varied based on settings. Supports
+   * both fixed spacing (grid) mode and minimum spacing mode.
+   *
+   * @param settings The settings index identifying the data type (WIND,
+   * CURRENT, etc.)
+   * @param pGR Array of GribRecord pointers containing the data
+   * @param vp Current viewport for rendering
+   */
   void RenderGribDirectionArrows(int config, GribRecord **pGR,
                                  PlugIn_ViewPort *vp);
+  /**
+   * Renders color-coded overlay maps showing data distribution.
+   *
+   * This function creates and draws bitmap or OpenGL texture overlays showing
+   * geographic distribution of data using color gradients. It handles both
+   * scalar and vector magnitude fields, and manages appropriate color mapping
+   * based on data range. Includes transparency support for certain data types.
+   *
+   * @param settings The settings index identifying the data type
+   * @param pGR Array of GribRecord pointers containing the data
+   * @param vp Current viewport for rendering
+   */
   void RenderGribOverlayMap(int config, GribRecord **pGR, PlugIn_ViewPort *vp);
+  /**
+   * Renders numeric values at fixed or minimum-spaced grid points.
+   *
+   * This function displays actual data values at locations across the chart.
+   * Values are drawn with background colors matching the data scale.
+   * Supports both fixed spacing (grid) mode and minimum spacing mode.
+   * Grid placement is aligned to geographic coordinates to maintain proper
+   * positioning during panning.
+   *
+   * @param settings The settings index identifying the data type
+   * @param pGR Array of GribRecord pointers containing the data
+   * @param vp Current viewport for rendering
+   */
   void RenderGribNumbers(int config, GribRecord **pGR, PlugIn_ViewPort *vp);
+  /**
+   * Renders animated particles showing flow patterns.
+   *
+   * This function creates and updates flowing particles that visualize vector
+   * fields like wind or current. Particles have position history, move based on
+   * field strength and direction, and are color-coded by magnitude. The
+   * implementation manages particle lifecycle, trajectory calculation, and
+   * efficient rendering for potentially thousands of particles.
+   *
+   * @param settings The settings index identifying the data type (WIND,
+   * CURRENT)
+   * @param pGR Array of GribRecord pointers containing the data
+   * @param vp Current viewport for rendering
+   */
   void RenderGribParticles(int settings, GribRecord **pGR, PlugIn_ViewPort *vp);
   void DrawLineBuffer(LineBuffer &buffer);
   void OnParticleTimer(wxTimerEvent &event);
@@ -245,7 +348,6 @@ private:
 
   wxString m_Message;
   wxString m_Message_Hiden;
-  int m_TimeZone;
 
   wxDC *m_pdc;
 #if wxUSE_GRAPHICS_CONTEXT

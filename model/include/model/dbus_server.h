@@ -12,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * DBus interface header file.
  */
 
-#ifndef DBUS_HANDLER_H__
-#define DBUS_HANDLER_H__
+#ifndef DBUS_HANDLER_H_
+#define DBUS_HANDLER_H_
 
 #include <functional>
 #include <thread>
@@ -29,12 +32,6 @@
 #include "model/instance_check.h"
 #include "model/local_api.h"
 #include "observable_evtvar.h"
-
-/**
- * \file
- *
- * DBus interface header file.
- */
 
 /** The name registered on the session bus. */
 static const char* const kDbusName = "org.opencpn.OpenCPN";
@@ -93,7 +90,6 @@ static void HandleMethodCall(GDBusConnection* connection, const gchar* sender,
  */
 class DbusServer : public LocalServerApi, public InstanceCheck {
 public:
-
   static DbusServer& GetInstance();
 
   /** Clear current singleton instance and disconnect from session bus */
@@ -141,4 +137,4 @@ private:
   unsigned m_owner_id;
 };
 
-#endif  // DBUS_HANDLER_H__
+#endif  // DBUS_HANDLER_H_

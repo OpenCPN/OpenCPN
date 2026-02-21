@@ -1,11 +1,4 @@
-/***************************************************************************
- *
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,74 +12,70 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * PlugInManager and helper classes -- Mostly gui parts (dialogs) and
+ * plugin API stuff.
+ */
 
 #ifndef _PLUGINMGR_H_
 #define _PLUGINMGR_H_
 
-#include <wx/wx.h>
-#include <wx/dynarray.h>
-#include <wx/dynlib.h>
-
-#include <memory>
 #include <atomic>
+#include <memory>
+#include <string>
+
 #include "config.h"
 
-#include "ocpn_plugin.h"
-#include "OCPN_Sound.h"
-#include "chartimg.h"
-#include "model/catalog_parser.h"
-#include "model/plugin_blacklist.h"
-#include "observable.h"
-#include "model/ais_target_data.h"
-#include "model/comm_navmsg.h"
-#include "s57chart.h"  // for Object list
-#include "model/semantic_vers.h"
-
-// For widgets...
-#include <wx/hyperlink.h>
-#include <wx/choice.h>
-#include <wx/tglbtn.h>
+#include <wx/wx.h>
 #include <wx/bmpcbox.h>
+#include <wx/choice.h>
+#include <wx/dynarray.h>
+#include <wx/dynlib.h>
+#include <wx/hyperlink.h>
+#include <wx/json_defs.h>
+#include <wx/jsonwriter.h>
+#include <wx/tglbtn.h>
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #ifdef OCPN_USE_CURL
 #include <wx/curl/http.h>
 #include <wx/curl/dialog.h>
 #endif
 #endif
 
-//    Include wxJSON headers
-//    We undefine MIN/MAX so avoid warning of redefinition coming from
-//    json_defs.h
-//    Definitions checked manually, and are identical
-#ifdef MIN
-#undef MIN
-#endif
+#include "o_sound/o_sound.h"
 
-#ifdef MAX
-#undef MAX
-#endif
-
-#include <wx/json_defs.h>
-#include <wx/jsonwriter.h>
+#include "model/ais_target_data.h"
+#include "model/catalog_parser.h"
+#include "model/comm_navmsg.h"
+#include "model/plugin_blacklist.h"
 #include "model/plugin_loader.h"
+#include "model/semantic_vers.h"
 
-//    Assorted static helper routines
-
-PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
-
-class PluginListPanel;
-class PluginPanel;
-class pluginUtilHandler;
-class MyFrame;
+#include "chartimg.h"
+#include "observable.h"
+#include "ocpndc.h"
+#include "ocpn_plugin.h"
+#include "s57chart.h"  // for Object list
+#include "top_frame.h"
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
 //----------------------------------------------------------------------------
+
+class PlugInManager;                // forward
+extern PlugInManager* g_pi_manager; /**< Global instance */
+
+class PluginListPanel;    // forward
+class PluginPanel;        // forward
+class pluginUtilHandler;  // forward in .cpp file
+
+PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
 
 class OCPN_MsgEvent : public wxEvent {
 public:
@@ -123,7 +112,8 @@ enum ActionVerb {
   REINSTALL_MANAGED_VERSION,
   DOWNGRADE_INSTALLED_MANAGED_VERSION,
   UNINSTALL_MANAGED_VERSION,
-  INSTALL_MANAGED_VERSION
+  INSTALL_MANAGED_VERSION,
+  UPDATE_IMPORTED_VERSION
 };
 
 class PlugInMenuItemContainer {
@@ -134,6 +124,7 @@ public:
   bool b_grey;
   int id;
   wxString m_in_menu;
+  bool extended;
 };
 
 //    Define an array of PlugIn MenuItem Containers
@@ -180,7 +171,7 @@ class BlacklistUI;
 
 class PlugInManager : public wxEvtHandler {
 public:
-  PlugInManager(MyFrame* parent);
+  PlugInManager(AbstractTopFrame* parent);
   virtual ~PlugInManager();
 
   bool RenderAllCanvasOverlayPlugIns(ocpnDC& dc, const ViewPort& vp,
@@ -188,7 +179,7 @@ public:
   bool RenderAllGLCanvasOverlayPlugIns(wxGLContext* pcontext,
                                        const ViewPort& vp, int canvasIndex,
                                        int priority);
-  void SendCursorLatLonToAllPlugIns(double lat, double lon);
+  // void SendCursorLatLonToAllPlugIns(double lat, double lon);
   void SendViewPortToRequestingPlugIns(ViewPort& vp);
   void PrepareAllPluginContextMenus();
 
@@ -225,23 +216,16 @@ public:
   ArrayOfPlugInMenuItems& GetPluginContextMenuItemArray() {
     return m_PlugInMenuItems;
   }
-  int AddCanvasContextMenuItem(wxMenuItem* pitem, opencpn_plugin* pplugin,
-                               const char* name = "");
+  int AddCanvasContextMenuItemPIM(wxMenuItem* pitem, opencpn_plugin* pplugin,
+                                  const char* name = "",
+                                  bool is_extended = false);
   void RemoveCanvasContextMenuItem(int item, const char* name = "");
   void SetCanvasContextMenuItemViz(int item, bool viz, const char* name = "");
   void SetCanvasContextMenuItemGrey(int item, bool grey, const char* name = "");
 
-  static void SendNMEASentenceToAllPlugIns(const wxString& sentence);
-  void SendPositionFixToAllPlugIns(GenericPosDatEx* ppos);
-  void SendActiveLegInfoToAllPlugIns(const ActiveLegDat* infos);
-  void SendAISSentenceToAllPlugIns(const wxString& sentence);
-  void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v);
-  void SendMessageToAllPlugins(const wxString& message_id,
-                               const wxString& message_body);
   bool UpDateChartDataTypes();
   void FinalizePluginLoadall();
 
-  int GetJSONMessageTargetCount();
   bool UpdateConfig();
   void SendResizeEventToAllPlugIns(int x, int y);
   void SetColorSchemeForAllPlugIns(ColorScheme cs);
@@ -249,13 +233,6 @@ public:
   bool CallLateInit(void);
 
   bool IsAnyPlugInChartEnabled();
-
-  void SendVectorChartObjectInfo(const wxString& chart, const wxString& feature,
-                                 const wxString& objname, double& lat,
-                                 double& lon, double& scale, int& nativescale);
-
-  bool SendMouseEventToPlugins(wxMouseEvent& event);
-  bool SendKeyEventToPlugins(wxKeyEvent& event);
 
   void SendBaseConfigToAllPlugIns();
   void SendS52ConfigToAllPlugIns(bool bReconfig = false);
@@ -265,10 +242,25 @@ public:
   bool CheckBlacklistedPlugin(const PluginMetadata plugin);
 
   void InitCommListeners(void);
+  /**
+   * Process incoming NMEA 0183 messages from the message bus.
+   * Filters messages based on their source configuration and distributes
+   * valid messages to all interested plugins.
+   *
+   * @param n0183_msg Message container with NMEA 0183 sentence and metadata
+   */
   void HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg);
+  /**
+   * Process incoming SignalK messages from the message bus.
+   * Validates and forwards SignalK data to plugins that have registered
+   * interest in SignalK messages.
+   *
+   * @param sK_msg Message container with SignalK data and metadata
+   */
   void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxArrayString GetPlugInChartClassNameArray(void);
+  opencpn_plugin* GetProvidingPlugin(const wxString& ChartClassName);
 
   ListOfPI_S57Obj* GetPlugInObjRuleListAtLatLon(ChartPlugInWrapper* target,
                                                 float zlat, float zlon,
@@ -278,7 +270,7 @@ public:
                                  ListOfPI_S57Obj* rule_list);
 
   wxString GetLastError();
-  MyFrame* GetParentFrame() { return pParent; }
+  AbstractTopFrame* GetParentFrame() { return m_parent; }
 
   void DimeWindow(wxWindow* win);
   pluginUtilHandler* GetUtilHandler() { return m_utilHandler; }
@@ -290,6 +282,7 @@ public:
 private:
   bool CheckBlacklistedPlugin(wxString name, int major, int minor);
   bool CheckBlacklistedPlugin(opencpn_plugin* plugin);
+  void OnNewMessageType();
 
   ObservableListener evt_ais_json_listener;
   ObservableListener evt_blacklisted_plugin_listener;
@@ -304,20 +297,24 @@ private:
   ObservableListener evt_routeman_json_listener;
   ObservableListener evt_routeman_leginfo_listener;
 
-  ObservableListener m_listener_N0183_all;
   ObservableListener m_listener_SignalK;
 
+  ObsListener m_new_msgtype_lstnr;
+
   ObsListener m_on_msg_sent_listener;
+
+  std::unordered_map<std::string, ObsListener> m_0183_listeners;
 
   wxBitmap* BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
                                   unsigned char dim_ratio);
 
   void ProcessLateInit(const PlugInContainer* pic);
+  void OnPluginActivate(const PlugInContainer* pic);
   void OnPluginDeactivate(const PlugInContainer* pic);
   void HandlePluginLoaderEvents();
   void HandlePluginHandlerEvents();
 
-  MyFrame* pParent;
+  AbstractTopFrame* m_parent;
   std::unique_ptr<BlacklistUI> m_blacklist_ui;
 
   wxString m_last_error_string;
@@ -339,7 +336,7 @@ private:
   PluginListPanel* m_listPanel;
   std::unique_ptr<AbstractBlacklist> m_blacklist;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #ifdef OCPN_USE_CURL
 
 public:
@@ -364,8 +361,6 @@ public:
 };
 
 WX_DEFINE_ARRAY_PTR(PluginPanel*, ArrayOfPluginPanel);
-
-class PluginDownloadDialog;
 
 /*
  * Panel with a single + sign which opens the "Add/download plugins" dialog.
@@ -439,14 +434,14 @@ private:
   PluginPanel* m_PluginSelected;
   wxString m_selectedName;
   int m_pluginSpacer;
-  std::atomic_flag m_is_loading;   //!<  recursive lock.
+  std::atomic_flag m_is_loading;  //!<  recursive lock.
 };
 
 /** Invokes client browser on plugin info_url when clicked. */
 class WebsiteButton : public wxPanel {
 public:
   WebsiteButton(wxWindow* parent, const char* url);
-  ~WebsiteButton(){};
+  ~WebsiteButton() {};
   void SetURL(std::string url) { m_url = url; }
 
 protected:
@@ -467,7 +462,7 @@ public:
               const wxSize& size, PluginMetadata plugin);
 
   /** Construct an entry reflecting a safe-loaded "uninstall-only" item */
-  PluginPanel(wxPanel* parent, const std::string&  name);
+  PluginPanel(wxPanel* parent, const std::string& name);
 
   ~PluginPanel();
 
@@ -526,7 +521,7 @@ public:
     LUP = NULL;
   };
 
-  ~S52PLIB_Context(){};
+  ~S52PLIB_Context() {};
 
   BoundingBox BBObj;  // lat/lon BBox of the rendered object
   bool bBBObj_valid;  // set after the BBObj has been calculated once.

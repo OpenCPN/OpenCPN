@@ -1,14 +1,5 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Navigation Utility Functions
- * Authors:   David Register
- *            Sean D'Epagnier
- * Project:  OpenCPN
- * Purpose:  Navigation Utility Functions
- * Author:   David Register
- *
- ***************************************************************************
+ *   Copyright (C) 2016 Sean D'Epagnier                                    *
  *   Copyright (C) 2016 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/   *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement track.h -- recorded track abstraction.
+ */
 
 /* Tracks are broken into SubTracks to allow for efficient rendering and
    selection on tracks with thousands or millions of track points
@@ -95,11 +90,16 @@ millions of points.
 #include "model/own_ship.h"
 #include "model/routeman.h"
 #include "model/select.h"
+#include "ocpn_plugin.h"
+#include "model/navobj_db.h"
 
-std::vector<Track*> g_TrackList;
+std::vector<Track *> g_TrackList;
 
-#if defined(__UNIX__) && \
-    !defined(__WXOSX__)  // high resolution stopwatch for profiling
+class ActiveTrack;  // forward
+ActiveTrack *g_pActiveTrack;
+
+// High resolution stopwatch for profiling
+#if defined(__UNIX__) && !defined(__WXOSX__)
 class OCPNStopWatch {
 public:
   OCPNStopWatch() { Reset(); }
@@ -129,13 +129,11 @@ TrackPoint::TrackPoint(double lat, double lon, wxDateTime dt)
 
 // Copy Constructor
 TrackPoint::TrackPoint(TrackPoint *orig)
-    : m_lat(orig->m_lat),
-      m_lon(orig->m_lon),
-      m_GPXTrkSegNo(1) {
+    : m_lat(orig->m_lat), m_lon(orig->m_lon), m_GPXTrkSegNo(1) {
   SetCreateTime(orig->GetCreateTime());
 }
 
-TrackPoint::~TrackPoint() { }
+TrackPoint::~TrackPoint() {}
 
 wxDateTime TrackPoint::GetCreateTime() {
   wxDateTime CreateTimeX;
@@ -146,10 +144,7 @@ wxDateTime TrackPoint::GetCreateTime() {
 void TrackPoint::SetCreateTime(wxDateTime dt) {
   wxString ts;
   if (dt.IsValid())
-    ts = dt.FormatISODate()
-             .Append(_T("T"))
-             .Append(dt.FormatISOTime())
-             .Append(_T("Z"));
+    ts = dt.FormatISODate().Append("T").Append(dt.FormatISOTime()).Append("Z");
 
   SetCreateTime(ts);
 }
@@ -170,7 +165,6 @@ double _distance2(vector2D &a, vector2D &b) {
 }
 double _distance(vector2D &a, vector2D &b) { return sqrt(_distance2(a, b)); }
 
-
 Track::Track() {
   m_bVisible = true;
   m_bListed = true;
@@ -182,14 +176,14 @@ Track::Track() {
   m_bIsInLayer = false;
   m_btemp = false;
 
-  m_HyperlinkList = new HyperlinkList;
+  m_TrackHyperlinkList = new HyperlinkList;
   m_HighlightedTrackPoint = -1;
 }
 
-Track::~Track(void) {
+Track::~Track() {
   for (size_t i = 0; i < TrackPoints.size(); i++) delete TrackPoints[i];
 
-  delete m_HyperlinkList;
+  delete m_TrackHyperlinkList;
 }
 
 #define TIMER_TRACK1 778
@@ -248,7 +242,7 @@ void ActiveTrack::SetPrecision(int prec) {
   }
 }
 
-void ActiveTrack::Start(void) {
+void ActiveTrack::Start() {
   if (!m_bRunning) {
     AddPointNow(true);  // Add initial point
     m_TimerTrack.Start(1000, wxTIMER_CONTINUOUS);
@@ -280,14 +274,13 @@ Track *ActiveTrack::DoExtendDaily() {
   TrackPoint *pExtendPoint = NULL;
 
   TrackPoint *pLastPoint = GetPoint(0);
-  if (!pLastPoint->GetCreateTime().IsValid())
-    return NULL;
+  if (!pLastPoint->GetCreateTime().IsValid()) return NULL;
 
-  for (Track* ptrack : g_TrackList) {
+  for (Track *ptrack : g_TrackList) {
     if (!ptrack->m_bIsInLayer && ptrack->m_GUID != m_GUID) {
       TrackPoint *track_node = ptrack->GetLastPoint();
       if (!track_node->GetCreateTime().IsValid())
-        continue;     // Skip this bad track
+        continue;  // Skip this bad track
       if (track_node->GetCreateTime() <= pLastPoint->GetCreateTime()) {
         if (!pExtendPoint ||
             track_node->GetCreateTime() > pExtendPoint->GetCreateTime()) {
@@ -305,7 +298,7 @@ Track *ActiveTrack::DoExtendDaily() {
     int begin = 1;
     if (pLastPoint->GetCreateTime() == pExtendPoint->GetCreateTime()) begin = 2;
     pSelect->DeleteAllSelectableTrackSegments(pExtendTrack);
-    wxString suffix = _T("");
+    wxString suffix = "";
     if (GetName().IsNull()) {
       suffix = pExtendTrack->GetName();
       if (suffix.IsNull()) suffix = wxDateTime::Today().FormatISODate();
@@ -376,10 +369,10 @@ void ActiveTrack::OnTimerTrack(wxTimerEvent &event) {
   if (b_addpoint)
     AddPointNow();
   else  // continuously update track beginning point timestamp if no movement.
-      if ((trackPointState == firstPoint) && !g_bTrackDaily) {
-    wxDateTime now = wxDateTime::Now();
-    if (TrackPoints.empty()) TrackPoints.front()->SetCreateTime(now.ToUTC());
-  }
+    if ((trackPointState == firstPoint) && !g_bTrackDaily) {
+      wxDateTime now = wxDateTime::Now();
+      if (TrackPoints.empty()) TrackPoints.front()->SetCreateTime(now.ToUTC());
+    }
 
   m_TimerTrack.Start(1000, wxTIMER_CONTINUOUS);
 }
@@ -397,17 +390,17 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
   vector2D gpsPoint(gLon, gLat);
 
   // Check if gps point is not too far from the last point
-  // which, if it is the case, means that there is probably a GPS bug on the two positions...
-  // So, it is better not to add this false new point.
+  // which, if it is the case, means that there is probably a GPS bug on the two
+  // positions... So, it is better not to add this false new point.
 
   // Calculate the distance between two points of the track based on georef lib
-    if (g_trackFilterMax){
-      if (trackPointState == potentialPoint)
-      {
-        double distToLastGpsPoint = DistLoxodrome(m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLat, gLon);
-        if (distToLastGpsPoint > g_trackFilterMax) return;
-      }
+  if (g_trackFilterMax) {
+    if (trackPointState == potentialPoint) {
+      double distToLastGpsPoint = DistLoxodrome(
+          m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLat, gLon);
+      if (distToLastGpsPoint > g_trackFilterMax) return;
     }
+  }
 
   // The dynamic interval algorithm will gather all track points in a queue,
   // and analyze the cross track errors for each point before actually adding
@@ -501,9 +494,7 @@ void ActiveTrack::AddPointNow(bool do_add_point) {
   m_prev_time = now;
 }
 
-
 void Track::ClearHighlights() { m_HighlightedTrackPoint = -1; }
-
 
 TrackPoint *Track::GetPoint(int nWhichPoint) {
   if (nWhichPoint < (int)TrackPoints.size())
@@ -684,8 +675,10 @@ TrackPoint *Track::AddNewPoint(vector2D point, wxDateTime time) {
 
   AddPointFinalized(tPoint);
 
-  NavObjectChanges::getInstance()->AddNewTrackPoint(
-      tPoint, m_GUID);  // This will update the "changes" file only
+  // NavObjectChanges::getInstance()->AddNewTrackPoint(
+  //   tPoint, m_GUID);  // This will update the "changes" file only
+
+  NavObj_dB::GetInstance().AddTrackPoint(this, tPoint);
 
   // send a wxJson message to all plugins
   wxJSONValue v;
@@ -789,8 +782,8 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
   TrackPoint *prp_OK =
       NULL;  // last routepoint known not to exceed xte limit, if not yet added
 
-  wxString icon = _T("xmblue");
-  if (g_TrackDeltaDistance >= 0.1) icon = _T("diamond");
+  wxString icon = "xmblue";
+  if (g_TrackDeltaDistance >= 0.1) icon = "diamond";
 
   int next_ic = 0;
   int back_ic = 0;
@@ -804,8 +797,7 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
 
   // add first point
 
-  pWP_dst = new RoutePoint(pWP_src->m_lat, pWP_src->m_lon, icon, _T ( "" ),
-                           wxEmptyString);
+  pWP_dst = new RoutePoint(pWP_src->m_lat, pWP_src->m_lon, icon, "", "");
   route->AddPoint(pWP_dst);
 
   pWP_dst->m_bShowName = false;
@@ -837,7 +829,7 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
       while (delta_inserts--) {
         ll_gc_ll(pWP_prev->m_lat, pWP_prev->m_lon, delta_hdg, delta_dist, &tlat,
                  &tlon);
-        pWP_dst = new RoutePoint(tlat, tlon, icon, _T ( "" ), wxEmptyString);
+        pWP_dst = new RoutePoint(tlat, tlon, icon, "", "");
         route->AddPoint(pWP_dst);
         pWP_dst->m_bShowName = false;
         pSelect->AddSelectableRoutePoint(pWP_dst->m_lat, pWP_dst->m_lon,
@@ -866,8 +858,7 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
       //            TrackPoint src(pWP_prev->m_lat, pWP_prev->m_lon);
       xte = GetXTE(pWP_src, prpX, prp);
       if (isProminent || (xte > g_TrackDeltaDistance)) {
-        pWP_dst = new RoutePoint(prp_OK->m_lat, prp_OK->m_lon, icon, _T ( "" ),
-                                 wxEmptyString);
+        pWP_dst = new RoutePoint(prp_OK->m_lat, prp_OK->m_lon, icon, "", "");
 
         route->AddPoint(pWP_dst);
         pWP_dst->m_bShowName = false;
@@ -911,9 +902,8 @@ Route *Track::RouteFromTrack(wxGenericProgressDialog *pprog) {
 
   // add last point, if needed
   if (delta_dist >= g_TrackDeltaDistance) {
-    pWP_dst =
-        new RoutePoint(TrackPoints.back()->m_lat, TrackPoints.back()->m_lon,
-                       icon, _T ( "" ), wxEmptyString);
+    pWP_dst = new RoutePoint(TrackPoints.back()->m_lat,
+                             TrackPoints.back()->m_lon, icon, "", "");
     route->AddPoint(pWP_dst);
 
     pWP_dst->m_bShowName = false;
@@ -981,4 +971,26 @@ double Track::GetXTE(TrackPoint *fm1, TrackPoint *fm2, TrackPoint *to) {
   return GetXTE(fm1->m_lat, fm1->m_lon, fm2->m_lat, fm2->m_lon, to->m_lat,
                 to->m_lon);
   ;
+}
+
+wxString Track::GetIsoDateTime(const wxString label_for_invalid_date) const {
+  wxString name;
+  TrackPoint *rp = NULL;
+  if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
+  if (rp && rp->GetCreateTime().IsValid())
+    name = rp->GetCreateTime().FormatISOCombined(' ');
+  else
+    name = label_for_invalid_date;
+  return name;
+}
+
+wxString Track::GetDateTime(const wxString label_for_invalid_date) const {
+  wxString name;
+  TrackPoint *rp = NULL;
+  if ((int)TrackPoints.size() > 0) rp = TrackPoints[0];
+  if (rp && rp->GetCreateTime().IsValid())
+    name = ocpn::toUsrDateTimeFormat(rp->GetCreateTime().FromUTC());
+  else
+    name = label_for_invalid_date;
+  return name;
 }

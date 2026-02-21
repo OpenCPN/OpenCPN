@@ -1,4 +1,4 @@
- /**************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -12,23 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
- /** \file gui_lib.h General purpose GUI support. */
+/**
+ *  \file
+ *
+ *  General purpose GUI support.
+ */
 
 #ifndef GUI_LIB_H__
 #define GUI_LIB_H__
 
+#include <wx/button.h>
 #include <wx/font.h>
 #include <wx/html/htmlwin.h>
 #include <wx/msgdlg.h>
 #include <wx/textctrl.h>
 #include <wx/timer.h>
 #include <wx/window.h>
-#include <wx/utils.h>
+
+#include "model/std_icon.h"
 
 /** Non-editable TextCtrl, used like wxStaticText but is copyable. */
 class CopyableText : public wxTextCtrl {
@@ -36,14 +40,40 @@ public:
   CopyableText(wxWindow* parent, const char* text);
 };
 
-
+/**
+ * Retrieves a font from FontMgr, optionally scaled for physical readability.
+ *
+ * Returns a font configured for a specific UI context, scaling based on
+ * system settings and preserving readability across different displays.
+ *
+ * @param item UI element identifier (e.g., "AISTargetAlert", "StatusBar")
+ * @param default_size Optional base font size in points. 0 uses platform
+ * default.
+ *
+ * @return Pointer to a dynamically scaled wxFont
+ *
+ * @note Font is managed by OpenCPN's central font cache
+ * @note Pointer is shared and should not be deleted by caller
+ */
 wxFont* GetOCPNScaledFont(wxString item, int default_size = 0);
+/**
+ * Retrieves a font optimized for touch and high-resolution interfaces.
+ *
+ * Generates a font specifically tuned for responsive and touch-friendly
+ * interfaces, with more aggressive scaling than standard font methods.
+ *
+ * @param item UI element identifier (e.g., "AISTargetAlert", "StatusBar")
+ *
+ * @return A wxFont object scaled for touch and high-resolution interfaces
+ *
+ * @note Ensures minimum physical font size for improved readability
+ * @note Particularly suitable for toolbars, buttons, and touch controls
+ */
 wxFont GetOCPNGUIScaledFont(wxString item);
 
 extern int OCPNMessageBox(wxWindow* parent, const wxString& message,
-                          const wxString& caption = _T("Message"),
-                          int style = wxOK, int timout_sec = -1, int x = -1,
-                          int y = -1);
+                          const wxString& caption = "Message", int style = wxOK,
+                          int timout_sec = -1, int x = -1, int y = -1);
 
 class OCPNMessageDialog : public wxDialog {
 public:
@@ -65,7 +95,7 @@ private:
 class TimedMessageBox : public wxEvtHandler {
 public:
   TimedMessageBox(wxWindow* parent, const wxString& message,
-                  const wxString& caption = _T("Message box"),
+                  const wxString& caption = "Message box",
                   long style = wxOK | wxCANCEL, int timeout_sec = -1,
                   const wxPoint& pos = wxDefaultPosition);
   ~TimedMessageBox();
@@ -79,30 +109,6 @@ public:
   DECLARE_EVENT_TABLE()
 };
 
-class OCPN_TimedHTMLMessageDialog : public wxDialog {
-public:
-  OCPN_TimedHTMLMessageDialog(wxWindow* parent, const wxString& message,
-                              const wxString& caption = wxMessageBoxCaptionStr,
-                              int tSeconds = -1, long style = wxOK | wxCENTRE,
-                              bool bFixedFont = false,
-                              const wxPoint& pos = wxDefaultPosition);
-
-  void OnYes(wxCommandEvent& event);
-  void OnNo(wxCommandEvent& event);
-  void OnCancel(wxCommandEvent& event);
-  void OnClose(wxCloseEvent& event);
-  void OnTimer(wxTimerEvent& evt);
-  void RecalculateSize(void);
-  void OnHtmlLinkClicked( wxHtmlLinkEvent& event ) { wxLaunchDefaultBrowser(event.GetLinkInfo().GetHref()); }
-
-private:
-  int m_style;
-  wxTimer m_timer;
-  wxHtmlWindow* msgWindow;
-
-  DECLARE_EVENT_TABLE()
-};
-
 //----------------------------------------------------------------------------
 // Generic Auto Timed Window
 // Belongs to the creator, not deleted automatically on application close
@@ -110,19 +116,19 @@ private:
 
 class TimedPopupWin : public wxWindow {
 public:
-  TimedPopupWin(wxWindow *parent, int timeout = -1);
+  TimedPopupWin(wxWindow* parent, int timeout = -1);
   ~TimedPopupWin();
 
-  void OnPaint(wxPaintEvent &event);
+  void OnPaint(wxPaintEvent& event);
 
-  void SetBitmap(wxBitmap &bmp);
-  wxBitmap *GetBitmap() { return m_pbm; }
-  void OnTimer(wxTimerEvent &event);
+  void SetBitmap(wxBitmap& bmp);
+  wxBitmap* GetBitmap() { return m_pbm; }
+  void OnTimer(wxTimerEvent& event);
   bool IsActive() { return isActive; }
   void IsActive(bool state) { isActive = state; }
 
 private:
-  wxBitmap *m_pbm;
+  wxBitmap* m_pbm;
   wxTimer m_timer_timeout;
   int m_timeout_sec;
   bool isActive;
@@ -130,22 +136,23 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-
-//-----------------------------------------------------------------------
-//          Dummy Text Control for global key events
-//-----------------------------------------------------------------------
-class DummyTextCtrl : public wxTextCtrl {
+/**
+ * Clickable, small info icon which displays a help text
+ * Typical usage:
+ *
+ * auto info_btn = InfoButton(this, g_btouch, "short header"
+ *                            "long, multiline help");
+ */
+class InfoButton : public wxButton {
 public:
-  DummyTextCtrl(wxWindow *parent, wxWindowID id);
-  void OnChar(wxKeyEvent &event);
-  void OnMouseEvent(wxMouseEvent &event);
+  InfoButton(wxWindow* parent, bool touch, const char* header,
+             const char* info);
 
-  wxTimer m_MouseWheelTimer;
-  int m_mouse_wheel_oneshot;
-  int m_last_wheel_dir;
+private:
+  class InfoFrame;
 
-  DECLARE_EVENT_TABLE()
+  StdIcon m_icon;
+  InfoFrame* m_info_frame;
 };
-
 
 #endif  // GUI_LIB_H__

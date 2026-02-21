@@ -13,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ *  \file
+ *
+ *   mDNS host lookups cache.
+ */
 
 #ifndef MDNS_CACHE_H
 #define MDNS_CACHE_H
@@ -24,7 +28,6 @@
 #include <mutex>
 #include <string>
 #include <vector>
-
 
 /**
  * Singleton cache for hosts looked up using mdns. A critical region accessed
@@ -74,7 +77,7 @@ public:
    * @return true if entry was added, false if entry with same ip
    * address already exists.
    */
-  bool Add(const std::string& _ip,  const std::string& _port);
+  bool Add(const std::string& _ip, const std::string& _port);
 
   /** Return read-only cached entries reference. */
   const std::vector<Entry>& GetCache() const { return m_cache; }

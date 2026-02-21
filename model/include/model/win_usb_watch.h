@@ -12,20 +12,23 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/** \file win_usb_watch.h Windows specific hardware events interface */
+/**
+ *  \file
+ *
+ *  Windows specific hardware events interface
+ */
 
 #ifndef _WIN32
 #error "This file can only be compiled on windows. "
 #endif
 
-#include "model/usb_watch_daemon.h"
-
+#include <winsock2.h>
 #include <windows.h>
+
+#include "model/usb_watch_daemon.h"
 
 /**
  * Listen to OS signals reflecting for example suspend/resume,
@@ -34,7 +37,7 @@
  */
 class WinUsbWatchDaemon : public UsbWatchDaemon {
 public:
-  WinUsbWatchDaemon(SystemEvents& se) : UsbWatchDaemon(se), m_frame(0)  {}
+  WinUsbWatchDaemon(SystemEvents& se) : UsbWatchDaemon(se), m_frame(0) {}
   virtual ~WinUsbWatchDaemon() = default;
 
   void Start();

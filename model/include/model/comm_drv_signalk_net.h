@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  PlugIn Manager Object
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * SignalK IP network driver
+ */
+
 // Originally by balp on 2018-07-28.
 
 #ifndef _SIGNALK_NET_H
@@ -42,6 +41,7 @@
 #include "rapidjson/fwd.h"
 #include "model/conn_params.h"
 #include "model/comm_drv_signalk.h"
+#include "comm_drv_stats.h"
 
 #define SIGNALK_SOCKET_ID 5011
 #define N_DOG_TIMEOUT 5             // seconds
@@ -49,13 +49,15 @@
 
 static const double ms_to_knot_factor = 1.9438444924406;
 
-class WebSocketThread;
-class OCPN_WebSocketMessageHandler;
-class CommDriverSignalKNetEvent;
+class WebSocketThread;               // Forward in .cpp file
+class OCPN_WebSocketMessageHandler;  // Indirectly unused
+class CommDriverSignalKNetEvent;     // Forward in .cpp file
 
-class CommDriverSignalKNet : public CommDriverSignalK, public wxEvtHandler {
+class CommDriverSignalKNet : public CommDriverSignalK,
+                             public wxEvtHandler,
+                             public DriverStatsProvider {
 public:
-  CommDriverSignalKNet(const ConnectionParams *params, DriverListener& l);
+  CommDriverSignalKNet(const ConnectionParams *params, DriverListener &l);
   virtual ~CommDriverSignalKNet();
 
   void Open();
@@ -64,22 +66,20 @@ public:
   static bool DiscoverSKServer(std::string serviceIdent, wxString &ip,
                                int &port, int tSec);
 
-
   void SetThreadRunning(bool active) { m_threadActive = active; }
   void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
   void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
   void SetWatchdog(int n) { m_dog_value = n; }
 
-/** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-
-  void handle_SK_sentence(CommDriverSignalKNetEvent& event);
+  void handle_SK_sentence(CommDriverSignalKNetEvent &event);
   void handleUpdate(const rapidjson::Value &update);
   void updateItem(const rapidjson::Value &item, wxString &sfixtime);
 
   void OpenWebSocket();
   void CloseWebSocket();
   bool IsThreadRunning() { return m_threadActive == 1; }
+
+  DriverStats GetDriverStats() const override;
 
   std::string m_self;
   std::string m_context;
@@ -88,7 +88,7 @@ public:
   std::atomic_int m_threadActive;
 
   ConnectionParams m_params;
-  DriverListener& m_listener;
+  DriverListener &m_listener;
 
   static void initIXNetSystem();
 
@@ -98,12 +98,12 @@ private:
   wxIPV4address m_addr;
   wxIPV4address GetAddr() const { return m_addr; }
 
-   int m_dog_value;
+  int m_dog_value;
 
-   wxTimer m_socketread_watchdog_timer;
-   wxTimer *GetSocketThreadWatchdogTimer() {
-     return &m_socketread_watchdog_timer;
-   }
+  wxTimer m_socketread_watchdog_timer;
+  wxTimer *GetSocketThreadWatchdogTimer() {
+    return &m_socketread_watchdog_timer;
+  }
 
   OCPN_WebSocketMessageHandler *m_eventHandler;
   bool m_useWebSocket;
@@ -113,9 +113,9 @@ private:
   bool SetOutputSocketOptions(wxSocketBase *sock);
 
   std::string m_token;
-
   WebSocketThread *m_wsThread;
-
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 };
 
 #endif  // _SIGNALK_NET_H

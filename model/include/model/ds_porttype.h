@@ -1,8 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,16 +12,24 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * Port type definition and support
  */
 
-#ifndef __DSPORTTYPE_H__
-#define __DSPORTTYPE_H__
+#ifndef DS_PORTTYPE_H_
+#define DS_PORTTYPE_H_
+
+#include <string>
 
 //      Port I/O type
 typedef enum { DS_TYPE_INPUT, DS_TYPE_INPUT_OUTPUT, DS_TYPE_OUTPUT } dsPortType;
+
+/** Return textual representation for use in driver ioDirection attribute. */
+std::string DsPortTypeToString(dsPortType type);
 
 #endif

@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Plugin catalog management: Build the runtime catalog, handling downloads
+ * as required.
  */
 
 #include "config.h"
@@ -57,15 +57,14 @@ static const char* const API_ENDPOINT = "https://api.github.com/repos";
 // static const char* const API_PATH = "/leamas/plugins/branches";
 static const char* const API_PATH = "/OpenCPN/plugins/branches";
 
-CatalogHandler::CatalogHandler() :
-     status(ServerStatus::UNKNOWN),
-     m_catalog_status(ServerStatus::UNKNOWN){
+CatalogHandler::CatalogHandler()
+    : status(ServerStatus::UNKNOWN), m_catalog_status(ServerStatus::UNKNOWN) {
   if (g_catalog_channel == "") {
     g_catalog_channel = DEFAULT_CHANNEL;
   }
 }
 
-CatalogHandler* CatalogHandler::getInstance() {
+CatalogHandler* CatalogHandler::GetInstance() {
   static CatalogHandler* instance = 0;
   if (!instance) {
     instance = new (CatalogHandler);
@@ -79,17 +78,14 @@ std::string CatalogHandler::GetDefaultUrl() {
   return url;
 }
 
-catalog_status CatalogHandler::GetCatalogStatus(){
-    return m_catalog_status;
-}
+catalog_status CatalogHandler::GetCatalogStatus() { return m_catalog_status; }
 
-CatalogCtx *CatalogHandler::GetActiveCatalogContext() {
-
-  if (m_catalog_status == ServerStatus::OK){
+CatalogCtx* CatalogHandler::GetActiveCatalogContext() {
+  if (m_catalog_status == ServerStatus::OK) {
     return &m_catalogctx;
   }
 
-  auto path = PluginHandler::getInstance()->getMetadataPath();
+  auto path = PluginHandler::GetInstance()->GetMetadataPath();
 
   if (!ocpn::exists(path)) {
     m_catalog_status = ServerStatus::FILE_ERROR;
@@ -112,10 +108,9 @@ bool CatalogHandler::AddMetadataToActiveContext(PluginMetadata metadata) {
   if (m_catalog_status == ServerStatus::OK) {
     m_catalogctx.plugins.push_back(metadata);
     return true;
-  }
-  else return false;
+  } else
+    return false;
 }
-
 
 catalog_status CatalogHandler::DownloadCatalog(std::ostream* stream) {
   std::string path(g_catalog_custom_url.ToStdString());
@@ -182,7 +177,7 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
   std::string url;
 
   bool ok = ::ParseCatalog(xml, ctx);
-  for (auto path : PluginHandler::getInstance()->GetImportPaths()) {
+  for (auto path : PluginHandler::GetInstance()->GetImportPaths()) {
     std::ifstream plugin_xml(path);
     std::stringstream ss;
     ss << plugin_xml.rdbuf();
@@ -204,12 +199,11 @@ catalog_status CatalogHandler::DoParseCatalog(const std::string xml,
     const auto& haystack = ctx->parsed_metas;
     auto found = std::find_if(haystack.begin(), haystack.end(), match);
     if (found != haystack.end()) {
-        continue;
+      continue;
     }
     ctx->parsed_metas.push_back(url);
     if (DownloadCatalog(&xml, url) != ServerStatus::OK) {
-      wxLogMessage("CatalogHandler: Cannot download meta-url: %s",
-                   url.c_str());
+      wxLogMessage("CatalogHandler: Cannot download meta-url: %s", url.c_str());
     } else {
       ok = DoParseCatalog(xml.str(), ctx) == ServerStatus::OK;
       if (!ok) break;
@@ -292,7 +286,7 @@ void CatalogHandler::LoadCatalogData(const std::string& path,
 
 CatalogData CatalogHandler::UserCatalogData() {
   if (user_data.undef) {
-    auto plugin_handler = PluginHandler::getInstance();
+    auto plugin_handler = PluginHandler::GetInstance();
     std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
     path += SEP;
     path += "ocpn-plugins.xml";
@@ -303,7 +297,7 @@ CatalogData CatalogHandler::UserCatalogData() {
 
 CatalogData CatalogHandler::DefaultCatalogData() {
   if (default_data.undef) {
-    auto plugin_handler = PluginHandler::getInstance();
+    auto plugin_handler = PluginHandler::GetInstance();
     std::string path = g_BasePlatform->GetSharedDataDir().ToStdString();
     path += SEP;
     path += "ocpn-plugins.xml";
@@ -323,8 +317,6 @@ void CatalogHandler::ClearCatalogData() {
   m_catalogctx.parsed_metas.clear();
   m_catalogctx.version.clear();
   m_catalogctx.date.clear();
-
-
 }
 
 std::string CatalogHandler::GetCustomUrl() {

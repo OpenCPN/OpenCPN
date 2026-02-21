@@ -41,6 +41,8 @@
 #include "qdebug.h"
 #endif
 
+#include "version.h"
+
 float g_piGLMinSymbolLineWidth = 0.9;
 
 void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
@@ -69,6 +71,9 @@ bool g_compact;
 //---------------------------------------------------------------------------------------------------------
 
 #include "icons.h"
+#include <N2kMsg.h>
+#include <N2kTypes.h>
+#include <N2kMessages.h>
 
 void WmmUIDialog::EnablePlotChanged(wxCommandEvent &event) {
   if (m_cbEnablePlot->GetValue()) m_wmm_pi.RecomputePlot();
@@ -110,7 +115,7 @@ and extended by Sean D'Epagnier to support plotting."));
 //---------------------------------------------------------------------------------------------------------
 
 wmm_pi::wmm_pi(void *ppimgr)
-    : opencpn_plugin_18(ppimgr),
+    : opencpn_plugin_118(ppimgr),
       m_bShowPlot(false),
       m_DeclinationMap(DECLINATION_PLOT, MagneticModel, TimedMagneticModel,
                        &Ellip),
@@ -159,7 +164,7 @@ int wmm_pi::Init(void) {
 
   // pFontSmall = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
   // wxFONTWEIGHT_BOLD );
-  pFontSmall = OCPNGetFont(_("WMM_Live_Overlay"), 10);
+  pFontSmall = OCPNGetFont(_("WMM_Live_Overlay"));
 
   m_shareLocn = *GetpSharedDataLocation() + _T("plugins") +
                 wxFileName::GetPathSeparator() + _T("wmm_pi") +
@@ -174,7 +179,7 @@ int wmm_pi::Init(void) {
 
   if (!MAG_robustReadMagModels(
           const_cast<char *>((const char *)cof_filename.mb_str()),
-          &MagneticModels)) {
+          (MAGtype_MagneticModel * (*)[]) & MagneticModels[0], 1)) {
     WMMLogMessage1(_T("initialization error"));
     m_buseable = false;
   } else {
@@ -207,6 +212,24 @@ int wmm_pi::Init(void) {
     Geoid.Geoid_Initialized = 1;
     /* Set EGM96 Geoid parameters END */
   }
+
+  bool found_handle = false;
+  for (const auto &handle : GetActiveDrivers()) {
+    const auto &attributes = GetAttributes(handle);
+    if (attributes.find("protocol") == attributes.end()) continue;
+    WMMLogMessage1(
+        wxString::Format("handle proto %s", attributes.at("protocol")));
+    if (attributes.at("protocol") == "nmea2000") {
+      m_handleN2k = handle;
+      found_handle = true;
+      break;
+    }
+  }
+  if (!found_handle) {
+    WMMLogMessage1("nmea2000 handle not found");
+  }
+  std::vector<int> pgn_list = {127258};
+  CommDriverResult xx = RegisterTXPGNs(m_handleN2k, pgn_list);
 
   int ret_flag =
       (WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK |
@@ -286,7 +309,7 @@ wxString wmm_pi::GetLongDescription() {
 Implements the NOAA World Magnetic Model\n\
 More information:\n\
 https://www.ngdc.noaa.gov/geomag/WMM/DoDWMM.shtml\n\
-The bundled WMM2020 model expires on December 31, 2025.\n\
+The bundled WMM2025 model is valid until late 2029.\n\
 After then, if new version of the plugin will not be released\n\
 in time, get a new WMM.COF from NOAA and place it to the\n\
 location you can find in the OpenCPN logfile.");
@@ -361,7 +384,7 @@ void wmm_pi::OnToolbarToolCallback(int id) {
   if (!m_buseable) return;
   if (NULL == m_pWmmDialog) {
     m_pWmmDialog = new WmmUIDialog(*this, m_parent_window);
-    wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+    wxFont *pFont = OCPNGetFont(_("Dialog"));
     m_pWmmDialog->SetFont(*pFont);
 
     m_pWmmDialog->Move(wxPoint(m_wmm_dialog_x, m_wmm_dialog_y));
@@ -413,16 +436,16 @@ bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
   if (!m_bShowPlot) return true;
 
   if (!m_oDC) {
-    #ifdef ocpnUSE_GL
-      //  Set the minimum line width
-      GLint parms[2];
-    #ifndef USE_ANDROID_GLES2
-      glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
-    #else
-      glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
-    #endif
-      g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
-    #endif
+#ifdef ocpnUSE_GL
+    //  Set the minimum line width
+    GLint parms[2];
+#ifndef USE_ANDROID_GLES2
+    glGetIntegerv(GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0]);
+#else
+    glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, &parms[0]);
+#endif
+    g_piGLMinSymbolLineWidth = wxMax(parms[0], 1);
+#endif
     m_oDC = new pi_ocpnDC();
   }
 
@@ -559,8 +582,8 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
   scale = wxRound(scale * 4.0) / 4.0;
   scale *= OCPN_GetWinDIPScaleFactor();
 
-  //scale =
-    //  wxMax(1.0, scale);  // Let the upstream processing handle minification.
+  // scale =
+  //   wxMax(1.0, scale);  // Let the upstream processing handle minification.
 
   if (m_bShowIcon && m_bShowLiveIcon &&
       ((m_LastVal != NewVal) || (scale != m_scale))) {
@@ -754,6 +777,9 @@ void wmm_pi::SendBoatVariation() {
   wxString out;
   w.Write(v, out);
   SendPluginMessage(wxString(_T("WMM_VARIATION_BOAT")), out);
+  // Send boat variation as NMEA HVD for the Priority List.
+  SendBoatVarHVD(m_boatVariation.Decl);
+  SendPGN127258(m_boatVariation.Decl);
 }
 
 void wmm_pi::SendCursorVariation() {
@@ -904,7 +930,7 @@ void wmm_pi::ShowPreferencesDialog(wxWindow *parent) {
 
 void wmm_pi::ShowPlotSettings() {
   WmmPlotSettingsDialog *dialog = new WmmPlotSettingsDialog(m_parent_window);
-  wxFont *pFont = OCPNGetFont(_T("Dialog"), 0);
+  wxFont *pFont = OCPNGetFont(_("Dialog"));
   dialog->SetFont(*pFont);
 
   dialog->Fit();
@@ -942,4 +968,46 @@ void wmm_pi::ShowPlotSettings() {
     SaveConfig();
   }
   delete dialog;
+}
+
+void wmm_pi::SendBoatVarHVD(double d_var) {
+  // We use the HVD NMEA sentence to send magnetic variation.
+  // The user can then select the desired variation
+  // via the priority of the source code. The not official Talker: WM
+  // is used to print source: WMM plugin in the Priority list.
+  wxString s_dir = d_var >= 0 ? "E" : "W";
+  d_var = fabs(d_var);  // Make it positive for NMEA sentence
+  wxString S = "$WMHVD";
+  S.Append(",");  // 1 Var degrees
+  S.Append(wxString::Format("%.1f", d_var));
+  S.Append(",");    // 2 Var Dir
+  S.Append(s_dir);  // E/W
+  S.Append("*");
+  S.Append(wxString::Format("%02X", ComputeChecksum(S)));
+  S += "\r\n";
+
+  PushNMEABuffer(S);
+}
+
+void wmm_pi::SendPGN127258(double d_var) {
+  // Send Magnetic Variation as PGN 127258 Magnetic Variation
+  double var_rad = d_var * (M_PI / 180.0);
+  // Calculate the number of days since the Unix epoch
+  time_t now = time(nullptr);
+  int days_since_epoch = now / (60 * 60 * 24);
+  tN2kMsg msg127285;
+  SetN2kPGN127258(msg127285, 0xFF, tN2kMagneticVariation::N2kmagvar_WMM2025,
+                  days_since_epoch, var_rad);
+  std::shared_ptr<std::vector<uint8_t>> payload(new std::vector<uint8_t>(
+      msg127285.Data, msg127285.Data + msg127285.DataLen));
+  WriteCommDriverN2K(m_handleN2k, 127258, 0xFF, 7, payload);
+}
+
+unsigned char wmm_pi::ComputeChecksum(wxString sentence) const {
+  unsigned char calculated_checksum = 0;
+  for (wxString::const_iterator i = sentence.begin() + 1;
+       i != sentence.end() && *i != '*'; ++i)
+    calculated_checksum ^= static_cast<unsigned char>(*i);
+
+  return (calculated_checksum);
 }

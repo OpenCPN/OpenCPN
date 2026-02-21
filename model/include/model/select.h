@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,13 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef _SELECT_H__
-#define _SELECT_H__
+/**
+ * \file
+ *
+ * Selected route, segment, waypoint, etc. abstraction.
+ */
+
+#ifndef SELECT_H_
+#define SELECT_H_
 
 #include "select_item.h"
 
@@ -40,15 +40,17 @@
 #define SELTYPE_TRACKSEGMENT 0x0100
 #define SELTYPE_DRAGHANDLE 0x0200
 
-class Select;   // forward
+class Select;  // forward
 
-extern Select* pSelect;
+extern Select *pSelect;    ///< Global instance
+extern Select *pSelectTC;  ///< Global instance
 
 struct SelectCtx {
   const bool show_nav_objects;
   const double scale;
   const double chart_scale;
-  SelectCtx(bool s, double _scale, double _chart_scale) : show_nav_objects(s), scale(_scale), chart_scale(_chart_scale) {}
+  SelectCtx(bool s, double _scale, double _chart_scale)
+      : show_nav_objects(s), scale(_scale), chart_scale(_chart_scale) {}
 };
 
 class Select {
@@ -69,9 +71,9 @@ public:
                                  float slon2, TrackPoint *pTrackPointAdd1,
                                  TrackPoint *pTrackPointAdd2, Track *pTrack);
 
-  SelectItem *FindSelection(SelectCtx& ctx, float slat, float slon,
+  SelectItem *FindSelection(SelectCtx &ctx, float slat, float slon,
                             int fseltype);
-  SelectableItemList FindSelectionList(SelectCtx& ctx, float slat, float slon,
+  SelectableItemList FindSelectionList(SelectCtx &ctx, float slat, float slon,
                                        int fseltype);
 
   bool DeleteAllSelectableRouteSegments(Route *);
@@ -84,7 +86,7 @@ public:
   bool DeletePointSelectableTrackSegments(TrackPoint *pt);
   bool IsSegmentSelected(float a, float b, float c, float d, float slat,
                          float slon);
-  bool IsSelectableSegmentSelected(SelectCtx& ctx, float slat, float slon,
+  bool IsSelectableSegmentSelected(SelectCtx &ctx, float slat, float slon,
                                    SelectItem *pFindSel);
 
   //    Generic Point Support
@@ -106,11 +108,11 @@ public:
 
 private:
   // FIXME (leamas?) this is not model stuff.
-  void CalcSelectRadius(SelectCtx& ctx);
+  void CalcSelectRadius(SelectCtx &ctx);
 
   SelectableItemList *pSelectList;
   int pixelRadius;
   float selectRadius;
 };
 
-#endif // _SELECT_H__
+#endif  // SELECT_H_

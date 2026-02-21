@@ -1,6 +1,8 @@
 #ifndef OCPN_CONFIG_H
 #define OCPN_CONFIG_H
 
+#define HAVE_OCPN_LOG     // file logger.h exists, ocpn log extensions
+
 #cmakedefine LINUX_CRASHRPT
 #cmakedefine OCPN_USE_CRASHREPORT
 #cmakedefine OCPN_HAVE_X11

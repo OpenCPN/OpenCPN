@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Object
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,10 +15,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
+ ***************************************************************************/
+/**
+ * \file
+ * \implements \ref GrabberWin.h
  */
-
 #include "wx/wx.h"
 
 #include "folder.xpm"
@@ -36,9 +31,10 @@
 //----------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(GribGrabberWin, wxPanel)
 EVT_MOUSE_EVENTS(GribGrabberWin::OnMouseEvent)
-    EVT_PAINT(GribGrabberWin::OnPaint) END_EVENT_TABLE()
+EVT_PAINT(GribGrabberWin::OnPaint)
+END_EVENT_TABLE()
 
-        GribGrabberWin::GribGrabberWin(wxWindow* parent) {
+GribGrabberWin::GribGrabberWin(wxWindow* parent) {
   Create(parent);
 
   m_bLeftDown = false;
@@ -132,7 +128,7 @@ void GribGrabberWin::OnPaint(wxPaintEvent& event) {
 
 void GribGrabberWin::Size() {
   wxBitmap bitmap = (wxBitmap(grabber));
-  int height = GetParent()->GetSize().y - 2; //keep a small margin of 2
+  int height = GetParent()->GetSize().y - 2;  // keep a small margin of 2
   int width = height / 2;
 
   wxImage scaled_image = bitmap.ConvertToImage();

@@ -1,0 +1,32 @@
+From df578a9938d37f07a87ac2e4aa20132da7e9b8ec Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Tue, 15 Apr 2025 09:47:28 +0200
+Subject: [PATCH 2/4] Point: Fix gcc initializer ordering warning
+
+---
+ lib/include/Point.hpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/include/Point.hpp b/lib/include/Point.hpp
+index e549dd2..ab5e186 100644
+--- a/lib/include/Point.hpp
++++ b/lib/include/Point.hpp
+@@ -12,8 +12,8 @@ namespace shp {
+
+             double x;
+             double y;
+-            double m;
+             double z;
++            double m;
+
+         public:
+
+@@ -41,4 +41,4 @@ namespace shp {
+
+     };
+
+-}
+\ No newline at end of file
++}
+--
+2.49.0

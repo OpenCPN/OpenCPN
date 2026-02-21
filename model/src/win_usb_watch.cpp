@@ -12,16 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/   *
  **************************************************************************/
 
-/** \file win_watch_daemon.cpp Implement win_watch_daemon.h */
+/**
+ * \file
+ *
+ * Implement win_usb_daemon.h -- Windows specific hardware events interface
+ */
 
+#include <winsock2.h>
 #include <windows.h>
 #include <Dbt.h>
 
+#include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/log.h>
 #include <wx/window.h>
@@ -30,10 +34,9 @@
 #include "model/sys_events.h"
 #include "model/win_usb_watch.h"
 
-
 class UsbListenFrame : public wxFrame {
 public:
-  UsbListenFrame() : wxFrame(GetTopWindow(), wxID_ANY, "") {}
+  UsbListenFrame() : wxFrame(wxTheApp->GetTopWindow(), wxID_ANY, "") {}
 
   virtual WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam,
                                   WXLPARAM lParam) {
@@ -52,7 +55,6 @@ void WinUsbWatchDaemon::Start() {
   m_frame = new UsbListenFrame();
   m_frame->Hide();
 }
-
 
 void WinUsbWatchDaemon::Stop() {
   if (!m_frame) return;

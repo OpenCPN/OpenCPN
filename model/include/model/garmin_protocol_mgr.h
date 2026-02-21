@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  NMEA Data Object
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,18 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
- *
- *
+ * NMEA Data Object
  */
 
-#ifndef _GARMINPROTOCOLHANDLER_H__
-#define _GARMINPROTOCOLHANDLER_H__
+#ifndef GARMINPROTOCOLHANDLER_H_
+#define GARMINPROTOCOLHANDLER_H_
 
 #include <atomic>
 #include <string>
@@ -38,11 +31,11 @@
 #include <sys/socket.h>  // needed for (some) Mac builds
 #include <netinet/in.h>
 #else
+#include <winsock2.h>
 #include <windows.h>
 #include <dbt.h>
 #include <initguid.h>
 #endif
-
 
 #include <wx/wxprec.h>
 
@@ -56,7 +49,6 @@
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
-//#include <gtk/gtk.h>
 #define GSocket GlibGSocket
 #include <wx/socket.h>
 #undef GSocket
@@ -74,8 +66,6 @@
 #ifndef PI
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
-
-#define TIMER_SOCKET 7006
 
 //----------------------------------------------------------------------------
 // Garmin Device Management
@@ -178,6 +168,8 @@ typedef struct {
 
 enum { rs_fromintr, rs_frombulk };
 
+using SendMsgFunc = std::function<void(const std::vector<unsigned char> &)>;
+
 #define TIMER_GARMIN1 7005
 
 class GARMIN_Serial_Thread;
@@ -185,8 +177,7 @@ class GARMIN_USB_Thread;
 
 class GarminProtocolHandler : public wxEvtHandler {
 public:
-  GarminProtocolHandler(wxString port, wxEvtHandler *MessageTarget,
-                        bool bsel_usb);
+  GarminProtocolHandler(wxString port, SendMsgFunc send_msg_func, bool sel_usb);
   ~GarminProtocolHandler();
 
   void Close(void);
@@ -200,7 +191,7 @@ public:
 
   bool FindGarminDeviceInterface();
 
-  wxEvtHandler *m_pMainEventHandler;
+  SendMsgFunc m_send_msg_func;
   void *m_pparent;
 
   int m_max_tx_size;
@@ -250,14 +241,14 @@ public:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_Serial_Thread : public wxThread {
 public:
-  GARMIN_Serial_Thread(GarminProtocolHandler *parent,
-                       wxEvtHandler *MessageTarget, wxString port);
+  GARMIN_Serial_Thread(GarminProtocolHandler *parent, SendMsgFunc send_msg_func,
+                       wxString port);
   ~GARMIN_Serial_Thread(void);
   void *Entry();
   void string(wxCharBuffer mb_str);
 
 private:
-  wxEvtHandler *m_pMessageTarget;
+  SendMsgFunc m_send_msg_func;
   GarminProtocolHandler *m_parent;
 
   wxString m_port;
@@ -275,9 +266,8 @@ private:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_USB_Thread : public wxThread {
 public:
-  GARMIN_USB_Thread(GarminProtocolHandler *parent,
-                    wxEvtHandler *MessageTarget, unsigned int device_handle,
-                    size_t max_tx_size);
+  GARMIN_USB_Thread(GarminProtocolHandler *parent, SendMsgFunc send_msg_func,
+                    unsigned int device_handle, size_t max_tx_size);
   ~GARMIN_USB_Thread(void);
   void *Entry();
 
@@ -286,7 +276,7 @@ private:
   int gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz);
   int gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz);
 
-  wxEvtHandler *m_pMessageTarget;
+  SendMsgFunc m_send_msg_func;
   GarminProtocolHandler *m_parent;
 
   int m_receive_state;
@@ -299,4 +289,4 @@ private:
 #endif
 };
 
-#endif  // __GARMINPROTOCOLHANDLER_H__
+#endif  // GARMINPROTOCOLHANDLER_H_

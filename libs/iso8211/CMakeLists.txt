@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 # FIXME: the s57.h header depends on S57ClassRegistrar, not in model.
 

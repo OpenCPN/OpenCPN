@@ -1,9 +1,7 @@
 /*************************************************************************
  *
- * Project: OpenCPN
- * Purpose: Implement observable.h
  *
- * Copyright (C) 2022 Alec Leamas
+ * Copyright (C) 2022 - 2025 Alec Leamas
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +19,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
  **************************************************************************/
 
+/**
+ *\file
+ *
+ * Implement observable.h
+ */
+
+
 #include <algorithm>
-#include <atomic>
 #include <mutex>
 #include <sstream>
 #include <unordered_map>
@@ -75,29 +79,29 @@ bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   return true;
 }
 
-const void Observable::Notify(std::shared_ptr<const void> ptr,
+void Observable::Notify(const std::shared_ptr<const void>& ptr,
                               const std::string& s, int num,
                               void* client_data) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto& listeners = m_list.listeners;
 
-  for (auto l = listeners.begin(); l != listeners.end(); l++) {
-    auto evt = new ObservedEvt(l->second);
+  for (const auto& l : listeners) {
+    auto evt = new ObservedEvt(l.second);
     evt->SetSharedPtr(ptr);
     evt->SetClientData(client_data);
     evt->SetString(s.c_str());  // Better safe than sorry: force a deep copy
     evt->SetInt(num);
-    wxQueueEvent(l->first, evt);
+    wxQueueEvent(l.first, evt);
   }
 }
 
-const void Observable::Notify() { Notify("", 0); }
+void Observable::Notify() { Notify("", nullptr); }
 
 /* ObservableListener implementation. */
 
 void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
                                 wxEventType e) {
-  if (key != "") Unlisten();
+  if (!key.empty()) Unlisten();
   key = k;
   listener = l;
   ev_type = e;
@@ -105,14 +109,14 @@ void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
 }
 
 void ObservableListener::Listen() {
-  if (key != "") {
+  if (!key.empty()) {
     assert(listener);
     Observable(key).Listen(listener, ev_type);
   }
 }
 
 void ObservableListener::Unlisten() {
-  if (key != "") {
+  if (!key.empty()) {
     assert(listener);
     Observable(key).Unlisten(listener, ev_type);
     key = "";

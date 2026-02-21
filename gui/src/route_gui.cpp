@@ -1,4 +1,31 @@
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
+ *   Copyright (C) 2025 NoCodeHummel                                       *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Route UI stuff
+ */
+
 #include <string>
+
+#include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include <wx/colour.h>
 #include <wx/gdicmn.h>
@@ -6,32 +33,29 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
-#include "color_handler.h"
-#include "chartbase.h"
 #include "model/comm_n0183_output.h"
 #include "model/georef.h"
-#include "gui_lib.h"
 #include "model/multiplexer.h"
+#include "model/own_ship.h"
+#include "model/route.h"
+#include "model/routeman.h"
+
+#include "chartbase.h"
+#include "color_handler.h"
+#include "dialog_alert.h"
+#include "gl_chart_canvas.h"
+#include "gui_lib.h"
+#include "line_clip.h"
 #include "n0183_ctx_factory.h"
 #include "navutil.h"
-#include "model/own_ship.h"
-#include "model/routeman.h"
+#include "ocpn_gl_options.h"
 #include "route_gui.h"
 #include "route_point_gui.h"
-#include "glChartCanvas.h"
-#include "line_clip.h"
-#include "model/route.h"
 
-extern Routeman* g_pRouteMan;
-extern wxColour g_colourTrackLineColour;
-extern Multiplexer *g_pMUX;
-
+// In ocpn_frame FIXME (leamas) find new home
 extern wxColor GetDimColor(wxColor c);
-extern bool g_bHighliteTracks;
 
-extern ocpnGLOptions g_GLOptions;
-
-extern int s_arrow_icon[];
+static int s_arrow_icon[] = {0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0};
 
 static void TestLongitude(double lon, double min, double max, bool &lonl,
                           bool &lonr) {
@@ -73,7 +97,7 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
     wxPenStyle style = wxPENSTYLE_SOLID;
     wxColour col;
     if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
-    if (m_route.m_Colour == wxEmptyString) {
+    if (m_route.m_Colour == "") {
       col = g_pRouteMan->GetRoutePen()->GetColour();
     } else {
       for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
@@ -98,18 +122,21 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
   wxPoint rpt1, rpt2;
   if (m_route.m_bVisible) DrawPointWhich(dc, canvas, 1, &rpt1);
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
-  RoutePoint *prp1 = node->GetData();
-  node = node->GetNext();
+  auto node = m_route.pRoutePointList->begin();
+  RoutePoint *prp1 = *node;
 
-  if (m_route.m_bVisible || prp1->IsShared()) RoutePointGui(*prp1).Draw(dc, canvas, NULL); //prp1->Draw(dc, canvas, NULL);
+  if (m_route.m_bVisible || prp1->IsShared())
+    RoutePointGui(*prp1).Draw(dc, canvas,
+                              NULL);  // prp1->Draw(dc, canvas, NULL);
 
-  while (node) {
-    RoutePoint *prp2 = node->GetData();
+  for (++node; node != m_route.pRoutePointList->end(); ++node) {
+    RoutePoint *prp2 = *node;
 
     bool draw_arrow = !(prp2->m_bIsActive && g_bAllowShipToActive);
 
-    if (m_route.m_bVisible || prp2->IsShared()) RoutePointGui(*prp2).Draw(dc, canvas, &rpt2); //prp2->Draw(dc, canvas, &rpt2);
+    if (m_route.m_bVisible || prp2->IsShared())
+      RoutePointGui(*prp2).Draw(dc, canvas,
+                                &rpt2);  // prp2->Draw(dc, canvas, &rpt2);
 
     if (m_route.m_bVisible) {
       //    Handle offscreen points
@@ -163,13 +190,11 @@ void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
 
     rpt1 = rpt2;
     prp1 = prp2;
-
-    node = node->GetNext();
   }
 }
 
 void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
-                          ViewPort &vp, bool bdraw_arrow, int hilite_width) {
+                             ViewPort &vp, bool bdraw_arrow, int hilite_width) {
   //    Get the dc boundary
   int sx, sy;
   dc.GetSize(&sx, &sy);
@@ -195,7 +220,7 @@ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
         cohen_sutherland_line_clip_i(&x0, &y0, &x1, &y1, 0, sx, 0, sy)) {
       wxPen psave = dc.GetPen();
 
-      wxColour y = GetGlobalColor(_T ( "YELO1" ));
+      wxColour y = GetGlobalColor("YELO1");
       wxColour hilt(y.Red(), y.Green(), y.Blue(), 128);
 
       wxPen HiPen(hilt, hilite_width, wxPENSTYLE_SOLID);
@@ -255,7 +280,7 @@ void RouteGui::RenderSegment(ocpnDC &dc, int xa, int ya, int xb, int yb,
 }
 
 void RouteGui::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
-                                  ViewPort &vp) {
+                                     ViewPort &vp) {
 #ifdef ocpnUSE_GL
   //    Draw a direction arrow
   float icon_scale_factor = 100 * vp.view_scale_ppm;
@@ -314,18 +339,17 @@ void RouteGui::RenderSegmentArrowsGL(ocpnDC &dc, int xa, int ya, int xb, int yb,
   pts[2].y = -s_arrow_icon[7];
   dc.DrawPolygon(3, pts, xb, yb, icon_scale_factor, theta);
 
-
 #endif
 }
 
 void RouteGui::DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
-                           wxPoint *rpn) {
+                              wxPoint *rpn) {
   if (iPoint <= m_route.GetnPoints())
     RoutePointGui(*m_route.GetPoint(iPoint)).Draw(dc, canvas, rpn);
 }
 
 void RouteGui::DrawSegment(ocpnDC &dc, ChartCanvas *canvas, wxPoint *rp1,
-                        wxPoint *rp2, ViewPort &vp, bool bdraw_arrow) {
+                           wxPoint *rp2, ViewPort &vp, bool bdraw_arrow) {
   if (m_route.m_bRtIsSelected)
     dc.SetPen(*g_pRouteMan->GetSelectedRoutePen());
   else if (m_route.m_bRtIsActive)
@@ -344,16 +368,15 @@ void RouteGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
     DrawGLRouteLines(vp, canvas, dc);
 
   /*  Route points  */
-  for (wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst(); node;
-       node = node->GetNext()) {
-    RoutePoint *prp = node->GetData();
+  for (RoutePoint *prp : *m_route.pRoutePointList) {
     // Inflate the bounding box a bit to ensure full drawing in accelerated pan
     // mode.
     // TODO this is a little extravagant, assumming a mark is always a large
     // fixed lat/lon extent.
     //  Maybe better to use the mark's drawn box, once it is known.
     if (vp.GetBBox().ContainsMarge(prp->m_lat, prp->m_lon, .5)) {
-      if (m_route.m_bVisible || prp->IsShared()) RoutePointGui(*prp).DrawGL(vp, canvas, dc);
+      if (m_route.m_bVisible || prp->IsShared())
+        RoutePointGui(*prp).DrawGL(vp, canvas, dc);
     }
   }
 #endif
@@ -364,7 +387,7 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   //  Hiliting first
   //  Being special case to draw something for a 1 point route....
   if (m_route.m_hiliteWidth) {
-    wxColour y = GetGlobalColor(_T ( "YELO1" ));
+    wxColour y = GetGlobalColor("YELO1");
     wxColour hilt(y.Red(), y.Green(), y.Blue(), 128);
 
     wxPen HiPen(hilt, m_route.m_hiliteWidth, wxPENSTYLE_SOLID);
@@ -385,7 +408,7 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   } else if (m_route.m_bRtIsSelected) {
     col = g_pRouteMan->GetSelectedRoutePen()->GetColour();
   } else {
-    if (m_route.m_Colour == wxEmptyString) {
+    if (m_route.m_Colour == "") {
       col = g_pRouteMan->GetRoutePen()->GetColour();
     } else {
       for (unsigned int i = 0; i < sizeof(::GpxxColorNames) / sizeof(wxString);
@@ -401,7 +424,7 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   wxPenStyle style = wxPENSTYLE_SOLID;
   if (m_route.m_style != wxPENSTYLE_INVALID) style = m_route.m_style;
   wxPen p = *wxThePenList->FindOrCreatePen(col, width, style);
-  if(glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
+  if (glChartCanvas::dash_map.find(style) != glChartCanvas::dash_map.end()) {
     p.SetDashes(2, &glChartCanvas::dash_map[style][0]);
   }
   dc.SetPen(p);
@@ -418,17 +441,17 @@ void RouteGui::DrawGLRouteLines(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc) {
   /* direction arrows.. could probably be further optimized for opengl */
   dc.SetPen(*wxThePenList->FindOrCreatePen(col, 1, wxPENSTYLE_SOLID));
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
+  auto node = m_route.pRoutePointList->begin();
   wxPoint rpt1, rpt2;
-  while (node) {
-    RoutePoint *prp = node->GetData();
+  while (node != m_route.pRoutePointList->end()) {
+    RoutePoint *prp = *node;
     canvas->GetCanvasPointPix(prp->m_lat, prp->m_lon, &rpt2);
-    if (node != m_route.pRoutePointList->GetFirst()) {
+    if (node != m_route.pRoutePointList->begin()) {
       if (!prp->m_bIsActive || !g_bAllowShipToActive)
         RenderSegmentArrowsGL(dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, vp);
     }
     rpt1 = rpt2;
-    node = node->GetNext();
+    ++node;
   }
 #endif
 }
@@ -442,8 +465,8 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
   wxPoint2DDouble r1;
   wxPoint2DDouble lastpoint;
 
-  wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
-  RoutePoint *prp2 = node->GetData();
+  auto node = m_route.pRoutePointList->begin();
+  RoutePoint *prp2 = *node;
   canvas->GetDoubleCanvasPointPix(prp2->m_lat, prp2->m_lon, &lastpoint);
 
   // single point.. make sure it shows up for highlighting
@@ -458,9 +481,9 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
 
   // dc is passed for thicker highlighted lines (performance not very important)
 
-  for (node = node->GetNext(); node; node = node->GetNext()) {
+  for (++node; node != m_route.pRoutePointList->end(); ++node) {
     RoutePoint *prp1 = prp2;
-    prp2 = node->GetData();
+    prp2 = *node;
 
     // Provisional, to properly set status of last point in route
     prp2->m_pos_on_screen = false;
@@ -500,7 +523,6 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
           continue;
         }
       }
-
 
       if (!r1valid) {
         canvas->GetDoubleCanvasPointPix(prp1->m_lat, prp1->m_lon, &r1);
@@ -548,7 +570,6 @@ void RouteGui::DrawGLLines(ViewPort &vp, ocpnDC *dc, ChartCanvas *canvas) {
     }
   }
 
-
 #endif
 }
 
@@ -564,9 +585,7 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
   // always be fully contained within the resulting rectangle.
   // Can we prove this?
   if (m_route.m_bVisible) {
-    wxRoutePointListNode *node = m_route.pRoutePointList->GetFirst();
-    while (node) {
-      RoutePoint *prp2 = node->GetData();
+    for (RoutePoint *prp2 : *m_route.pRoutePointList) {
       bool blink_save = prp2->m_bBlink;
       prp2->m_bBlink = false;
       ocpnDC odc_route(dc_route);
@@ -579,15 +598,14 @@ void RouteGui::CalculateDCRect(wxDC &dc_route, ChartCanvas *canvas,
       r.Inflate(m_route.m_hiliteWidth, m_route.m_hiliteWidth);
 
       update_rect.Union(r);
-      node = node->GetNext();
     }
   }
 
   *prect = update_rect;
 }
 
-int RouteGui::SendToGPS(const wxString& com_name, bool bsend_waypoints,
-                        SendToGpsDlg* dialog) {
+int RouteGui::SendToGPS(const wxString &com_name, bool bsend_waypoints,
+                        SendToGpsDlg *dialog) {
   int result = 0;
 
   N0183DlgCtx dlg_ctx = GetDialogCtx(dialog);
@@ -600,12 +618,39 @@ int RouteGui::SendToGPS(const wxString& com_name, bool bsend_waypoints,
   if (0 == result)
     msg = _("Route Transmitted.");
   else {
-    if (result == ERR_GARMIN_INITIALIZE)
-      msg = _("Error on Route Upload.  Garmin GPS not connected");
-    else
-      msg = _("Error on Route Upload.  Please check logfiles...");
+    switch (result) {
+      case ERR_GARMIN_INITIALIZE:
+        msg = _("Error on Route Upload. Garmin GPS not connected");
+        break;
+      case ERR_GPS_DRIVER_NOT_AVAILAIBLE:
+        msg = _("Error on Route Upload. GPS driver not available");
+        break;
+      case ERR_GARMIN_SEND_MESSAGE:
+      default:
+        msg = _("Error on Route Upload. Please check logfiles...");
+        break;
+    }
   }
   OCPNMessageBox(NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
 
   return (result == 0);
+}
+
+// Delete the route.
+bool RouteGui::OnDelete(wxWindow *parent, const int count) {
+  std::string title = _("Route Delete").ToStdString();
+  std::string action = _("Delete").ToStdString();
+  std::string msg;
+  if (count > 1) {
+    wxString str = wxString::Format(
+        _("Are you sure you want to delete %d routes?"), count);
+    msg = str.c_str();
+  } else {
+    msg = _("Are you sure you want to delete this route?").ToStdString();
+  }
+
+  AlertDialog dialog(parent, title, action);
+  dialog.SetMessage(msg);
+  int result = dialog.ShowModal();
+  return result == wxID_OK;
 }

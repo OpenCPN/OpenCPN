@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Console Canvas
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,14 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ****************************************************************************/
+
+/**
+ * \file
  *
- *
- *
+ * Implement concanv.h  --  Console canvas
  */
+
+#include <stdlib.h>
+#include <time.h>
 
 #include <wx/wxprec.h>
 
@@ -33,53 +30,45 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
+#include <wx/app.h>
 #include <wx/datetime.h>
+#include "gl_headers.h"  // Must be before anything using GL
 
+#include "model/config_vars.h"
 #include "model/navutil_base.h"
 #include "model/own_ship.h"
 #include "model/route.h"
 #include "model/routeman.h"
-#include "model/wx28compat.h"
 
+#include "color_handler.h"
 #include "concanv.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
-#include "OCPNPlatform.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "styles.h"
-
-extern Routeman* g_pRouteMan;
-extern MyFrame* gFrame;
-extern bool g_bShowActiveRouteHighway;
-extern BasePlatform* g_BasePlatform;
-
-bool g_bShowRouteTotal;
-
-extern ocpnStyle::StyleManager* g_StyleManager;
+#include "top_frame.h"
 
 enum eMenuItems { ID_NAVLEG = 1, ID_NAVROUTE, ID_NAVHIGHWAY } menuItems;
 
-//------------------------------------------------------------------------------
-//    ConsoleCanvas Implementation
-//------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(ConsoleCanvas, wxWindow)
-EVT_PAINT(ConsoleCanvas::OnPaint)
-EVT_SHOW(ConsoleCanvas::OnShow)
-EVT_CONTEXT_MENU(ConsoleCanvas::OnContextMenu)
-EVT_MENU(ID_NAVLEG, ConsoleCanvas::OnContextMenuSelection)
-EVT_MENU(ID_NAVROUTE, ConsoleCanvas::OnContextMenuSelection)
-EVT_MENU(ID_NAVHIGHWAY, ConsoleCanvas::OnContextMenuSelection)
+APConsole* console;  ///< Global instance
 
+//------------------------------------------------------------------------------
+//    ConsoleCanvasWin Implementation
+//------------------------------------------------------------------------------
+BEGIN_EVENT_TABLE(ConsoleCanvasWin, wxWindow)
+EVT_PAINT(ConsoleCanvasWin::OnPaint)
+EVT_SHOW(ConsoleCanvasWin::OnShow)
+EVT_CONTEXT_MENU(ConsoleCanvasWin::OnContextMenu)
+EVT_MENU(ID_NAVLEG, ConsoleCanvasWin::OnContextMenuSelection)
+EVT_MENU(ID_NAVROUTE, ConsoleCanvasWin::OnContextMenuSelection)
+EVT_MENU(ID_NAVHIGHWAY, ConsoleCanvasWin::OnContextMenuSelection)
 END_EVENT_TABLE()
 
 // Define a constructor for my canvas
-ConsoleCanvas::ConsoleCanvas(wxWindow* frame) {
-  m_speedUsed = SPEED_VMG;
+ConsoleCanvasWin::ConsoleCanvasWin(wxWindow* parent) {
+  m_speedUsed = SPEED_SOG;
   pbackBrush = NULL;
   m_bNeedClear = false;
 
@@ -89,10 +78,9 @@ ConsoleCanvas::ConsoleCanvas(wxWindow* frame) {
   style |= wxFRAME_NO_TASKBAR;
 #endif
 
-  wxFrame::Create(frame, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize,
-                  style);
+  wxWindow::Create(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style);
 
-  m_pParent = frame;
+  m_pParent = parent;
 
   m_pitemBoxSizerLeg = new wxBoxSizer(wxVERTICAL);
 
@@ -103,33 +91,33 @@ ConsoleCanvas::ConsoleCanvas(wxWindow* frame) {
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
 
   wxFont* pThisLegFont = FontMgr::Get().FindOrCreateFont(
-      10, wxFONTFAMILY_DEFAULT, qFont->GetStyle(), wxFONTWEIGHT_BOLD, false,
-      qFont->GetFaceName());
+      qFont->GetPointSize(), wxFONTFAMILY_DEFAULT, qFont->GetStyle(),
+      wxFONTWEIGHT_BOLD, false, qFont->GetFaceName());
   pThisLegText->SetFont(*pThisLegFont);
 
   pXTE = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
-  pXTE->SetALabel(_T("XTE"));
+  pXTE->SetALabel("XTE");
   m_pitemBoxSizerLeg->Add(pXTE, 1, wxALIGN_LEFT | wxALL, 2);
 
   pBRG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
-  pBRG->SetALabel(_T("BRG"));
+  pBRG->SetALabel("BRG");
   m_pitemBoxSizerLeg->Add(pBRG, 1, wxALIGN_LEFT | wxALL, 2);
 
   pVMG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
-  pVMG->SetALabel(_T("VMG"));
+  pVMG->SetALabel("VMG");
   m_pitemBoxSizerLeg->Add(pVMG, 1, wxALIGN_LEFT | wxALL, 2);
 
   pRNG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
-  pRNG->SetALabel(_T("RNG"));
+  pRNG->SetALabel("RNG");
   m_pitemBoxSizerLeg->Add(pRNG, 1, wxALIGN_LEFT | wxALL, 2);
 
   pTTG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
-  pTTG->SetALabel(_T("TTG  @VMG"));
+  pTTG->SetALabel("TTG  @VMG");
   m_pitemBoxSizerLeg->Add(pTTG, 1, wxALIGN_LEFT | wxALL, 2);
 
   //    Create CDI Display Window
 
-  pCDI = new CDI(this, -1, wxSIMPLE_BORDER, _T("CDI"));
+  pCDI = new CDI(this, -1, wxSIMPLE_BORDER, "CDI");
   m_pitemBoxSizerLeg->AddSpacer(5);
   m_pitemBoxSizerLeg->Add(pCDI, 0, wxALL | wxEXPAND, 2);
 
@@ -146,12 +134,12 @@ ConsoleCanvas::ConsoleCanvas(wxWindow* frame) {
   Hide();
 }
 
-ConsoleCanvas::~ConsoleCanvas() { delete pCDI; }
+ConsoleCanvasWin::~ConsoleCanvasWin() { delete pCDI; }
 
-void ConsoleCanvas::SetColorScheme(ColorScheme cs) {
+void ConsoleCanvasWin::SetColorScheme(ColorScheme cs) {
   pbackBrush = wxTheBrushList->FindOrCreateBrush(
-      GetGlobalColor(_T("DILG1" /*UIBDR*/)), wxBRUSHSTYLE_SOLID);
-  SetBackgroundColour(GetGlobalColor(_T("DILG1" /*"UIBDR"*/)));
+      GetGlobalColor("DILG1" /*UIBDR*/), wxBRUSHSTYLE_SOLID);
+  SetBackgroundColour(GetGlobalColor("DILG1" /*"UIBDR"*/));
 
   if (g_bShowRouteTotal)
     pThisLegText->SetLabel(_("Route"));
@@ -160,7 +148,7 @@ void ConsoleCanvas::SetColorScheme(ColorScheme cs) {
 
   //  Also apply color scheme to all known children
 
-  pThisLegText->SetBackgroundColour(GetGlobalColor(_T("DILG1" /*"UIBDR"*/)));
+  pThisLegText->SetBackgroundColour(GetGlobalColor("DILG1" /*"UIBDR"*/));
 
   pXTE->SetColorScheme(cs);
   pBRG->SetColorScheme(cs);
@@ -171,7 +159,7 @@ void ConsoleCanvas::SetColorScheme(ColorScheme cs) {
   pCDI->SetColorScheme(cs);
 }
 
-void ConsoleCanvas::OnPaint(wxPaintEvent& event) {
+void ConsoleCanvasWin::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
 
   if (g_pRouteMan->GetpActiveRoute()) {
@@ -179,19 +167,17 @@ void ConsoleCanvas::OnPaint(wxPaintEvent& event) {
       pThisLegText->Refresh();
       m_bNeedClear = false;
     }
-
-    UpdateRouteData();
   }
 
   if (!g_bShowActiveRouteHighway) pCDI->Hide();
 }
 
-void ConsoleCanvas::OnShow(wxShowEvent& event) {
+void ConsoleCanvasWin::OnShow(wxShowEvent& event) {
   pCDI->Show(g_bShowActiveRouteHighway);
   m_pitemBoxSizerLeg->SetSizeHints(this);
 }
 
-void ConsoleCanvas::LegRoute() {
+void ConsoleCanvasWin::LegRoute() {
   if (g_bShowRouteTotal)
     pThisLegText->SetLabel(_("Route"));
   else
@@ -201,14 +187,14 @@ void ConsoleCanvas::LegRoute() {
   RefreshConsoleData();
 }
 
-void ConsoleCanvas::OnContextMenu(wxContextMenuEvent& event) {
+void ConsoleCanvasWin::OnContextMenu(wxContextMenuEvent& event) {
   wxMenu* contextMenu = new wxMenu();
-  wxMenuItem* btnLeg = new wxMenuItem(contextMenu, ID_NAVLEG, _("This Leg"),
-                                      _T(""), wxITEM_RADIO);
+  wxMenuItem* btnLeg =
+      new wxMenuItem(contextMenu, ID_NAVLEG, _("This Leg"), "", wxITEM_RADIO);
   wxMenuItem* btnRoute = new wxMenuItem(contextMenu, ID_NAVROUTE,
-                                        _("Full Route"), _T(""), wxITEM_RADIO);
-  wxMenuItem* btnHighw = new wxMenuItem(
-      contextMenu, ID_NAVHIGHWAY, _("Show Highway"), _T(""), wxITEM_CHECK);
+                                        _("Full Route"), "", wxITEM_RADIO);
+  wxMenuItem* btnHighw = new wxMenuItem(contextMenu, ID_NAVHIGHWAY,
+                                        _("Show Highway"), "", wxITEM_CHECK);
   contextMenu->Append(btnLeg);
   contextMenu->Append(btnRoute);
   contextMenu->AppendSeparator();
@@ -223,7 +209,7 @@ void ConsoleCanvas::OnContextMenu(wxContextMenuEvent& event) {
   delete contextMenu;
 }
 
-void ConsoleCanvas::OnContextMenuSelection(wxCommandEvent& event) {
+void ConsoleCanvasWin::OnContextMenuSelection(wxCommandEvent& event) {
   switch (event.GetId()) {
     case ID_NAVLEG: {
       g_bShowRouteTotal = false;
@@ -248,17 +234,443 @@ void ConsoleCanvas::OnContextMenuSelection(wxCommandEvent& event) {
   }
 }
 
-void ConsoleCanvas::ToggleRouteTotalDisplay() {
-  if (m_speedUsed == SPEED_VMG) {
+void ConsoleCanvasWin::ToggleShowHighway() {
+  g_bShowActiveRouteHighway = !g_bShowActiveRouteHighway;
+  if (g_bShowActiveRouteHighway) {
+    pCDI->Show();
+  } else {
+    pCDI->Hide();
+  }
+  m_pitemBoxSizerLeg->SetSizeHints(this);
+  Layout();
+}
+
+void ConsoleCanvasWin::ToggleRouteTotalDisplay() {
+  // Implement 3-state logic
+  //  Route/SOG -> LEG/SOG -> LEG/VMG -> ....
+
+  if (g_bShowRouteTotal) {
+    g_bShowRouteTotal = false;
     m_speedUsed = SPEED_SOG;
   } else {
-    m_speedUsed = SPEED_VMG;
-    g_bShowRouteTotal = !g_bShowRouteTotal;
+    if (m_speedUsed == SPEED_VMG) {
+      g_bShowRouteTotal = true;
+      m_speedUsed = SPEED_SOG;
+    } else
+      m_speedUsed = SPEED_VMG;
   }
   LegRoute();
 }
 
-void ConsoleCanvas::UpdateRouteData() {
+void ConsoleCanvasWin::UpdateRouteData() {
+  wxString str_buf;
+  if (g_pRouteMan->GetpActiveRoute()) {
+    if (g_pRouteMan->m_bDataValid) {
+      // Range to the next waypoint is needed always
+      float rng = g_pRouteMan->GetCurrentRngToActivePoint();
+
+      // Brg to the next waypoint
+      float dcog = g_pRouteMan->GetCurrentBrgToActivePoint();
+      if (dcog >= 359.5) dcog = 0;
+
+      wxString cogstr;
+      if (g_bShowTrue)
+        cogstr << wxString::Format(wxString("%6.0f", wxConvUTF8), dcog);
+      if (g_bShowMag)
+        cogstr << wxString::Format(wxString("%6.0f(M)", wxConvUTF8),
+                                   toMagnetic(dcog));
+
+      pBRG->SetAValue(cogstr);
+
+      double speed = 0.;
+      if (!std::isnan(gCog) && !std::isnan(gSog)) {
+        double BRG;
+        BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
+        double vmg = gSog * cos((BRG - gCog) * PI / 180.);
+        str_buf.Printf("%6.2f", toUsrSpeed(vmg));
+
+        if (m_speedUsed == SPEED_VMG) {
+          // VMG
+          // VMG is always to next waypoint, not to end of route
+          // VMG is SOG x cosine (difference between COG and BRG to Waypoint)
+          speed = vmg;
+        } else {
+          speed = gSog;
+        }
+      } else
+        str_buf = "---";
+
+      pVMG->SetAValue(str_buf);
+
+      if (!g_bShowRouteTotal) {
+        float nrng = g_pRouteMan->GetCurrentRngToActiveNormalArrival();
+        wxString srng;
+        double deltarng = fabs(rng - nrng);
+        if ((deltarng > .01) && ((deltarng / rng) > .10) &&
+            (rng < 10.0))  // show if there is more than 10% difference in
+                           // ranges, etc...
+        {
+          if (nrng < 10.0)
+            srng.Printf("%5.2f/%5.2f", toUsrDistance(rng), toUsrDistance(nrng));
+          else
+            srng.Printf("%5.1f/%5.1f", toUsrDistance(rng), toUsrDistance(nrng));
+        } else {
+          if (rng < 10.0)
+            srng.Printf("%6.2f", toUsrDistance(rng));
+          else
+            srng.Printf("%6.1f", toUsrDistance(rng));
+        }
+
+        // RNG to the next WPT
+        pRNG->SetAValue(srng);
+        // XTE
+        str_buf.Printf(
+            "%6.2f", toUsrDistance(g_pRouteMan->GetCurrentXTEToActivePoint()));
+        pXTE->SetAValue(str_buf);
+        if (g_pRouteMan->GetXTEDir() < 0)
+          pXTE->SetALabel(wxString(_("XTE         L")));
+        else
+          pXTE->SetALabel(wxString(_("XTE         R")));
+        // TTG
+        // In all cases, ttg/eta are declared invalid if VMG <= 0.
+        // If showing only "this leg", use VMG for calculation of ttg
+        wxString ttg_s;
+        if ((speed > 0.) && !std::isnan(gCog) && !std::isnan(gSog)) {
+          float ttg_sec = (rng / speed) * 3600.;
+          wxTimeSpan ttg_span(0, 0, long(ttg_sec), 0);
+          ttg_s = ttg_span.Format();
+        } else
+          ttg_s = "---";
+
+        pTTG->SetAValue(ttg_s);
+        if (m_speedUsed == SPEED_VMG) {
+          pTTG->SetALabel(wxString(_("TTG  @VMG")));
+        } else {
+          pTTG->SetALabel(wxString(_("TTG  @SOG")));
+        }
+      } else {
+        //    Remainder of route
+        float trng = rng;
+
+        Route* prt = g_pRouteMan->GetpActiveRoute();
+        int n_addflag = 0;
+        for (RoutePoint* prp : *prt->pRoutePointList) {
+          if (n_addflag) trng += prp->m_seg_len;
+
+          if (prp == prt->m_pRouteActivePoint) n_addflag++;
+        }
+
+        //                total rng
+        wxString strng;
+        if (trng < 10.0)
+          strng.Printf("%6.2f", toUsrDistance(trng));
+        else
+          strng.Printf("%6.1f", toUsrDistance(trng));
+
+        pRNG->SetAValue(strng);
+
+        // total TTG
+        // If showing total route TTG/ETA, use gSog for calculation
+
+        wxString tttg_s;
+        wxTimeSpan tttg_span;
+        float tttg_sec = 0.0;
+        if (speed > 0.) {
+          tttg_sec = (trng / gSog) * 3600.;
+          tttg_span = wxTimeSpan::Seconds((long)tttg_sec);
+          // Show also #days if TTG > 24 h
+          tttg_s = tttg_sec > SECONDS_PER_DAY ? tttg_span.Format(_("%Dd %H:%M"))
+                                              : tttg_span.Format("%H:%M:%S");
+        } else {
+          tttg_span = wxTimeSpan::Seconds(0);
+          tttg_s = "---";
+        }
+
+        pTTG->SetAValue(tttg_s);
+
+        //                total ETA to be shown on XTE panel
+        wxDateTime dtnow, eta;
+        dtnow.SetToCurrent();
+        eta = dtnow.Add(tttg_span);
+        wxString seta;
+
+        if (speed > 0.) {
+          // Show date, e.g. Feb 15, if TTG > 24 h
+          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format("%d/%m %H:%M")
+                                            : eta.Format("%H:%M");
+        } else {
+          seta = "---";
+        }
+        pXTE->SetAValue(seta);
+        if (m_speedUsed == SPEED_VMG) {
+          pTTG->SetALabel(wxString(_("TTG  @VMG")));
+          pXTE->SetALabel(wxString(_("ETA  @VMG")));
+        } else {
+          pTTG->SetALabel(wxString(_("TTG  @SOG")));
+          pXTE->SetALabel(wxString(_("ETA  @SOG")));
+        }
+      }
+
+      pRNG->Refresh();
+      pBRG->Refresh();
+      pVMG->Refresh();
+      pTTG->Refresh();
+      pXTE->Refresh();
+    }
+  }
+}
+
+void ConsoleCanvasWin::RefreshConsoleData() {
+  UpdateRouteData();
+
+  pRNG->Refresh();
+  pBRG->Refresh();
+  pVMG->Refresh();
+  pTTG->Refresh();
+  pXTE->Refresh();
+  pCDI->Refresh();
+}
+
+void ConsoleCanvasWin::ShowWithFreshFonts() {
+  Hide();
+  UpdateFonts();
+  top_frame::Get()->PositionConsole();
+  Show();
+}
+
+void ConsoleCanvasWin::UpdateFonts() {
+  pBRG->RefreshFonts();
+  pXTE->RefreshFonts();
+  pTTG->RefreshFonts();
+  pRNG->RefreshFonts();
+  pVMG->RefreshFonts();
+
+  m_pitemBoxSizerLeg->SetSizeHints(this);
+  Layout();
+  Fit();
+
+  Refresh();
+}
+
+//------------------------------------------------------------------------------
+//    ConsoleCanvasFrame Implementation
+//------------------------------------------------------------------------------
+BEGIN_EVENT_TABLE(ConsoleCanvasFrame, wxWindow)
+EVT_PAINT(ConsoleCanvasFrame::OnPaint)
+EVT_SHOW(ConsoleCanvasFrame::OnShow)
+EVT_CONTEXT_MENU(ConsoleCanvasFrame::OnContextMenu)
+EVT_MENU(ID_NAVLEG, ConsoleCanvasFrame::OnContextMenuSelection)
+EVT_MENU(ID_NAVROUTE, ConsoleCanvasFrame::OnContextMenuSelection)
+EVT_MENU(ID_NAVHIGHWAY, ConsoleCanvasFrame::OnContextMenuSelection)
+END_EVENT_TABLE()
+
+// Define a constructor for my canvas
+ConsoleCanvasFrame::ConsoleCanvasFrame(wxWindow* parent) {
+  m_speedUsed = SPEED_SOG;
+  pbackBrush = NULL;
+  m_bNeedClear = false;
+
+  long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN | wxFRAME_FLOAT_ON_PARENT;
+
+#ifdef __WXMSW__
+  style |= wxFRAME_NO_TASKBAR;
+#endif
+
+  wxFrame::Create(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                  style);
+
+  m_pParent = parent;
+
+  m_pitemBoxSizerLeg = new wxBoxSizer(wxVERTICAL);
+
+  pThisLegText = new wxStaticText(this, -1, _("This Leg"));
+  pThisLegText->Fit();
+  m_pitemBoxSizerLeg->Add(pThisLegText, 0, wxALIGN_CENTER_HORIZONTAL, 2);
+
+  wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
+
+  wxFont* pThisLegFont = FontMgr::Get().FindOrCreateFont(
+      qFont->GetPointSize(), wxFONTFAMILY_DEFAULT, qFont->GetStyle(),
+      wxFONTWEIGHT_BOLD, false, qFont->GetFaceName());
+  pThisLegText->SetFont(*pThisLegFont);
+
+  pXTE = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
+  pXTE->SetALabel("XTE");
+  m_pitemBoxSizerLeg->Add(pXTE, 1, wxALIGN_LEFT | wxALL, 2);
+
+  pBRG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
+  pBRG->SetALabel("BRG");
+  m_pitemBoxSizerLeg->Add(pBRG, 1, wxALIGN_LEFT | wxALL, 2);
+
+  pVMG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
+  pVMG->SetALabel("VMG");
+  m_pitemBoxSizerLeg->Add(pVMG, 1, wxALIGN_LEFT | wxALL, 2);
+
+  pRNG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
+  pRNG->SetALabel("RNG");
+  m_pitemBoxSizerLeg->Add(pRNG, 1, wxALIGN_LEFT | wxALL, 2);
+
+  pTTG = new AnnunText(this, -1, _("Console Legend"), _("Console Value"));
+  pTTG->SetALabel("TTG  @VMG");
+  m_pitemBoxSizerLeg->Add(pTTG, 1, wxALIGN_LEFT | wxALL, 2);
+
+  //    Create CDI Display Window
+
+  pCDI = new CDI(this, -1, wxSIMPLE_BORDER, "CDI");
+  m_pitemBoxSizerLeg->AddSpacer(5);
+  m_pitemBoxSizerLeg->Add(pCDI, 0, wxALL | wxEXPAND, 2);
+
+  SetSizer(m_pitemBoxSizerLeg);  // use the sizer for layout
+  m_pitemBoxSizerLeg->SetSizeHints(this);
+  Layout();
+  Fit();
+
+  if (g_bShowRouteTotal)
+    pThisLegText->SetLabel(_("Route"));
+  else
+    pThisLegText->SetLabel(_("This Leg"));
+
+  Hide();
+}
+
+ConsoleCanvasFrame::~ConsoleCanvasFrame() { delete pCDI; }
+
+void ConsoleCanvasFrame::SetColorScheme(ColorScheme cs) {
+  pbackBrush = wxTheBrushList->FindOrCreateBrush(
+      GetGlobalColor("DILG1" /*UIBDR*/), wxBRUSHSTYLE_SOLID);
+  SetBackgroundColour(GetGlobalColor("DILG1" /*"UIBDR"*/));
+
+  if (g_bShowRouteTotal)
+    pThisLegText->SetLabel(_("Route"));
+  else
+    pThisLegText->SetLabel(_("This Leg"));
+
+  //  Also apply color scheme to all known children
+
+  pThisLegText->SetBackgroundColour(GetGlobalColor("DILG1" /*"UIBDR"*/));
+
+  pXTE->SetColorScheme(cs);
+  pBRG->SetColorScheme(cs);
+  pRNG->SetColorScheme(cs);
+  pTTG->SetColorScheme(cs);
+  pVMG->SetColorScheme(cs);
+
+  pCDI->SetColorScheme(cs);
+}
+
+void ConsoleCanvasFrame::OnPaint(wxPaintEvent& event) {
+  wxPaintDC dc(this);
+
+  if (g_pRouteMan->GetpActiveRoute()) {
+    if (m_bNeedClear) {
+      pThisLegText->Refresh();
+      m_bNeedClear = false;
+    }
+    UpdateRouteData();
+  }
+
+  if (!g_bShowActiveRouteHighway) pCDI->Hide();
+}
+
+void ConsoleCanvasFrame::OnShow(wxShowEvent& event) {
+  pCDI->Show(g_bShowActiveRouteHighway);
+  m_pitemBoxSizerLeg->SetSizeHints(this);
+}
+
+void ConsoleCanvasFrame::LegRoute() {
+  if (g_bShowRouteTotal)
+    pThisLegText->SetLabel(_("Route"));
+  else
+    pThisLegText->SetLabel(_("This Leg"));
+
+  pThisLegText->Refresh(true);
+  RefreshConsoleData();
+}
+
+void ConsoleCanvasFrame::OnContextMenu(wxContextMenuEvent& event) {
+  wxMenu* contextMenu = new wxMenu();
+  wxMenuItem* btnLeg =
+      new wxMenuItem(contextMenu, ID_NAVLEG, _("This Leg"), "", wxITEM_RADIO);
+  wxMenuItem* btnRoute = new wxMenuItem(contextMenu, ID_NAVROUTE,
+                                        _("Full Route"), "", wxITEM_RADIO);
+  wxMenuItem* btnHighw = new wxMenuItem(contextMenu, ID_NAVHIGHWAY,
+                                        _("Show Highway"), "", wxITEM_CHECK);
+
+#ifdef __ANDROID__
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+  btnLeg->SetFont(sFont);
+  btnRoute->SetFont(sFont);
+  btnHighw->SetFont(sFont);
+#endif
+
+  contextMenu->Append(btnLeg);
+  contextMenu->Append(btnRoute);
+  contextMenu->AppendSeparator();
+  contextMenu->Append(btnHighw);
+
+  btnLeg->Check(!g_bShowRouteTotal);
+  btnRoute->Check(g_bShowRouteTotal);
+  btnHighw->Check(g_bShowActiveRouteHighway);
+
+  PopupMenu(contextMenu);
+
+  delete contextMenu;
+}
+
+void ConsoleCanvasFrame::OnContextMenuSelection(wxCommandEvent& event) {
+  switch (event.GetId()) {
+    case ID_NAVLEG: {
+      g_bShowRouteTotal = false;
+      LegRoute();
+      break;
+    }
+    case ID_NAVROUTE: {
+      g_bShowRouteTotal = true;
+      LegRoute();
+      break;
+    }
+    case ID_NAVHIGHWAY: {
+      g_bShowActiveRouteHighway = !g_bShowActiveRouteHighway;
+      if (g_bShowActiveRouteHighway) {
+        pCDI->Show();
+      } else {
+        pCDI->Hide();
+      }
+      m_pitemBoxSizerLeg->SetSizeHints(this);
+      break;
+    }
+  }
+}
+
+void ConsoleCanvasFrame::ToggleShowHighway() {
+  g_bShowActiveRouteHighway = !g_bShowActiveRouteHighway;
+  if (g_bShowActiveRouteHighway) {
+    pCDI->Show();
+  } else {
+    pCDI->Hide();
+  }
+  m_pitemBoxSizerLeg->SetSizeHints(this);
+  Layout();
+}
+
+void ConsoleCanvasFrame::ToggleRouteTotalDisplay() {
+  // Implement 3-state logic
+  //  Route/SOG -> LEG/SOG -> LEG/VMG -> ....
+
+  if (g_bShowRouteTotal) {
+    g_bShowRouteTotal = false;
+    m_speedUsed = SPEED_SOG;
+  } else {
+    if (m_speedUsed == SPEED_VMG) {
+      g_bShowRouteTotal = true;
+      m_speedUsed = SPEED_SOG;
+    } else
+      m_speedUsed = SPEED_VMG;
+  }
+  LegRoute();
+}
+
+void ConsoleCanvasFrame::UpdateRouteData() {
   wxString str_buf;
 
   if (g_pRouteMan->GetpActiveRoute()) {
@@ -284,7 +696,7 @@ void ConsoleCanvas::UpdateRouteData() {
         double BRG;
         BRG = g_pRouteMan->GetCurrentBrgToActivePoint();
         double vmg = gSog * cos((BRG - gCog) * PI / 180.);
-        str_buf.Printf(_T("%6.2f"), toUsrSpeed(vmg));
+        str_buf.Printf("%6.2f", toUsrSpeed(vmg));
 
         if (m_speedUsed == SPEED_VMG) {
           // VMG
@@ -295,7 +707,7 @@ void ConsoleCanvas::UpdateRouteData() {
           speed = gSog;
         }
       } else
-        str_buf = _T("---");
+        str_buf = "---";
 
       pVMG->SetAValue(str_buf);
 
@@ -308,24 +720,21 @@ void ConsoleCanvas::UpdateRouteData() {
                            // ranges, etc...
         {
           if (nrng < 10.0)
-            srng.Printf(_T("%5.2f/%5.2f"), toUsrDistance(rng),
-                        toUsrDistance(nrng));
+            srng.Printf("%5.2f/%5.2f", toUsrDistance(rng), toUsrDistance(nrng));
           else
-            srng.Printf(_T("%5.1f/%5.1f"), toUsrDistance(rng),
-                        toUsrDistance(nrng));
+            srng.Printf("%5.1f/%5.1f", toUsrDistance(rng), toUsrDistance(nrng));
         } else {
           if (rng < 10.0)
-            srng.Printf(_T("%6.2f"), toUsrDistance(rng));
+            srng.Printf("%6.2f", toUsrDistance(rng));
           else
-            srng.Printf(_T("%6.1f"), toUsrDistance(rng));
+            srng.Printf("%6.1f", toUsrDistance(rng));
         }
 
         // RNG to the next WPT
         pRNG->SetAValue(srng);
         // XTE
         str_buf.Printf(
-            _T("%6.2f"),
-            toUsrDistance(g_pRouteMan->GetCurrentXTEToActivePoint()));
+            "%6.2f", toUsrDistance(g_pRouteMan->GetCurrentXTEToActivePoint()));
         pXTE->SetAValue(str_buf);
         if (g_pRouteMan->GetXTEDir() < 0)
           pXTE->SetALabel(wxString(_("XTE         L")));
@@ -340,7 +749,7 @@ void ConsoleCanvas::UpdateRouteData() {
           wxTimeSpan ttg_span(0, 0, long(ttg_sec), 0);
           ttg_s = ttg_span.Format();
         } else
-          ttg_s = _T("---");
+          ttg_s = "---";
 
         pTTG->SetAValue(ttg_s);
         if (m_speedUsed == SPEED_VMG) {
@@ -353,25 +762,19 @@ void ConsoleCanvas::UpdateRouteData() {
         float trng = rng;
 
         Route* prt = g_pRouteMan->GetpActiveRoute();
-        wxRoutePointListNode* node = (prt->pRoutePointList)->GetFirst();
-        RoutePoint* prp;
-
         int n_addflag = 0;
-        while (node) {
-          prp = node->GetData();
+        for (RoutePoint* prp : *prt->pRoutePointList) {
           if (n_addflag) trng += prp->m_seg_len;
 
           if (prp == prt->m_pRouteActivePoint) n_addflag++;
-
-          node = node->GetNext();
         }
 
         //                total rng
         wxString strng;
         if (trng < 10.0)
-          strng.Printf(_T("%6.2f"), toUsrDistance(trng));
+          strng.Printf("%6.2f", toUsrDistance(trng));
         else
-          strng.Printf(_T("%6.1f"), toUsrDistance(trng));
+          strng.Printf("%6.1f", toUsrDistance(trng));
 
         pRNG->SetAValue(strng);
 
@@ -389,7 +792,7 @@ void ConsoleCanvas::UpdateRouteData() {
                                               : tttg_span.Format("%H:%M:%S");
         } else {
           tttg_span = wxTimeSpan::Seconds(0);
-          tttg_s = _T("---");
+          tttg_s = "---";
         }
 
         pTTG->SetAValue(tttg_s);
@@ -402,10 +805,10 @@ void ConsoleCanvas::UpdateRouteData() {
 
         if (speed > 0.) {
           // Show date, e.g. Feb 15, if TTG > 24 h
-          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format(_T("%d/%m %H:%M"))
-                                            : eta.Format(_T("%H:%M"));
+          seta = tttg_sec > SECONDS_PER_DAY ? eta.Format("%d/%m %H:%M")
+                                            : eta.Format("%H:%M");
         } else {
-          seta = _T("---");
+          seta = "---";
         }
         pXTE->SetAValue(seta);
         if (m_speedUsed == SPEED_VMG) {
@@ -426,7 +829,7 @@ void ConsoleCanvas::UpdateRouteData() {
   }
 }
 
-void ConsoleCanvas::RefreshConsoleData(void) {
+void ConsoleCanvasFrame::RefreshConsoleData() {
   UpdateRouteData();
 
   pRNG->Refresh();
@@ -437,16 +840,15 @@ void ConsoleCanvas::RefreshConsoleData(void) {
   pCDI->Refresh();
 }
 
-void ConsoleCanvas::ShowWithFreshFonts(void) {
+void ConsoleCanvasFrame::ShowWithFreshFonts() {
   Hide();
   Move(0, 0);
-
   UpdateFonts();
-  gFrame->PositionConsole();
+  top_frame::Get()->PositionConsole();
   Show();
 }
 
-void ConsoleCanvas::UpdateFonts(void) {
+void ConsoleCanvasFrame::UpdateFonts() {
   pBRG->RefreshFonts();
   pXTE->RefreshFonts();
   pTTG->RefreshFonts();
@@ -472,15 +874,15 @@ AnnunText::AnnunText(wxWindow* parent, wxWindowID id,
                      const wxString& LegendElement,
                      const wxString& ValueElement)
     : wxWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxNO_BORDER) {
-  m_label = _T("Label");
-  m_value = _T("-----");
+  m_label = "Label";
+  m_value = "-----";
 
   m_plabelFont = FontMgr::Get().FindOrCreateFont(
       14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
-      wxString(_T("Arial Bold")));
+      wxString("Arial Bold"));
   m_pvalueFont = FontMgr::Get().FindOrCreateFont(
       24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, FALSE,
-      wxString(_T("helvetica")), wxFONTENCODING_ISO8859_1);
+      wxString("helvetica"), wxFONTENCODING_ISO8859_1);
 
   m_LegendTextElement = LegendElement;
   m_ValueTextElement = ValueElement;
@@ -490,22 +892,30 @@ AnnunText::AnnunText(wxWindow* parent, wxWindowID id,
 
 AnnunText::~AnnunText() {}
 void AnnunText::MouseEvent(wxMouseEvent& event) {
-  if (event.RightDown()) {
-    wxContextMenuEvent cevt;
-    cevt.SetPosition(event.GetPosition());
-
-    ConsoleCanvas* ccp = dynamic_cast<ConsoleCanvas*>(GetParent());
-    if (ccp) ccp->OnContextMenu(cevt);
-
-  } else if (event.LeftDown()) {
-    ConsoleCanvas* ccp = dynamic_cast<ConsoleCanvas*>(GetParent());
-    if (ccp) {
-      ccp->ToggleRouteTotalDisplay();
+  ConsoleCanvasWin* ccpw = dynamic_cast<ConsoleCanvasWin*>(GetParent());
+  if (ccpw) {
+    if (event.RightDown()) {
+      wxContextMenuEvent cevt;
+      cevt.SetPosition(event.GetPosition());
+      ccpw->OnContextMenu(cevt);
+    } else if (event.LeftDown()) {
+      ccpw->ToggleRouteTotalDisplay();
+    }
+  } else {
+    ConsoleCanvasFrame* ccpf = dynamic_cast<ConsoleCanvasFrame*>(GetParent());
+    if (ccpf) {
+      if (event.RightDown()) {
+        wxContextMenuEvent cevt;
+        cevt.SetPosition(event.GetPosition());
+        ccpf->OnContextMenu(cevt);
+      } else if (event.LeftDown()) {
+        ccpf->ToggleRouteTotalDisplay();
+      }
     }
   }
 }
 
-void AnnunText::CalculateMinSize(void) {
+void AnnunText::CalculateMinSize() {
   //    Calculate the minimum required size of the window based on text size
 
   int wl = 50;  // reasonable defaults?
@@ -514,28 +924,26 @@ void AnnunText::CalculateMinSize(void) {
   int hv = 20;
 
   if (m_plabelFont)
-    GetTextExtent(_T("1234"), &wl, &hl, NULL, NULL, m_plabelFont);
+    GetTextExtent("TTG @SOG", &wl, &hl, NULL, NULL, m_plabelFont);
 
   if (m_pvalueFont)
-    GetTextExtent(_T("123.4567"), &wv, &hv, NULL, NULL, m_pvalueFont);
+    GetTextExtent("123.4567", &wv, &hv, NULL, NULL, m_pvalueFont);
 
-   double pdifactor = g_BasePlatform->GetDisplayDIPMult(gFrame);
-   wl *= pdifactor; hl *= pdifactor;
-   wv *= pdifactor; hv *= pdifactor;
+  double pdifactor =
+      g_BasePlatform->GetDisplayDIPMult(wxTheApp->GetTopWindow());
+  wl *= pdifactor;
+  hl *= pdifactor;
+  wv *= pdifactor;
+  hv *= pdifactor;
 
   wxSize min;
-  min.x = wl + wv;
-
-  // Space is tight on Android....
-#ifdef __ANDROID__
   min.x = wv * 1.2;
-#endif
-
+  min.x = wxMax(min.x, wl * 1.2);
   min.y = (int)((hl + hv) * 1.2);
 
   SetMinSize(min);
 
-  //resize background to the necessary size
+  // resize background to the necessary size
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
   if (style->consoleTextBackground.IsOk()) {
     wxImage img = style->consoleTextBackground.ConvertToImage();
@@ -545,7 +953,7 @@ void AnnunText::CalculateMinSize(void) {
 
 void AnnunText::SetColorScheme(ColorScheme cs) {
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-  m_backBrush = *wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T("UBLCK")),
+  m_backBrush = *wxTheBrushList->FindOrCreateBrush(GetGlobalColor("UBLCK"),
                                                    wxBRUSHSTYLE_SOLID);
 
   m_default_text_color = style->consoleFontColor;
@@ -553,19 +961,15 @@ void AnnunText::SetColorScheme(ColorScheme cs) {
 }
 
 void AnnunText::RefreshFonts() {
-  wxFont *pl = FontMgr::Get().GetFont(m_LegendTextElement);
+  wxFont* pl = FontMgr::Get().GetFont(m_LegendTextElement);
   m_plabelFont = FontMgr::Get().FindOrCreateFont(
-      pl->GetPointSize() / OCPN_GetWinDIPScaleFactor(),
-      pl->GetFamily(), pl->GetStyle(),
-      pl->GetWeight(), FALSE,
-      pl->GetFaceName());
+      pl->GetPointSize() / OCPN_GetWinDIPScaleFactor(), pl->GetFamily(),
+      pl->GetStyle(), pl->GetWeight(), FALSE, pl->GetFaceName());
 
-  wxFont *pv = FontMgr::Get().GetFont(m_ValueTextElement);
+  wxFont* pv = FontMgr::Get().GetFont(m_ValueTextElement);
   m_pvalueFont = FontMgr::Get().FindOrCreateFont(
-      pv->GetPointSize() / OCPN_GetWinDIPScaleFactor(),
-      pv->GetFamily(), pv->GetStyle(),
-      pv->GetWeight(), FALSE,
-      pv->GetFaceName());
+      pv->GetPointSize() / OCPN_GetWinDIPScaleFactor(), pv->GetFamily(),
+      pv->GetStyle(), pv->GetWeight(), FALSE, pv->GetFaceName());
 
   m_legend_color = FontMgr::Get().GetFontColor(_("Console Legend"));
   m_val_color = FontMgr::Get().GetFontColor(_("Console Value"));
@@ -666,18 +1070,18 @@ void CDI::MouseEvent(wxMouseEvent& event) {
     wxContextMenuEvent cevt;
     cevt.SetPosition(event.GetPosition());
 
-    ConsoleCanvas* ccp = dynamic_cast<ConsoleCanvas*>(GetParent());
+    ConsoleCanvasFrame* ccp = dynamic_cast<ConsoleCanvasFrame*>(GetParent());
     if (ccp) ccp->OnContextMenu(cevt);
   }
 #endif
 }
 
 void CDI::SetColorScheme(ColorScheme cs) {
-  m_pbackBrush = wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T("DILG2")),
+  m_pbackBrush = wxTheBrushList->FindOrCreateBrush(GetGlobalColor("DILG2"),
                                                    wxBRUSHSTYLE_SOLID);
-  m_proadBrush = wxTheBrushList->FindOrCreateBrush(GetGlobalColor(_T("DILG1")),
+  m_proadBrush = wxTheBrushList->FindOrCreateBrush(GetGlobalColor("DILG1"),
                                                    wxBRUSHSTYLE_SOLID);
-  m_proadPen = wxThePenList->FindOrCreatePen(GetGlobalColor(_T("CHBLK")), 1,
+  m_proadPen = wxThePenList->FindOrCreatePen(GetGlobalColor("CHBLK"), 1,
                                              wxPENSTYLE_SOLID);
 }
 
@@ -752,3 +1156,44 @@ void CDI::OnPaint(wxPaintEvent& event) {
   wxPaintDC dc(this);
   dc.Blit(0, 0, sx, sy, &mdc, 0, 0);
 }
+
+#if defined(__WXMSW__) || defined(__WXMAC__) || defined(__ANDROID__)
+APConsole::APConsole(wxWindow* parent) {
+  m_con_frame = new ConsoleCanvasFrame(wxTheApp->GetTopWindow());
+}
+APConsole::~APConsole() {}
+void APConsole::SetColorScheme(ColorScheme cs) {
+  m_con_frame->SetColorScheme(cs);
+}
+bool APConsole::IsShown() { return m_con_frame->IsShown(); }
+void APConsole::UpdateFonts() { m_con_frame->UpdateFonts(); }
+void APConsole::RefreshConsoleData() { m_con_frame->RefreshConsoleData(); }
+void APConsole::Raise() { m_con_frame->Raise(); }
+void APConsole::ShowWithFreshFonts() { m_con_frame->ShowWithFreshFonts(); }
+void APConsole::Show(bool bshow) { m_con_frame->Show(bshow); }
+CDI* APConsole::GetCDI() { return m_con_frame->pCDI; }
+wxSize APConsole::GetSize() { return m_con_frame->GetSize(); }
+void APConsole::ToggleShowHighway() { m_con_frame->ToggleShowHighway(); }
+void APConsole::Move(wxPoint p) { m_con_frame->Move(p); }
+
+#else
+
+APConsole::APConsole(wxWindow* parent) {
+  m_con_win = new ConsoleCanvasWin(parent);
+}
+APConsole::~APConsole() {}
+void APConsole::SetColorScheme(ColorScheme cs) {
+  m_con_win->SetColorScheme(cs);
+}
+bool APConsole::IsShown() { return m_con_win->IsShown(); }
+void APConsole::UpdateFonts() { m_con_win->UpdateFonts(); }
+void APConsole::RefreshConsoleData() { m_con_win->RefreshConsoleData(); }
+void APConsole::Raise() {}
+void APConsole::ShowWithFreshFonts() { m_con_win->ShowWithFreshFonts(); }
+void APConsole::Show(bool bshow) { m_con_win->Show(bshow); }
+CDI* APConsole::GetCDI() { return m_con_win->pCDI; }
+wxSize APConsole::GetSize() { return m_con_win->GetSize(); }
+void APConsole::ToggleShowHighway() { m_con_win->ToggleShowHighway(); }
+void APConsole::Move(wxPoint p) { m_con_win->Move(p); }
+
+#endif

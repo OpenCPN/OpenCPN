@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin Friends
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,9 +16,15 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * GRIB Cursor Data Tracking and Display.
+ *
+ * Defines classes for tracking and displaying GRIB weather data at the cursor
+ * position on the chart. Provides real-time updates of meteorological
+ * parameters as the cursor moves.
  */
-
 #ifndef __GRIBUICData_H__
 #define __GRIBUICData_H__
 
@@ -41,9 +41,14 @@
 class GRIBUICtrlBar;
 class GribGrabberWin;
 class GribSpacerWin;
-//----------------------------------------------------------------------------------------------------------
-//    GRIB CtrlBar Specification
-//----------------------------------------------------------------------------------------------------------
+
+/**
+ * Tracks and displays GRIB meteorological data at cursor position.
+ *
+ * Display various meteorological parameters (wind, pressure, waves, etc.) at
+ * the current cursor position on the chart. Manages data display controls and
+ * handles user interactions for display preferences.
+ */
 class CursorData : public CursorDataBase {
 public:
   CursorData(wxWindow *window, GRIBUICtrlBar &parent);

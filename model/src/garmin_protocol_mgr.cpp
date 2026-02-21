@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Garmin NMEA Data Stream Object
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,34 +12,41 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
 
- ***************************************************************************
- *  Parts of this file were adapted from source code found in              *
- *  John F. Waers (jfwaers@csn.net) public domain program MacGPS45         *
- ***************************************************************************
+/**
+ * \file
  *
+ * Implement garmin_protocol_mgr.h -- Garmin NMEA Data Stream Object
+ *
+ * Parts of this file were adapted from source code found in
+ * John F. Waers (jfwaers@csn.net) public domain program MacGPS45
  */
+
+#include <vector>
 
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-
-#include <vector>
 
 #ifndef _MSC_VER
 #include <arpa/inet.h>
 #include <netinet/tcp.h>
 #endif
 
-#include <wx/wxprec.h>
+#ifdef _WIN32
+#include <winsock2.h>
+#include <windows.h>
+#include <winioctl.h>
+#include <initguid.h>
+#include <setupapi.h>
+#endif
 
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <wx/datetime.h>
 #include <wx/event.h>
@@ -53,13 +54,6 @@
 #include <wx/string.h>
 #include <wx/tokenzr.h>
 #include <wx/utils.h>
-
-#ifdef __WXMSW__
-#include <windows.h>
-#include <winioctl.h>
-#include <initguid.h>
-#include <setupapi.h>
-#endif
 
 #include "model/comm_drv_n0183_serial.h"
 #include "model/config_vars.h"
@@ -73,7 +67,6 @@
 #include "androidUTIL.h"
 #endif
 
-
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
@@ -86,7 +79,6 @@ static const long long lNaN = 0xfff8000000000000;
 DEFINE_GUID(GARMIN_GUID1, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b,
             0xba, 0xe7, 0x22, 0xc0);
 #endif
-
 
 //----------------------------------------------------------------------------
 // Garmin Device Management
@@ -127,10 +119,10 @@ EVT_TIMER(TIMER_GARMIN1, GarminProtocolHandler::OnTimerGarmin1)
 END_EVENT_TABLE()
 
 GarminProtocolHandler::GarminProtocolHandler(wxString port,
-                                             wxEvtHandler *MessageTarget,
+                                             SendMsgFunc send_msg_func,
                                              bool bsel_usb) {
-  //m_pparent = parent;
-  m_pMainEventHandler = MessageTarget;
+  // m_pparent = parent;
+  m_send_msg_func = send_msg_func;
   m_garmin_serial_thread = NULL;
   m_garmin_usb_thread = NULL;
   m_bOK = false;
@@ -151,13 +143,13 @@ GarminProtocolHandler::GarminProtocolHandler(wxString port,
     m_receive_state = rs_fromintr;
     m_ndelay = 0;
 
-    wxLogMessage(_T("Searching for Garmin DeviceInterface and Device..."));
+    wxLogMessage("Searching for Garmin DeviceInterface and Device...");
 
     if (!FindGarminDeviceInterface()) {
-      wxLogMessage(_T("   Find:Is the Garmin USB driver installed?"));
+      wxLogMessage("   Find:Is the Garmin USB driver installed?");
     } else {
       if (!ResetGarminUSBDriver())
-        wxLogMessage(_T("   Reset:Is the Garmin USB Device plugged in?"));
+        wxLogMessage("   Reset:Is the Garmin USB Device plugged in?");
     }
   }
 #endif
@@ -168,7 +160,7 @@ GarminProtocolHandler::GarminProtocolHandler(wxString port,
 
     // Start handler thread
     m_garmin_serial_thread =
-        new GARMIN_Serial_Thread(this, m_pMainEventHandler, m_port);
+        new GARMIN_Serial_Thread(this, m_send_msg_func, m_port);
 
     m_Thread_run_flag = 1;
     m_garmin_serial_thread->Run();
@@ -180,16 +172,16 @@ GarminProtocolHandler::GarminProtocolHandler(wxString port,
 
 GarminProtocolHandler::~GarminProtocolHandler() {}
 
-void GarminProtocolHandler::Close(void) {
+void GarminProtocolHandler::Close() {
   TimerGarmin1.Stop();
 
   StopIOThread(true);
   StopSerialThread();
 }
 
-void GarminProtocolHandler::StopSerialThread(void) {
+void GarminProtocolHandler::StopSerialThread() {
   if (m_garmin_serial_thread) {
-    wxLogMessage(_T("Stopping Garmin Serial thread"));
+    wxLogMessage("Stopping Garmin Serial thread");
     m_Thread_run_flag = 0;
 
     int tsec = 5;
@@ -199,9 +191,9 @@ void GarminProtocolHandler::StopSerialThread(void) {
 
     wxString msg;
     if (m_Thread_run_flag < 0)
-      msg.Printf(_T("Stopped in %d sec."), 5 - tsec);
+      msg.Printf("Stopped in %d sec.", 5 - tsec);
     else
-      msg.Printf(_T("Not Stopped after 5 sec."));
+      msg.Printf("Not Stopped after 5 sec.");
     wxLogMessage(msg);
   }
 
@@ -212,7 +204,7 @@ void GarminProtocolHandler::StopIOThread(bool b_pause) {
   if (b_pause) TimerGarmin1.Stop();
 
   if (m_garmin_usb_thread) {
-    wxLogMessage(_T("Stopping Garmin USB thread"));
+    wxLogMessage("Stopping Garmin USB thread");
     m_Thread_run_flag = 0;
 
     int tsec = 5;
@@ -222,9 +214,9 @@ void GarminProtocolHandler::StopIOThread(bool b_pause) {
 
     wxString msg;
     if (m_Thread_run_flag < 0)
-      msg.Printf(_T("Stopped in %d sec."), 5 - tsec);
+      msg.Printf("Stopped in %d sec.", 5 - tsec);
     else
-      msg.Printf(_T("Not Stopped after 5 sec."));
+      msg.Printf("Not Stopped after 5 sec.");
     wxLogMessage(msg);
   }
 
@@ -239,8 +231,8 @@ void GarminProtocolHandler::StopIOThread(bool b_pause) {
   m_ndelay = 30;  // Fix delay for next restart
 }
 
-void GarminProtocolHandler::RestartIOThread(void) {
-  wxLogMessage(_T("Restarting Garmin I/O thread"));
+void GarminProtocolHandler::RestartIOThread() {
+  wxLogMessage("Restarting Garmin I/O thread");
   TimerGarmin1.Start(1000);
 }
 
@@ -259,9 +251,8 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent &event) {
         gusb_cmd_send((const garmin_usb_packet *)pvt_on, sizeof(pvt_on));
 
         //    Start the pump
-        m_garmin_usb_thread =
-            new GARMIN_USB_Thread(this, m_pMainEventHandler,
-                                  (wxIntPtr)m_usb_handle, m_max_tx_size);
+        m_garmin_usb_thread = new GARMIN_USB_Thread(
+            this, m_send_msg_func, (wxIntPtr)m_usb_handle, m_max_tx_size);
         m_Thread_run_flag = 1;
         m_garmin_usb_thread->Run();
       }
@@ -281,8 +272,8 @@ bool GarminProtocolHandler::ResetGarminUSBDriver() {
     if (version_info.dwMajorVersion > 5) {
       if (!IsUserAdmin()) {
         wxLogMessage(
-            _T("    GarminUSBDriver Reset skipped, requires elevated ")
-            _T("privileges on Vista and later...."));
+            "    GarminUSBDriver Reset skipped, requires elevated "
+            "privileges on Vista and later....");
         return true;
       }
     }
@@ -298,7 +289,7 @@ bool GarminProtocolHandler::ResetGarminUSBDriver() {
 
   devInfo.cbSize = sizeof(devInfo);
   if (!SetupDiEnumDeviceInfo(devs, 0, &devInfo)) {
-    wxLogMessage(_T("   GarminUSBDriver Reset0 failed..."));
+    wxLogMessage("   GarminUSBDriver Reset0 failed...");
     return false;
   }
 
@@ -310,16 +301,16 @@ bool GarminProtocolHandler::ResetGarminUSBDriver() {
 
   if (!SetupDiSetClassInstallParams(devs, &devInfo, &pchange.ClassInstallHeader,
                                     sizeof(pchange))) {
-    wxLogMessage(_T("   GarminUSBDriver Reset1 failed..."));
+    wxLogMessage("   GarminUSBDriver Reset1 failed...");
     return false;
   }
 
   if (!SetupDiCallClassInstaller(DIF_PROPERTYCHANGE, devs, &devInfo)) {
-    wxLogMessage(_T("   GarminUSBDriver Reset2 failed..."));
+    wxLogMessage("   GarminUSBDriver Reset2 failed...");
     return false;
   }
 
-  wxLogMessage(_T("GarminUSBDriver Reset succeeded."));
+  wxLogMessage("GarminUSBDriver Reset succeeded.");
 
   return true;
 }
@@ -404,7 +395,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
 
   if (!bgarmin_unit_found) return INVALID_HANDLE_VALUE;
 
-  wxLogMessage(_T("Garmin USB Device Found"));
+  wxLogMessage("Garmin USB Device Found");
 
   if ((m_usb_handle == INVALID_HANDLE_VALUE) || (m_usb_handle == 0)) {
     PSP_INTERFACE_DEVICE_DETAIL_DATA pdd = NULL;
@@ -419,7 +410,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
     if (!SetupDiGetDeviceInterfaceDetail(hdevinfo, &infodata, pdd, size, NULL,
                                          &devinfo)) {
       wxLogMessage(
-          _T("   SetupDiGetDeviceInterfaceDetail failed for Garmin Device..."));
+          "   SetupDiGetDeviceInterfaceDetail failed for Garmin Device...");
       free(pdd);
       return INVALID_HANDLE_VALUE;
     }
@@ -439,7 +430,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
 
     if (m_usb_handle == INVALID_HANDLE_VALUE) {
       wxString msg;
-      msg.Printf(_T("   (usb) CreateFile on '%s' failed"), pdd->DevicePath);
+      msg.Printf("   (usb) CreateFile on '%s' failed", pdd->DevicePath);
       wxLogMessage(msg);
     }
 
@@ -464,7 +455,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
   if (!DeviceIoControl(m_usb_handle, IOCTL_GARMIN_USB_BULK_OUT_PACKET_SIZE,
                        NULL, 0, &m_max_tx_size, GARMIN_USB_INTERRUPT_DATA_SIZE,
                        &size, NULL)) {
-    wxLogMessage(_T("   Couldn't get Garmin USB packet size."));
+    wxLogMessage("   Couldn't get Garmin USB packet size.");
     CloseHandle(m_usb_handle);
     m_usb_handle = INVALID_HANDLE_VALUE;
     return INVALID_HANDLE_VALUE;
@@ -478,7 +469,7 @@ HANDLE GarminProtocolHandler::garmin_usb_start() {
   return m_usb_handle;
 }
 
-bool GarminProtocolHandler::gusb_syncup(void) {
+bool GarminProtocolHandler::gusb_syncup() {
   static int unit_number;
   static const char oinit[12] = {0, 0, 0, 0, GUSB_SESSION_START, 0, 0, 0,
                                  0, 0, 0, 0};
@@ -509,13 +500,13 @@ bool GarminProtocolHandler::gusb_syncup(void) {
 
         unit_number++;
 
-        wxLogMessage(_T("Successful Garmin USB syncup."));
+        wxLogMessage("Successful Garmin USB syncup.");
         return true;
         ;
       }
     }
   }
-  wxLogMessage(_T("   Unable to establish Garmin USB syncup."));
+  wxLogMessage("   Unable to establish Garmin USB syncup.");
   return false;
 }
 
@@ -536,9 +527,9 @@ int GarminProtocolHandler::gusb_cmd_send(const garmin_usb_packet *opkt,
    */
 
   if (sz && !(sz % m_max_tx_size)) {
-    wxLogMessage(_T("win_send_call1"));
+    wxLogMessage("win_send_call1");
     gusb_win_send(opkt, 0);
-    wxLogMessage(_T("win_send_ret1"));
+    wxLogMessage("win_send_ret1");
   }
 
   return (rv);
@@ -664,7 +655,7 @@ device
                             pDBHandle = (PDEV_BROADCAST_HANDLE) pDBHdr;
                             HANDLE target_handle = pDBHandle->dbch_handle;
 
-                            wxLogMessage(_T("Garmin USB Device Removed"));
+                            wxLogMessage("Garmin USB Device Removed");
                             StopIOThread(false);
                             m_bneed_int_reset = true;
                             processed = true;
@@ -696,16 +687,16 @@ D800_Pvt_Data_Type_Aligned mypvt;
 //
 //-------------------------------------------------------------------------------------------------------------
 GARMIN_Serial_Thread::GARMIN_Serial_Thread(GarminProtocolHandler *parent,
-                                           wxEvtHandler *MessageTarget,
+                                           SendMsgFunc send_msg_func,
                                            wxString port) {
   m_parent = parent;  // This thread's immediate "parent"
-  m_pMessageTarget = MessageTarget;
+  m_send_msg_func = send_msg_func;
   m_port = port;
 
   Create();
 }
 
-GARMIN_Serial_Thread::~GARMIN_Serial_Thread(void) {}
+GARMIN_Serial_Thread::~GARMIN_Serial_Thread() {}
 
 //    Entry Point
 void *GARMIN_Serial_Thread::Entry() {
@@ -757,17 +748,17 @@ void *GARMIN_Serial_Thread::Entry() {
           // Synthesize an NMEA GMRMC message
           SENTENCE snt;
           NMEA0183 oNMEA0183(NmeaCtxFactory());
-          oNMEA0183.TalkerID = _T ( "GM" );
+          oNMEA0183.TalkerID = "GM";
 
           if (mypvt.lat < 0.)
-            oNMEA0183.Rmc.Position.Latitude.Set(-mypvt.lat, _T ( "S" ));
+            oNMEA0183.Rmc.Position.Latitude.Set(-mypvt.lat, "S");
           else
-            oNMEA0183.Rmc.Position.Latitude.Set(mypvt.lat, _T ( "N" ));
+            oNMEA0183.Rmc.Position.Latitude.Set(mypvt.lat, "N");
 
           if (mypvt.lon < 0.)
-            oNMEA0183.Rmc.Position.Longitude.Set(-mypvt.lon, _T ( "W" ));
+            oNMEA0183.Rmc.Position.Longitude.Set(-mypvt.lon, "W");
           else
-            oNMEA0183.Rmc.Position.Longitude.Set(mypvt.lon, _T ( "E" ));
+            oNMEA0183.Rmc.Position.Longitude.Set(mypvt.lon, "E");
 
           /* speed over ground */
           double sog =
@@ -784,19 +775,10 @@ void *GARMIN_Serial_Thread::Entry() {
           oNMEA0183.Rmc.IsDataValid = NTrue;
 
           oNMEA0183.Rmc.Write(snt);
-          wxString message = snt.Sentence;
 
-          //    Copy the message into a vector for tranmittal upstream
-          auto buffer = std::make_shared<std::vector<unsigned char>>();
-          std::vector<unsigned char>* vec = buffer.get();
-          for (unsigned int i=0 ; i < message.Length() ; i++){
-            vec->push_back(message[i]);
-          }
-          if (m_pMessageTarget) {
-            CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-            Nevent.SetPayload(buffer);
-            m_pMessageTarget->AddPendingEvent(Nevent);
-          }
+          // Send message...
+          auto msg = snt.Sentence.ToStdString();
+          m_send_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
 
           last_rx_time = wxDateTime::Now();
         }
@@ -829,7 +811,7 @@ thread_exit_2:
 
 thread_exit:
 
-#endif  //#ifdef USE_GARMINHOST
+#endif  // #ifdef USE_GARMINHOST
 
   m_parent->m_Thread_run_flag = -1;  // in GarminProtocolHandler
   return 0;
@@ -840,11 +822,11 @@ thread_exit:
 //-------------------------------------------------------------------------------------------------------------
 #if 1
 GARMIN_USB_Thread::GARMIN_USB_Thread(GarminProtocolHandler *parent,
-                                     wxEvtHandler *MessageTarget,
+                                     SendMsgFunc send_msg_func,
                                      unsigned int device_handle,
                                      size_t max_tx_size) {
   m_parent = parent;  // This thread's immediate "parent"
-  m_pMessageTarget = MessageTarget;
+  m_send_msg_func = send_msg_func;
   m_max_tx_size = max_tx_size;
 
 #ifdef __WXMSW__
@@ -890,23 +872,14 @@ void *GARMIN_USB_Thread::Entry() {
       // Synthesize an NMEA GMGSV message
       SENTENCE snt;
       NMEA0183 oNMEA0183(NmeaCtxFactory());
-      oNMEA0183.TalkerID = _T ( "GM" );
+      oNMEA0183.TalkerID = "GM";
       oNMEA0183.Gsv.SatsInView = m_nSats;
 
       oNMEA0183.Gsv.Write(snt);
-      wxString message = snt.Sentence;
+      wxString msg = snt.Sentence;
 
-      //    Copy the message into a vector for tranmittal upstream
-      auto buffer = std::make_shared<std::vector<unsigned char>>();
-      std::vector<unsigned char>* vec = buffer.get();
-      for (unsigned int i=0 ; i < message.Length() ; i++){
-        vec->push_back(message[i]);
-      }
-      if (m_pMessageTarget) {
-        CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-        Nevent.SetPayload(buffer);
-        m_pMessageTarget->AddPendingEvent(Nevent);
-      }
+      // and send message.
+      m_send_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
     }
 
     if (iresp.gusb_pkt.pkt_id[0] == GUSB_RESPONSE_PVT)  // PVT Data Record
@@ -918,21 +891,17 @@ void *GARMIN_USB_Thread::Entry() {
         // Synthesize an NMEA GMRMC message
         SENTENCE snt;
         NMEA0183 oNMEA0183(NmeaCtxFactory());
-        oNMEA0183.TalkerID = _T ( "GM" );
+        oNMEA0183.TalkerID = "GM";
 
         if (ppvt->lat < 0.)
-          oNMEA0183.Rmc.Position.Latitude.Set(-ppvt->lat * 180. / PI,
-                                              _T ( "S" ));
+          oNMEA0183.Rmc.Position.Latitude.Set(-ppvt->lat * 180. / PI, "S");
         else
-          oNMEA0183.Rmc.Position.Latitude.Set(ppvt->lat * 180. / PI,
-                                              _T ( "N" ));
+          oNMEA0183.Rmc.Position.Latitude.Set(ppvt->lat * 180. / PI, "N");
 
         if (ppvt->lon < 0.)
-          oNMEA0183.Rmc.Position.Longitude.Set(-ppvt->lon * 180. / PI,
-                                               _T ( "W" ));
+          oNMEA0183.Rmc.Position.Longitude.Set(-ppvt->lon * 180. / PI, "W");
         else
-          oNMEA0183.Rmc.Position.Longitude.Set(ppvt->lon * 180. / PI,
-                                               _T ( "E" ));
+          oNMEA0183.Rmc.Position.Longitude.Set(ppvt->lon * 180. / PI, "E");
 
         /* speed over ground */
         double sog = sqrt(ppvt->east * ppvt->east + ppvt->north * ppvt->north) *
@@ -948,19 +917,8 @@ void *GARMIN_USB_Thread::Entry() {
         oNMEA0183.Rmc.IsDataValid = NTrue;
 
         oNMEA0183.Rmc.Write(snt);
-        wxString message = snt.Sentence;
-
-        //    Copy the message into a vector for tranmittal upstream
-        auto buffer = std::make_shared<std::vector<unsigned char>>();
-        std::vector<unsigned char>* vec = buffer.get();
-        for (unsigned int i=0 ; i < message.Length() ; i++){
-          vec->push_back(message[i]);
-        }
-        if (m_pMessageTarget) {
-          CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-          Nevent.SetPayload(buffer);
-          m_pMessageTarget->AddPendingEvent(Nevent);
-        }
+        wxString msg = snt.Sentence;
+        m_send_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
       }
     }
   }

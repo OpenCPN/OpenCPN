@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Basic platform specific support utilities without GUI deps.
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,16 +12,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Basic platform specific support utilities without GUI deps.
+ */
 
 #ifndef BASEPLATFORM_H
 #define BASEPLATFORM_H
 
 #include <stdio.h>
 #include <vector>
+
+#ifdef _WIN32
+#define NOMINMAX  // Required to not interfere with std::max et. al. Sigh.
+#include <winsock2.h>
+#include <windows.h>
+#endif
 
 #include <wx/wxprec.h>
 
@@ -42,11 +46,10 @@
 #include <wx/colourdata.h>
 #include <wx/colordlg.h>
 
-
 #define PLATFORM_CAP_PLUGINS 1
 #define PLATFORM_CAP_FASTPAN 2
 
-class BasePlatform;   // forward
+class BasePlatform;  // forward
 
 /// points to g_platform, handles brain-dead MS linker.
 extern BasePlatform* g_BasePlatform;
@@ -57,11 +60,9 @@ typedef struct {
   char msdk[20];
 } PlatSpec;
 
-void appendOSDirSlash(wxString* path);
-
 struct OCPN_OSDetail {
-  OCPN_OSDetail(){};
-  ~OCPN_OSDetail(){};
+  OCPN_OSDetail() {};
+  ~OCPN_OSDetail() {};
 
   std::string osd_name;
   std::string osd_version;
@@ -70,17 +71,27 @@ struct OCPN_OSDetail {
   std::string osd_ID;
 };
 
+void appendOSDirSlash(wxString* path);
+
+namespace platform {
+
+/**
+ * Return total system RAM and size of program
+ * Values returned are in kilobytes
+ */
+bool GetMemoryStatus(int* mem_total, int* mem_used);
+
+}  // namespace platform
 class AbstractPlatform {
 public:
   AbstractPlatform() = default;
-  virtual ~AbstractPlatform()  = default;
+  virtual ~AbstractPlatform() = default;
 
   /** Return dir path for opencpn.log, etc., respecting -c cli option. */
   wxString& GetPrivateDataDir();
 
   /** Return dir path for opencpn.log, etc., does not respect -c option. */
   wxString& DefaultPrivateDataDir();
-
 
   wxString* GetPluginDirPtr();
   wxString* GetSharedDataDirPtr();
@@ -90,6 +101,9 @@ public:
 
   /** The original in-tree plugin directory, sometimes not user-writable.*/
   wxString& GetPluginDir();
+
+  /** Android license details, otherwise "" */
+  wxString GetSupplementalLicenseString();
 
   wxStandardPaths& GetStdPaths();
 
@@ -133,7 +147,20 @@ public:
   virtual double GetDisplaySizeMM() { return 1.0; }
   virtual double GetDisplayDPmm() { return 1.0; }
   virtual unsigned int GetSelectRadiusPix();
-  double GetDisplayDIPMult(wxWindow *win);
+
+  /**
+   * Get the display scaling factor for DPI-aware rendering.
+   *
+   * @note Only applies scaling on Windows. Other platforms return 1.0 as they
+   *       handle DPI scaling differently (e.g., macOS uses logical pixels).
+   */
+  double GetDisplayDIPMult(wxWindow* win);
+
+  /**
+   * Return icon size roughly corresponding to height of a char in w, tweaked
+   * to be "big enough" for touch screens if touch is true.
+   */
+  virtual int GetSvgStdIconSize(const wxWindow* w, bool touch) = 0;
 
   static void ShowBusySpinner();
   static void HideBusySpinner();
@@ -160,9 +187,8 @@ protected:
 
   std::vector<int> m_displaySizeMMOverride;
 
-
 #ifdef _MSC_VER
-  bool GetWindowsMonitorSize(int *width, int *height);
+  bool GetWindowsMonitorSize(int* width, int* height);
 #endif
   int m_monitorWidth, m_monitorHeight;
   bool m_bdisableWindowsDisplayEnum;
@@ -179,6 +205,7 @@ public:
   wxSize getDisplaySize() override;
   double GetDisplaySizeMM() override;
   double GetDisplayDPmm() override;
+  int GetSvgStdIconSize(const wxWindow* w, bool touch) override;
 };
 
 #endif  //  BASEPLATFORM_H

@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Options Dialog
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Options dialog
+ */
 
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_
@@ -31,21 +29,23 @@
 #include <windows.h>
 #endif
 
+#include <functional>
 #include <memory>
+#include <vector>
 
-#include <wx/listbook.h>
-#include <wx/dirctrl.h>
-#include <wx/spinctrl.h>
-#include <wx/listctrl.h>
+#include <wx/arrimpl.cpp>
 #include <wx/choice.h>
-#include <wx/collpane.h>
 #include <wx/clrpicker.h>
+#include <wx/collpane.h>
 #include <wx/colourdata.h>
-#include "connections_dialog.h"
-
-#if wxUSE_TIMEPICKCTRL
+#include <wx/dialog.h>
+#include <wx/dirctrl.h>
+#include <wx/frame.h>
+#include <wx/listbook.h>
+#include <wx/listctrl.h>
+#include <wx/scrolwin.h>
+#include <wx/spinctrl.h>
 #include <wx/timectrl.h>
-#endif
 
 #ifdef __WXGTK__
 // wxTimePickerCtrl is completely broken in Gnome based desktop environments as
@@ -53,37 +53,18 @@
 #include "time_textbox.h"
 #endif
 
-#include <vector>
-
-#if wxCHECK_VERSION(2, 9, 0)
-#include <wx/frame.h>
-#else
-#include "scrollingdialog.h"
-#endif
+#include "model/ais_decoder.h"
 
 #include "chartdbs.h"
+#include "connections_dlg.h"
+#include "mark_info.h"
+#include "navutil.h"
+#include "ocpn_platform.h"
 #include "pluginmanager.h"  // FIXME: Refactor
 
-#ifndef __OCPN__ANDROID__
-#define __OCPN__OPTIONS_USE_LISTBOOK__
+#ifndef __ANDROID__
+#define OCPN_OPTIONS_USE_LISTBOOK
 #endif
-
-// Forward Declarations
-class wxGenericDirCtrl;
-class MyConfig;
-class ChartGroupsUI;
-//class ConnectionParams;
-class PluginListPanel;
-class ChartGroupArray;
-class ChartGroup;
-class MMSI_Props_Panel;
-class MmsiProperties;
-class OCPNCheckedListCtrl;
-class CanvasConfigSelect;
-class OCPNIconCombo;
-class OCPNColourPickerCtrl;
-class OCPNChartDirPanel;
-class OCPNSoundPanel;
 
 #define ID_DIALOG 10001
 #ifdef __WXOSX__
@@ -98,6 +79,36 @@ class OCPNSoundPanel;
 #define SYMBOL_OPTIONS_SIZE wxSize(500, 500)
 #define SYMBOL_OPTIONS_POSITION wxDefaultPosition
 
+/* Define an int bit field for dialog return value
+ * to indicate which types of settings have changed */
+#define GENERIC_CHANGED 1
+#define S52_CHANGED 1 << 1
+#define FONT_CHANGED 1 << 2
+#define FORCE_UPDATE 1 << 3
+#define VISIT_CHARTS 1 << 4
+#define LOCALE_CHANGED 1 << 5
+#define TOOLBAR_CHANGED 1 << 6
+#define CHANGE_CHARTS 1 << 7
+#define SCAN_UPDATE 1 << 8
+#define GROUPS_CHANGED 1 << 9
+#define STYLE_CHANGED 1 << 10
+#define TIDES_CHANGED 1 << 11
+#define GL_CHANGED 1 << 12
+#define REBUILD_RASTER_CACHE 1 << 13
+#define NEED_NEW_OPTIONS 1 << 14
+#define PARSE_ENC 1 << 15
+#define CONFIG_CHANGED 1 << 16
+#define FONT_CHANGED_SAFE 1 << 17
+#define FORCE_RELOAD 1 << 18
+#define MENU_CHANGED 1 << 19
+
+#ifndef wxCLOSE_BOX
+#define wxCLOSE_BOX 0x1000
+#endif
+#ifndef wxFIXED_MINSIZE
+#define wxFIXED_MINSIZE 0
+#endif
+
 enum {
   ID_APPLY = 10000,
   ID_ATONTEXTCHECKBOX,
@@ -107,6 +118,7 @@ enum {
   ID_BUTTONDELETE,
   ID_BUTTONCOMPRESS,
   ID_BUTTONFONTCHOOSE,
+  ID_BUTTONFONT_RESET,
   ID_BUTTONECDISHELP,
   ID_BUTTONFONTCOLOR,
   ID_BUTTONGROUP,
@@ -171,6 +183,7 @@ enum {
   ID_SPEEDUNITSCHOICE,
   ID_WINDSPEEDUNITCHOICE,
   ID_DEPTHUNITSCHOICE,
+  ID_HEIGHTUNITSCHOICE,
   ID_SELECTLIST,
   ID_SHOWDEPTHUNITSBOX1,
   ID_SHOWGPSWINDOW,
@@ -187,6 +200,7 @@ enum {
   ID_TRACKHILITE,
   ID_TRANSTOOLBARCHECKBOX,
   ID_UPDCHECKBOX,
+  ID_REBUILDBUTTON,
   ID_PARSEENCBUTTON,
   ID_VECTORCHECKBOX1,
   ID_ZTCCHECKBOX,
@@ -224,38 +238,27 @@ enum {
   ID_AISALERTAUDIO,
   ID_AISALERTDIALOG,
   ID_TEMPUNITSCHOICE,
-  ID_BUTTONMIGRATE
+  ID_BUTTONMIGRATE,
+  ID_TIMEZONE_UTC,
+  ID_TIMEZONE_LOCAL_TIME,
+  ID_TENHZCHECKBOX
 };
 
-/* Define an int bit field for dialog return value
- * to indicate which types of settings have changed */
-#define GENERIC_CHANGED 1
-#define S52_CHANGED 1 << 1
-#define FONT_CHANGED 1 << 2
-#define FORCE_UPDATE 1 << 3
-#define VISIT_CHARTS 1 << 4
-#define LOCALE_CHANGED 1 << 5
-#define TOOLBAR_CHANGED 1 << 6
-#define CHANGE_CHARTS 1 << 7
-#define SCAN_UPDATE 1 << 8
-#define GROUPS_CHANGED 1 << 9
-#define STYLE_CHANGED 1 << 10
-#define TIDES_CHANGED 1 << 11
-#define GL_CHANGED 1 << 12
-#define REBUILD_RASTER_CACHE 1 << 13
-#define NEED_NEW_OPTIONS 1 << 14
-#define PARSE_ENC 1 << 15
-#define CONFIG_CHANGED 1 << 16
-
-#ifndef wxCLOSE_BOX
-#define wxCLOSE_BOX 0x1000
-#endif
-#ifndef wxFIXED_MINSIZE
-#define wxFIXED_MINSIZE 0
-#endif
-
-#include <wx/arrimpl.cpp>
 WX_DEFINE_ARRAY_PTR(wxGenericDirCtrl *, ArrayOfDirCtrls);
+
+class options;              // forward
+extern options *g_options;  ///< Global instance
+
+class MyConfig;              // circular
+class OCPNColourPickerCtrl;  // circular
+class canvasConfig;          // circular
+
+class ChartGroupsUI;        // forward
+class MMSI_Props_Panel;     // forward
+class CanvasConfigSelect;   // forward
+class OCPNCheckedListCtrl;  // forward in .cpp file
+class OCPNChartDirPanel;    // forward in .cpp file
+class OCPNSoundPanel;       // forward in .cpp file
 
 class Uncopyable {
 protected:
@@ -267,29 +270,31 @@ private:
   Uncopyable &operator=(const Uncopyable &);
 };
 
-#ifndef bert  // wxCHECK_VERSION(2, 9, 0)
-class options : private Uncopyable,
-                public wxDialog
-#else
-class options : private Uncopyable,
-                public wxScrollingDialog
-#endif
-{
+struct OptionsCallbacks {
+  std::function<void(options *, int)> prepare_close;
+  std::function<void(int, ArrayOfCDI *)> process_dialog;
+  OptionsCallbacks() : prepare_close(nullptr), process_dialog(nullptr) {}
+};
+
+class options : public wxDialog {
 public:
-  explicit options(wxWindow *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
+  explicit options(wxWindow *parent, OptionsCallbacks callbacks,
+                   wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                    const wxString &caption = SYMBOL_OPTIONS_TITLE,
                    const wxPoint &pos = SYMBOL_OPTIONS_POSITION,
                    const wxSize &size = SYMBOL_OPTIONS_SIZE,
                    long style = SYMBOL_OPTIONS_STYLE);
+  options(const options &) = delete;
+  options &operator=(const options &) = delete;
 
   ~options(void);
-#if wxCHECK_VERSION(3, 0, 0)
   bool SendIdleEvents(wxIdleEvent &event);
-#endif
   void SetInitialPage(int page_sel, int sub_page = -1);
   void Finish(void);
 
   void OnClose(wxCloseEvent &event);
+
+  void ShowOKButtons(bool _show) { m_OK_Cancel_Apply_buttons->Show(_show); }
 
   void CreateListbookIcons();
   void CreateControls(void);
@@ -318,6 +323,7 @@ public:
   void OnButtonaddClick(wxCommandEvent &event);
   void OnButtondeleteClick(wxCommandEvent &event);
   void OnButtonParseENC(wxCommandEvent &event);
+  void OnButtonRebuildChartDb(wxCommandEvent &event);
   void OnButtoncompressClick(wxCommandEvent &event);
   void OnButtonmigrateClick(wxCommandEvent &event);
   void OnButtonEcdisHelp(wxCommandEvent &event);
@@ -377,24 +383,28 @@ public:
   void ClearConfigList();
   void BuildConfigList();
   void OnConfigMouseSelected(wxMouseEvent &event);
-  void OnDialogInit(wxInitDialogEvent& event);
-
+  void OnDialogInit(wxInitDialogEvent &event);
 
   bool GetNeedNew() { return m_bneedNew; }
   void SetNeedNew(bool bnew) { m_bneedNew = bnew; }
   int GetScrollRate() { return m_scrollRate; }
-  void SetForceNewToolbarOnCancel(bool val) { m_bForceNewToolbaronCancel = val; }
+  void SetForceNewToolbarOnCancel(bool val) {
+    m_bForceNewToolbaronCancel = val;
+  }
 
-  wxArrayString *GetSerialArray(){ return m_pSerialArray; }
+  wxArrayString *GetSerialArray() { return m_pSerialArray; }
+  void OptionsFinalizeChartDBUpdate();
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
 
-#ifdef __OCPN__OPTIONS_USE_LISTBOOK__
+#ifdef OCPN_OPTIONS_USE_LISTBOOK
   wxListbook *m_pListbook;
 #else
   wxNotebook *m_pListbook;
 #endif
+
+  wxBoxSizer *m_OK_Cancel_Apply_buttons;
 
   size_t m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips;
   size_t m_pageUI, m_pagePlugins;
@@ -420,13 +430,23 @@ public:
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
   wxCheckBox *pZoomButtons, *pChartBarEX;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
-  wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor;
+  wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor, *m_pTxt_OwnMMSI;
+  // Radio buttons to control the date/time format.
+  // In the future, other date/time formats may be added here. For example:
+  // 1. Local Mean Time (LMT) at the location.
+  // 2. Custom timezone, such as for route planning purpose.
 
+  /** Specify date/time should be formatted in timezone as configured in the
+   * operating system. */
+  wxRadioButton *pTimezoneLocalTime;
+  /** Specify date/time should be formatted in UTC. */
+  wxRadioButton *pTimezoneUTC;
   wxTextCtrl *pCmdSoundString;
 
   wxChoice *m_pShipIconType, *m_pcTCDatasets;
-  wxSlider *m_pSlider_Zoom_Raster, *m_pSlider_GUI_Factor, *m_pSlider_Chart_Factor,
-      *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor, *m_pSlider_ENCText_Factor;
+  wxSlider *m_pSlider_Zoom_Raster, *m_pSlider_GUI_Factor,
+      *m_pSlider_Chart_Factor, *m_pSlider_Ship_Factor, *m_pSlider_Text_Factor,
+      *m_pSlider_ENCText_Factor;
   wxSlider *m_pMouse_Zoom_Slider;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
@@ -435,7 +455,6 @@ public:
   wxTextCtrl *pSDefaultBoatSpeed;
 
   wxRadioButton *pCBCourseUp, *pCBNorthUp, *pRBSizeAuto, *pRBSizeManual;
-  int k_tides;
 
   // For the Display\Units page
   wxStaticText *itemStaticTextUserVar;
@@ -446,7 +465,6 @@ public:
   void UpdateChartDirList();
 
   void OnCanvasConfigSelectClick(int ID, bool selected);
-
 
   bool b_haveWMM;
   bool b_oldhaveWMM;
@@ -471,7 +489,7 @@ public:
 
   // For "Units" page
   wxChoice *pSDMMFormat, *pDistanceFormat, *pSpeedFormat, *pDepthUnitSelect,
-      *pTempFormat, *pWindSpeedFormat;
+      *pTempFormat, *pWindSpeedFormat, *pHeightUnitSelect;
   wxCheckBox *pCBTrueShow, *pCBMagShow;
   wxTextCtrl *pMagVar;
 
@@ -484,16 +502,16 @@ public:
 
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
-  wxButton *pParseENCButton;
+  wxButton *pParseENCButton, *pRebuildChartDatabase;
   wxButton *m_removeBtn, *m_compressBtn;
   wxButton *m_migrateBtn;
   int k_charts;
   int m_nCharWidthMax;
   wxBoxSizer *boxSizerCharts;
   wxScrolledWindow *m_scrollWinChartList;
-  wxScrolledWindow* chartPanelWin;
-  wxBoxSizer* cmdButtonSizer;
-  wxStaticBox* loadedBox;
+  wxScrolledWindow *chartPanelWin;
+  wxBoxSizer *cmdButtonSizer;
+  wxStaticBox *loadedBox;
   std::vector<OCPNChartDirPanel *> panelVector;
   wxArrayString activeChartList;
 
@@ -548,12 +566,14 @@ public:
   OCPNIconCombo *pRoutepointDefaultIconChoice;
   wxCheckBox *pScaMinChckB, *pScaMinOverruleChckB;
   wxTextCtrl *m_pText_ScaMin;
+  wxTextCtrl *m_pText_ScaMax;
 
   // For the font page
   wxBoxSizer *m_itemBoxSizerFontPanel;
   wxChoice *m_itemFontElementListBox, *m_itemStyleListBox, *m_itemLangListBox;
   wxStaticText *m_textSample;
   bool m_bVisitLang;
+  bool m_bVisitPlugins;
 
   // For "AIS Options"
   wxComboBox *m_itemAISListBox;
@@ -572,12 +592,10 @@ public:
   ;
   wxChoice *pTrackPrecision;
   wxTextCtrl *pNavAidRadarRingsStep, *pWaypointRangeRingsStep;
-  wxCheckBox *pSogCogFromLLCheckBox;
-  wxSpinCtrl *pSogCogFromLLDampInterval;
   wxTextCtrl *m_pText_TP_Secs, *m_pText_TP_Dist;
   wxCheckBox *pWayPointPreventDragging, *pConfirmObjectDeletion;
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;
-  wxCheckBox *pTransparentToolbar;
+  wxCheckBox *pEnableTenHertz, *pTransparentToolbar;
   wxCheckBox *pAdvanceRouteWaypointOnArrivalOnly, *pTrackShowIcon;
   wxCheckBox *pTrackDaily, *pTrackHighlite;
   wxStaticText *pStatic_CallSign;
@@ -620,6 +638,9 @@ public:
   /** Notified with a OCPN_Sound* pointer when sound has completed. */
   EventVar m_on_sound_done;
   ObsListener m_sound_done_listener;
+  wxGenericProgressDialog *m_pCBDSprog;
+  void DoDBSUpdate(bool force_full);
+  bool m_bTextureCacheingSave;
 
 private:
   void Init(void);
@@ -652,22 +673,26 @@ private:
 
   void OnAlertEnableButtonClick(wxCommandEvent &event);
   void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
+  void OnResetFont(wxCommandEvent &event);
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
+
+  OptionsCallbacks m_callbacks;
   int m_returnChanges;
   wxListCtrl *tcDataSelected;
   std::vector<int> marinersStdXref;
   ChartGroupsUI *groupsPanel;
   wxImageList *m_topImgList;
 
-  wxCheckBox* m_persist_active_route_chkbox;
+  wxCheckBox *m_persist_active_route_chkbox;
   wxScrolledWindow *m_pNMEAForm;
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
   ObservableListener compat_os_listener;
+  void ApplyChanges(wxCommandEvent &event);
 
-  int m_screenConfig;
+  unsigned int m_screenConfig;
 
   wxNotebookPage *m_groupsPage;
   wxFont *dialogFont;
@@ -678,6 +703,8 @@ private:
   bool m_bcompact;
   int m_fontHeight, m_scrollRate;
   bool m_bfontChanged;
+  wxArrayString m_font_element_array;
+
   bool m_bVectorInit;
 
   wxBoxSizer *m_boxSizerConfigs;
@@ -687,8 +714,8 @@ private:
 
   wxSize m_sliderSize;
   bool m_bneedNew;
-
-  std::shared_ptr<ConnectionsDialog>comm_dialog;
+  ObsListener m_OnChartDb_finalize_listener;
+  std::shared_ptr<ConnectionsDlg> comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };
@@ -716,7 +743,7 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-class ChartGroupsUI :  public wxScrolledWindow {
+class ChartGroupsUI : public wxScrolledWindow {
 public:
   ChartGroupsUI(wxWindow *parent);
   ~ChartGroupsUI(void);
@@ -858,9 +885,10 @@ public:
   void OnMMSIEditCancelClick(wxCommandEvent &event);
   void OnMMSIEditOKClick(wxCommandEvent &event);
   void OnCtlUpdated(wxCommandEvent &event);
+  void OnMMSIChanged(wxCommandEvent &event);
 
   MmsiProperties *m_props;
-  wxTextCtrl *m_MMSICtl, m_ShipNameCtl;  // Has ToDo take away?
+  wxTextCtrl *m_MMSICtl, *m_ShipNameCtl;  // Has ToDo take away?
   wxRadioButton *m_rbTypeTrackDefault, *m_rbTypeTrackAlways;
   wxRadioButton *m_rbTypeTrackNever;
   wxCheckBox *m_cbTrackPersist, *m_IgnoreButton, *m_MOBButton, *m_VDMButton,

@@ -1,11 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  ChartBaseBSB and Friends
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,20 +12,23 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * BSB chart management
  */
 
 #ifndef _CHARTIMG_H_
 #define _CHARTIMG_H_
 
-#include "chartbase.h"
 #include "model/georef.h"  // for GeoRef type
-#include "OCPNRegion.h"
+
+#include "chartbase.h"
+#include "chartdb.h"
+#include "ocpn_region.h"
 #include "viewport.h"
 
 typedef enum ScaleTypeEnum {
@@ -113,10 +110,21 @@ public:
   int nRev;
 };
 
-// ----------------------------------------------------------------------------
-// ChartBaseBSB
-// ----------------------------------------------------------------------------
-
+/**
+ * Base class for BSB (Maptech/NOS) format nautical charts.
+ *
+ * Provides core functionality for handling BSB format raster nautical charts.
+ * Implements chart rendering, coordinate transformations, and utility
+ * functions.
+ *
+ * Key features include:
+ * - Chart initialization and loading
+ * - Rendering of chart views on different devices (DC, OpenGL)
+ * - Coordinate conversions between lat/lon and chart pixels
+ * - Color scheme management
+ * - Chart scaling and zooming
+ * - Caching mechanisms for improved performance
+ */
 class ChartBaseBSB : public ChartBase {
 public:
   //    Public methods
@@ -151,6 +159,16 @@ public:
                                     const LLRegion &Region);
 
   virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
+  /**
+   * Find the nearest preferred viewport scale (in pixels/meter) for this chart.
+   *
+   * The function aims to find a scale within 5% of the requested scale while
+   * staying between 1/0.01x and 64x of the chart's native scale.
+   *
+   * @param target_scale_ppm Desired viewport scale in physical pixels per
+   * meter.
+   * @return Closest preferred scale in physical pixels per meter
+   */
   virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 
   virtual void GetValidCanvasRegion(const ViewPort &VPoint,
@@ -197,6 +215,17 @@ protected:
   PaletteDir GetPaletteDir(void);
   int *GetPalettePtr(BSB_Color_Capability);
 
+  /**
+   * Find closest valid scale that's a power of 2 multiple of chart's native
+   * scale.
+   *
+   * @param target_scale Target scale in physical pixels per meter.
+   * @param scale_factor_min Minimum allowed scale multiplier (e.g., 0.01 allows
+   * zoom in to 100x).
+   * @param scale_factor_max Maximum allowed scale multiplier (e.g., 64 allows
+   * zoom out to 1/64x).
+   * @return Valid scale in physical pixels per meter.
+   */
   double GetClosestValidNaturalScalePPM(double target_scale,
                                         double scale_factor_min,
                                         double scale_factor_max);
@@ -318,10 +347,9 @@ protected:
   wxULongLong m_filesize;
 };
 
-// ----------------------------------------------------------------------------
-// ChartKAP
-// ----------------------------------------------------------------------------
-
+/**
+ * Represents a KAP format chart, derived from ChartBaseBSB.
+ */
 class ChartKAP : public ChartBaseBSB {
 public:
   //    Methods
@@ -352,6 +380,12 @@ public:
 
 class PlugInChartBase;  // found in ocpn_plugin.h
 
+/**
+ * Wrapper class for plugin-based charts.
+ * Serves as an interface between the main application and plugin-provided
+ * charts. Allows seamless integration of charts from external plugins into the
+ * main chart handling system.
+ */
 class ChartPlugInWrapper : public ChartBaseBSB {
 public:
   ChartPlugInWrapper();

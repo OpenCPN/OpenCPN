@@ -28,29 +28,29 @@
 #ifndef __AIS_H__
 #define __AIS_H__
 
-#include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-
-#include <wx/datetime.h>
-#include <wx/listctrl.h>
-#include <wx/spinctrl.h>
-#include <wx/aui/aui.h>
-#include <wx/wxhtml.h>
-
 #include <vector>
 
-#include <wx/sound.h>
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
 
-#include "gui_lib.h"
-#include "navutil.h"
-#include "OCPN_Sound.h"
+#include <wx/aui/aui.h>
+#include <wx/datetime.h>
+#include <wx/listctrl.h>
+#include <wx/sound.h>
+#include <wx/spinctrl.h>
+#include <wx/wxhtml.h>
+
+#include "o_sound/o_sound.h"
+
 #include "model/ais_bitstring.h"
-#include "AISTargetListDialog.h"
 #include "model/ais_target_data.h"
 #include "model/ais_defs.h"
+
+#include "ais_target_list_dlg.h"
+#include "gui_lib.h"
+#include "navutil.h"
 
 //  FWD definitions
 class ChartCanvas;
@@ -63,7 +63,6 @@ class ChartCanvas;
 #define TIMER_AIS_MSEC 998
 #define TIMER_AIS_AUDIO_MSEC 2000
 
-
 enum {
   tlTRK = 0,
   tlNAME,
@@ -71,6 +70,7 @@ enum {
   tlMMSI,
   tlCLASS,
   tlTYPE,
+  tlFLAG,
   tlNAVSTATUS,
   tlBRG,
   tlRNG,
@@ -96,7 +96,6 @@ extern wxString ais8_001_22_notice_names[];
 WX_DEFINE_SORTED_ARRAY(AisTargetData *, ArrayOfAISTarget);
 
 //      Implement the AISTargetList as a wxHashMap
-
 
 void AISDrawAreaNotices(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp);
 void AISDraw(ocpnDC &dc, ViewPort &vp, ChartCanvas *cp);

@@ -1,12 +1,7 @@
-
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Route drawing stuff
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
+ *   Copyright (C) 2025 by NoCodeHummel                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,27 +14,33 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Route drawing stuff
+ */
 
 #ifndef _ROUTE_GUI_H
 #define _ROUTE_GUI_H
 
 #include <wx/gdicmn.h>
 #include <wx/dc.h>
+#include <wx/string.h>
+
+#include "model/route.h"
 
 #include "bbox.h"
 #include "chcanv.h"
 #include "ocpndc.h"
-#include "model/route.h"
+#include "send_to_gps_dlg.h"
 #include "viewport.h"
-#include "SendToGpsDlg.h"
 
 class RouteGui {
 public:
-  RouteGui(Route& route) : m_route(route) {}
+  RouteGui(Route &route) : m_route(route) {}
   virtual void Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box);
   void DrawPointWhich(ocpnDC &dc, ChartCanvas *canvas, int iPoint,
                       wxPoint *rpn);
@@ -56,9 +57,10 @@ public:
                              ViewPort &vp);
   int SendToGPS(const wxString &com_name, bool bsend_waypoints,
                 SendToGpsDlg *dialog);
+  static bool OnDelete(wxWindow *parent, const int count = 0);
 
 private:
-  Route& m_route;
+  Route &m_route;
 };
 
-#endif   // _ROUTE_GUI_H
+#endif  // _ROUTE_GUI_H

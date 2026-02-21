@@ -15,10 +15,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
-
-/******************************************
-Elément de base d'un fichier GRIB V1
-******************************************/
+/**
+ * \file
+ * GRIB Version 1 Record Implementation.
+ *
+ * Implements record handling for the GRIB1 format, which is the original GRIB
+ * specification widely used for weather data distribution. GRIB1 has a simpler
+ * structure than GRIB2 but supports fewer parameters and options.
+ */
 
 #ifndef GRIBV1RECORD_H
 #define GRIBV1RECORD_H

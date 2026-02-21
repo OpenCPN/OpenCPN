@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2023 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register                                  *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,41 +13,45 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Nmea2000 IP network driver
+ */
 
 #ifndef _COMMDRIVERN2KNET_H
 #define _COMMDRIVERN2KNET_H
 
-#include <wx/wxprec.h>
+#ifndef __WXMSW__
+#include <sys/socket.h>  // needed for (some) Mac builds
+#include <netinet/in.h>
+#endif
 
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled header
+#endif
+
+#include <wx/datetime.h>
 
 #include "model/comm_can_util.h"
 #include "model/comm_drv_n2k.h"
+#include "model/comm_drv_n2k_net.h"
+#include "model/comm_drv_stats.h"
 #include "model/conn_params.h"
-
-#include <wx/datetime.h>
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
-//#include <gtk/gtk.h>
 #define GSocket GlibGSocket
 #include <wx/socket.h>
 #undef GSocket
 #else
 #include <wx/socket.h>
-#endif
-
-#ifndef __WXMSW__
-#include <sys/socket.h>  // needed for (some) Mac builds
-#include <netinet/in.h>
 #endif
 
 #define RX_BUFFER_SIZE_NET 4096
@@ -64,9 +63,7 @@
 #define MsgTypeN2kData 0x93
 #define MsgTypeN2kRequest 0x94
 
-
-typedef enum
-{
+typedef enum {
   N2KFormat_Undefined = 0,
   N2KFormat_YD_RAW,
   N2KFormat_Actisense_RAW_ASCII,
@@ -78,16 +75,10 @@ typedef enum
   N2KFormat_MiniPlex
 } N2K_Format;
 
-typedef enum
-{
-  TX_FORMAT_YDEN = 0,
-  TX_FORMAT_ACTISENSE
-} GW_TX_FORMAT;
+typedef enum { TX_FORMAT_YDEN = 0, TX_FORMAT_ACTISENSE } GW_TX_FORMAT;
 
+class MrqContainer;           // forward in .cpp file
 class CommDriverN2KNetEvent;  // Internal
-class MrqContainer;
-class FastMessageMap;
-
 
 class circular_buffer {
 public:
@@ -109,16 +100,18 @@ private:
   bool full_ = 0;
 };
 
-class CommDriverN2KNet : public CommDriverN2K, public wxEvtHandler {
+class CommDriverN2KNet : public CommDriverN2K,
+                         public wxEvtHandler,
+                         public DriverStatsProvider {
 public:
   CommDriverN2KNet();
   CommDriverN2KNet(const ConnectionParams* params, DriverListener& listener);
 
   virtual ~CommDriverN2KNet();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-  void SetListener(DriverListener& l) override{};
+  DriverStats GetDriverStats() const override { return m_driver_stats; }
+
+  void SetListener(DriverListener& l) override {};
 
   void Open();
   void Close();
@@ -190,16 +183,22 @@ private:
   bool ProcessSeaSmart(std::vector<unsigned char> packet);
   bool ProcessMiniPlex(std::vector<unsigned char> packet);
 
-
-  bool SendN2KNetwork(std::shared_ptr<const Nmea2000Msg> &msg,
+  bool SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
                       std::shared_ptr<const NavAddr2000> dest_addr);
 
-  std::vector<std::vector<unsigned char>>
-      GetTxVector(const std::shared_ptr<const Nmea2000Msg> &msg,
-              std::shared_ptr<const NavAddr2000> dest_addr);
+  std::vector<std::vector<unsigned char>> GetTxVector(
+      const std::shared_ptr<const Nmea2000Msg>& msg,
+      std::shared_ptr<const NavAddr2000> dest_addr);
   bool SendSentenceNetwork(std::vector<std::vector<unsigned char>> payload);
-  bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char> &payload);
+  bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char>& payload);
   bool PrepareForTX();
+  std::vector<unsigned char> PrepareLogPayload(
+      std::shared_ptr<const Nmea2000Msg>& msg,
+      std::shared_ptr<const NavAddr2000> addr);
+  void OnProdInfoTimer(wxTimerEvent& ev);
+
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 
   wxString m_net_port;
   NetworkProtocol m_net_protocol;
@@ -208,7 +207,7 @@ private:
   wxSocketBase* m_tsock;
   wxSocketServer* m_socket_server;
   bool m_is_multicast;
-  MrqContainer  *m_mrq_container;
+  MrqContainer* m_mrq_container;
 
   int m_txenter;
   int m_dog_value;
@@ -227,14 +226,16 @@ private:
   int m_ib;
   bool m_bInMsg, m_bGotESC, m_bGotSOT;
 
-  circular_buffer *m_circle;
-  unsigned char *rx_buffer;
+  circular_buffer* m_circle;
+  unsigned char* rx_buffer;
   std::string m_sentence;
 
-  FastMessageMap *fast_messages;
+  FastMessageMap* fast_messages;
   N2K_Format m_n2k_format;
   uint8_t m_order;
   char m_TX_flag;
+  bool m_TX_available;
+  wxTimer m_prodinfo_timer;
 
   ObsListener resume_listener;
 
@@ -242,4 +243,3 @@ private:
 };
 
 #endif  // guard
-

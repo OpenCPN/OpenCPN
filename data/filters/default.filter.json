@@ -1,0 +1,16 @@
+{
+   "filter" : {
+      "name" : "default",
+      "buses" : [
+         "nmea0183",
+         "SignalK",
+         "nmea2000"
+      ],
+      "directions" : [
+         "received",
+         "output",
+         "internal"
+      ],
+      "description" : "Default settings"
+   }
+}

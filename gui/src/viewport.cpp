@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  ViewPort
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,104 +12,94 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-// For compilers that support precompilation, includes "wx.h".
-#include <wx/wxprec.h>
+/**
+ * \file
+ *
+ * Implement viewport.h -- geographic projection and coordinate transformations
+ */
 
-#ifndef WX_PRECOMP
-#include <wx/wx.h>
-#endif  // precompiled headers
-#include <wx/image.h>
-#include <wx/graphics.h>
-#include <wx/listbook.h>
-#include <wx/clipbrd.h>
-#include <wx/aui/aui.h>
+// Must come before any GL includes:
+#include "gl_headers.h"
 
-#if defined(__OCPN__ANDROID__)
+#include <vector>
+
+#ifndef __WXMSW__
+#include <signal.h>
+#include <setjmp.h>
+#endif
+
+#if defined(__ANDROID__)
 #include <GLES2/gl2.h>
 #elif defined(__WXQT__) || defined(__WXGTK__)
 #include <GL/glew.h>
 #endif
 
-#include "config.h"
+// For compilers that support precompilation, includes "wx.h".
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
 
-#include "dychart.h"
-
+#include <wx/aui/aui.h>
+#include <wx/clipbrd.h>
+#include <wx/graphics.h>
+#include <wx/image.h>
+#include <wx/listbook.h>
 #include <wx/listimpl.cpp>
 
-#include "chcanv.h"
-#include "TCWin.h"
-#include "model/geodesic.h"
-#include "styles.h"
-#include "model/routeman.h"
-#include "navutil.h"
-#include "kml.h"
-#include "concanv.h"
-#include "thumbwin.h"
-#include "chartdb.h"
-#include "chartimg.h"
-#include "model/cutil.h"
-#include "TrackPropDlg.h"
-#include "tcmgr.h"
-#include "routemanagerdialog.h"
-#include "pluginmanager.h"
-#include "ocpn_pixel.h"
-#include "ocpndc.h"
-#include "undo.h"
-#include "model/multiplexer.h"
-#include "timers.h"
-#include "tide_time.h"
-#include "glTextureDescriptor.h"
-#include "ChInfoWin.h"
-#include "Quilt.h"
-#include "model/select_item.h"
-#include "model/select.h"
-#include "FontMgr.h"
+#ifdef __VISUALC__
+#include <wx/msw/msvcrt.h>
+#endif
+
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
-#include "AISTargetAlertDialog.h"
-#include "SendToGpsDlg.h"
-#include "OCPNRegion.h"
-#include "gshhs.h"
-
-#ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
-
-#include "cm93.h"      // for chart outline draw
-#include "s57chart.h"  // for ArrayOfS57Obj
-#include "s52plib.h"
+#include "model/cutil.h"
+#include "model/geodesic.h"
+#include "model/multiplexer.h"
+#include "model/routeman.h"
+#include "model/select.h"
+#include "model/select_item.h"
 
 #include "ais.h"
+#include "ais_target_alert_dlg.h"
+#include "chartdb.h"
+#include "chartimg.h"
+#include "chcanv.h"
+#include "ch_info_win.h"
+#include "cm93.h"  // for chart outline draw
+#include "concanv.h"
+#include "config.h"
+#include "dychart.h"
+#include "font_mgr.h"
+#include "gl_texture_descr.h"
+#include "gshhs.h"
+#include "kml.h"
+#include "navutil.h"
+#include "ocpndc.h"
+#include "ocpn_pixel.h"
+#include "ocpn_platform.h"
+#include "ocpn_region.h"
+#include "pluginmanager.h"
+#include "quilt.h"
+#include "routemanagerdialog.h"
+#include "s52plib.h"
+#include "s57chart.h"  // for ArrayOfS57Obj
+#include "send_to_gps_dlg.h"
+#include "styles.h"
+#include "tcmgr.h"
+#include "tc_win.h"
+#include "thumbwin.h"
+#include "tide_time.h"
+#include "timers.h"
+#include "track_prop_dlg.h"
+#include "undo.h"
 
-#ifdef __MSVC__
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW
+#ifdef ocpnUSE_GL
+#include "gl_chart_canvas.h"
 #endif
-
-#ifndef __WXMSW__
-#include <signal.h>
-#include <setjmp.h>
-
-extern struct sigaction sa_all_old;
-
-extern sigjmp_buf env;  // the context saved by sigsetjmp();
-#endif
-
-#include <vector>
-
-// ----------------------------------------------------------------------------
-// Useful Prototypes
-// ----------------------------------------------------------------------------
-
-extern void catch_signals(int signo);
 
 //------------------------------------------------------------------------------
 //    ViewPort Implementation
@@ -131,19 +115,16 @@ ViewPort::ViewPort() {
   b_MercatorProjectionOverride = false;
   lat0_cache = NAN;
   m_projection_type = PROJECTION_MERCATOR;
+  m_displayScale = 1.0;
 }
 
-void ViewPort::PixelScale(float scale){
-  pix_width *= scale;
-  pix_height *= scale;
-  view_scale_ppm *= scale;
-}
+void ViewPort::SetPixelScale(double scale) { m_displayScale = scale; }
 
 // TODO: eliminate the use of this function
 wxPoint ViewPort::GetPixFromLL(double lat, double lon) {
   wxPoint2DDouble p = GetDoublePixFromLL(lat, lon);
-  if (wxFinite(p.m_x) && wxFinite(p.m_y)){
-    if( (abs(p.m_x) < 1e6) && (abs(p.m_y) < 1e6) )
+  if (wxFinite(p.m_x) && wxFinite(p.m_y)) {
+    if ((abs(p.m_x) < 1e6) && (abs(p.m_y) < 1e6))
       return wxPoint(wxRound(p.m_x), wxRound(p.m_y));
   }
   return wxPoint(INVALID_COORD, INVALID_COORD);
@@ -260,12 +241,22 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL(double lat, double lon) {
     dxr = epix * cos(angle) + npix * sin(angle);
     dyr = npix * cos(angle) - epix * sin(angle);
   }
-
-  return wxPoint2DDouble((pix_width / 2.0) + dxr, (pix_height / 2.0) - dyr);
+  double x = (pix_width / 2.0) + dxr;
+  double y = (pix_height / 2.0) - dyr;
+  if (!g_bopengl) {
+    // Convert from physical to logical pixels when not using OpenGL.
+    // This ensures that the viewport corner coordinates remain the
+    // same in OpenGL and no-OpenGL mode (especially in MacOS).
+    x /= m_displayScale;
+    y /= m_displayScale;
+  }
+  return wxPoint2DDouble(x, y);
 }
 
 void ViewPort::GetLLFromPix(const wxPoint2DDouble &p, double *lat,
                             double *lon) {
+  // Calculate distance from the center of the viewport to the given point in
+  // physical pixels.
   double dx = p.m_x - (pix_width / 2.0);
   double dy = (pix_height / 2.0) - p.m_y;
 
@@ -355,7 +346,7 @@ LLRegion ViewPort::GetLLRegion(const OCPNRegion &region) {
 
     int x1 = rect.x, y1 = rect.y, x2 = x1 + rect.width, y2 = y1 + rect.height;
     int p[8] = {x1, y1, x2, y1, x2, y2, x1, y2};
-    double pll[2896];     //  Max splits is 180, ((180 *  2)  + 2) * 8 = 2896.
+    double pll[2896];  //  Max splits is 180, ((180 *  2)  + 2) * 8 = 2896.
     int j;
 
     /* if the viewport is rotated, we must split the segments as straight lines
@@ -422,12 +413,10 @@ OCPNRegion ViewPort::GetVPRegionIntersect(const OCPNRegion &region,
   rotation = 0;
 
   std::list<ContourRegion> cregions;
-  for (std::list<poly_contour>::const_iterator i = llregion.contours.begin();
-       i != llregion.contours.end(); i++) {
+  for (auto i = llregion.contours.begin(); i != llregion.contours.end(); i++) {
     float *contour_points = new float[2 * i->size()];
     int idx = 0;
-    std::list<contour_pt>::const_iterator j;
-    for (j = i->begin(); j != i->end(); j++) {
+    for (auto j = i->begin(); j != i->end(); j++) {
       contour_points[idx++] = j->y;
       contour_points[idx++] = j->x;
     }
@@ -817,10 +806,10 @@ wxRect ViewPort::GetVPRectIntersect(size_t n, float *llpoints) {
   return r.GetBox();
 }
 
-void ViewPort::SetBoxes(void) {
-  //  In the case where canvas rotation is applied, we need to define a larger
-  //  "virtual" pixel window size to ensure that enough chart data is fatched
-  //  and available to fill the rotated screen.
+void ViewPort::SetBoxes() {
+  // In the case where canvas rotation is applied, we need to define a larger
+  // "virtual" pixel window size to ensure that enough chart data is fatched
+  // and available to fill the rotated screen.
   rv_rect = wxRect(0, 0, pix_width, pix_height);
 
   //  Specify the minimum required rectangle in unrotated screen space which
@@ -857,8 +846,9 @@ void ViewPort::SetBoxes(void) {
   double rotation_save = rotation;
   SetRotationAngle(0.0);
 
-  wxPoint ul(rv_rect.x, rv_rect.y),
-      lr(rv_rect.x + rv_rect.width, rv_rect.y + rv_rect.height);
+  wxPoint ul(rv_rect.x, rv_rect.y);  // Upper left.
+  wxPoint lr(rv_rect.x + rv_rect.width,
+             rv_rect.y + rv_rect.height);  // Lower right.
   double dlat_min, dlat_max, dlon_min, dlon_max;
 
   bool hourglass = false;
@@ -963,11 +953,10 @@ void ViewPort::SetBBoxDirect(double latmin, double lonmin, double latmax,
                              double lonmax) {
   vpBBox.Set(latmin, lonmin, latmax, lonmax);
 }
-bool ViewPort::ContainsIDL(){
+bool ViewPort::ContainsIDL() {
   if ((vpBBox.GetMinLon() <= -180.) && (vpBBox.GetMaxLon() > -180.))
     return true;
-  if ((vpBBox.GetMinLon() <= 180.) && (vpBBox.GetMaxLon() > 180.))
-    return true;
+  if ((vpBBox.GetMinLon() <= 180.) && (vpBBox.GetMaxLon() > 180.)) return true;
   return false;
 }
 
@@ -982,12 +971,10 @@ ViewPort ViewPort::BuildExpandedVP(int width, int height) {
 }
 
 void ViewPort::SetVPTransformMatrix() {
-   mat4x4 m;
-   mat4x4_identity(m);
-   mat4x4_scale_aniso((float(*)[4])vp_matrix_transform, m,
-                      2.0 / (float)pix_width, -2.0 / (float)pix_height,
-                      1.0);
-   mat4x4_translate_in_place((float(*)[4])vp_matrix_transform, -pix_width / 2,
-                             -pix_height / 2, 0);
-
+  mat4x4 m;
+  mat4x4_identity(m);
+  mat4x4_scale_aniso((float(*)[4])vp_matrix_transform, m,
+                     2.0 / (float)pix_width, -2.0 / (float)pix_height, 1.0);
+  mat4x4_translate_in_place((float(*)[4])vp_matrix_transform, -pix_width / 2,
+                            -pix_height / 2, 0);
 }

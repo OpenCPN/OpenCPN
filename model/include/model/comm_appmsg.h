@@ -1,12 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Decoded messages definitions. These messages are handled by the
- *           ApgMsgBus defined in comm_appmsg_bus.h.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,10 +13,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Decoded messages definitions. These messages are handled by the
+ * ApgMsgBus defined in comm_appmsg_bus.h.
+ */
 
 #ifndef _APP_MSG_H
 #define _APP_MSG_H
@@ -54,14 +53,13 @@ public:
   /** Construct a (0,0) position, type == Undef. */
   Position();
 
-
-  bool IsValid() const { return type != Type::Undef;  }
+  bool IsValid() const { return type != Type::Undef; }
 
   /** Return utf string like 65°25,11N 21°12,01E */
   std::string to_string() const;
 
-  const double lat;      // signed value
-  const double lon;      // signed value
+  const double lat;  // signed value
+  const double lon;  // signed value
   const Type type;
 
   /**
@@ -82,21 +80,26 @@ private:
 
   /** Returned signed long  deduced from t. */
   double TypeToLong(Type t, double lon);
-
 };
-
 
 class AppMsg : public KeyProvider {
 public:
   enum class Type;
+
   AppMsg(AppMsg::Type t)
-      : type(t), name(TypeToString(t)), source(NavAddr()), prio(0){};
+      : type(t), name(TypeToString(t)), source(NavAddr()), prio(0) {};
 
-  virtual std::string key() const { return std::string("@!appmsg-") + name; }
+  virtual ~AppMsg() = default;
 
+  /** Return unique key used by Observable. */
+  virtual std::string key() const { return "appmsg::" + name; }
+
+  /** Alias for key(). */
   std::string GetKey() const { return key(); }
 
   std::string TypeToString(const Type t) const;
+
+  virtual std::string to_string() const { return "appmsg::" + name; }
 
   const Type type;
   const std::string name;  // Must be unique, probably using TypeToString().
@@ -105,7 +108,7 @@ public:
 
 protected:
   AppMsg(AppMsg::Type tp, const std::string& nm, NavAddr src)
-      : type(tp), name(nm), source(src), prio(0){};
+      : type(tp), name(nm), source(src), prio(0) {};
 };
 
 enum class AppMsg::Type {
@@ -138,10 +141,9 @@ public:
         pos(p),
         time(t),
         quality(q),
-        satellites_used(s_used){};
-  virtual ~GnssFix() = default;
+        satellites_used(s_used) {};
 
-  std::string to_string() const {
+  std::string to_string() const override {
     std::stringstream buf;
     buf << pos.to_string() << " " << TimeToString(time);
     return buf.str();
@@ -154,12 +156,12 @@ public:
 };
 
 // bitmask defining update validity of BasicNavDataMsg members
-#define POS_UPDATE     (int)(1)
-#define COG_UPDATE     (int)(1 << 1)
-#define SOG_UPDATE     (int)(1 << 2)
-#define VAR_UPDATE     (int)(1 << 3)
-#define HDT_UPDATE     (int)(1 << 4)
-#define POS_VALID      (int)(1 << 5)
+#define POS_UPDATE (int)(1)
+#define COG_UPDATE (int)(1 << 1)
+#define SOG_UPDATE (int)(1 << 2)
+#define VAR_UPDATE (int)(1 << 3)
+#define HDT_UPDATE (int)(1 << 4)
+#define POS_VALID (int)(1 << 5)
 
 class BasicNavDataMsg : public AppMsg {
 public:
@@ -172,7 +174,7 @@ public:
         var(VAR),
         hdt(HDT),
         vflag(valid_flag),
-        time(t){};
+        time(t) {};
 
   BasicNavDataMsg()
       : AppMsg(AppMsg::Type::BasicNavData, "basic-nav-data", NavAddr()),
@@ -181,9 +183,12 @@ public:
         var(0),
         hdt(0),
         vflag(0),
-        time(0){};
+        time(0),
+        set_time() {};
 
   virtual ~BasicNavDataMsg() = default;
+
+  virtual std::string to_string() const;
 
   const Position pos;
   const double sog;
@@ -192,6 +197,7 @@ public:
   const double hdt;
   const int vflag;
   const time_t time;
+  struct timespec set_time;
 };
 
 class GPSWatchdogMsg : public AppMsg {
@@ -201,7 +207,7 @@ public:
   GPSWatchdogMsg(WDSource _source, int value)
       : AppMsg(AppMsg::Type::GPSWatchdog, "gps-watchdog", NavAddr()),
         gps_watchdog(value),
-        wd_source(_source){};
+        wd_source(_source) {};
 
   virtual ~GPSWatchdogMsg() = default;
 
@@ -212,6 +218,8 @@ public:
 /** AIS data point for a vessel. */
 class AisData : public AppMsg {
 public:
+  std::string key() const override { return "appmsg::aisdata"; }
+  std::string to_string() const override;
   time_t time;
   Position pos;
   float sog;           // Speed over ground, knots.
@@ -236,9 +244,7 @@ class CustomMsg : public AppMsg {
   CustomMsg(const std::string s, std::shared_ptr<const void> ptr)
       : AppMsg(Type::CustomMsg, "custom", NavAddr()), id(s), payload(ptr) {}
 
-  std::string key() const override {
-    return std::string("@##_appmsg-custom-") + id;
-  }
+  std::string key() const override { return "appmsg::custom-" + id; }
 
   const std::string id;  // Must be unique.
   std::shared_ptr<const void> payload;

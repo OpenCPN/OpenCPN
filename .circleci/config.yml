@@ -6,27 +6,14 @@ jobs:
   build-bookworm:
     docker:
       - image: leamas/debian-git:bookworm
-      # bookworm-scm fails on non-existing /etc/apt/sources.list
-      # - image: buildpack-deps:bookworm-scm
+        # bookworm-scm fails on non-existing /etc/apt/sources.list
+        # - image: buildpack-deps:bookworm-scm
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PW
     environment:
       - OCPN_TARGET: bookworm
-    steps:
-      - checkout
-      - run: cat /etc/apt/sources.list
-      - run: ci/generic-build-debian.sh
-      - run: ci/generic-upload.sh
-
-  build-focal:
-    docker:
-      - image: circleci/buildpack-deps:focal-scm
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_PW
-    environment:
-      - OCPN_TARGET: focal
+      - PACKAGE_BRANCH: ci/bookworm-backports
     steps:
       - checkout
       - run: cat /etc/apt/sources.list
@@ -36,8 +23,8 @@ jobs:
   build-jammy:
     docker:
       - image: leamas/ubuntu-git:jammy
-      # jammy-scm fails on missing sudo
-      # - image: buildpack-deps:jammy-scm
+        # jammy-scm fails on missing sudo
+        # - image: buildpack-deps:jammy-scm
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PW
@@ -53,18 +40,22 @@ jobs:
   build-flatpak:
     working_directory: ~/OpenCPN
     machine:
-      image: ubuntu-2204:current
+      image: ubuntu-2404:current
     environment:
       - OCPN_TARGET: flatpak
     steps:
+      # We maintain two caches, one for even build numbers and one for odd.
+      # flatpak-builder knows about what can be used in the cache, we just
+      # make sure that we always save existing data
       - run: cd ~; git clone "$CIRCLE_REPOSITORY_URL" -b "$CIRCLE_BRANCH"
-      - run: ci/docker-auth.sh
+      # - run: echo "CIRCLE_BUILD_NUM: $CIRCLE_BUILD_NUM"
+      - run: echo $((CIRCLE_BUILD_NUM % 2)) > .buildstamp
       - restore_cache:
-          keys:
-            - fp-cache-v3-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+          key: fp-v2-{{checksum ".buildstamp"}}
       - run: ci/circleci-build-flatpak.sh
+      - run: echo $(((CIRCLE_BUILD_NUM + 1) % 2)) > .buildstamp
       - save_cache:
-          key: fp-cache-v3-{{checksum "flatpak/org.opencpn.OpenCPN.yaml"}}
+          key: fp-v2-{{checksum ".buildstamp"}}
           paths:
             - build/.flatpak-builder/cache
             - build/.flatpak-builder/ccache
@@ -84,49 +75,51 @@ jobs:
 
   build-macos:
     macos:
-      xcode: "13.3.1"
+      xcode: "14.3.1"
     environment:
-      - OCPN_TARGET:  macos
+      - OCPN_TARGET: macos
       - pkg_mod: 11
       - MACOSX_DEPLOYMENT_TARGET: 11.0
     steps:
       - checkout
       - restore_cache:
-         keys:
-           - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+          keys:
+            - macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
       - run: ci/generic-build-macos.sh
       - save_cache:
-         key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
-         paths:
-           - /usr/local/bin
-           - /usr/local/include
-           - /usr/local/lib
+          key: macos-cache-v2-{{checksum "ci/generic-build-macos.sh"}}
+          paths:
+            - /usr/local/bin
+            - /usr/local/include
+            - /usr/local/lib
       - run: ci/generic-upload.sh
 
   build-macos-universal:
     macos:
-      xcode: "15.1.0"
+      xcode: "15.4.0"
     environment:
-      - OCPN_TARGET:  macos
+      - OCPN_TARGET: macos
       - pkg_mod: 11
       - MACOSX_DEPLOYMENT_TARGET: 11.0
     steps:
       - checkout
       - restore_cache:
-         keys:
-           - macos-cache-v2-universal-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
+          keys:
+            - macos-cache-v2-universal-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
+      - run: ci/macos-sign-setup.sh
       - run: ci/universal-build-macos.sh
+      - run: ci/macos-sign-cleanup.sh
       - save_cache:
-         key: macos-cache-v2-universal-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
-         paths:
-           - /usr/local/bin
-           - /usr/local/include
-           - /usr/local/lib
+          key: macos-cache-v2-universal-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
+          paths:
+            - /usr/local/bin
+            - /usr/local/include
+            - /usr/local/lib
       - run: ci/generic-upload.sh
 
   build-macos-intel-legacy:
     macos:
-      xcode: "13.4.1"
+      xcode: "14.3.1"
     environment:
       - OCPN_TARGET: macos
       - pkg_mod: 11
@@ -140,24 +133,28 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-         keys:
-           - macos-cache-v2-intel-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
+          keys:
+            - macos-cache-v2-intel-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
+      - run: ci/macos-sign-setup.sh
       - run: ci/universal-build-macos.sh
+      - run: ci/macos-sign-cleanup.sh
       - save_cache:
-         key: macos-cache-v2-intel-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
-         paths:
-           - /usr/local/bin
-           - /usr/local/include
-           - /usr/local/lib
+          key: macos-cache-v2-intel-{{checksum "ci/macos-universal-deps.sh"}}-{{checksum "ci/universal-build-macos.sh"}}
+          paths:
+            - /usr/local/bin
+            - /usr/local/include
+            - /usr/local/lib
       - run: ci/generic-upload.sh
 
 std-filters: &std-filters
   filters:
     branches:
-     only:
+      only:
         - master
         - build
         - flatpak
+        - dpt
+        - v5.14.x
 
 
 workflows:
@@ -165,9 +162,6 @@ workflows:
   build_all:
     jobs:
       - build-bookworm:
-          <<: *std-filters
-
-      - build-focal:
           <<: *std-filters
 
       - build-jammy:

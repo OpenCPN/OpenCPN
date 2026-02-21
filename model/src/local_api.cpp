@@ -12,10 +12,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement local_api.h -- server side handling commands and a client part
+ * issuing commands.
+ */
+
 #include <iostream>
 #include <string>
 
@@ -56,7 +62,7 @@ CmdlineAction LocalClientApi::ParseArgs(const wxCmdLineParser& parser,
   }
   return result;
 }
-#endif   // __ANDROID__
+#endif  // __ANDROID__
 
 LocalApiResult LocalClientApi::HandleCmdline(const wxCmdLineParser& parser) {
   std::string arg;
@@ -68,42 +74,39 @@ LocalApiResult LocalClientApi::HandleCmdline(CmdlineAction action,
                                              const std::string& arg) {
   switch (action) {
     case CmdlineAction::Fail:
-        MESSAGE_LOG << "IpcClient: Cannot parse command line (ignored)";
-        return LocalApiResult(false, "Cannot parse command line");
+      MESSAGE_LOG << "IpcClient: Cannot parse command line (ignored)";
+      return LocalApiResult(false, "Cannot parse command line");
     case CmdlineAction::Quit: {
-          auto result = SendQuit();
-          if (!result.first) {
-            MESSAGE_LOG << "Error running remote quit cmd: " << result.second;
-          }
-          return result;
-        }
-        break;
+      auto result = SendQuit();
+      if (!result.first) {
+        MESSAGE_LOG << "Error running remote quit cmd: " << result.second;
+      }
+      return result;
+    } break;
     case CmdlineAction::Raise: {
-          auto result = SendRaise();
-          if (!result.first) {
-            MESSAGE_LOG << "Error running remote raise cmd: " << result.second;
-          }
-          return result;
-        }
-        break;
+      auto result = SendRaise();
+      if (!result.first) {
+        MESSAGE_LOG << "Error running remote raise cmd: " << result.second;
+      }
+      return result;
+    } break;
     case CmdlineAction::Open: {
-          auto result = SendOpen(arg.c_str());
-          if (!result.first) {
-            MESSAGE_LOG << "Error running remote open of file \"" << arg
+      auto result = SendOpen(arg.c_str());
+      if (!result.first) {
+        MESSAGE_LOG << "Error running remote open of file \"" << arg
                     << "\": " << result.second;
-          }
-          return result;
-        }
-        break;
+      }
+      return result;
+    } break;
     case CmdlineAction::GetRestEndpoint: {
-          auto result = GetRestEndpoint();
-          if (result.first)
-            std::cout << result.second << "\n" << std::flush;
-          else
-            std::cout << "Error getting remote endpoint: " << result.second
-                << "\n" << std::flush;
-          return result;
-        }
+      auto result = GetRestEndpoint();
+      if (result.first)
+        std::cout << result.second << "\n" << std::flush;
+      else
+        std::cout << "Error getting remote endpoint: " << result.second << "\n"
+                  << std::flush;
+      return result;
+    }
     case CmdlineAction::Skip:
       return LocalApiResult(true, "Unknown command CmdlineAction::Skip");
   }

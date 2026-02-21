@@ -14,9 +14,14 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02111 USA
+    along with this program; if not, see <https://www.gnu.org/licenses/>.
+ */
 
+/**
+ * \file
+ *
+ * Implement garmin_wrapper.h -- OpenCPN Interface Wrapper for garmin
+ * library.
  */
 
 #include "config.h"
@@ -31,7 +36,7 @@
 
 static gpsdevh *my_gps_devh;
 
-wxString GetLastGarminError(void) {
+wxString GetLastGarminError() {
   return wxString(GetDeviceLastError(), wxConvUTF8);
 }
 
@@ -75,7 +80,7 @@ int Garmin_GPS_GetPVT(void *pvt) {
   return GPS_Serial_Command_Pvt_Get((GPS_PPvt_Data *)pvt);
 }
 
-void Garmin_GPS_ClosePortVerify(void) { VerifyPortClosed(); }
+void Garmin_GPS_ClosePortVerify() { VerifyPortClosed(); }
 
 wxString Garmin_GPS_GetSaveString() {
   return wxString(gps_save_string, wxConvUTF8);
@@ -93,7 +98,7 @@ int Garmin_GPS_SendWaypoints(const wxString &port_name,
                              RoutePointList *wplist) {
   int ret_val = 0;
 
-  int nPoints = wplist->GetCount();
+  int nPoints = wplist->size();
 
   // Create the array of GPS_PWays
 
@@ -105,8 +110,8 @@ int Garmin_GPS_SendWaypoints(const wxString &port_name,
   //    Now fill in the useful elements
   for (int i = 0; i < nPoints; i++) {
     GPS_PWay pway = ppway[i];
-    wxRoutePointListNode *node = wplist->Item(i);
-    RoutePoint *prp = node->GetData();
+    auto it = wplist->begin() + i;
+    RoutePoint *prp = *it;
 
     Garmin_GPS_PrepareWptData(pway, prp);
   }
@@ -140,7 +145,7 @@ int Garmin_GPS_SendWaypoints(const wxString &port_name,
 GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number,
                                         int *size) {
   RoutePointList *wplist = pr->pRoutePointList;
-  int nPoints = wplist->GetCount();
+  int nPoints = wplist->size();
 
   // Create the array of GPS_PWays
   // There will be one extra for the route header
@@ -165,8 +170,8 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number,
   //    Elements 1..n are waypoints
   for (int i = 1; i < *size; i++) {
     GPS_PWay pway = ppway[i];
-    wxRoutePointListNode *node = wplist->Item(i - 1);
-    RoutePoint *prp = node->GetData();
+    auto it = wplist->begin() + i;
+    RoutePoint *prp = *it;
 
     Garmin_GPS_PrepareWptData(pway, prp);
   }
@@ -192,7 +197,7 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number,
 GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number,
                                         int *size) {
   RoutePointList *wplist = pr->pRoutePointList;
-  int nPoints = wplist->GetCount();
+  int nPoints = wplist->size();
 
   // Create the array of GPS_PWays
   // There will be one for the route header, n for each way point
@@ -221,8 +226,8 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number,
     if (i % 2 == 1) /* Odd */
     {
       GPS_PWay pway = ppway[i];
-      wxRoutePointListNode *node = wplist->Item((i - 1) / 2);
-      RoutePoint *prp = node->GetData();
+      auto it = wplist->begin() + i;
+      RoutePoint *prp = *it;
 
       Garmin_GPS_PrepareWptData(pway, prp);
     } else /* Even */
@@ -255,55 +260,55 @@ int Garmin_GPS_SendRoute(const wxString &port_name, Route *pr,
     if (npacks < 0) return npacks;
     dlg_ctx.set_value(40);
 
-//  Iterate on the packets, finding the first route number from [0..9] that
-//  is not present
+    //  Iterate on the packets, finding the first route number from [0..9] that
+    //  is not present
 
-//    An array of route numbers, set element to true as encountered
-bool brn[10];
-for (int i = 0; i < 10; i++) brn[i] = false;
+    //    An array of route numbers, set element to true as encountered
+    bool brn[10];
+    for (int i = 0; i < 10; i++) brn[i] = false;
 
-for (int ip = 0; ip < npacks; ip++) {
-  GPS_PWay pway = pprouteway[ip];
-  if (pway->isrte) {
-    if ((pway->rte_num < 10)) brn[pway->rte_num] = true;
+    for (int ip = 0; ip < npacks; ip++) {
+      GPS_PWay pway = pprouteway[ip];
+      if (pway->isrte) {
+        if ((pway->rte_num < 10)) brn[pway->rte_num] = true;
+      }
+    }
+
+    //    Find the first candidate within [1..9] that is unused
+    bool bfound_empty = false;
+    for (int i = 1; i < 10; i++) {
+      if (brn[i] == false) {
+        route_number = i;
+        bfound_empty = true;
+        break;
+      }
+    }
+    GPS_Diag("Using route number: %d", route_number);
+
+    //  Ask the user if it is all right to overwrite
+    if (!bfound_empty) {
+      if (!dlg_ctx.confirm_overwrite()) {
+        return 0;
+      }
+    }
   }
-}
 
-//    Find the first candidate within [1..9] that is unused
-bool bfound_empty = false;
-for (int i = 1; i < 10; i++) {
-  if (brn[i] == false) {
-    route_number = i;
-    bfound_empty = true;
-    break;
-  }
-}
-GPS_Diag("Using route number: %d", route_number);
+  // Based on the route transfer protocol create the array of transfer packets
+  GPS_SWay **ppway;
+  int elements = 0;
+  if (gps_route_transfer == pA201)
+    ppway = Garmin_GPS_Create_A201_Route(pr, route_number, &elements);
+  else
+    ppway = Garmin_GPS_Create_A200_Route(pr, route_number, &elements);
 
-//  Ask the user if it is all right to overwrite
-if (!bfound_empty) {
-  if (!dlg_ctx.confirm_overwrite()) {
-    return 0;
-  }
-}
-}
+  //    Transmit the Route to the GPS receiver
+  int xfer_result = GPS_Command_Send_Route(port_name.mb_str(), ppway, elements);
+  ret_val = xfer_result;
 
-// Based on the route transfer protocol create the array of transfer packets
-GPS_SWay **ppway;
-int elements = 0;
-if (gps_route_transfer == pA201)
-ppway = Garmin_GPS_Create_A201_Route(pr, route_number, &elements);
-else
-ppway = Garmin_GPS_Create_A200_Route(pr, route_number, &elements);
+  //  Free all the memory
+  for (int i = 0; i < elements; i++) GPS_Way_Del(&ppway[i]);
 
-//    Transmit the Route to the GPS receiver
-int xfer_result = GPS_Command_Send_Route(port_name.mb_str(), ppway, elements);
-ret_val = xfer_result;
-
-//  Free all the memory
-for (int i = 0; i < elements; i++) GPS_Way_Del(&ppway[i]);
-
-free(ppway);
+  free(ppway);
   dlg_ctx.set_value(80);
 
   VerifyPortClosed();
@@ -311,14 +316,14 @@ free(ppway);
 }
 
 /*
-int Garmin_USB_On(void)
+int Garmin_USB_On()
 {
       int ret_val = GPS_Device_On("usb:", &my_gps_devh);
 
       return ret_val;
 }
 
-int Garmin_USB_Off(void)
+int Garmin_USB_Off()
 {
       int ret_val = GPS_Device_Off(my_gps_devh);
 

@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_drv_file.h -- driver reading/writing to/from files
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 by Alec Leamas                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,12 +13,16 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
- // For compilers that support precompilation, includes "wx.h".
+/**
+ * \file
+ *
+ * Implement comm_drv_file.h -- driver reading/writing to/from files
+ */
+
+// For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -41,41 +40,14 @@
 #include "model/comm_drv_file.h"
 #include "model/ocpn_utils.h"
 
+using namespace std;
+
 class VoidDriverListener : public DriverListener {
   virtual void Notify(std::shared_ptr<const NavMsg> message) {}
   virtual void Notify(const AbstractCommDriver& driver) {}
 };
 
 static VoidDriverListener kVoidDriverListener;
-
-using namespace std;
-
-FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
-                               DriverListener& l)
-    : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
-      output_path(opath),
-      input_path(ipath),
-      listener(l) {}
-
-FileCommDriver::FileCommDriver(const string& opath)
-    : FileCommDriver(opath, "", kVoidDriverListener) {}
-
-std::shared_ptr<NavAddr> FileCommDriver::GetAddress() {
-    return std::make_shared<NavAddr>(NavAddrTest(output_path));
-}
-
-bool FileCommDriver::SendMessage(std::shared_ptr<const NavMsg> msg,
-                                 std::shared_ptr<const NavAddr> addr) {
-  ofstream f;
-  f.open(output_path, ios::app);
-  if (!f.is_open()) {
-    wxLogWarning("Cannot open file %s for writing", output_path.c_str());
-    return false;
-  }
-  f << msg->to_string();
-  f.close();
-  return true;
-}
 
 static vector<unsigned char> HexToChar(string hex) {
   if (hex.size() % 2 == 1) hex = string("0") + hex;
@@ -98,8 +70,8 @@ static shared_ptr<const NavMsg> LineToMessage(const string& line,
       if (true) {  // Create a separate scope.
         N2kName name(N2kName::Parse(words[2]));
         vector<unsigned char> payload(HexToChar(words[3]));
-// FIXME (Leamas)
-//        return make_shared<Nmea2000Msg>(name, payload, src);
+        // FIXME (Leamas)
+        //        return make_shared<Nmea2000Msg>(name, payload, src);
         return make_shared<NullNavMsg>();
       }
       break;
@@ -117,8 +89,12 @@ static shared_ptr<const NavMsg> LineToMessage(const string& line,
   return make_shared<NullNavMsg>();  // for the compiler.
 }
 
-void FileCommDriver::Activate() {
-  CommDriverRegistry::GetInstance().Activate(shared_from_this());
+FileCommDriver::FileCommDriver(const string& opath, const string& ipath,
+                               DriverListener& l)
+    : AbstractCommDriver(NavAddr::Bus::TestBus, opath),
+      output_path(opath),
+      input_path(ipath),
+      listener(l) {
   if (input_path != "") {
     ifstream f(input_path);
     string line;
@@ -127,4 +103,24 @@ void FileCommDriver::Activate() {
       if (msg->bus != NavAddr::Bus::Undef) listener.Notify(msg);
     }
   }
+}
+
+FileCommDriver::FileCommDriver(const string& opath)
+    : FileCommDriver(opath, "", kVoidDriverListener) {}
+
+std::shared_ptr<NavAddr> FileCommDriver::GetAddress() {
+  return std::make_shared<NavAddr>(NavAddrTest(output_path));
+}
+
+bool FileCommDriver::SendMessage(std::shared_ptr<const NavMsg> msg,
+                                 std::shared_ptr<const NavAddr> addr) {
+  ofstream f;
+  f.open(output_path, ios::app);
+  if (!f.is_open()) {
+    wxLogWarning("Cannot open file %s for writing", output_path.c_str());
+    return false;
+  }
+  f << msg->to_string();
+  f.close();
+  return true;
 }

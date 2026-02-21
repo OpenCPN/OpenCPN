@@ -1,3 +1,44 @@
+/***************************************************************************
+ *   Copyright (C) 2011 by OpenCPN Development Team                        *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ ***************************************************************************/
+/**
+ * \file
+ * Linear Algebra Math Library.
+ *
+ * Provides optimized vector and matrix operations for 3D graphics:
+ *
+ * Mathematical Operations:
+ * - Vector operations (2D/3D/4D)
+ * - Matrix transformations (4x4)
+ * - Quaternion math
+ * - Projection matrices
+ * - Camera view transforms
+ *
+ * Features:
+ * - Header-only implementation
+ * - SIMD-friendly data layouts
+ * - Optimized algorithms
+ * - Cross-platform support
+ * - Efficient memory usage
+ *
+ * Used throughout the GRIB plugin for coordinate transforms, viewports,
+ * and weather data visualization operations requiring 3D mathematics.
+ */
 #ifndef LINMATH_H
 #define LINMATH_H
 

@@ -1,4 +1,3 @@
-
 /**************************************************************************
  *   Copyright (C) 2022 David Register                                     *
  *   Copyright (C) 2022-2023  Alec Leamas                                  *
@@ -14,12 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/** \file  rest_server.cpp Implement rest_server.h */
+/**
+ *  \file
+ *
+ *  Implement rest_server.h -- REST API server
+ */
 
 #include <memory>
 #include <mutex>
@@ -36,15 +37,16 @@
 
 #include "model/config_vars.h"
 #include "model/comm_navmsg_bus.h"
+#include "model/gui_events.h"
 #include "model/logger.h"
 #include "model/nav_object_database.h"
 #include "model/ocpn_utils.h"
 #include "model/pincode.h"
 #include "model/rest_server.h"
-#include "model/routeman.h"
 
 #include "mongoose.h"
 #include "observable_evt.h"
+#include "model/navobj_db.h"
 
 /** Event from IO thread to main */
 wxDEFINE_EVENT(REST_IO_EVT, ObservedEvt);
@@ -87,7 +89,8 @@ struct RestIoEvtData {
                                      const std::string& src,
                                      const std::string& gpx_data, bool _force,
                                      bool _activate) {
-    return RestIoEvtData(Cmd::Object, key, src, gpx_data, "", _force, _activate);
+    return RestIoEvtData(Cmd::Object, key, src, gpx_data, "", _force,
+                         _activate);
   }
 
   /** Create a Cmd::Ping instance: */
@@ -129,13 +132,11 @@ struct RestIoEvtData {
   }
 
 private:
-
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
-                std::string _id, bool _force, bool _activate) ;
+                std::string _id, bool _force, bool _activate);
   RestIoEvtData(Cmd c, std::string key, std::string src, std::string _payload,
                 std::string id)
       : RestIoEvtData(c, key, src, _payload, id, false, false) {}
-
 };
 
 /** Extract a HTTP variable from query string. */
@@ -271,8 +272,7 @@ static void HandleActivateRoute(struct mg_connection* c,
   mg_http_reply(c, 200, "", "{\"result\": %d}\n", parent->GetReturnStatus());
 }
 
-static void HandlePluginMsg(struct mg_connection* c,
-                            struct mg_http_message* hm,
+static void HandlePluginMsg(struct mg_connection* c, struct mg_http_message* hm,
                             RestServer* parent) {
   std::string apikey = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
@@ -301,8 +301,7 @@ static void HandlePluginMsg(struct mg_connection* c,
 }
 
 static void HandleReverseRoute(struct mg_connection* c,
-                               struct mg_http_message* hm,
-                               RestServer* parent) {
+                               struct mg_http_message* hm, RestServer* parent) {
   std::string apikey = HttpVarToString(hm->query, "apikey");
   std::string source = HttpVarToString(hm->query, "source");
   std::string guid = HttpVarToString(hm->query, "guid");
@@ -658,15 +657,16 @@ void RestServer::HandleRoute(pugi::xml_node object,
   if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
       //  Remove the existing duplicate route before adding new route
-      m_route_ctx.delete_route(duplicate);
+      m_route_ctx.delete_route(duplicate);  // Also handles the navobj.db delete
     }
     // Add the route to the global list
     NavObjectCollection1 pSet;
     if (InsertRouteA(route, &pSet)) {
+      NavObj_dB::GetInstance().InsertRoute(route);
       UpdateReturnStatus(RestServerResult::NoError);
       if (evt_data.activate)
         activate_route.Notify(route->GetGUID().ToStdString());
-      if (g_pRouteMan) g_pRouteMan->on_routes_update.Notify();
+      GuiEvents::GetInstance().on_routes_update.Notify();
     } else {
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     }
@@ -700,14 +700,14 @@ void RestServer::HandleTrack(pugi::xml_node object,
   }
   if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
+      NavObj_dB::GetInstance().DeleteTrack(duplicate);
       m_route_ctx.delete_track(duplicate);
     }
     // Add the track to the global list
-    NavObjectCollection1 pSet;
-
-    if (InsertTrack(track, false))
+    if (InsertTrack(track, false)) {
+      NavObj_dB::GetInstance().InsertTrack(track);
       UpdateReturnStatus(RestServerResult::NoError);
-    else
+    } else
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     m_dlg_ctx.top_level_refresh();
   }
@@ -740,11 +740,13 @@ void RestServer::HandleWaypoint(pugi::xml_node object,
   }
   if (add) {
     if (m_overwrite || overwrite_one || evt_data.force) {
+      NavObj_dB::GetInstance().DeleteRoutePoint(duplicate);
       m_route_ctx.delete_waypoint(duplicate);
     }
-    if (InsertWpt(rp, m_overwrite || overwrite_one || evt_data.force))
+    if (InsertWpt(rp, m_overwrite || overwrite_one || evt_data.force)) {
       UpdateReturnStatus(RestServerResult::NoError);
-    else
+      NavObj_dB::GetInstance().InsertRoutePoint(rp);
+    } else
       UpdateReturnStatus(RestServerResult::RouteInsertError);
     m_dlg_ctx.top_level_refresh();
   }

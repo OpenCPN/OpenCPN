@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Implement comm_appmsg.h -- Decoded application messages.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement comm_appmsg.h -- Decoded application messages.
+ */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
@@ -36,6 +35,8 @@
 #include "model/comm_appmsg.h"
 #include "model/ocpn_utils.h"
 
+static const auto kUtfDegrees = wxString::FromUTF8(u8"\u00B0");
+
 /* Free functions. */
 
 std::string TimeToString(const time_t t) {
@@ -43,18 +44,17 @@ std::string TimeToString(const time_t t) {
 #ifdef _MSC_VER
   errno_t e = ctime_s(buff, sizeof(buff), &t);
   assert(e == 0 && "Huh? ctime_s returned an error");
-  return std::string(buff);
 #else
   const char* r = ctime_r(&t, buff);
   assert(r != NULL && "ctime_r failed...");
-  return std::string(buff);
 #endif
+  return std::string(buff, strlen(buff) - 1);  // Drop trailing '\n'
 }
 
 std::string DegreesToString(double degrees) {
   using namespace std;
   std::stringstream buf;
-  buf << setw(2) << static_cast<int>(trunc(degrees)) << "\u00B0"
+  buf << setw(2) << static_cast<int>(trunc(degrees)) << kUtfDegrees
       << static_cast<int>(trunc(degrees * 100)) % 100 << "," << setw(2)
       << (static_cast<int>(trunc(degrees * 10000)) % 10000) % 100;
   return buf.str();
@@ -64,7 +64,6 @@ double PosPartsToDegrees(float degrees, float minutes,
                          float percent_of_minute) {
   return degrees + minutes / 60 + percent_of_minute / 6000;
 }
-
 
 /* Position implementation */
 
@@ -85,7 +84,7 @@ std::string Position::to_string() const {
   return buf.str();
 }
 
-std::string  Position::TypeToStr(const Type t) const {
+std::string Position::TypeToStr(const Type t) const {
   switch (t) {
     case Type::NE:
       return "NE";
@@ -102,8 +101,8 @@ std::string  Position::TypeToStr(const Type t) const {
     case Type::Undef:
       return "Undefined";
       break;
-   }
-  return "??";     // Not reached, but compiler complains.
+  }
+  return "??";  // Not reached, but compiler complains.
 }
 
 Position::Type Position::LatLongToType(double lat, double lon) {
@@ -127,8 +126,7 @@ static double GgaPartToDouble(const std::string& s) {
   if (dotpos < 2) return nan("");
   auto degrees = s.substr(0, dotpos - 2);
   auto minutes = s.substr(dotpos - 2);
-  return std::stod(degrees) + std::stod(minutes)/60;
-
+  return std::stod(degrees) + std::stod(minutes) / 60;
 }
 
 Position Position::ParseGGA(const std::string gga) {
@@ -149,7 +147,6 @@ Position Position::ParseGGA(const std::string gga) {
 
   return lat != nan("") && lon != nan("") ? Position(lat, lon) : Position();
 }
-
 
 /* Appmsg implementation */
 
@@ -178,4 +175,22 @@ std::string AppMsg::TypeToString(const AppMsg::Type t) const {
       break;
   }
   return "????";  // Not reached, for the compiler.
+}
+
+std::string BasicNavDataMsg::to_string() const {
+  std::stringstream ss;
+  ss << AppMsg::to_string() << " pos: " << pos.to_string() << " sog: " << sog
+     << " cog: " << cog << " var: " << var << " hdt: " << hdt
+     << "  vflag: " << vflag << " set_time: " << TimeToString(set_time.tv_sec);
+  return ss.str();
+}
+std::string AisData::to_string() const {
+  std::stringstream ss;
+  ss << TimeToString(time) << " " << pos.to_string() << " sog: " << sog
+     << " cog: " << cog << " heading: " << heading
+     << " rate of turn: " << rate_of_turn << "type: 0x" << std::hex << type
+     << " name " << name << " callsign " << callsign << " dest: " << dest
+     << " length " << std::dec << length << " beam: " << beam
+     << " draft: " << draft << " status: 0x" << std::hex << status;
+  return ss.str();
 }

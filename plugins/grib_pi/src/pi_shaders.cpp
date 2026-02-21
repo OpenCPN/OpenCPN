@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2017 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,7 +16,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
+/**
+ * \file
+ * \implements \ref pi_shaders.h
+ */
 #include "pi_shaders.h"
 
 #include "linmath.h"
@@ -30,18 +29,15 @@
 #include <GLES2/gl2.h>
 #endif
 
-
-
 #ifdef USE_ANDROID_GLES2
-const GLchar* PI_shader_preamble =
-"\n";
+const GLchar* PI_shader_preamble = "\n";
 #else
 const GLchar* PI_shader_preamble =
-"#version 120\n"
-"#define precision\n"
-"#define lowp\n"
-"#define mediump\n"
-"#define highp\n";
+    "#version 120\n"
+    "#define precision\n"
+    "#define lowp\n"
+    "#define mediump\n"
+    "#define highp\n";
 #endif
 
 // Simple colored triangle shader
@@ -207,15 +203,26 @@ bool pi_loadShaders() {
   enum Consts { INFOLOG_LEN = 512 };
   GLchar infoLog[INFOLOG_LEN];
 
+  // Some platforms require explicit initialization of GLEW interface
+  // in the plugin module
+#if defined(__linux__) && defined(__OCPN_USE_GLEW__) && \
+    !defined(__ANDROID__) && !defined(__WXOSX)
+  auto GLEW_test = glCreateProgram;  // this is (unsigned int(*)(void))
+  if (!GLEW_test) glewInit();
+#endif
+
   // Are the shaders ready?
 
   // Simple colored triangle shader
 
   if (!GRIBpi_color_tri_shader_program) {
-    auto shaderProgram = PI_GLShaderProgram::Builder()
-     .addShaderFromSource(color_tri_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(color_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
+    auto shaderProgram =
+        PI_GLShaderProgram::Builder()
+            .addShaderFromSource(color_tri_vertex_shader_source,
+                                 GL_VERTEX_SHADER)
+            .addShaderFromSource(color_tri_fragment_shader_source,
+                                 GL_FRAGMENT_SHADER)
+            .linkProgram();
 
     GRIBpi_color_tri_shader_program = shaderProgram.programId();
   }
@@ -225,11 +232,11 @@ bool pi_loadShaders() {
     /* Vertex shader */
     pi_color_tri_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(pi_color_tri_vertex_shader, 1,
-                   &color_tri_vertex_shader_source, NULL);
+                   &color_tri_vertex_shader_source, nullptr);
     glCompileShader(pi_color_tri_vertex_shader);
     glGetShaderiv(pi_color_tri_vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(pi_color_tri_vertex_shader, INFOLOG_LEN, NULL,
+      glGetShaderInfoLog(pi_color_tri_vertex_shader, INFOLOG_LEN, nullptr,
                          infoLog);
       printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -240,11 +247,11 @@ bool pi_loadShaders() {
     /* Fragment shader */
     pi_color_tri_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(pi_color_tri_fragment_shader, 1,
-                   &color_tri_fragment_shader_source, NULL);
+                   &color_tri_fragment_shader_source, nullptr);
     glCompileShader(pi_color_tri_fragment_shader);
     glGetShaderiv(pi_color_tri_fragment_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(pi_color_tri_fragment_shader, INFOLOG_LEN, NULL,
+      glGetShaderInfoLog(pi_color_tri_fragment_shader, INFOLOG_LEN, nullptr,
                          infoLog);
       printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -259,7 +266,7 @@ bool pi_loadShaders() {
     glLinkProgram(pi_color_tri_shader_program);
     glGetProgramiv(pi_color_tri_shader_program, GL_LINK_STATUS, &success);
     if (!success) {
-      glGetProgramInfoLog(pi_color_tri_shader_program, INFOLOG_LEN, NULL,
+      glGetProgramInfoLog(pi_color_tri_shader_program, INFOLOG_LEN, nullptr,
                           infoLog);
       printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -269,10 +276,13 @@ bool pi_loadShaders() {
 
   // Array colored triangle shader
   if (!GRIBpi_colorv_tri_shader_program) {
-    auto shaderProgram = PI_GLShaderProgram::Builder()
-     .addShaderFromSource(colorv_tri_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(colorv_tri_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
+    auto shaderProgram =
+        PI_GLShaderProgram::Builder()
+            .addShaderFromSource(colorv_tri_vertex_shader_source,
+                                 GL_VERTEX_SHADER)
+            .addShaderFromSource(colorv_tri_fragment_shader_source,
+                                 GL_FRAGMENT_SHADER)
+            .linkProgram();
 
     GRIBpi_colorv_tri_shader_program = shaderProgram.programId();
   }
@@ -282,11 +292,11 @@ bool pi_loadShaders() {
     /* Vertex shader */
     pi_colorv_tri_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(pi_colorv_tri_vertex_shader, 1,
-                   &colorv_tri_vertex_shader_source, NULL);
+                   &colorv_tri_vertex_shader_source, nullptr);
     glCompileShader(pi_colorv_tri_vertex_shader);
     glGetShaderiv(pi_colorv_tri_vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(pi_colorv_tri_vertex_shader, INFOLOG_LEN, NULL,
+      glGetShaderInfoLog(pi_colorv_tri_vertex_shader, INFOLOG_LEN, nullptr,
                          infoLog);
       printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -297,11 +307,11 @@ bool pi_loadShaders() {
     /* Fragment shader */
     pi_colorv_tri_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(pi_colorv_tri_fragment_shader, 1,
-                   &colorv_tri_fragment_shader_source, NULL);
+                   &colorv_tri_fragment_shader_source, nullptr);
     glCompileShader(pi_colorv_tri_fragment_shader);
     glGetShaderiv(pi_colorv_tri_fragment_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(pi_colorv_tri_fragment_shader, INFOLOG_LEN, NULL,
+      glGetShaderInfoLog(pi_colorv_tri_fragment_shader, INFOLOG_LEN, nullptr,
                          infoLog);
       printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -316,7 +326,7 @@ bool pi_loadShaders() {
     glLinkProgram(pi_colorv_tri_shader_program);
     glGetProgramiv(pi_colorv_tri_shader_program, GL_LINK_STATUS, &success);
     if (!success) {
-      glGetProgramInfoLog(pi_colorv_tri_shader_program, INFOLOG_LEN, NULL,
+      glGetProgramInfoLog(pi_colorv_tri_shader_program, INFOLOG_LEN, nullptr,
                           infoLog);
       printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -326,10 +336,13 @@ bool pi_loadShaders() {
 
   // Simple 2D texture shader
   if (!pi_texture_2D_shader_program) {
-    auto shaderProgram = PI_GLShaderProgram::Builder()
-     .addShaderFromSource(texture_2D_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(texture_2D_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
+    auto shaderProgram =
+        PI_GLShaderProgram::Builder()
+            .addShaderFromSource(texture_2D_vertex_shader_source,
+                                 GL_VERTEX_SHADER)
+            .addShaderFromSource(texture_2D_fragment_shader_source,
+                                 GL_FRAGMENT_SHADER)
+            .linkProgram();
 
     pi_texture_2D_shader_program = shaderProgram.programId();
   }
@@ -339,11 +352,11 @@ bool pi_loadShaders() {
     /* Vertex shader */
     pi_texture_2D_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(pi_texture_2D_vertex_shader, 1,
-                   &texture_2D_vertex_shader_source, NULL);
+                   &texture_2D_vertex_shader_source, nullptr);
     glCompileShader(pi_texture_2D_vertex_shader);
     glGetShaderiv(pi_texture_2D_vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(pi_texture_2D_vertex_shader, INFOLOG_LEN, NULL,
+      glGetShaderInfoLog(pi_texture_2D_vertex_shader, INFOLOG_LEN, nullptr,
                          infoLog);
       printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -354,11 +367,11 @@ bool pi_loadShaders() {
     /* Fragment shader */
     pi_texture_2D_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(pi_texture_2D_fragment_shader, 1,
-                   &texture_2D_fragment_shader_source, NULL);
+                   &texture_2D_fragment_shader_source, nullptr);
     glCompileShader(pi_texture_2D_fragment_shader);
     glGetShaderiv(pi_texture_2D_fragment_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(pi_texture_2D_fragment_shader, INFOLOG_LEN, NULL,
+      glGetShaderInfoLog(pi_texture_2D_fragment_shader, INFOLOG_LEN, nullptr,
                          infoLog);
       printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -373,7 +386,7 @@ bool pi_loadShaders() {
     glLinkProgram(pi_texture_2D_shader_program);
     glGetProgramiv(pi_texture_2D_shader_program, GL_LINK_STATUS, &success);
     if (!success) {
-      glGetProgramInfoLog(pi_texture_2D_shader_program, INFOLOG_LEN, NULL,
+      glGetProgramInfoLog(pi_texture_2D_shader_program, INFOLOG_LEN, nullptr,
                           infoLog);
       printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
       ret_val = false;
@@ -387,11 +400,11 @@ bool pi_loadShaders() {
     if(!fade_texture_2D_vertex_shader){
         /* Vertex shader */
         fade_texture_2D_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(fade_texture_2D_vertex_shader, 1, &fade_texture_2D_vertex_shader_source, NULL);
+        glShaderSource(fade_texture_2D_vertex_shader, 1, &fade_texture_2D_vertex_shader_source, nullptr);
         glCompileShader(fade_texture_2D_vertex_shader);
         glGetShaderiv(fade_texture_2D_vertex_shader, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(fade_texture_2D_vertex_shader, INFOLOG_LEN, NULL, infoLog);
+            glGetShaderInfoLog(fade_texture_2D_vertex_shader, INFOLOG_LEN, nullptr, infoLog);
             printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
             ret_val = false;
         }
@@ -400,11 +413,11 @@ bool pi_loadShaders() {
     if(!fade_texture_2D_fragment_shader){
         /* Fragment shader */
         fade_texture_2D_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fade_texture_2D_fragment_shader, 1, &fade_texture_2D_fragment_shader_source, NULL);
+        glShaderSource(fade_texture_2D_fragment_shader, 1, &fade_texture_2D_fragment_shader_source, nullptr);
         glCompileShader(fade_texture_2D_fragment_shader);
         glGetShaderiv(fade_texture_2D_fragment_shader, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(fade_texture_2D_fragment_shader, INFOLOG_LEN, NULL, infoLog);
+            glGetShaderInfoLog(fade_texture_2D_fragment_shader, INFOLOG_LEN, nullptr, infoLog);
             printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
             ret_val = false;
         }
@@ -418,7 +431,7 @@ bool pi_loadShaders() {
         glLinkProgram(fade_texture_2D_shader_program);
         glGetProgramiv(fade_texture_2D_shader_program, GL_LINK_STATUS, &success);
         if (!success) {
-            glGetProgramInfoLog(fade_texture_2D_shader_program, INFOLOG_LEN, NULL, infoLog);
+            glGetProgramInfoLog(fade_texture_2D_shader_program, INFOLOG_LEN, nullptr, infoLog);
             printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
             ret_val = false;
         }
@@ -428,10 +441,13 @@ bool pi_loadShaders() {
 
   // Circle shader
   if (!pi_circle_filled_shader_program) {
-    auto shaderProgram = PI_GLShaderProgram::Builder()
-     .addShaderFromSource(circle_filled_vertex_shader_source, GL_VERTEX_SHADER)
-     .addShaderFromSource(circle_filled_fragment_shader_source, GL_FRAGMENT_SHADER)
-     .linkProgram();
+    auto shaderProgram =
+        PI_GLShaderProgram::Builder()
+            .addShaderFromSource(circle_filled_vertex_shader_source,
+                                 GL_VERTEX_SHADER)
+            .addShaderFromSource(circle_filled_fragment_shader_source,
+                                 GL_FRAGMENT_SHADER)
+            .linkProgram();
 
     pi_circle_filled_shader_program = shaderProgram.programId();
   }
@@ -441,11 +457,11 @@ bool pi_loadShaders() {
     /* Vertex shader */
     pi_circle_filled_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(pi_circle_filled_vertex_shader, 1,
-                   &circle_filled_vertex_shader_source, NULL);
+                   &circle_filled_vertex_shader_source, nullptr);
     glCompileShader(pi_circle_filled_vertex_shader);
     glGetShaderiv(pi_circle_filled_vertex_shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(pi_circle_filled_vertex_shader, INFOLOG_LEN, NULL,
+      glGetShaderInfoLog(pi_circle_filled_vertex_shader, INFOLOG_LEN, nullptr,
                          infoLog);
       printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
       //qDebug() << infoLog;
@@ -457,12 +473,12 @@ bool pi_loadShaders() {
     /* Fragment shader */
     pi_circle_filled_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(pi_circle_filled_fragment_shader, 1,
-                   &circle_filled_fragment_shader_source, NULL);
+                   &circle_filled_fragment_shader_source, nullptr);
     glCompileShader(pi_circle_filled_fragment_shader);
     glGetShaderiv(pi_circle_filled_fragment_shader, GL_COMPILE_STATUS,
                   &success);
     if (!success) {
-      glGetShaderInfoLog(pi_circle_filled_fragment_shader, INFOLOG_LEN, NULL,
+      glGetShaderInfoLog(pi_circle_filled_fragment_shader, INFOLOG_LEN, nullptr,
                          infoLog);
       printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
       //qDebug() << infoLog;
@@ -480,7 +496,7 @@ bool pi_loadShaders() {
     glLinkProgram(pi_circle_filled_shader_program);
     glGetProgramiv(pi_circle_filled_shader_program, GL_LINK_STATUS, &success);
     if (!success) {
-      glGetProgramInfoLog(pi_circle_filled_shader_program, INFOLOG_LEN, NULL,
+      glGetProgramInfoLog(pi_circle_filled_shader_program, INFOLOG_LEN, nullptr,
                           infoLog);
       printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
       //qDebug() << infoLog;
@@ -495,11 +511,11 @@ bool pi_loadShaders() {
     if(!FBO_texture_2D_vertex_shader){
         /* Vertex shader */
         FBO_texture_2D_vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(FBO_texture_2D_vertex_shader, 1, &FBO_texture_2D_vertex_shader_source, NULL);
+        glShaderSource(FBO_texture_2D_vertex_shader, 1, &FBO_texture_2D_vertex_shader_source, nullptr);
         glCompileShader(FBO_texture_2D_vertex_shader);
         glGetShaderiv(FBO_texture_2D_vertex_shader, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(FBO_texture_2D_vertex_shader, INFOLOG_LEN, NULL, infoLog);
+            glGetShaderInfoLog(FBO_texture_2D_vertex_shader, INFOLOG_LEN, nullptr, infoLog);
             printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", infoLog);
             ret_val = false;
         }
@@ -508,11 +524,11 @@ bool pi_loadShaders() {
     if(!FBO_texture_2D_fragment_shader){
         /* Fragment shader */
         FBO_texture_2D_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(FBO_texture_2D_fragment_shader, 1, &FBO_texture_2D_fragment_shader_source, NULL);
+        glShaderSource(FBO_texture_2D_fragment_shader, 1, &FBO_texture_2D_fragment_shader_source, nullptr);
         glCompileShader(FBO_texture_2D_fragment_shader);
         glGetShaderiv(FBO_texture_2D_fragment_shader, GL_COMPILE_STATUS, &success);
         if (!success) {
-            glGetShaderInfoLog(FBO_texture_2D_fragment_shader, INFOLOG_LEN, NULL, infoLog);
+            glGetShaderInfoLog(FBO_texture_2D_fragment_shader, INFOLOG_LEN, nullptr, infoLog);
             printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n%s\n", infoLog);
             ret_val = false;
         }
@@ -526,7 +542,7 @@ bool pi_loadShaders() {
         glLinkProgram(FBO_texture_2D_shader_program);
         glGetProgramiv(FBO_texture_2D_shader_program, GL_LINK_STATUS, &success);
         if (!success) {
-            glGetProgramInfoLog(FBO_texture_2D_shader_program, INFOLOG_LEN, NULL, infoLog);
+            glGetProgramInfoLog(FBO_texture_2D_shader_program, INFOLOG_LEN, nullptr, infoLog);
             printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", infoLog);
             ret_val = false;
         }
@@ -551,7 +567,8 @@ void configureShaders(float width, float height) {
   mat4x4_identity(I);
 
   glUseProgram(GRIBpi_color_tri_shader_program);
-  GLint matloc = glGetUniformLocation(GRIBpi_color_tri_shader_program, "MVMatrix");
+  GLint matloc =
+      glGetUniformLocation(GRIBpi_color_tri_shader_program, "MVMatrix");
   glUniformMatrix4fv(matloc, 1, GL_FALSE, (const GLfloat*)vp_transform);
   GLint transloc =
       glGetUniformLocation(GRIBpi_color_tri_shader_program, "TransformMatrix");
@@ -586,4 +603,3 @@ void configureShaders(float width, float height) {
 
   glUseProgram(0);
 }
-

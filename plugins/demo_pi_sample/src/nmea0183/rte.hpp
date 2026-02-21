@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( RTE_CLASS_HEADER )
+#if !defined(RTE_CLASS_HEADER)
 #define RTE_CLASS_HEADER
 
 /*
@@ -41,37 +40,30 @@
 ** You can use it any way you like.
 */
 
-class RTE : public RESPONSE
-{
+class RTE : public RESPONSE {
+private:
+  void delete_all_entries(void);
 
-   private:
+  double last_message_number_received;
 
-      void delete_all_entries( void );
+  int last_waypoint_number_written;
 
-      double last_message_number_received;
+public:
+  RTE();
+  ~RTE();
 
-      int last_waypoint_number_written;
+  ROUTE_TYPE TypeOfRoute;
+  wxString RouteName;
+  wxArrayString Waypoints;
+  int message_number;
+  int total_number_of_messages;
+  int m_skip_checksum;
+  char m_complete_char;
 
-   public:
-
-      RTE();
-     ~RTE();
-
-
-      ROUTE_TYPE TypeOfRoute;
-      wxString    RouteName;
-      wxArrayString Waypoints;
-      int message_number;
-      int total_number_of_messages;
-      int m_skip_checksum;
-      char m_complete_char;
-
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-      virtual bool AddWaypoint(const wxString& name);
-
-
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
+  virtual bool AddWaypoint(const wxString& name);
 };
 
-#endif // RTE_CLASS_HEADER
+#endif  // RTE_CLASS_HEADER

@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Peer-peer data sharing.
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 by David Register                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,14 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement peer_client_dlg.h -- Confirm peer transfer PIN code dialog
+ */
 
 #include <cassert>
 #include <iostream>
 #include <sstream>
+
+#include "gl_headers.h"  // Must come before anything using GL stuff
 
 #include <wx/fileconf.h>
 #include <wx/json_defs.h>
@@ -40,11 +40,8 @@
 #include "model/config_vars.h"
 
 #include "peer_client_dlg.h"
-#include "ocpn_frame.h"
-#include "FontMgr.h"
+#include "font_mgr.h"
 #include "gui_lib.h"
-
-extern MyFrame* gFrame;
 
 struct MemoryStruct {
   char* memory;
@@ -61,7 +58,7 @@ PinConfirmDlg::PinConfirmDlg(wxWindow* parent, wxWindowID id,
                              const wxString& caption, const wxString& hint,
                              const wxPoint& pos, const wxSize& size,
                              long style) {
-  wxFont* pif = FontMgr::Get().GetFont(_T("Dialog"));
+  wxFont* pif = FontMgr::Get().GetFont(_("Dialog"));
   SetFont(*pif);
   Create(parent, id, caption, hint, pos, size, style);
 }
@@ -146,8 +143,6 @@ void PinConfirmDlg::SetPincodeText(const wxString& message) {
   GetSizer()->Fit(this);
 }
 
-void PinConfirmDlg::OnOKClick(wxCommandEvent&) {
-  EndModal(wxID_OK);
-}
+void PinConfirmDlg::OnOKClick(wxCommandEvent&) { EndModal(wxID_OK); }
 
 void PinConfirmDlg::OnCancelClick(wxCommandEvent&) { EndModal(wxID_CANCEL); }

@@ -1,0 +1,45 @@
+From 0562b89561a00654d7ad74955379dcb525047786 Mon Sep 17 00:00:00 2001
+From: ALec Leamas <leamas@nowhere.net>
+Date: Tue, 20 Aug 2024 14:08:09 +0200
+Subject: [PATCH] os.h: Remove conflicting ssize_t definition
+
+Forwarded: https://github.com/ofalk/libdnet/pull/102
+
+---
+ include/config.h.in | 4 ++--
+ include/dnet/os.h   | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/config.h.in b/include/config.h.in
+index d57625b..87d1243 100644
+--- a/include/config.h.in
++++ b/include/config.h.in
+@@ -293,11 +293,11 @@ int inet_pton(int, const char *, void *);
+ #endif
+
+ #ifndef HAVE_STRLCAT
+-int strlcat(char *, const char *, int);
++size_t strlcat(char *, const char *, int);
+ #endif
+
+ #ifndef HAVE_STRLCPY
+-int strlcpy(char *, const char *, int);
++size_t strlcpy(char *, const char *, int);
+ #endif
+
+ #ifndef HAVE_STRSEP
+diff --git a/include/dnet/os.h b/include/dnet/os.h
+index 29d3ea8..aa659d3 100644
+--- a/include/dnet/os.h
++++ b/include/dnet/os.h
+@@ -23,7 +23,7 @@
+   typedef u_short	uint16_t;
+   typedef u_int		uint32_t;
+ # ifndef __CYGWIN__
+-  typedef long		ssize_t;
++  typedef ptrdiff_t 	ssize_t;
+ # endif
+ #else
+ # include <sys/param.h>
+--
+2.35.1.windows.1

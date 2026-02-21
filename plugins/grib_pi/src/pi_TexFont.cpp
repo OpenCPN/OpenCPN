@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  texture OpenGL text rendering built from wxFont
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
  *   Copyright (C) 2014 Sean D'Epagnier                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,7 +16,10 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
+/**
+ * \file
+ * \implements \ref pi_TexFont.h
+ */
 #include <wx/wx.h>
 
 #ifdef __OCPN__ANDROID__
@@ -65,7 +62,7 @@ void TexFont::Build(wxFont &font, bool blur) {
     wxCoord gw, gh;
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
+      text = wxString::Format(_T("%c"), 0x00B0);  //_T("Â°");
     else
       text = wxString::Format(_T("%c"), i);
     wxCoord descent, exlead;
@@ -93,10 +90,8 @@ void TexFont::Build(wxFont &font, bool blur) {
   wxASSERT(w < 2048 && h < 2048);
 
   /* make power of 2 */
-  for (tex_w = 1; tex_w < w; tex_w *= 2)
-    ;
-  for (tex_h = 1; tex_h < h; tex_h *= 2)
-    ;
+  for (tex_w = 1; tex_w < w; tex_w *= 2);
+  for (tex_h = 1; tex_h < h; tex_h *= 2);
 
   wxBitmap tbmp(tex_w, tex_h);
   wxMemoryDC dc;
@@ -127,7 +122,7 @@ void TexFont::Build(wxFont &font, bool blur) {
 
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
+      text = wxString::Format(_T("%c"), 0x00B0);  //_T("Â°");
     else
       text = wxString::Format(_T("%c"), i);
 

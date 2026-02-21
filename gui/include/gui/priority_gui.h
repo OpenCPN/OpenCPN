@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2022 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,20 +12,30 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Input priorities management dialog
  */
 
 #ifndef _PRIORITY_DIALOG_H
 #define _PRIORITY_DIALOG_H
 
+#include <string>
 #include <vector>
+
+#include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/dialog.h>
+#include <wx/event.h>
+#include <wx/font.h>
 #include <wx/listctrl.h>
 #include <wx/radiobut.h>
 #include <wx/stattext.h>
+#include <wx/string.h>
 #include <wx/timer.h>
 #include <wx/treectrl.h>
 
@@ -41,18 +45,17 @@ public:
   virtual ~PriorityDlg();
 
 private:
-  void OnMoveUpClick(wxCommandEvent& event);
-  void OnMoveDownClick(wxCommandEvent& event);
-  void OnRefreshClick(wxCommandEvent& event);
-  void OnClearClick(wxCommandEvent& event);
-  void OnItemSelected(wxCommandEvent& event);
+  void OnMoveUpClick(wxCommandEvent &event);
+  void OnMoveDownClick(wxCommandEvent &event);
+  void OnRefreshClick(wxCommandEvent &event);
+  void OnClearClick(wxCommandEvent &event);
+  void OnItemSelected(wxCommandEvent &event);
 
   void ProcessMove(wxTreeItemId, int dir);
 
   void Populate();
-  void AddLeaves(const std::vector<std::string> &map_list,
-                            size_t map_index, std::string map_name,
-                            wxTreeItemId leaf_parent);
+  void AddLeaves(const std::vector<std::string> &map_list, size_t map_index,
+                 std::string map_name, wxTreeItemId leaf_parent);
   void AdjustSatPriority();
   void AdjustCOGSOGPriority();
 
@@ -69,5 +72,4 @@ private:
   wxFont *m_pF;
 };
 
-
-#endif    //_PRIORITY_DIALOG_H
+#endif  //_PRIORITY_DIALOG_H

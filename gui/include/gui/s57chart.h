@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  S57 Chart Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,64 +12,47 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef __S57CHART_H__
-#define __S57CHART_H__
+/**
+ * \file
+ *
+ * S57 Chart Object
+ */
 
-#include <wx/wx.h>
-#include <wx/progdlg.h>
-#include "s52s57.h"
-#include "chartbase.h"
-#include "wx/dir.h"
-#include "wx/filename.h"
-#include "wx/file.h"
-#include "wx/stream.h"
-#include "wx/wfstream.h"
-#include "gdal/ogrsf_frmts.h"
+#ifndef S57CHART_H_
+#define S57CHART_H_
 
-#include "iso8211.h"
-
-#include "gdal/gdal.h"
-#include "s57RegistrarMgr.h"
-#include "S57ClassRegistrar.h"
-#include "S57Light.h"
-#include "S57Sector.h"
-#include "OCPNRegion.h"
-#include "ocpndc.h"
-#include "viewport.h"
-#include "SencManager.h"
 #include <memory>
-#include "ocpn_plugin.h"
 #include <unordered_map>
 
-// ----------------------------------------------------------------------------
-// Useful Prototypes
-// ----------------------------------------------------------------------------
-class ChartCanvas;
+#include <wx/wx.h>
+#include <wx/dir.h>
+#include <wx/dynarray.h>
+#include <wx/filename.h>
+#include <wx/stream.h>
+#include <wx/wfstream.h>
 
-// ----------------------------------------------------------------------------
-// S57 Utility Prototypes
-// ----------------------------------------------------------------------------
-extern "C" bool s57_GetChartExtent(const wxString &FullPath, Extent *pext);
+#include "gdal/ogrsf_frmts.h"
 
-void s57_DrawExtendedLightSectors(ocpnDC &temp_dc, ViewPort &VPoint,
-                                  std::vector<s57Sector_t> &sectorlegs);
-void s57_DrawExtendedLightSectorsGL(ocpnDC &temp_dc, ViewPort &VPoint,
-                                  std::vector<s57Sector_t> &sectorlegs);
-bool s57_CheckExtendedLightSectors(ChartCanvas *cc, int mx, int my,
-                                   ViewPort &VPoint,
-                                   std::vector<s57Sector_t> &sectorlegs);
-bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
-                                ViewPort &viewport,
-                                std::vector<s57Sector_t> &sectorlegs);
+#include "model/gui_vars.h"
 
-//----------------------------------------------------------------------------
-// Constants
-//----------------------------------------------------------------------------
+#include "chartbase.h"  // ChartBase
+#include "chartimg.h"
+#include "ocpn_pixel.h"
+#include "ocpn_region.h"
+#include "ogr_s57.h"
+#include "s52s57.h"  // ObjRazRules
+#include "s57.h"
+#include "s57_light.h"
+#include "s57_object_desc.h"
+#include "s57_sector.h"
+#include "viewport.h"
+
+extern bool chain_broken_mssage_shown; /**< Global instance */
+
+class ChartCanvas;  // circular
 
 enum {
   BUILD_SENC_OK,
@@ -84,34 +61,32 @@ enum {
   BUILD_SENC_PENDING
 };
 
-//----------------------------------------------------------------------------
-// Fwd Defns
-//----------------------------------------------------------------------------
-
-class ChartBase;
-class ViewPort;
-class ocpnBitmap;
-class PixelCache;
-class S57ObjectDesc;
-class S57Reader;
-class OGRS57DataSource;
-class S57ClassRegistrar;
-class S57Obj;
-class VE_Element;
-class VC_Element;
-class connector_segment;
-class ChartPlugInWrapper;
-
-#include <wx/dynarray.h>
-
-// Declare the Array of S57Obj
 WX_DECLARE_OBJARRAY(S57Obj, ArrayOfS57Obj);
 
-WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
+bool s57_CheckExtendedLightSectors(ChartCanvas *cc, int mx, int my,
+                                   ViewPort &VPoint,
+                                   std::vector<s57Sector_t> &sectorlegs);
 
-//----------------------------------------------------------------------------
-// s57 Chart object class
-//----------------------------------------------------------------------------
+bool s57_GetVisibleLightSectors(ChartCanvas *cc, double lat, double lon,
+                                ViewPort &viewport,
+                                std::vector<s57Sector_t> &sectorlegs);
+
+/**
+ * Represents an S57 format electronic navigational chart in OpenCPN.
+ *
+ * S57 is an international standard for encoding and exchanging digital
+ * hydrographic data. These vector charts contain maritime information including
+ * depths, buoys, lights, and other navigational features.
+ *
+ * Key features of S57 charts and this class:
+ * - Vector data: Allows for smooth scaling and rotation without loss of quality
+ * - Rich feature set: Includes detailed information about various maritime
+ * objects
+ * - Layered display: Supports showing/hiding different types of information
+ * - SENC support: Can create and use System ENC (SENC) files for faster loading
+ * - Render options: Supports various rendering modes including OpenGL
+ * - Object queries: Allows for detailed queries of chart objects
+ */
 class s57chart : public ChartBase {
 public:
   s57chart();
@@ -198,22 +173,22 @@ public:
   //    DEPCNT VALDCO array access
   bool GetNearestSafeContour(double safe_cnt, double &next_safe_cnt);
 
-  virtual std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
+  virtual std::list<S57Obj *> *GetAssociatedObjects(S57Obj *obj);
 
-  virtual std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void) {
+  virtual std::unordered_map<unsigned, VE_Element *> &Get_ve_hash() {
     return m_ve_hash;
   }
-  virtual std::unordered_map<unsigned, VC_Element *> &Get_vc_hash(void) {
+  virtual std::unordered_map<unsigned, VC_Element *> &Get_vc_hash() {
     return m_vc_hash;
   }
 
-  virtual void ForceEdgePriorityEvaluate(void);
+  virtual void ForceEdgePriorityEvaluate();
 
-  float *GetLineVertexBuffer(void) { return m_line_vertex_buffer; }
+  float *GetLineVertexBuffer() { return m_line_vertex_buffer; }
 
   void ClearRenderedTextCache();
 
-  double GetCalculatedSafetyContour(void) { return m_next_safe_cnt; }
+  double GetCalculatedSafetyContour() { return m_next_safe_cnt; }
 
   virtual bool RenderRegionViewOnGL(const wxGLContext &glc,
                                     const ViewPort &VPoint,
@@ -256,17 +231,17 @@ public:
   virtual void InvalidateCache();
   virtual bool RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint);
 
-  virtual void ClearDepthContourArray(void);
-  virtual void BuildDepthContourArray(void);
+  virtual void ClearDepthContourArray();
+  virtual void BuildDepthContourArray();
   int ValidateAndCountUpdates(const wxFileName file000, const wxString CopyDir,
                               wxString &LastUpdateDate, bool b_copyfiles);
   static int GetUpdateFileArray(const wxFileName file000,
                                 wxArrayString *UpFiles, wxDateTime date000,
                                 wxString edtn000);
-  wxString GetISDT(void);
+  wxString GetISDT();
   InitReturn PostInit(ChartInitFlag flags, ColorScheme cs);
 
-  char GetUsageChar(void) { return m_usage_char; }
+  char GetUsageChar() { return m_usage_char; }
   static bool IsCellOverlayType(const wxString &pFullPath);
 
   bool m_b2pointLUPS;
@@ -279,17 +254,15 @@ public:
   void DisableBackgroundSENC() { m_disableBackgroundSENC = true; }
   void EnableBackgroundSENC() { m_disableBackgroundSENC = false; }
 
-  SENCThreadStatus m_SENCthreadStatus;
-
 protected:
-  void AssembleLineGeometry(void);
+  void AssembleLineGeometry();
 
   ObjRazRules *razRules[PRIO_NUM][LUPNAME_NUM];
   double m_next_safe_cnt;
 
 private:
   int GetLineFeaturePointArray(S57Obj *obj, void **ret_array);
-  void SetSafetyContour(void);
+  void SetSafetyContour();
 
   bool DoRenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
                         RenderTypeEnum option, bool force_new_view);
@@ -304,12 +277,12 @@ private:
   int BuildSENCFile(const wxString &FullPath000, const wxString &SENCFileName,
                     bool b_progress = true);
 
-  void SetLinePriorities(void);
+  void SetLinePriorities();
 
   bool BuildThumbnail(const wxString &bmpname);
-  bool CreateHeaderDataFromENC(void);
-  bool CreateHeaderDataFromSENC(void);
-  bool CreateHeaderDataFromoSENC(void);
+  bool CreateHeaderDataFromENC();
+  bool CreateHeaderDataFromSENC();
+  bool CreateHeaderDataFromoSENC();
   bool GetBaseFileAttr(const wxString &file000);
 
   void ResetPointBBoxes(const ViewPort &vp_last, const ViewPort &vp_this);
@@ -329,16 +302,10 @@ private:
                               const OCPNRegion &RectRegion,
                               const LLRegion &Region, bool b_overlay);
 
-  void BuildLineVBO(void);
+  void BuildLineVBO();
 
   void ChangeThumbColor(ColorScheme cs);
   void LoadThumb();
-  bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
-                                       ChartPlugInWrapper *target_plugin_chart,
-                                       s57chart *Chs57,
-                                       ListOfObjRazRules *rule_list,
-                                       std::list<S57Obj*> *pi_rule_list,
-                                       std::vector<s57Sector_t> &sectorlegs);
   void CreateChartContext();
   void PopulateObjectsWithContext();
 
@@ -385,7 +352,6 @@ private:
   bool m_btex_mem;
   char m_usage_char;
 
-
   int m_LineVBO_name;
 
   std::unordered_map<unsigned, VE_Element *> m_ve_hash;
@@ -400,4 +366,4 @@ protected:
   sm_parms vp_transform;
 };
 
-#endif
+#endif  // S57CHART_H_

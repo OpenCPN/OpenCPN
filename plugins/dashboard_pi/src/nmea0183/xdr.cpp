@@ -31,116 +31,113 @@
 
 #include "nmea0183.h"
 
-//IMPLEMENT_DYNAMIC( XDR, RESPONSE )
+// IMPLEMENT_DYNAMIC( XDR, RESPONSE )
 
-XDR::XDR()
-{
-   Mnemonic = _T("XDR");
-   Empty();
+XDR::XDR() {
+  Mnemonic = _T("XDR");
+  Empty();
 }
 
-XDR::~XDR()
-{
-   Mnemonic.Empty();
-   Empty();
+XDR::~XDR() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void XDR::Empty( void )
-{
-//   ASSERT_VALID( this );
-     TransducerCnt=0;
-     for (int idx = 0; idx < MaxTransducerCnt; idx++) {
-         TransducerInfo[idx].TransducerType.Empty();
-         TransducerInfo[idx].MeasurementData = 0.0;
-         TransducerInfo[idx].UnitOfMeasurement.Empty();
-         TransducerInfo[idx].TransducerName.Empty();
-     }
+void XDR::Empty(void) {
+  //   ASSERT_VALID( this );
+  TransducerCnt = 0;
+  for (int idx = 0; idx < MaxTransducerCnt; idx++) {
+    TransducerInfo[idx].TransducerType.Empty();
+    TransducerInfo[idx].MeasurementData = 0.0;
+    TransducerInfo[idx].UnitOfMeasurement.Empty();
+    TransducerInfo[idx].TransducerName.Empty();
+  }
 }
 
-bool XDR::Parse( const SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool XDR::Parse(const SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** XDR - Transducer Measurement
-   **
-   **        1 2   3 4            n
-   **        | |   | |            |
-   ** $--XDR,a,x.x,a,c--c, ..... *hh<CR><LF>
-   **
-   ** Field Number:
-   **  1) Transducer Type
-   **  2) Measurement Data
-   **  3) Unit of Measurement, Celcius
-   **  4) Name of transducer
-   **  ...
-   **  n) Checksum
-   ** There may be any number of quadruplets like this, each describing a sensor. The last field will be a checksum as usual.
-   */
+  /*
+  ** XDR - Transducer Measurement
+  **
+  **        1 2   3 4            n
+  **        | |   | |            |
+  ** $--XDR,a,x.x,a,c--c, ..... *hh<CR><LF>
+  **
+  ** Field Number:
+  **  1) Transducer Type
+  **  2) Measurement Data
+  **  3) Unit of Measurement, Celcius
+  **  4) Name of transducer
+  **  ...
+  **  n) Checksum
+  ** There may be any number of quadruplets like this, each describing a sensor.
+  *The last field will be a checksum as usual.
+  */
 
-   /*
-   ** First we check the checksum...
-   */
-   int cksumFieldNr = 0;
-   TransducerCnt = 0;
-   TransducerCnt=(int)sentence.GetNumberOfDataFields()/4;
-   cksumFieldNr=sentence.GetNumberOfDataFields()+1;
-   if (TransducerCnt == 0 || TransducerCnt > MaxTransducerCnt) {
-      SetErrorMessage( _T("Invalid Field count" ));
-      return( FALSE );
-   }
+  /*
+  ** First we check the checksum...
+  */
+  int cksumFieldNr = 0;
+  TransducerCnt = 0;
+  TransducerCnt = (int)sentence.GetNumberOfDataFields() / 4;
+  cksumFieldNr = sentence.GetNumberOfDataFields() + 1;
+  if (TransducerCnt == 0 || TransducerCnt > MaxTransducerCnt) {
+    SetErrorMessage(_T("Invalid Field count" ));
+    return (FALSE);
+  }
 
-   if ( sentence.IsChecksumBad( cksumFieldNr ) == NTrue ) {
-      SetErrorMessage( _T("Invalid Checksum" ));
-      return( FALSE );
-   }
-    for (int idx = 0; idx < TransducerCnt; idx++)
-   {
-         TransducerInfo[idx].TransducerType = sentence.Field( idx*4+1 );
-         TransducerInfo[idx].MeasurementData = sentence.Double( idx*4+2 );
-         TransducerInfo[idx].UnitOfMeasurement = sentence.Field( idx*4+3 );
-         TransducerInfo[idx].TransducerName = sentence.Field( idx*4+4 );
-   }
+  if (sentence.IsChecksumBad(cksumFieldNr) == NTrue) {
+    SetErrorMessage(_T("Invalid Checksum" ));
+    return (FALSE);
+  }
+  for (int idx = 0; idx < TransducerCnt; idx++) {
+    TransducerInfo[idx].TransducerType = sentence.Field(idx * 4 + 1);
+    TransducerInfo[idx].MeasurementData = sentence.Double(idx * 4 + 2);
+    TransducerInfo[idx].UnitOfMeasurement = sentence.Field(idx * 4 + 3);
+    TransducerInfo[idx].TransducerName = sentence.Field(idx * 4 + 4);
+  }
 
-   return( TRUE );
+  return (TRUE);
 }
 
-bool XDR::Write( SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool XDR::Write(SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Let the parent do its thing
-   */
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += TransducerCnt;
-   for (int idx = 0; idx < TransducerCnt; idx++) {
-         sentence += TransducerInfo[idx].TransducerType;
-         sentence += TransducerInfo[idx].MeasurementData;
-         sentence += TransducerInfo[idx].UnitOfMeasurement;
-         sentence += TransducerInfo[idx].TransducerName;
-         //sentence.Finish();
-   }
+  sentence += TransducerCnt;
+  for (int idx = 0; idx < TransducerCnt; idx++) {
+    sentence += TransducerInfo[idx].TransducerType;
+    sentence += TransducerInfo[idx].MeasurementData;
+    sentence += TransducerInfo[idx].UnitOfMeasurement;
+    sentence += TransducerInfo[idx].TransducerName;
+    // sentence.Finish();
+  }
 
-   sentence.Finish();
+  sentence.Finish();
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const XDR& XDR::operator = ( const XDR& source )
-{
-//   ASSERT_VALID( this );
+const XDR& XDR::operator=(const XDR& source) {
+  //   ASSERT_VALID( this );
 
-  TransducerCnt       = source.TransducerCnt;
-   for (int idx = 0; idx < TransducerCnt; idx++) {
-         TransducerInfo[idx].TransducerType = source.TransducerInfo[idx].TransducerType;
-         TransducerInfo[idx].MeasurementData = source.TransducerInfo[idx].MeasurementData;
-         TransducerInfo[idx].UnitOfMeasurement = source.TransducerInfo[idx].UnitOfMeasurement;
-         TransducerInfo[idx].TransducerName = source.TransducerInfo[idx].TransducerName;
-   }
+  TransducerCnt = source.TransducerCnt;
+  for (int idx = 0; idx < TransducerCnt; idx++) {
+    TransducerInfo[idx].TransducerType =
+        source.TransducerInfo[idx].TransducerType;
+    TransducerInfo[idx].MeasurementData =
+        source.TransducerInfo[idx].MeasurementData;
+    TransducerInfo[idx].UnitOfMeasurement =
+        source.TransducerInfo[idx].UnitOfMeasurement;
+    TransducerInfo[idx].TransducerName =
+        source.TransducerInfo[idx].TransducerName;
+  }
 
-
-  return( *this );
+  return (*this);
 }

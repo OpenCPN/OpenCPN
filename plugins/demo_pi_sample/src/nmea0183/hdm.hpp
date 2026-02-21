@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( HDM_CLASS_HEADER )
+#if !defined(HDM_CLASS_HEADER)
 #define HDM_CLASS_HEADER
 
 /*
@@ -41,33 +40,30 @@
 ** You can use it any way you like.
 */
 
-class HDM : public RESPONSE
-{
+class HDM : public RESPONSE {
+public:
+  HDM();
+  ~HDM();
 
-   public:
+  /*
+  ** Data
+  */
 
-      HDM();
-     ~HDM();
+  double DegreesMagnetic;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-     double DegreesMagnetic;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const HDM& operator = ( const HDM& source );
+  virtual const HDM& operator=(const HDM& source);
 };
 
-#endif // HDM_CLASS_HEADER
+#endif  // HDM_CLASS_HEADER

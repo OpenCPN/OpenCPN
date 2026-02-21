@@ -54,9 +54,10 @@
 //+------------------------------------------------------------------------------
 class DashboardInstrument_Speedometer : public DashboardInstrument_Dial {
 public:
-  DashboardInstrument_Speedometer(wxWindow *parent, wxWindowID id,
-                                  wxString title, InstrumentProperties* Properties, DASH_CAP cap_flag,
-                                  int s_value, int e_value);
+  DashboardInstrument_Speedometer(wxWindow* parent, wxWindowID id,
+                                  wxString title,
+                                  InstrumentProperties* Properties,
+                                  DASH_CAP cap_flag, int s_value, int e_value);
 
   ~DashboardInstrument_Speedometer(void) {}
 

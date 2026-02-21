@@ -12,12 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/** \file linux_devices.cpp Implement linux_devices.h. */
+/**
+ * \file
+ *
+ * Implement linux_devices.h -- low level udev usb device management (Linux
+ * only).
+ */
 
 #include "config.h"
 
@@ -198,8 +201,8 @@ static usbdata GetDeviceUsbdata(const char* path) {
   syspath << "/sys/dev/char/" << major(st.st_rdev) << ":" << minor(st.st_rdev);
   char buff[PATH_MAX];
   if (!realpath(syspath.str().c_str(), buff)) {
-      wxLogDebug("Error resolving link %s: %s", syspath.str().c_str(),
-                 strerror(errno));
+    wxLogDebug("Error resolving link %s: %s", syspath.str().c_str(),
+               strerror(errno));
   }
   std::string real_path(buff);
 

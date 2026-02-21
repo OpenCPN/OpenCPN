@@ -1,13 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Raw messages layer, supports sending and recieving navmsg
- *           messages. This is the second layer in the three tier model
- *           drivers, raw messages and application messages.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,27 +13,32 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-/* API handling raw partially decoded messages. */
+/**
+ * \file
+ *
+ * Raw messages layer, supports sending and recieving navmsg
+ * messages. This is the second layer in the three tier model
+ * drivers, raw messages and application messages.
+ */
 
-#ifndef _NAVMSG_BUS_H__
-#define _NAVMSG_BUS_H__
+#ifndef NAVMSG_BUS_H_
+#define NAVMSG_BUS_H_
 
 #include <memory>
-#include <vector>
+#include <mutex>
+#include <set>
+#include <string>
 
 #include <wx/event.h>
-#include <wx/jsonreader.h>
 
 #include "model/comm_driver.h"
-
+#include "observable_evtvar.h"
 
 /** The raw message layer, a singleton. */
-class NavMsgBus : public DriverListener {
+class NavMsgBus : public wxEvtHandler, public DriverListener {
 public:
   /* Singleton implementation. */
   static NavMsgBus& GetInstance();
@@ -48,16 +46,33 @@ public:
   NavMsgBus& operator=(NavMsgBus&) = delete;
   NavMsgBus(const NavMsgBus&) = delete;
 
+  /** Send a message to given destination using suitable driver. */
   void SendMessage(std::shared_ptr<const NavMsg> message,
                    std::shared_ptr<const NavAddr> address);
 
+  /**
+   * Register a message type in list the GetActiveMessages() list
+   * @return true if key is inserted, false if already registered.
+   */
+  bool RegisterKey(const std::string& key);
+
+  /** Accept message received by driver, make it available for upper layers. */
   void Notify(std::shared_ptr<const NavMsg> message);
 
   /* DriverListener implementation: */
   void Notify(const AbstractCommDriver& driver);
 
+  /** Return list of message types sent or received. */
+  const std::set<std::string>& GetActiveMessages() { return m_active_messages; }
+
+  /** Notified without data when new message type(s) are detected. */
+  EventVar new_msg_event;
+
 private:
+  std::mutex m_mutex;
   NavMsgBus() = default;
+
+  std::set<std::string> m_active_messages;
 };
 
-#endif  // NAVMSG_BUS_H
+#endif  // NAVMSG_BUS_H_

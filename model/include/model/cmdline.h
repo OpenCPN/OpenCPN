@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2023 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register                                  *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,18 +13,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
+ *
  * Global variables reflecting command line options and arguments.
  */
 
-#ifndef _CMDLINE_H__
-#define _CMDLINE_H__
+#ifndef CMDLINE_H_
+#define CMDLINE_H_
 
 #include <vector>
 #include <string>
@@ -39,4 +39,4 @@ extern bool g_bdisable_opengl;
 extern std::string g_configdir;
 extern std::vector<std::string> g_params;
 
-#endif  // _CMDLINE_H__
+#endif  // CMDLINE_H_

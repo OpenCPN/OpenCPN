@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  GRIB Plugin Friends
- * Author:   David Register
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,9 +15,27 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * GRIB Dialog Grabber Control Interface.
+ *
+ * Implements a custom window control for manipulating GRIB dialog positioning
+ * and behavior:
+ * - Provides drag handle for repositioning dialogs
+ * - Manages window attachment and docking
+ * - Handles mouse interaction for window control
+ * - Supports custom bitmap rendering for visual feedback
+ *
+ * Features:
+ * - Custom paint handling for grabber visuals
+ * - Mouse event processing for drag operations
+ * - Automatic sizing and positioning
+ * - Platform-independent window management
+ *
+ * This component enables flexible positioning of GRIB data display windows
+ * within the OpenCPN interface while maintaining a consistent user experience.
  */
-
 #ifndef __GRIBGRABBERWIN_H__
 #define __GRIBGRABBERWIN_H__
 

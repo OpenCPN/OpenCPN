@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( GGA_CLASS_HEADER )
+#if !defined(GGA_CLASS_HEADER)
 #define GGA_CLASS_HEADER
 
 /*
@@ -41,41 +40,38 @@
 ** You can use it any way you like.
 */
 
-class GGA : public RESPONSE
-{
+class GGA : public RESPONSE {
+public:
+  GGA();
+  ~GGA();
 
-   public:
+  /*
+  ** Data
+  */
 
-      GGA();
-     ~GGA();
+  wxString UTCTime;
+  LATLONG Position;
+  int GPSQuality;
+  int NumberOfSatellitesInUse;
+  double HorizontalDilutionOfPrecision;
+  double AntennaAltitudeMeters;
+  double GeoidalSeparationMeters;
+  double AgeOfDifferentialGPSDataSeconds;
+  int DifferentialReferenceStationID;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      wxString         UTCTime;
-      LATLONG          Position;
-      int              GPSQuality;
-      int              NumberOfSatellitesInUse;
-      double           HorizontalDilutionOfPrecision;
-      double           AntennaAltitudeMeters;
-      double           GeoidalSeparationMeters;
-      double           AgeOfDifferentialGPSDataSeconds;
-      int              DifferentialReferenceStationID;
+  virtual void Empty(void);
+  virtual bool Parse(const SENTENCE& sentence);
+  virtual bool Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( const SENTENCE& sentence );
-      virtual bool Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const GGA& operator = ( const GGA& source );
+  virtual const GGA& operator=(const GGA& source);
 };
 
-#endif // GGA_CLASS_HEADER
+#endif  // GGA_CLASS_HEADER

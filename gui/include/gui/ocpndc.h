@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Layer to use wxDC or opengl
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2011 by Sean D'Epagnier                                 *
  *   sean at depagnier dot com                                             *
  *                                                                         *
@@ -19,42 +13,50 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *f
+ * Layer to use wxDC or opengl
  */
 
 #ifndef __OCPNDC_H__
 #define __OCPNDC_H__
 
-#include <vector>
+#ifdef ocpnUSE_GL
+#include "gl_headers.h"
+#include "shaders.h"
+#endif
 
-#include "dychart.h"
+#include <wx/brush.h>
+#include <wx/colour.h>
+#include <wx/font.h>
+#include <wx/glcanvas.h>
+#include <wx/pen.h>
+#include <wx/string.h>
 
 #include "linmath.h"
 
 #include "TexFont.h"
 #include "viewport.h"
-#ifdef ocpnUSE_GL
-    #include "shaders.h"
-#endif
 
-class ViewPort;
-class GLUtesselator;
+class glChartCanvas;  // Circular
 
-void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
-                     bool b_hiqual);
+static void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
+                            bool b_hiqual);
 
 //----------------------------------------------------------------------------
 // ocpnDC
 //----------------------------------------------------------------------------
 
-class wxGLCanvas;
-class glChartCanvas;
-
+/**
+ * Device context class that can use either wxDC or OpenGL for drawing.
+ * Provides a unified interface for drawing operations, abstracting the
+ * underlying context. Allows seamless switching between contexts and offers
+ * various drawing methods.
+ */
 class ocpnDC {
 public:
   ocpnDC(glChartCanvas &canvas);
@@ -81,14 +83,30 @@ public:
 
   void GetSize(wxCoord *width, wxCoord *height) const;
 
+  /**
+   * Draw a line between two points using either wxDC or OpenGL.
+   *
+   * When using OpenGL, this function supports different line qualities and
+   * widths. For high quality lines (b_hiqual=true), it enables anti-aliasing
+   * and line smoothing. The function also handles dashed lines via line
+   * stippling in OpenGL mode.
+   *
+   * @param x1 The x-coordinate of the starting point, in physical pixels.
+   * @param y1 The y-coordinate of the starting point, in physical pixels.
+   * @param x2 The x-coordinate of the ending point, in physical pixels.
+   * @param y2 The y-coordinate of the ending point, in physical pixels.
+   * @param b_hiqual If true, enables high quality rendering with anti-aliasing
+   *                 and line smoothing in OpenGL mode. Has no effect in wxDC
+   * mode.
+   */
   void DrawLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2,
                 bool b_hiqual = true);
   void DrawLines(int n, wxPoint points[], wxCoord xoffset = 0,
                  wxCoord yoffset = 0, bool b_hiqual = true);
   void DrawGLThickLine(float x1, float y1, float x2, float y2, wxPen pen,
-                     bool b_hiqual);
-  void DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset,
-                      wxPen pen, bool b_hiqual);
+                       bool b_hiqual);
+  void DrawGLThickLines(int n, wxPoint points[], wxCoord xoffset,
+                        wxCoord yoffset, wxPen pen, bool b_hiqual);
 
   void StrokeLine(wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
   void StrokeLine(wxPoint a, wxPoint b) { StrokeLine(a.x, a.y, b.x, b.y); }
@@ -125,7 +143,7 @@ public:
   void DestroyClippingRegion() {}
 
   wxDC *GetDC() const { return dc; }
-  void SetDPIFactor(double factor){ m_dpi_factor = factor; }
+  void SetDPIFactor(double factor) { m_dpi_factor = factor; }
   void SetVP(ViewPort vp);
 
 #ifdef ocpnUSE_GL

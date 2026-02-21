@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,20 +12,23 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Plugin catalog settings dialog
  */
 
 #ifndef PLUG_SETTINGS_H_
 #define PLUG_SETTINGS_H_
 
 #include <wx/dialog.h>
-#include <wx/window.h>
 
 /**
- * Modal dialog, displays settings for plugin catalog.
+ * Modal dialog for plugin catalog settings. Implements a dialog that displays
+ * and allows editing of settings for the plugin catalog.
  */
 class CatalogSettingsDialog : public wxDialog {
 public:

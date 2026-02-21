@@ -13,11 +13,11 @@
 #define GEODESIC_WGS84_SEMI_MINORAXIS 6356752.3142
 #define GEODESIC_DEG2RAD(d) ((d) * (M_PI / 180.0))
 #define GEODESIC_RAD2DEG(r) ((r) * (180.0 / M_PI))
-#define GEODESIC_METERS2NM(m) ((m)*0.000539956803)
+#define GEODESIC_METERS2NM(m) ((m) * 0.000539956803)
 #define GEODESIC_NM2METERS(nm) ((nm) / 0.000539956803)
-#define GEODESIC_METERS2FT(m) ((m)*3.2808399)
+#define GEODESIC_METERS2FT(m) ((m) * 3.2808399)
 #define GEODESIC_FT2METERS(ft) ((ft) / 3.2808399)
-#define GEODESIC_MPERS2KT(mpers) ((mpers)*1.9438445)
+#define GEODESIC_MPERS2KT(mpers) ((mpers) * 1.9438445)
 #define GEODESIC_KT2MPERS(mpers) ((mpers) / 1.9438445)
 
 class Geodesic {

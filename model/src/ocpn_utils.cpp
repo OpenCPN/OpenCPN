@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,15 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement ocpn_utils.h -- miscellaneous utilities, many of which string
+ * related.
  */
+
 #include <algorithm>
 #include <cstdio>
+#include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -78,6 +81,7 @@ bool exists(const std::string& name) {
 #endif
 }
 
+/** @deprecated Using std::filesystem instead. */
 void mkdir(const std::string path) {
 #if defined(_WIN32) && !defined(__MINGW32__)
   _mkdir(path.c_str());
@@ -88,17 +92,19 @@ void mkdir(const std::string path) {
 #endif
 }
 
-std::string ltrim(std::string s) {
+std::string ltrim(const std::string& arg) {
   using namespace std;
 
+  string s(arg);
   s.erase(s.begin(),
           find_if(s.begin(), s.end(), [](int ch) { return !isspace(ch); }));
   return s;
 }
 
-std::string rtrim(std::string s) {
+std::string rtrim(const std::string& arg) {
   using namespace std;
 
+  string s(arg);
   s.erase(
       find_if(s.rbegin(), s.rend(), [](int ch) { return !isspace(ch); }).base(),
       s.end());
@@ -143,6 +149,57 @@ void copy_file(const std::string& src_path, const std::string& dest_path) {
 
   source.close();
   dest.close();
+}
+
+bool N0183CheckSumOk(const std::string& sentence) {
+  size_t check_start = sentence.find('*');
+  if (check_start == std::string::npos || check_start > sentence.size() - 3)
+    return false;  // * not found, or it didn't have 2 characters following it.
+
+  std::string check_str = sentence.substr(check_start + 1, 2);
+  unsigned long checksum = strtol(check_str.c_str(), 0, 16);
+  if (checksum == 0L && check_str != "00") return false;
+
+  unsigned char calculated_checksum = 0;
+  for (std::string::const_iterator i = sentence.begin() + 1;
+       i != sentence.end() && *i != '*'; ++i)
+    calculated_checksum ^= static_cast<unsigned char>(*i);
+
+  return calculated_checksum == checksum;
+}
+
+std::string printable(const std::string& str) {
+  std::stringstream ss;
+  for (auto it = str.begin(); it != str.end(); it++) {
+    if (std::isprint(*it) && *it != '\r' && *it != '\n') {
+      ss << *it;
+    } else {
+      std::stringstream ss2;
+      ss2 << std::setw(2) << std::setfill('0') << std::uppercase << std::hex
+          << static_cast<int>(*it);
+      ss << "<" << ss2.str() << ">";
+    }
+  }
+  return ss.str();
+}
+
+double AnchorDistFix(double const d, double const AnchorPointMinDist,
+                     double const AnchorPointMaxDist)  //  pjotrc 2010.02.22
+{
+  if (d >= 0.0)
+    if (d < AnchorPointMinDist)
+      return AnchorPointMinDist;
+    else if (d > AnchorPointMaxDist)
+      return AnchorPointMaxDist;
+    else
+      return d;
+  else  //  d < 0.0
+    if (d > -AnchorPointMinDist)
+      return -AnchorPointMinDist;
+    else if (d < -AnchorPointMaxDist)
+      return -AnchorPointMaxDist;
+    else
+      return d;
 }
 
 }  // namespace ocpn

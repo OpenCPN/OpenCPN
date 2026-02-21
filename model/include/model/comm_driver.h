@@ -1,14 +1,6 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Communication driver layer. Defines the generic driver model,
- *           messages sent to/from drivers and addresses. The driver layer
- *           is the lowest of the three layers drivers, raw messages (navmsg)
- *           and decoded application messages(appmsg).
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+/**************************************************************************
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 - 2024  Alec Leamas                                *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +13,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Communication driver layer. Defines the generic driver model,
+ * messages sent to/from drivers and addresses. The driver layer
+ * is the lowest of the three layers drivers, raw messages (navmsg)
+ * and decoded application messages(appmsg).
+ */
+
+#ifndef _DRIVER_API_H
+#define _DRIVER_API_H
 
 #include <memory>
 #include <string>
@@ -33,19 +35,25 @@
 #include "observable.h"
 #include "comm_navmsg.h"
 
-#ifndef _DRIVER_API_H
-#define _DRIVER_API_H
-
 enum class CommStatus { Ok, NotImplemented, NotSupported, NameInUse };
 
 class AbstractCommDriver;  // forward
 
 /**
- * Interface implemented by transport layer and possible other parties
+ * Interface for handling incoming messages.
+ *
+ * Implemented by transport layer and possible other parties
  * like test code which should handle incoming messages
+ *
+ * @interface DriverListener comm_driver.h "model/comm_driver.h"
  */
 class DriverListener {
 public:
+  /**
+   * Destroy the Driver Listener object.
+   */
+  virtual ~DriverListener() = default;
+
   /** Handle a received message. */
   virtual void Notify(std::shared_ptr<const NavMsg> message) = 0;
 
@@ -54,16 +62,14 @@ public:
 };
 
 /** Common interface for all drivers.  */
-class AbstractCommDriver
-    : public std::enable_shared_from_this<AbstractCommDriver> {
+class AbstractCommDriver {
 public:
-  AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil"){};
+  AbstractCommDriver() : bus(NavAddr::Bus::Undef), iface("nil") {};
+
+  virtual ~AbstractCommDriver() = default;
 
   virtual bool SendMessage(std::shared_ptr<const NavMsg> msg,
                            std::shared_ptr<const NavAddr> addr) = 0;
-
-  /** Register driver in  the driver Registry. */
-  virtual void Activate() = 0;
 
   /**
    * Set the entity which will receive incoming data. By default, such
@@ -89,15 +95,17 @@ public:
   const std::string iface; /**< Physical device for 0183, else a
                                 unique string */
 
-  virtual std::unordered_map<std::string, std::string> GetAttributes() const { return attributes;}
+  virtual std::unordered_map<std::string, std::string> GetAttributes() const {
+    return attributes;
+  }
 
   std::unordered_map<std::string, std::string> attributes;
 
 protected:
-  AbstractCommDriver(NavAddr::Bus b) : bus(b){
+  AbstractCommDriver(NavAddr::Bus b) : bus(b) {
     attributes["protocol"] = NavAddr::BusToString(bus);
   };
-  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s){
+  AbstractCommDriver(NavAddr::Bus b, const std::string& s) : bus(b), iface(s) {
     attributes["protocol"] = NavAddr::BusToString(bus);
   };
 };

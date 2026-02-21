@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  CM93 Chart Object
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,33 +12,34 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Class cm93chart and helpers -- CM93 chart state
+ */
 
 #ifndef __CM93CHART_H__
 #define __CM93CHART_H__
 
-#include <wx/listctrl.h>  // Somehow missing from wx build
+#include <wx/listctrl.h>
+#include <wx/spinctrl.h>
 
-#include "s57chart.h"
+#include "chcanv.h"
 #include "model/cutil.h"  // for types
+#include "ocpn_region.h"
 #include "poly_math.h"
-
-//    Some constants
-#define INDEX_m_sor 217  // cm93 dictionary index for object type _m_sor
+#include "s57chart.h"
+#include "viewport.h"
 
 #define CM93_ZOOM_FACTOR_MAX_RANGE 5
 
-//    Static functions
-int Get_CM93_CellIndex(double lat, double lon, int scale);
-void Get_CM93_Cell_Origin(int cellindex, int scale, double *lat, double *lon);
+class CM93OffsetDialog;                       // Forward
+extern CM93OffsetDialog *g_pCM93OffsetDialog; /**< Global instance */
 
-//    Fwd definitions
-class covr_set;
-class wxSpinCtrl;
-class ChartCanvas;
+class covr_set;  // Forward
 
 class M_COVR_Desc {
 public:
@@ -103,7 +98,7 @@ static const double CM93_semimajor_axis_meters =
 
 class Extended_Geometry;
 
-//#pragma pack(push,1)
+// #pragma pack(push,1)
 
 typedef struct {
   unsigned short x;
@@ -116,7 +111,7 @@ typedef struct {
   unsigned short z;
 } cm93_point_3d;
 
-//#pragma pack(pop)
+// #pragma pack(pop)
 
 typedef struct {
   double lon_min;
@@ -287,9 +282,21 @@ public:
   bool m_bfoundZ;
 };
 
-//----------------------------------------------------------------------------
-// cm93 Chart object class
-//----------------------------------------------------------------------------
+/**
+ * Represents a single CM93 chart at a specific scale.
+ *
+ * CM93 charts are a proprietary vector chart format developed by C-Map. Unlike
+ * S57 charts, CM93 charts use a different data structure and cover the entire
+ * world in a seamless database. Key differences from S57 include:
+ * - Multi-scale coverage: CM93 data is organized into several discrete zoom
+ * levels.
+ * - Proprietary encoding: CM93 uses its own object and attribute encoding,
+ * requiring translation to S57 objects.
+ * - Global coverage: A single CM93 database covers the entire world,
+ * eliminating chart boundaries.
+ * - Efficient storage: Data is highly compressed and organized in a cell-based
+ * structure.
+ */
 class cm93chart : public s57chart {
 public:
   cm93chart();
@@ -400,6 +407,12 @@ private:
 //----------------------------------------------------------------------------
 class CM93OffsetDialog;
 
+/**
+ * Represents a composite CM93 chart covering multiple scales.
+ * Manages multiple cm93chart objects at different scales, providing a seamless
+ * multi-scale chart. Handles scale transitions, rendering, and querying across
+ * different chart scales.
+ */
 class cm93compchart : public s57chart {
 public:
   cm93compchart();
@@ -453,7 +466,7 @@ public:
 
   void UpdateLUPs(s57chart *pOwner);
   void ForceEdgePriorityEvaluate(void);
-  std::list<S57Obj*> *GetAssociatedObjects(S57Obj *obj);
+  std::list<S57Obj *> *GetAssociatedObjects(S57Obj *obj);
   cm93chart *GetCurrentSingleScaleChart() { return m_pcm93chart_current; }
 
   void SetSpecialOutlineCellIndex(int cell_index, int object_id, int subcell) {
@@ -489,7 +502,7 @@ private:
                               const LLRegion &Region);
 
   bool RenderCellOutlines(ocpnDC &dc, ViewPort &vp, wxPoint *pwp,
-                              M_COVR_Desc *mcd);
+                          M_COVR_Desc *mcd);
 
   //    Data members
 
@@ -518,9 +531,11 @@ private:
 };
 
 class OCPNOffsetListCtrl;
-//----------------------------------------------------------------------------------------------------------
-//    CM93OffsetDialog Specification
-//----------------------------------------------------------------------------------------------------------
+/**
+ * Dialog for managing CM93 chart offsets.
+ * Allows users to view and adjust offsets for CM93 charts, which can be used to
+ * fine-tune chart positioning.
+ */
 class CM93OffsetDialog : public wxDialog {
   DECLARE_CLASS(CM93OffsetDialog)
   DECLARE_EVENT_TABLE()

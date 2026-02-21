@@ -7,7 +7,10 @@
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
-
+/**
+ * \file
+ * \implements \ref jsonval.h
+ */
 #ifdef NDEBUG
 // make wxLogTrace a noop if no debug set, it's really slow
 // must be defined before including debug.h
@@ -69,7 +72,7 @@ int wxJSONRefData::sm_progr = 1;
 wxJSONRefData::wxJSONRefData() {
   m_lineNo = -1;
   m_refCount = 1;
-  m_memBuff = 0;
+  m_memBuff = nullptr;
 
 #if defined(WXJSON_USE_VALUE_COUNTER)
   m_progr = sm_progr;
@@ -178,7 +181,7 @@ int wxJSONValue::sm_progr = 1;
  \endcode
 */
 wxJSONValue::wxJSONValue() {
-  m_refData = 0;
+  m_refData = nullptr;
   Init(wxJSONTYPE_NULL);
 }
 
@@ -188,7 +191,7 @@ wxJSONValue::wxJSONValue() {
  the wxJSONRefData class and sets the type of the JSON value.
  Note that only the type is set, not the value.
  Also note that this function may be called from other memberfunctions
- if the \c m_refData data member is NULL.
+ if the \c m_refData data member is nullptr.
 */
 wxJSONRefData* wxJSONValue::Init(wxJSONType type) {
   wxJSONRefData* data = GetRefData();
@@ -219,13 +222,13 @@ wxJSONRefData* wxJSONValue::Init(wxJSONType type) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(wxJSONType type) {
-  m_refData = 0;
+  m_refData = nullptr;
   Init(type);
 }
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(int i) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_INT);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -237,7 +240,7 @@ wxJSONValue::wxJSONValue(int i) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(unsigned int ui) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_UINT);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -249,7 +252,7 @@ wxJSONValue::wxJSONValue(unsigned int ui) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(short int i) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_INT);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -261,7 +264,7 @@ wxJSONValue::wxJSONValue(short int i) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(unsigned short ui) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_UINT);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -273,7 +276,7 @@ wxJSONValue::wxJSONValue(unsigned short ui) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(bool b) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_BOOL);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -283,7 +286,7 @@ wxJSONValue::wxJSONValue(bool b) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(double d) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_DOUBLE);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -293,7 +296,7 @@ wxJSONValue::wxJSONValue(double d) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(const wxChar* str) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_CSTRING);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -308,7 +311,7 @@ wxJSONValue::wxJSONValue(const wxChar* str) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(const wxString& str) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_STRING);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -318,7 +321,7 @@ wxJSONValue::wxJSONValue(const wxString& str) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(long int l) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_INT);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -328,7 +331,7 @@ wxJSONValue::wxJSONValue(long int l) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(unsigned long int ul) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_UINT);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -343,7 +346,7 @@ wxJSONValue::wxJSONValue(unsigned long int ul) {
  JSON value.
 */
 wxJSONValue::wxJSONValue(const wxMemoryBuffer& buff) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_MEMORYBUFF);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -363,7 +366,7 @@ wxJSONValue::wxJSONValue(const wxMemoryBuffer& buff) {
  JSON value.
 */
 wxJSONValue::wxJSONValue(const void* buff, size_t len) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_MEMORYBUFF);
   wxJSON_ASSERT(data);
   if (data != 0 && len > 0) {
@@ -381,7 +384,7 @@ wxJSONValue::wxJSONValue(const void* buff, size_t len) {
  the reference count of the \c wxJSONRefData structure.
 */
 wxJSONValue::wxJSONValue(const wxJSONValue& other) {
-  m_refData = 0;
+  m_refData = nullptr;
   Ref(other);
 
   // the progressive counter of the ctor is not copied from
@@ -404,12 +407,12 @@ wxJSONValue::~wxJSONValue() { UnRef(); }
 //! Return the type of the value stored in the object.
 /*!
  This function is the only one that does not ASSERT that the
- \c m_refData data member is not NULL.
+ \c m_refData data member is not nullptr.
  In fact, if the JSON value object does not contain a pointer
  to a wxJSONRefData structure, the function returns the
  wxJSONTYPE_INVALID constant which represent an invalid JSON value object.
  Also note that the pointer to the referenced data structure
- should NEVER be NULL.
+ should NEVER be nullptr.
 
  \par Integer types
 
@@ -846,7 +849,7 @@ double wxJSONValue::AsDouble() const {
 
  \li for booleans the string returned is: \b true or \b false.
 
- \li if the value is a NULL value the \b null literal string is returned.
+ \li if the value is a nullptr value the \b null literal string is returned.
 
  \li if the value is of type wxJSONTYPE_INVALID, the literal string \b
  &lt;invalid&gt; is returned. Note that this is NOT a valid JSON text.
@@ -931,18 +934,18 @@ wxString wxJSONValue::AsString() const {
  function just returns that pointer.
  If the stored value is a wxString object, the function returns the
  pointer returned by the \b wxString::c_str() function.
- If the stored value is of all other JSON types, the functions returns a NULL
+ If the stored value is of all other JSON types, the functions returns a nullptr
  pointer.
 
  Note that in versions prior to 0.5, the
- function returned a NULL pointer also if the value is a \c wxString object.
+ function returned a nullptr pointer also if the value is a \c wxString object.
 
  \sa \ref json_internals_cstring
  \sa \ref wxjson_tutorial_get
 
 */
 const wxChar* wxJSONValue::AsCString() const {
-  const wxChar* s = 0;
+  const wxChar* s = nullptr;
   wxJSONRefData* data = GetRefData();
   wxJSON_ASSERT(data);
   switch (data->m_type) {
@@ -1255,13 +1258,13 @@ bool wxJSONValue::AsMemoryBuff(wxMemoryBuffer& buff) const {
  This function is for testing and debugging purposes and you shold never use it.
  To retreive values from an array or map JSON object use the \c Item() or
  ItemAt() memberfunctions or the subscript operator. If the stored value is not
- a map type, returns a NULL pointer.
+ a map type, returns a nullptr pointer.
 */
 const wxJSONInternalMap* wxJSONValue::AsMap() const {
   wxJSONRefData* data = GetRefData();
   wxJSON_ASSERT(data);
 
-  const wxJSONInternalMap* v = 0;
+  const wxJSONInternalMap* v = nullptr;
   if (data->m_type == wxJSONTYPE_OBJECT) {
     v = &(data->m_valMap);
   }
@@ -1273,13 +1276,13 @@ const wxJSONInternalMap* wxJSONValue::AsMap() const {
  This function is for testing and debugging purposes and you shold never use it.
  To retreive values from an array or map JSON object use the \c Item() or
  ItemAt() memberfunctions or the subscript operator. If the stored value is not
- an array type, returns a NULL pointer.
+ an array type, returns a nullptr pointer.
 */
 const wxJSONInternalArray* wxJSONValue::AsArray() const {
   wxJSONRefData* data = GetRefData();
   wxJSON_ASSERT(data);
 
-  const wxJSONInternalArray* v = 0;
+  const wxJSONInternalArray* v = nullptr;
   if (data->m_type == wxJSONTYPE_ARRAY) {
     v = &(data->m_valArray);
   }
@@ -1591,7 +1594,7 @@ void wxJSONValue::Clear() {
  index.
  If the element does not exist, the array is enlarged to \c index + 1
  elements and a reference to the last element will be returned.
- New elements will contain NULL values.
+ New elements will contain nullptr values.
  If this object does not contain an array, the old value is
  replaced by an array object which will be enlarged to the needed
  dimension.
@@ -1619,7 +1622,7 @@ wxJSONValue& wxJSONValue::Item(unsigned index) {
 /*!
  The function returns a reference to the object in the map
  that has the specified key.
- If \c key does not exist, a new NULL value is created with
+ If \c key does not exist, a new nullptr value is created with
  the provided key and a reference to it is returned.
  If this object does not contain a map, the old value is
  replaced by a map object.
@@ -1697,7 +1700,7 @@ wxJSONValue wxJSONValue::ItemAt(const wxString& key) const {
  index.
  If the element does not exist, the array is enlarged to \c index + 1
  elements and a reference to the last element will be returned.
- New elements will contain NULL values.
+ New elements will contain nullptr values.
  If this object does not contain an array, the old value is
  replaced by an array object.
 */
@@ -1710,7 +1713,7 @@ wxJSONValue& wxJSONValue::operator[](unsigned index) {
 /*!
  The function returns a reference to the object in the map
  that has the specified key.
- If \c key does not exist, a new NULL value is created with
+ If \c key does not exist, a new nullptr value is created with
  the provided key and a reference to it is returned.
  If this object does not contain a map, the old value is
  replaced by a map object.
@@ -1896,15 +1899,15 @@ wxJSONValue wxJSONValue::Get(const wxString& key,
 //! Find an element
 /*!
  The function returns a pointer to the element at index \c index
- or a NULL pointer if \c index does not exist.
- A NULL pointer is also returned if the object does not contain an
+ or a nullptr pointer if \c index does not exist.
+ A nullptr pointer is also returned if the object does not contain an
  array nor a key/value map.
 */
 wxJSONValue* wxJSONValue::Find(unsigned index) const {
   wxJSONRefData* data = GetRefData();
   wxJSON_ASSERT(data);
 
-  wxJSONValue* vp = 0;
+  wxJSONValue* vp = nullptr;
 
   if (data->m_type == wxJSONTYPE_ARRAY) {
     size_t size = data->m_valArray.GetCount();
@@ -1918,15 +1921,15 @@ wxJSONValue* wxJSONValue::Find(unsigned index) const {
 //! Find an element
 /*!
  The function returns a pointer to the element with key \c key
- or a NULL pointer if \c key does not exist.
- A NULL pointer is also returned if the object does not contain a
+ or a nullptr pointer if \c key does not exist.
+ A nullptr pointer is also returned if the object does not contain a
  key/value map.
 */
 wxJSONValue* wxJSONValue::Find(const wxString& key) const {
   wxJSONRefData* data = GetRefData();
   wxJSON_ASSERT(data);
 
-  wxJSONValue* vp = 0;
+  wxJSONValue* vp = nullptr;
 
   if (data->m_type == wxJSONTYPE_OBJECT) {
     wxJSONInternalMap::iterator it = data->m_valMap.find(key);
@@ -2489,7 +2492,7 @@ void wxJSONValue::ClearComments() {
  The \c type argument can be one of the following:
 
   \li wxJSONTYPE_INVALID: an empty (not initialized) JSON value
-  \li wxJSONTYPE_NULL: a NULL value
+  \li wxJSONTYPE_NULL: a nullptr value
   \li wxJSONTYPE_INT: an integer value
   \li wxJSONTYPE_UINT: an unsigned integer
   \li wxJSONTYPE_DOUBLE: a double precision number
@@ -2658,7 +2661,7 @@ void wxJSONValue::UnRef() {
 
     if (--m_refData->m_refCount == 0) {
       delete m_refData;
-      m_refData = NULL;
+      m_refData = nullptr;
     }
   }
 }
@@ -2966,7 +2969,7 @@ wxMemoryBuffer wxJSONValue::ArrayToMemoryBuff(const wxJSONValue& value) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(wxInt64 i) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_INT);
   wxJSON_ASSERT(data);
   if (data != 0) {
@@ -2976,7 +2979,7 @@ wxJSONValue::wxJSONValue(wxInt64 i) {
 
 //! \overload wxJSONValue()
 wxJSONValue::wxJSONValue(wxUint64 ui) {
-  m_refData = 0;
+  m_refData = nullptr;
   wxJSONRefData* data = Init(wxJSONTYPE_UINT);
   wxJSON_ASSERT(data);
   if (data != 0) {

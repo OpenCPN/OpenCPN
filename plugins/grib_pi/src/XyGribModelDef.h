@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  XyGrib model definitions
- * Author:   Ronan Demoment
- *
- ***************************************************************************
  *   Copyright (C) 2024 by R. Demoment                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,10 +15,28 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ ***************************************************************************/
+/**
+ * \file
+ * XyGrib Model Configuration and Definitions.
  *
+ * Defines data structures and constants for configuring atmospheric and wave
+ * models in the XyGrib weather data service integration:
+ *
+ * Model Configuration:
+ * - Atmospheric model parameters (GFS, ICON, ARPEGE, etc.)
+ * - Wave model parameters (WW3, GWAM, EWAM)
+ * - Resolution and grid specifications
+ * - Available weather parameters
+ * - Time interval options
+ *
+ * Features:
+ * - Flexible model configuration
+ * - Multiple resolution support
+ * - Parameter availability flags
+ * - Run schedule masks
+ * - Standard and high-definition model variants
  */
-
 #ifndef __XYGRIBMODELDEF_H__
 #define __XYGRIBMODELDEF_H__
 

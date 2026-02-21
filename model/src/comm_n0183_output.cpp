@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  NMEA Data Multiplexer Object
- * Author:   David Register
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,15 +12,18 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * NMEA Data Multiplexer Object
+ */
 
 // For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
-
-#ifndef WX_PRECOMP  // precompiled headers
+#ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
 
@@ -56,92 +53,43 @@
 #include "model/garmin_wrapper.h"
 #endif
 
-wxString FormatPrintableMessage(wxString msg_raw) {
-  std::string fmsg;
-  std::string str = msg_raw.ToStdString();
-  for (std::string::iterator it = str.begin(); it != str.end(); ++it) {
-    if (isprint(*it))
-      fmsg += *it;
-    else {
-      wxString bin_print;
-      bin_print.Printf("<0x%02X>", *it);
-      fmsg += bin_print;
-    }
-  }
-
-  return wxString(fmsg.c_str());
-}
-
-void LogBroadcastOutputMessageColor(const wxString& msg,
-                                    const wxString& stream_name,
-                                    const wxString& color, NmeaLog& nmea_log) {
-  if (nmea_log.Active()) {
-    wxDateTime now = wxDateTime::Now();
-    wxString ss;
-#ifndef __WXQT__  //  Date/Time on Qt are broken, at least for android
-    ss = now.FormatISOTime();
-#endif
-    ss.Prepend("--> ");
-    ss.Append(" (");
-    ss.Append(stream_name);
-    ss.Append(") ");
-    ss.Append(msg);
-    ss.Prepend(color);
-
-    nmea_log.Add(ss.ToStdString());
+void LogBroadcastOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
+                                    NavmsgStatus ns, NmeaLog* nmea_log) {
+  if (nmea_log->IsVisible()) {
+    ns.direction = NavmsgStatus::Direction::kOutput;
+    Logline ll(msg, ns);
+    nmea_log->Add(ll);
   }
 }
 
-void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
+void BroadcastNMEA0183Message(const wxString& msg, NmeaLog* nmea_log,
                               EventVar& on_msg_sent) {
   auto& registry = CommDriverRegistry::GetInstance();
-  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers =
+  const std::vector<std::unique_ptr<AbstractCommDriver>>& drivers =
       registry.GetDrivers();
 
   for (auto& driver : drivers) {
     if (driver->bus == NavAddr::Bus::N0183) {
-      ConnectionParams params;
-      auto drv_serial =
-          std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
-      if (drv_serial) {
-        params = drv_serial->GetParams();
-      } else {
-        auto drv_net = std::dynamic_pointer_cast<CommDriverN0183Net>(driver);
-        if (drv_net) {
-          params = drv_net->GetParams();
-        }
-#ifdef __ANDROID__
-        else {
-          auto drv_bluetooth =
-              std::dynamic_pointer_cast<CommDriverN0183AndroidBT>(driver);
-          if (drv_bluetooth) {
-            params = drv_bluetooth->GetParams();
-          }
-        }
-#endif
-      }
+      auto drv_n0183 = dynamic_cast<CommDriverN0183*>(driver.get());
+      assert(drv_n0183);
+      ConnectionParams params = drv_n0183->GetParams();
 
       if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
           params.IOSelect == DS_TYPE_OUTPUT) {
-        bool bout_filter = params.SentencePassesFilter(msg, FILTER_OUTPUT);
-        if (bout_filter) {
-          std::string id = msg.ToStdString().substr(1, 5);
-          auto msg_out = std::make_shared<Nmea0183Msg>(
-              id, msg.ToStdString(),
-              std::make_shared<NavAddr0183>(driver->iface));
-
-          bool bxmit_ok = driver->SendMessage(
-              msg_out, std::make_shared<NavAddr0183>(driver->iface));
-
-          if (bxmit_ok)
-            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<BLUE>",
-                                           nmea_log);
-          else
-            LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<RED>",
-                                           nmea_log);
-        } else
-          LogBroadcastOutputMessageColor(msg, params.GetDSPort(), "<CORAL>",
-                                         nmea_log);
+        std::string id = msg.ToStdString().substr(1, 5);
+        auto source_addr =
+            std::make_shared<NavAddr>(NavAddr0183(params.GetStrippedDSPort()));
+        auto msg_out =
+            std::make_shared<Nmea0183Msg>(id, msg.ToStdString(), source_addr);
+        NavmsgStatus ns;
+        ns.direction = NavmsgStatus::Direction::kOutput;
+        if (params.SentencePassesFilter(msg, FILTER_OUTPUT)) {
+          bool xmit_ok = driver->SendMessage(msg_out, source_addr);
+          if (!xmit_ok) ns.status = NavmsgStatus::State::kTxError;
+        } else {
+          ns.accepted = NavmsgStatus::Accepted::kFilteredDropped;
+        }
+        LogBroadcastOutputMessageColor(msg_out, ns, nmea_log);
       }
     }
   }
@@ -149,13 +97,13 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog& nmea_log,
   on_msg_sent.Notify(msg.ToStdString());
 }
 
-std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
-    const wxString& com_name, ConnectionParams& params_save, bool& btempStream,
-    bool& b_restoreStream, N0183DlgCtx dlg_ctx, bool bGarminIn) {
-  std::shared_ptr<AbstractCommDriver> driver;
+bool CreateOutputConnection(const wxString& com_name,
+                            ConnectionParams& params_save, bool& btempStream,
+                            bool& b_restoreStream, N0183DlgCtx dlg_ctx,
+                            bool bGarminIn) {
+  AbstractCommDriver* driver(nullptr);
   auto& registry = CommDriverRegistry::GetInstance();
-  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers =
-      registry.GetDrivers();
+  const std::vector<DriverPtr>& drivers = registry.GetDrivers();
 
   int baud = 0;
   wxString comx;
@@ -164,19 +112,18 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     comx = com_name.AfterFirst(':');  // strip "Serial:"
     comx =
         comx.BeforeFirst(' ');  // strip off any description provided by Windows
-    std::shared_ptr<AbstractCommDriver> old_driver;
-    old_driver = FindDriver(drivers, comx.ToStdString());
+    DriverPtr& old_driver = FindDriver(drivers, comx.ToStdString());
     wxLogDebug("Looking for old stream %s", com_name);
 
     if (old_driver) {
       auto drv_serial_n0183 =
-          std::dynamic_pointer_cast<CommDriverN0183Serial>(old_driver);
+          dynamic_cast<CommDriverN0183Serial*>(old_driver.get());
       if (drv_serial_n0183) {
         params_save = drv_serial_n0183->GetParams();
         baud = params_save.Baudrate;
         bGarmin = params_save.Garmin;
+        drv_serial_n0183->Close();  // Fast close
       }
-      drv_serial_n0183->Close();    // Fast close
       registry.Deactivate(old_driver);
 
       b_restoreStream = true;
@@ -192,14 +139,13 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
     cp.Garmin = bGarminIn || bGarmin;
     cp.IOSelect = DS_TYPE_OUTPUT;
 
-    driver = MakeCommDriver(&cp);
+    MakeCommDriver(&cp);
     btempStream = true;
 
 #ifdef __ANDROID__
     wxMilliSleep(1000);
 #else
-    auto drv_serial_n0183 =
-        std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
+    auto drv_serial_n0183 = dynamic_cast<CommDriverN0183Serial*>(driver);
     if (drv_serial_n0183) {
       if ((wxNOT_FOUND != com_name.Upper().Find("USB")) &&
           (wxNOT_FOUND != com_name.Upper().Find("GARMIN"))) {
@@ -228,38 +174,26 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
                       << " ...Could not be opened for writing";
         }
       }
+    } else {
+      driver =
+          FindDriver(drivers, comx.ToStdString(), NavAddr::Bus::N0183).get();
     }
 #endif
-  } else
-    driver = FindDriver(drivers, com_name.ToStdString());
+  }
 
   if (com_name.Find("Bluetooth") != wxNOT_FOUND) {
     wxString comm_addr = com_name.AfterFirst(';');
 
-    driver = FindDriver(drivers, comm_addr.ToStdString());
+    driver = FindDriver(drivers, comm_addr.ToStdString()).get();
     if (!driver) {
       // Force Android Bluetooth to use only already enabled driver
-      return driver;
-
-      ConnectionParams ConnectionParams;
-      ConnectionParams.Type = INTERNAL_BT;
-      wxStringTokenizer tkz(com_name, ";");
-      wxString name = tkz.GetNextToken();
-      wxString mac = tkz.GetNextToken();
-
-      ConnectionParams.NetworkAddress = name;
-      ConnectionParams.Port = mac;
-      ConnectionParams.NetworkPort = 0;
-      ConnectionParams.NetProtocol = PROTO_UNDEFINED;
-      ConnectionParams.Baudrate = 0;
-
-      driver = MakeCommDriver(&ConnectionParams);
-
-      btempStream = true;
+      return false;
     }
   } else if (com_name.Lower().StartsWith("udp") ||
              com_name.Lower().StartsWith("tcp")) {
-    std::shared_ptr<CommDriverN0183Net> drv_net_n0183;
+    CommDriverN0183Net* drv_net_n0183(nullptr);
+    driver =
+        FindDriver(drivers, com_name.ToStdString(), NavAddr::Bus::N0183).get();
 
     if (!driver) {
       NetworkProtocol protocol = UDP;
@@ -276,12 +210,15 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
       cp.NetProtocol = protocol;
       cp.NetworkAddress = address;
       cp.NetworkPort = port;
-      cp.IOSelect = DS_TYPE_INPUT_OUTPUT;
+      cp.IOSelect = DS_TYPE_OUTPUT;  // DS_TYPE_INPUT_OUTPUT;
 
-      driver = MakeCommDriver(&cp);
+      MakeCommDriver(&cp);
+      auto& me =
+          FindDriver(drivers, cp.GetStrippedDSPort(), cp.GetLastCommProtocol());
+      driver = me.get();
       btempStream = true;
     }
-    drv_net_n0183 = std::dynamic_pointer_cast<CommDriverN0183Net>(driver);
+    drv_net_n0183 = dynamic_cast<CommDriverN0183Net*>(driver);
 
     if (com_name.Lower().StartsWith("tcp")) {
       // new tcp connections must wait for connect
@@ -292,8 +229,8 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
 
       if (drv_net_n0183) {
         int loopCount = 10;  // seconds
-        bool bconnected = false;
-        while (!bconnected && (loopCount > 0)) {
+        bool bconnected;
+        for (bconnected = false; !bconnected && (loopCount > 0); loopCount--) {
           if (drv_net_n0183->GetSock()->IsConnected()) {
             bconnected = true;
             break;
@@ -301,53 +238,46 @@ std::shared_ptr<AbstractCommDriver> CreateOutputConnection(
           dlg_ctx.pulse();
           wxYield();
           wxSleep(1);
-          loopCount--;
         }
-
         if (bconnected) {
           msg = _("Connected to ");
           msg += com_name;
           dlg_ctx.set_message(msg);
         } else {
           if (btempStream) {
-            registry.Deactivate(driver);
+            auto& me = FindDriver(drivers, driver->iface, driver->bus);
+            registry.Deactivate(me);
           }
           return 0;
         }
       }
     }
   }
-  return driver;
+  return driver != nullptr;
 }
 
-int PrepareOutputChannel(const wxString& com_name,
-                         N0183DlgCtx dlg_ctx,
-                         std::shared_ptr<AbstractCommDriver>& new_driver,
-                         ConnectionParams& params_save,
-                         bool& b_restoreStream,
-                         bool& btempStream)
-{
+int PrepareOutputChannel(const wxString& com_name, N0183DlgCtx dlg_ctx,
+                         ConnectionParams& params_save, bool& b_restoreStream,
+                         bool& btempStream) {
   int ret_val = 0;
   auto& registry = CommDriverRegistry::GetInstance();
 
   // Find any existing(i.e. open) serial com port with the same name,
   // and query its parameters.
-  const std::vector<std::shared_ptr<AbstractCommDriver>>& drivers = registry.GetDrivers();
+  const std::vector<DriverPtr>& drivers = registry.GetDrivers();
   bool is_garmin_serial = false;
-  std::shared_ptr<AbstractCommDriver> existing_driver;
-  std::shared_ptr<CommDriverN0183Serial> drv_serial_n0183;
+  CommDriverN0183Serial* drv_serial_n0183(nullptr);
 
   if (com_name.Lower().StartsWith("serial")) {
     wxString comx;
-    comx = com_name.AfterFirst(':');  // strip "Serial:"
-    comx = comx.BeforeFirst(
-        ' ');  // strip off any description provided by Windows
-    existing_driver = FindDriver(drivers, comx.ToStdString());
+    comx = com_name.AfterFirst(':');  // strip "Serial: + windows description
+    comx = comx.BeforeFirst(' ');
+    DriverPtr& existing_driver = FindDriver(drivers, comx.ToStdString());
     wxLogDebug("Looking for old stream %s", com_name);
 
     if (existing_driver) {
       drv_serial_n0183 =
-          std::dynamic_pointer_cast<CommDriverN0183Serial>(existing_driver);
+          dynamic_cast<CommDriverN0183Serial*>(existing_driver.get());
       if (drv_serial_n0183) {
         is_garmin_serial = drv_serial_n0183->GetParams().Garmin;
       }
@@ -362,13 +292,17 @@ int PrepareOutputChannel(const wxString& com_name,
   if (is_garmin_serial) {
     params_save = drv_serial_n0183->GetParams();
     b_restoreStream = true;
-    drv_serial_n0183->Close();    // Fast close
-    registry.Deactivate(drv_serial_n0183);
+    drv_serial_n0183->Close();  // Fast close
+    auto& me =
+        FindDriver(drivers, drv_serial_n0183->GetParams().GetStrippedDSPort(),
+                   drv_serial_n0183->GetParams().GetCommProtocol());
+    registry.Deactivate(me);
     btempStream = true;
   }
-  new_driver = CreateOutputConnection(com_name, params_save, btempStream,
-                                      b_restoreStream, dlg_ctx, is_garmin_serial);
-  if (!new_driver) return 1;
+  bool conn_ok =
+      CreateOutputConnection(com_name, params_save, btempStream,
+                             b_restoreStream, dlg_ctx, is_garmin_serial);
+  if (!conn_ok) return 1;
 
 #ifdef xUSE_GARMINHOST
 #ifdef __WXMSW__
@@ -377,8 +311,7 @@ int PrepareOutputChannel(const wxString& com_name,
     //        if(m_pdevmon)
     //            m_pdevmon->StopIOThread(true);
 
-    auto drv_n0183_serial =
-        std::dynamic_pointer_cast<CommDriverN0183Serial>(driver);
+    auto drv_n0183_serial = dynamic_cast<CommDriverN0183Serial*>(driver.get());
     drv_n0183_serial->StopGarminUSBIOThread(true);
 
     if (!drv_n0183_serial->IsGarminThreadActive()) {
@@ -397,7 +330,7 @@ int PrepareOutputChannel(const wxString& com_name,
 
     // Create a RoutePointList with one item
     RoutePointList rplist;
-    rplist.Append(prp);
+    rplist.push_back(prp);
 
     int ret1 = Garmin_GPS_SendWaypoints(wxString("usb:"), &rplist);
 
@@ -405,7 +338,7 @@ int PrepareOutputChannel(const wxString& com_name,
       MESSAGE_LOG << "Error Sending Waypoint to Garmin USB, last error: "
                   << GetLastGarminError();
 
-      ret_val = ERR_GARMIN_GENERAL;
+      ret_val = ERR_GARMIN_SEND_MESSAGE;
     } else
       ret_val = 0;
 
@@ -421,31 +354,40 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
                          N0183DlgCtx dlg_ctx) {
   int ret_val = 0;
 
-  std::shared_ptr<AbstractCommDriver> target_driver;
   ConnectionParams params_save;
   bool b_restoreStream = false;
   bool btempStream = false;
 
   auto& registry = CommDriverRegistry::GetInstance();
 
-  int rv = PrepareOutputChannel(com_name,
-                                dlg_ctx,
-                                target_driver,
-                                params_save,
-                                b_restoreStream,
-                                btempStream);
+  PrepareOutputChannel(com_name, dlg_ctx, params_save, b_restoreStream,
+                       btempStream);
 
-  auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(target_driver);
+  std::string target_iface =
+      com_name.AfterFirst(':').ToStdString();  // For serial ports
+  if (com_name.Lower().StartsWith("udp") || com_name.Lower().StartsWith("tcp"))
+    target_iface = com_name.ToStdString();  // for network
+
+  auto& target_driver =
+      FindDriver(registry.GetDrivers(), target_iface, NavAddr::Bus::N0183);
+
+  auto drv_n0183 = dynamic_cast<CommDriverN0183*>(target_driver.get());
+  if (!drv_n0183) {
+    return ERR_GPS_DRIVER_NOT_AVAILAIBLE;
+  }
 
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
   if (com_name.Upper().Matches("*GARMIN*"))  // Garmin USB Mode
   {
     auto drv_serial_n0183 =
-      std::dynamic_pointer_cast<CommDriverN0183Serial>(target_driver);
+        dynamic_cast<CommDriverN0183Serial*>(target_driver.get());
     if (drv_serial_n0183) {
-      drv_serial_n0183->Close();    // Fast close
-      registry.Deactivate(drv_serial_n0183);
+      drv_serial_n0183->Close();  // Fast close
+      auto& me = FindDriver(CommDriverRegistry::GetInstance().GetDrivers(),
+                            drv_serial_n0183->GetParams().GetStrippedDSPort(),
+                            drv_serial_n0183->GetParams().GetCommProtocol());
+      registry.Deactivate(me);
     }
 
     {
@@ -465,7 +407,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       if (ret1 != 1) {
         MESSAGE_LOG << " Error sending routes, last garmin error: "
                     << GetLastGarminError();
-        ret_val = ERR_GARMIN_GENERAL;
+        ret_val = ERR_GARMIN_SEND_MESSAGE;
       } else
         ret_val = 0;
     }
@@ -478,10 +420,13 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
   if (g_bGarminHostUpload) {
     //  Close and abandon the tentatively opened target_driver
     auto drv_serial_n0183 =
-        std::dynamic_pointer_cast<CommDriverN0183Serial>(target_driver);
+        dynamic_cast<CommDriverN0183Serial*>(target_driver.get());
     if (drv_serial_n0183) {
-      drv_serial_n0183->Close();    // Fast close
-      registry.Deactivate(drv_serial_n0183);
+      drv_serial_n0183->Close();  // Fast close
+      auto& me = FindDriver(CommDriverRegistry::GetInstance().GetDrivers(),
+                            drv_serial_n0183->GetParams().GetStrippedDSPort(),
+                            drv_serial_n0183->GetParams().GetCommProtocol());
+      registry.Deactivate(me);
     }
 
     int lret_val;
@@ -517,7 +462,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       MESSAGE_LOG << "Error Sending Route to Garmin GPS on port: " << short_com
                   << " Error Code: " << lret_val
                   << " LastGarminError: " << GetLastGarminError();
-      ret_val = ERR_GARMIN_GENERAL;
+      ret_val = ERR_GARMIN_SEND_MESSAGE;
       goto ret_point;
     } else {
       ret_val = 0;
@@ -532,30 +477,26 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     goto ret_point_1;
   } else
 
-
   {
-    auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
+    auto address =
+        std::make_shared<NavAddr>(NavAddr::Bus::N0183, drv_n0183->iface);
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = _T ( "EC" );
 
-    int nProg = pr->pRoutePointList->GetCount() + 1;
+    int nProg = pr->pRoutePointList->size() + 1;
     dlg_ctx.set_range(100);
 
     int progress_stall = 500;
-    if (pr->pRoutePointList->GetCount() > 10) progress_stall = 200;
+    if (pr->pRoutePointList->size() > 10) progress_stall = 200;
 
     //       if (!dialog) progress_stall = 200;  // 80 chars at 4800 baud is
     //       ~160 msec
 
     // Send out the waypoints, in order
     if (bsend_waypoints) {
-      wxRoutePointListNode* node = pr->pRoutePointList->GetFirst();
-
       int ip = 1;
-      while (node) {
-        RoutePoint* prp = node->GetData();
-
+      for (RoutePoint* prp : *pr->pRoutePointList) {
         if (g_GPS_Ident == "Generic") {
           if (prp->m_lat < 0.)
             oNMEA0183.Wpl.Position.Latitude.Set(-prp->m_lat, _T ( "S" ));
@@ -612,14 +553,15 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         //  We need only send once for FurunoGP3X models
 
         auto msg_out = std::make_shared<Nmea0183Msg>(
-            std::string("ECWPL"), snt.Sentence.ToStdString(), address);
+            "ECWPL", snt.Sentence.ToStdString(), address);
 
-        drv_n0183->SendMessage(msg_out, address);
+        drv_n0183->SendMessage(msg_out, std::make_shared<NavAddr>());
         if (g_GPS_Ident != "FurunoGP3X")
-          drv_n0183->SendMessage(msg_out, address);
+          drv_n0183->SendMessage(msg_out, std::make_shared<NavAddr>());
 
-        multiplexer.LogOutputMessage(snt.Sentence, com_name.ToStdString(),
-                                     false);
+        NavmsgStatus ns;
+        ns.direction = NavmsgStatus::Direction::kOutput;
+        multiplexer.LogOutputMessage(msg_out, ns);
         auto msg =
             wxString("-->GPS Port: ") + com_name + " Sentence: " + snt.Sentence;
         msg.Trim();
@@ -628,8 +570,6 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         dlg_ctx.set_value((ip * 100) / nProg);
 
         wxMilliSleep(progress_stall);
-
-        node = node->GetNext();
         ip++;
       }
     }
@@ -670,11 +610,8 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
     oNMEA0183.Rte.message_number = 1;
 
     // add the waypoints
-    auto node = pr->pRoutePointList->GetFirst();
-    while (node) {
-      RoutePoint* prp = node->GetData();
+    for (RoutePoint* prp : *pr->pRoutePointList) {
       wxString name = prp->GetName().Truncate(g_maxWPNameLength);
-
       if (g_GPS_Ident == "FurunoGP3X") {
         name = prp->GetName();
         name += "000000";
@@ -682,16 +619,13 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         name.Prepend(" ");  // What Furuno calls "Skip Code", space means
                             // use the WP
       }
-
       oNMEA0183.Rte.AddWaypoint(name);
-      node = node->GetNext();
     }
 
     oNMEA0183.Rte.Write(snt);
 
     if ((snt.Sentence.Len() > max_length) ||
-        (pr->pRoutePointList->GetCount() >
-         max_wp))  // Do we need split sentences?
+        (pr->pRoutePointList->size() > max_wp))  // Do we need split sentences?
     {
       // Make a route with zero waypoints to get tare load.
       NMEA0183 tNMEA0183(NmeaCtxFactory());
@@ -724,9 +658,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       int sent_len = 0;
       unsigned int wp_count = 0;
 
-      auto node = pr->pRoutePointList->GetFirst();
-      while (node) {
-        RoutePoint* prp = node->GetData();
+      auto _node = pr->pRoutePointList->begin();
+      while (_node != pr->pRoutePointList->end()) {
+        RoutePoint* prp = *_node;
         unsigned int name_len =
             prp->GetName().Truncate(g_maxWPNameLength).Len();
         if (g_GPS_Ident == "FurunoGP3X")
@@ -736,7 +670,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           sent_len = tare_length;
           sent_len += name_len + 1;  // with comma
           bnew_sentence = false;
-          node = node->GetNext();
+          ++_node;
           wp_count = 1;
 
         } else {
@@ -745,11 +679,11 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
             bnew_sentence = true;
           } else {
             if (wp_count == max_wp)
-              sent_len += name_len;      // with comma
+              sent_len += name_len;  // with comma
             else
               sent_len += name_len + 1;  // with comma
             wp_count++;
-            node = node->GetNext();
+            ++_node;
           }
         }
       }
@@ -760,9 +694,9 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       int n_run = 1;
       bnew_sentence = true;
 
-      node = pr->pRoutePointList->GetFirst();
-      while (node) {
-        RoutePoint* prp = node->GetData();
+      auto it = pr->pRoutePointList->begin();
+      while (it != pr->pRoutePointList->end()) {
+        RoutePoint* prp = *it;
         wxString name = prp->GetName().Truncate(g_maxWPNameLength);
         if (g_GPS_Ident == "FurunoGP3X") {
           name = prp->GetName();
@@ -797,7 +731,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
           wp_count = 1;
 
           oNMEA0183.Rte.AddWaypoint(name);
-          node = node->GetNext();
+          ++it;
         } else {
           if ((sent_len + name_len > max_length) || (wp_count >= max_wp)) {
             n_run++;
@@ -810,7 +744,7 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
             sent_len += name_len + 1;  // comma
             oNMEA0183.Rte.AddWaypoint(name);
             wp_count++;
-            node = node->GetNext();
+            ++it;
           }
         }
       }
@@ -822,11 +756,12 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
         wxString sentence = sentence_array[ii];
 
         auto msg_out = std::make_shared<Nmea0183Msg>(
-            std::string("ECRTE"), sentence.ToStdString(), address);
+            "ECRTE", sentence.ToStdString(), std::make_shared<NavAddr>());
         drv_n0183->SendMessage(msg_out, address);
 
-        wxString fmsg = FormatPrintableMessage(sentence);
-        multiplexer.LogOutputMessageColor(fmsg, com_name, "<BLUE>");
+        NavmsgStatus ns;
+        ns.direction = NavmsgStatus::Direction::kOutput;
+        multiplexer.LogOutputMessage(msg_out, ns);
         wxYield();
 
         //             LogOutputMessage(sentence, dstr->GetPort(), false);
@@ -840,11 +775,12 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
 
     } else {
       auto msg_out = std::make_shared<Nmea0183Msg>(
-          std::string("ECRTE"), snt.Sentence.ToStdString(), address);
+          "ECRTE", snt.Sentence.ToStdString(), address);
       drv_n0183->SendMessage(msg_out, address);
 
-      wxString fmsg = FormatPrintableMessage(snt.Sentence);
-      multiplexer.LogOutputMessageColor(fmsg, com_name, "<BLUE>");
+      NavmsgStatus ns;
+      ns.direction = NavmsgStatus::Direction::kOutput;
+      multiplexer.LogOutputMessage(msg_out, ns);
       wxYield();
 
       auto msg =
@@ -863,10 +799,12 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       rtep.Printf(",%c%c", 0x0d, 0x0a);
       rte += rtep;
 
-      auto msg_out = std::make_shared<Nmea0183Msg>(std::string("GPRTC"),
-                                                   rte.ToStdString(), address);
+      auto msg_out =
+          std::make_shared<Nmea0183Msg>("GPRTC", rte.ToStdString(), address);
       drv_n0183->SendMessage(msg_out, address);
-      multiplexer.LogOutputMessage(rte, com_name.ToStdString(), false);
+      NavmsgStatus ns;
+      ns.direction = NavmsgStatus::Direction::kOutput;
+      multiplexer.LogOutputMessage(msg_out, ns);
 
       auto msg = wxString("-->GPS Port:") + com_name + " Sentence: " + rte;
       msg.Trim();
@@ -875,11 +813,13 @@ int SendRouteToGPS_N0183(Route* pr, const wxString& com_name,
       wxString term;
       term.Printf("$PFEC,GPxfr,CTL,E%c%c", 0x0d, 0x0a);
 
-      auto msg_outf = std::make_shared<Nmea0183Msg>(
-          std::string("GPRTC"), term.ToStdString(), address);
+      auto msg_outf =
+          std::make_shared<Nmea0183Msg>("GPRTC", term.ToStdString(), address);
       drv_n0183->SendMessage(msg_outf, address);
 
-      multiplexer.LogOutputMessage(term, com_name.ToStdString(), false);
+      ns = NavmsgStatus();
+      ns.direction = NavmsgStatus::Direction::kOutput;
+      multiplexer.LogOutputMessage(msg_outf, ns);
 
       msg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
       msg.Trim();
@@ -911,32 +851,35 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
                             Multiplexer& multiplexer, N0183DlgCtx dlg_ctx) {
   int ret_val = 0;
 
-  std::shared_ptr<AbstractCommDriver> target_driver;
   ConnectionParams params_save;
   bool b_restoreStream = false;
   bool btempStream = false;
 
   auto& registry = CommDriverRegistry::GetInstance();
 
-  int rv = PrepareOutputChannel(com_name,
-                          dlg_ctx,
-                          target_driver,
-                          params_save,
-                          b_restoreStream,
-                          btempStream);
+  PrepareOutputChannel(com_name, dlg_ctx, params_save, b_restoreStream,
+                       btempStream);
+
+  auto& target_driver =
+      FindDriver(registry.GetDrivers(), com_name.AfterFirst(':').ToStdString(),
+                 NavAddr::Bus::N0183);
 
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
   if (com_name.Upper().Matches("*GARMIN*"))  // Garmin USB Mode
   {
     auto drv_serial_n0183 =
-          std::dynamic_pointer_cast<CommDriverN0183Serial>(target_driver);
+        dynamic_cast<CommDriverN0183Serial*>(target_driver.get());
     if (drv_serial_n0183) {
-      drv_serial_n0183->Close();    // Fast close
-      registry.Deactivate(drv_serial_n0183);
+      drv_serial_n0183->Close();  // Fast close
+      auto& me = FindDriver(CommDriverRegistry::GetInstance().GetDrivers(),
+                            drv_serial_n0183->GetParams().GetStrippedDSPort(),
+                            drv_serial_n0183->GetParams().GetCommProtocol());
+
+      registry.Deactivate(me);
     }
 
-   {
+    {
       int v_init = Garmin_GPS_Init(wxString("usb:"));
       if (v_init < 0) {
         MESSAGE_LOG << "Garmin USB GPS could not be initialized, last error: "
@@ -952,7 +895,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 
     // Create a RoutePointList with one item
     RoutePointList rplist;
-    rplist.Append(prp);
+    rplist.push_back(prp);
 
     int ret1 = Garmin_GPS_SendWaypoints(wxString("usb:"), &rplist);
 
@@ -960,7 +903,7 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
       MESSAGE_LOG << "Error Sending Waypoint to Garmin USB, last error: "
                   << GetLastGarminError();
 
-      ret_val = ERR_GARMIN_GENERAL;
+      ret_val = ERR_GARMIN_SEND_MESSAGE;
     } else
       ret_val = 0;
 
@@ -973,16 +916,16 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
 #ifdef USE_GARMINHOST
   // Are we using Garmin Host mode for uploads?
   if (g_bGarminHostUpload) {
-
     //  Close and abandon the tentatively opened target_driver
-    auto drv_serial_n0183 =
-        std::dynamic_pointer_cast<CommDriverN0183Serial>(target_driver);
-    if (drv_serial_n0183) {
-      drv_serial_n0183->Close();    // Fast close
-      registry.Deactivate(drv_serial_n0183);
+    auto serial_n0183 =
+        dynamic_cast<CommDriverN0183Serial*>(target_driver.get());
+    if (serial_n0183) {
+      serial_n0183->Close();  // Fast close
+      auto& me = FindDriver(CommDriverRegistry::GetInstance().GetDrivers(),
+                            serial_n0183->GetParams().GetStrippedDSPort(),
+                            serial_n0183->GetParams().GetCommProtocol());
+      registry.Deactivate(me);
     }
-
-
     RoutePointList rplist;
 
     wxString short_com = com_name.Mid(7);
@@ -992,10 +935,10 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     int n_try = 5;
     int v_init = 0;
     while (n_try) {
-        v_init = Garmin_GPS_Init(short_com);
-        if (v_init >= 0) break;
-        n_try--;
-        wxMilliSleep(1000);
+      v_init = Garmin_GPS_Init(short_com);
+      if (v_init >= 0) break;
+      n_try--;
+      wxMilliSleep(1000);
     }
     if (v_init < 0) {
       MESSAGE_LOG << "Garmin GPS could not be initialized on port: " << com_name
@@ -1010,14 +953,14 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     }
 
     // Create a RoutePointList with one item
-    rplist.Append(prp);
+    rplist.push_back(prp);
 
     ret_val = Garmin_GPS_SendWaypoints(short_com, &rplist);
     if (ret_val != 1) {
       MESSAGE_LOG << "Error Sending Waypoint(s) to Garmin GPS on port, "
                   << com_name << " error code: " << ret_val
                   << ", last garmin error: " << GetLastGarminError();
-      ret_val = ERR_GARMIN_GENERAL;
+      ret_val = ERR_GARMIN_SEND_MESSAGE;
       goto ret_point;
     } else
       ret_val = 0;
@@ -1026,10 +969,14 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
   } else
 #endif  // USE_GARMINHOST
 
-  {     // Standard NMEA mode
-    auto drv_n0183 = std::dynamic_pointer_cast<CommDriverN0183>(target_driver);
+  {  // Standard NMEA mode
+    auto drv_n0183 = dynamic_cast<CommDriverN0183*>(target_driver.get());
+    if (!drv_n0183) {
+      ret_val = ERR_GPS_DRIVER_NOT_AVAILAIBLE;
+      goto ret_point;
+    }
 
-    auto address = std::make_shared<NavAddr0183>(drv_n0183->iface);
+    auto address = std::make_shared<NavAddr>();
     SENTENCE snt;
     NMEA0183 oNMEA0183(NmeaCtxFactory());
     oNMEA0183.TalkerID = "EC";
@@ -1071,10 +1018,12 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
     }
 
     auto msg_out = std::make_shared<Nmea0183Msg>(
-        std::string("ECWPL"), snt.Sentence.ToStdString(), address);
+        "ECWPL", snt.Sentence.ToStdString(), address);
     drv_n0183->SendMessage(msg_out, address);
 
-    multiplexer.LogOutputMessage(snt.Sentence, com_name, false);
+    NavmsgStatus ns;
+    ns.direction = NavmsgStatus::Direction::kOutput;
+    multiplexer.LogOutputMessage(msg_out, ns);
     auto msg = wxString("-->GPS Port:") + com_name + " Sentence: ";
     msg.Trim();
     wxLogMessage(msg);
@@ -1086,22 +1035,20 @@ int SendWaypointToGPS_N0183(RoutePoint* prp, const wxString& com_name,
       // driver->SendSentence(term);
       // LogOutputMessage(term, dstr->GetPort(), false);
 
-      auto msg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
-      msg.Trim();
-      wxLogMessage(msg);
+      auto logmsg = wxString("-->GPS Port:") + com_name + " Sentence: " + term;
+      logmsg.Trim();
+      wxLogMessage(logmsg);
     }
     dlg_ctx.set_value(100);
 
     wxMilliSleep(500);
-
 
     ret_val = 0;
   }
 
 ret_point:
   //  All finished with the temp port
-  if (btempStream)
-    registry.Deactivate(target_driver);
+  if (btempStream) registry.Deactivate(target_driver);
 
   if (b_restoreStream) {
     MakeCommDriver(&params_save);

@@ -39,101 +39,94 @@
 ** You can use it any way you like.
 */
 
-//IMPLEMENT_DYNAMIC( MWV, RESPONSE )
+// IMPLEMENT_DYNAMIC( MWV, RESPONSE )
 
-VWT::VWT()
-{
-   Mnemonic = _T("VWT");
-   Empty();
+VWT::VWT() {
+  Mnemonic = _T("VWT");
+  Empty();
 }
 
-VWT::~VWT()
-{
-   Mnemonic.Empty();
-   Empty();
+VWT::~VWT() {
+  Mnemonic.Empty();
+  Empty();
 }
 
-void VWT::Empty( void )
-{
-//   ASSERT_VALID( this );
+void VWT::Empty(void) {
+  //   ASSERT_VALID( this );
 
-    WindDirectionMagnitude = 0.0;
-    DirectionOfWind = LR_Unknown;
-    WindSpeedKnots = 0.0;
-    WindSpeedms = 0.0;
-    WindSpeedKmh = 0.0;
+  WindDirectionMagnitude = 0.0;
+  DirectionOfWind = LR_Unknown;
+  WindSpeedKnots = 0.0;
+  WindSpeedms = 0.0;
+  WindSpeedKmh = 0.0;
 }
 
-bool VWT::Parse( const SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool VWT::Parse(const SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-    ** VWT - Wind Speed and Angle
-    **
-    **        1   2 3 4   5 6   7   8
-    **        |   | | |   | |   |   |
-    ** $--VWT,x.x,L,x.x,N,x.x,M,x.x,K,*hh<CR><LF>
-    **
-    ** 1) Wind direction magnitude in degrees
-    ** 2) Wind direction Left/Right of bow
-    ** 3) Speed
-    ** 4) N = Knots
-    ** 5) Speed
-    ** 6) M = Meters Per Second
-    ** 7) Speed
-    ** 8) K = Kilometers Per Hour
-    ** 9) Checksum
+  /*
+   ** VWT - Wind Speed and Angle
+   **
+   **        1   2 3 4   5 6   7   8
+   **        |   | | |   | |   |   |
+   ** $--VWT,x.x,L,x.x,N,x.x,M,x.x,K,*hh<CR><LF>
+   **
+   ** 1) Wind direction magnitude in degrees
+   ** 2) Wind direction Left/Right of bow
+   ** 3) Speed
+   ** 4) N = Knots
+   ** 5) Speed
+   ** 6) M = Meters Per Second
+   ** 7) Speed
+   ** 8) K = Kilometers Per Hour
+   ** 9) Checksum
    */
 
-   /*
-   ** First we check the checksum...
-   */
+  /*
+  ** First we check the checksum...
+  */
 
-   if ( sentence.IsChecksumBad( 9 ) == TRUE )
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
+  if (sentence.IsChecksumBad(9) == TRUE) {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
 
-   WindDirectionMagnitude = sentence.Double( 1 );
-   DirectionOfWind = sentence.LeftOrRight( 2 );
-   WindSpeedKnots = sentence.Double( 3 );
-   WindSpeedms = sentence.Double( 5 );
-   WindSpeedKmh = sentence.Double( 7 );
+  WindDirectionMagnitude = sentence.Double(1);
+  DirectionOfWind = sentence.LeftOrRight(2);
+  WindSpeedKnots = sentence.Double(3);
+  WindSpeedms = sentence.Double(5);
+  WindSpeedKmh = sentence.Double(7);
 
-   return( TRUE );
+  return (TRUE);
 }
 
-bool VWT::Write( SENTENCE& sentence )
-{
-//   ASSERT_VALID( this );
+bool VWT::Write(SENTENCE& sentence) {
+  //   ASSERT_VALID( this );
 
-   /*
-   ** Let the parent do its thing
-   */
+  /*
+  ** Let the parent do its thing
+  */
 
-   RESPONSE::Write( sentence );
+  RESPONSE::Write(sentence);
 
-   sentence += WindDirectionMagnitude;
-   sentence += DirectionOfWind;
-   sentence += WindSpeedKnots;
-   sentence += WindSpeedms;
-   sentence += WindSpeedms;
-   sentence += WindSpeedKmh;
+  sentence += WindDirectionMagnitude;
+  sentence += DirectionOfWind;
+  sentence += WindSpeedKnots;
+  sentence += WindSpeedms;
+  sentence += WindSpeedms;
+  sentence += WindSpeedKmh;
 
-   return( TRUE );
+  return (TRUE);
 }
 
-const VWT& VWT::operator = ( const VWT& source )
-{
-//   ASSERT_VALID( this );
+const VWT& VWT::operator=(const VWT& source) {
+  //   ASSERT_VALID( this );
 
-   WindDirectionMagnitude   = source.WindDirectionMagnitude;
-   DirectionOfWind          = source.DirectionOfWind;
-   WindSpeedKnots           = source.WindSpeedKnots;
-   WindSpeedms              = source.WindSpeedms;
-   WindSpeedKmh             = source.WindSpeedKmh;
+  WindDirectionMagnitude = source.WindDirectionMagnitude;
+  DirectionOfWind = source.DirectionOfWind;
+  WindSpeedKnots = source.WindSpeedKnots;
+  WindSpeedms = source.WindSpeedms;
+  WindSpeedKmh = source.WindSpeedKmh;
 
-   return( *this );
+  return (*this);
 }

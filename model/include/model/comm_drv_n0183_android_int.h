@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2023 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2023 by David Register                                  *
+ *   Copyright (C) 2023 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Android internal nmea0183 driver
+ */
 
 #ifndef _COMMDRIVERN0183ANDROIDINT_H
 #define _COMMDRIVERN0183ANDROIDINT_H
@@ -33,10 +32,11 @@
 
 #include "model/comm_drv_n0183.h"
 #include "model/conn_params.h"
+#include "model/comm_drv_stats.h"
 
 class CommDriverN0183AndroidIntEvent : public wxEvent {
 public:
-  CommDriverN0183AndroidIntEvent( wxEventType commandType, int id);
+  CommDriverN0183AndroidIntEvent(wxEventType commandType, int id);
   ~CommDriverN0183AndroidIntEvent();
 
   // accessors
@@ -45,29 +45,31 @@ public:
 
   // required for sending with wxPostEvent()
   wxEvent* Clone() const;
+
 private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_INT, CommDriverN0183AndroidIntEvent);
+wxDECLARE_EVENT(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
+                CommDriverN0183AndroidIntEvent);
 
-
-class CommDriverN0183AndroidInt : public CommDriverN0183, public wxEvtHandler {
+class CommDriverN0183AndroidInt : public CommDriverN0183,
+                                  public wxEvtHandler,
+                                  public DriverStatsProvider {
 public:
   CommDriverN0183AndroidInt(const ConnectionParams* params, DriverListener& l);
 
   virtual ~CommDriverN0183AndroidInt();
 
-  /** Register driver and possibly do other post-ctor steps. */
-  void Activate() override;
-
   bool Open();
   void Close();
 
-  ConnectionParams GetParams() const { return m_params; }
+  const ConnectionParams& GetParams() const override { return m_params; }
 
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
+
+  DriverStats GetDriverStats() const override { return m_driver_stats; }
 
 private:
   bool m_bok;
@@ -75,6 +77,8 @@ private:
   std::string m_BaudRate;
   int m_handshake;
 
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 
   ConnectionParams m_params;
   DriverListener& m_listener;

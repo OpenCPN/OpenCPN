@@ -15,7 +15,27 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
-
+/**
+ * \file
+ * Unified Compressed File Access System.
+ *
+ * Provides a consistent interface for reading both compressed and uncompressed
+ * GRIB files with support for:
+ * - Uncompressed files
+ * - GZIP compression (.gz)
+ * - BZIP2 compression (.bz2)
+ *
+ * Features:
+ * - Transparent compression detection
+ * - Unified file operations (open, read, seek, tell)
+ * - Large file support
+ * - Buffered reading for performance
+ * - Error handling and validation
+ *
+ * This system allows the GRIB plugin to work seamlessly with compressed
+ * weather data files while handling the complexities of different compression
+ * formats internally.
+ */
 #ifndef ZU_FILE_H
 #define ZU_FILE_H
 

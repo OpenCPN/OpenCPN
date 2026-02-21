@@ -799,7 +799,7 @@ int wxJSONWriter::WriteStringValue(wxOutputStream& os, const wxString& str) {
         }
       }
     }
-  }               // end for
+  }  // end for
   os.PutC('\"');  // close quotes
   return 0;
 }

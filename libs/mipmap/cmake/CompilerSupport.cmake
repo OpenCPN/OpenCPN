@@ -12,7 +12,7 @@ if(HAVE_ARM_NEON)
 endif()
 
 #set(CMAKE_REQUIRED_INCLUDES /usr/lib/gcc/x86_64-redhat-linux/13/include/)
-set(CMAKE_REQUIRED_FLAGS "-march=native")
+#set(CMAKE_REQUIRED_FLAGS "-march=native")
 
 include(CheckCSourceCompiles)
 check_c_source_compiles(

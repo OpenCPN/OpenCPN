@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Plugin blacklist for plugins which can or should not be loaded
- * Author:   Alec Leamas
- *
- ***************************************************************************
  *   Copyright (C) 2022 by Alec Leamas                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Plugin blacklist for plugins which can or should not be loaded
+ */
 
 #ifndef PLUGIN_BLACKLIST_H
 #define PLUGIN_BLACKLIST_H
@@ -39,10 +37,10 @@
 #endif
 
 typedef enum class plug_status {
-  unblocked,   /** Not blocked for any reason */
-  unloadable,  /** Tried with load error */
-  hard,        /** Hard block from code or configuration */
-  soft         /** Soft block: load with a warning. */
+  unblocked,  /** Not blocked for any reason */
+  unloadable, /** Tried with load error */
+  hard,       /** Hard block from code or configuration */
+  soft        /** Soft block: load with a warning. */
 } plug_status;
 
 typedef struct plug_data {
@@ -51,10 +49,9 @@ typedef struct plug_data {
   int minor;
 
   plug_data(std::string n, int _major, int _minor)
-    : name(n), major(_major), minor(_minor) {}
+      : name(n), major(_major), minor(_minor) {}
 
 } plug_data;
-
 
 /**
  * Plugins could be blacklisted in runtime if they are unloadable or in
@@ -70,11 +67,11 @@ public:
   virtual ~AbstractBlacklist() = default;
 
   /** Return status for given official plugin name and version. */
-  virtual plug_status get_status(const std::string& name,
-                                 int _major, int _minor) = 0;
+  virtual plug_status get_status(const std::string& name, int _major,
+                                 int _minor) = 0;
 
   /** Return status for given official plugin name and version. */
-  virtual plug_status get_status(const plug_data pd)  = 0;
+  virtual plug_status get_status(const plug_data pd) = 0;
 
   /** Best effort attempt to get data for a library file. */
   virtual plug_data get_library_data(const std::string& library_file) = 0;
@@ -89,8 +86,8 @@ public:
    *  Given plugin name and version mark it as unloadable.
    *  @return true if plugin was already marked, else false.
    **/
-  virtual bool mark_unloadable(const std::string& name,
-		               int major, int minor) = 0;
+  virtual bool mark_unloadable(const std::string& name, int major,
+                               int minor) = 0;
 
   /** Return true iff plugin (a path) is loadable. */
   virtual bool is_loadable(const std::string path) = 0;

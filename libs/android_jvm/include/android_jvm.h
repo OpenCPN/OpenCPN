@@ -17,7 +17,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-/** \file android_jvm.h   Singleton Android Java JVM interface */
+/**
+ *  \file
+ *  Singleton Android Java JVM interface
+ */
 
 #ifndef ANDROID_JVM_H
 #define ANDROID_JVM_H
@@ -51,6 +54,7 @@ wxString callActivityMethod_s4s(const char *method, wxString parm1,
 wxString callActivityMethod_s2s2i(const char *method, wxString parm1,
                                   wxString parm2, int parm3, int parm4);
 wxString callActivityMethod_ssi(const char *method, wxString parm1, int parm2);
+wxString callActivityMethod_ssl(const char *method, wxString parm1, long parm2);
 
 void androidTerminate();
 

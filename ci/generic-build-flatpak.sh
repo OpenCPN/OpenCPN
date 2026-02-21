@@ -37,6 +37,13 @@ cd flatpak
 sed -i -e '/url:/s|\.\.|https://github.com/OpenCPN/OpenCPN.git|' \
     -e "/BUILD_NUMBER/s/0/$BUILD_NUMBER/" \
     org.opencpn.OpenCPN.yaml
+ed org.opencpn.OpenCPN.yaml << EOF
+/DOCPN_FLATPAK=ON/
+i
+          - -DOCPN_BUILD_SAMPLE=ON \\
+.
+wq
+EOF
 
 test -d ../build || mkdir ../build
 cd ../build

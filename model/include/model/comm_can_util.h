@@ -1,11 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Low-level utility functions for socketcan support.
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2024 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2024 by David Register                                  *
+ *   Copyright (C) 2024 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Low-level socketcan utility functions.
+ */
 
 #ifndef _COMMCANUTIL_H
 #define _COMMCANUTIL_H
@@ -29,42 +28,41 @@
 #include <memory>
 #include <string>
 
-#include <wx/datetime.h>
-
-#if !defined(__WXMSW__) && !defined(__WXMAC__)
+#if !defined(_WIN32) && !defined(__APPLE__)
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #endif
+
+#include <wx/datetime.h>
 
 #ifdef __WXMSW__
 #define CAN_MAX_DLEN 8
 
 struct can_frame {
-  uint32_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
-  uint8_t    can_dlc; /* frame payload length in byte (0 .. 8) */
-  uint8_t    data[CAN_MAX_DLEN];
+  uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+  uint8_t can_dlc; /* frame payload length in byte (0 .. 8) */
+  uint8_t data[CAN_MAX_DLEN];
 };
 #endif
 
-#if defined (__WXMAC__)
+#if defined(__WXMAC__)
 #define CAN_MAX_DLEN 8
 
 struct can_frame {
-  uint32_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
-  uint8_t    can_dlc; /* frame payload length in byte (0 .. 8) */
-  uint8_t    data[CAN_MAX_DLEN];
+  uint32_t can_id; /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+  uint8_t can_dlc; /* frame payload length in byte (0 .. 8) */
+  uint8_t data[CAN_MAX_DLEN];
 };
 #endif
 
 unsigned long BuildCanID(int priority, int source, int destination, int pgn);
 bool IsFastMessagePGN(unsigned pgn);
 
-
 /// CAN v2.0 29 bit header as used by NMEA 2000
 class CanHeader {
 public:
   CanHeader();
-    /** Construct a CanHeader by parsing a frame */
+  /** Construct a CanHeader by parsing a frame */
   CanHeader(can_frame frame);
 
   /** Return true if header reflects a multipart fast message. */
@@ -83,8 +81,9 @@ public:
   public:
     Entry()
         : time_arrived(wxDateTime::Now()),
-          sid(0), expected_length(0), cursor(0) {}
-
+          sid(0),
+          expected_length(0),
+          cursor(0) {}
 
     wxDateTime time_arrived;  ///< time of last fragment.
 
@@ -100,8 +99,7 @@ public:
     std::vector<unsigned char> data;  ///< Received data
   };
 
-  FastMessageMap() : dropped_frames(0),
-                     last_gc_run(wxDateTime::Now()) {}
+  FastMessageMap() : dropped_frames(0), last_gc_run(wxDateTime::Now()) {}
 
   Entry operator[](int i) const { return entries[i]; }  /// Getter
   Entry& operator[](int i) { return entries[i]; }       /// Setter
@@ -133,6 +131,5 @@ private:
   wxDateTime last_gc_run;
   wxDateTime dropped_frame_time;
 };
-
 
 #endif  // guard

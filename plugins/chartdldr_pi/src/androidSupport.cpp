@@ -369,13 +369,9 @@ void androidHideBusyIcon() {
   b_androidBusyShown = false;
 }
 
-void androidEnableRotation(void) {
-  callActivityMethod_vs("EnableRotation");
-}
+void androidEnableRotation(void) { callActivityMethod_vs("EnableRotation"); }
 
-void androidDisableRotation(void) {
-  callActivityMethod_vs("DisableRotation");
-}
+void androidDisableRotation(void) { callActivityMethod_vs("DisableRotation"); }
 
 int androidGetSDKVersion() {
   wxString deviceInfo = callActivityMethod_vs("getDeviceInfo");

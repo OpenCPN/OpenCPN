@@ -1,10 +1,5 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Framework for Undo features
- * Author:   Jesper Weissglas
- *
- ***************************************************************************
+/***************************************************************************
+ *   Copyright (C) 2012 Jesper Weissglas                                   *
  *   Copyright (C) 2012 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,44 +13,25 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
+ * Framework for Undo features
  */
 
 #ifndef UNDO_H
 #define UNDO_H
 
+#include <wx/string.h>
+
 #include <vector>
 #include <deque>
 
-class ChartCanvas;
-
-enum UndoType {
-  Undo_CreateWaypoint,
-  Undo_DeleteWaypoint,
-  Undo_AppendWaypoint,
-  Undo_MoveWaypoint
-};
-
-enum UndoBeforePointerType { Undo_IsOrphanded, Undo_NeedsCopy, Undo_HasParent };
-
-typedef void* UndoItemPointer;
-
-class UndoAction {
-public:
-  ~UndoAction();
-  wxString Description();
-
-  UndoType type;
-  std::vector<UndoItemPointer> before;
-  std::vector<UndoBeforePointerType> beforeType;
-  std::vector<UndoItemPointer> after;
-  std::vector<UndoItemPointer> selectable;
-};
+#include "undo_defs.h"
+#include "chcanv.h"
 
 class Undo {
 public:

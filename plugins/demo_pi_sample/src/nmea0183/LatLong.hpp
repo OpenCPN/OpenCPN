@@ -29,8 +29,7 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
-#if ! defined( LATLONG_CLASS_HEADER )
+#if !defined(LATLONG_CLASS_HEADER)
 #define LATLONG_CLASS_HEADER
 
 /*
@@ -43,100 +42,95 @@
 
 class SENTENCE;
 
-class LATITUDE
-{
+class LATITUDE {
+public:
+  LATITUDE();
+  virtual ~LATITUDE();
 
-   public:
+  /*
+  ** Data
+  */
 
-      LATITUDE();
-      virtual ~LATITUDE();
+  double Latitude;
 
-      /*
-      ** Data
-      */
+  NORTHSOUTH Northing;
 
-      double Latitude;
+  /*
+  ** Methods
+  */
 
-      NORTHSOUTH Northing;
+  virtual void Empty(void);
+  virtual bool IsDataValid(void);
+  virtual void Parse(int PositionFieldNumber, int NorthingFieldNumber,
+                     const SENTENCE& LineToParse);
+  virtual void Set(double Position, const wxString& Northing);
+  virtual void Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool IsDataValid( void );
-      virtual void Parse( int PositionFieldNumber, int NorthingFieldNumber, const SENTENCE& LineToParse );
-      virtual void Set( double Position, const wxString& Northing );
-      virtual void Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const LATITUDE& operator = ( const LATITUDE& source );
+  virtual const LATITUDE& operator=(const LATITUDE& source);
 };
 
-class LONGITUDE
-{
+class LONGITUDE {
+public:
+  LONGITUDE();
+  virtual ~LONGITUDE();
 
-   public:
+  /*
+  ** Data
+  */
 
-      LONGITUDE();
-      virtual ~LONGITUDE();
+  double Longitude;
 
-      /*
-      ** Data
-      */
+  EASTWEST Easting;
 
-      double Longitude;
+  /*
+  ** Methods
+  */
 
-      EASTWEST Easting;
+  virtual void Empty(void);
+  virtual bool IsDataValid(void);
+  virtual void Parse(int PositionFieldNumber, int EastingFieldNumber,
+                     const SENTENCE& LineToParse);
+  virtual void Set(double Position, const wxString& Easting);
+  virtual void Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool IsDataValid( void );
-      virtual void Parse( int PositionFieldNumber, int EastingFieldNumber, const SENTENCE& LineToParse );
-      virtual void Set( double Position, const wxString& Easting );
-      virtual void Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const LONGITUDE& operator = ( const LONGITUDE& source );
+  virtual const LONGITUDE& operator=(const LONGITUDE& source);
 };
 
-class LATLONG
-{
+class LATLONG {
+public:
+  LATLONG();
+  virtual ~LATLONG();
 
-   public:
+  /*
+  ** Data
+  */
 
-      LATLONG();
-      virtual ~LATLONG();
+  LATITUDE Latitude;
+  LONGITUDE Longitude;
 
-      /*
-      ** Data
-      */
+  /*
+  ** Methods
+  */
 
-      LATITUDE  Latitude;
-      LONGITUDE Longitude;
+  virtual void Empty(void);
+  virtual bool Parse(int LatitudePostionFieldNumber, int NorthingFieldNumber,
+                     int LongitudePositionFieldNumber, int EastingFieldNumber,
+                     const SENTENCE& LineToParse);
+  virtual void Write(SENTENCE& sentence);
 
-      /*
-      ** Methods
-      */
+  /*
+  ** Operators
+  */
 
-      virtual void Empty( void );
-      virtual bool Parse( int LatitudePostionFieldNumber, int NorthingFieldNumber, int LongitudePositionFieldNumber, int EastingFieldNumber, const SENTENCE& LineToParse );
-      virtual void Write( SENTENCE& sentence );
-
-      /*
-      ** Operators
-      */
-
-      virtual const LATLONG& operator = ( const LATLONG& source );
+  virtual const LATLONG& operator=(const LATLONG& source);
 };
 
-#endif // LATLONG_CLASS_HEADER
+#endif  // LATLONG_CLASS_HEADER

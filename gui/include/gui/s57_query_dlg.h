@@ -1,0 +1,119 @@
+/***************************************************************************
+ *   Copyright (C) 2013 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * S57 object query result window
+ */
+
+#ifndef S57QUERYDIALOG_H_
+#define S57QUERYDIALOG_H_
+
+#include <wx/button.h>
+#include <wx/frame.h>
+#include <wx/html/htmlwin.h>
+#include <wx/string.h>
+
+class S57QueryDialog;                         // forward
+extern S57QueryDialog* g_pObjectQueryDialog;  ///< Global instance
+
+/**
+ * Dialog for displaying query results of S57 objects. Creates a dialog window
+ * to display detailed information about queried S57 objects, including an HTML
+ * view of the object's properties.
+ */
+class S57QueryDialog : public wxFrame {
+  DECLARE_CLASS(S57QueryDialog)
+  DECLARE_EVENT_TABLE()
+public:
+  /// Constructors
+
+  S57QueryDialog();
+  S57QueryDialog(wxWindow* parent, wxWindowID id = wxID_ANY,
+                 const wxString& caption = _("Object Query"),
+                 const wxPoint& pos = wxDefaultPosition,
+                 const wxSize& size = wxDefaultSize,
+                 long style = wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU);
+
+  ~S57QueryDialog();
+  void Init();
+
+  bool Create(wxWindow* parent, wxWindowID id = wxID_ANY,
+              const wxString& caption = _("Object Query"),
+              const wxPoint& pos = wxDefaultPosition,
+              const wxSize& size = wxDefaultSize,
+              long style = wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU);
+
+  void SetColorScheme();
+
+  void CreateControls();
+  void OnSize(wxSizeEvent& event);
+  void RecalculateSize();
+
+  void OnClose(wxCloseEvent& event);
+  void OnHtmlLinkClicked(wxHtmlLinkEvent& event);
+
+  void OnOKClick(wxCommandEvent& event) { Close(); }
+  void OnKey(wxKeyEvent& ke);
+
+  //    Overrides
+  void OnPaint(wxPaintEvent& event);
+
+  void SetHTMLPage(wxString& page);
+
+  //    Data
+  wxHtmlWindow* m_phtml;
+  wxSize m_createsize;
+
+  wxButton* m_btnOK;
+};
+
+/**
+ * Dialog for displaying extra query information for S57 objects.
+ * Extends S57QueryDialog to provide additional query information about S57
+ * objects.
+ */
+class S57ExtraQueryInfoDlg : public S57QueryDialog {
+  DECLARE_CLASS(S57ExtraQueryInfoDlg)
+  DECLARE_EVENT_TABLE()
+public:
+  /// Constructors
+
+  S57ExtraQueryInfoDlg();
+  S57ExtraQueryInfoDlg(wxWindow* parent, wxWindowID id = wxID_ANY,
+                       const wxString& caption = _("Extra Object Info"),
+                       const wxPoint& pos = wxDefaultPosition,
+                       const wxSize& size = wxDefaultSize,
+                       long style = wxCAPTION | wxRESIZE_BORDER |
+                                    wxSYSTEM_MENU);
+  bool Create(wxWindow* parent, wxWindowID id = wxID_ANY,
+              const wxString& caption = _("Extra Object Info"),
+              const wxPoint& pos = wxDefaultPosition,
+              const wxSize& size = wxDefaultSize,
+              long style = wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU);
+
+  ~S57ExtraQueryInfoDlg();
+  void OnClose(wxCloseEvent& event);
+  void OnSize(wxSizeEvent& event);
+  void RecalculateSize();
+
+private:
+  wxButton* m_btnOK;
+};
+
+#endif

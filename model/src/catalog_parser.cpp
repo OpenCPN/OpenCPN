@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement catalog_parser.h -- Datatypes and methods to parse
+ * ocpn-plugins.xml XML data, either complete catalog or a single plugin.
  */
 
 #include <sstream>
@@ -40,7 +40,6 @@ static void add_node(pugi::xml_node root, const std::string& name,
   auto child = root.append_child(name.c_str());
   child.append_child(pugi::node_pcdata).set_value(value.c_str());
 }
-
 
 std::string PluginMetadata::to_string() {
   pugi::xml_document doc;
@@ -70,7 +69,7 @@ std::string PluginMetadata::to_string() {
 }
 
 static void ParseValue(pugi::xml_node node, const std::string& name,
-                        std::string& value) {
+                       std::string& value) {
   auto child = node.child(name.c_str());
   if (child) value = ocpn::trim(child.first_child().value());
 }
@@ -79,31 +78,30 @@ static void ParseBool(pugi::xml_node node, const std::string& name,
                       bool& value) {
   auto child = node.child(name.c_str());
   if (child) {
-    auto text =  ocpn::trim(child.first_child().value());
+    auto text = ocpn::trim(child.first_child().value());
     value = text == "yes" || text == "true";
   }
 }
 
 bool ParsePlugin(pugi::xml_node root, PluginMetadata& plugin) {
-    ParseValue(root, "name", plugin.name);
-    ParseValue(root, "version", plugin.version);
-    ParseValue(root, "release", plugin.release);
-    ParseValue(root, "summary", plugin.summary);
-    ParseValue(root, "api-version", plugin.api_version);
-    ParseValue(root, "author", plugin.author);
-    ParseValue(root, "description", plugin.description);
-    ParseValue(root, "source", plugin.source);
-    ParseValue(root, "tarball-url", plugin.tarball_url);
-    ParseValue(root, "info-url", plugin.info_url);
-    ParseValue(root, "target", plugin.target);
-    ParseValue(root, "target-version", plugin.target_version);
-    ParseValue(root, "target-arch", plugin.target_arch);
-    ParseValue(root, "target-checksum", plugin.checksum);
-    ParseBool(root, "open-source", plugin.openSource);
-    ParseBool(root, "is-imported", plugin.is_imported);
-    return root.child("name") ? true : false;
+  ParseValue(root, "name", plugin.name);
+  ParseValue(root, "version", plugin.version);
+  ParseValue(root, "release", plugin.release);
+  ParseValue(root, "summary", plugin.summary);
+  ParseValue(root, "api-version", plugin.api_version);
+  ParseValue(root, "author", plugin.author);
+  ParseValue(root, "description", plugin.description);
+  ParseValue(root, "source", plugin.source);
+  ParseValue(root, "tarball-url", plugin.tarball_url);
+  ParseValue(root, "info-url", plugin.info_url);
+  ParseValue(root, "target", plugin.target);
+  ParseValue(root, "target-version", plugin.target_version);
+  ParseValue(root, "target-arch", plugin.target_arch);
+  ParseValue(root, "target-checksum", plugin.checksum);
+  ParseBool(root, "open-source", plugin.openSource);
+  ParseBool(root, "is-imported", plugin.is_imported);
+  return root.child("name") ? true : false;
 }
-
 
 bool ParsePlugin(const std::string& xml, PluginMetadata& plugin) {
   pugi::xml_document doc;
@@ -116,9 +114,7 @@ bool ParsePlugin(const std::string& xml, PluginMetadata& plugin) {
   return ParsePlugin(doc.child("plugin"), plugin);
 }
 
-
 bool ParseCatalog(const std::string xml, CatalogCtx* ctx) {
-  bool ok = true;
   PluginMetadata* plugin = 0;
 
   pugi::xml_document doc;

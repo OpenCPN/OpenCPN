@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #endif
 
+#undef bzero
 #define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
 
 // size of query/publish hashes
@@ -168,7 +169,7 @@ struct cached *_c_next(mdnsd d, struct cached *c, char *host, int type)
     if(c == 0) c = d->cache[_namehash(host) % LPRIME];
     else c = c->next;
     for(;c != 0; c = c->next)
-        if((type == c->rr.type || type == 255) && strcmp(c->rr.name, host) == 0)
+        if((type == c->rr.type || type == 255) && strcmp((const char *)c->rr.name, host) == 0)
             return c;
     return 0;
 }
@@ -177,7 +178,7 @@ mdnsdr _r_next(mdnsd d, mdnsdr r, char *host, int type)
     if(r == 0) r = d->published[_namehash(host) % SPRIME];
     else r = r->next;
     for(;r != 0; r = r->next)
-        if(type == r->rr.type && strcmp(r->rr.name, host) == 0)
+        if(type == r->rr.type && strcmp((const char *)r->rr.name, host) == 0)
             return r;
     return 0;
 }
@@ -186,7 +187,7 @@ int _rr_len(mdnsda rr)
 {
     int len = 12; // name is always compressed (dup of earlier), plus normal stuff
     if(rr->rdata) len += rr->rdlen;
-    if(rr->rdname) len += strlen(rr->rdname); // worst case
+    if(rr->rdname) len += strlen((const char *)rr->rdname); // worst case
     if(rr->ip) len += 4;
     if(rr->type == QTYPE_PTR) len += 6; // srv record stuff
     return len;
@@ -194,9 +195,9 @@ int _rr_len(mdnsda rr)
 
 int _a_match(struct resource *r, mdnsda a)
 { // compares new rdata with known a, painfully
-    if(strcmp(r->name,a->name) || r->type != a->type) return 0;
-    if(r->type == QTYPE_SRV && !strcmp(r->known.srv.name,a->rdname) && a->srv.port == r->known.srv.port && a->srv.weight == r->known.srv.weight && a->srv.priority == r->known.srv.priority) return 1;
-    if((r->type == QTYPE_PTR || r->type == QTYPE_NS || r->type == QTYPE_CNAME) && !strcmp(a->rdname,r->known.ns.name)) return 1;
+    if(strcmp((const char *)r->name,(const char *)a->name) || r->type != a->type) return 0;
+    if(r->type == QTYPE_SRV && !strcmp((const char *)r->known.srv.name,(const char *)a->rdname) && a->srv.port == r->known.srv.port && a->srv.weight == r->known.srv.weight && a->srv.priority == r->known.srv.priority) return 1;
+    if((r->type == QTYPE_PTR || r->type == QTYPE_NS || r->type == QTYPE_CNAME) && !strcmp((const char *)a->rdname,(const char *)r->known.ns.name)) return 1;
     if(r->rdlength == a->rdlen && !memcmp(r->rdata,a->rdata,r->rdlength)) return 1;
     return 0;
 }
@@ -271,7 +272,7 @@ void _q_reset(mdnsd d, struct query *q)
     struct cached *cur = 0;
     q->nexttry = 0;
     q->tries = 0;
-    while(cur = _c_next(d,cur,q->name,q->type))
+    while((cur = _c_next(d,cur,q->name,q->type)))
         if(q->nexttry == 0 || cur->rr.ttl - 7 < q->nexttry) q->nexttry = cur->rr.ttl - 7;
     if(q->nexttry != 0 && q->nexttry < d->checkqlist) d->checkqlist = q->nexttry;
 }
@@ -281,7 +282,7 @@ void _q_done(mdnsd d, struct query *q)
     struct cached *c = 0;
     struct query *cur;
     int i = _namehash(q->name) % LPRIME;
-    while(c = _c_next(d,c,q->name,q->type)) c->q = 0;
+    while((c = _c_next(d,c,q->name,q->type))) c->q = 0;
     if(d->qlist == q) d->qlist = q->list;
     else {
         for(cur=d->qlist;cur->list != q;cur = cur->list);
@@ -299,7 +300,7 @@ void _q_done(mdnsd d, struct query *q)
 void _r_done(mdnsd d, mdnsdr r)
 { // buh-bye, remove from hash and free
     mdnsdr cur = 0;
-    int i = _namehash(r->rr.name) % SPRIME;
+    int i = _namehash((const char *)r->rr.name) % SPRIME;
     if(d->published[i] == r) d->published[i] = r->next;
     else {
         for(cur=d->published[i];cur && cur->next != r;cur = cur->next);
@@ -319,7 +320,7 @@ void _q_answer(mdnsd d, struct cached *c)
 
 void _conflict(mdnsd d, mdnsdr r)
 {
-    r->conflict(r->rr.name,r->rr.type,r->arg);
+    r->conflict((char *)r->rr.name,r->rr.type,r->arg);
     mdnsd_done(d,r);
 }
 
@@ -357,17 +358,17 @@ void _gc(mdnsd d)
 void _cache(mdnsd d, struct resource *r)
 {
     struct cached *c = 0;
-    int i = _namehash(r->name) % LPRIME;
+    int i = _namehash((const char *)r->name) % LPRIME;
 
     if(r->rr_class == 32768 + d->class)
     { // cache flush
-        while(c = _c_next(d,c,r->name,r->type)) c->rr.ttl = 0;
+        while((c = _c_next(d,c,(char *)r->name,r->type))) c->rr.ttl = 0;
         _c_expire(d,&d->cache[i]);
     }
 
     if(r->ttl == 0)
     { // process deletes
-        while(c = _c_next(d,c,r->name,r->type))
+        while((c = _c_next(d,c,(char *)r->name,r->type)))
             if(_a_match(r,&c->rr))
 	      c->rr.ttl = 0;
 
@@ -378,7 +379,7 @@ void _cache(mdnsd d, struct resource *r)
 
     c = (struct cached *)malloc(sizeof(struct cached));
     bzero(c,sizeof(struct cached));
-    c->rr.name = strdup(r->name);
+    c->rr.name = (unsigned char *)strdup((const char *)r->name);
     c->rr.type = r->type;
     c->rr.ttl = d->now.tv_sec + (r->ttl / 2) + 8; // XXX hack for now, BAD SPEC, start retrying just after half-waypoint, then expire
     c->rr.rdlen = r->rdlength;
@@ -392,10 +393,10 @@ void _cache(mdnsd d, struct resource *r)
     case QTYPE_NS:
     case QTYPE_CNAME:
     case QTYPE_PTR:
-        c->rr.rdname = strdup(r->known.ns.name);
+        c->rr.rdname = (unsigned char *)strdup((const char *)r->known.ns.name);
         break;
     case QTYPE_SRV:
-        c->rr.rdname = strdup(r->known.srv.name);
+        c->rr.rdname = (unsigned char *)strdup((const char *)r->known.srv.name);
         c->rr.srv.port = r->known.srv.port;
         c->rr.srv.weight = r->known.srv.weight;
         c->rr.srv.priority = r->known.srv.priority;
@@ -403,7 +404,7 @@ void _cache(mdnsd d, struct resource *r)
     }
     c->next = d->cache[i];
     d->cache[i] = c;
-    if(c->q = _q_next(d, 0, r->name, r->type))
+    if((c->q = _q_next(d, 0, (char *)r->name, r->type)))
         _q_answer(d,c);
 }
 
@@ -493,25 +494,25 @@ void mdnsd_in(mdnsd d, struct message *m, unsigned long int ip, unsigned short i
     {
         for(i=0;i<m->qdcount;i++)
         { // process each query
-            if(m->qd[i].rr_class != d->class || (r = _r_next(d,0,m->qd[i].name,m->qd[i].type)) == 0) continue;
+            if(m->qd[i].rr_class != d->class || (r = _r_next(d,0,(char *)m->qd[i].name,m->qd[i].type)) == 0) continue;
 
             // send the matching unicast reply
             if(port != 5353) _u_push(d,r,m->id,ip,port);
 
-            for(;r != 0; r = _r_next(d,r,m->qd[i].name,m->qd[i].type))
+            for(;r != 0; r = _r_next(d,r,(char *)m->qd[i].name,m->qd[i].type))
             { // check all of our potential answers
                 if(r->unique && r->unique < 5)
                 { // probing state, check for conflicts
                     for(j=0;j<m->nscount;j++)
                     { // check all to-be answers against our own
-                        if(m->qd[i].type != m->an[j].type || strcmp(m->qd[i].name,m->an[j].name)) continue;
+                        if(m->qd[i].type != m->an[j].type || strcmp((const char *)m->qd[i].name,(const char *)m->an[j].name)) continue;
                         if(!_a_match(&m->an[j],&r->rr)) _conflict(d,r); // this answer isn't ours, conflict!
                     }
                     continue;
                 }
                 for(j=0;j<m->ancount;j++)
                 { // check the known answers for this question
-                    if(m->qd[i].type != m->an[j].type || strcmp(m->qd[i].name,m->an[j].name)) continue;
+                    if(m->qd[i].type != m->an[j].type || strcmp((const char *)m->qd[i].name,(const char *)m->an[j].name)) continue;
                     if(_a_match(&m->an[j],&r->rr)) break; // they already have this answer
                 }
                 if(j == m->ancount) _r_send(d,r);
@@ -522,7 +523,7 @@ void mdnsd_in(mdnsd d, struct message *m, unsigned long int ip, unsigned short i
 
     for(i=0;i<m->ancount;i++)
     { // process each answer, check for a conflict, and cache
-        if((r = _r_next(d,0,m->an[i].name,m->an[i].type)) != 0 && r->unique && _a_match(&m->an[i],&r->rr) == 0) _conflict(d,r);
+        if((r = _r_next(d,0,(char *)m->an[i].name,m->an[i].type)) != 0 && r->unique && _a_match(&m->an[i],&r->rr) == 0) _conflict(d,r);
         _cache(d,&m->an[i]);
     }
 }
@@ -647,7 +648,7 @@ int mdnsd_out(mdnsd d, struct message *m, unsigned long int *ip, unsigned short 
         // ask questions first, track nextbest time
         for(q = d->qlist; q != 0; q = q->list)
             if(q->nexttry > 0 && q->nexttry <= d->now.tv_sec && q->tries < 3)
-                message_qd(m,q->name,q->type,d->class);
+                message_qd(m,(unsigned char *)q->name,q->type,d->class);
             else if(q->nexttry > 0 && (nextbest == 0 || q->nexttry < nextbest))
                 nextbest = q->nexttry;
 
@@ -669,7 +670,7 @@ int mdnsd_out(mdnsd d, struct message *m, unsigned long int *ip, unsigned short 
             c = 0;
             while((c = _c_next(d,c,q->name,q->type)) != 0 && c->rr.ttl > d->now.tv_sec + 8 && message_packet_len(m) + _rr_len(&c->rr) < d->frame)
             {
-                message_an(m,q->name,q->type,d->class,c->rr.ttl - d->now.tv_sec);
+                message_an(m,(unsigned char *)q->name,q->type,d->class,c->rr.ttl - d->now.tv_sec);
                 _a_copy(m,&c->rr);
             }
         }
@@ -738,7 +739,7 @@ void mdnsd_query(mdnsd d, char *host, int type, int (*answer)(mdnsda a, void *ar
         q->next = d->queries[i];
         q->list = d->qlist;
         d->qlist = d->queries[i] = q;
-        while(cur = _c_next(d,cur,q->name,q->type))
+        while((cur = _c_next(d,cur,q->name,q->type)))
             cur->q = q; // any cached entries should be associated
         _q_reset(d,q);
         q->nexttry = d->checkqlist = d->now.tv_sec; // new questin, immediately send out
@@ -763,7 +764,7 @@ mdnsdr mdnsd_shared(mdnsd d, char *host, int type, long int ttl)
     mdnsdr r;
     r = (mdnsdr)malloc(sizeof(struct mdnsdr_struct));
     bzero(r,sizeof(struct mdnsdr_struct));
-    r->rr.name = strdup(host);
+    r->rr.name = (unsigned char *)strdup((const char *)host);
     r->rr.type = type;
     r->rr.ttl = ttl;
     r->next = d->published[i];
@@ -813,7 +814,7 @@ void mdnsd_set_raw(mdnsd d, mdnsdr r, char *data, int len)
 void mdnsd_set_host(mdnsd d, mdnsdr r, char *name)
 {
     free(r->rr.rdname);
-    r->rr.rdname = strdup(name);
+    r->rr.rdname = (unsigned char *)strdup((const char *)name);
     _r_publish(d,r);
 }
 
@@ -830,4 +831,3 @@ void mdnsd_set_srv(mdnsd d, mdnsdr r, int priority, int weight, int port, char *
     r->rr.srv.port = port;
     mdnsd_set_host(d,r,name);
 }
-

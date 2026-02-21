@@ -218,14 +218,14 @@ typedef struct _Rules {
 class LUPrec {
 public:
   ~LUPrec() { ATTArray.clear(); };
-  int RCID;                      // record identifier
-  char OBCL[7];                  // Name (6 char) '\0' terminated
-  Object_t FTYP;                 // 'A' Area, 'L' Line, 'P' Point
-  DisPrio DPRI;                  // Display Priority
-  RadPrio RPRI;                  // 'O' or 'S', Radar Priority
-  LUPname TNAM;                  // FTYP:  areas, points, lines
+  int RCID;                           // record identifier
+  char OBCL[7];                       // Name (6 char) '\0' terminated
+  Object_t FTYP;                      // 'A' Area, 'L' Line, 'P' Point
+  DisPrio DPRI;                       // Display Priority
+  RadPrio RPRI;                       // 'O' or 'S', Radar Priority
+  LUPname TNAM;                       // FTYP:  areas, points, lines
   std::vector<std::string> ATTArray;  // Array of LUP Attributes
-  wxString INST;                 // Instruction Field (rules)
+  wxString INST;                      // Instruction Field (rules)
   DisCat DISC;      // Display Categorie: D/S/O, DisplayBase, Standard, Other
   int LUCM;         // Look-Up Comment (PLib3.x put 'groupes' here,
                     // hence 'int', but its a string in the specs)
@@ -330,7 +330,7 @@ struct chart_context {
   int vboID;
   int chart_type;
   int chart_scale;
-  std::list<S57Obj*> *(s57chart::*pt2GetAssociatedObjects)(S57Obj *obj);
+  std::list<S57Obj *> *(s57chart::*pt2GetAssociatedObjects)(S57Obj *obj);
 };
 
 class LineGeometryDescriptor {
@@ -474,6 +474,8 @@ typedef struct _ObjRazRules {
   struct _ObjRazRules *next;
   struct _mps_container *mps;
 } ObjRazRules;
+
+WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
 
 //----------------------------------------------------------------------------------
 //          Used for s52 Fast Polygon Renderer

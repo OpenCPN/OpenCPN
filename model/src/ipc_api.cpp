@@ -42,7 +42,6 @@ IpcClient::IpcClient(const std::string& path) {
     throw LocalApiException(std::string("Cannot connect to: ") + path);
 };
 
-
 LocalApiResult IpcClient::SendQuit() {
   if (connection->Execute(wxString("quit"))) {
     return LocalApiResult(true, "");
@@ -50,7 +49,6 @@ LocalApiResult IpcClient::SendQuit() {
     return LocalApiResult(false, "Server error running quit command");
   }
 }
-
 
 LocalApiResult IpcClient::SendRaise() {
   if (connection->Execute(wxString("raise"))) {
@@ -60,16 +58,14 @@ LocalApiResult IpcClient::SendRaise() {
   }
 }
 
-
 LocalApiResult IpcClient::SendOpen(const char* path) {
-  const  void* reply = connection->Request(wxString("open " ) + path);
+  const void* reply = connection->Request(wxString("open ") + path);
   if (reply) return LocalApiResult(true, static_cast<const char*>(reply));
   return LocalApiResult(false, "");
 }
 
-
 LocalApiResult IpcClient::GetRestEndpoint() {
-  const  void* reply = connection->Request("get_rest_endpoint");
+  const void* reply = connection->Request("get_rest_endpoint");
   if (reply) {
     return LocalApiResult(true, static_cast<const char*>(reply));
   }
@@ -101,8 +97,8 @@ bool IpcConnection::OnExec(const wxString&, const wxString& data) {
 }
 
 const void* IpcConnection::OnRequest(const wxString& topic,
-                                 const wxString& item, size_t* size,
-                                 wxIPCFormat format) {
+                                     const wxString& item, size_t* size,
+                                     wxIPCFormat format) {
   if (format != wxIPC_TEXT) return 0;
 
   std::string line = item.ToStdString();
@@ -110,7 +106,7 @@ const void* IpcConnection::OnRequest(const wxString& topic,
     buffer = server.get_rest_api_endpoint_cb();
     if (size) *size = buffer.size();
     return buffer.c_str();
-  } else if( ocpn::startswith(line, "open")) {
+  } else if (ocpn::startswith(line, "open")) {
     auto words = ocpn::split(line.c_str(), " ");
     if (words.size() != 2) {
       wxLogWarning("Illegal open cmd line: %s", line.c_str());

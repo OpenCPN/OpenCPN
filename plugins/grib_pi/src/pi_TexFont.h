@@ -1,10 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenGL text rendering
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
  *   Copyright (C) 2014 Sean D'Epagnier                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,7 +16,28 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
-
+/**
+ * \file
+ * OpenGL Texture Font System.
+ *
+ * Provides bitmap font rendering using OpenGL textures for weather data
+ * visualization. Key features:
+ *
+ * Font Management:
+ * - Bitmap font generation from system fonts
+ * - ASCII character support with degree symbol
+ * - Single texture atlas packing (16x8 grid)
+ * - Optional glyph blurring for anti-aliasing
+ *
+ * Rendering Capabilities:
+ * - Hardware-accelerated text rendering
+ * - Text extent calculations
+ * - Cached glyph metrics
+ * - Basic string layout
+ *
+ * The system is optimized for OpenGL-based text rendering in the GRIB
+ * plugin's overlay displays and data visualization components.
+ */
 #ifndef __TEXFONT_H__
 #define __TEXFONT_H__
 

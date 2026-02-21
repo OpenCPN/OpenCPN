@@ -12,7 +12,8 @@ a.  Opencpn was built with the following objectives in mind.
     iii. Those and only those toolbar buttons really needed for
          daily operation.
     iv.  Portability, thus wxWidgets core components.  Currently
-         tested and in production use on Windows XP-8.1, OS X, and Linux.
+         tested and in production use on Windows, MacOS, Linux
+         and Android.
     v.   Conventional ( i.e. popular and modern ) chart format
          support.  In the real world, this means BSB format raster
          charts, and S57ENC format vector charts.

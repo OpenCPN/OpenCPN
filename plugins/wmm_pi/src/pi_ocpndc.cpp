@@ -117,11 +117,11 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
     : glcanvas(NULL), dc(&pdc), m_pen(wxNullPen), m_brush(wxNullBrush) {
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
-  wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
+  auto pmdc = dynamic_cast<wxMemoryDC *>(dc);
   if (pmdc)
     pgc = wxGraphicsContext::Create(*pmdc);
   else {
-    wxClientDC *pcdc = wxDynamicCast(dc, wxClientDC);
+    auto pcdc = dynamic_cast<wxClientDC *>(dc);
     if (pcdc) pgc = wxGraphicsContext::Create(*pcdc);
   }
 #endif
@@ -1644,7 +1644,7 @@ void pi_odc_endCallbackD_GLSL(void *data) {
 }
 #endif
 
-#endif  //#ifdef ocpnUSE_GL
+#endif  // #ifdef ocpnUSE_GL
 
 void pi_ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
                                        wxCoord yoffset) {
@@ -1828,7 +1828,7 @@ void pi_ocpnDC::DrawBitmap(const wxBitmap &bitmap, wxCoord x, wxCoord y,
 
       glColor4f(1, 1, 1, 1);
       GLDrawBlendData(x, y, w, h, GL_RGBA, e);
-      delete[](e);
+      delete[] (e);
     } else {
       glRasterPos2i(x, y);
       glPixelZoom(1, -1); /* draw data from top to bottom */

@@ -1,5 +1,3 @@
-
-
 /***************************************************************************
  *   Copyright (C) 2023 Alec Leamas                     *
  *                                                                         *
@@ -14,12 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#include "model/pincode.h"
+/**
+ * \file
+ *
+ * Implement pincode.h -- peer communications pincode abstraction
+ */
 
 #include <algorithm>
 #include <iomanip>
@@ -28,13 +28,16 @@
 
 #include "picosha2.h"
 
+#include "model/pincode.h"
+
 std::string Pincode::CompatHash() {
   std::linear_congruential_engine<unsigned long long, 48271, 0,
-	                          0xFFFFFFFFFFFFFFFF> engine;
+                                  0xFFFFFFFFFFFFFFFF>
+      engine;
   engine.seed(m_value);
   unsigned long long compat_val = engine();
   char buffer[100];
-  snprintf(buffer, sizeof(buffer)-1, "%0llX", compat_val);
+  snprintf(buffer, sizeof(buffer) - 1, "%0llX", compat_val);
   return std::string(buffer);
 }
 
@@ -54,9 +57,7 @@ std::string Pincode::ToString() const {
 std::string Pincode::Hash() const {
   std::string hash_hex_str;
   picosha2::hash256_hex_string(ToString(), hash_hex_str);
-  return hash_hex_str.substr(0,12);
+  return hash_hex_str.substr(0, 12);
 }
 
-std::string Pincode::IntToHash(uint64_t  value) {
-  return Pincode(value).Hash();
-}
+std::string Pincode::IntToHash(uint64_t value) { return Pincode(value).Hash(); }

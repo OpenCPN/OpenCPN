@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  ChartBase Definition
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,18 +12,32 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * General chart base definitions
+ */
 
 #ifndef _CHARTBASE_H_
 #define _CHARTBASE_H_
 
-#include "bbox.h"
+#include "gl_headers.h"
+
+#include <wx/bitmap.h>
+#include <wx/datetime.h>
+#include <wx/dcmemory.h>
+#include <wx/glcanvas.h>
+#include <wx/string.h>
+
 #include "model/ocpn_types.h"
+#include "bbox.h"
+#include "abstract_chart.h"
 #include "color_types.h"
 #include "LLRegion.h"
+#include "viewport.h"
 
 //----------------------------------------------------------------------------
 //  Forward Declarations
@@ -110,19 +118,20 @@ public:
   float lnp;
 };
 
-// ----------------------------------------------------------------------------
-// ChartBase
-// ----------------------------------------------------------------------------
-
-class ChartBase {
+/**
+ * Base class for all chart types. Defines the interface and common
+ * functionality for all chart types in OpenCPN. Provides methods for
+ * initialization, rendering, and querying chart properties and data.
+ */
+class ChartBase : public AbstractChart {
 public:
   ChartBase();
   virtual ~ChartBase() = 0;
 
   virtual InitReturn Init(const wxString &name, ChartInitFlag init_flags) = 0;
 
-  virtual void Activate(void){};
-  virtual void Deactivate(void){};
+  virtual void Activate(void) {};
+  virtual void Deactivate(void) {};
 
   //    Accessors
   virtual ThumbData *GetThumbData(int tnx, int tny, float lat, float lon) = 0;

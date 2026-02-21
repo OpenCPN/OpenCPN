@@ -40,6 +40,7 @@
 #include <wx/matrix.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
+#include "o_sound/o_sound.h"
 
 #include "model/ais_state_vars.h"
 #include "model/cmdline.h"
@@ -48,53 +49,57 @@
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
+#include "model/gui_vars.h"
 #include "model/idents.h"
 #include "model/logger.h"
 #include "model/multiplexer.h"
 #include "model/nav_object_database.h"
+#include "model/navobj_db.h"
 #include "model/own_ship.h"
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
 #include "model/select.h"
 
 #include "about.h"
-#include "AISTargetAlertDialog.h"
-#include "AISTargetListDialog.h"
-#include "AISTargetQueryDialog.h"
-#include "AndroidSound.h"
+#include "ais_target_alert_dlg.h"
+#include "ais_target_list_dlg.h"
+#include "ais_target_query_dlg.h"
 #include "androidUTIL.h"
-#include "CanvasOptions.h"
+#include "canvas_options.h"
 #include "chartdb.h"
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "config.h"
 #include "dychart.h"
-#include "glChartCanvas.h"
+#include "gl_chart_canvas.h"
 #include "gui_lib.h"
-#include "iENCToolbar.h"
-#include "MarkInfo.h"
-#include "MUIBar.h"
+#include "ienc_toolbar.h"
+#include "mark_info.h"
+#include "mui_bar.h"
 #include "navutil.h"
 #include "nmea0183.h"
 #include "model/nmea_ctx_factory.h"
-#include "OCPNPlatform.h"
+#include "ocpn_frame.h"
+#include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "options.h"
 #include "routemanagerdialog.h"
-#include "RoutePropDlgImpl.h"
+#include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s52s57.h"
 #include "s52utils.h"
-#include "S57QueryDialog.h"
-#include "TCWin.h"
+#include "s57_query_dlg.h"
+#include "tc_win.h"
 #include "toolbar.h"
 #include "toolbar.h"
-#include "TrackPropDlg.h"
+#include "track_prop_dlg.h"
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
 #endif
 
 #include "android_jvm.h"
+
+#include "lunasvg.h"
 
 const wxString AndroidSuppLicense = wxT(
     "<br><br>The software included in this product contains copyrighted "
@@ -123,7 +128,7 @@ extern MyFrame *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 // extern const wxEventType wxEVT_DOWNLOAD_EVENT;
 
-wxEvtHandler *s_pAndroidNMEAMessageConsumer;
+static SendMsgFunc s_send_msg_func;
 wxEvtHandler *s_pAndroidGPSIntMessageConsumer;
 wxEvtHandler *s_pAndroidBTNMEAMessageConsumer;
 
@@ -138,7 +143,7 @@ extern bool g_bSleep;
 androidUtilHandler *g_androidUtilHandler;
 extern wxDateTime g_start_time;
 extern RouteManagerDialog *pRouteManagerDialog;
-extern about *g_pAboutDlgLegacy;
+extern About *g_pAboutDlgLegacy;
 extern bool g_bFullscreen;
 extern OCPNPlatform *g_Platform;
 
@@ -157,9 +162,6 @@ extern int g_chart_zoom_modifier_raster;
 extern int g_NMEAAPBPrecision;
 
 extern wxString *pInit_Chart_Dir;
-extern bool g_bfilter_cogsog;
-extern int g_COGFilterSec;
-extern int g_SOGFilterSec;
 
 extern bool g_bDisplayGrid;
 
@@ -203,8 +205,6 @@ extern bool g_bConfirmObjectDelete;
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 extern wxLocale *plocale_def_lang;
 #endif
-
-// extern OCPN_Sound        g_anchorwatch_sound;
 
 extern bool g_fog_overzoom;
 extern double g_overzoom_emphasis_base;
@@ -263,8 +263,6 @@ extern bool g_bAutoAnchorMark;
 extern wxAuiManager *g_pauimgr;
 extern wxString g_AisTargetList_perspective;
 
-
-WX_DEFINE_ARRAY_PTR(ChartCanvas *, arrayofCanvasPtr);
 extern arrayofCanvasPtr g_canvasArray;
 
 wxString callActivityMethod_vs(const char *method);
@@ -272,9 +270,8 @@ wxString callActivityMethod_is(const char *method, int parm);
 
 //      Globals, accessible only to this module
 
-bool b_androidBusyShown;
-double g_androidDPmm;
-double g_androidDensity;
+static bool b_androidBusyShown;
+static double g_androidDensity;
 
 bool g_bExternalApp;
 
@@ -286,6 +283,7 @@ wxString g_androidExtStorageDir;
 wxString g_androidGetFilesDirs0;
 wxString g_androidGetFilesDirs1;
 wxString g_androidDownloadDirectory;
+wxString g_androidDocumentsDirectory;
 wxString g_android_Device_Model;
 
 int g_mask;
@@ -314,7 +312,6 @@ bool g_backEnabled;
 bool g_bFullscreenSave;
 bool s_optionsActive;
 
-extern int ShowNavWarning();
 extern bool g_btrackContinuous;
 extern wxString ChartListFileName;
 
@@ -328,6 +325,10 @@ bool g_detect_smt590;
 int g_orientation;
 int g_Android_SDK_Version;
 MigrateAssistantDialog *g_migrateDialog;
+
+bool g_android_import_active;
+bool g_android_import_islayer;
+bool g_android_import_ispersistent;
 
 //      Some dummy devices to ensure plugins have static access to these classes
 //      not used elsewhere
@@ -347,6 +348,7 @@ wxTransformMatrix g_dummy_transform;
 
 #define SCHEDULED_EVENT_CLEAN_EXIT 5498
 #define ID_CMD_PERSIST_DATA 5499
+#define SCHEDULED_EVENT_UPDATE_RMD 5500
 
 // Implement a small function missing from Android API 16, or so.
 // FIXME This can go away when Android MIN_SDK is raised to 19 (KitKat)
@@ -357,7 +359,7 @@ int futimens(int fd, const struct timespec times[2]) {
 // Event handler for Raw NMEA messages coming from Java upstream
 class AndroidNMEAEvent : public wxEvent {
 public:
-  AndroidNMEAEvent( wxEventType commandType, int id);
+  AndroidNMEAEvent(wxEventType commandType, int id);
   ~AndroidNMEAEvent();
 
   // accessors
@@ -365,39 +367,39 @@ public:
   std::shared_ptr<std::vector<unsigned char>> GetPayload();
 
   // required for sending with wxPostEvent()
-  wxEvent* Clone() const;
+  wxEvent *Clone() const;
+
 private:
   std::shared_ptr<std::vector<unsigned char>> m_payload;
 };
 
 wxDECLARE_EVENT(wxEVT_ANDROID_NMEA_RAW, AndroidNMEAEvent);
 
-
 wxDEFINE_EVENT(wxEVT_ANDROID_NMEA_RAW, AndroidNMEAEvent);
 
-AndroidNMEAEvent::AndroidNMEAEvent( wxEventType commandType, int id = 0)
-      : wxEvent(id, commandType){};
+AndroidNMEAEvent::AndroidNMEAEvent(wxEventType commandType, int id = 0)
+    : wxEvent(id, commandType) {};
 
-AndroidNMEAEvent::~AndroidNMEAEvent(){};
+AndroidNMEAEvent::~AndroidNMEAEvent() {};
 
-void AndroidNMEAEvent::SetPayload(std::shared_ptr<std::vector<unsigned char>> data) {
-    m_payload = data;
+void AndroidNMEAEvent::SetPayload(
+    std::shared_ptr<std::vector<unsigned char>> data) {
+  m_payload = data;
 }
-std::shared_ptr<std::vector<unsigned char>> AndroidNMEAEvent::GetPayload() { return m_payload; }
+std::shared_ptr<std::vector<unsigned char>> AndroidNMEAEvent::GetPayload() {
+  return m_payload;
+}
 
-  // required for sending with wxPostEvent()
-wxEvent* AndroidNMEAEvent::Clone() const {
-    AndroidNMEAEvent* newevent =
-        new AndroidNMEAEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
+// required for sending with wxPostEvent()
+wxEvent *AndroidNMEAEvent::Clone() const {
+  AndroidNMEAEvent *newevent = new AndroidNMEAEvent(*this);
+  newevent->m_payload = this->m_payload;
+  return newevent;
 };
-
-
 
 class androidUtilHandler : public wxEvtHandler {
 public:
-  androidUtilHandler(DriverListener& listener);
+  androidUtilHandler(DriverListener &listener);
   ~androidUtilHandler();
 
   void onTimerEvent(wxTimerEvent &event);
@@ -405,7 +407,7 @@ public:
   void OnResizeTimer(wxTimerEvent &event);
   void OnScheduledEvent(wxCommandEvent &event);
 
-  void handle_N0183_MSG(AndroidNMEAEvent& event);
+  void handle_N0183_MSG(AndroidNMEAEvent &event);
 
   wxString GetStringResult() { return m_stringResult; }
   void LoadAuxClasses();
@@ -420,7 +422,7 @@ public:
   int m_bskipConfirm;
   bool m_migratePermissionSetDone;
 
-  DriverListener& m_listener;
+  DriverListener &m_listener;
 
   DECLARE_EVENT_TABLE()
 };
@@ -435,9 +437,8 @@ EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_MENU_SELECTED,
 
 END_EVENT_TABLE()
 
-androidUtilHandler::androidUtilHandler(DriverListener& listener)
-  : m_listener(listener)
-{
+androidUtilHandler::androidUtilHandler(DriverListener &listener)
+    : m_listener(listener) {
   m_eventTimer.SetOwner(this, ANDROID_EVENT_TIMER);
   m_stressTimer.SetOwner(this, ANDROID_STRESS_TIMER);
   m_resizeTimer.SetOwner(this, ANDROID_RESIZE_TIMER);
@@ -446,20 +447,17 @@ androidUtilHandler::androidUtilHandler(DriverListener& listener)
 
   LoadAuxClasses();
 
-    // Prepare the wxEventHandler to accept events from upstream
-  Bind(wxEVT_ANDROID_NMEA_RAW, &androidUtilHandler::handle_N0183_MSG,
-       this);
-
+  // Prepare the wxEventHandler to accept events from upstream
+  Bind(wxEVT_ANDROID_NMEA_RAW, &androidUtilHandler::handle_N0183_MSG, this);
 }
 
 androidUtilHandler::~androidUtilHandler() {
-  Unbind(wxEVT_ANDROID_NMEA_RAW, &androidUtilHandler::handle_N0183_MSG,
-       this);
+  Unbind(wxEVT_ANDROID_NMEA_RAW, &androidUtilHandler::handle_N0183_MSG, this);
 }
 
-void androidUtilHandler::handle_N0183_MSG(AndroidNMEAEvent& event) {
+void androidUtilHandler::handle_N0183_MSG(AndroidNMEAEvent &event) {
   auto p = event.GetPayload();
-  std::vector<unsigned char>* payload = p.get();
+  std::vector<unsigned char> *payload = p.get();
 
   // Extract the NMEA0183 sentence
   std::string full_sentence = std::string(payload->begin(), payload->end());
@@ -469,22 +467,15 @@ void androidUtilHandler::handle_N0183_MSG(AndroidNMEAEvent& event) {
     // We notify based on full message, including the Talker ID
     identifier = full_sentence.substr(1, 5);
 
-    // notify message listener and also "ALL" N0183 messages, to support plugin
-    // API using original talker id
-
+    // notify message listener
     auto address = std::make_shared<NavAddr>(NavAddr0183("Android_RAW"));
-
-    auto msg = std::make_shared<const Nmea0183Msg>(identifier, full_sentence,
-                                                   address);
-    auto msg_all = std::make_shared<const Nmea0183Msg>(*msg, "ALL");
-
+    auto msg =
+        std::make_shared<const Nmea0183Msg>(identifier, full_sentence, address);
     m_listener.Notify(std::move(msg));
-    m_listener.Notify(std::move(msg_all));
   }
 }
 
-void androidUtilHandler::LoadAuxClasses()
-{
+void androidUtilHandler::LoadAuxClasses() {
   // We do a few little dummy class accesses here, to cause the static link to
   // wxWidgets to bring in some class members required by some plugins, that
   // would be missing otherwise.
@@ -498,7 +489,6 @@ void androidUtilHandler::LoadAuxClasses()
   wxZipEntry *entry = new wxZipEntry();
 
   wxSplitterWindow *swin = new wxSplitterWindow();
-
 }
 
 void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
@@ -587,7 +577,8 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
       }
 
       // Tide/Current window
-      if (gFrame->GetPrimaryCanvas() && gFrame->GetPrimaryCanvas()->getTCWin()) {
+      if (gFrame->GetPrimaryCanvas() &&
+          gFrame->GetPrimaryCanvas()->getTCWin()) {
         bool bshown = gFrame->GetPrimaryCanvas()->getTCWin()->IsShown();
         gFrame->GetPrimaryCanvas()->getTCWin()->Hide();
         gFrame->GetPrimaryCanvas()->getTCWin()->RecalculateSize();
@@ -621,8 +612,20 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
       }
 
       if (g_options) {
-        g_options->RecalculateSize(
-          g_options->GetSize().x, g_options->GetSize().y );
+        g_options->RecalculateSize(g_options->GetSize().x,
+                                   g_options->GetSize().y);
+      }
+
+      // Notification dialog
+      if (gFrame->GetPrimaryCanvas()) {
+        auto canvas = gFrame->GetPrimaryCanvas();
+        if (canvas->GetNotificationsList() &&
+            canvas->GetNotificationsList()->IsShown()) {
+          canvas->GetNotificationsList()->Hide();
+          canvas->GetNotificationsList()->RecalculateSize();
+          canvas->GetNotificationsList()->ReloadNotificationList();
+          canvas->GetNotificationsList()->Show();
+        }
       }
 
       bInConfigChange = false;
@@ -765,7 +768,6 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
         }
       }
 
-
       break;
     }
 
@@ -802,7 +804,7 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
           // qDebug() << "isFileChooserFinished returned null";
         } else if ((jenv)->GetStringLength(s)) {
           const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-          //qDebug() << "isFileChooserFinished returned" << ret_string;
+          // qDebug() << "isFileChooserFinished returned" << ret_string;
           if (!strncmp(ret_string, "cancel:", 7)) {
             m_migratePermissionSetDone = true;
             m_stringResult = _T("cancel:");
@@ -812,19 +814,17 @@ void androidUtilHandler::onTimerEvent(wxTimerEvent &event) {
           }
         }
 
-        if(m_migratePermissionSetDone){
+        if (m_migratePermissionSetDone) {
           g_androidUtilHandler->m_action = ACTION_NONE;
           g_androidUtilHandler->m_eventTimer.Stop();
 
-          if(g_migrateDialog)
+          if (g_migrateDialog)
             g_migrateDialog->onPermissionGranted(m_stringResult);
         }
       }
 
       break;
     }
-
-
 
     default:
       break;
@@ -934,11 +934,16 @@ void androidUtilHandler::onStressTimer(wxTimerEvent &event) {
 void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
   switch (event.GetId()) {
     case SCHEDULED_EVENT_CLEAN_EXIT:
-      //             gFrame->FrameTimer1.Stop();
-      //             gFrame->FrameCOGTimer.Stop();
-      //
-      //             doAndroidPersistState();
-      //             androidTerminate();
+      qDebug() << "SCHEDULED_EVENT_CLEAN_EXIT";
+      gFrame->FrameTimer1.Stop();
+      gFrame->FrameCOGTimer.Stop();
+      doAndroidPersistState();
+      break;
+
+    case SCHEDULED_EVENT_UPDATE_RMD:
+      qDebug() << "SCHEDULED_EVENT_UPDATE_RMD";
+      if (pRouteManagerDialog && pRouteManagerDialog->IsShown())
+        pRouteManagerDialog->UpdateLists();
       break;
 
     case ID_CMD_PERSIST_DATA:
@@ -947,12 +952,6 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
         //  Persist the config file, especially to capture the viewport
         //  location,scale etc.
         pConfig->UpdateSettings();
-
-        //  There may be unsaved objects at this point, and a navobj.xml.changes
-        //  restore file.
-        //  We commit the navobj deltas
-        //  No need to flush or recreate a new empty "changes" file
-        pConfig->UpdateNavObjOnly();
       }
 
       break;
@@ -991,7 +990,7 @@ void androidUtilHandler::OnScheduledEvent(wxCommandEvent &event) {
 bool androidUtilInit(void) {
   qDebug() << "androidUtilInit()";
 
-  auto& msgbus = NavMsgBus::GetInstance();
+  auto &msgbus = NavMsgBus::GetInstance();
   g_androidUtilHandler = new androidUtilHandler(msgbus);
 
   //  Initialize some globals
@@ -1029,7 +1028,8 @@ bool androidUtilInit(void) {
 
     token = tk.GetNextToken();
     g_androidDownloadDirectory = token;
-
+    token = tk.GetNextToken();
+    g_androidDocumentsDirectory = token;
   }
 
   g_mask = -1;
@@ -1055,6 +1055,12 @@ bool androidUtilInit(void) {
   return true;
 }
 
+void PrepareImportAndroid(bool isLayer, bool isPersistent) {
+  g_android_import_active = true;
+  g_android_import_islayer = isLayer;
+  g_android_import_ispersistent = isPersistent;
+}
+
 wxString androidGetIpV4Address(void) {
   wxString ipa = callActivityMethod_vs("getIpAddress");
   return ipa;
@@ -1072,18 +1078,15 @@ void resizeAndroidPersistents() {
 }
 
 void sendNMEAMessageEvent(wxString &msg) {
-
   std::string string = msg.ToStdString();
   auto buffer = std::make_shared<std::vector<unsigned char>>();
-  std::vector<unsigned char>* vec = buffer.get();
+  std::vector<unsigned char> *vec = buffer.get();
 
-  for (int i=0; i < string.size(); i++)
-    vec->push_back(string[i]);
+  for (int i = 0; i < string.size(); i++) vec->push_back(string[i]);
 
   AndroidNMEAEvent Nevent(wxEVT_ANDROID_NMEA_RAW, 0);
   Nevent.SetPayload(buffer);
   g_androidUtilHandler->AddPendingEvent(Nevent);
-
 }
 
 //      OCPNNativeLib
@@ -1100,17 +1103,37 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_test(JNIEnv *env,
 }
 
 extern "C" {
-JNIEXPORT jint JNICALL
-    Java_org_opencpn_OCPNNativeLib_onSoundDone(JNIEnv *env,
-                                              jobject obj,
-                                              long soundPtr) {
-        auto sound = reinterpret_cast<AndroidSound*>(soundPtr);
-        DEBUG_LOG << "on SoundDone, ptr: " << soundPtr;
-        sound->OnSoundDone();
-        return 57;
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onSoundDone(
+    JNIEnv *env, jobject obj, long soundPtr) {
+  auto sound = reinterpret_cast<o_sound::Sound *>(soundPtr);
+  DEBUG_LOG << "on SoundDone, ptr: " << soundPtr;
+  sound->OnSoundDone();
+  return 57;
 }
 }
 
+extern "C" {
+JNIEXPORT void JNICALL Java_org_opencpn_OCPNNativeLib_ImportTmpGPX(
+    JNIEnv *env, jobject obj, jstring filePath, bool isLayer,
+    bool isPersistent) {
+  if (!g_android_import_active) return;
+  wxArrayString file_array;
+  const char *string = env->GetStringUTFChars(filePath, NULL);
+  file_array.Add(wxString(string));
+  ImportFileArray(file_array, g_android_import_islayer,
+                  g_android_import_ispersistent, "");
+  g_android_import_active = false;
+  g_android_import_islayer = false;
+  g_android_import_ispersistent = false;
+
+  // Update the RouteManagerDialog on the wx event loop
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(SCHEDULED_EVENT_UPDATE_RMD);
+  if (gFrame && gFrame->GetEventHandler()) {
+    g_androidUtilHandler->AddPendingEvent(evt);
+  }
+}
+}
 
 extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processSailTimer(
@@ -1120,8 +1143,9 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processSailTimer(
   //  Java app, even without a definite connection, and we want to process these
   //  messages too. So assume that the global MUX, if present, will handle these
   //  synthesized messages.
-  if (!s_pAndroidNMEAMessageConsumer && g_pMUX)
-    s_pAndroidNMEAMessageConsumer = g_pMUX;
+
+  ////if (!s_pAndroidNMEAMessageConsumer && g_pMUX)
+  ////  s_pAndroidNMEAMessageConsumer = g_pMUX;
 
   double wind_angle_mag = 0;
   double apparent_wind_angle = 0;
@@ -1200,7 +1224,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processSailTimer(
       // qDebug() << wind_angle_mag << app_windSpeed << apparent_wind_angle <<
       // true_windSpeed << true_windDirection;
 
-      if (s_pAndroidNMEAMessageConsumer) {
+      if (g_androidUtilHandler) {
         NMEA0183 parser(NmeaCtxFactory());
 
         // Now make some NMEA messages
@@ -1260,22 +1284,14 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEA(
   //  The NMEA message target handler may not be setup yet, if no connections
   //  are defined or enabled. But we may get synthesized messages from the Java
   //  app, even without a definite connection.  We ignore these messages.
-  wxEvtHandler *consumer = s_pAndroidNMEAMessageConsumer;
 
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
 
   // qDebug() << "ProcessNMEA: " << string;
 
-  if (consumer) {
-    auto buffer = std::make_shared<std::vector<unsigned char>>();
-    std::vector<unsigned char>* vec = buffer.get();
-
-    for (int i=0; i < strlen(string); i++)
-      vec->push_back(string[i]);
-
-    CommDriverN0183SerialEvent Nevent(wxEVT_COMMDRIVER_N0183_SERIAL, 0);
-    Nevent.SetPayload(buffer);
-    consumer->AddPendingEvent(Nevent);
+  if (s_send_msg_func) {
+    std::string s(string);
+    s_send_msg_func(std::vector<unsigned char>(s.begin(), s.end()));
   }
 
   return 66;
@@ -1296,12 +1312,12 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEAInt(
 
   if (consumer) {
     auto buffer = std::make_shared<std::vector<unsigned char>>();
-    std::vector<unsigned char>* vec = buffer.get();
+    std::vector<unsigned char> *vec = buffer.get();
 
-    for (int i=0; i < strlen(string); i++)
-      vec->push_back(string[i]);
+    for (int i = 0; i < strlen(string); i++) vec->push_back(string[i]);
 
-    CommDriverN0183AndroidIntEvent Nevent(wxEVT_COMMDRIVER_N0183_ANDROID_INT, 0);
+    CommDriverN0183AndroidIntEvent Nevent(wxEVT_COMMDRIVER_N0183_ANDROID_INT,
+                                          0);
     Nevent.SetPayload(buffer);
     consumer->AddPendingEvent(Nevent);
   }
@@ -1313,7 +1329,6 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processNMEAInt(
 extern "C" {
 JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(
     JNIEnv *env, jobject obj, jstring nmea_string) {
-
   wxEvtHandler *consumer = s_pAndroidBTNMEAMessageConsumer;
 
   const char *string = env->GetStringUTFChars(nmea_string, NULL);
@@ -1322,10 +1337,9 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processBTNMEA(
 
   if (consumer) {
     auto buffer = std::make_shared<std::vector<unsigned char>>();
-    std::vector<unsigned char>* vec = buffer.get();
+    std::vector<unsigned char> *vec = buffer.get();
 
-    for (int i=0; i < strlen(string); i++)
-      vec->push_back(string[i]);
+    for (int i = 0; i < strlen(string); i++) vec->push_back(string[i]);
     vec->push_back('\r');
     vec->push_back('\n');
 
@@ -1352,10 +1366,9 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_processARBNMEA(
 
   if (consumer) {
     auto buffer = std::make_shared<std::vector<unsigned char>>();
-    std::vector<unsigned char>* vec = buffer.get();
+    std::vector<unsigned char> *vec = buffer.get();
 
-    for (int i=0; i < strlen(string); i++)
-      vec->push_back(string[i]);
+    for (int i = 0; i < strlen(string); i++) vec->push_back(string[i]);
     vec->push_back('\r');
     vec->push_back('\n');
 
@@ -1384,9 +1397,11 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(
   //         evts.SetId( ID_CMD_STOP_RESIZE );
   //             g_androidUtilHandler->AddPendingEvent(evts);
 
-  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
-  evt.SetId(ID_CMD_TRIGGER_RESIZE);
-  g_androidUtilHandler->AddPendingEvent(evt);
+  if (g_androidUtilHandler) {
+    wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+    evt.SetId(ID_CMD_TRIGGER_RESIZE);
+    g_androidUtilHandler->AddPendingEvent(evt);
+  }
 
   return 77;
 }
@@ -1436,6 +1451,28 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStop(JNIEnv *env,
   g_running = false;
 
   qDebug() << "onStop return 98";
+  return 98;
+}
+}
+
+extern "C" {
+JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_cleanExit(JNIEnv *env,
+                                                                jobject obj) {
+  qDebug() << "cleanExit";
+  wxLogMessage(_T("cleanExit"));
+
+  //  App may be summarily killed after this point due to OOM condition.
+  //  So we need to persist some dynamic data.
+
+  wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
+  evt.SetId(SCHEDULED_EVENT_CLEAN_EXIT);
+  if (gFrame && gFrame->GetEventHandler()) {
+    g_androidUtilHandler->AddPendingEvent(evt);
+  }
+
+  g_running = false;
+
+  qDebug() << "cleanExit return 98";
   return 98;
 }
 }
@@ -1574,7 +1611,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_invokeCmdEventCmdString(
   wxString wx_sparm;
   JNIEnv *jenv;
 
-  if (!java_vm)  return 73;
+  if (!java_vm) return 73;
 
   //  Need a Java environment to decode the string parameter
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
@@ -1730,8 +1767,7 @@ JNIEXPORT int JNICALL Java_org_opencpn_OCPNNativeLib_getTLWCount(JNIEnv *env,
   wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
   while (node) {
     wxWindow *win = node->GetData();
-    if (win->IsShown() && !win->IsKindOf(CLASSINFO(CanvasOptions))) ret++;
-
+    if (win->IsShown() && !dynamic_cast<CanvasOptions *>(win)) ret++;
     node = node->GetNext();
   }
   return ret;
@@ -1814,7 +1850,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_sendPluginMessage(
   wxString Msg;
   JNIEnv *jenv;
 
-  if (!java_vm)  return 79;
+  if (!java_vm) return 79;
 
   //  Need a Java environment to decode the string parameter
   if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
@@ -1899,12 +1935,7 @@ void androidDisplayToast(wxString message) {
   callActivityMethod_ss("showToast", message);
 }
 
-void androidEnableRotation(void) {
-  //    if(g_detect_smt590)
-  //        return;
-
-  callActivityMethod_vs("EnableRotation");
-}
+void androidEnableRotation(void) { callActivityMethod_vs("EnableRotation"); }
 
 void androidDisableRotation(void) { callActivityMethod_vs("DisableRotation"); }
 
@@ -2097,13 +2128,15 @@ wxString androidGetDeviceInfo() {
         wxString b = s1.Mid(a + 1, 2);
         memset(android_plat_spc.msdk, 0, sizeof(android_plat_spc.msdk));
         strncpy(android_plat_spc.msdk, b.c_str(), 2);
-        g_Android_SDK_Version = atoi( android_plat_spc.msdk );
+        g_Android_SDK_Version = atoi(android_plat_spc.msdk);
       }
     }
     if (wxNOT_FOUND != s1.Find(_T("opencpn"))) {
       strcpy(&android_plat_spc.hn[0], s1.c_str());
     }
-    if (wxNOT_FOUND != s1.Find(_T("Model (and Product): "))) {    //Model (and Product): LML413DL (cv3_lao_com)
+    if (wxNOT_FOUND !=
+        s1.Find(_T("Model (and Product): "))) {  // Model (and Product):
+                                                 // LML413DL (cv3_lao_com)
       wxString smp = s1.Mid(21);
       wxString smp1 = smp.BeforeFirst('(');
       g_android_Device_Model = smp1.Trim(false).Trim(true).Truncate(8);
@@ -2123,16 +2156,16 @@ wxString androidGetDeviceInfo() {
   return g_deviceInfo;
 }
 
-bool androidIsDirWritable( wxString dir )
-{
+bool androidIsDirWritable(wxString dir) {
   if (g_Android_SDK_Version < 30)
     return true;
-  else{
+  else {
     // This is theorectically most accurate, but slow to execute
-    //wxString result = callActivityMethod_ss("isDirWritable", dir);
-    //return (result.IsSameAs("YES"));
+    // wxString result = callActivityMethod_ss("isDirWritable", dir);
+    // return (result.IsSameAs("YES"));
 
-    // This is a practical alternative, for things like chart storage qualification.
+    // This is a practical alternative, for things like chart storage
+    // qualification.
     return (dir.Contains("org.opencpn.opencpn"));
   }
 }
@@ -2207,7 +2240,7 @@ androidGetCacheDir()  // Used for raster_texture_cache, mmsitoname.csv, etc
 wxString androidGetExtStorageDir()  // Used for Chart storage, typically
 {
   if (g_Android_SDK_Version >= 30)
-    return g_androidExtFilesDir;      // Scoped storage model
+    return g_androidExtFilesDir;  // Scoped storage model
   else
     return g_androidExtStorageDir;
 }
@@ -2268,6 +2301,8 @@ void androidEnableMulticast(bool benable) {
 
 void androidLastCall(void) {
   CheckMigrateCharts();
+  DoImportGPX();
+
   callActivityMethod_is("lastCallOnInit", 1);
 }
 
@@ -2400,9 +2435,9 @@ double GetAndroidDisplaySize() {
   if (ldpi < 160) ldpi = 160.;
 
   // Find the max dimension among all possibilities
-//   double maxDim = wxMax(screen_size.x, screen_size.y);
-//   maxDim = wxMax(maxDim, androidHeight);
-//   maxDim = wxMax(maxDim, androidWidth);
+  //   double maxDim = wxMax(screen_size.x, screen_size.y);
+  //   maxDim = wxMax(maxDim, androidHeight);
+  //   maxDim = wxMax(maxDim, androidWidth);
 
   double maxDim = screen_size.x;
   maxDim = wxMax(maxDim, androidWidth);
@@ -2480,7 +2515,6 @@ double getAndroidDisplayDensity() {
 }
 
 wxSize getAndroidDisplayDimensions(void) {
-
   wxSize sz_ret = ::wxGetDisplaySize();  // default, probably reasonable, but
                                          // maybe not accurate
   if (!java_vm) return sz_ret;
@@ -2533,11 +2567,6 @@ wxSize getAndroidDisplayDimensions(void) {
     long abh = 0;
     token = tk.GetNextToken();  //  ActionBar height, if shown
     if (token.ToLong(&abh)) sz_ret.y -= abh;
-  }
-
-  // Samsung sm-t590/Android 10 has some display problems in portrait mode.....
-  if (g_detect_smt590) {
-    if (sz_ret.x < sz_ret.y) sz_ret.y = 1650;
   }
 
   // qDebug() << "getAndroidDisplayDimensions" << sz_ret.x << sz_ret.y;
@@ -2741,6 +2770,69 @@ bool androidStopGPS() {
   return true;
 }
 
+wxString androidGetLocalizedDateTime(const DateTimeFormatOptions &options,
+                                     wxDateTime time) {
+  wxDateTime t(time);
+  wxString effective_time_zone = options.time_zone;
+  if (effective_time_zone == wxEmptyString) {
+    effective_time_zone = ::g_datetime_format;
+  }
+  if (effective_time_zone == wxEmptyString) {
+    effective_time_zone = "UTC";
+  }
+
+  wxString tzName;
+  if (effective_time_zone == "Local Time") {
+    wxDateTime now = wxDateTime::Now();
+    if ((now == (now.ToGMT())) &&
+        t.IsDST())  // bug in wxWingets 3.0 for UTC meridien ?
+      t.Add(wxTimeSpan(1, 0, 0, 0));
+    if (options.show_timezone) {
+      tzName = _("LOC");
+    }
+  } else if (effective_time_zone == "LMT") {
+    // Local mean solar time at the current location.
+    t.MakeUTC();
+    tzName = _("LMT");
+    if (std::isnan(options.longitude)) {
+      t = wxInvalidDateTime;
+    } else {
+      t.Add(wxTimeSpan(0, 0, wxLongLong(options.longitude * 3600. / 15.)));
+    }
+  } else {
+    // UTC, or fallback to UTC if the timezone is not recognized.
+    t.MakeUTC();
+    tzName = _("UTC");
+  }
+
+  // If $ARCH is ARMHF, we cannot reliably use "long" over the JNI bridge
+  // So use "int", and live with it until 2038 rolls around.
+  int epoch_seconds = (int)t.GetTicks();
+
+  wxString format = options.format_string;
+  wxString formattedDate;
+
+  wxStringTokenizer tk(format, "$");
+  while (tk.HasMoreTokens()) {
+    wxString token = tk.GetNextToken();
+    if (token.Length()) {
+      token.Trim();
+      wxString partial_result = callActivityMethod_ssi(
+          "getLocalizedDateTime", "$" + token, epoch_seconds);
+      if (partial_result.Length()) {
+        if (!formattedDate.IsEmpty()) formattedDate += "  ";
+        formattedDate += partial_result;
+      }
+    }
+  }
+
+  if (options.show_timezone) {
+    return formattedDate + " " + tzName;
+  } else {
+    return formattedDate;
+  }
+}
+
 wxString androidGPSService(int parm) {
   if (!java_vm) return "NOK";
 
@@ -2890,17 +2982,17 @@ wxArrayString *androidGetSerialPortsArray(void) {
 }
 
 bool androidStartUSBSerial(wxString &portname, wxString baudRate,
-                           wxEvtHandler *consumer) {
+                           SendMsgFunc send_msg_func) {
   wxString result =
       callActivityMethod_s2s("startSerialPort", portname, baudRate);
 
-  s_pAndroidNMEAMessageConsumer = consumer;
+  s_send_msg_func = send_msg_func;
 
   return true;
 }
 
 bool androidStopUSBSerial(wxString &portname) {
-  s_pAndroidNMEAMessageConsumer = NULL;
+  s_send_msg_func = nullptr;
 
   //  If app is closing down, the USB serial ports will go away automatically.
   //  So no need here.
@@ -2923,11 +3015,7 @@ int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
   wxString tresult;
 
-  //  Start a timer to poll for results
   if (g_androidUtilHandler) {
-    g_androidUtilHandler->m_eventTimer.Stop();
-    g_androidUtilHandler->m_done = false;
-
     wxString activityResult;
     if (dirOnly)
       activityResult = callActivityMethod_s2s2i("DirChooserDialog", initDir,
@@ -2938,6 +3026,15 @@ int androidFileChooser(wxString *result, const wxString &initDir,
                                               title, suggestion, wildcard);
 
     if (activityResult == _T("OK")) {
+      return wxID_OK;
+    } else if (activityResult == "cancel:") {
+      return wxID_CANCEL;
+    } else {
+      *result = activityResult.AfterFirst(':');
+      return wxID_OK;
+    }
+
+#if 0
       // qDebug() << "ResultOK, starting spin loop";
       g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
       g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
@@ -2970,6 +3067,7 @@ int androidFileChooser(wxString *result, const wxString &initDir,
     } else {
       // qDebug() << "Result NOT OK";
     }
+#endif
   }
 
   return wxID_CANCEL;
@@ -3132,8 +3230,7 @@ wxString BuildAndroidSettingsString(void) {
   // Connections
 
   // Internal GPS.
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams *cp = TheConnectionParams()->Item(i);
+  for (auto &cp : TheConnectionParams()) {
     if (INTERNAL_GPS == cp->Type) {
       result += _T("prefb_internalGPS:");
       result += cp->bEnabled ? _T("1;") : _T("0;");
@@ -3384,8 +3481,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
     ConnectionParams *pExistingParams = NULL;
     ConnectionParams *cp = NULL;
 
-    for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-      ConnectionParams *xcp = TheConnectionParams()->Item(i);
+    for (auto &xcp : TheConnectionParams()) {
       if (INTERNAL_GPS == xcp->Type) {
         pExistingParams = xcp;
         cp = xcp;
@@ -3405,12 +3501,12 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
       ConnectionParams *new_params = new ConnectionParams(sGPS);
 
       new_params->bEnabled = benable_InternalGPS;
-      TheConnectionParams()->Add(new_params);
+      TheConnectionParams().push_back(new_params);
       cp = new_params;
     }
 
     if (b_action && cp) {  // something to do?
-//FIXME (dave)
+// FIXME (dave)
 #if 0
 
       // Terminate and remove any existing stream with the same port name
@@ -3477,8 +3573,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
 
         wxString target = AUSBNames[i] + _T("-") + extraString;
 
-        for (unsigned int j = 0; j < TheConnectionParams()->Count(); j++) {
-          ConnectionParams *xcp = TheConnectionParams()->Item(j);
+        for (auto &xcp : TheConnectionParams()) {
           wxLogMessage(_T("    Checking: ") + target + " .. " +
                        xcp->GetDSPort());
 
@@ -3514,13 +3609,13 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
           ConnectionParams *new_params = new ConnectionParams(sSerial);
 
           new_params->bEnabled = true;
-          TheConnectionParams()->Add(new_params);
+          TheConnectionParams().push_back(new_params);
           cp = new_params;
           rr |= NEED_NEW_OPTIONS;
         }
 
         if (b_action && cp) {  // something to do?
-//FIXME (dave)
+// FIXME (dave)
 #if 0
             rr |= NEED_NEW_OPTIONS;
 
@@ -3554,12 +3649,12 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
               cp->b_IsSetup = true;
             }
 #endif
-          }
         }
-      }  // found pref
+      }
+    }  // found pref
 
-      i++;
-    }  // while
+    i++;
+  }  // while
 
   return rr;
 }
@@ -3762,12 +3857,13 @@ wxString getFontQtStylesheet(wxFont *font) {
   return qstyle;
 }
 
-bool androidPlaySound(const wxString soundfile, AndroidSound* sound) {
+bool androidPlaySound(const wxString soundfile, o_sound::Sound *sound) {
   DEBUG_LOG << "androidPlaySound";
   std::ostringstream oss;
   oss << sound;
   wxString wxSound(oss.str());
-  wxString result = callActivityMethod_s2s("playSound", soundfile, wxSound.Mid(2));
+  wxString result =
+      callActivityMethod_s2s("playSound", soundfile, wxSound.Mid(2));
   return true;
 }
 
@@ -3796,7 +3892,8 @@ wxString androidGetSupplementalLicense(void) {
 
 wxArrayString androidTraverseDir(wxString dir, wxString filespec) {
   wxArrayString result;
-  if (g_Android_SDK_Version != 17)  // skip unless running Android 4.2.2, especially Samsung...
+  if (g_Android_SDK_Version !=
+      17)  // skip unless running Android 4.2.2, especially Samsung...
     return result;
 
   wxString ir =
@@ -4038,7 +4135,6 @@ QScrollBar::sub-line:vertical {\
     subcontrol-position: bottom;\
     subcontrol-origin: margin;\
 }";
-
 
 QString qtStyleSheetWideScrollBars =
     "QScrollBar:horizontal {\
@@ -4301,11 +4397,11 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
   fn.SetExt(_T("png"));
 
   // Try to find the target image, at the proper resolution.
-  if(fn.FileExists()){
+  if (fn.FileExists()) {
     wxBitmap bmp_test(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
-    if(bmp_test.IsOk()){
-      if((bmp_test.GetWidth() == (int)width) && (bmp_test.GetHeight() ==
-            (int)height))
+    if (bmp_test.IsOk()) {
+      if ((bmp_test.GetWidth() == (int)width) &&
+          (bmp_test.GetHeight() == (int)height))
         return bmp_test;
     }
   }
@@ -4319,6 +4415,34 @@ wxBitmap loadAndroidSVG(const wxString filename, unsigned int width,
   } else {
     return wxBitmap(width, height);
   }
+}
+
+wxBitmap loadAndroidSVG(const char *svg, unsigned int width,
+                        unsigned int height) {
+  auto doc = lunasvg::Document::loadFromData(svg);
+  doc->loadFromData(svg);
+  lunasvg::Bitmap bitmap = doc->renderToBitmap(width, height, 0xFFFFFFFF);
+  uint8_t *data = bitmap.data();
+  uint8_t *p_data = data;
+  uint8_t *idata = (uint8_t *)malloc(3 * width * height);
+  uint8_t *p_idata = idata;
+
+  for (unsigned int i = 0; i < height; i++) {
+    for (unsigned int j = 0; j < width; j++) {
+      auto b = *p_data++;
+      auto g = *p_data++;
+      auto r = *p_data++;
+      auto a = *p_data++;
+
+      *p_idata++ = r;
+      *p_idata++ = g;
+      *p_idata++ = b;
+    }
+  }
+
+  auto image = wxImage(width, height);
+  image.SetData(idata);
+  return wxBitmap(image);
 }
 
 void androidTestCPP() { callActivityMethod_vs("callFromCpp"); }
@@ -4379,6 +4503,10 @@ bool AndroidSecureCopyFile(wxString in, wxString out) {
   return bret;
 }
 
+void AndroidRemoveSystemFile(wxString file) {
+  callActivityMethod_ss("RemoveSystemFile", file);
+}
+
 int doAndroidPersistState() {
   qDebug() << "doAndroidPersistState() starting...";
   wxLogMessage(_T("doAndroidPersistState() starting..."));
@@ -4390,14 +4518,14 @@ int doAndroidPersistState() {
       wxAuiPaneInfo &pane = g_pauimgr->GetPane(g_pAISTargetList);
       g_AisTargetList_perspective = g_pauimgr->SavePaneInfo(pane);
       g_pauimgr->DetachPane(g_pAISTargetList);
-
-      pConfig->SetPath(_T ( "/AUI" ));
-      pConfig->Write(_T ( "AUIPerspective" ), g_pauimgr->SavePerspective());
     }
+
+    pConfig->SetPath(_T ( "/AUI" ));
+    pConfig->Write(_T ( "AUIPerspective" ), g_pauimgr->SavePerspective());
   }
 
   //    Deactivate the PlugIns, allowing them to save state
-  PluginLoader::getInstance()->DeactivateAllPlugIns();
+  PluginLoader::GetInstance()->DeactivateAllPlugIns();
 
   /*
    Automatically drop an anchorage waypoint, if enabled
@@ -4427,35 +4555,30 @@ int doAndroidPersistState() {
     {
       //    First, delete any single anchorage waypoint closer than 0.25 NM from
       //    this point This will prevent clutter and database congestion....
-
-      wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
-      while (node) {
-        RoutePoint *pr = node->GetData();
-        if (pr->GetName().StartsWith(_T("Anchorage"))) {
+      for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
+        if (pr->GetName().StartsWith("Anchorage")) {
           double a = gLat - pr->m_lat;
           double b = gLon - pr->m_lon;
           double l = sqrt((a * a) + (b * b));
 
           // caveat: this is accurate only on the Equator
           if ((l * 60. * 1852.) < (.25 * 1852.)) {
-            pConfig->DeleteWayPoint(pr);
+            NavObj_dB::GetInstance().DeleteRoutePoint(pr);
             pSelect->DeleteSelectablePoint(pr, SELTYPE_ROUTEPOINT);
             delete pr;
             break;
           }
         }
-
-        node = node->GetNext();
       }
 
-      wxString name = now.Format();
+      wxString name = ocpn::toUsrDateTimeFormat(now);
       name.Prepend(_("Anchorage created "));
       RoutePoint *pWP =
           new RoutePoint(gLat, gLon, _T("anchorage"), name, _T(""));
       pWP->m_bShowName = false;
       pWP->m_bIsolatedMark = true;
 
-      pConfig->AddNewWayPoint(pWP, -1);  // use auto next num
+      NavObj_dB::GetInstance().InsertRoutePoint(pWP);
     }
   }
 
@@ -4485,14 +4608,6 @@ int doAndroidPersistState() {
   }
 
   pConfig->UpdateSettings();
-  pConfig->UpdateNavObj();
-
-  pConfig->m_pNavObjectChangesSet->reset();
-
-  // Remove any leftover Routes and Waypoints from config file as they were
-  // saved to navobj before
-  pConfig->DeleteGroup(_T ( "/Routes" ));
-  pConfig->DeleteGroup(_T ( "/Marks" ));
   pConfig->Flush();
 
   delete pConfig;  // All done
@@ -4507,7 +4622,7 @@ int doAndroidPersistState() {
 
   if (ChartData) ChartData->PurgeCachePlugins();
 
-  PluginLoader::getInstance()->UnLoadAllPlugIns();
+  PluginLoader::GetInstance()->UnLoadAllPlugIns();
   if (g_pi_manager) {
     delete g_pi_manager;
     g_pi_manager = NULL;
@@ -4538,87 +4653,105 @@ Java_org_opencpn_OCPNNativeLib_ScheduleCleanExit(JNIEnv *env, jobject obj) {
 }
 }
 
-void CheckMigrateCharts()
-{
+void DoImportGPX() {
+  //  Look for importable GPX files
+  wxString import_dir = g_androidGetFilesDirs0;
+  import_dir += "/import";
+  wxArrayString file_list;
+  wxDir::GetAllFiles(import_dir, &file_list);
+  for (size_t i = 0; i < file_list.GetCount(); i++) {
+    wxFileName fn(file_list[i]);
+    if ((fn.GetExt().IsSameAs("GPX") || fn.GetExt().IsSameAs("gpx"))) {
+      // Query the user
+      wxString msg(_("Import GPX file:"));
+      msg += "        \n";
+      msg += fn.GetFullName();
+      if (androidShowSimpleYesNoDialog(_T("OpenCPN"), msg)) {
+        NavObjectCollection1 *pSet = new NavObjectCollection1;
+        if (pSet->load_file(fn.GetFullPath().fn_str()).status !=
+            pugi::xml_parse_status::status_ok) {
+          wxLogMessage("Error loading GPX file " + fn.GetFullPath());
+          pSet->reset();
+          delete pSet;
+        } else {
+          int wpt_dups;
+          pSet->LoadAllGPXObjects(
+              !pSet->IsOpenCPN(),
+              wpt_dups);  // Import with full visibility of names and objects
+          delete pSet;
+          ::wxRemoveFile(fn.GetFullPath());
+        }
+      }
+    }
+  }
+}
+
+void CheckMigrateCharts() {
   qDebug() << "CheckMigrateCharts";
-  if (g_Android_SDK_Version < 30)   // Only on Android/11 +
+  if (g_Android_SDK_Version < 30)  // Only on Android/11 +
     return;
 
-  // Force access to correct home directory, as a hint....
-  pInit_Chart_Dir->Clear();
-
   // Scan the config file chart directory array.
-  wxArrayString chartDirs = GetConfigChartDirectories(); //GetChartDirArrayString();
+  wxArrayString chartDirs =
+      GetConfigChartDirectories();  // GetChartDirArrayString();
   wxArrayString migrateDirs;
   qDebug() << chartDirs.GetCount();
 
-  for (unsigned int i=0; i < chartDirs.GetCount(); i++){
+  for (unsigned int i = 0; i < chartDirs.GetCount(); i++) {
     qDebug() << chartDirs[i].mb_str();
 
     bool bOK = false;
-    if ( chartDirs[i].StartsWith(g_androidGetFilesDirs0) )
+    if (chartDirs[i].StartsWith(g_androidGetFilesDirs0))
       bOK = true;
 
-    else if (!g_androidGetFilesDirs1.StartsWith("?")){
-      if ( chartDirs[i].StartsWith(g_androidGetFilesDirs1) )
-        bOK = true;
+    else if (!g_androidGetFilesDirs1.StartsWith("?")) {
+      if (chartDirs[i].StartsWith(g_androidGetFilesDirs1)) bOK = true;
     }
     if (!bOK) {
       migrateDirs.Add(chartDirs[i]);
     }
   }
 
-  if (!migrateDirs.GetCount())
-    return;
-
+  if (!migrateDirs.GetCount()) return;
 
   // Run the chart migration assistant
+
+  // Force access to correct home directory, as a hint....
+  pInit_Chart_Dir->Clear();
+
   g_migrateDialog = new MigrateAssistantDialog(gFrame, false);
-  g_migrateDialog->SetSize( gFrame->GetSize());
+  g_migrateDialog->SetSize(gFrame->GetSize());
   g_migrateDialog->Centre();
   g_migrateDialog->Raise();
   g_migrateDialog->ShowModal();
-
-
 }
 
-wxString androidGetDownloadDirectory()
-{
-  return g_androidDownloadDirectory;
-}
+wxString androidGetDownloadDirectory() { return g_androidDownloadDirectory; }
 
+wxString androidGetDocumentsDirectory() { return g_androidDocumentsDirectory; }
 
+wxString WrapText(wxWindow *win, const wxString &text, int widthMax) {
+  class HardBreakWrapper : public wxTextWrapper {
+  public:
+    HardBreakWrapper(wxWindow *win, const wxString &text, int widthMax) {
+      Wrap(win, text, widthMax);
+    }
+    wxString const &GetWrapped() const { return m_wrapped; }
 
-wxString WrapText(wxWindow *win, const wxString& text, int widthMax)
-{
-    class HardBreakWrapper : public wxTextWrapper
-    {
-    public:
-        HardBreakWrapper(wxWindow *win, const wxString& text, int widthMax)
-        {
-            Wrap(win, text, widthMax);
-        }
-        wxString const& GetWrapped() const { return m_wrapped; }
-    protected:
-        virtual void OnOutputLine(const wxString& line)
-        {
-            m_wrapped += line;
-        }
-        virtual void OnNewLine()
-        {
-            m_wrapped += '\n';
-        }
-    private:
-        wxString m_wrapped;
-    };
-    HardBreakWrapper wrapper(win, text, widthMax);
-    return wrapper.GetWrapped();
+  protected:
+    virtual void OnOutputLine(const wxString &line) { m_wrapped += line; }
+    virtual void OnNewLine() { m_wrapped += '\n'; }
+
+  private:
+    wxString m_wrapped;
+  };
+  HardBreakWrapper wrapper(win, text, widthMax);
+  return wrapper.GetWrapped();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class MigrateAssistantDialog Implementation
 ///////////////////////////////////////////////////////////////////////////////
-
 
 BEGIN_EVENT_TABLE(MigrateAssistantDialog, wxDialog)
 EVT_BUTTON(ID_MIGRATE_CANCEL, MigrateAssistantDialog::OnMigrateCancelClick)
@@ -4628,13 +4761,13 @@ EVT_BUTTON(ID_MIGRATE_CONTINUE, MigrateAssistantDialog::OnMigrate1Click)
 EVT_TIMER(MIGRATION_STATUS_TIMER, MigrateAssistantDialog::onTimerEvent)
 END_EVENT_TABLE()
 
-MigrateAssistantDialog::MigrateAssistantDialog(wxWindow* parent, bool bskipScan,
-                               wxWindowID id, const wxString& caption,
-                               const wxPoint& pos, const wxSize& size,
-                               long style)
+MigrateAssistantDialog::MigrateAssistantDialog(wxWindow *parent, bool bskipScan,
+                                               wxWindowID id,
+                                               const wxString &caption,
+                                               const wxPoint &pos,
+                                               const wxSize &size, long style)
     : wxDialog(parent, id, caption, pos, size,
-               wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
-{
+               wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER) {
   m_Status = "";
   m_permissionResult = "";
   m_bsdcard = false;
@@ -4643,7 +4776,7 @@ MigrateAssistantDialog::MigrateAssistantDialog(wxWindow* parent, bool bskipScan,
 
   m_statusTimer.SetOwner(this, MIGRATION_STATUS_TIMER);
 
-  wxFont *qFont = OCPNGetFont(_("Dialog"), 10);
+  wxFont *qFont = OCPNGetFont(_("Dialog"));
   SetFont(*qFont);
 
   CreateControls();
@@ -4651,34 +4784,30 @@ MigrateAssistantDialog::MigrateAssistantDialog(wxWindow* parent, bool bskipScan,
   Centre();
 }
 
-MigrateAssistantDialog::~MigrateAssistantDialog(void) {
-
-}
-
+MigrateAssistantDialog::~MigrateAssistantDialog(void) {}
 
 void MigrateAssistantDialog::CreateControls(void) {
-  wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+  wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
 
-  wxStaticBox* mmsiBox =
-      new wxStaticBox(this, wxID_ANY, _("OpenCPN for Android Migration Assistant"));
+  wxStaticBox *mmsiBox = new wxStaticBox(
+      this, wxID_ANY, _("OpenCPN for Android Migration Assistant"));
 
-  wxStaticBoxSizer* infoSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
+  wxStaticBoxSizer *infoSizer = new wxStaticBoxSizer(mmsiBox, wxVERTICAL);
   mainSizer->Add(infoSizer, 0, wxEXPAND | wxALL, 5);
   m_infoText = NULL;
 
-  if (!m_bskipScan){
+  if (!m_bskipScan) {
     // Scan the  chart directory array from the config file.
     wxArrayString chartDirs = GetConfigChartDirectories();
 
-    for (unsigned int i=0; i < chartDirs.GetCount(); i++){
+    for (unsigned int i = 0; i < chartDirs.GetCount(); i++) {
       bool bOK = false;
-      if ( chartDirs[i].StartsWith(g_androidGetFilesDirs0) )
+      if (chartDirs[i].StartsWith(g_androidGetFilesDirs0))
         bOK = true;
 
-      else if (!g_androidGetFilesDirs1.StartsWith("?")){
-        if ( chartDirs[i].StartsWith(g_androidGetFilesDirs1) )
-          bOK = true;
+      else if (!g_androidGetFilesDirs1.StartsWith("?")) {
+        if (chartDirs[i].StartsWith(g_androidGetFilesDirs1)) bOK = true;
       }
       if (!bOK) {
         m_migrateDirs.Add(chartDirs[i]);
@@ -4686,96 +4815,116 @@ void MigrateAssistantDialog::CreateControls(void) {
     }
   }
 
-  if (m_migrateDirs.GetCount()){
-    wxString infoText1(_("OpenCPN has detected chart folders in your configuration file that cannot be accessed on this version of Android"));
+  if (m_migrateDirs.GetCount()) {
+    wxString infoText1(
+        _("OpenCPN has detected chart folders in your configuration file that "
+          "cannot be accessed on this version of Android"));
 
-    wxString infoText1w = WrapText(this, infoText1, gFrame->GetSize().x * 95 / 100);
+    wxString infoText1w =
+        WrapText(this, infoText1, gFrame->GetSize().x * 95 / 100);
 
     m_infoText = new wxStaticText(this, wxID_STATIC, infoText1w);
 
-    infoSizer->AddSpacer( 1 * GetCharWidth());
+    infoSizer->AddSpacer(1 * GetCharWidth());
     infoSizer->Add(m_infoText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
-    infoSizer->AddSpacer( 1 * GetCharWidth());
+    infoSizer->AddSpacer(1 * GetCharWidth());
 
     wxString dirsMsg;
 
-    for (unsigned int i=0; i < m_migrateDirs.GetCount(); i++){
+    for (unsigned int i = 0; i < m_migrateDirs.GetCount(); i++) {
       dirsMsg += wxString("     ");
       dirsMsg += m_migrateDirs[i];
       dirsMsg += wxString("\n");
     }
-    //dirsMsg += wxString("\n");
+    // dirsMsg += wxString("\n");
 
     m_infoDirs = new wxStaticText(this, wxID_STATIC, dirsMsg);
 
     infoSizer->Add(m_infoDirs, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
 
-    wxString migrateMsg1 = _("OpenCPN can copy these chart folders to a suitable location, if desired.");
+    wxString migrateMsg1 =
+        _("OpenCPN can copy these chart folders to a suitable location, if "
+          "desired.");
     migrateMsg1 += "\n\n";
-    migrateMsg1 += _("To proceed with chart folder migration, choose the chart source folder, and follow the instructions given.");
+    migrateMsg1 +=
+        _("To proceed with chart folder migration, choose the chart source "
+          "folder, and follow the instructions given.");
 
-    wxString migrateMsg1w = WrapText(this, migrateMsg1, gFrame->GetSize().x * 95/ 100);
+    wxString migrateMsg1w =
+        WrapText(this, migrateMsg1, gFrame->GetSize().x * 95 / 100);
 
     m_migrateStep1 = new wxStaticText(this, wxID_STATIC, migrateMsg1w);
-    infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
+    infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP,
+                   10);
 
-  }
-  else {
-
-    wxString migrateMsg1 = _("Some chart folders may be inaccessible to OpenCPN on this version of Android. ");
-    migrateMsg1 += _("OpenCPN can copy these chart folders to a suitable location, if desired.");
+  } else {
+    wxString migrateMsg1 =
+        _("Some chart folders may be inaccessible to OpenCPN on this version "
+          "of Android. ");
+    migrateMsg1 +=
+        _("OpenCPN can copy these chart folders to a suitable location, if "
+          "desired.");
     migrateMsg1 += "\n\n";
-    migrateMsg1 += _("To proceed with chart folder migration, choose the chart source folder, and follow the instructions given.");
+    migrateMsg1 +=
+        _("To proceed with chart folder migration, choose the chart source "
+          "folder, and follow the instructions given.");
 
-    wxString migrateMsg1w = WrapText(this, migrateMsg1, gFrame->GetSize().x * 9 / 10);
+    wxString migrateMsg1w =
+        WrapText(this, migrateMsg1, gFrame->GetSize().x * 9 / 10);
 
     m_migrateStep1 = new wxStaticText(this, wxID_STATIC, migrateMsg1w);
-    infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP, 10);
+    infoSizer->Add(m_migrateStep1, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP,
+                   10);
   }
 
-   mainSizer->AddSpacer( 1 * GetCharWidth());
+  mainSizer->AddSpacer(1 * GetCharWidth());
 
   // Is SDCard available?
-  if (!g_androidGetFilesDirs1.StartsWith("?")){
-
-    wxStaticBoxSizer* sourceSizer = new wxStaticBoxSizer(
+  if (!g_androidGetFilesDirs1.StartsWith("?")) {
+    wxStaticBoxSizer *sourceSizer = new wxStaticBoxSizer(
         new wxStaticBox(this, wxID_ANY, _("Migrate destination")), wxVERTICAL);
     mainSizer->Add(sourceSizer, 0, wxEXPAND | wxALL, 5);
-    mainSizer->AddSpacer( 2 * GetCharWidth());
+    mainSizer->AddSpacer(2 * GetCharWidth());
 
-    m_radioInternal = new	wxRadioButton (this, wxID_ANY, _("OpenCPN Internal Storage"),wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-    sourceSizer->Add( m_radioInternal, 0, /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
+    m_radioInternal =
+        new wxRadioButton(this, wxID_ANY, _("OpenCPN Internal Storage"),
+                          wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    sourceSizer->Add(m_radioInternal, 0,
+                     /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
-    m_radioSDCard = new	wxRadioButton (this, wxID_ANY, _("OpenCPN SDCard Storage"),wxDefaultPosition, wxDefaultSize);
-    sourceSizer->Add( m_radioSDCard, 0, /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
+    m_radioSDCard =
+        new wxRadioButton(this, wxID_ANY, _("OpenCPN SDCard Storage"),
+                          wxDefaultPosition, wxDefaultSize);
+    sourceSizer->Add(m_radioSDCard, 0,
+                     /*wxEXPAND |*/ wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
-    m_radioInternal->SetValue( true );
+    m_radioInternal->SetValue(true);
   }
 
-
   // control buttons
-  m_migrateButton = new wxButton(this, ID_MIGRATE_START, _("Choose chart source folder."));
+  m_migrateButton =
+      new wxButton(this, ID_MIGRATE_START, _("Choose chart source folder."));
   mainSizer->Add(m_migrateButton, 0, wxEXPAND | wxALL, 5);
 
-  //mainSizer->AddSpacer( 1 * GetCharWidth());
+  // mainSizer->AddSpacer( 1 * GetCharWidth());
 
   statusSizer = new wxStaticBoxSizer(
-        new wxStaticBox(this, wxID_ANY, _("Status")), wxVERTICAL);
-    mainSizer->Add(statusSizer, 0, wxEXPAND | wxALL, 5);
+      new wxStaticBox(this, wxID_ANY, _("Status")), wxVERTICAL);
+  mainSizer->Add(statusSizer, 0, wxEXPAND | wxALL, 5);
 
+  m_ipGauge = new InProgressIndicator(
+      this, wxID_ANY, 100, wxDefaultPosition,
+      wxSize(gFrame->GetSize().x * 8 / 10, gFrame->GetCharHeight() * 2));
+  statusSizer->Add(m_ipGauge, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 
-  m_ipGauge = new InProgressIndicator(this, wxID_ANY, 100, wxDefaultPosition,
-                                      wxSize(gFrame->GetSize().x * 8 / 10, gFrame->GetCharHeight() * 2));
-  statusSizer->Add(m_ipGauge, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
-
-  mainSizer->AddSpacer( 1 * GetCharWidth());
+  mainSizer->AddSpacer(1 * GetCharWidth());
 
   m_statusText = new wxStaticText(this, wxID_STATIC, m_Status);
   statusSizer->Add(m_statusText, 0, wxEXPAND | wxALL, 5);
 
   GetSizer()->Hide(statusSizer);
 
-  wxBoxSizer* btnSizer = new wxBoxSizer(wxHORIZONTAL);
+  wxBoxSizer *btnSizer = new wxBoxSizer(wxHORIZONTAL);
   mainSizer->Add(btnSizer, 0, wxALIGN_RIGHT | wxALL, 5);
   m_CancelButton = new wxButton(this, ID_MIGRATE_CANCEL, _("Cancel"));
   m_CancelButton->SetDefault();
@@ -4784,42 +4933,37 @@ void MigrateAssistantDialog::CreateControls(void) {
   m_OKButton = new wxButton(this, ID_MIGRATE_OK, _("OK"));
   btnSizer->Add(m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
   m_OKButton->Hide();
-
 }
 
-
-void MigrateAssistantDialog::OnMigrateCancelClick(wxCommandEvent& event) {
-
+void MigrateAssistantDialog::OnMigrateCancelClick(wxCommandEvent &event) {
   m_statusTimer.Stop();
   callActivityMethod_vs("cancelMigration");
 
   EndModal(wxID_CANCEL);
 }
 
-void MigrateAssistantDialog::OnMigrateOKClick(wxCommandEvent& event) {
+void MigrateAssistantDialog::OnMigrateOKClick(wxCommandEvent &event) {
   EndModal(wxID_OK);
 }
 
-void MigrateAssistantDialog::OnMigrateClick(wxCommandEvent& event)
-{
-
-  wxString clickText1(_("On the next page, find and choose the root folder containing chart files to migrate\n\n\
+void MigrateAssistantDialog::OnMigrateClick(wxCommandEvent &event) {
+  wxString clickText1(_(
+      "On the next page, find and choose the root folder containing chart files to migrate\n\n\
 Example: /storage/emulated/0/Charts\n\n"));
   clickText1 += _("This entire folder will be migrated.\n");
   clickText1 += _("Proceed?");
 
-  if (wxID_OK == OCPNMessageBox(
-        NULL, clickText1, _("OpenCPN for Android Migration Assistant"), wxOK | wxCANCEL )){
-
-    if(m_infoText) m_infoText->Hide();
+  if (wxID_OK == OCPNMessageBox(NULL, clickText1,
+                                _("OpenCPN for Android Migration Assistant"),
+                                wxOK | wxCANCEL)) {
+    if (m_infoText) m_infoText->Hide();
     m_migrateStep1->Hide();
     GetSizer()->Show(statusSizer);
     Layout();
 
     if (g_androidUtilHandler) {
-
       m_Status = _("Waiting for permission grant....");
-      setStatus( m_Status );
+      setStatus(m_Status);
 
       g_androidUtilHandler->m_eventTimer.Stop();
       g_androidUtilHandler->m_migratePermissionSetDone = false;
@@ -4836,143 +4980,131 @@ Example: /storage/emulated/0/Charts\n\n"));
   }
 }
 
-void MigrateAssistantDialog::OnMigrate1Click(wxCommandEvent& event) {
-
+void MigrateAssistantDialog::OnMigrate1Click(wxCommandEvent &event) {
   // Construct the migration arguments
 
-  //Destination is either internal, or SDCard, if available
-  if( !m_bsdcard )
+  // Destination is either internal, or SDCard, if available
+  if (!m_bsdcard)
     m_migrateDestinationFolder = g_androidGetFilesDirs0 + "/Charts";
   else
     m_migrateDestinationFolder = g_androidGetFilesDirs1 + "/Charts";
 
   qDebug() << "m_migrateSourceFolder" << m_migrateSourceFolder.mb_str();
-  qDebug() << "m_migrateDestinationFolder" << m_migrateDestinationFolder.mb_str();
+  qDebug() << "m_migrateDestinationFolder"
+           << m_migrateDestinationFolder.mb_str();
 
   wxString activityResult;
-  activityResult = callActivityMethod_s2s("migrateFolder", m_migrateSourceFolder, m_migrateDestinationFolder);
+  activityResult = callActivityMethod_s2s(
+      "migrateFolder", m_migrateSourceFolder, m_migrateDestinationFolder);
 
   m_Status = _("Migration started...");
-  setStatus( m_Status );
+  setStatus(m_Status);
 
   m_statusTimer.Start(500, wxTIMER_CONTINUOUS);
   m_ipGauge->Show();
   Layout();
-
-
 }
 
-void MigrateAssistantDialog::onPermissionGranted( wxString result ) {
+void MigrateAssistantDialog::onPermissionGranted(wxString result) {
   m_permissionResult = result;
   qDebug() << "onPermissionGranted " << result.mb_str();
-  if(result.StartsWith("file")){
+  if (result.StartsWith("file")) {
     m_migrateSourceFolder = result.Mid(5);
 
     m_Status = _("Permission granted to ");
     m_Status += m_migrateSourceFolder;
-    setStatus( m_Status );
+    setStatus(m_Status);
 
     // Carry on to the next step
     m_migrateButton->Hide();
     Layout();
 
     // Capture the destination
-    if(m_radioSDCard)
-      m_bsdcard = m_radioSDCard->GetValue();
+    if (m_radioSDCard) m_bsdcard = m_radioSDCard->GetValue();
 
-    wxString clickText2(_("OpenCPN has obtained temporary permission to access the selected chart folders."));
+    wxString clickText2(
+        _("OpenCPN has obtained temporary permission to access the selected "
+          "chart folders."));
     clickText2 += "\n\n";
     clickText2 += _("Chart migration is ready to proceed.");
     clickText2 += "\n\n";
     clickText2 += _("Source: ");
     clickText2 += m_migrateSourceFolder;
     clickText2 += "\n\n";
-    if(!m_bsdcard)
+    if (!m_bsdcard)
       clickText2 += _("Destination: OpenCPN Internal Storage");
     else
       clickText2 += _("Destination: OpenCPN SDCard Storage");
     clickText2 += "\n\n";
     clickText2 += _("Migrate charts now?");
 
-
-
-    if (wxID_OK == OCPNMessageBox(
-        NULL, clickText2, _("OpenCPN for Android Migration Assistant"), wxOK | wxCANCEL )){
-
+    if (wxID_OK == OCPNMessageBox(NULL, clickText2,
+                                  _("OpenCPN for Android Migration Assistant"),
+                                  wxOK | wxCANCEL)) {
       wxCommandEvent evt(wxEVT_BUTTON);
       evt.SetId(ID_MIGRATE_CONTINUE);
       AddPendingEvent(evt);
-    }
-    else{
-     m_Status = "";
-     setStatus( m_Status );
+    } else {
+      m_Status = "";
+      setStatus(m_Status);
 
-     m_migrateButton->Show();
-     Layout();
+      m_migrateButton->Show();
+      Layout();
     }
-  }
-  else{
+  } else {
     m_Status = "";
-    setStatus( m_Status );
+    setStatus(m_Status);
+  }
+}
+
+void MigrateAssistantDialog::onTimerEvent(wxTimerEvent &event) {
+  // Get and show the current status from Java upstream
+  qDebug() << "Migration: onTimerEvent";
+
+  m_Status = callActivityMethod_vs("getMigrateStatus");
+  setStatus(m_Status);
+
+  if (m_Status.StartsWith("Counting")) m_ipGauge->Pulse();
+
+  if (m_Status.StartsWith("Migrating")) {
+    wxString prog = m_Status.Mid(10);
+    // qDebug() << prog.mb_str();
+    wxString np = prog.BeforeFirst('/');
+    // qDebug() << np.mb_str();
+    wxString np1 = prog.AfterFirst('/');
+    wxString np2 = np1.BeforeFirst(';');
+    // qDebug() << np2.mb_str();
+
+    long i, n;
+    np.ToLong(&i);
+    np2.ToLong(&n);
+    if (m_ipGauge->GetRange() != n) m_ipGauge->SetRange(n);
+    m_ipGauge->SetValue(i);
   }
 
+  // Finished?
+  if (m_Status.Contains("Migration complete")) {
+    m_statusTimer.Stop();
+
+    wxString clickText3(_("Chart migration is finished."));
+    clickText3 += "\n\n";
+    clickText3 += _("Migrated chart folders are now accessible to OpenCPN.");
+    clickText3 += "\n";
+    clickText3 +=
+        _("You may need to adjust your chart folders further, to accommodate "
+          "individual chart groups");
+    clickText3 += "\n\n";
+    clickText3 += _("OpenCPN will now restart to apply changes.");
+
+    if (wxID_OK == OCPNMessageBox(NULL, clickText3,
+                                  _("OpenCPN for Android Migration Assistant"),
+                                  wxOK)) {
+      FinishMigration();
+    }
+  }
 }
 
-void MigrateAssistantDialog::onTimerEvent(wxTimerEvent &event)
-{
-    // Get and show the current status from Java upstream
-    qDebug() << "Migration: onTimerEvent";
-
-    m_Status = callActivityMethod_vs("getMigrateStatus");
-    setStatus( m_Status );
-
-    if (m_Status.StartsWith("Counting"))
-      m_ipGauge->Pulse();
-
-    if (m_Status.StartsWith("Migrating")){
-      wxString prog = m_Status.Mid(10);
-      //qDebug() << prog.mb_str();
-      wxString np = prog.BeforeFirst('/');
-      //qDebug() << np.mb_str();
-      wxString np1 = prog.AfterFirst('/');
-      wxString np2 = np1.BeforeFirst(';');
-      //qDebug() << np2.mb_str();
-
-      long i, n;
-      np.ToLong(&i);
-      np2.ToLong(&n);
-      if (m_ipGauge->GetRange() != n)
-        m_ipGauge->SetRange( n );
-      m_ipGauge->SetValue( i );
-    }
-
-
-
-
-    // Finished?
-    if (m_Status.Contains("Migration complete")){
-      m_statusTimer.Stop();
-
-      wxString clickText3(_("Chart migration is finished."));
-      clickText3 += "\n\n";
-      clickText3 += _("Migrated chart folders are now accessible to OpenCPN.");
-      clickText3 += "\n";
-      clickText3 += _("You may need to adjust your chart folders further, to accommodate individual chart groups");
-      clickText3 += "\n\n";
-      clickText3 += _("OpenCPN will now restart to apply changes.");
-
-      if (wxID_OK == OCPNMessageBox(
-        NULL, clickText3, _("OpenCPN for Android Migration Assistant"), wxOK )){
-
-        FinishMigration();
-
-      }
-    }
-
-}
-
-wxArrayString GetConfigChartDirectories()
-{
+wxArrayString GetConfigChartDirectories() {
   wxArrayString rv;
   pConfig->SetPath(_T ( "/ChartDirectories" ));
   int iDirMax = pConfig->GetNumberOfEntries();
@@ -4984,60 +5116,55 @@ wxArrayString GetConfigChartDirectories()
       pConfig->Read(str, &val);  // Get a Directory name
       rv.Add(val.BeforeFirst('^'));
       bCont = pConfig->GetNextEntry(str, dummy);
-
     }
   }
 
   return rv;
 }
 
+void MigrateAssistantDialog::FinishMigration() {
+  m_Status = _("Finishing migration");
+  setStatus(m_Status);
 
-void MigrateAssistantDialog::FinishMigration()
-{
-    m_Status = _("Finishing migration");
-    setStatus( m_Status );
+  // Craft the migrated (destination) folder
 
-    // Craft the migrated (destination) folder
+  qDebug() << "m_migrateSourceFolder " << m_migrateSourceFolder.mb_str();
+  qDebug() << "m_migrateDestinationFolder "
+           << m_migrateDestinationFolder.mb_str();
 
-    qDebug() << "m_migrateSourceFolder " << m_migrateSourceFolder.mb_str();
-    qDebug() << "m_migrateDestinationFolder " << m_migrateDestinationFolder.mb_str();
+  // Edit the config file, removing old inaccessible folders,
+  // and adding migrated folders.
 
+  wxArrayString finalArray;
+  wxArrayString chartDirs =
+      GetConfigChartDirectories();  // ChartData->GetChartDirArrayString();
+  for (unsigned int i = 0; i < chartDirs.GetCount(); i++) {
+    // qDebug() << "Checking: " << chartDirs[i].mb_str();
 
+    // Leave the OK folders
+    bool bOK = false;
+    if (chartDirs[i].StartsWith(g_androidGetFilesDirs0))
+      bOK = true;
 
-    // Edit the config file, removing old inaccessible folders,
-    // and adding migrated folders.
-
-    wxArrayString finalArray;
-    wxArrayString chartDirs = GetConfigChartDirectories(); //ChartData->GetChartDirArrayString();
-    for (unsigned int i=0; i < chartDirs.GetCount(); i++){
-
-        //qDebug() << "Checking: " << chartDirs[i].mb_str();
-
-        // Leave the OK folders
-        bool bOK = false;
-        if ( chartDirs[i].StartsWith(g_androidGetFilesDirs0) )
-          bOK = true;
-
-        else if (!g_androidGetFilesDirs1.StartsWith("?")){
-          if ( chartDirs[i].StartsWith(g_androidGetFilesDirs1) )
-            bOK = true;
-        }
-
-        // Check inaccessible folders to see if they were (part of) the migration
-        if (!bOK) {
-            if(!chartDirs[i].StartsWith(m_migrateSourceFolder))    // not part of migration
-              bOK = true;                                   // so, keep it.
-                                                            // To be migrated on next round
-        }
-
-        if(bOK){
-          //qDebug() << "Add: " << chartDirs[i].mb_str();
-          finalArray.Add(chartDirs[i]);
-        }
-
+    else if (!g_androidGetFilesDirs1.StartsWith("?")) {
+      if (chartDirs[i].StartsWith(g_androidGetFilesDirs1)) bOK = true;
     }
 
-    finalArray.Add(m_migrateDestinationFolder + "/MigratedCharts");
+    // Check inaccessible folders to see if they were (part of) the migration
+    if (!bOK) {
+      if (!chartDirs[i].StartsWith(
+              m_migrateSourceFolder))  // not part of migration
+        bOK = true;                    // so, keep it.
+                                       // To be migrated on next round
+    }
+
+    if (bOK) {
+      // qDebug() << "Add: " << chartDirs[i].mb_str();
+      finalArray.Add(chartDirs[i]);
+    }
+  }
+
+  finalArray.Add(m_migrateDestinationFolder + "/MigratedCharts");
 
 #if 0
     // Now manage the migrate folder
@@ -5098,77 +5225,63 @@ void MigrateAssistantDialog::FinishMigration()
     }
 
 #endif
-    for (unsigned int j=0 ; j < finalArray.GetCount() ; j++){
-      qDebug() << "finalEntry: " << finalArray[j].mb_str();
-    }
+  for (unsigned int j = 0; j < finalArray.GetCount(); j++) {
+    qDebug() << "finalEntry: " << finalArray[j].mb_str();
+  }
 
+  // Now delete and replace the chart directory list in the config file
+  wxRemoveFile(ChartListFileName);
 
-    // Now delete and replace the chart directory list in the config file
-    wxRemoveFile(ChartListFileName);
+  pConfig->SetPath(_T ( "/ChartDirectories" ));
+  pConfig->DeleteGroup(_T ( "/ChartDirectories" ));
 
-    pConfig->SetPath(_T ( "/ChartDirectories" ));
-    pConfig->DeleteGroup(_T ( "/ChartDirectories" ));
+  pConfig->SetPath(_T ( "/ChartDirectories" ));
+  for (int iDir = 0; iDir < finalArray.GetCount(); iDir++) {
+    wxString dirn = finalArray[iDir];
+    dirn.Append(_T("^"));
 
-    pConfig->SetPath(_T ( "/ChartDirectories" ));
-    for (int iDir = 0; iDir < finalArray.GetCount(); iDir++) {
-      wxString dirn = finalArray[iDir];
-      dirn.Append(_T("^"));
+    wxString str_buf;
+    str_buf.Printf(_T ( "ChartDir%d" ), iDir + 1);
+    pConfig->Write(str_buf, dirn);
+  }
+  pConfig->Flush();
 
-      wxString str_buf;
-      str_buf.Printf(_T ( "ChartDir%d" ), iDir + 1);
-      pConfig->Write(str_buf, dirn);
-    }
-    pConfig->Flush();
-
-    // Restart
-    callActivityMethod_vs("restartOCPNAfterMigrate");
-
+  // Restart
+  callActivityMethod_vs("restartOCPNAfterMigrate");
 }
 
- BEGIN_EVENT_TABLE( InProgressIndicator, wxGauge )
- EVT_TIMER( 4356, InProgressIndicator::OnTimer )
- END_EVENT_TABLE()
+BEGIN_EVENT_TABLE(InProgressIndicator, wxGauge)
+EVT_TIMER(4356, InProgressIndicator::OnTimer)
+END_EVENT_TABLE()
 
- InProgressIndicator::InProgressIndicator()
- {
- }
+InProgressIndicator::InProgressIndicator() {}
 
- InProgressIndicator::InProgressIndicator(wxWindow* parent, wxWindowID id, int range,
-                     const wxPoint& pos, const wxSize& size,
-                     long style, const wxValidator& validator, const wxString& name)
-{
-    wxGauge::Create(parent, id, range, pos, size, style, validator, name);
+InProgressIndicator::InProgressIndicator(wxWindow *parent, wxWindowID id,
+                                         int range, const wxPoint &pos,
+                                         const wxSize &size, long style,
+                                         const wxValidator &validator,
+                                         const wxString &name) {
+  wxGauge::Create(parent, id, range, pos, size, style, validator, name);
 
-    m_timer.SetOwner( this, 4356 );
+  m_timer.SetOwner(this, 4356);
 
-    SetValue(0);
-    m_bAlive = false;
-
+  SetValue(0);
+  m_bAlive = false;
 }
 
-InProgressIndicator::~InProgressIndicator()
-{
-    Stop();
+InProgressIndicator::~InProgressIndicator() { Stop(); }
+
+void InProgressIndicator::OnTimer(wxTimerEvent &evt) {
+  if (m_bAlive) Pulse();
 }
 
-void InProgressIndicator::OnTimer(wxTimerEvent &evt)
-{
-    if(m_bAlive)
-        Pulse();
+void InProgressIndicator::Start() {
+  m_bAlive = true;
+  m_timer.Start(50);
 }
 
-
-void InProgressIndicator::Start()
-{
-     m_bAlive = true;
-     m_timer.Start( 50 );
-
-}
-
-void InProgressIndicator::Stop()
-{
-     m_bAlive = false;
-     SetValue(0);
-     m_timer.Stop();
-
+void InProgressIndicator::Stop() {
+  m_bAlive = false;
+  SetValue(0);
+  m_timer.Stop();
 }

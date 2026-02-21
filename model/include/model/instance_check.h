@@ -12,38 +12,42 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef INSTANCE_CHECK_H__
-#define INSTANCE_CHECK_H__
+/**
+ * \file
+ *
+ * Instance check interface
+ */
+
+#ifndef INSTANCE_CHECK_H_
+#define INSTANCE_CHECK_H_
 
 #include <memory>
 
 /** Common interface for all instance checkers. */
 class InstanceCheck {
 public:
-    /** @return Reference to an InstanceCheck implementation. */
-    static InstanceCheck& GetInstance();
+  /** @return Reference to an InstanceCheck implementation. */
+  static InstanceCheck& GetInstance();
 
-    virtual ~InstanceCheck() = default;
+  virtual ~InstanceCheck() = default;
 
-    /** Return true if this process is the primary opencpn instance. */
-    virtual bool IsMainInstance() = 0;
+  /** Return true if this process is the primary opencpn instance. */
+  virtual bool IsMainInstance() = 0;
 
-    /** Wait until this object can be used for example for Dbus connection. */
-    virtual void WaitUntilValid() {};
+  /** Wait until this object can be used for example for Dbus connection. */
+  virtual void WaitUntilValid() {};
 
-    /**
-     * Remove all persistent instance state, including possible lock file
-     * and defunct opencpn processes.
-     */
-    virtual void CleanUp() {};
+  /**
+   * Remove all persistent instance state, including possible lock file
+   * and defunct opencpn processes.
+   */
+  virtual void CleanUp() {};
 
-    /** Do whatever needed before wxWidget's checks triggers. */
-    virtual void OnExit () {};
+  /** Do whatever needed before wxWidget's checks triggers. */
+  virtual void OnExit() {};
 };
 
 /** Empty place holder, primarely for Android. */
@@ -54,7 +58,7 @@ public:
     return instance;
   }
 
-  virtual bool IsMainInstance()  { return true; }
+  virtual bool IsMainInstance() { return true; }
 };
 
-#endif   // INSTANCE_CHECK_H__
+#endif  // INSTANCE_CHECK_H__

@@ -1,11 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Tide and Current Manager
- * Author:   David Register
- * Todo add original author
- *
- ***************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,10 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Tide and Current Manager
+ * @TODO  Add original author copyright
+ */
 
 #ifndef __TCMGR_H__
 #define __TCMGR_H__
@@ -30,10 +28,12 @@
 #include <map>
 #include <vector>
 
-#include "Station_Data.h"
-#include "IDX_entry.h"
-#include "TC_Error_Code.h"
-#include "TCDataSource.h"
+#include <wx/datetime.h>
+
+#include "station_data.h"
+#include "idx_entry.h"
+#include "tc_error_code.h"
+#include "tc_data_source.h"
 
 // ----------------------------------------------------------------------------
 // external C linkages
@@ -68,7 +68,10 @@
  * spacing is greater than this value (in seconds).
  */
 #define TIDE_TIME_STEP (TIDE_TIME_PREC)
-#define TIDE_BAD_TIME ((time_t)-1)
+#define TIDE_BAD_TIME ((time_t) - 1)
+
+class TCMgr;           // forward
+extern TCMgr *ptcmgr;  ///< Global instance
 
 //----------------------------------------------------------------------------
 //   Reference Station Data
@@ -89,11 +92,12 @@ public:
   ~TCMgr();
 
   TC_Error_Code LoadDataSources(std::vector<std::string> &sources);
-  std::vector<std::string> GetDataSet(void) { return m_sourcefile_array; }
+  std::vector<std::string> GetDataSet() { return m_sourcefile_array; }
 
-  bool IsReady(void) { return bTCMReady; }
+  bool IsReady() { return bTCMReady; }
 
   bool GetTideOrCurrent(time_t t, int idx, float &value, float &dir);
+  bool GetTideOrCurrentMeters(time_t t, int idx, float &value, float &dir);
   bool GetTideOrCurrent15(time_t t, int idx, float &tcvalue, float &dir,
                           bool &bnew_val);
   bool GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now,
@@ -104,6 +108,8 @@ public:
 
   int GetStationTimeOffset(IDX_entry *pIDX);
   int GetNextBigEvent(time_t *tm, int idx);
+  std::wstring GetTidalEventStr(int station_id, wxDateTime ref_dt, double lat,
+                                double lon, int dt_type);
   double GetStationLat(IDX_entry *pIDX);
   double GetStationLon(IDX_entry *pIDX);
 
@@ -123,10 +129,10 @@ public:
 private:
   void PurgeData();
 
-  void LoadMRU(void);
-  void SaveMRU(void);
+  void LoadMRU();
+  void SaveMRU();
   void AddMRU(Station_Data *psd);
-  void FreeMRU(void);
+  void FreeMRU();
 
   bool bTCMReady;
   wxString pmru_file_name;
@@ -348,7 +354,7 @@ typedef struct {
 #define AMPLITUDE_EPSILON 0.00005
 
 /* Rounding function. */
-#define NINT(a) ((a) < 0.0 ? (NV_INT32)((a)-0.5) : (NV_INT32)((a) + 0.5))
+#define NINT(a) ((a) < 0.0 ? (NV_INT32)((a) - 0.5) : (NV_INT32)((a) + 0.5))
 
 /*  Public function prototypes.  */
 
@@ -598,7 +604,7 @@ NV_BOOL check_simple(TIDE_RECORD rec);
 #ifndef __TIDE_HEADER__
 #define __TIDE_HEADER__
 
-//#include "tcd.h"
+// #include "tcd.h"
 
 typedef struct {
   const NV_CHAR *keyphrase;

@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -40,74 +39,60 @@
 ** You can use it any way you like.
 */
 
-
-HDM::HDM()
-{
-   Mnemonic = _T("HDM");
-   Empty();
+HDM::HDM() {
+  Mnemonic = _T("HDM");
+  Empty();
 }
 
-HDM::~HDM()
-{
-   Mnemonic.Empty();
-   Empty();
+HDM::~HDM() { Empty(); }
+
+void HDM::Empty(void) { DegreesMagnetic = 0.0; }
+
+bool HDM::Parse(const SENTENCE& sentence) {
+  /*
+  ** HDM - Heading - Magnetic
+  **
+  **        1   2 3
+  **        |   | |
+  ** $--HDM,x.x,M*hh<CR><LF>
+  **
+  ** Field Number:
+  **  1) Heading Degrees, Magnetic
+  **  2) M = Magnetic
+  **  3) Checksum
+  */
+
+  /*
+  ** First we check the checksum...
+  */
+
+  if (sentence.IsChecksumBad(3) == TRUE) {
+    SetErrorMessage(_T("Invalid Checksum"));
+    return (FALSE);
+  }
+
+  DegreesMagnetic = sentence.Double(1);
+
+  return (TRUE);
 }
 
-void HDM::Empty( void )
-{
-   DegreesMagnetic = 0.0;
+bool HDM::Write(SENTENCE& sentence) {
+  /*
+  ** Let the parent do its thing
+  */
+
+  RESPONSE::Write(sentence);
+
+  sentence += DegreesMagnetic;
+  sentence += _T("M");
+
+  sentence.Finish();
+
+  return (TRUE);
 }
 
-bool HDM::Parse( const SENTENCE& sentence )
-{
+const HDM& HDM::operator=(const HDM& source) {
+  DegreesMagnetic = source.DegreesMagnetic;
 
-   /*
-   ** HDM - Heading - Magnetic
-   **
-   **        1   2 3
-   **        |   | |
-   ** $--HDM,x.x,M*hh<CR><LF>
-   **
-   ** Field Number:
-   **  1) Heading Degrees, Magnetic
-   **  2) M = Magnetic
-   **  3) Checksum
-   */
-
-   /*
-   ** First we check the checksum...
-   */
-
-   if ( sentence.IsChecksumBad( 3 ) == TRUE )
-   {
-      SetErrorMessage( _T("Invalid Checksum") );
-      return( FALSE );
-   }
-
-   DegreesMagnetic = sentence.Double( 1 );
-
-   return( TRUE );
-}
-
-bool HDM::Write( SENTENCE& sentence )
-{
-   /*
-   ** Let the parent do its thing
-   */
-
-   RESPONSE::Write( sentence );
-
-   sentence += DegreesMagnetic;
-   sentence += _T("M");
-
-   sentence.Finish();
-
-   return( TRUE );
-}
-
-const HDM& HDM::operator = ( const HDM& source )
-{
-      DegreesMagnetic = source.DegreesMagnetic;
-
-   return( *this );
+  return (*this);
 }

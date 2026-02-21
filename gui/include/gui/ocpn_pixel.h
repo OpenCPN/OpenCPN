@@ -1,12 +1,5 @@
-
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Optimized wxBitmap Object
- * Author:   David Register
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,19 +12,17 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
- *
- *
+ * Optimized wxBitmap Object
  */
 
 #ifndef _OCPN_PIXEL_H_
 #define _OCPN_PIXEL_H_
-
-//#include "dychart.h"  // for configuration stuff
 
 wxImage Image_Rotate(wxImage &base_image, double angle,
                      const wxPoint &centre_of_rotation, bool interpolating,
@@ -46,28 +37,28 @@ wxImage Image_Rotate(wxImage &base_image, double angle,
 //          Only one of the following must be selected
 //          with due regard for the system type
 
-//#define __PIX_CACHE_WXIMAGE__                               // a safe default
-//#define __PIX_CACHE_DIBSECTION__                            // for MSW
-//#define __PIX_CACHE_X11IMAGE__                              // for
-//X11/Universal, requires ocpnUSE_ocpnBitmap
+// #define __PIX_CACHE_WXIMAGE__                               // a safe default
+// #define __PIX_CACHE_DIBSECTION__                            // for MSW
+// #define __PIX_CACHE_X11IMAGE__                              // for
+// X11/Universal, requires ocpnUSE_ocpnBitmap
 
 //  I use these shortcuts....
 #ifdef __WXX11__
 #define __PIX_CACHE_WXIMAGE__
-//#define     __PIX_CACHE_X11IMAGE__
+// #define     __PIX_CACHE_X11IMAGE__
 #endif
 
 #ifdef __WXGTK__
 #define __PIX_CACHE_WXIMAGE__
-//#define     __PIX_CACHE_X11IMAGE__
-//#define __PIX_CACHE_PIXBUF__
+// #define     __PIX_CACHE_X11IMAGE__
+// #define __PIX_CACHE_PIXBUF__
 #endif
 
 #ifdef __WXMSW__
 #define __PIX_CACHE_WXIMAGE__
-//#define __PIX_CACHE_DIBSECTION__
-//#define     ocpnUSE_DIBSECTION
-//#define     ocpnUSE_ocpnBitmap
+// #define __PIX_CACHE_DIBSECTION__
+// #define     ocpnUSE_DIBSECTION
+// #define     ocpnUSE_ocpnBitmap
 #endif
 
 #ifdef __WXOSX__
@@ -139,7 +130,7 @@ wxImage Image_Rotate(wxImage &base_image, double angle,
 
 typedef enum RGBO { RGB = 0, BGR } _RGBO;
 
-class ocpnBitmap;
+class ocpnBitmap;  // forward in .cpp file
 
 #ifdef __PIX_CACHE_X11IMAGE__
 //----------------------------------------------------------------------
@@ -286,9 +277,6 @@ protected:
 #ifdef __WXX11__
   bool CreateFromocpnXImage(ocpnXImage *poXI, int width, int height, int depth);
 #endif
-
-private:
-  DECLARE_DYNAMIC_CLASS(ocpnBitmap)
 };
 
 #endif  // ocpnUSE_ocpnBitmap
@@ -317,8 +305,6 @@ private:
 #ifdef ocpnUSE_DIBSECTION
   wxDIB *m_pselectedDIB;
 #endif
-
-  DECLARE_DYNAMIC_CLASS(ocpnMemDC)
 };
 
 #endif  // _OCPN_PIXEL_H_

@@ -1,12 +1,6 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:
- *
- * Author:   David Register, Alec Leamas
- *
- ***************************************************************************
- *   Copyright (C) 2022 by David Register, Alec Leamas                     *
+ *   Copyright (C) 2022 by David Register                                  *
+ *   Copyright (C) 2022 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,10 +13,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Incoming messages decoding support.
+ */
 
 #ifndef _COMM_DECODER_H
 #define _COMM_DECODER_H
@@ -30,7 +28,8 @@
 #include <memory>
 #include <string>
 
-#include "rapidjson/fwd.h"
+#include "rapidjson/fwd.h"  // Must be early, rapidjson known bug
+
 #include <wx/string.h>
 
 #include "model/comm_appmsg.h"
@@ -40,8 +39,7 @@
 #include "nmea0183.h"
 #include "N2KParser.h"
 
-
-typedef struct{
+typedef struct {
   double gLat;
   double gLon;
   double gSog;
@@ -53,17 +51,18 @@ typedef struct{
   int SID;
 } NavData;
 
-
 class CommDecoder {
 public:
   CommDecoder() : m_NMEA0183(NmeaCtxFactory()) {};
-  ~CommDecoder(){};
+  ~CommDecoder() {};
 
   // NMEA0183 decoding, by sentence.
   bool DecodeRMC(std::string s, NavData& temp_data);
   bool DecodeHDM(std::string s, NavData& temp_data);
+  bool DecodeTHS(std::string s, NavData& temp_data);
   bool DecodeHDT(std::string s, NavData& temp_data);
   bool DecodeHDG(std::string s, NavData& temp_data);
+  bool DecodeHVD(std::string s, NavData& temp_data);
   bool DecodeVTG(std::string s, NavData& temp_data);
   bool DecodeGSV(std::string s, NavData& temp_data);
   bool DecodeGGA(std::string s, NavData& temp_data);
@@ -74,32 +73,37 @@ public:
   NMEA0183 m_NMEA0183;  // Used to parse messages from NMEA threads
 
   // NMEA2000 decoding, by PGN
-  bool DecodePGN129025(std::vector<unsigned char> v,  NavData& temp_data);
-  bool DecodePGN129026(std::vector<unsigned char> v,  NavData& temp_data);
-  bool DecodePGN129029(std::vector<unsigned char> v,  NavData& temp_data);
-  bool DecodePGN127250(std::vector<unsigned char> v,  NavData& temp_data);
-  bool DecodePGN129540(std::vector<unsigned char> v,  NavData& temp_data);
+  bool DecodePGN129025(std::vector<unsigned char> v, NavData& temp_data);
+  bool DecodePGN129026(std::vector<unsigned char> v, NavData& temp_data);
+  bool DecodePGN129029(std::vector<unsigned char> v, NavData& temp_data);
+  bool DecodePGN127250(std::vector<unsigned char> v, NavData& temp_data);
+  bool DecodePGN127258(std::vector<unsigned char> v, NavData& temp_data);
+  bool DecodePGN129540(std::vector<unsigned char> v, NavData& temp_data);
 
   // SignalK
   bool DecodeSignalK(std::string s, NavData& temp_data);
-  void handleUpdate(const rapidjson::Value &update, NavData& temp_data);
-  void updateItem(const rapidjson::Value &item, wxString &sfixtime, NavData& temp_data);
-  bool updateNavigationPosition(const rapidjson::Value &value,
-                                const wxString &sfixtime, NavData& temp_data);
-  void updateNavigationSpeedOverGround(const rapidjson::Value &value,
-                                       const wxString &sfixtime, NavData& temp_data);
-  void updateNavigationCourseOverGround(const rapidjson::Value &value,
-                                        const wxString &sfixtime, NavData& temp_data);
-  void updateGnssSatellites(const rapidjson::Value &value, const wxString &sfixtime, NavData& temp_data);
-  void updateHeadingTrue(const rapidjson::Value &value, const wxString &sfixtime, NavData& temp_data);
-  void updateHeadingMagnetic(const rapidjson::Value &value,
-                             const wxString &sfixtime, NavData& temp_data);
-  void updateMagneticVariance(const rapidjson::Value &value,
-                              const wxString &sfixtime, NavData& temp_data);
+  void handleUpdate(const rapidjson::Value& update, NavData& temp_data);
+  void updateItem(const rapidjson::Value& item, wxString& sfixtime,
+                  NavData& temp_data);
+  bool updateNavigationPosition(const rapidjson::Value& value,
+                                const wxString& sfixtime, NavData& temp_data);
+  void updateNavigationSpeedOverGround(const rapidjson::Value& value,
+                                       const wxString& sfixtime,
+                                       NavData& temp_data);
+  void updateNavigationCourseOverGround(const rapidjson::Value& value,
+                                        const wxString& sfixtime,
+                                        NavData& temp_data);
+  void updateGnssSatellites(const rapidjson::Value& value,
+                            const wxString& sfixtime, NavData& temp_data);
+  void updateHeadingTrue(const rapidjson::Value& value,
+                         const wxString& sfixtime, NavData& temp_data);
+  void updateHeadingMagnetic(const rapidjson::Value& value,
+                             const wxString& sfixtime, NavData& temp_data);
+  void updateMagneticVariance(const rapidjson::Value& value,
+                              const wxString& sfixtime, NavData& temp_data);
 
   std::string src_string;
   std::unordered_map<std::string, int> GNSS_quality_map;
-
 };
 
 #endif  // _COMM_DECODER_H

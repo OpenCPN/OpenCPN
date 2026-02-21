@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/***************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement semantic_vers.h -- semantic version object
  */
 
 #include "config.h"
@@ -31,7 +30,7 @@
 
 #include "model/semantic_vers.h"
 
-#undef major  // walk around gnu's major() and minor() macros.
+#undef major  // work around gnu's major() and minor() macros.
 #undef minor
 
 SemanticVersion SemanticVersion::parse(std::string s) {
@@ -48,6 +47,10 @@ SemanticVersion SemanticVersion::parse(std::string s) {
     vers.pre = s.substr(pos + 1);
     s = s.substr(0, pos);
   }
+
+  // Ignore prefixes like 'v', 'rc'. etc.
+  while (s.size() && (s[0] < '0' || s[0] > '9')) s = s.substr(1);
+
   int r = sscanf(s.c_str(), "%d.%d.%d.%d", &vers.major, &vers.minor,
                  &vers.patch, &vers.post);
   if (r < 2) {
@@ -99,8 +102,7 @@ bool SemanticVersion::operator!=(const SemanticVersion& other) {
 }
 
 std::ostream& operator<<(std::ostream& s, const SemanticVersion& v) {
-  if ((v.major == 0) && (v.minor == 0) && (v.patch == 0))
-    return s;
+  if ((v.major == 0) && (v.minor == 0) && (v.patch == 0)) return s;
 
   s << v.major << '.' << v.minor;
   if (v.patch != -1) {

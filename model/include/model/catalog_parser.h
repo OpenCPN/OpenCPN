@@ -1,8 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2019 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,21 +12,21 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Datatypes and  methods to parse ocpn-plugins.xml XML data, either complete
+ * catalog or a single plugin.
  */
-#ifndef CATALOG_PARSER_H__
-#define CATALOG_PARSER_H__
+
+#ifndef CATALOG_PARSER_H_
+#define CATALOG_PARSER_H_
 
 #include <string>
 #include <vector>
-
-/**
- *  Datatypes and  methods to parse ocpn-plugins.xml XML data,
- *  either complete catalog or a single plugin.
- */
 
 /** Overall metadata for the set of plugins used. */
 struct CatalogData {
@@ -73,11 +69,14 @@ struct PluginMetadata {
     return name + version + release + target + target_version;
   }
 
-  std::string to_string(); ///< Return printable XML representation.
+  std::string to_string();  ///< Return printable XML representation.
 
   PluginMetadata()
-      : is_imported(false), is_orphan(false), openSource(true),
-        readonly(true), ix(-1) {}
+      : is_imported(false),
+        is_orphan(false),
+        openSource(true),
+        readonly(true),
+        ix(-1) {}
 };
 
 /**
@@ -105,4 +104,4 @@ bool ParseCatalog(const std::string xml, CatalogCtx* ctx);
 
 bool ParsePlugin(const std::string& xml, PluginMetadata& metadata);
 
-#endif  // CATALOG_PARSER_H__
+#endif  // CATALOG_PARSER_H_

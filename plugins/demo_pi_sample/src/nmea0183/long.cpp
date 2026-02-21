@@ -29,7 +29,6 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-
 #include "nmea0183.h"
 
 /*
@@ -40,105 +39,78 @@
 ** You can use it any way you like.
 */
 
+LONGITUDE::LONGITUDE() { Empty(); }
 
-LONGITUDE::LONGITUDE()
-{
-   Empty();
+LONGITUDE::~LONGITUDE() { Empty(); }
+
+void LONGITUDE::Empty(void) {
+  Longitude = 0.0;
+  Easting = EW_Unknown;
 }
 
-LONGITUDE::~LONGITUDE()
-{
-   Empty();
+bool LONGITUDE::IsDataValid(void) {
+  if (Easting != East && Easting != West) {
+    return (FALSE);
+  }
+
+  return (TRUE);
 }
 
-void LONGITUDE::Empty( void )
-{
-
-   Longitude = 0.0;
-   Easting   = EW_Unknown;
+void LONGITUDE::Parse(int position_field_number, int east_or_west_field_number,
+                      const SENTENCE& sentence) {
+  wxString w_or_e = sentence.Field(east_or_west_field_number);
+  Set(sentence.Double(position_field_number), w_or_e);
 }
 
-bool LONGITUDE::IsDataValid( void )
-{
-   if ( Easting != East && Easting != West )
-   {
-      return( FALSE );
-   }
+void LONGITUDE::Set(double position, const wxString& east_or_west) {
+  //   assert( east_or_west != NULL );
 
-   return( TRUE );
+  Longitude = position;
+  wxString ts = east_or_west;
+
+  if (!ts.IsEmpty() && ts.Trim(false)[0] == 'E') {
+    Easting = East;
+  } else if (!ts.IsEmpty() && ts.Trim(false)[0] == 'W') {
+    Easting = West;
+  } else {
+    Easting = EW_Unknown;
+  }
 }
 
-void LONGITUDE::Parse( int position_field_number, int east_or_west_field_number, const SENTENCE& sentence )
-{
-   wxString w_or_e = sentence.Field( east_or_west_field_number );
-   Set( sentence.Double( position_field_number ), w_or_e );
+void LONGITUDE::Write(SENTENCE& sentence) {
+  wxString temp_string;
+  int neg = 0;
+  int d;
+  int m;
+
+  if (Longitude < 0.0) {
+    Longitude = -Longitude;
+    neg = 1;
+  }
+  d = (int)Longitude;
+  double m0 = (Longitude - (double)d) * 60000.0;
+  m = (int)wxRound(m0);
+
+  if (neg) d = -d;
+
+  temp_string.Printf(_T("%03d%02d.%03d"), d, m / 1000, m % 1000);
+
+  sentence += temp_string;
+
+  if (Easting == East) {
+    sentence += _T("E");
+  } else if (Easting == West) {
+    sentence += _T("W");
+  } else {
+    /*
+    ** Add Nothing
+    */
+  }
 }
 
-void LONGITUDE::Set( double position, const wxString& east_or_west )
-{
-//   assert( east_or_west != NULL );
+const LONGITUDE& LONGITUDE::operator=(const LONGITUDE& source) {
+  Longitude = source.Longitude;
+  Easting = source.Easting;
 
-   Longitude = position;
-   wxString ts = east_or_west;
-
-   if ( !ts.IsEmpty( ) && ts.Trim(false)[ 0 ] == 'E' )
-   {
-      Easting = East;
-   }
-   else if ( !ts.IsEmpty( ) && ts.Trim(false)[ 0 ] == 'W' )
-   {
-      Easting = West;
-   }
-   else
-   {
-      Easting = EW_Unknown;
-   }
-}
-
-void LONGITUDE::Write( SENTENCE& sentence )
-{
-
-    wxString temp_string;
-    int neg = 0;
-    int d;
-    int m;
-
-    if (Longitude < 0.0) {
-            Longitude = -Longitude;
-            neg = 1;
-            }
-    d = (int) Longitude;
-    double m0 = (Longitude - (double) d) * 60000.0;
-    m = (int)wxRound(m0);
-
-    if (neg)
-            d = -d;
-
-    temp_string.Printf(_T("%03d%02d.%03d"), d, m / 1000, m % 1000);
-
-   sentence += temp_string;
-
-   if ( Easting == East )
-   {
-       sentence += _T("E");
-   }
-   else if ( Easting == West )
-   {
-       sentence += _T("W");
-   }
-   else
-   {
-      /*
-      ** Add Nothing
-      */
-   }
-}
-
-const LONGITUDE& LONGITUDE::operator = ( const LONGITUDE& source )
-{
-
-   Longitude = source.Longitude;
-   Easting   = source.Easting;
-
-   return( *this );
+  return (*this);
 }

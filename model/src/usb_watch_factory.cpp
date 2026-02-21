@@ -12,12 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/   *
  **************************************************************************/
 
-/** \file usb_watch_factory.cpp UsbWatchDaemon factory */
+/**
+ *  \file
+ *
+ *  Implement usb_watch_factory.h -- UsbWatchDaemon factory
+ */
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #include "model/linux_usb_watch.h"
@@ -36,7 +38,6 @@ UsbWatchDaemon& UsbWatchDaemon::GetInstance() {
   static WinUsbWatchDaemon instance(SystemEvents::GetInstance());
   return instance;
 }
-
 
 #else
 #include "model/usb_watch_daemon.h"

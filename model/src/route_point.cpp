@@ -1,8 +1,4 @@
 /***************************************************************************
- *
- * Project:  OpenCPN
- *
- ***************************************************************************
  *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -16,10 +12,14 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement route_point.h -- waypoint or mark abstraction
+ */
 
 #include <wx/colour.h>
 #include <wx/datetime.h>
@@ -38,16 +38,14 @@
 
 #include <wx/listimpl.cpp>
 
-WX_DEFINE_LIST(RoutePointList);
-
 wxColour g_colourWaypointRangeRingsColour;
 
 int g_LayerIdx;
 
 wxRect g_blink_rect;
 
-std::function<void(unsigned, const unsigned*)> RoutePoint::delete_gl_textures
-    = [](unsigned, const unsigned*) { assert(true); };
+std::function<void(unsigned, const unsigned *)> RoutePoint::delete_gl_textures =
+    [](unsigned, const unsigned *) { assert(true); };
 
 RoutePoint::RoutePoint() {
   m_pbmIcon = NULL;
@@ -60,7 +58,6 @@ RoutePoint::RoutePoint() {
   m_manual_etd = false;
 
   m_seg_eta = wxInvalidDateTime;
-  m_bDynamicName = false;
   m_bPtIsSelected = false;
   m_bRPIsBeingEdited = false;
   m_bIsActive = false;
@@ -86,9 +83,9 @@ RoutePoint::RoutePoint() {
 
   m_GUID = pWayPointMan->CreateGUID(this);
 
-  m_IconName = wxEmptyString;
+  m_IconName = "";
 
-  m_MarkName = wxEmptyString;
+  m_MarkName = "";
 
   m_bIsInLayer = false;
   m_LayerID = 0;
@@ -103,7 +100,7 @@ RoutePoint::RoutePoint() {
   m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
   m_ScaMin = g_iWpt_ScaMin;
   m_bShowName = g_bShowWptName;
-  m_ScaMax = 0;
+  SetScaMax(g_iWpt_ScaMax);
   b_UseScamin = g_bUseWptScaMin;
 
   m_pos_on_screen = false;
@@ -126,7 +123,6 @@ RoutePoint::RoutePoint(RoutePoint *orig) {
   m_seg_etd = orig->m_seg_etd;
   m_manual_etd = false;
 
-  m_bDynamicName = orig->m_bDynamicName;
   m_bPtIsSelected = orig->m_bPtIsSelected;
   m_bRPIsBeingEdited = orig->m_bRPIsBeingEdited;
   m_bIsActive = orig->m_bIsActive;
@@ -193,7 +189,6 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_seg_etd = wxInvalidDateTime;
   m_manual_etd = false;
 
-  m_bDynamicName = false;
   m_bPtIsSelected = false;
   m_bRPIsBeingEdited = false;
   m_bIsActive = false;
@@ -249,7 +244,7 @@ RoutePoint::RoutePoint(double lat, double lon, const wxString &icon_ident,
   m_iWaypointRangeRingsStepUnits = g_iWaypointRangeRingsStepUnits;
   m_wxcWaypointRangeRingsColour = g_colourWaypointRangeRingsColour;
   m_ScaMin = g_iWpt_ScaMin;
-  m_ScaMax = 0;
+  SetScaMax(g_iWpt_ScaMax);
   b_UseScamin = g_bUseWptScaMin;
   m_bShowName = g_bShowWptName;
 
@@ -265,7 +260,8 @@ RoutePoint::~RoutePoint() {
   if (NULL != pWayPointMan) pWayPointMan->RemoveRoutePoint(this);
 
   if (m_HyperlinkList) {
-    m_HyperlinkList->DeleteContents(true);
+    auto &list = m_HyperlinkList;
+    for (auto it = list->begin(); it != list->end(); ++it) delete *it;
     delete m_HyperlinkList;
   }
   RoutePoint::delete_gl_textures(1, &m_dragIconTexture);
@@ -289,7 +285,7 @@ void RoutePoint::SetName(const wxString &name) {
   CalculateNameExtents();
 }
 
-void RoutePoint::CalculateNameExtents(void) {
+void RoutePoint::CalculateNameExtents() {
   if (m_pMarkFont) {
     wxScreenDC dc;
 
@@ -305,7 +301,6 @@ void RoutePoint::CalculateNameExtents(void) {
     m_NameExtents = wxSize(0, 0);
 }
 
-
 bool RoutePoint::IsVisibleSelectable(double scale_val, bool boverrideViz) {
   if (m_bIsActive)  //  An active route point must always be visible
     return true;
@@ -320,6 +315,7 @@ bool RoutePoint::IsVisibleSelectable(double scale_val, bool boverrideViz) {
       return true;
     else if (scale_val >= (double)(m_ScaMin + 1))
       return false;
+    if (m_ScaMax > 0 && scale_val <= (double)m_ScaMax - 1.0) return false;
   }
   return true;
 }
@@ -339,6 +335,7 @@ bool RoutePoint::IsSharedInVisibleRoute() {
           break;
         }
       }
+      delete proute_array;
     }
 
     return brp_viz;
@@ -360,6 +357,32 @@ bool RoutePoint::IsSame(RoutePoint *pOtherRP) {
       IsSame = true;
   }
   return IsSame;
+}
+
+/*!
+ * Check if the name is dynamic for resequencing purposes.
+ * If the name is part of a route, and has 3 numeric characters,
+ * then it is dynamic and can be resequenced.
+ */
+bool RoutePoint::IsNameDynamic() {
+  bool b_numeric = false;
+  if (m_bIsInRoute) {
+    if (GetName().Len() >= 2) {
+      wxString substring = GetName().Left(2);
+      if (substring == "NM") {
+        substring = GetName().substr(2, 3);
+      } else {
+        substring = GetName().Left(3);
+      }
+      b_numeric = true;  // assume it is numeric
+      for (unsigned int i = 0; i < substring.Len(); i++) {
+        if (b_numeric == true) {
+          b_numeric = wxIsdigit(substring[i]);
+        }  // don't change the value if it is already false
+      }
+    }
+  }
+  return b_numeric;
 }
 
 double RoutePoint::GetWaypointArrivalRadius() {
@@ -395,7 +418,7 @@ void RoutePoint::SetScaMin(long val) {
   if (val < SCAMIN_MIN)
     val = SCAMIN_MIN;  // prevent from waypoints hiding always with a nonlogic
                        // value
-  if (val < (long)m_ScaMax * 5) val = (long)m_ScaMax * 5;
+  if (m_ScaMax > 0 && val < (long)m_ScaMax) val = (long)m_ScaMax;
   m_ScaMin = val;
 }
 void RoutePoint::SetScaMin(wxString str) {
@@ -405,9 +428,12 @@ void RoutePoint::SetScaMin(wxString str) {
 }
 
 void RoutePoint::SetScaMax(long val) {
-  if (val > (int)m_ScaMin / 5)
-    m_ScaMax = (int)m_ScaMin /
-               5;  // prevent from waypoints hiding always with a nonlogic value
+  long max_allowed = m_ScaMin > 0 ? (long)m_ScaMin : 0;
+  m_ScaMax = val;
+  if (max_allowed > 0 && m_ScaMax > max_allowed) {
+    m_ScaMax = max_allowed;  // prevent from waypoints hiding always with a
+                             // nonlogic value
+  }
 }
 void RoutePoint::SetScaMax(wxString str) {
   long val;
@@ -421,15 +447,14 @@ void RoutePoint::SetPlannedSpeed(double spd) {
 
 double RoutePoint::GetPlannedSpeed() {
   if (m_PlannedSpeed < 0.0001 &&
-      m_MarkDescription.Find(_T("VMG=")) != wxNOT_FOUND) {
+      m_MarkDescription.Find("VMG=") != wxNOT_FOUND) {
     // In case there was speed encoded in the name of the waypoint, do the
     // conversion here.
-    wxString s_vmg =
-        (m_MarkDescription.Mid(m_MarkDescription.Find(_T("VMG=")) + 4))
-            .BeforeFirst(';');
+    wxString s_vmg = (m_MarkDescription.Mid(m_MarkDescription.Find("VMG=") + 4))
+                         .BeforeFirst(';');
     double vmg;
     if (!s_vmg.ToDouble(&vmg)) {
-      m_MarkDescription.Replace(_T("VMG=") + s_vmg + ";", wxEmptyString);
+      m_MarkDescription.Replace("VMG=" + s_vmg + ";", "");
       SetPlannedSpeed(vmg);
     }
   }
@@ -444,19 +469,22 @@ wxDateTime RoutePoint::GetETD() {
       return GetETA();
     }
   } else {
-    if (m_MarkDescription.Find(_T("ETD=")) != wxNOT_FOUND) {
+    if (m_MarkDescription.Find("ETD=") != wxNOT_FOUND) {
       wxDateTime etd = wxInvalidDateTime;
       wxString s_etd =
-          (m_MarkDescription.Mid(m_MarkDescription.Find(_T("ETD=")) + 4))
+          (m_MarkDescription.Mid(m_MarkDescription.Find("ETD=") + 4))
               .BeforeFirst(';');
       const wxChar *parse_return = etd.ParseDateTime(s_etd);
       if (parse_return) {
         wxString tz(parse_return);
 
-        if (tz.Find(_T("UT")) != wxNOT_FOUND) {
+        if (tz.Find("UT") != wxNOT_FOUND) {
+          // TODO: This is error-prone. It would match any string containing
+          // these characters, not just time zone codes For example, "UT" would
+          // match "UTC+2".
           m_seg_etd = etd;
         } else {
-          if (tz.Find(_T("LMT")) != wxNOT_FOUND) {
+          if (tz.Find("LMT") != wxNOT_FOUND) {
             m_seg_etd = etd;
             long lmt_offset = (long)((m_lon * 3600.) / 15.);
             wxTimeSpan lmt(0, 0, (int)lmt_offset, 0);
@@ -466,7 +494,7 @@ wxDateTime RoutePoint::GetETD() {
           }
         }
         if (etd.IsValid() && (!GetETA().IsValid() || etd > GetETA())) {
-          m_MarkDescription.Replace(s_etd, wxEmptyString);
+          m_MarkDescription.Replace(s_etd, "");
           m_seg_etd = etd;
           return m_seg_etd;
         } else {
@@ -496,7 +524,7 @@ wxString RoutePoint::GetETE() {
   if (m_seg_ete != 0) {
     return formatTimeDelta(m_seg_ete);
   }
-  return wxEmptyString;
+  return "";
 }
 
 void RoutePoint::SetETE(wxLongLong secs) { m_seg_ete = secs; }
@@ -514,6 +542,9 @@ bool RoutePoint::SetETD(const wxString &ts) {
   }
   wxDateTime tmp;
   wxString::const_iterator end;
+  // No timezone conversion is done because the serialized string
+  // does not include timezone information, e.g., "2025-03-26T18:57:01"
+  // The input string is assumed to be in UTC format.
   if (tmp.ParseISOCombined(ts)) {
     SetETD(tmp);
     return TRUE;
