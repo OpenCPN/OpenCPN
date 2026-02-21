@@ -1,10 +1,10 @@
-opencpn (1:5.14.1+dfsg~beta2-1~bpo13+1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta2-1~bpo13+1) trixie-backports; urgency=medium
 
   * New upstream release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Feb 2026 16:18:12 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 21 Feb 2026 10:13:10 +0100
 
-opencpn (1:5.14.1+dfsg~beta2-1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta2-1) sid; urgency=medium
 
   * New upstream release
 
@@ -17,4 +17,3 @@ opencpn (1:5.14.1+dfsg~beta1-1) unstable; urgency=medium
   * d/copyright: Updated for new sources
 
  -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 10:29:34 +0100
-
