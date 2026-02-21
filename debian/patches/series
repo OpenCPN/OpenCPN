@@ -5,3 +5,4 @@
 0005-build-add-latomic-linkage.patch
 0006-tests-disable-file-driver-tests-on-distro-builders.patch
 0007-base_platform-Add-homedir-environment-override.patch
+0008-appdata-Fix-url-typo.patch
