@@ -16,10 +16,10 @@ the sources.
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8bdba4c..2d0e4d0 100644
+index 1d2c4b6..b61d4d1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1448,8 +1448,10 @@ if (OCPN_USE_SVG)
+@@ -1427,8 +1427,10 @@ if (OCPN_USE_SVG)
    endif ()
  endif ()
  
@@ -31,7 +31,7 @@ index 8bdba4c..2d0e4d0 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif ()
-@@ -1523,7 +1525,6 @@ message(STATUS "    Adding local LIBTESS2")
+@@ -1502,7 +1504,6 @@ message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
  
@@ -74,10 +74,10 @@ index 0000000..473722c
 +find_path(HAVE_STDINT_H NAMES stdint.h)
 +find_path(HAVE_SYS_SERIAL_LIB NAMES serial.h)
 diff --git a/cmake/in-files/config.h.in b/cmake/in-files/config.h.in
-index 25ec4ee..19c2647 100644
+index 993fcdb..b801944 100644
 --- a/cmake/in-files/config.h.in
 +++ b/cmake/in-files/config.h.in
-@@ -45,6 +45,7 @@
+@@ -47,6 +47,7 @@
  #cmakedefine HAVE_SYS_TYPES_H
  #cmakedefine HAVE_SYS_FCNTL_H
  #cmakedefine HAVE_SYS_IOCTL_H

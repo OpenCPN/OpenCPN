@@ -7,10 +7,10 @@ Subject: CMakeLists: handle help_web.html location
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2d0e4d0..0081b38 100644
+index b61d4d1..120c766 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1836,7 +1836,7 @@ if (APPLE)
+@@ -1859,7 +1859,7 @@ if (APPLE)
    )
  
    set_source_files_properties(
@@ -19,7 +19,7 @@ index 2d0e4d0..0081b38 100644
    )
  
    if (OCPN_BUNDLE_DOCS)
-@@ -1876,11 +1876,11 @@ if (APPLE)
+@@ -1899,11 +1899,11 @@ if (APPLE)
    set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.opencpn")
  
    if (OCPN_BUNDLE_DOCS)
@@ -33,7 +33,7 @@ index 2d0e4d0..0081b38 100644
    endif ()
  
    target_sources(
-@@ -2031,7 +2031,7 @@ if (NOT APPLE)
+@@ -2069,7 +2069,7 @@ if (NOT APPLE)
    if (OCPN_BUNDLE_DOCS)
      install(DIRECTORY data/doc DESTINATION ${PREFIX_PKGDATA})
    else ()

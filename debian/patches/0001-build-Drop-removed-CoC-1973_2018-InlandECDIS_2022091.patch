@@ -11,10 +11,10 @@ Not acceptable upstream.
  1 file changed, 16 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index abb480c..8bdba4c 100644
+index ff56132..1d2c4b6 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1736,16 +1736,6 @@ if (APPLE)
+@@ -1759,16 +1759,6 @@ if (APPLE)
      data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
    )
  
@@ -31,8 +31,8 @@ index abb480c..8bdba4c 100644
    set_source_files_properties(
      ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml PROPERTIES MACOSX_PACKAGE_LOCATION
                                                           SharedSupport
-@@ -1903,8 +1893,6 @@ if (APPLE)
-             data/authors.html
+@@ -1927,8 +1917,6 @@ if (APPLE)
+             data/license.html
              data/opencpn.png
              data/ocpn-plugins.xml
 -            data/CoC-909_2013-InlandECDIS_20170308s.pdf
@@ -40,7 +40,7 @@ index abb480c..8bdba4c 100644
              ${SOUND_FILES}
              buildosx/opencpn.icns
              buildosx/MainMenu.xib
-@@ -2024,10 +2012,6 @@ if (NOT APPLE)
+@@ -2061,10 +2049,6 @@ if (NOT APPLE)
    file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
    install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
  
@@ -50,4 +50,4 @@ index abb480c..8bdba4c 100644
 -  )
    install(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME})
    install(FILES data/license.html DESTINATION ${PREFIX_PKGDATA})
-   install(FILES data/authors.html DESTINATION ${PREFIX_PKGDATA})
+   install(FILES ${CMAKE_SOURCE_DIR}/data/authors.html
