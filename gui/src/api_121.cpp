@@ -845,6 +845,8 @@ bool GetNearestTideStation(double lat, double lon,
     if (pIDX->IDX_type == 'T' || pIDX->IDX_type == 't') {
       // Find the array index for this IDX_entry pointer
       for (int i = 1; i <= ptcmgr->Get_max_IDX(); i++) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
         if (ptcmgr->GetIDX_entry(i) == pIDX) {
           station->index = i;
           strncpy(station->name, pIDX->IDX_station_name, 89);
@@ -853,6 +855,7 @@ bool GetNearestTideStation(double lat, double lon,
           station->lon = pIDX->IDX_lon;
           return true;
         }
+#pragma GCC diagnostic pop
       }
     }
   }
