@@ -812,10 +812,11 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
 
               //  attribute number, ascii
               wxString token = tkz.GetNextToken();
-              long liattr;
-              token.ToLong(&liattr);
-              int iattr = liattr;
-              if (iattr > iattr_max) iattr_max = iattr;
+              long liattr = 0; // FIX 1: Initialize to zero to clear garbage memory
+              if (token.ToLong(&liattr)){
+                  int iattr = liattr;
+                  if (iattr > iattr_max) iattr_max = iattr;
+              }    
             }
           }
         }
