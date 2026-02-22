@@ -178,9 +178,6 @@ private:
 
 extern bool g_running;  ///< Android only
 
-//    For VBO(s)
-static bool g_b_needFinish;  // Need glFinish() call on each frame?
-
 static wxColor s_regionColor;
 static float g_GLMinCartographicLineWidth;
 // MacOS has some missing parts:
@@ -932,6 +929,8 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
 #endif
 
 void glChartCanvas::BuildFBO() {
+  if (g_b_needFinish) glFinish();
+
   if (m_b_BuiltFBO) {
     // return;
     glDeleteTextures(2, m_cache_tex);
@@ -4559,8 +4558,6 @@ void glChartCanvas::Render() {
 
   //  Some older MSW OpenGL drivers are generally very unstable.
   //  This helps...
-
-  if (g_b_needFinish) glFinish();
 
   SwapBuffers();
 

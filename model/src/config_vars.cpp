@@ -41,6 +41,8 @@ bool g_bCourseUp = false;
 bool g_bDebugCM93 = false;
 bool g_bDebugGPSD = false;
 bool g_bDebugOGL = false;
+//    For VBO(s)
+bool g_b_needFinish = false;  // Need glFinish() call on each frame?
 bool g_bDebugS57 = false;
 bool g_bDisplayGrid = false;
 bool g_bEmailCrashReport = false;

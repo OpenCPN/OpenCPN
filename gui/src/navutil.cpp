@@ -554,6 +554,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read("GPUTextureMemSize", &g_GLOptions.m_iTextureMemorySize);
     Read("DebugOpenGL", &g_bDebugOGL);
     Read("OpenGL", &g_bopengl);
+    Read("OpenGLFinsihNeeded", &g_b_needFinish);
     Read("SoftwareGL", &g_bSoftwareGL);
   }
 #endif
