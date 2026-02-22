@@ -607,7 +607,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read("SkewCompUpdatePeriod", &g_SkewCompUpdatePeriod);
 
-  Read("SetSystemTime", &s_bSetSystemTime);
   Read("EnableKioskStartup", &g_kiosk_startup);
   Read("ShowStatusBar", &g_bShowStatusBar);
 #ifndef __WXOSX__
@@ -1886,7 +1885,6 @@ void MyConfig::UpdateSettings() {
 
   Write("Fullscreen", g_bFullscreen);
   Write("ShowCompassWindow", g_bShowCompassWin);
-  Write("SetSystemTime", s_bSetSystemTime);
   Write("ShowGrid", g_bDisplayGrid);
   Write("PlayShipsBells", g_bPlayShipsBells);
   Write("SoundDeviceIndex", g_iSoundDeviceIndex);
