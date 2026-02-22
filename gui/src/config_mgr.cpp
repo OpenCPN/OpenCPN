@@ -591,7 +591,6 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   conf->Write("Fullscreen", g_bFullscreen);
   conf->Write("ShowCompassWindow", g_bShowCompassWin);
-  conf->Write("SetSystemTime", s_bSetSystemTime);
   conf->Write("ShowGrid", g_bDisplayGrid);
   conf->Write("PlayShipsBells", g_bPlayShipsBells);
   conf->Write("SoundDeviceIndex", g_iSoundDeviceIndex);

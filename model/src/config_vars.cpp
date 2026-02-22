@@ -114,7 +114,6 @@ bool g_fog_overzoom = false;
 bool g_oz_vector_scale = false;
 bool g_persist_active_route = false;
 bool g_useMUI = false;
-bool s_bSetSystemTime = false;
 bool g_kiosk_startup = false;
 
 double g_COGAvg = 0.0;
