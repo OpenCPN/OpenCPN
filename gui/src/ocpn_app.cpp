@@ -96,6 +96,7 @@
 #include <wx/settings.h>
 #include <wx/stdpaths.h>
 #include <wx/tokenzr.h>
+#include <thread>
 
 #include "o_sound/o_sound.h"
 
@@ -271,8 +272,6 @@ static unsigned int malloc_max;
 
 static int osMajor, osMinor;
 
-static bool g_bHasHwClock;
-
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 // FIXME (leamas) find a new home
 wxLocale *plocale_def_lang = 0;
@@ -317,6 +316,7 @@ static bool LoadAllPlugIns(bool load_enabled) {
 
 #if defined(__WXGTK__) || defined(__WXQT__)
 #include "bitmaps/opencpn.xpm"
+#include <navutil.h>
 #endif
 
 wxString newPrivateFileName(wxString, const char *name,
@@ -1274,15 +1274,16 @@ bool MyApp::OnInit() {
     }
   }
 
-  // As an a.e. Raspberry does not have a hardwareclock we will have some
-  // problems with date/time setting
-  g_bHasHwClock = true;  // by default most computers do have a hwClock
-#if defined(__UNIX__) && !defined(__ANDROID__)
-  struct stat buffer;
-  g_bHasHwClock =
-      ((stat("/dev/rtc", &buffer) == 0) || (stat("/dev/rtc0", &buffer) == 0) ||
-       (stat("/dev/misc/rtc", &buffer) == 0));
-#endif
+  // Changing systemtime by users does have some security issues.
+  // Therefore we only allow it as the environment variable
+  // ocpnUPDATE_SYSTEM_TIME is set!
+  if (getenv("ocpnUPDATE_SYSTEM_TIME") != NULL) {
+    wxLogMessage("Change systemtime from GPS is permitted");
+    // Start a new thread, to pol if a gps fix time is available
+    std::thread systimeset(SetSystemtime);
+    systimeset.detach();
+  } else
+    wxLogMessage("Change systemtime from GPS is prohibited");
 
   g_config_version_string = vs;
 
@@ -1492,9 +1493,9 @@ void MyApp::BuildMainFrame() {
     gFrame->Maximize(true);
 #endif
 
-    //      All set to go.....
+  //      All set to go.....
 
-    // Process command line option to rebuild cache
+  // Process command line option to rebuild cache
 #ifdef ocpnUSE_GL
   extern ocpnGLOptions g_GLOptions;
 
@@ -1601,8 +1602,8 @@ void MyApp::BuildMainFrame() {
 
   if (!bno_load) g_pauimgr->LoadPerspective(perspective, false);
 
-    // Touch up the AUI manager
-    //  Make sure that any pane width is reasonable default value
+  // Touch up the AUI manager
+  //  Make sure that any pane width is reasonable default value
 #if 0  // TODO nees this?
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
     ChartCanvas *cc = g_canvasArray.Item(i);
