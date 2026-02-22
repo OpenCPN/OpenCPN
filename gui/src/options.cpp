@@ -1528,8 +1528,9 @@ bool options::SendIdleEvents(wxIdleEvent& event) {
 }
 
 void options::OptionsFinalizeChartDBUpdate() {
-  m_CurrentDirList =
-      *m_pWorkDirList;  // Perform a deep copy back to main database.
+  if (m_pWorkDirList)
+    m_CurrentDirList =
+        *m_pWorkDirList;  // Perform a deep copy back to main database.
   // Re-enable RNC texture caching
   g_GLOptions.m_bTextureCompressionCaching = m_bTextureCacheingSave;
 }

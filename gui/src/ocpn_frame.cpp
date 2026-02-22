@@ -832,7 +832,7 @@ void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
   }
 }
 
-void MyFrame::RebuildChartDatabase() {
+void MyFrame::StartRebuildChartDatabase() {
   bool b_SetInitialPoint = false;
 
   //   Build the initial chart dir array
@@ -864,17 +864,10 @@ void MyFrame::RebuildChartDatabase() {
     wxString dummy2 = _("Estimated time : ");
     wxString dummy3 = _("Remaining time : ");
     wxGenericProgressDialog *pprog = new wxGenericProgressDialog(
-        _("OpenCPN Chart Update"), line, 100, NULL,
-        wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
-            wxPD_REMAINING_TIME);
+        _("OpenCPN Chart Update"), line, 100, NULL, wxPD_SMOOTH);
 
-    ChartData->Create(ChartDirArray, nullptr);
-    ChartData->SaveBinary(ChartListFileName);
-
-    delete pprog;
-
-    //  Apply the inital Group Array structure to the chart database
-    ChartData->ApplyGroupArray(g_pGroupArray);
+    LoadS57();
+    ChartData->Create(ChartDirArray, pprog);
   }
 }
 
@@ -4473,6 +4466,11 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 
 void MyFrame::FinalizeChartDBUpdate() {
   // Finalize chartdbs update after all async events finished.
+  if (!g_bDeferredInitDone) {  // Coming from auto startup rebuild.
+    // Resume init timer
+    InitTimer.Start(100, wxTIMER_ONE_SHOT);
+  }
+
   bool b_groupchange = ScrubGroupArray();
   ChartData->ApplyGroupArray(g_pGroupArray);
   RefreshGroupIndices();
@@ -4483,7 +4481,7 @@ void MyFrame::FinalizeChartDBUpdate() {
   }
   pConfig->UpdateSettings();
 
-  ScheduleReloadCharts();
+  if (g_bDeferredInitDone) ScheduleReloadCharts();
 }
 
 void MyFrame::ToggleQuiltMode(ChartCanvas *cc) {
@@ -4595,7 +4593,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       // Rebuild chart database, if necessary
       if (g_NeedDBUpdate > 0) {
-        RebuildChartDatabase();
         for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
           ChartCanvas *cc = g_canvasArray.Item(i);
           if (cc) {
@@ -4603,65 +4600,13 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           }
         }
 
-        //    As a favor to new users, poll the database and
-        //    move the initial viewport so that a chart will come up.
-
-        double clat, clon;
-        if (ChartData->GetCentroidOfLargestScaleChart(&clat, &clon,
-                                                      CHART_FAMILY_RASTER)) {
-          gLat = clat;
-          gLon = clon;
-          gFrame->ClearbFollow(gFrame->GetPrimaryCanvas());
-        } else {
-          if (ChartData->GetCentroidOfLargestScaleChart(&clat, &clon,
-                                                        CHART_FAMILY_VECTOR)) {
-            gLat = clat;
-            gLon = clon;
-            gFrame->ClearbFollow(gFrame->GetPrimaryCanvas());
-          }
-        }
-
+        // Start an async chart database update
+        // Arrange for init timer to restart at next point in chain
+        m_iInitCount = 1;
+        StartRebuildChartDatabase();
         g_NeedDBUpdate = 0;
+        return;
       }
-
-#if 0
-      // Load the waypoints. Both of these routines are very slow to execute
-      // which is why they have been to defered until here
-      auto colour_func = [](wxString c) { return GetGlobalColor(c); };
-      pWayPointMan = new WayPointman(colour_func);
-      WayPointmanGui(*pWayPointMan)
-          .SetColorScheme(global_color_scheme, g_Platform->GetDisplayDPmm());
-      // Reload the ownship icon from UserIcons, if present
-      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        if (cc) {
-          if (cc->SetUserOwnship()) cc->SetColorScheme(global_color_scheme);
-        }
-      }
-
-      NavObj_dB::GetInstance().ImportLegacyNavobj(this);
-      NavObj_dB::GetInstance().LoadNavObjects();
-
-      //    Re-enable anchor watches if set in config file
-      if (!g_AW1GUID.IsEmpty()) {
-        pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID(g_AW1GUID);
-      }
-      if (!g_AW2GUID.IsEmpty()) {
-        pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID(g_AW2GUID);
-      }
-
-      // Import Layer-wise any .gpx files from /layers directory
-      wxString layerdir = g_Platform->GetPrivateDataDir();
-      appendOSDirSlash(&layerdir);
-      layerdir.Append("layers");
-
-      if (wxDir::Exists(layerdir)) {
-        wxString laymsg;
-        laymsg.Printf("Getting .gpx layer files from: %s", layerdir.c_str());
-        wxLogMessage(laymsg);
-        pConfig->LoadLayers(layerdir);
-      }
-#endif
 
       break;
     }
