@@ -61,15 +61,14 @@ get all necessary three branches:
     $ cd OpenCPN
     $ git clone --origin upstream  https://github.com/OpenCPN/OpenCPN.git
     $ cd OpenCPN
-    $ git fetch --tags upstream upstream/latest:upstream/latest
-    $ git fetch upstream pristine-tar:pristine-tar
     $ git fetch upstream ubuntu/numbat:ubuntu/numbat
     $ git checkout ubuntu/numbat
     $ git checkout .; git clean -fxd
+    $ gbp pull upstream
 
 `ubuntu/numbat` is the branch to use when building Ubuntu Numbat (24.04)
 packages.
-Alternatives includes  `ubuntu/jammy`, `ubuntu/focal` and `debian/sid`.
+Alternatives includes  `ubuntu/jammy` and `debian/sid`.
 The latter builds packages for the rolling Sid distribution.
 
 To update an existing clone:
@@ -171,11 +170,18 @@ For each release do:
 1. Initiate the environment as described <<setup, above>>.
 2. Clone and checkout all branches, or update existing clone.
    See <<create-clone, above>>.
-3. Make sure the repo is synchronized: `git clean -fxd; git checkout .`
-4. Create the upstream source tarball: `gbp export-orig`
-5. Create the source package: `debuild --no-lintian -S`
-6.  List all available source packages using `ls -lt ../*source.changes`.
-7. Push the most recent package to a PPA using something like:
+3. Optionally, mark the package as relesed by you:
++
+```
+  $ dch -r    # complete changelog entry in editor
+  $ git add debian/changelog
+  $ git commit -m "<changelog version>"
+```
+4. Make sure the repo is synchronized: `git clean -fxd; git checkout .`
+5. Create the upstream source tarball: `gbp export-orig`
+6. Create the source package: `debuild --no-lintian -d -S -sa`
+7. List all available source packages using `ls -lt ../*source.changes`. Push the 
+   most recent package to a PPA using something like:
 +
 ```
   $ dput ppa:leamas-alec/opencpn \
@@ -217,7 +223,7 @@ This builds testable .deb packages in _.._.
 First step is to setup the environment, see <<setup, above>>.
 However, no gpg key is required.
 
-Make sure the build dependencies are in place, see <<test-build, above>>
+Make sure the build dependencies are in place, see <<test-build, above>>https://www.dn.se/varlden/michael-winiarski-har-ar-sju-myter-om-kriget-i-ukraina/
 
 Work is done in a clean clone of the master branch.
 Make sure the remote "upstream" exists and update it:
