@@ -18,10 +18,9 @@ build-only:
 submodules: .phony
 	cd ../flatpak; \
 	    git submodule update --init org.opencpn.OpenCPN; \
-	    git submodule update --remote --rebase org.opencpn.OpenCPN; \
 	cd ../flatpak/org.opencpn.OpenCPN;  \
 	    git submodule update --init shared-modules; \
-	    git submodule  update --remote --merge shared-modules
+	    git submodule  update --remote --rebase shared-modules
 
 manifest: submodules
 	cd ../flatpak; \
