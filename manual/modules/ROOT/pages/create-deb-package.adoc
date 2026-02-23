@@ -54,7 +54,7 @@ PPA.
 
 The Debian tools creates things in the parent directory. To handle this,
 create  new, empty directory and put the OpenCPN tree there. Then,
-get all necessary three branches:
+get all necessary branches:
 
 
     $ mkdir OpenCPN
@@ -73,10 +73,8 @@ The latter builds packages for the rolling Sid distribution.
 
 To update an existing clone:
 
-    $ git fetch upstream upstream/latest:upstream/latest
-    $ git fetch upstream pristine-tar:pristine-tar
     $ git checkout ubuntu/numbat
-    $ git pull upstream ubuntu/numbat
+    $ gbp pull upstream
 
 [#import-version]
 == Import a new opencpn version into packaging branches.
@@ -170,7 +168,7 @@ For each release do:
 1. Initiate the environment as described <<setup, above>>.
 2. Clone and checkout all branches, or update existing clone.
    See <<create-clone, above>>.
-3. Optionally, mark the package as relesed by you:
+3. Optionally, mark the package as released by you:
 +
 ```
   $ dch -r    # complete changelog entry in editor
@@ -223,7 +221,7 @@ This builds testable .deb packages in _.._.
 First step is to setup the environment, see <<setup, above>>.
 However, no gpg key is required.
 
-Make sure the build dependencies are in place, see <<test-build, above>>https://www.dn.se/varlden/michael-winiarski-har-ar-sju-myter-om-kriget-i-ukraina/
+Make sure the build dependencies are in place, see <<test-build, above>>
 
 Work is done in a clean clone of the master branch.
 Make sure the remote "upstream" exists and update it:
@@ -308,3 +306,15 @@ by one rather than as a big patch.
 
 It is also possible to edit existing patches using the standard
 git tools, in particular `git rebase -i`
+
+
+
+
+
+
+
+
+
+
+
+
