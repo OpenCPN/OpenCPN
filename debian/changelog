@@ -1,3 +1,9 @@
+opencpn (1:5.14.1+dfsg~beta2-1~bpo22.04~ppa4) jammy; urgency=medium
+
+  * d/not-installed: Add gtest/gmock artifacts
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Mon, 23 Feb 2026 21:32:17 +0100
+
 opencpn (1:5.14.1+dfsg~beta2-1~bpo22.04~ppa3) jammy; urgency=medium
 
   * Add b-d libunarr-dev
