@@ -80,10 +80,11 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
+#include <string>
 
-/* should be size of larged possible filename */
+/* should be size of largest possible filename */
 #define CPL_PATH_BUF_SIZE 2048
-static char     szStaticResult[CPL_PATH_BUF_SIZE];
+static thread_local std::string gStaticResult;
 
 #ifdef WIN32
 #define SEP_CHAR '\\'
@@ -98,16 +99,13 @@ static char     szStaticResult[CPL_PATH_BUF_SIZE];
 /************************************************************************/
 
 static int CPLFindFilenameStart( const char * pszFilename )
-
 {
-    int         iFileStart;
-
-    for( iFileStart = strlen(pszFilename);
+    int iFileStart;
+    for( iFileStart = static_cast<int>(strlen(pszFilename));
          iFileStart > 0
              && pszFilename[iFileStart-1] != '/'
              && pszFilename[iFileStart-1] != '\\';
          iFileStart-- ) {}
-
     return iFileStart;
 }
 
@@ -138,33 +136,25 @@ static int CPLFindFilenameStart( const char * pszFilename )
  */
 
 const char *CPLGetPath( const char *pszFilename )
-
 {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
-#pragma GCC diagnostic ignored "-Wrestrict"
-// Overflow seen by compiler is guarded by assert.
-
-    int         iFileStart = CPLFindFilenameStart(pszFilename);
+    int iFileStart = CPLFindFilenameStart(pszFilename);
 
     CPLAssert( iFileStart < CPL_PATH_BUF_SIZE );
 
     if( iFileStart == 0 )
     {
-        strcpy( szStaticResult, "" );
-        return szStaticResult;
+        gStaticResult.clear();
+        return gStaticResult.c_str();
     }
 
-    strncpy( szStaticResult, pszFilename, iFileStart );
-    szStaticResult[iFileStart] = '\0';
+    gStaticResult.assign(pszFilename, static_cast<size_t>(iFileStart));
 
     if( iFileStart > 1
-        && (szStaticResult[iFileStart-1] == '/'
-            || szStaticResult[iFileStart-1] == '\\') )
-        szStaticResult[iFileStart-1] = '\0';
+        && (gStaticResult[iFileStart-1] == '/'
+            || gStaticResult[iFileStart-1] == '\\') )
+        gStaticResult.resize(static_cast<size_t>(iFileStart - 1));
 
-    return szStaticResult;
-#pragma GCC diagnostic pop
+    return gStaticResult.c_str();
 }
 
 /************************************************************************/
@@ -194,32 +184,25 @@ const char *CPLGetPath( const char *pszFilename )
  */
 
 const char *CPLGetDirname( const char *pszFilename )
-
 {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
-#pragma GCC diagnostic ignored "-Wrestrict"
-    // Overflow seen by compiler is guarded by assert.
-    int         iFileStart = CPLFindFilenameStart(pszFilename);
+    int iFileStart = CPLFindFilenameStart(pszFilename);
 
     CPLAssert( iFileStart < CPL_PATH_BUF_SIZE );
 
     if( iFileStart == 0 )
     {
-        strcpy( szStaticResult, "." );
-        return szStaticResult;
+        gStaticResult = ".";
+        return gStaticResult.c_str();
     }
 
-    strncpy( szStaticResult, pszFilename, iFileStart );
-    szStaticResult[iFileStart] = '\0';
+    gStaticResult.assign(pszFilename, static_cast<size_t>(iFileStart));
 
     if( iFileStart > 1
-        && (szStaticResult[iFileStart-1] == '/'
-            || szStaticResult[iFileStart-1] == '\\') )
-        szStaticResult[iFileStart-1] = '\0';
+        && (gStaticResult[iFileStart-1] == '/'
+            || gStaticResult[iFileStart-1] == '\\') )
+        gStaticResult.resize(static_cast<size_t>(iFileStart - 1));
 
-    return szStaticResult;
-#pragma GCC diagnostic pop
+    return gStaticResult.c_str();
 }
 
 /************************************************************************/
@@ -247,14 +230,14 @@ const char *CPLGetDirname( const char *pszFilename )
  */
 
 const char *CPLGetFilename( const char *pszFullFilename )
-
 {
     int iFileStart = CPLFindFilenameStart( pszFullFilename );
 
-    strncpy( szStaticResult, pszFullFilename + iFileStart, CPL_PATH_BUF_SIZE );
-    szStaticResult[CPL_PATH_BUF_SIZE - 1] = '\0';
+    gStaticResult.assign( pszFullFilename + iFileStart );
+    if( gStaticResult.size() >= CPL_PATH_BUF_SIZE )
+        gStaticResult.resize(CPL_PATH_BUF_SIZE - 1);
 
-    return szStaticResult;
+    return gStaticResult.c_str();
 }
 
 /************************************************************************/
@@ -282,28 +265,26 @@ const char *CPLGetFilename( const char *pszFullFilename )
  */
 
 const char *CPLGetBasename( const char *pszFullFilename )
-
 {
     int iFileStart = CPLFindFilenameStart( pszFullFilename );
-    int iExtStart, nLength;
+    int iExtStart;
 
-    for( iExtStart = strlen(pszFullFilename);
+    for( iExtStart = static_cast<int>(strlen(pszFullFilename));
          iExtStart > iFileStart && pszFullFilename[iExtStart] != '.';
          iExtStart-- ) {}
 
     if( iExtStart == iFileStart )
-        iExtStart = strlen(pszFullFilename);
+        iExtStart = static_cast<int>(strlen(pszFullFilename));
 
-    nLength = iExtStart - iFileStart;
+    int nLength = iExtStart - iFileStart;
 
     CPLAssert( nLength < CPL_PATH_BUF_SIZE );
 
-    strncpy( szStaticResult, pszFullFilename + iFileStart, nLength );
-    szStaticResult[nLength] = '\0';
+    gStaticResult.assign( pszFullFilename + iFileStart,
+                          static_cast<size_t>(nLength) );
 
-    return szStaticResult;
+    return gStaticResult.c_str();
 }
-
 
 /************************************************************************/
 /*                           CPLGetExtension()                          */
@@ -329,22 +310,22 @@ const char *CPLGetBasename( const char *pszFullFilename )
  */
 
 const char *CPLGetExtension( const char *pszFullFilename )
-
 {
     int iFileStart = CPLFindFilenameStart( pszFullFilename );
     int iExtStart;
 
-    for( iExtStart = strlen(pszFullFilename);
+    for( iExtStart = static_cast<int>(strlen(pszFullFilename));
          iExtStart > iFileStart && pszFullFilename[iExtStart] != '.';
          iExtStart-- ) {}
 
     if( iExtStart == iFileStart )
-        iExtStart = strlen(pszFullFilename)-1;
+        iExtStart = static_cast<int>(strlen(pszFullFilename)) - 1;
 
-    strncpy( szStaticResult, pszFullFilename+iExtStart+1, CPL_PATH_BUF_SIZE );
-    szStaticResult[CPL_PATH_BUF_SIZE - 1] = '\0';
+    gStaticResult.assign( pszFullFilename + iExtStart + 1 );
+    if( gStaticResult.size() >= CPL_PATH_BUF_SIZE )
+        gStaticResult.resize(CPL_PATH_BUF_SIZE - 1);
 
-    return szStaticResult;
+    return gStaticResult.c_str();
 }
 
 /************************************************************************/
@@ -363,37 +344,31 @@ const char *CPLGetExtension( const char *pszFullFilename )
  */
 
 const char *CPLResetExtension( const char *pszPath, const char *pszExt )
-
 {
-    int         i;
+    gStaticResult.assign( pszPath ? pszPath : "" );
 
-/* -------------------------------------------------------------------- */
-/*      First, try and strip off any existing extension.                */
-/* -------------------------------------------------------------------- */
-    strncpy( szStaticResult, pszPath, CPL_PATH_BUF_SIZE );
-    szStaticResult[CPL_PATH_BUF_SIZE - 1] = '\0';
-    for( i = strlen(szStaticResult) - 1; i > 0; i-- )
+    int i;
+    for( i = static_cast<int>(gStaticResult.size()) - 1; i > 0; i-- )
     {
-        if( szStaticResult[i] == '.' )
+        if( gStaticResult[i] == '.' )
         {
-            szStaticResult[i] = '\0';
+            gStaticResult.resize(static_cast<size_t>(i));
             break;
         }
 
-        if( szStaticResult[i] == '/' || szStaticResult[i] == '\\'
-            || szStaticResult[i] == ':' )
+        if( gStaticResult[i] == '/' || gStaticResult[i] == '\\'
+            || gStaticResult[i] == ':' )
             break;
     }
 
-/* -------------------------------------------------------------------- */
-/*      Append the new extension.                                       */
-/* -------------------------------------------------------------------- */
-    CPLAssert( strlen(pszExt) + 2 < CPL_PATH_BUF_SIZE );
+    size_t addLen = 1 + (pszExt ? strlen(pszExt) : 0);
+    CPLAssert( gStaticResult.size() + addLen < CPL_PATH_BUF_SIZE );
 
-    strcat( szStaticResult, "." );
-    strcat( szStaticResult, pszExt );
+    gStaticResult.push_back('.');
+    if( pszExt )
+        gStaticResult.append(pszExt);
 
-    return szStaticResult;
+    return gStaticResult.c_str();
 }
 
 /************************************************************************/
@@ -431,7 +406,6 @@ const char *CPLResetExtension( const char *pszPath, const char *pszExt )
 const char *CPLFormFilename( const char * pszPath,
                              const char * pszBasename,
                              const char * pszExtension )
-
 {
     const char  *pszAddedPathSep = "";
     const char  *pszAddedExtSep = "";
@@ -452,14 +426,18 @@ const char *CPLFormFilename( const char * pszPath,
                strlen(pszBasename) + strlen(pszAddedExtSep) +
                strlen(pszExtension) + 1 < CPL_PATH_BUF_SIZE );
 
-    strncpy( szStaticResult, pszPath, CPL_PATH_BUF_SIZE - 1 );
-    strncat( szStaticResult, pszAddedPathSep, sizeof(szStaticResult)-strlen(szStaticResult)-1);
-    strncat( szStaticResult, pszBasename,     sizeof(szStaticResult)-strlen(szStaticResult)-1);
-    strncat( szStaticResult, pszAddedExtSep,  sizeof(szStaticResult)-strlen(szStaticResult)-1);
-    strncat( szStaticResult, pszExtension,    sizeof(szStaticResult)-strlen(szStaticResult)-1);
-    szStaticResult[CPL_PATH_BUF_SIZE - 1] = '\0';
+    gStaticResult.clear();
+    gStaticResult.reserve(strlen(pszPath) + strlen(pszAddedPathSep) +
+                          strlen(pszBasename) + strlen(pszAddedExtSep) +
+                          strlen(pszExtension) + 1);
 
-    return szStaticResult;
+    gStaticResult.append(pszPath);
+    gStaticResult.append(pszAddedPathSep);
+    gStaticResult.append(pszBasename);
+    gStaticResult.append(pszAddedExtSep);
+    gStaticResult.append(pszExtension);
+
+    return gStaticResult.c_str();
 }
 
 /************************************************************************/
@@ -493,21 +471,19 @@ const char *CPLFormFilename( const char * pszPath,
 const char *CPLFormCIFilename( const char * pszPath,
                                const char * pszBasename,
                                const char * pszExtension )
-
 {
 #ifdef WIN32
     return CPLFormFilename( pszPath, pszBasename, pszExtension );
 #else
     const char  *pszAddedExtSep = "";
-    char        *pszFilename;
     const char  *pszFullPath;
-    int         nLen = strlen(pszBasename)+2, i;
+    int         nLen = static_cast<int>(strlen(pszBasename))+2, i;
     FILE        *fp;
 
     if( pszExtension != NULL )
-        nLen += strlen(pszExtension);
+        nLen += static_cast<int>(strlen(pszExtension));
 
-    pszFilename = (char *) CPLMalloc(nLen);
+    char *pszFilename = static_cast<char *>( CPLMalloc(nLen) );
 
     if( pszExtension == NULL )
         pszExtension = "";
@@ -524,7 +500,7 @@ const char *CPLFormCIFilename( const char * pszPath,
         for( i = 0; pszFilename[i] != '\0'; i++ )
         {
             if( pszFilename[i] >= 'a' && pszFilename[i] <= 'z' )
-                pszFilename[i] = pszFilename[i] + 'A' - 'a';
+                pszFilename[i] = static_cast<char>(pszFilename[i] + 'A' - 'a');
         }
 
         pszFullPath = CPLFormFilename( pszPath, pszFilename, NULL );
@@ -536,7 +512,7 @@ const char *CPLFormCIFilename( const char * pszPath,
         for( i = 0; pszFilename[i] != '\0'; i++ )
         {
             if( pszFilename[i] >= 'A' && pszFilename[i] <= 'Z' )
-                pszFilename[i] = pszFilename[i] + 'a' - 'A';
+                pszFilename[i] = static_cast<char>(pszFilename[i] + 'a' - 'A');
         }
 
         pszFullPath = CPLFormFilename( pszPath, pszFilename, NULL );
@@ -587,7 +563,6 @@ const char *CPLFormCIFilename( const char * pszPath,
 
 const char *CPLProjectRelativeFilename( const char *pszProjectDir,
                                         const char *pszSecondaryFilename )
-
 {
     if( !CPLIsFilenameRelative( pszSecondaryFilename ) )
         return pszSecondaryFilename;
@@ -595,22 +570,20 @@ const char *CPLProjectRelativeFilename( const char *pszProjectDir,
     if( pszProjectDir == NULL || strlen(pszProjectDir) == 0 )
         return pszSecondaryFilename;
 
-    strncpy( szStaticResult, pszProjectDir, CPL_PATH_BUF_SIZE );
-    szStaticResult[CPL_PATH_BUF_SIZE - 1] = '\0';
+    gStaticResult = pszProjectDir;
 
     if( pszProjectDir[strlen(pszProjectDir)-1] != '/'
         && pszProjectDir[strlen(pszProjectDir)-1] != '\\' )
     {
         CPLAssert( strlen(SEP_STRING) + 1 < CPL_PATH_BUF_SIZE );
-
-        strcat( szStaticResult, SEP_STRING );
+        gStaticResult.append(SEP_STRING);
     }
 
     CPLAssert( strlen(pszSecondaryFilename) + 1 < CPL_PATH_BUF_SIZE );
 
-    strcat( szStaticResult, pszSecondaryFilename );
+    gStaticResult.append(pszSecondaryFilename);
 
-    return szStaticResult;
+    return gStaticResult.c_str();
 }
 
 /************************************************************************/
@@ -630,7 +603,6 @@ const char *CPLProjectRelativeFilename( const char *pszProjectDir,
  */
 
 int CPLIsFilenameRelative( const char *pszFilename )
-
 {
     if( (strlen(pszFilename) > 2 && strncmp(pszFilename+1,":\\",2) == 0)
         || pszFilename[0] == '\\'
