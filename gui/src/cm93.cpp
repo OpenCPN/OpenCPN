@@ -572,7 +572,6 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
   m_dict_dir = dir;
 
   //    Build some array strings for Feature decoding
-
   wxString sf(dir);
   sf.Append("CM93OBJ.DIC");
 
@@ -596,17 +595,17 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
     line = file.GetLine(i);
 
     wxStringTokenizer tkz(line, "|");
-    //            while ( tkz.HasMoreTokens() )
     {
       //  6 char class name
       wxString class_name = tkz.GetNextToken();
 
       //  class number, ascii
       wxString token = tkz.GetNextToken();
-      long liclass;
-      token.ToLong(&liclass);
-      int iclass = liclass;
-      if (iclass > iclass_max) iclass_max = iclass;
+      long liclass = 0;
+      if (token.ToLong(&liclass)) {
+          int iclass = liclass;
+          if (iclass > iclass_max) iclass_max = iclass;
+      }
 
       //  geom type, ascii
       wxString geo_type = tkz.GetNextToken();
@@ -627,44 +626,43 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
     line = file.GetLine(i);
 
     wxStringTokenizer tkz(line, "|");
-    //           while ( tkz.HasMoreTokens() )
     {
       //  6 char class name
       wxString class_name = tkz.GetNextToken();
 
       //  class number, ascii
       wxString token = tkz.GetNextToken();
-      long liclass;
-      token.ToLong(&liclass);
-      int iclass = liclass;
+      long liclass = 0;
+      if (token.ToLong(&liclass)) {
+          int iclass = liclass;
 
-      //  geom type, ascii
-      wxString geo_type = tkz.GetNextToken();
+          //  geom type, ascii
+          wxString geo_type = tkz.GetNextToken();
 
-      m_S57ClassArray->Insert(class_name, iclass);
-      m_S57ClassArray->RemoveAt(iclass + 1);
+          if (iclass >= 0 && (size_t)iclass < m_S57ClassArray->GetCount()) {
+              m_S57ClassArray->Insert(class_name, iclass);
+              m_S57ClassArray->RemoveAt(iclass + 1);
+          }
 
-      int igeom_type = -1;  // default unknown
-      wxChar geo_type_primary = geo_type[0];
+          int igeom_type = -1;  // default unknown
+          if (!geo_type.IsEmpty()) {
+              wxChar geo_type_primary = geo_type[0];
 
-      if (geo_type_primary == 'A')
-        igeom_type = 3;
-      else if (geo_type_primary == 'L')
-        igeom_type = 2;
-      else if (geo_type_primary == 'P')
-        igeom_type = 1;
+              if (geo_type_primary == 'A')
+                igeom_type = 3;
+              else if (geo_type_primary == 'L')
+                igeom_type = 2;
+              else if (geo_type_primary == 'P')
+                igeom_type = 1;
+          }
 
-      //    Note:  there are other types in the file, e.g. 'C'.  Dunno what this
-      //    is Also, some object classes want multiple geometries, like PA, PLA,
-      //    etc. Take only primary, ignore the rest
-
-      m_GeomTypeArray[iclass] = igeom_type;
+          m_GeomTypeArray[iclass] = igeom_type;
+      }
     }
   }
   file.Close();
 
   //    Build some array strings for Attribute decoding
-
   wxString sfa(dir);
   sfa.Append("ATTRLUT.DIC");
 
@@ -698,20 +696,19 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
 
             //  attribute number, ascii
             wxString token = tkz.GetNextToken();
-            long liattr;
-            token.ToLong(&liattr);
-            int iattr = liattr;
-            if (iattr > iattr_max) iattr_max = iattr;
+            long liattr = 0;
+            if (token.ToLong(&liattr)) {
+                int iattr = liattr;
+                if (iattr > iattr_max) iattr_max = iattr;
+            }
           }
         }
       }
 
       m_max_attr = iattr_max;
-
       filea.SeekI(0);
 
       //    Create the attribute label array
-
       m_AttrArray = new wxArrayString;
       m_AttrArray->Add("NULLNM", iattr_max + 1);
 
@@ -737,36 +734,42 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
 
             //  class number, ascii
             wxString token = tkz.GetNextToken();
-            long liattr;
-            token.ToLong(&liattr);
-            int iattr = liattr;
+            long liattr = 0;
+            
+            if (token.ToLong(&liattr)) {
+                int iattr = liattr;
 
-            m_AttrArray->Insert(attr_name, iattr);
-            m_AttrArray->RemoveAt(iattr + 1);
+                if (iattr >= 0 && (size_t)iattr < m_AttrArray->GetCount()) {
+                    m_AttrArray->Insert(attr_name, iattr);
+                    m_AttrArray->RemoveAt(iattr + 1);
+                }
 
-            //    Skip some
-            token = tkz.GetNextToken();
-            token = tkz.GetNextToken();
-            token = tkz.GetNextToken();
-            token = tkz.GetNextToken().Trim();
+                //    Skip some
+                token = tkz.GetNextToken();
+                token = tkz.GetNextToken();
+                token = tkz.GetNextToken();
+                token = tkz.GetNextToken().Trim();
 
-            char atype = '?';
-            if (token.IsSameAs("aFLOAT"))
-              atype = 'R';
-            else if (token.IsSameAs("aBYTE"))
-              atype = 'B';
-            else if (token.IsSameAs("aSTRING"))
-              atype = 'S';
-            else if (token.IsSameAs("aCMPLX"))
-              atype = 'C';
-            else if (token.IsSameAs("aLIST"))
-              atype = 'L';
-            else if (token.IsSameAs("aWORD10"))
-              atype = 'W';
-            else if (token.IsSameAs("aLONG"))
-              atype = 'G';
+                char atype = '?';
+                if (token.IsSameAs("aFLOAT"))
+                  atype = 'R';
+                else if (token.IsSameAs("aBYTE"))
+                  atype = 'B';
+                else if (token.IsSameAs("aSTRING"))
+                  atype = 'S';
+                else if (token.IsSameAs("aCMPLX"))
+                  atype = 'C';
+                else if (token.IsSameAs("aLIST"))
+                  atype = 'L';
+                else if (token.IsSameAs("aWORD10"))
+                  atype = 'W';
+                else if (token.IsSameAs("aLONG"))
+                  atype = 'G';
 
-            m_ValTypeArray[iattr] = atype;
+                if (iattr >= 0 && iattr <= iattr_max) {
+                    m_ValTypeArray[iattr] = atype;
+                }
+            }
           }
         }
       }
@@ -812,21 +815,19 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
 
               //  attribute number, ascii
               wxString token = tkz.GetNextToken();
-              long liattr = 0; // FIX 1: Initialize to zero to clear garbage memory
-              if (token.ToLong(&liattr)){
+              long liattr = 0;
+              if (token.ToLong(&liattr)) {
                   int iattr = liattr;
                   if (iattr > iattr_max) iattr_max = iattr;
-              }    
+              }
             }
           }
         }
 
         m_max_attr = iattr_max;
-
         filea.SeekI(0);
 
         //    Create the attribute label array
-
         m_AttrArray = new wxArrayString;
         m_AttrArray->Add("NULLNM", iattr_max + 1);
 
@@ -853,32 +854,38 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
 
               //  class number, ascii
               wxString token = tkz.GetNextToken();
-              long liattr;
-              token.ToLong(&liattr);
-              int iattr = liattr;
+              long liattr = 0;
+              
+              if (token.ToLong(&liattr)) {
+                  int iattr = liattr;
 
-              m_AttrArray->Insert(attr_name, iattr);
-              m_AttrArray->RemoveAt(iattr + 1);
+                  if (iattr >= 0 && (size_t)iattr < m_AttrArray->GetCount()) {
+                      m_AttrArray->Insert(attr_name, iattr);
+                      m_AttrArray->RemoveAt(iattr + 1);
+                  }
 
-              token = tkz.GetNextToken().Trim();
+                  token = tkz.GetNextToken().Trim();
 
-              char atype = '?';
-              if (token.IsSameAs("aFLOAT"))
-                atype = 'R';
-              else if (token.IsSameAs("aBYTE"))
-                atype = 'B';
-              else if (token.IsSameAs("aSTRING"))
-                atype = 'S';
-              else if (token.IsSameAs("aCMPLX"))
-                atype = 'C';
-              else if (token.IsSameAs("aLIST"))
-                atype = 'L';
-              else if (token.IsSameAs("aWORD10"))
-                atype = 'W';
-              else if (token.IsSameAs("aLONG"))
-                atype = 'G';
+                  char atype = '?';
+                  if (token.IsSameAs("aFLOAT"))
+                    atype = 'R';
+                  else if (token.IsSameAs("aBYTE"))
+                    atype = 'B';
+                  else if (token.IsSameAs("aSTRING"))
+                    atype = 'S';
+                  else if (token.IsSameAs("aCMPLX"))
+                    atype = 'C';
+                  else if (token.IsSameAs("aLIST"))
+                    atype = 'L';
+                  else if (token.IsSameAs("aWORD10"))
+                    atype = 'W';
+                  else if (token.IsSameAs("aLONG"))
+                    atype = 'G';
 
-              m_ValTypeArray[iattr] = atype;
+                  if (iattr >= 0 && iattr <= iattr_max) {
+                      m_ValTypeArray[iattr] = atype;
+                  }
+              }
             }
           }
         }
@@ -898,6 +905,7 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
 
   return ret_val;
 }
+
 
 wxString cm93_dictionary::GetClassName(int iclass) {
   if ((iclass > m_max_class) || (iclass < 0))
