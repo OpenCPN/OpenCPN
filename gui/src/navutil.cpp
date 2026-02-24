@@ -1166,6 +1166,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read("TideCurrentWindowScale", &g_tcwin_scale);
   Read("DefaultWPIcon", &g_default_wp_icon);
+  Read("DataMonitorLogfile", &g_dm_logfile);
   Read("DefaultRPIcon", &g_default_routepoint_icon);
 
   SetPath("/MmsiProperties");
@@ -2385,6 +2386,7 @@ void MyConfig::UpdateSettings() {
   Write("TrackLineColour",
         g_colourTrackLineColour.GetAsString(wxC2S_HTML_SYNTAX));
   Write("DefaultWPIcon", g_default_wp_icon);
+  Write("DataMonitorLogfile", g_dm_logfile);
   Write("DefaultRPIcon", g_default_routepoint_icon);
 
   DeleteGroup("/MmsiProperties");
@@ -2409,7 +2411,7 @@ void MyConfig::UpdateSettings() {
 
 #ifdef ocpnUSE_GL
   if (g_bopengl) {
-    top_frame::Get()->SendGlJsonConfigMsg();
+    if (top_frame::Get()) top_frame::Get()->SendGlJsonConfigMsg();
   }
 #endif
 }

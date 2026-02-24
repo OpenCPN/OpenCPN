@@ -1061,7 +1061,12 @@ void RoutePropDlgImpl::ExtendOnButtonClick(wxCommandEvent& event) {
   m_btnExtend->Enable(false);
 
   if (IsThisRouteExtendable()) {
-    int fm = m_pExtendRoute->GetIndexOf(m_pExtendPoint) + 1;
+    int extend_idx = m_pExtendRoute->GetIndexOf(m_pExtendPoint);
+    if (extend_idx < 0) {
+      m_btnExtend->Enable(true);
+      return;
+    }
+    int fm = extend_idx + 1;
     int to = m_pExtendRoute->GetnPoints();
     if (fm <= to) {
       pSelect->DeleteAllSelectableRouteSegments(m_pRoute);
@@ -1120,7 +1125,12 @@ bool RoutePropDlgImpl::IsThisRouteExtendable() {
   }
   if (pEditRouteArray->GetCount() == 1) {
     Route* p = (Route*)pEditRouteArray->Item(0);
-    int fm = p->GetIndexOf(m_pExtendPoint) + 1;
+    int extend_idx = p->GetIndexOf(m_pExtendPoint);
+    if (extend_idx < 0) {
+      delete pEditRouteArray;
+      return false;
+    }
+    int fm = extend_idx + 1;
     int to = p->GetnPoints();
     if (fm <= to) {
       m_pExtendRoute = p;

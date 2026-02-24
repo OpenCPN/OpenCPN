@@ -65,6 +65,14 @@ public:
     Bind(wxEVT_PAINT, &TideChartPanel::OnPaint, this);
     Bind(wxEVT_MOTION, &TideChartPanel::OnMouseMove, this);
     SetBackgroundStyle(wxBG_STYLE_CUSTOM);  // Prevent flicker
+
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
+    SetFont(*qFont);
+    wxScreenDC dc;
+    int text_height;
+    dc.SetFont(*qFont);
+    dc.GetTextExtent("W", NULL, &text_height);
+    m_refTCWTextHeight = text_height;
   }
 
 private:
@@ -88,7 +96,7 @@ private:
     int chart_height = panelSize.GetHeight() - (2 * other_margins);
 
     // Reserve space at bottom for date/time text
-    int bottom_text_space = 50;
+    int bottom_text_space = 4 * m_refTCWTextHeight;
     chart_height -= bottom_text_space;
     chart_width = wxMax(chart_width, 300);
     chart_height = wxMax(chart_height, 150);
@@ -106,6 +114,7 @@ private:
   }
 
   TCWin *m_tcWin;
+  int m_refTCWTextHeight;
 };
 
 enum { ID_TCWIN_NX, ID_TCWIN_PR };
@@ -173,6 +182,13 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
 
   btc_valid = false;
 
+  // Establish a "reference" text hieght value, for layout assistance
+  wxScreenDC dc;
+  int text_height;
+  dc.SetFont(*qFont);
+  dc.GetTextExtent("W", NULL, &text_height);
+  m_refTextHeight = text_height;
+
   CreateLayout();
   Layout();
   m_graph_rect = wxRect(0, 0, 400, 200);
@@ -189,11 +205,6 @@ TCWin::TCWin(ChartCanvas *parent, int x, int y, void *pvIDX) {
   m_TimeIndicatorTimer.SetOwner(this, TCWIN_TIME_INDICATOR_TIMER);
   m_TimeIndicatorTimer.Start(60000, false);  // Refresh every 60 seconds
 
-  wxScreenDC dc;
-  int text_height;
-  dc.SetFont(*qFont);
-  dc.GetTextExtent("W", NULL, &text_height);
-  m_refTextHeight = text_height;
   m_button_height = m_tsy;
 
   // Build graphics tools
@@ -276,19 +287,22 @@ void TCWin::CreateLayout() {
   m_ptextctrl =
       new wxTextCtrl(m_topPanel, -1, "", wxDefaultPosition, wxDefaultSize,
                      wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP);
-  m_ptextctrl->SetMinSize(wxSize(200, 120));  // Minimum readable size
+  m_ptextctrl->SetMinSize(wxSize(
+      25 * m_refTextHeight, 7 * m_refTextHeight));  // Minimum readable size
 
   // Right cell: Tide list (LW/HW) with minimum size
   m_tList = new wxListCtrl(m_topPanel, -1, wxDefaultPosition, wxDefaultSize,
                            wxLC_REPORT | wxLC_NO_HEADER);
-  m_tList->SetMinSize(wxSize(150, 120));  // Minimum to show a few entries
+  m_tList->SetMinSize(
+      wxSize(18 * m_refTextHeight,
+             4 * m_refTextHeight));  // Minimum to show a few entries
 
   // Add first column to tide list
   wxListItem col0;
   col0.SetId(0);
   col0.SetText("");
   col0.SetAlign(wxLIST_FORMAT_LEFT);
-  col0.SetWidth(140);
+  col0.SetWidth(20 * m_refTextHeight);
   m_tList->InsertColumn(0, col0);
 
   // Add controls to top sizer (first row: two cells)
@@ -714,8 +728,11 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
       dc.SetPen(*pblack_1);
 
     dc.DrawLine(m_graph_rect.x, yd, m_graph_rect.x + m_graph_rect.width, yd);
-    snprintf(sbuf, 99, "%d", i);
-    dc.DrawText(wxString(sbuf, wxConvUTF8), m_graph_rect.x - 20, yd - 5);
+    if ((yd < m_graph_rect.height * 48 / 100) ||
+        (yd > m_graph_rect.height * 52 / 100)) {
+      snprintf(sbuf, 99, "%d", i);
+      dc.DrawText(wxString(sbuf, wxConvUTF8), m_graph_rect.x - 20, yd - 5);
+    }
     i += i_skip;
   }
 
@@ -768,7 +785,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
   dc.GetTextExtent(m_stz, &w, &h);
   // Position timezone text below the chart, centered horizontally
   dc.DrawText(m_stz, m_graph_rect.x + (m_graph_rect.width / 2) - (w / 2),
-              m_graph_rect.y + m_graph_rect.height + 35);
+              m_graph_rect.y + m_graph_rect.height + (2 * h));
 
   wxString sdate;
   if (g_locale == "en_US")
@@ -780,14 +797,14 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
   dc.GetTextExtent(sdate, &w, &h);
   // Position date text below the chart, centered horizontally
   dc.DrawText(sdate, m_graph_rect.x + (m_graph_rect.width / 2) - (w / 2),
-              m_graph_rect.y + m_graph_rect.height + 15);
+              m_graph_rect.y + m_graph_rect.height + (5 * h / 2));
 
   Station_Data *pmsd = pIDX->pref_sta_data;
   if (pmsd) {
     // Use user's height unit for Y-axis label instead of station units
     wxString height_unit = getUsrHeightUnit();
     dc.GetTextExtent(height_unit, &w, &h);
-    dc.DrawRotatedText(height_unit, 5,
+    dc.DrawRotatedText(height_unit, 0,
                        m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
   }
 
@@ -824,7 +841,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
     dc.GetTextExtent(sday, &w, &h);
     // Position day text at the left side of the chart, below it
     dc.DrawText(sday, m_graph_rect.x,
-                m_graph_rect.y + m_graph_rect.height + 15);
+                m_graph_rect.y + m_graph_rect.height + (2 * h));
   }
 
   //  Render "Spot of interest"

@@ -32,11 +32,13 @@
 #include <set>
 #include <string>
 
+#include <wx/event.h>
+
 #include "model/comm_driver.h"
 #include "observable_evtvar.h"
 
 /** The raw message layer, a singleton. */
-class NavMsgBus : public DriverListener {
+class NavMsgBus : public wxEvtHandler, public DriverListener {
 public:
   /* Singleton implementation. */
   static NavMsgBus& GetInstance();
@@ -48,8 +50,11 @@ public:
   void SendMessage(std::shared_ptr<const NavMsg> message,
                    std::shared_ptr<const NavAddr> address);
 
-  /** Register a message type in list the GetActiveMessages() list. */
-  void RegisterKey(const std::string& key);
+  /**
+   * Register a message type in list the GetActiveMessages() list
+   * @return true if key is inserted, false if already registered.
+   */
+  bool RegisterKey(const std::string& key);
 
   /** Accept message received by driver, make it available for upper layers. */
   void Notify(std::shared_ptr<const NavMsg> message);

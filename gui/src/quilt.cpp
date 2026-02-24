@@ -1772,11 +1772,10 @@ ChartBase *Quilt::GetRefChart() {
 void Quilt::UnlockQuilt() {
   wxASSERT(m_bbusy == false);
   ChartData->UnLockCache();
-  ChartData->UnLockAllCacheCharts();
   // unlocked only charts owned by the Quilt
   for (unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++) {
     QuiltCandidate *pqc = m_pcandidate_array->Item(ir);
-    // ChartData->UnLockCacheChart(pqc->dbIndex);
+    ChartData->UnLockCacheChart(pqc->dbIndex);
   }
 }
 

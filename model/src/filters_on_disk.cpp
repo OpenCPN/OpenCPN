@@ -72,6 +72,20 @@ bool Remove(const std::string& name) {
   return !fs::exists(path);
 }
 
+bool Rename(const std::string& old_name, const std::string& new_name) {
+  const std::string old_filename = old_name + ".json";
+  fs::path old_path(UserPath() / old_filename);
+  if (!fs::exists(old_path)) return false;
+  const std::string new_filename = new_name + ".json";
+  fs::path new_path(UserPath() / new_filename);
+  try {
+    fs::rename(old_path, new_path);
+  } catch (fs::filesystem_error& e) {
+    return false;
+  }
+  return !fs::exists(old_path) && fs::exists(new_path);
+}
+
 bool Write(const NavmsgFilter& filter, const std::string& name) {
   std::string json = filter.to_string();
   const std::string filename = name + ".json";

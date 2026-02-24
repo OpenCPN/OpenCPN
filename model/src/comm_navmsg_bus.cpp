@@ -27,17 +27,18 @@
 void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
   if (!msg) return;
   std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
-  RegisterKey(key);
-  Observable(*msg).Notify(msg);
+  if (RegisterKey(key))
+    // Leave some time for listeners to register before message is sent.
+    CallAfter([msg] { Observable(*msg).Notify(msg); });
+  else
+    Observable(*msg).Notify(msg);
 }
 
-void NavMsgBus::RegisterKey(const std::string& key) {
-  {
-    std::lock_guard lock(m_mutex);
-    if (m_active_messages.find(key) == m_active_messages.end())
-      new_msg_event.Notify();
-    m_active_messages.insert(key);
-  }
+bool NavMsgBus::RegisterKey(const std::string& key) {
+  std::lock_guard lock(m_mutex);
+  auto rv = m_active_messages.insert(key);
+  if (rv.second) new_msg_event.Notify();
+  return rv.second;
 }
 
 NavMsgBus& NavMsgBus::GetInstance() {

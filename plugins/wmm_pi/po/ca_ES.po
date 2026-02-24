@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 16:56-0400\n"
-"PO-Revision-Date: 2025-05-20 02:02\n"
+"POT-Creation-Date: 2026-02-09 10:30-0500\n"
+"PO-Revision-Date: 2026-02-13 20:43\n"
 "Last-Translator: \n"
 "Language-Team: Catalan\n"
 "Language: ca_ES\n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Crowdin-File: /plugins/wmm_pi/po/wmm_pi.pot\n"
 "X-Crowdin-File-ID: 128\n"
 
-#: src/wmm_pi.cpp:87
+#: src/wmm_pi.cpp:90
 msgid "\n"
 "World Magnetic Model Plotting allows users to cross reference the magnetic variation values printed on many raster charts.\n\n"
 "Variation is the angle between true and magnetic north.\n"
@@ -30,23 +30,23 @@ msgid "\n"
 "The World Magnetic Model Plugin was written by Pavel Kalian and extended by Sean D'Epagnier to support plotting."
 msgstr ""
 
-#: src/wmm_pi.cpp:103
+#: src/wmm_pi.cpp:106
 msgid "WMM Plugin"
 msgstr "Connector WMM"
 
-#: src/wmm_pi.cpp:164
+#: src/wmm_pi.cpp:167
 msgid "WMM_Live_Overlay"
 msgstr ""
 
-#: src/wmm_pi.cpp:221 src/wmm_pi.cpp:279 src/WmmUIDialog.h:85
+#: src/wmm_pi.cpp:242 src/wmm_pi.cpp:300 src/WmmUIDialog.h:85
 msgid "WMM"
 msgstr "WMM"
 
-#: src/wmm_pi.cpp:282
+#: src/wmm_pi.cpp:303
 msgid "World Magnetic Model PlugIn for OpenCPN"
 msgstr "Connector del Model Magnètic Mundial per a OpenCPN"
 
-#: src/wmm_pi.cpp:287
+#: src/wmm_pi.cpp:308
 msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "Implements the NOAA World Magnetic Model\n"
 "More information:\n"
@@ -57,15 +57,15 @@ msgid "World Magnetic Model PlugIn for OpenCPN\n"
 "location you can find in the OpenCPN logfile."
 msgstr ""
 
-#: src/wmm_pi.cpp:366 src/wmm_pi.cpp:909
+#: src/wmm_pi.cpp:387 src/wmm_pi.cpp:933
 msgid "Dialog"
 msgstr ""
 
-#: src/wmm_pi.cpp:479 src/wmm_pi.cpp:647
+#: src/wmm_pi.cpp:500 src/wmm_pi.cpp:668
 msgid "Error, see log."
 msgstr "Error, veure el fitxer log."
 
-#: src/wmm_pi.cpp:879 src/WmmUIDialog.h:118
+#: src/wmm_pi.cpp:903 src/WmmUIDialog.h:118
 msgid "WMM Preferences"
 msgstr "Preferències WMM"
 
