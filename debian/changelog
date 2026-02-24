@@ -2,54 +2,18 @@ opencpn (1:5.14.1+dfsg~beta2-1~bpo12+1) UNRELEASED; urgency=medium
 
   * New upstream beta release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 24 Feb 2026 16:24:09 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 24 Feb 2026 16:31:59 +0100
 
-opencpn (1:5.14.1+dfsg~beta1-1~bpo12+1) bookworm-backports; urgency=medium
-
-  *  New upstream beta release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 15:43:01 +0100
-
-opencpn (1:5.12.4+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
-
-  * New upstream maintenance release
-  * d/patches: rebased
-  * d/control: drop heavy b-d asciidoc-base, not needed from 5.12.4
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 15 Sep 2025 23:01:17 +0200
-
-opencpn (1:5.12.2+dfsg-3~bpo12+2) bookworm-backports; urgency=medium
-
-  * Add missing b-d libunarr-dev.
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 24 Aug 2025 16:10:13 +0200
-
-opencpn (1:5.12.2+dfsg-3~bpo12+1) bookworm-backports; urgency=medium
-
-  * Backport from new upstream release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 23 Aug 2025 11:44:28 +0200
-
-opencpn (1:5.12.2+dfsg-3) unstable; urgency=medium
-
-  * Completely disable tests on unused and untestable arches
-
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 12 Aug 2025 21:02:51 +0200
-
-opencpn (1:5.12.2+dfsg-2) unstable; urgency=medium
-
-  * New patch: Remove some useless and failing tests.
-
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 11 Aug 2025 15:05:07 +0200
-
-opencpn (1:5.12.2+dfsg-1) unstable; urgency=medium
+opencpn (1:5.14.1+dfsg~beta2-1) sid; urgency=medium
 
   * New upstream release
-  * Drop upstreamed patches:
-     - 0007-chartdldr-Don-t-use-unarr-for-libarchive-3.7.4-4005.patch
-  * Rebase other patches
-  * Update d/copyright to reflect new source
-  * lintian-overrides: drop obsolete entries, add new for appstreamcli
-  * d/opencpn-data-install: Authors.html -> authors.html
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 10 Aug 2025 21:35:45 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Feb 2026 09:32:09 +0100
+
+opencpn (1:5.14.1+dfsg~beta1-1) unstable; urgency=medium
+
+  * New upstream beta release
+  * d/patches: rebased
+  * d/copyright: Updated for new sources
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 10:29:34 +0100
