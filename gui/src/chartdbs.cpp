@@ -876,8 +876,6 @@ bool ChartTableEntry::Write(const ChartDatabase *pDb, wxOutputStream &os) {
 ///////////////////////////////////////////////////////////////////////
 
 void ChartTableEntry::Clear() {
-  //    memset(this, 0, sizeof(ChartTableEntry));
-
   pFullPath = NULL;
   pPlyTable = NULL;
   pAuxPlyTable = NULL;
@@ -892,6 +890,7 @@ void ChartTableEntry::Clear() {
 
   m_pfilename = NULL;  // a helper member, not on disk
   m_psFullPath = NULL;
+  Scale = 1e8;  // Very small scale
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -1372,12 +1371,11 @@ void ChartDatabase::UpdateChartClassDescriptorArray() {
   }
 }
 
-ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const {
-  // if (index < GetChartTableEntries())
-  return *active_chartTable[index];
-  // TODO fix
-  // else
-  // return m_ChartTableEntryDummy;
+ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) {
+  if (index < GetChartTableEntries())
+    return *active_chartTable[index];
+  else
+    return m_ChartTableEntryDummy;
 }
 
 bool ChartDatabase::CompareChartDirArray(ArrayOfCDI &test_array) {

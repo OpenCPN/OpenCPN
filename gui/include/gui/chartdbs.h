@@ -347,7 +347,7 @@ public:
     return active_chartTable;
   }
   int GetChartTableEntries() const { return active_chartTable.size(); }
-  ChartTableEntry &GetChartTableEntry(int index) const;
+  ChartTableEntry &GetChartTableEntry(int index);
 
   bool IsValid() const { return bValid; }
   int DisableChart(wxString &PathToDisable);
@@ -425,6 +425,7 @@ private:
 
   ChartTableEntry
       m_ChartTableEntryDummy;  // used for return value if database is not valid
+
   wxString m_DBFileName;
 
   int m_pdifile;
