@@ -16,7 +16,7 @@ Here are five main tasks:
   - <<import-version,Importing new opencpn releases into the packaging
     branches>>.
   - <<src-release, Creating a new downstream release>>.
-  - <<publish, Upload a downstream release to an Ubuntu PPA>>
+  - <<publish, Publish an existing  downstream release to a Ubuntu PPA>>
   - <<test-build, Local test build of the package from existing release>>
   - <<master-build, Local test build of the package from master>>
 
@@ -28,21 +28,14 @@ There is also some support tasks, see the right panel.
 [#setup]
 == Setting up the environment
 
-1. Creating releases requires a working gpg secret key including the
-   password is available.
-   Verify using something like
-   `gpg --export-secret-keys E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C`.
-   This key must be registered on the PPA about the be used.
-2. Create a file _~/.devscripts_ with contents like:
 
-       DEBSIGN_KEYID=E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C
+1. Create a file _~/.devscripts_ with contents like:
++
        DEBEMAIL="leamas.alec@gmail.com"
        DEBFULLNAME="Alec Leamas"
 +
-Of course, all values here are personal.
-DEBSIGN_KEYID is the secret key verified above.
-This key is only required when uploading source packages to an ubuntu
-PPA.
+Values here are of course personal.
+
 [#install-tools]
 3. Install development tools
 
@@ -166,19 +159,35 @@ For each release do:
 == Publish existing downstream release to PPA
 
 1. Initiate the environment as described <<setup, above>>.
-2. Clone and checkout all branches, or update existing clone.
+2. Creating releases requires a working gpg secret key including the
+   password is available.
+   Verify using something like
+   `gpg --export-secret-keys E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C`.
+   This key must be registered on the PPA about the be used. Make key
+   being used by default by adding
++
+```
+  DEBSIGN_KEYID=E2EA41DCE2F8A99AD17A1E463A67D5D966D15C5C
+```
++
+to *~/.devscripts*
+
+3. Clone and checkout all branches, or update existing clone.
    See <<create-clone, above>>.
-3. Optionally, mark the package as released by you:
+4. Optionally, mark the package as released by you:
 +
 ```
   $ dch -r    # complete changelog entry in editor
   $ git add debian/changelog
   $ git commit -m "<changelog version>"
 ```
-4. Make sure the repo is synchronized: `git clean -fxd; git checkout .`
-5. Create the upstream source tarball: `gbp export-orig`
-6. Create the source package: `debuild --no-lintian -d -S -sa`
-7. List all available source packages using `ls -lt ../*source.changes`. Push the 
+5. Make sure the repo is clean: `git clean -fxd; git checkout .`
+6. Create the upstream source tarball: `gbp export-orig`
+7. Create the source package: `debuild --no-lintian -d -S -sa`. 
+This uses the default key defined in *~/.devscripts*. 
++
+Or use an explicit key; `debuild --no-lintian -d -S -sa -kE2EA41DCE2F8A99AD17A1E463A67D5D966D15C5` 
+8. List all available source packages using `ls -lt ../*source.changes`. Push the 
    most recent package to a PPA using something like:
 +
 ```
@@ -190,7 +199,7 @@ Or, a more generic oneliner pushing the most recent _source.changes_ file:
 ```
   $ dput ppa:leamas-alec/opencpn $(ls -t ../*source.changes | head -1)
 ```
-8. Tag the published  release using a tag name like 
+9. Tag the published  release using a tag name like 
    *ppa/5.12.2+dfsg-1-bpo20.04+2*
 
 [#test-build]
