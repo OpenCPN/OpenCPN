@@ -1726,7 +1726,7 @@ void MyApp::LoadChartDatabase() {
 
   //      Try to load the current chart list Data file
   ChartData = new ChartDB();
-  if (g_NeedDBUpdate == 0 &&
+  if (g_NeedDBUpdate == 0 && ChartDirArray.GetCount() &&
       !ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
     g_NeedDBUpdate = 1;
     g_restore_dbindex = 0;
