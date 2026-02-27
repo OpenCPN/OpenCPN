@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="DOWNLOADING_FILE">Descargando el archivo …</string>
-    <string name="DEFAULT">Predeterminada</string>
-    <string name="CUSTOM">Personalizar</string>
+    <string name="DOWNLOADING_FILE">Descargando archivo …</string>
+    <string name="DEFAULT">Por Defecto</string>
+    <string name="CUSTOM">Personalizado</string>
     <string name="ocpn_GRIB_activity_Display">Ajustes de Visualización GRIB</string>
-    <string name="ocpn_GRIB_activity_Choose">Elegir archivo GRIB local</string>
+    <string name="ocpn_GRIB_activity_Choose">Elija el archivo GRIB local</string>
     <string name="ocpn_GRIB_activity_Request">Solicitar nueva descarga de archivo GRIB</string>
     <string name="ocpn_GRIB_download_dialog_Request">Solicitar descargar de GRIB...</string>
     <string name="ocpn_GRIB_download_dialog_OK">Archivo GRIB descargado OK</string>

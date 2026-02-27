@@ -89,6 +89,7 @@
 #include "cm93.h"
 #include "config.h"
 #include "config_mgr.h"
+#include "displays.h"
 #include "dychart.h"
 #include "font_mgr.h"
 #include "layer.h"
@@ -96,13 +97,15 @@
 #include "nmea0183.h"
 #include "observable_globvar.h"
 #include "ocpndc.h"
-#include "ocpn_frame.h"
 #include "ocpn_plugin.h"
 #include "ocpn_platform.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "s57_load.h"
 #include "snd_config.h"
 #include "styles.h"
+#include "top_frame.h"
+#include "user_colors.h"
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
@@ -234,7 +237,6 @@ int MyConfig::LoadMyConfig() {
   g_cog_predictor_width = 3;
   g_ownship_HDTpredictor_miles = 1;
   g_n_ownship_min_mm = 2;
-  g_own_ship_sog_cog_calc_damp_sec = 1;
   g_bFullScreenQuilt = 1;
   g_track_rotate_time_type = TIME_TYPE_COMPUTER;
   g_bHighliteTracks = 1;
@@ -316,13 +318,13 @@ int MyConfig::LoadMyConfig() {
     g_MarkScaleFactorExp =
         g_Platform->GetMarkScaleFactorExp(g_ChartScaleFactor);
 
-    g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
+    g_COGFilterSec = wxMin(g_COGFilterSec, kMaxCogsogFilterSeconds);
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
 
     if (!g_bShowTrue && !g_bShowMag) g_bShowTrue = true;
     g_COGAvgSec =
-        wxMin(g_COGAvgSec, MAX_COG_AVERAGE_SECONDS);  // Bound the array size
+        wxMin(g_COGAvgSec, kMaxCogAverageSeconds);  // Bound the array size
 
     if (g_bInlandEcdis) g_bLookAhead = 1;
 
@@ -552,6 +554,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read("GPUTextureMemSize", &g_GLOptions.m_iTextureMemorySize);
     Read("DebugOpenGL", &g_bDebugOGL);
     Read("OpenGL", &g_bopengl);
+    Read("OpenGLFinishNeeded", &g_b_needFinish);
     Read("SoftwareGL", &g_bSoftwareGL);
   }
 #endif
@@ -660,8 +663,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("OwnShipGPSOffsetX", &g_n_gps_antenna_offset_x);
   Read("OwnShipGPSOffsetY", &g_n_gps_antenna_offset_y);
   Read("OwnShipMinSize", &g_n_ownship_min_mm);
-  Read("OwnShipSogCogCalc", &g_own_ship_sog_cog_calc);
-  Read("OwnShipSogCogCalcDampSec", &g_own_ship_sog_cog_calc_damp_sec);
   Read("ShowDirectRouteLine", &g_bShowShipToActive);
   Read("DirectRouteLineStyle", &g_shipToActiveStyle);
   Read("DirectRouteLineColor", &g_shipToActiveColor);
@@ -1166,6 +1167,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read("TideCurrentWindowScale", &g_tcwin_scale);
   Read("DefaultWPIcon", &g_default_wp_icon);
+  Read("DataMonitorLogfile", &g_dm_logfile);
   Read("DefaultRPIcon", &g_default_routepoint_icon);
 
   SetPath("/MmsiProperties");
@@ -1981,8 +1983,6 @@ void MyConfig::UpdateSettings() {
   Write("OwnShipGPSOffsetX", g_n_gps_antenna_offset_x);
   Write("OwnShipGPSOffsetY", g_n_gps_antenna_offset_y);
   Write("OwnShipMinSize", g_n_ownship_min_mm);
-  Write("OwnShipSogCogCalc", g_own_ship_sog_cog_calc);
-  Write("OwnShipSogCogCalcDampSec", g_own_ship_sog_cog_calc_damp_sec);
   Write("ShowDirectRouteLine", g_bShowShipToActive);
   Write("DirectRouteLineStyle", g_shipToActiveStyle);
   Write("DirectRouteLineColor", g_shipToActiveColor);
@@ -2136,7 +2136,8 @@ void MyConfig::UpdateSettings() {
 
   //    Various Options
   SetPath("/Settings/GlobalState");
-  if (!g_bInlandEcdis) Write("nColorScheme", (int)gFrame->GetColorScheme());
+  if (!g_bInlandEcdis)
+    Write("nColorScheme", (int)user_colors::GetColorScheme());
 
   Write("FrameWinX", g_nframewin_x);
   Write("FrameWinY", g_nframewin_y);
@@ -2386,6 +2387,7 @@ void MyConfig::UpdateSettings() {
   Write("TrackLineColour",
         g_colourTrackLineColour.GetAsString(wxC2S_HTML_SYNTAX));
   Write("DefaultWPIcon", g_default_wp_icon);
+  Write("DataMonitorLogfile", g_dm_logfile);
   Write("DefaultRPIcon", g_default_routepoint_icon);
 
   DeleteGroup("/MmsiProperties");
@@ -2407,6 +2409,12 @@ void MyConfig::UpdateSettings() {
 
   Flush();
   SendMessageToAllPlugins("GLOBAL_SETTINGS_UPDATED", "{\"updated\":\"1\"}");
+
+#ifdef ocpnUSE_GL
+  if (g_bopengl) {
+    if (top_frame::Get()) top_frame::Get()->SendGlJsonConfigMsg();
+  }
+#endif
 }
 
 static wxFileName exportFileName(wxWindow *parent,
@@ -2858,7 +2866,7 @@ void SwitchInlandEcdisMode(bool Switch) {
     g_iSpeedFormat = 2;     // 0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
     if (ps52plib) ps52plib->SetDisplayCategory(STANDARD);
     g_bDrawAISSize = false;
-    if (gFrame) gFrame->RequestNewToolbars(true);
+    if (top_frame::Get()) top_frame::Get()->RequestNewToolbars(true);
   } else {
     wxLogMessage("Switch InlandEcdis mode Off");
     // reread the settings overruled by inlandEcdis
@@ -2876,7 +2884,7 @@ void SwitchInlandEcdisMode(bool Switch) {
       pConfig->Read("bDrawAISSize", &g_bDrawAISSize);
       pConfig->Read("bDrawAISRealtime", &g_bDrawAISRealtime);
     }
-    if (gFrame) gFrame->RequestNewToolbars(true);
+    if (top_frame::Get()) top_frame::Get()->RequestNewToolbars(true);
   }
 }
 

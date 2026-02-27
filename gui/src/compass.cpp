@@ -31,10 +31,10 @@
 #include "model/own_ship.h"
 
 #include "chcanv.h"
+#include "color_handler.h"
 #include "compass.h"
 #include "gl_chart_canvas.h"
 #include "tooltip.h"
-#include "ocpn_frame.h"  // FIXME (dave) colorschemes
 #include "styles.h"
 
 #ifndef GL_RGBA8

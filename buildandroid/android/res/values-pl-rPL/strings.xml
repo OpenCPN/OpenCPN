@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="DOWNLOADING_FILE">Pobieranie pliku…</string>
+    <string name="DOWNLOADING_FILE">Pobieranie pliku...</string>
     <string name="DEFAULT">Domyślne</string>
     <string name="CUSTOM">Niestandardowe</string>
     <string name="ocpn_GRIB_activity_Display">Ustawienia wyświetlania GRIBów</string>
@@ -8,15 +8,15 @@
     <string name="ocpn_GRIB_activity_Request">Żądanie pobierania nowego pliku GRIB</string>
     <string name="ocpn_GRIB_download_dialog_Request">Żądania pobrania GRIB...</string>
     <string name="ocpn_GRIB_download_dialog_OK">Plik GRIB pobrany</string>
-    <string name="ocpn_GRIB_download_dialog_NO_INTERNET">Brak połączenia z internetem\n Prosze sprawdź ustawienia Przesyłania danych lub wifi swojego urządzenia.</string>
+    <string name="ocpn_GRIB_download_dialog_NO_INTERNET">Brak połączenia z internetem\n Sprawdź ustawienia Danych Mobilnych lub Wifi swojego urządzenia.</string>
     <string name="ocpn_GRIB_download_dialog_NO_CONNECTION">Połączenie nieudane</string>
-    <string name="ocpn_GRIB_download_dialog_DOWN_FAIL">Pobieranie Nieudane\n sprawdź logi.</string>
-    <string name="ocpn_action_follow">Automatyczne śledzenie statku</string>
-    <string name="ocpn_action_mob">Zaznacz MOB</string>
-    <string name="ocpn_action_routemanager">Pokaż menedżera dróg</string>
-    <string name="ocpn_action_tracktoggle_on">Zacznij śledzenie</string>
-    <string name="ocpn_action_tracktoggle_off">Zakończ śledzenie</string>
-    <string name="ocpn_action_createroute">Utwórz nową drogę</string>
+    <string name="ocpn_GRIB_download_dialog_DOWN_FAIL">Pobieranie nieudane\n Sprawdź logi.</string>
+    <string name="ocpn_action_follow">Automatyczne podążanie za łodzią</string>
+    <string name="ocpn_action_mob">Oznacz MOB</string>
+    <string name="ocpn_action_routemanager">Pokaż Menadżera Tras</string>
+    <string name="ocpn_action_tracktoggle_on">Włącz śledzenie</string>
+    <string name="ocpn_action_tracktoggle_off">Wyłącz śledzenie</string>
+    <string name="ocpn_action_createroute">Utwórz nową trasę</string>
     <string name="ocpn_action_endroute">Zakończ nową drogę</string>
     <string name="ocpn_action_tides">Pokaż/ukryj pływy</string>
     <string name="ocpn_action_currents">Pokaż/ukryj prądy</string>

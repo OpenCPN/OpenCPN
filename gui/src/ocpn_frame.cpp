@@ -84,6 +84,7 @@
 #include "model/navutil_base.h"
 #include "model/notification_manager.h"
 #include "model/own_ship.h"
+#include "model/ocpn_utils.h"
 #include "model/plugin_comm.h"
 #include "model/plugin_loader.h"
 #include "model/routeman.h"
@@ -142,11 +143,13 @@
 #include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s57chart.h"
+#include "s57_load.h"
 #include "s57_query_dlg.h"
 #include "tcmgr.h"
 #include "timers.h"
 #include "toolbar.h"
 #include "track_prop_dlg.h"
+#include "user_colors.h"
 #include "waypointman_gui.h"
 #include "canvas_options.h"
 #include "udev_rule_mgr.h"
@@ -162,8 +165,6 @@ static constexpr long kFrameStyle = wxDEFAULT_FRAME_STYLE | wxWANTS_CHARS;
 //      Static variable definition
 //------------------------------------------------------------------------------
 //
-
-arrayofCanvasPtr g_canvasArray;
 
 extern options *g_pOptions;  // FIXME (leamas) same as g_options, merge
 MyFrame *gFrame;
@@ -200,8 +201,6 @@ static o_sound::Sound *_bells_sounds[] = {o_sound::Factory(),
 static std::vector<o_sound::Sound *> bells_sound(_bells_sounds,
                                                  _bells_sounds + 2);
 
-static wxArrayPtrVoid *UserColourHashTableArray;
-
 #ifdef __WXMSW__
 // System color control support
 
@@ -235,8 +234,6 @@ DWORD color_inactiveborder;
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
-
-static wxArrayPtrVoid *UserColorTableArray = 0;
 
 // Latest "ground truth" fix, and auxiliaries
 static double gLat_gt, gLon_gt;
@@ -289,6 +286,16 @@ static void LaunchLocalHelp() {
 #endif
 }
 
+// Helper to create menu label + hotkey string when registering menus
+static wxString _menuText(wxString name, wxString shortcut) {
+  wxString menutext;
+  menutext << name;
+#ifndef __ANDROID__
+  menutext << "\t" << shortcut;
+#endif
+  return menutext;
+}
+
 static void DoHelpDialog() {
 #ifndef __ANDROID__
   if (!g_pAboutDlg) {
@@ -328,7 +335,7 @@ static void DoHelpDialog() {
 //              Fwd Refs
 //------------------------------------------------------------------------------
 
-void BuildiENCToolbar(bool bnew) {
+void BuildiENCToolbar(bool bnew, ToolbarDlgCallbacks callbacks) {
   if (g_bInlandEcdis) {
     if (bnew) {
       if (g_iENCToolbar) {
@@ -367,9 +374,8 @@ void BuildiENCToolbar(bool bnew) {
 
       double tool_scale_factor =
           g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
-
-      g_iENCToolbar =
-          new iENCToolbar(gFrame, posn, wxTB_HORIZONTAL, tool_scale_factor);
+      g_iENCToolbar = new iENCToolbar(gFrame, posn, wxTB_HORIZONTAL,
+                                      tool_scale_factor, callbacks);
       g_iENCToolbar->SetColorScheme(global_color_scheme);
       g_iENCToolbar->EnableSubmerge(false);
     }
@@ -377,19 +383,6 @@ void BuildiENCToolbar(bool bnew) {
     delete g_iENCToolbar;
     g_iENCToolbar = NULL;
   }
-}
-
-bool isSingleChart(ChartBase *chart) {
-  if (chart == nullptr) return false;
-
-  // ..For each canvas...
-  for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-    ChartCanvas *cc = g_canvasArray.Item(i);
-    if (cc && cc->m_singleChart == chart) {
-      return true;
-    }
-  }
-  return false;
 }
 
 #if defined(__WXGTK__) && defined(OCPN_HAVE_X11)
@@ -465,6 +458,21 @@ static bool isTransparentToolbarInOpenGLOK() {
 #endif
 }
 
+wxFont *MyFrame::GetFont(wxFont *font, double scale) {
+  return FindOrCreateFont_PlugIn(font->GetPointSize() / scale,
+                                 font->GetFamily(), font->GetStyle(),
+                                 font->GetWeight(), false, font->GetFaceName());
+}
+wxFont *MyFrame::GetScaledFont(int pointSize, wxFontFamily family,
+                               wxFontStyle style, wxFontWeight weight,
+                               const wxString faceName, double scale) {
+  return FindOrCreateFont_PlugIn(pointSize / scale, family, style, weight,
+                                 false, faceName);
+}
+wxFont *MyFrame::GetDefaultFont(wxString label, int Ptsize) {
+  return GetOCPNScaledFont_PlugIn(label, Ptsize);
+}
+
 //------------------------------------------------------------------------------
 // MyFrame
 //------------------------------------------------------------------------------
@@ -532,7 +540,7 @@ static NmeaLog *GetDataMonitor() {
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
                  RestServer &rest_server, wxAuiDefaultDockArt *pauidockart,
                  OpenFileFunc open_gpx_file)
-    : wxFrame(nullptr, -1, title, pos, size, kFrameStyle, kTopLevelWindowName),
+    : AbstractTopFrame(nullptr, title, pos, size, kFrameStyle),
       m_connections_dlg(nullptr),
       m_data_monitor(new DataMonitor(this)),
       m_pauidockart(pauidockart),
@@ -562,6 +570,15 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
   InitTimer.SetOwner(this, INIT_TIMER);
   m_iInitCount = 0;
   m_initializing = false;
+  m_toolbar_callbacks.render_gl_textures =
+#ifdef ocpnUSE_GL
+      [&](ocpnDC &dc, float *coords, float *uv) {
+        GetPrimaryCanvas()->GetglCanvas()->RenderTextures(
+            dc, coords, uv, 4, &GetPrimaryCanvas()->GetVP());
+      };
+#else
+      [&](ocpnDC &dc, float *coords, float *uv) {};
+#endif
 
   //      Redirect the global heartbeat timer to this frame
   FrameTimer1.SetOwner(this, FRAME_TIMER_1);
@@ -588,12 +605,10 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
 
   //      Set up some assorted member variables
   m_bTimeIsSet = false;
-  nBlinkerTick = 0;
-
   m_bdefer_resize = false;
 
   //    Clear the NMEA Filter tables
-  for (int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++) {
+  for (int i = 0; i < kMaxCogsogFilterSeconds; i++) {
     COGFilterTable[i] = NAN;
     SOGFilterTable[i] = NAN;
   }
@@ -608,13 +623,15 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
   gHdt_gt = NAN;
   gCog_gt = NAN;
 
-  for (int i = 0; i < MAX_COG_AVERAGE_SECONDS; i++) COGTable[i] = NAN;
+  for (int i = 0; i < kMaxCogAverageSeconds; i++) COGTable[i] = NAN;
 
   m_fixtime = -1;
 
   double dt = 2.0;                     // Time interval
   double process_noise_std = 1.0;      // Process noise standard deviation
   double measurement_noise_std = 0.5;  // Measurement noise standard deviation
+
+  SetUtils(this);
 
   m_ChartUpdatePeriod = 1;  // set the default (1 sec.) period
   initIXNetSystem();
@@ -704,7 +721,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
   m_recaptureTimer.SetOwner(this, RECAPTURE_TIMER);
   m_tick_idx = 0;
   assert(g_pRouteMan != 0 && "g_pRouteMan not available");
-  m_routes_update_listener.Init(g_pRouteMan->on_routes_update,
+  m_routes_update_listener.Init(GuiEvents::GetInstance().on_routes_update,
                                 [&](wxCommandEvent) { Refresh(); });
   m_evt_drv_msg_listener.Init(CommDriverRegistry::GetInstance().evt_driver_msg,
                               [&](ObservedEvt &ev) { OnDriverMsg(ev); });
@@ -716,12 +733,15 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
         auto ais_target = UnpackEvtPointer<AisTargetData>(ev);
         CenterAisTarget(ais_target);
       });
+  m_reload_charts_listener.Init(
+      GuiEvents::GetInstance().on_finalize_chartdbs,
+      [&](ObservedEvt &ev) { FinalizeChartDBUpdate(); });
 
 #ifdef __WXOSX__
   // Enable native fullscreen on macOS
   EnableFullScreenView();
 #endif
-  int is_day = GetColorScheme() == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
+  int is_day = user_colors::GetColorScheme() == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
   GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 }
 
@@ -812,7 +832,7 @@ void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
   }
 }
 
-void MyFrame::RebuildChartDatabase() {
+void MyFrame::StartRebuildChartDatabase() {
   bool b_SetInitialPoint = false;
 
   //   Build the initial chart dir array
@@ -844,17 +864,10 @@ void MyFrame::RebuildChartDatabase() {
     wxString dummy2 = _("Estimated time : ");
     wxString dummy3 = _("Remaining time : ");
     wxGenericProgressDialog *pprog = new wxGenericProgressDialog(
-        _("OpenCPN Chart Update"), line, 100, NULL,
-        wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
-            wxPD_REMAINING_TIME);
+        _("OpenCPN Chart Update"), line, 100, NULL, wxPD_SMOOTH);
 
+    LoadS57();
     ChartData->Create(ChartDirArray, pprog);
-    ChartData->SaveBinary(ChartListFileName);
-
-    delete pprog;
-
-    //  Apply the inital Group Array structure to the chart database
-    ChartData->ApplyGroupArray(g_pGroupArray);
   }
 }
 
@@ -890,10 +903,6 @@ void MyFrame::OnMaximize(wxMaximizeEvent &event) {
   event.Skip();
 #endif
 }
-
-ColorScheme GetColorScheme() { return global_color_scheme; }
-
-ColorScheme MyFrame::GetColorScheme() { return global_color_scheme; }
 
 void MyFrame::ReloadAllVP() {
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -967,21 +976,11 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
 
   g_StyleManager->GetCurrentStyle()->SetColorScheme(cs);
 
-  // Search the user color table array to find the proper hash table
-  unsigned Usercolortable_index = 0;
-  for (unsigned int i = 0; i < UserColorTableArray->GetCount(); i++) {
-    colTable *ct = (colTable *)UserColorTableArray->Item(i);
-    if (SchemeName.IsSameAs(*ct->tableName)) {
-      Usercolortable_index = i;
-      break;
-    }
-  }
-
   if (ps52plib) ps52plib->SetPLIBColorScheme(SchemeName, ChartCtxFactory());
 
   //    Set up a pointer to the proper hash table
   pcurrent_user_color_hash =
-      (wxColorHashMap *)UserColourHashTableArray->Item(Usercolortable_index);
+      user_colors::GetMapByScheme(SchemeName.ToStdString());
 
   SetSystemColors(cs);
 
@@ -1087,6 +1086,7 @@ ChartCanvas *MyFrame::GetPrimaryCanvas() {
   else
     return NULL;
 }
+
 void MyFrame::CancelAllMouseRoute() {
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -1094,8 +1094,6 @@ void MyFrame::CancelAllMouseRoute() {
     if (cc) cc->CancelMouseRoute();
   }
 }
-
-void MyFrame::NotifyChildrenResize() {}
 
 void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
   //  Clear the cache, and thus close all charts to avoid memory leaks
@@ -1296,7 +1294,7 @@ void MyFrame::RequestNewToolbars(bool bforcenew) {
     return;
   }
 
-  BuildiENCToolbar(bforcenew);
+  BuildiENCToolbar(bforcenew, m_toolbar_callbacks);
   PositionIENCToolbar();
 
 #ifdef __ANDROID__
@@ -1424,7 +1422,7 @@ bool MyFrame::DropMarker(bool atOwnShip) {
   return true;
 }
 
-void MyFrame::SwitchKBFocus(ChartCanvas *pCanvas) {
+void MyFrame::SwitchKBFocusCanvas(ChartCanvas *pCanvas) {
   if (g_canvasConfig != 0) {  // multi-canvas?
     canvasConfig *cc;
     int nTarget = -1;
@@ -2522,7 +2520,6 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
-      /// LoadS57();
       androidDisableFullScreen();
       g_MainToolbar->HideTooltip();
       DoAndroidPreferences();
@@ -2961,6 +2958,7 @@ void MyFrame::DoSettingsNew() {
 }
 
 void MyFrame::DoSettings() {
+  LoadS57();
   DoOptionsDialog();
 
   //              Apply various system settings
@@ -2999,7 +2997,7 @@ void MyFrame::ToggleChartBar(ChartCanvas *cc) {
 
 void MyFrame::ToggleColorScheme() {
   static bool lastIsNight;
-  ColorScheme s = GetColorScheme();
+  ColorScheme s = user_colors::GetColorScheme();
   int is = (int)s;
   is++;
   if (lastIsNight && is == 3)  // Back from step 3
@@ -3516,15 +3514,6 @@ void MyFrame::ApplyGlobalSettings(bool bnewtoolbar) {
   if (bnewtoolbar) UpdateAllToolbars(global_color_scheme);
 }
 
-wxString _menuText(wxString name, wxString shortcut) {
-  wxString menutext;
-  menutext << name;
-#ifndef __ANDROID__
-  menutext << "\t" << shortcut;
-#endif
-  return menutext;
-}
-
 void MyFrame::BuildMenuBar() {
   /*
    * Menu Bar - add or remove it if necessary, and update the state of the menu
@@ -3679,7 +3668,7 @@ void MyFrame::RegisterGlobalMenuItems() {
 
   wxMenu *tools_menu = new wxMenu();
   tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
-                     _menuText(_("Data Monitor"), "Alt-C"));
+                     _menuText(_("Data Monitor"), "E"));
 #ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), "M"));
@@ -3991,9 +3980,12 @@ void MyFrame::PrepareOptionsClose(options *settings,
   androidEnableRotation();
 #endif
   ThawCharts();
+  EnableSettingsTool(true);
 }
 
 void MyFrame::DoOptionsDialog() {
+  EnableSettingsTool(false);
+
   if (NULL == g_options) {
     AbstractPlatform::ShowBusySpinner();
 
@@ -4006,8 +3998,15 @@ void MyFrame::DoOptionsDialog() {
 #ifdef __WXOSX__
     optionsParent = GetPrimaryCanvas();
 #endif
-    g_options = new options(optionsParent, -1, _("Options"), wxPoint(-1, -1),
-                            wxSize(sx, sy));
+    OptionsCallbacks callbacks;
+    callbacks.prepare_close = [&](options *me, int changes) {
+      PrepareOptionsClose(me, changes);
+    };
+    callbacks.process_dialog = [&](int changes, ArrayOfCDI *workdir_list) {
+      ProcessOptionsDialog(changes, workdir_list);
+    };
+    g_options = new options(optionsParent, callbacks, -1, _("Options"),
+                            wxPoint(-1, -1), wxSize(sx, sy));
 
     AbstractPlatform::HideBusySpinner();
   }
@@ -4081,6 +4080,7 @@ void MyFrame::DoOptionsDialog() {
 void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   bool b_need_refresh = false;  // Do we need a full reload?
 
+#if 0
   if ((rr & VISIT_CHARTS) &&
       ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) {
     if (pNewDirArray) {
@@ -4091,6 +4091,7 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
       b_need_refresh = true;
     }
   }
+#endif
 
   if (rr & STYLE_CHANGED) {
     OCPNMessageBox(
@@ -4099,19 +4100,9 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
         _("OpenCPN Info"), wxOK | wxICON_INFORMATION);
   }
 
-  bool b_groupchange = false;
-  if (((rr & VISIT_CHARTS) &&
-       ((rr & CHANGE_CHARTS) || (rr & FORCE_UPDATE) || (rr & SCAN_UPDATE))) ||
-      (rr & GROUPS_CHANGED)) {
-    b_groupchange = ScrubGroupArray();
-    ChartData->ApplyGroupArray(g_pGroupArray);
-    RefreshGroupIndices();
-  }
-
-  if (rr & GROUPS_CHANGED || b_groupchange) {
-    pConfig->DestroyConfigGroups();
-    pConfig->CreateConfigGroups(g_pGroupArray);
-  }
+  bool charts_updating =
+      (rr & VISIT_CHARTS) && ((rr & CHANGE_CHARTS) || (rr & SCAN_UPDATE));
+  if (!charts_updating) RefreshGroupIndices();
 
   if (rr & TIDES_CHANGED) {
     LoadHarmonics();
@@ -4139,7 +4130,7 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   if (!std::isnan(gCog)) stuffcog = gCog;
   if (!std::isnan(gSog)) stuffsog = gSog;
 
-  for (int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++) {
+  for (int i = 0; i < kMaxCogsogFilterSeconds; i++) {
     COGFilterTable[i] = stuffcog;
     SOGFilterTable[i] = stuffsog;
   }
@@ -4206,16 +4197,20 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     if (cc) cc->ApplyGlobalSettings();
   }
 
+#if 0
   //  The zoom-scale factor may have changed
   //  so, trigger a recalculation of the reference chart
-  bool ztc = g_bEnableZoomToCursor;  // record the present state
-  g_bEnableZoomToCursor =
-      false;  // since we don't want to pan to an unknown cursor position
-
   //  This is needed to recognise changes in zoom-scale factors
-  if (!GetPrimaryCanvas()->IsFrozen())
-    GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
-  g_bEnableZoomToCursor = ztc;
+  // Do not call if chartdbs update is underway.
+  if (!charts_updating) {
+    bool ztc = g_bEnableZoomToCursor;  // record the present state
+    g_bEnableZoomToCursor = false;     // since we don't want to pan
+                                       // to an unknown cursor position
+    if (!GetPrimaryCanvas()->IsFrozen())
+      GetPrimaryCanvas()->ZoomCanvasSimple(1.0001);
+    g_bEnableZoomToCursor = ztc;
+  }
+#endif
 
   //  Pick up chart object icon size changes (g_ChartScaleFactorExp)
   if (g_last_ChartScaleFactor != g_ChartScaleFactor) {
@@ -4233,13 +4228,15 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
     ChartCanvas *cc = g_canvasArray.Item(i);
     if (cc) {
       cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
-      cc->UpdateCanvasControlBar();
+      if (!charts_updating) cc->UpdateCanvasControlBar();
     }
   }
   UpdateGPSCompassStatusBoxes();
 
   SetAllToolbarScale();
   RequestNewToolbars();
+
+  if ((rr & MENU_CHANGED) == MENU_CHANGED) BuildMenuBar();
 
   //  Rebuild cursors
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -4288,8 +4285,6 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
 
-  if (rr & FORCE_RELOAD) ScheduleReloadCharts();
-
   return;
 }
 
@@ -4304,8 +4299,8 @@ bool MyFrame::CheckGroup(int igroup) {
   for (const auto &elem : pGroup->m_element_array) {
     for (unsigned int ic = 0;
          ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
-      ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
-      wxString chart_full_path(pcte->GetpFullPath(), wxConvUTF8);
+      auto &cte = ChartData->GetChartTableEntry(ic);
+      wxString chart_full_path(cte.GetpFullPath(), wxConvUTF8);
 
       if (chart_full_path.StartsWith(elem.m_element_name)) return true;
     }
@@ -4330,8 +4325,8 @@ bool MyFrame::ScrubGroupArray() {
 
       for (unsigned int ic = 0;
            ic < (unsigned int)ChartData->GetChartTableEntries(); ic++) {
-        ChartTableEntry *pcte = ChartData->GetpChartTableEntry(ic);
-        wxString chart_full_path = pcte->GetFullSystemPath();
+        auto &cte = ChartData->GetChartTableEntry(ic);
+        wxString chart_full_path = cte.GetFullSystemPath();
 
         if (chart_full_path.StartsWith(element_root)) {
           b_chart_in_element = true;
@@ -4436,71 +4431,57 @@ bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
 
   AbstractPlatform::ShowBusySpinner();
 
-  wxGenericProgressDialog *pprog = nullptr;
   if (b_prog) {
     wxString longmsg = _("OpenCPN Chart Update");
     longmsg +=
         ".................................................................."
         "........";
 
-    pprog = new wxGenericProgressDialog();
+    Updateprog = new wxGenericProgressDialog();
 
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
-    pprog->SetFont(*qFont);
+    Updateprog->SetFont(*qFont);
 
-    pprog->Create(_("OpenCPN Chart Update"), longmsg, 100, gFrame,
-                  wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
-                      wxPD_REMAINING_TIME);
+    Updateprog->Create(_("OpenCPN Chart Update"), longmsg, 100, gFrame,
+                       wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME |
+                           wxPD_REMAINING_TIME);
 
-    DimeControl(pprog);
-    pprog->Show();
+    DimeControl(Updateprog);
+    Updateprog->Show();
   }
 
   wxLogMessage("   ");
   wxLogMessage("Starting chart database Update...");
-  wxString gshhg_chart_loc = gWorldMapLocation;
-  gWorldMapLocation = wxEmptyString;
+
   // The Update() function may set gWorldMapLocation if at least one of the
-  // directories contains GSHHS files.
-  ChartData->Update(DirArray, b_force, pprog);
-  ChartData->SaveBinary(ChartListFileName);
-  wxLogMessage("Finished chart database Update");
-  wxLogMessage("   ");
-  if (gWorldMapLocation.empty()) {  // Last resort. User might have deleted all
-                                    // GSHHG data, but we still might have the
-                                    // default dataset distributed with OpenCPN
-                                    // or from the package repository...
-    gWorldMapLocation = gDefaultWorldMapLocation;
-    gshhg_chart_loc = wxEmptyString;
-  }
+  // directories contains GSHHS files.  Save current situation...
+  m_gshhg_chart_loc = gWorldMapLocation;
+  gWorldMapLocation = wxEmptyString;
 
-  if (gWorldMapLocation != gshhg_chart_loc) {
-    // ..For each canvas...
-    for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-      ChartCanvas *cc = g_canvasArray.Item(i);
-      if (cc) cc->ResetWorldBackgroundChart();
-    }
-    // Reset the GSHHS singleton which is used to detect land crossing.
-    gshhsCrossesLandReset();
-  }
-
-  delete pprog;
+  ChartData->Update(DirArray, b_force, Updateprog);
 
   AbstractPlatform::HideBusySpinner();
-
-  pConfig->UpdateChartDirs(DirArray);
-
-  // Restart timers, if necessary
-  if (b_run) FrameTimer1.Start(TIMER_GFRAME_1, wxTIMER_CONTINUOUS);
-  if (b_run) FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
-
-  if (b_runCOGTimer) {
-    //    Restart the COG rotation timer, max frequency is 10 hz.
-    int period_ms = 100;
-    if (g_COGAvgSec > 0) period_ms = g_COGAvgSec * 1000;
-    FrameCOGTimer.Start(period_ms, wxTIMER_CONTINUOUS);
-  }
   return true;
+}
+
+void MyFrame::FinalizeChartDBUpdate() {
+  // Finalize chartdbs update after all async events finished.
+  if (!g_bDeferredInitDone) {  // Coming from auto startup rebuild.
+    // Resume init timer
+    InitTimer.Start(100, wxTIMER_ONE_SHOT);
+  }
+
+  bool b_groupchange = ScrubGroupArray();
+  ChartData->ApplyGroupArray(g_pGroupArray);
+  RefreshGroupIndices();
+
+  if (b_groupchange) {
+    pConfig->DestroyConfigGroups();
+    pConfig->CreateConfigGroups(g_pGroupArray);
+  }
+  pConfig->UpdateSettings();
+
+  if (g_bDeferredInitDone) ScheduleReloadCharts();
 }
 
 void MyFrame::ToggleQuiltMode(ChartCanvas *cc) {
@@ -4531,6 +4512,18 @@ void MyFrame::ToggleQuiltMode(ChartCanvas *cc) {
             ps52plib->GenerateStateHash();
 #endif
   }
+}
+
+void MyFrame::DoStackDown(AbstractChartCanvas *arg) {
+  auto *cc = dynamic_cast<ChartCanvas *>(arg);
+  assert(cc);
+  DoStackDelta(cc, -1);
+}
+
+void MyFrame::DoStackUp(AbstractChartCanvas *arg) {
+  auto *cc = dynamic_cast<ChartCanvas *>(arg);
+  assert(cc);
+  DoStackDelta(cc, 1);
 }
 
 void MyFrame::DoStackDown(ChartCanvas *cc) { DoStackDelta(cc, -1); }
@@ -4568,6 +4561,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
   switch (m_iInitCount++) {
     case 0: {
+      EnableSettingsTool(false);
+
       FontMgr::Get()
           .ScrubList();  // Clean the font list, removing nonsensical entries
 
@@ -4598,7 +4593,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
       // Rebuild chart database, if necessary
       if (g_NeedDBUpdate > 0) {
-        RebuildChartDatabase();
         for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
           ChartCanvas *cc = g_canvasArray.Item(i);
           if (cc) {
@@ -4606,65 +4600,13 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           }
         }
 
-        //    As a favor to new users, poll the database and
-        //    move the initial viewport so that a chart will come up.
-
-        double clat, clon;
-        if (ChartData->GetCentroidOfLargestScaleChart(&clat, &clon,
-                                                      CHART_FAMILY_RASTER)) {
-          gLat = clat;
-          gLon = clon;
-          gFrame->ClearbFollow(gFrame->GetPrimaryCanvas());
-        } else {
-          if (ChartData->GetCentroidOfLargestScaleChart(&clat, &clon,
-                                                        CHART_FAMILY_VECTOR)) {
-            gLat = clat;
-            gLon = clon;
-            gFrame->ClearbFollow(gFrame->GetPrimaryCanvas());
-          }
-        }
-
+        // Start an async chart database update
+        // Arrange for init timer to restart at next point in chain
+        m_iInitCount = 1;
+        StartRebuildChartDatabase();
         g_NeedDBUpdate = 0;
+        return;
       }
-
-#if 0
-      // Load the waypoints. Both of these routines are very slow to execute
-      // which is why they have been to defered until here
-      auto colour_func = [](wxString c) { return GetGlobalColor(c); };
-      pWayPointMan = new WayPointman(colour_func);
-      WayPointmanGui(*pWayPointMan)
-          .SetColorScheme(global_color_scheme, g_Platform->GetDisplayDPmm());
-      // Reload the ownship icon from UserIcons, if present
-      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        if (cc) {
-          if (cc->SetUserOwnship()) cc->SetColorScheme(global_color_scheme);
-        }
-      }
-
-      NavObj_dB::GetInstance().ImportLegacyNavobj(this);
-      NavObj_dB::GetInstance().LoadNavObjects();
-
-      //    Re-enable anchor watches if set in config file
-      if (!g_AW1GUID.IsEmpty()) {
-        pAnchorWatchPoint1 = pWayPointMan->FindRoutePointByGUID(g_AW1GUID);
-      }
-      if (!g_AW2GUID.IsEmpty()) {
-        pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID(g_AW2GUID);
-      }
-
-      // Import Layer-wise any .gpx files from /layers directory
-      wxString layerdir = g_Platform->GetPrivateDataDir();
-      appendOSDirSlash(&layerdir);
-      layerdir.Append("layers");
-
-      if (wxDir::Exists(layerdir)) {
-        wxString laymsg;
-        laymsg.Printf("Getting .gpx layer files from: %s", layerdir.c_str());
-        wxLogMessage(laymsg);
-        pConfig->LoadLayers(layerdir);
-      }
-#endif
 
       break;
     }
@@ -4704,11 +4646,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 #ifdef __WXOSX__
       optionsParent = GetPrimaryCanvas();
 #endif
-      // g_options = new options(optionsParent, -1, _("Options"), wxPoint(-1,
-      // -1),
-      //                         wxSize(sx, sy));
-
-      BuildiENCToolbar(true);
+      BuildiENCToolbar(true, m_toolbar_callbacks);
 
       break;
     }
@@ -4788,6 +4726,32 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       }
       break;
     }
+    case 8: {
+      if (!g_kiosk_startup) {
+        AbstractPlatform::ShowBusySpinner();
+
+        int sx, sy;
+        pConfig->SetPath("/Settings");
+        pConfig->Read("OptionsSizeX", &sx, -1);
+        pConfig->Read("OptionsSizeY", &sy, -1);
+
+        wxWindow *optionsParent = this;
+#ifdef __WXOSX__
+        optionsParent = GetPrimaryCanvas();
+#endif
+        OptionsCallbacks callbacks;
+        callbacks.prepare_close = [&](options *me, int changes) {
+          PrepareOptionsClose(me, changes);
+        };
+        callbacks.process_dialog = [&](int changes, ArrayOfCDI *workdir_list) {
+          ProcessOptionsDialog(changes, workdir_list);
+        };
+        g_options = new options(optionsParent, callbacks, -1, _("Options"),
+                                wxPoint(-1, -1), wxSize(sx, sy));
+        AbstractPlatform::HideBusySpinner();
+      }
+      break;
+    }
 
     default: {
       // Last call....
@@ -4812,10 +4776,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       GetPrimaryCanvas()->SetFocus();
       GetPrimaryCanvas()->Enable();
       g_focusCanvas = GetPrimaryCanvas();
-
-#ifndef __ANDROID__
-      // gFrame->Raise();
-#endif
 
       if (b_reloadForPlugins) {
         //  If any PlugIn implements PlugIn Charts, we need to re-run the
@@ -4850,8 +4810,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       androidLastCall();
 #endif
 
-      // if (g_MainToolbar) g_MainToolbar->EnableTool(ID_SETTINGS, true);
-
       if (g_start_fullscreen && !IsFullScreen()) ToggleFullScreen();
 
       UpdateStatusBar();
@@ -4874,6 +4832,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
   RefreshAllCanvas(true);
   UsbWatchDaemon::GetInstance().Start();
+  EnableSettingsTool(true);
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);
@@ -5442,7 +5401,8 @@ void MyFrame::OnFrameTenHzTimer(wxTimerEvent &event) {
       if (cc) {
         if (g_bopengl) {
           if (cc->GetUpMode() != NORTH_UP_MODE || cc->m_bFollow) {
-            cc->DoCanvasUpdate();
+            bool bnew = cc->DoCanvasUpdate();
+            if (!bnew) cc->UpdateShips();  // Ensure ownship HDT is rendered.
           } else
             cc->Refresh(false);  // Process ownship motion at 10 Hz.
         }
@@ -5493,7 +5453,7 @@ void MyFrame::ProcessAnchorWatch() {
                             pAnchorWatchPoint1->m_lon, gLat, gLon, &brg, &dist);
     double d = g_nAWMax;
     (pAnchorWatchPoint1->GetName()).ToDouble(&d);
-    d = AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
+    d = ocpn::AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
     bool toofar = false;
     bool tooclose = false;
     if (d >= 0.0) toofar = (dist * 1852. > d);
@@ -5514,7 +5474,7 @@ void MyFrame::ProcessAnchorWatch() {
 
     double d = g_nAWMax;
     (pAnchorWatchPoint2->GetName()).ToDouble(&d);
-    d = AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
+    d = ocpn::AnchorDistFix(d, AnchorPointMinDist, g_nAWMax);
     bool toofar = false;
     bool tooclose = false;
     if (d >= 0) toofar = (dist * 1852. > d);
@@ -5668,7 +5628,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   bool bnew_view = false;
   if (!g_btenhertz) bnew_view = DoChartUpdate();
 
-  nBlinkerTick++;
+  g_blinker_tick++;
 
   if (g_always_send_rmb_rmc) SendNoRouteRmbRmc(*g_pRouteMan);
 
@@ -5748,7 +5708,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
           // Rotation is handled by 10Hz timer, do not duplicate here
           bool b_rotate = cc->GetUpMode() != NORTH_UP_MODE;
           if (!b_rotate) {
-            if (!g_btenhertz) {
+            if ((!g_btenhertz)) {
               if (cc->m_bFollow) {
                 cc->DoCanvasUpdate();
                 if (bnew_view)
@@ -6437,7 +6397,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
 }
 
 void MyFrame::FilterCogSog() {
-  if (g_bfilter_cogsog && !g_own_ship_sog_cog_calc) {
+  if (g_bfilter_cogsog) {
     //    Simple averaging filter for COG
     double cog_last = gCog;  // most recent reported value
 
@@ -6827,7 +6787,8 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
     toolbarParent = GetPrimaryCanvas();
 #endif
     g_MainToolbar = new ocpnFloatingToolbarDialog(
-        toolbarParent, wxPoint(-1, -1), orient, g_toolbar_scalefactor);
+        toolbarParent, wxPoint(-1, -1), orient, g_toolbar_scalefactor,
+        m_toolbar_callbacks);
     g_MainToolbar->SetBackGroundColorString("GREY3");
     g_MainToolbar->SetToolbarHideMethod(TOOLBAR_HIDE_TO_FIRST_TOOL);
     g_MainToolbar->SetToolConfigString(g_toolbarConfig);
@@ -7079,317 +7040,6 @@ bool MyFrame::AddDefaultPositionPlugInTools() {
  *
  *************************************************************************/
 
-wxColour GetGlobalColor(wxString colorName);  // -> color_handler
-
-static const char *usercolors[] = {
-    //======================================================================
-    // Table:DAY - Bright daylight color scheme (full visibility mode)
-    //======================================================================
-    "Table:DAY",
-
-    // Standard palette colors - general purpose UI elements
-    "GREEN1;120;255;120;", "GREEN2; 45;150; 45;", "GREEN3;200;220;200;",
-    "GREEN4;  0;255;  0;", "GREEN5;170;254;  0;", "BLUE1; 170;170;255;",
-    "BLUE2;  45; 45;170;", "BLUE3;   0;  0;255;", "GREY1; 200;200;200;",
-    "GREY2; 230;230;230;", "RED1;  220;200;200;", "YELO1; 243;229; 47;",
-    "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;",
-
-    // Basic UI colors
-    "UBLCK;   0;  0;  0;",  // Universal black for text/lines
-    "UWHIT; 255;255;255;",  // Universal white for backgrounds
-    "URED;  255;  0;  0;",  // Own vessel color, AIS targets, predictor lines
-    "UGREN;   0;255;  0;",  // Universal green for general purpose green
-    "COMPT; 245;247;244",   // Compass rose background/details
-
-// Dialog system colors
-#ifdef __WXOSX__
-    "DILG0; 255;255;255;",  // Dialog window background (macOS)
-#else
-    "DILG0; 238;239;242;",  // Dialog window background (other platforms)
-#endif
-    "DILG1; 212;208;200;",  // Background color for selected items
-    "DILG2; 255;255;255;",  // Control backgrounds for text boxes and input
-                            // fields
-    "DILG3;   0;  0;  0;",  // Dialog text color in dialogs and controls
-    /**
-     * Text color optimized for progressively darker backgrounds (pairs with
-     * DILG0). Gets progressively lighter as background darkens to maintain
-     * contrast. Ideal for tooltips, overlays, and any text over DILG0
-     * background. */
-    "DILG4;   0;  0;  0;",
-    "UITX1;   0;  0;  0;",  // Menu text color
-
-    // Chart and information display colors
-    "CHGRF; 163; 180; 183;",  // Chart gray foreground (grid lines, secondary
-                              // text)
-    "CHYLW; 244; 218;  72;",  // Chart yellow (AIS name invalid, warnings)
-    "CHWHT; 212; 234; 238;",  // Chart white (AIS outlines, contrast elements)
-
-    // Information status colors
-    "UINFM; 197;  69; 195;",  // Magenta - special indicators, chart magenta
-                              // features
-    "UINFG; 104; 228;  86;",  // Green - status indicators, tide/current
-                              // graphics
-    "UINFR; 241;  84; 105;",  // Red - alerts, errors, danger markers
-    "UINFF; 125; 137; 140;",  // Default foreground - general UI elements
-    "SHIPS;   7;   7;   7;",  // Other vessels/AIS target fills
-
-    // Route and navigation colors
-    "UDKRD; 124; 16;  0;",  // Dark red variant - reduced visibility alternative
-                            // to URED
-    "UARTE; 200;  0;  0;",  // Active route color (bright red in day mode)
-
-    // Chart data and measurement colors
-    "NODTA; 163; 180; 183;",  // No data available areas
-    "CHBLK;   7;   7;   7;",  // Chart black - text, lines, piano keys
-    "SNDG1; 125; 137; 140;",  // Sounding text (depth numbers) - primary
-    "SNDG2;   7;   7;   7;",  // Sounding text (depth numbers) - secondary
-    "SCLBR; 235; 125;  54;",  // Scale bar markings and text
-
-    // UI framework colors
-    "UIBDR; 125; 137; 140;",  // UI borders, status bar background
-    "UIBCK; 212; 234; 238;",  // Highlight backgrounds, info windows
-    "UINFB;  58; 120; 240;",  // Information blue - active/selected states, tide
-                              // markers
-    "UINFD;   7;   7;   7;",  // Information dark - borders, inactive elements
-    "UINFO; 235; 125;  54;",  // Information orange - warnings, highlights
-
-    // Route planning colors
-    "PLRTE; 220;  64;  37;",  // Planned route color (not yet active)
-    "CHMGD; 197; 69; 195;",  // Chart magenta - special chart features, AIS MMSI
-                             // text
-
-    // Dashboard instrument colors
-    "DASHB; 255;255;255;",  // Dashboard instrument background
-    "DASHL; 175;175;175;",  // Dashboard instrument labels and graduations
-    "DASHF;  50; 50; 50;",  // Dashboard foreground text and indicators
-    "DASHR; 200;  0;  0;",  // Dashboard red indicators (alarms, danger zones)
-    "DASHG;   0;200;  0;",  // Dashboard green indicators (normal status)
-    "DASHN; 200;120;  0;",  // Dashboard needle/pointer color
-    "DASH1; 204;204;255;",  // Dashboard graphic elements - primary
-    "DASH2; 122;131;172;",  // Dashboard graphic elements - secondary
-    "COMP1; 211;211;211;",  // Compass window background
-
-    // Window and canvas elements
-    "GREY3;  40; 40; 40;",     // MUI toolbar background
-    "BLUE4; 100;100;200;",     // Canvas focus indicator bar
-    "VIO01; 171; 33;141;",     // Violet - vector chart special elements
-    "VIO02; 209;115;213;",     // Violet variant - vector chart features
-    "BLUEBACK; 212;234;238;",  // Deep water background color for basemap
-    "LANDBACK; 201;185;122;",  // Land mass background color for basemap
-
-    //======================================================================
-    // Table:DUSK - Reduced brightness for twilight conditions
-    // Colors defined above are automatically dimmed for dusk visibility
-    //======================================================================
-    "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;",
-    "GREEN3; 80;100; 80;", "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;",
-    "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;", "GREY1; 100;100;100;",
-    "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
-    "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;",
-    "YELO1; 120;115; 24;", "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;",
-    "GREEN5; 85;128; 0;", "COMPT; 124;126;121",
-
-    "CHGRF;  41; 46; 46;", "UINFM;  58; 20; 57;", "UINFG;  35; 76; 29;",
-    "UINFF;  41; 46; 46;", "UINFR;  80; 28; 35;", "SHIPS;  71; 78; 79;",
-    "CHYLW;  81; 73; 24;", "CHWHT;  71; 78; 79;",
-
-    "DILG0; 110;110;110;",  // Dialog Background
-    "DILG1; 110;110;110;",  // Dialog Background
-    "DILG2;   0;  0;  0;",  // Control Background
-    "DILG3; 130;130;130;",  // Text
-    "DILG4;   0;  0;  0;",
-    "UITX1;  41; 46; 46;",  // Menu text color
-    "UDKRD;  80;  0;  0;",  // Dark red variant - reduced visibility alternative
-                            // to URED
-    "UARTE;  64; 64; 64;",  // Active route color (grey for dusk/night modes)
-
-    "NODTA;  41;  46;  46;", "CHBLK;  54;  60;  61;", "SNDG1;  41;  46;  46;",
-    "SNDG2;  71;  78;  79;", "SCLBR;  75;  38;  19;", "UIBDR;  54;  60;  61;",
-    "UINFB;  19;  40;  80;", "UINFD;  71;  78;  79;", "UINFO;  75;  38;  19;",
-    "PLRTE;  73;  21;  12;", "CHMGD; 74; 58; 81;", "UIBCK; 7; 7; 7;",
-
-    "DASHB;  77; 77; 77;",  // Dashboard Instr background
-    "DASHL;  54; 54; 54;",  // Dashboard Instr Label
-    "DASHF;   0;  0;  0;",  // Dashboard Foreground
-    "DASHR;  58; 21; 21;",  // Dashboard Red
-    "DASHG;  21; 58; 21;",  // Dashboard Green
-    "DASHN; 100; 50;  0;",  // Dashboard Needle
-    "DASH1;  76; 76;113;",  // Dashboard Illustrations
-    "DASH2;  48; 52; 72;",  // Dashboard Illustrations
-    "COMP1; 107;107;107;",  // Compass Window Background
-
-    "GREY3;  20; 20; 20;",  // MUIBar/TB background
-    "BLUE4;  80; 80;160;",  // Canvas Focus Bar
-    "VIO01; 128; 25;108;", "VIO02; 171; 33;141;", "BLUEBACK; 186;213;235;",
-    "LANDBACK; 201;185;122;",
-
-    //======================================================================
-    // Table:NIGHT - Dark adapted colors preserving night vision
-    // Colors are further dimmed and shifted toward red spectrum
-    //======================================================================
-    "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;",
-    "GREEN3; 12; 23;  9;", "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;",
-    "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;", "GREY1;  48; 48; 48;",
-    "GREY2;  32; 32; 32;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
-    "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;",
-    "YELO1;  60; 65; 12;", "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;",
-    "GREEN5; 44; 64; 0;", "COMPT;  48; 49; 51",
-    "DILG0;  80; 80; 80;",  // Dialog Background
-    "DILG1;  80; 80; 80;",  // Dialog Background
-    "DILG2;   0;  0;  0;",  // Control Background
-    "DILG3;  65; 65; 65;",  // Text
-    "DILG4; 220;220;220;",
-    "UITX1;  31; 34; 35;",  // Menu text color
-    "UDKRD;  50;  0;  0;",  // Dark red variant - reduced visibility alternative
-                            // to URED
-    "UARTE;  64; 64; 64;",  // Active route color (grey for dusk/night modes)
-
-    "CHGRF;  16; 18; 18;", "UINFM;  52; 18; 52;", "UINFG;  22; 24;  7;",
-    "UINFF;  31; 34; 35;", "UINFR;  59; 17; 10;", "SHIPS;  37; 41; 41;",
-    "CHYLW;  31; 33; 10;", "CHWHT;  37; 41; 41;",
-
-    "NODTA;   7;   7;   7;", "CHBLK;  31;  34;  35;", "SNDG1;  31;  34;  35;",
-    "SNDG2;  43;  48;  48;", "SCLBR;  52;  28;  12;", "UIBDR;  31;  34;  35;",
-    "UINFB;  21;  29;  69;", "UINFD;  43;  48;  58;", "UINFO;  52;  28;  12;",
-    "PLRTE;  66;  19;  11;", "CHMGD; 52; 18; 52;", "UIBCK; 7; 7; 7;",
-
-    "DASHB;   0;  0;  0;",  // Dashboard Instr background
-    "DASHL;  20; 20; 20;",  // Dashboard Instr Label
-    "DASHF;  64; 64; 64;",  // Dashboard Foreground
-    "DASHR;  70; 15; 15;",  // Dashboard Red
-    "DASHG;  15; 70; 15;",  // Dashboard Green
-    "DASHN;  17; 80; 56;",  // Dashboard Needle
-    "DASH1;  48; 52; 72;",  // Dashboard Illustrations
-    "DASH2;  36; 36; 53;",  // Dashboard Illustrations
-    "COMP1;  24; 24; 24;",  // Compass Window Background
-
-    "GREY3;  10; 10; 10;",  // MUIBar/TB background
-    "BLUE4;  70; 70;140;",  // Canvas Focus Bar
-    "VIO01;  85; 16; 72;", "VIO02; 128; 25;108;", "BLUEBACK; 186;213;235;",
-    "LANDBACK; 201;185;122;",
-
-    "*****"};
-
-int get_static_line(char *d, const char **p, int index, int n) {
-  if (!strcmp(p[index], "*****")) return 0;
-
-  strncpy(d, p[index], n);
-  return strlen(d);
-}
-
-void InitializeUserColors() {
-  const char **p = usercolors;
-  char buf[81];
-  int index = 0;
-  char TableName[20];
-  colTable *ctp;
-  colTable *ct;
-  int R, G, B;
-
-  UserColorTableArray = new wxArrayPtrVoid;
-  UserColourHashTableArray = new wxArrayPtrVoid;
-
-  //    Create 3 color table entries
-  ct = new colTable;
-  ct->tableName = new wxString("DAY");
-  ct->color = new wxArrayPtrVoid;
-  UserColorTableArray->Add((void *)ct);
-
-  ct = new colTable;
-  ct->tableName = new wxString("DUSK");
-  ct->color = new wxArrayPtrVoid;
-  UserColorTableArray->Add((void *)ct);
-
-  ct = new colTable;
-  ct->tableName = new wxString("NIGHT");
-  ct->color = new wxArrayPtrVoid;
-  UserColorTableArray->Add((void *)ct);
-
-  while ((get_static_line(buf, p, index, sizeof(buf) - 1))) {
-    if (!strncmp(buf, "Table", 5)) {
-      sscanf(buf, "Table:%s", TableName);
-
-      for (unsigned int it = 0; it < UserColorTableArray->GetCount(); it++) {
-        ctp = (colTable *)(UserColorTableArray->Item(it));
-        if (!strcmp(TableName, ctp->tableName->mb_str())) {
-          ct = ctp;
-          break;
-        }
-      }
-
-    } else {
-      char name[21];
-      int j = 0;
-      while (buf[j] != ';' && j < 20) {
-        name[j] = buf[j];
-        j++;
-      }
-      name[j] = 0;
-
-      S52color *c = new S52color;
-      strcpy(c->colName, name);
-
-      sscanf(&buf[j], ";%i;%i;%i", &R, &G, &B);
-      c->R = (char)R;
-      c->G = (char)G;
-      c->B = (char)B;
-
-      ct->color->Add(c);
-    }
-
-    index++;
-  }
-
-  //    Now create the Hash tables
-
-  for (unsigned int its = 0; its < UserColorTableArray->GetCount(); its++) {
-    wxColorHashMap *phash = new wxColorHashMap;
-    UserColourHashTableArray->Add((void *)phash);
-
-    colTable *ctp = (colTable *)(UserColorTableArray->Item(its));
-
-    for (unsigned int ic = 0; ic < ctp->color->GetCount(); ic++) {
-      S52color *c2 = (S52color *)(ctp->color->Item(ic));
-
-      wxColour c(c2->R, c2->G, c2->B);
-      wxString key(c2->colName, wxConvUTF8);
-      (*phash)[key] = c;
-    }
-  }
-
-  //    Establish a default hash table pointer
-  //    in case a color is needed before ColorScheme is set
-  pcurrent_user_color_hash =
-      (wxColorHashMap *)UserColourHashTableArray->Item(0);
-}
-
-void DeInitializeUserColors() {
-  if (!UserColorTableArray) return;
-  for (unsigned i = 0; i < UserColorTableArray->GetCount(); i++) {
-    colTable *ct = (colTable *)UserColorTableArray->Item(i);
-
-    for (unsigned int j = 0; j < ct->color->GetCount(); j++) {
-      S52color *c = (S52color *)ct->color->Item(j);
-      delete c;  // color
-    }
-
-    delete ct->tableName;  // wxString
-    delete ct->color;      // wxArrayPtrVoid
-
-    delete ct;  // colTable
-  }
-
-  delete UserColorTableArray;
-
-  for (unsigned i = 0; i < UserColourHashTableArray->GetCount(); i++) {
-    wxColorHashMap *phash = (wxColorHashMap *)UserColourHashTableArray->Item(i);
-    delete phash;
-  }
-
-  delete UserColourHashTableArray;
-}
-
 #ifdef __WXMSW__
 
 #define NCOLORS 40
@@ -7473,48 +7123,7 @@ void SetSystemColors(ColorScheme cs) {  //---------------
 #endif
 }
 
-wxColor GetDimColor(wxColor c) {
-  if ((global_color_scheme == GLOBAL_COLOR_SCHEME_DAY) ||
-      (global_color_scheme == GLOBAL_COLOR_SCHEME_RGB))
-    return c;
-
-  float factor = 1.0;
-  if (global_color_scheme == GLOBAL_COLOR_SCHEME_DUSK) factor = 0.5;
-  if (global_color_scheme == GLOBAL_COLOR_SCHEME_NIGHT) factor = 0.25;
-
-  wxImage::RGBValue rgb(c.Red(), c.Green(), c.Blue());
-  wxImage::HSVValue hsv = wxImage::RGBtoHSV(rgb);
-  hsv.value = hsv.value * factor;
-  wxImage::RGBValue nrgb = wxImage::HSVtoRGB(hsv);
-
-  return wxColor(nrgb.red, nrgb.green, nrgb.blue);
-}
-
-//               A helper function to check for proper parameters of anchor
-//               watch
-//
-double AnchorDistFix(double const d, double const AnchorPointMinDist,
-                     double const AnchorPointMaxDist)  //  pjotrc 2010.02.22
-{
-  if (d >= 0.0)
-    if (d < AnchorPointMinDist)
-      return AnchorPointMinDist;
-    else if (d > AnchorPointMaxDist)
-      return AnchorPointMaxDist;
-    else
-      return d;
-
-  else
-    // if ( d < 0.0 )
-    if (d > -AnchorPointMinDist)
-      return -AnchorPointMinDist;
-    else if (d < -AnchorPointMaxDist)
-      return -AnchorPointMaxDist;
-    else
-      return d;
-}
 //      Console supporting printf functionality for Windows GUI app
-
 #ifdef __WXMSW__
 static const WORD MAX_CONSOLE_LINES =
     500;  // maximum mumber of lines the output console should have
@@ -7572,43 +7181,7 @@ void RedirectIOToConsole()
   // ios::sync_with_stdio();
 }
 
-// #endif
 #endif
-
-#ifdef __WXMSW__
-bool TestGLCanvas(wxString prog_dir) {
-#ifdef __MSVC__
-  wxString test_app = prog_dir;
-  test_app += "ocpn_gltest1.exe";
-
-  if (::wxFileExists(test_app)) {
-    long proc_return = ::wxExecute(test_app, wxEXEC_SYNC);
-    printf("OpenGL Test Process returned %0X\n", proc_return);
-    if (proc_return == 0)
-      printf("GLCanvas OK\n");
-    else
-      printf("GLCanvas failed to start, disabling OpenGL.\n");
-
-    return (proc_return == 0);
-  } else
-    return true;
-#else
-  /* until we can get the source to ocpn_gltest1 assume true for mingw */
-  return true;
-#endif
-}
-#endif
-
-bool ReloadLocale() {
-  bool ret = false;
-
-#if wxUSE_XLOCALE
-  ret =
-      (!g_Platform->ChangeLocale(g_locale, plocale_def_lang, &plocale_def_lang)
-            .IsEmpty());
-#endif
-  return ret;
-}
 
 void ApplyLocale() {
   FontMgr::Get().SetLocale(g_locale);
@@ -7701,173 +7274,6 @@ void ApplyLocale() {
   if (gFrame) {
     gFrame->RequestNewToolbars(true);
     gFrame->RequestNewMasterToolbar(true);
-  }
-}
-
-void LoadS57() {
-  if (ps52plib)  // already loaded?
-    return;
-
-  //  Start a SENC Thread manager
-  g_SencThreadManager = new SENCThreadManager();
-
-  //      Set up a useable CPL library error handler for S57 stuff
-  // FIXME (dave) Verify after moving LoadS57
-  // CPLSetErrorHandler(MyCPLErrorHandler);
-
-  //      Init the s57 chart object, specifying the location of the required csv
-  //      files
-  g_csv_locn = g_Platform->GetSharedDataDir();
-  g_csv_locn.Append("s57data");
-
-  if (g_bportable) {
-    g_csv_locn = ".";
-    appendOSDirSlash(&g_csv_locn);
-    g_csv_locn.Append("s57data");
-  }
-
-  //      If the config file contains an entry for SENC file prefix, use it.
-  //      Otherwise, default to PrivateDataDir
-  if (g_SENCPrefix.IsEmpty()) {
-    g_SENCPrefix = g_Platform->GetPrivateDataDir();
-    appendOSDirSlash(&g_SENCPrefix);
-    g_SENCPrefix.Append("SENC");
-  }
-
-  if (g_bportable) {
-    wxFileName f(g_SENCPrefix);
-    if (f.MakeRelativeTo(g_Platform->GetPrivateDataDir()))
-      g_SENCPrefix = f.GetFullPath();
-    else
-      g_SENCPrefix = "SENC";
-  }
-
-  //      If the config file contains an entry for PresentationLibraryData, use
-  //      it. Otherwise, default to conditionally set spot under g_pcsv_locn
-  wxString plib_data;
-  bool b_force_legacy = false;
-
-  if (g_UserPresLibData.IsEmpty()) {
-    plib_data = g_csv_locn;
-    appendOSDirSlash(&plib_data);
-    plib_data.Append("S52RAZDS.RLE");
-  } else {
-    plib_data = g_UserPresLibData;
-    b_force_legacy = true;
-  }
-
-  ps52plib = new s52plib(plib_data, b_force_legacy);
-
-  //  If the library load failed, try looking for the s57 data elsewhere
-
-  //  First, look in UserDataDir
-  /*    From wxWidgets documentation
-
-   wxStandardPaths::GetUserDataDir
-   wxString GetUserDataDir() const
-   Return the directory for the user-dependent application data files:
-   * Unix: ~/.appname
-   * Windows: C:\Documents and Settings\username\Application Data\appname
-   * Mac: ~/Library/Application Support/appname
-   */
-
-  if (!ps52plib->m_bOK) {
-    delete ps52plib;
-
-    wxStandardPaths &std_path = g_Platform->GetStdPaths();
-
-    wxString look_data_dir;
-    look_data_dir.Append(std_path.GetUserDataDir());
-    appendOSDirSlash(&look_data_dir);
-    wxString tentative_SData_Locn = look_data_dir;
-    look_data_dir.Append("s57data");
-
-    plib_data = look_data_dir;
-    appendOSDirSlash(&plib_data);
-    plib_data.Append("S52RAZDS.RLE");
-
-    wxLogMessage("Looking for s57data in " + look_data_dir);
-    ps52plib = new s52plib(plib_data);
-
-    if (ps52plib->m_bOK) {
-      g_csv_locn = look_data_dir;
-      ///???            g_SData_Locn = tentative_SData_Locn;
-    }
-  }
-
-  //  And if that doesn't work, look again in the original SData Location
-  //  This will cover the case in which the .ini file entry is corrupted or
-  //  moved
-
-  if (!ps52plib->m_bOK) {
-    delete ps52plib;
-
-    wxString look_data_dir;
-    look_data_dir = g_Platform->GetSharedDataDir();
-    look_data_dir.Append("s57data");
-
-    plib_data = look_data_dir;
-    appendOSDirSlash(&plib_data);
-    plib_data.Append("S52RAZDS.RLE");
-
-    wxLogMessage("Looking for s57data in " + look_data_dir);
-    ps52plib = new s52plib(plib_data);
-
-    if (ps52plib->m_bOK) g_csv_locn = look_data_dir;
-  }
-
-  if (ps52plib->m_bOK) {
-    wxLogMessage("Using s57data in " + g_csv_locn);
-    m_pRegistrarMan =
-        new s57RegistrarMgr(g_csv_locn, g_Platform->GetLogFilePtr());
-
-    //    Preset some object class visibilites for "User Standard" disply
-    //    category
-    //  They may be overridden in LoadS57Config
-    for (unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount();
-         iPtr++) {
-      OBJLElement *pOLE = (OBJLElement *)(ps52plib->pOBJLArray->Item(iPtr));
-      if (!strncmp(pOLE->OBJLName, "DEPARE", 6)) pOLE->nViz = 1;
-      if (!strncmp(pOLE->OBJLName, "LNDARE", 6)) pOLE->nViz = 1;
-      if (!strncmp(pOLE->OBJLName, "COALNE", 6)) pOLE->nViz = 1;
-    }
-
-    pConfig->LoadS57Config();
-    ps52plib->SetPLIBColorScheme(global_color_scheme, ChartCtxFactory());
-
-    if (gFrame) {
-      ps52plib->SetDisplayWidth(g_monitor_info[g_current_monitor].width);
-      ps52plib->SetPPMM(g_BasePlatform->GetDisplayDPmm());
-      double dip_factor = g_BasePlatform->GetDisplayDIPMult(gFrame);
-      ps52plib->SetDIPFactor(dip_factor);
-      ps52plib->SetContentScaleFactor(OCPN_GetDisplayContentScaleFactor());
-    }
-
-    // preset S52 PLIB scale factors
-    ps52plib->SetScaleFactorExp(
-        g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor));
-    ps52plib->SetScaleFactorZoomMod(g_chart_zoom_modifier_vector);
-
-#ifdef ocpnUSE_GL
-
-    // Setup PLIB OpenGL options, if enabled
-    if (g_bopengl) {
-      if (GL_Caps) {
-        wxString renderer = wxString(GL_Caps->Renderer.c_str());
-        ps52plib->SetGLRendererString(renderer);
-      }
-
-      ps52plib->SetGLOptions(
-          glChartCanvas::s_b_useStencil, glChartCanvas::s_b_useStencilAP,
-          glChartCanvas::s_b_useScissorTest, glChartCanvas::s_b_useFBO,
-          g_b_EnableVBO, g_texture_rectangle_format, 1, 1);
-    }
-#endif
-
-  } else {
-    wxLogMessage("   S52PLIB Initialization failed, disabling Vector charts.");
-    delete ps52plib;
-    ps52plib = NULL;
   }
 }
 

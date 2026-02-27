@@ -62,6 +62,7 @@
 #include "ocpndc.h"
 #include "ocpn_plugin.h"
 #include "s57chart.h"  // for Object list
+#include "top_frame.h"
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
@@ -73,7 +74,6 @@ extern PlugInManager* g_pi_manager; /**< Global instance */
 class PluginListPanel;    // forward
 class PluginPanel;        // forward
 class pluginUtilHandler;  // forward in .cpp file
-class MyFrame;            // circular
 
 PlugIn_AIS_Target* Create_PI_AIS_Target(AisTargetData* ptarget);
 
@@ -171,7 +171,7 @@ class BlacklistUI;
 
 class PlugInManager : public wxEvtHandler {
 public:
-  PlugInManager(MyFrame* parent);
+  PlugInManager(AbstractTopFrame* parent);
   virtual ~PlugInManager();
 
   bool RenderAllCanvasOverlayPlugIns(ocpnDC& dc, const ViewPort& vp,
@@ -260,6 +260,7 @@ public:
   void HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg);
 
   wxArrayString GetPlugInChartClassNameArray(void);
+  opencpn_plugin* GetProvidingPlugin(const wxString& ChartClassName);
 
   ListOfPI_S57Obj* GetPlugInObjRuleListAtLatLon(ChartPlugInWrapper* target,
                                                 float zlat, float zlon,
@@ -269,7 +270,7 @@ public:
                                  ListOfPI_S57Obj* rule_list);
 
   wxString GetLastError();
-  MyFrame* GetParentFrame() { return pParent; }
+  AbstractTopFrame* GetParentFrame() { return m_parent; }
 
   void DimeWindow(wxWindow* win);
   pluginUtilHandler* GetUtilHandler() { return m_utilHandler; }
@@ -313,7 +314,7 @@ private:
   void HandlePluginLoaderEvents();
   void HandlePluginHandlerEvents();
 
-  MyFrame* pParent;
+  AbstractTopFrame* m_parent;
   std::unique_ptr<BlacklistUI> m_blacklist_ui;
 
   wxString m_last_error_string;

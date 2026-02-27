@@ -50,4 +50,7 @@ bool Write(const NavmsgFilter& filter, const std::string& name);
 /** Read filter with given name from disk. */
 NavmsgFilter Read(const std::string& name);
 
+/** Rename old_name on disk to new. */
+bool Rename(const std::string& old_name, const std::string& new_name);
+
 }  // namespace filters_on_disk

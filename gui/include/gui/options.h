@@ -29,6 +29,7 @@
 #include <windows.h>
 #endif
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -99,6 +100,7 @@
 #define CONFIG_CHANGED 1 << 16
 #define FONT_CHANGED_SAFE 1 << 17
 #define FORCE_RELOAD 1 << 18
+#define MENU_CHANGED 1 << 19
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -198,6 +200,7 @@ enum {
   ID_TRACKHILITE,
   ID_TRANSTOOLBARCHECKBOX,
   ID_UPDCHECKBOX,
+  ID_REBUILDBUTTON,
   ID_PARSEENCBUTTON,
   ID_VECTORCHECKBOX1,
   ID_ZTCCHECKBOX,
@@ -267,9 +270,16 @@ private:
   Uncopyable &operator=(const Uncopyable &);
 };
 
+struct OptionsCallbacks {
+  std::function<void(options *, int)> prepare_close;
+  std::function<void(int, ArrayOfCDI *)> process_dialog;
+  OptionsCallbacks() : prepare_close(nullptr), process_dialog(nullptr) {}
+};
+
 class options : public wxDialog {
 public:
-  explicit options(wxWindow *parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME,
+  explicit options(wxWindow *parent, OptionsCallbacks callbacks,
+                   wxWindowID id = SYMBOL_OPTIONS_IDNAME,
                    const wxString &caption = SYMBOL_OPTIONS_TITLE,
                    const wxPoint &pos = SYMBOL_OPTIONS_POSITION,
                    const wxSize &size = SYMBOL_OPTIONS_SIZE,
@@ -313,6 +323,7 @@ public:
   void OnButtonaddClick(wxCommandEvent &event);
   void OnButtondeleteClick(wxCommandEvent &event);
   void OnButtonParseENC(wxCommandEvent &event);
+  void OnButtonRebuildChartDb(wxCommandEvent &event);
   void OnButtoncompressClick(wxCommandEvent &event);
   void OnButtonmigrateClick(wxCommandEvent &event);
   void OnButtonEcdisHelp(wxCommandEvent &event);
@@ -382,6 +393,7 @@ public:
   }
 
   wxArrayString *GetSerialArray() { return m_pSerialArray; }
+  void OptionsFinalizeChartDBUpdate();
 
   // Should we show tooltips?
   static bool ShowToolTips(void);
@@ -490,7 +502,7 @@ public:
 
   wxStaticBox *itemActiveChartStaticBox;
   wxCheckBox *pUpdateCheckBox, *pScanCheckBox;
-  wxButton *pParseENCButton;
+  wxButton *pParseENCButton, *pRebuildChartDatabase;
   wxButton *m_removeBtn, *m_compressBtn;
   wxButton *m_migrateBtn;
   int k_charts;
@@ -580,8 +592,6 @@ public:
   ;
   wxChoice *pTrackPrecision;
   wxTextCtrl *pNavAidRadarRingsStep, *pWaypointRangeRingsStep;
-  wxCheckBox *pSogCogFromLLCheckBox;
-  wxSpinCtrl *pSogCogFromLLDampInterval;
   wxTextCtrl *m_pText_TP_Secs, *m_pText_TP_Dist;
   wxCheckBox *pWayPointPreventDragging, *pConfirmObjectDeletion;
   wxCheckBox *pEnableZoomToCursor, *pPreserveScale, *pPlayShipsBells;
@@ -628,6 +638,9 @@ public:
   /** Notified with a OCPN_Sound* pointer when sound has completed. */
   EventVar m_on_sound_done;
   ObsListener m_sound_done_listener;
+  wxGenericProgressDialog *m_pCBDSprog;
+  void DoDBSUpdate(bool force_full);
+  bool m_bTextureCacheingSave;
 
 private:
   void Init(void);
@@ -664,6 +677,8 @@ private:
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
+
+  OptionsCallbacks m_callbacks;
   int m_returnChanges;
   wxListCtrl *tcDataSelected;
   std::vector<int> marinersStdXref;
@@ -699,7 +714,7 @@ private:
 
   wxSize m_sliderSize;
   bool m_bneedNew;
-
+  ObsListener m_OnChartDb_finalize_listener;
   std::shared_ptr<ConnectionsDlg> comm_dialog;
 
   DECLARE_EVENT_TABLE()

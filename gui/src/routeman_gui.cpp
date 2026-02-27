@@ -47,11 +47,12 @@
 #include "model/track.h"
 
 #include "chcanv.h"
+#include "color_handler.h"
 #include "concanv.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "routeman_gui.h"
+#include "top_frame.h"
 #include "track_prop_dlg.h"
 #include "vector2D.h"
 
@@ -176,7 +177,11 @@ bool RoutemanGui::UpdateProgress() {
     // Allow DirectShipToActivePoint line (distance XTE in mm is > 3 (arbitrary)
     // or when active point is the first
     if (g_bShowShipToActive) {
-      if (m_routeman.pActiveRoute->GetIndexOf(m_routeman.pActivePoint) == 1)
+      int active_index =
+          m_routeman.pActiveRoute->GetIndexOf(m_routeman.pActivePoint);
+      if (active_index < 0)
+        g_bAllowShipToActive = false;
+      else if (active_index == 0)
         g_bAllowShipToActive = true;
       else {
         // compute XTE in pixels
@@ -184,12 +189,12 @@ bool RoutemanGui::UpdateProgress() {
         wxPoint r, r1;
         ll_gc_ll(gLat, gLon, m_routeman.CourseToRouteSegment,
                  (m_routeman.CurrentXTEToActivePoint / 1.852), &tlat, &tlon);
-        gFrame->GetFocusCanvas()->GetCanvasPointPix(gLat, gLon, &r1);
-        gFrame->GetFocusCanvas()->GetCanvasPointPix(tlat, tlon, &r);
+        top_frame::Get()->GetCanvasPointPix(gLat, gLon, &r1);
+        top_frame::Get()->GetCanvasPointPix(tlat, tlon, &r);
         double xtepix =
             sqrt(pow((double)(r1.x - r.x), 2) + pow((double)(r1.y - r.y), 2));
         // xte in mm
-        double xtemm = xtepix / gFrame->GetFocusCanvas()->GetPixPerMM();
+        double xtemm = xtepix / top_frame::Get()->GetPixPerMM();
         // allow display (or not)
         g_bAllowShipToActive = (xtemm > 3.0) ? true : false;
       }
@@ -271,7 +276,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
     }
 
     if ((pTrack == g_pActiveTrack) && pTrack->IsRunning()) {
-      pTrack = gFrame->TrackOff();
+      pTrack = top_frame::Get()->TrackOff();
     }
     //    Remove the track from associated lists
     pSelect->DeleteAllSelectableTrackSegments(pTrack);
@@ -288,7 +293,7 @@ void RoutemanGui::DeleteTrack(Track *pTrack) {
 }
 
 void RoutemanGui::DeleteAllTracks() {
-  gFrame->TrackOff();
+  top_frame::Get()->TrackOff();
 
   ::wxBeginBusyCursor();
 

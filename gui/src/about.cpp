@@ -45,7 +45,6 @@
 #include "font_mgr.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "std_filesystem.h"
 #include "styles.h"

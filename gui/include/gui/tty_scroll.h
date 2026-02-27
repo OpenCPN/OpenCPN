@@ -94,6 +94,9 @@ public:
    */
   virtual void Add(const Logline& line);
 
+  /** Clear the log window */
+  virtual void Clear();
+
   /** Set the window to ignore Add() or not depending on pause. */
   void Pause(bool pause) { m_is_paused = pause; }
 

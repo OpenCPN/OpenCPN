@@ -72,10 +72,10 @@
 #include "gui_lib.h"
 #include "lz4.h"
 #include "lz4hc.h"
-#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "quilt.h"
 #include "squish.h"
+#include "top_frame.h"
 #include "viewport.h"
 
 #ifndef GL_ETC1_RGB8_OES
@@ -86,9 +86,7 @@ using JobList = std::list<JobTicket *>;
 
 extern GLuint g_raster_format;  // FIXME (leamas) Find a home
 
-extern arrayofCanvasPtr g_canvasArray;  // FIXME (leamas) find a home
-                                        //
-glTextureManager *g_glTextureManager;   ///< Global instance
+glTextureManager *g_glTextureManager;  ///< Global instance
 
 static bool bthread_debug;
 
@@ -863,7 +861,7 @@ void glTextureManager::OnEvtThread(OCPN_CompressionThreadEvent &event) {
       // We need to force a refresh to replace the uncompressed texture
       // This frees video memory and is also really required if we had
       // gone up a mipmap level
-      gFrame->InvalidateAllGL();
+      top_frame::Get()->InvalidateAllGL();
       ptd->compdata_ticks = 10;
     }
 
@@ -1106,6 +1104,12 @@ void glTextureManager::PurgeJobList(wxString chart_path) {
           return is_chart_match;
         });
     list.erase(removed_begin, list.end());
+
+    //  Mark running tasks for this chart as "abort"
+    for (auto node = running_list.begin(); node != running_list.end(); ++node) {
+      JobTicket *ticket = *node;
+      if (ticket->m_ChartPath == chart_path) ticket->b_abort = true;
+    }
 
     if (bthread_debug)
       std::cout << "Pool: Purge, todo count: " << list.size() << "\n";
@@ -1409,7 +1413,7 @@ void glTextureManager::BuildCompressedCache() {
   wxFont *qFont = GetOCPNScaledFont(_("Dialog"));
   int fontSize = qFont->GetPointSize();
   wxFont *sFont;
-  wxSize csz = gFrame->GetClientSize();
+  wxSize csz = wxTheApp->GetTopWindow()->GetClientSize();
   if (csz.x < 500 || csz.y < 500)
     sFont = FontMgr::Get().FindOrCreateFont(
         10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);

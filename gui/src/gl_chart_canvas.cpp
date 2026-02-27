@@ -178,9 +178,6 @@ private:
 
 extern bool g_running;  ///< Android only
 
-//    For VBO(s)
-static bool g_b_needFinish;  // Need glFinish() call on each frame?
-
 static wxColor s_regionColor;
 static float g_GLMinCartographicLineWidth;
 // MacOS has some missing parts:
@@ -485,6 +482,8 @@ glChartCanvas::~glChartCanvas() {
 #endif
 }
 
+int glChartCanvas::GetCanvasIndex() { return m_pParentCanvas->m_canvasIndex; }
+
 void glChartCanvas::FlushFBO() {
   if (m_bsetup) BuildFBO();
 }
@@ -506,7 +505,10 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 #endif
 #endif
 
-  if (!IsShown() || !m_bsetup) return;
+#ifndef __ANDROID__
+  if (!m_bsetup) return;
+#endif
+  if (!IsShown()) return;
 
   SetCurrent(*m_pcontext);
 
@@ -927,6 +929,8 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
 #endif
 
 void glChartCanvas::BuildFBO() {
+  if (g_b_needFinish) glFinish();
+
   if (m_b_BuiltFBO) {
     // return;
     glDeleteTextures(2, m_cache_tex);
@@ -1340,6 +1344,7 @@ no_compression:
 void glChartCanvas::OnPaint(wxPaintEvent &event) {
   wxPaintDC dc(this);
   if (!m_pcontext) return;
+  if (ChartData->IsBusy()) return;
 
   Show(g_bopengl);
   if (!g_bopengl) {
@@ -1856,12 +1861,14 @@ void glChartCanvas::GridDraw() {
     double dpi_factor = g_BasePlatform->GetDisplayDIPMult(this);
     wxFont *dFont = FontMgr::Get().GetFont(_("GridText"), 0);
     wxFont font = *dFont;
+    // Keep point size unscaled here; TexFont::Build handles DPI and display
+    // scale.
     int font_size = wxMax(10, dFont->GetPointSize());
-    font.SetPointSize(font_size * m_displayScale);
+    font.SetPointSize(font_size);
     font.SetWeight(wxFONTWEIGHT_NORMAL);
 
     m_gridfont.SetContentScaleFactor(OCPN_GetDisplayContentScaleFactor());
-    m_gridfont.Build(font, 1, dpi_factor);
+    m_gridfont.Build(font, m_displayScale, dpi_factor);
   }
   m_gridfont.SetColor(GridColor);
 
@@ -4551,8 +4558,6 @@ void glChartCanvas::Render() {
 
   //  Some older MSW OpenGL drivers are generally very unstable.
   //  This helps...
-
-  if (g_b_needFinish) glFinish();
 
   SwapBuffers();
 

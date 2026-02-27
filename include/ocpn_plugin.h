@@ -44,6 +44,7 @@
 #endif
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -161,6 +162,8 @@ class wxGLCanvas;
 /** Receive notification just before OpenCPN shutdown.
     Allows plugins to clean up resources and save state. */
 #define WANTS_PRESHUTDOWN_HOOK 0x00400000
+
+#define WANTS_TIDECURRENT_CLICK 0x00800000
 
 /**
  * Overlay rendering priorities determine the layering order of plugin graphics.
@@ -1265,6 +1268,28 @@ protected:
 //    Declare an array of PlugIn_AIS_Targets
 WX_DEFINE_ARRAY_PTR(PlugIn_AIS_Target *, ArrayOfPlugIn_AIS_Targets);
 
+// Support for plugin Tide/Current access
+typedef enum TideStationType {
+  TIDE_STATION = 0,
+  CURRENT_STATION
+} _TideStationType;
+
+struct TCClickInfo {
+  TideStationType point_type;
+  int index;
+  std::string name;
+  int tz_offset_minutes;
+  std::function<bool(time_t, int, float &, float &)> getTide;
+};
+
+// Tide query API for plugins
+struct PlugIn_TideStation {
+  int index;
+  char name[90];
+  double lat;
+  double lon;
+};
+
 /**
  * Base class for OpenCPN plugins.
  *
@@ -2276,6 +2301,7 @@ class DECL_EXP opencpn_plugin_121 : public opencpn_plugin_120 {
 public:
   opencpn_plugin_121(void *pmgr);
   virtual void UpdateFollowState(int canvas_index, bool state);
+  virtual void OnTideCurrentClick(TCClickInfo info);
 };
 
 //------------------------------------------------------------------
@@ -7344,6 +7370,11 @@ public:
 
   /** Retrieve route from database */
   virtual std::unique_ptr<HostApi121::Route> GetRoute(const wxString &guid);
+
+  // Enhanced Tide query support.
+  virtual bool GetNearestTideStation(double lat, double lon,
+                                     PlugIn_TideStation *station);
+  virtual bool GetTideHeight(int stationIndex, time_t time, float *height);
 };
 
 #endif  //_PLUGIN_H_

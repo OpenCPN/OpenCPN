@@ -43,6 +43,7 @@
 #include "route_printout.h"
 #include "route_prop_dlg_impl.h"
 #include "tcmgr.h"
+#include "top_frame.h"
 
 #define UTCINPUT 0  //!< Format date/time in UTC.
 #define LTINPUT \
@@ -733,10 +734,7 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlSelectionChanged(
   if (selected_row >= 0 && selected_row < m_dvlcWaypoints->GetItemCount()) {
     RoutePoint* prp = m_pRoute->GetPoint(selected_row + 1);
     if (prp) {
-      if (gFrame->GetFocusCanvas()) {
-        gFrame->JumpToPosition(gFrame->GetFocusCanvas(), prp->m_lat, prp->m_lon,
-                               gFrame->GetFocusCanvas()->GetVPScale());
-      }
+      top_frame::Get()->JumpToPosition(prp->m_lat, prp->m_lon);
 #ifdef __WXMSW__
       if (m_dvlcWaypoints) m_dvlcWaypoints->SetFocus();
 #endif
@@ -842,7 +840,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
         m_pRoute->UpdateSegmentDistances();
         ;
 
-        gFrame->InvalidateAllGL();
+        top_frame::Get()->InvalidateAllGL();
 
         m_dvlcWaypoints->SelectRow(pos - list->begin());
 
@@ -866,7 +864,7 @@ void RoutePropDlgImpl::OnRoutePropMenuSelected(wxCommandEvent& event) {
 
         g_pRouteMan->RemovePointFromRoute(pRP, m_pRoute, 0);
 
-        gFrame->InvalidateAllGL();
+        top_frame::Get()->InvalidateAllGL();
         UpdatePoints();
       }
       break;
@@ -1063,7 +1061,12 @@ void RoutePropDlgImpl::ExtendOnButtonClick(wxCommandEvent& event) {
   m_btnExtend->Enable(false);
 
   if (IsThisRouteExtendable()) {
-    int fm = m_pExtendRoute->GetIndexOf(m_pExtendPoint) + 1;
+    int extend_idx = m_pExtendRoute->GetIndexOf(m_pExtendPoint);
+    if (extend_idx < 0) {
+      m_btnExtend->Enable(true);
+      return;
+    }
+    int fm = extend_idx + 1;
     int to = m_pExtendRoute->GetnPoints();
     if (fm <= to) {
       pSelect->DeleteAllSelectableRouteSegments(m_pRoute);
@@ -1098,7 +1101,7 @@ bool RoutePropDlgImpl::IsThisRouteExtendable() {
   } else {
     if (pEditRouteArray->GetCount() == 0) {
       int nearby_radius_meters =
-          (int)(8. / gFrame->GetPrimaryCanvas()->GetCanvasTrueScale());
+          (int)(8. / top_frame::Get()->GetCanvasTrueScale());
       double rlat = pLastPoint->m_lat;
       double rlon = pLastPoint->m_lon;
 
@@ -1122,7 +1125,12 @@ bool RoutePropDlgImpl::IsThisRouteExtendable() {
   }
   if (pEditRouteArray->GetCount() == 1) {
     Route* p = (Route*)pEditRouteArray->Item(0);
-    int fm = p->GetIndexOf(m_pExtendPoint) + 1;
+    int extend_idx = p->GetIndexOf(m_pExtendPoint);
+    if (extend_idx < 0) {
+      delete pEditRouteArray;
+      return false;
+    }
+    int fm = extend_idx + 1;
     int to = p->GetnPoints();
     if (fm <= to) {
       m_pExtendRoute = p;

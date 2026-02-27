@@ -41,9 +41,9 @@
 #include "chcanv.h"
 #include "mark_info.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "routemanagerdialog.h"
 #include "styles.h"
+#include "top_frame.h"
 #include "undo.h"
 
 Undo::Undo(ChartCanvas* parent) {
@@ -148,7 +148,7 @@ void doUndoAppendWaypoint(UndoAction* action, ChartCanvas* cc) {
     noRouteLeftToRedo = true;
 
   g_pRouteMan->RemovePointFromRoute(point, route, cc->m_routeState);
-  gFrame->InvalidateAllGL();
+  top_frame::Get()->InvalidateAllGL();
 
   if (action->beforeType[0] == Undo_IsOrphanded) {
     NavObj_dB::GetInstance().DeleteRoutePoint(point);

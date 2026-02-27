@@ -3967,10 +3967,15 @@ void AisDecoder::UpdateAllAlarms() {
 
       //    Maintain the timer for in_ack flag
       //  SART and DSC targets always maintain ack timeout
-
-      if (g_bAIS_ACK_Timeout || (td->Class == AIS_SART) ||
-          ((td->Class == AIS_DSC) &&
-           ((td->ShipType == 12) || (td->ShipType == 16)))) {
+      if (td->Class == AIS_SART) {
+        if (td->b_in_ack_timeout) {
+          wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
+          // SART Alert obeys fixed 10 minute ACK-TO.
+          if (delta.GetMinutes() >= 10) td->b_in_ack_timeout = false;
+        }
+      } else if (g_bAIS_ACK_Timeout ||
+                 ((td->Class == AIS_DSC) &&
+                  ((td->ShipType == 12) || (td->ShipType == 16)))) {
         if (td->b_in_ack_timeout) {
           wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
           if (delta.GetMinutes() > g_AckTimeout_Mins)
@@ -4204,7 +4209,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       removelost_Mins = (2 * iECD_LostTimeOut) / 60.;
     } else if (g_bMarkLost) {
       if ((target_posn_age > g_MarkLost_Mins * 60) &&
-          (xtd->Class != AIS_GPSG_BUDDY))
+          (xtd->Class != AIS_GPSG_BUDDY) && (xtd->Class != AIS_SART))
         xtd->b_active = false;
     }
 

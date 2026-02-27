@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<xs:schema xmlns="http://opencpn-manuals.github.io/xmlschemas/OpenCPN" elementFormDefault="qualified" targetNamespace="http://opencpn-manuals.github.io/xmlschemas/OpenCPN" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns="http://opencpn-manuals.github.io/xmlschemas/OpenCPN" elementFormDefault="qualified" targetNamespace="http://www.opencpn.org" xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:element name="guid" type="xs:string" />
     <xs:element name="viz" type="xs:boolean" />
     <xs:element name="planned_speed" type="xs:double" />
     <xs:element name="planned_departure" type="xs:string" />
     <xs:element name="time_display" type="xs:string" />
-    <xs:element name="auto_name" type="xs:boolean" /> // deprecated
+    <xs:element name="auto_name" type="xs:boolean" /> <!-- deprecated -->
     <xs:element name="shared" type="xs:boolean" />
     <xs:element name="arrival_radius" type="xs:double" />
     <xs:element name="waypoint_range_rings">

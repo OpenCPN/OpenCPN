@@ -41,6 +41,8 @@ bool g_bCourseUp = false;
 bool g_bDebugCM93 = false;
 bool g_bDebugGPSD = false;
 bool g_bDebugOGL = false;
+//    For VBO(s)
+bool g_b_needFinish = false;  // Need glFinish() call on each frame?
 bool g_bDebugS57 = false;
 bool g_bDisplayGrid = false;
 bool g_bEmailCrashReport = false;
@@ -111,7 +113,6 @@ bool g_config_display_size_manual = false;
 bool g_declutter_anchorage = false;
 bool g_enable_root_menu_debug = false;
 bool g_fog_overzoom = false;
-bool g_own_ship_sog_cog_calc = false;
 bool g_oz_vector_scale = false;
 bool g_persist_active_route = false;
 bool g_useMUI = false;
@@ -210,7 +211,6 @@ int g_ownship_HDTpredictor_endmarker = 0;
 int g_ownship_HDTpredictor_style = 0;
 int g_ownship_HDTpredictor_width = 0;
 int g_OwnShipIconType = 0;
-int g_own_ship_sog_cog_calc_damp_sec = 0;
 int g_pNavAidRadarRingsStepUnits = 0;
 int gps_watchdog_timeout_ticks = 0;
 int g_restore_dbindex = 0;
@@ -264,6 +264,7 @@ wxString g_datetime_format;
 wxString g_default_font_facename;
 wxString g_default_routepoint_icon;
 wxString g_default_wp_icon;
+wxString g_dm_logfile;
 wxString g_GPS_Ident;
 wxString g_gpx_path;
 wxString g_hostname;
@@ -287,6 +288,8 @@ wxString g_winPluginDir;
 wxString gWorldMapLocation;
 wxString gWorldShapefileLocation;
 
+std::vector<size_t> g_config_display_size_mm;
+
 static wxConfigBase* the_base_config = 0;
 
 wxConfigBase* TheBaseConfig() {
@@ -294,5 +297,3 @@ wxConfigBase* TheBaseConfig() {
   return the_base_config;
 }
 void InitBaseConfig(wxConfigBase* cfg) { the_base_config = cfg; }
-
-std::vector<size_t> g_config_display_size_mm;

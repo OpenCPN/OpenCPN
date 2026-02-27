@@ -57,13 +57,13 @@
 #include "font_mgr.h"
 #include "layer.h"
 #include "navutil.h"
-#include "ocpn_frame.h"
 #include "ocpn_gl_options.h"
 #include "ocpn_platform.h"
 #include "ocpn_plugin.h"
 #include "route_prop_dlg_impl.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "user_colors.h"
 
 extern s52plib *ps52plib;  // In a library...
 
@@ -642,8 +642,6 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
   conf->Write("OwnShipGPSOffsetX", g_n_gps_antenna_offset_x);
   conf->Write("OwnShipGPSOffsetY", g_n_gps_antenna_offset_y);
   conf->Write("OwnShipMinSize", g_n_ownship_min_mm);
-  conf->Write("OwnShipSogCogCalc", g_own_ship_sog_cog_calc);
-  conf->Write("OwnShipSogCogCalcDampSec", g_own_ship_sog_cog_calc_damp_sec);
 
   conf->Write("RouteArrivalCircleRadius",
               wxString::Format("%.3f", g_n_arrival_circle_radius));
@@ -738,7 +736,7 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   //    Various Options
   if (!g_bInlandEcdis)
-    conf->Write("nColorScheme", (int)gFrame->GetColorScheme());
+    conf->Write("nColorScheme", (int)user_colors::GetColorScheme());
 
   //    AIS
   conf->SetPath("/Settings/AIS");
@@ -1129,8 +1127,6 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_FLT("OwnShipGPSOffsetX", &g_n_gps_antenna_offset_x, 0.1);
   CHECK_FLT("OwnShipGPSOffsetY", &g_n_gps_antenna_offset_y, 0.1);
   CHECK_INT("OwnShipMinSize", &g_n_ownship_min_mm);
-  CHECK_INT("OwnShipSogCogCalc", &g_own_ship_sog_cog_calc);
-  CHECK_INT("OwnShipSogCogCalcDampSec", &g_own_ship_sog_cog_calc_damp_sec);
 
   CHECK_FLT("RouteArrivalCircleRadius", &g_n_arrival_circle_radius, .01);
 

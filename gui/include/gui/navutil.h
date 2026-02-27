@@ -60,6 +60,9 @@
 #define LMTINPUT 2  //!< Date/time using the remote location LMT time.
 #define GLOBAL_SETTINGS_INPUT 3  //!< Date/time as of global OpenCPN settings.
 
+constexpr int kMaxCogsogFilterSeconds = 60;
+constexpr int kMaxCogAverageSeconds = 60;
+
 class MyConfig;           // forward
 extern MyConfig *pConfig; /**< Global instance */
 
