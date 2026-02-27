@@ -1,0 +1,23 @@
+{
+    /* /////////////////////////////////////////////////////////////////////////
+      Purpose: Schema and configuration options for Signal K input stream.
+    ---------------------------------------------------------------------------
+      Edit the copy of the *_template-file, streamin-sk.json, located in the
+      program's data directory for plug-ins, in dashboard_tactics_pi folder.
+      This template get copied at first launch. The name of the file to use
+      can be changed in ini-/conf-file, see StreamInSk/ConfigFile, allowing
+      multiple configurations (but only one used at a time).
+    ///////////////////////////////////////////////////////////////////////// */
+
+    /*
+      Definition of the data streaming input characteristics:
+    */
+    "streaminsk" : {
+        "source"          : "localhost:8375", // not limited to localhost
+        "api"             : "v1.20.0",        // version of Signal K server
+        "connectionretry" : 5,                // [s](min.=1s to reduce CPU load)
+        "timestamps"      : "server",         // Signal K "server" or "local"
+        "verbosity"       : 1                 //0=no,1=events,2=verbose,3+=debug
+    }
+
+}
