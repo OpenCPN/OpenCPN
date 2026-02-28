@@ -893,6 +893,18 @@ bool MyApp::OnInit() {
                g_mem_total / 1024, g_mem_initial / 1024);
 
   OCPN_OSDetail *detail = g_Platform->GetOSDetail();
+
+  // --- Linux Mint Deep Spoof Patch ---
+  // Intercept the OS detection at the root memory level before
+  // the Plugin Manager or Config Saver ever sees it.
+  if (detail && detail->osd_ID == "linuxmint") {
+      detail->osd_ID = "ubuntu";
+      detail->osd_name = "ubuntu";
+      detail->osd_version = "22.04";
+      wxLogMessage("Patch: Deep spoof applied. System now identifies internally as ubuntu 22.04");
+  }
+  // --- End Linux Mint Patch ---
+
   wxString msgplat;
   wxString like0;
   if (!detail->osd_names_like.empty())
