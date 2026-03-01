@@ -1,4 +1,4 @@
-opencpn (1:5.14.1+dfsg~beta2-2~bpo13+1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta2-2~bpo13+1) trixie-backports; urgency=medium
 
   * New upstream release
 
