@@ -54,7 +54,7 @@ index 9ef2581..612400d 100644
    <summary xml:lang="sv">Kartplotter och navigationsprogram</summary>
    <provides>
      <binary>opencpn</binary>
-+    <modalias>usb:v1547p1000d* </modalias>
++    <modalias>usb:v1547p1000d*</modalias>
    </provides>
    <launchable type="desktop-id">opencpn.desktop</launchable>
    <description>
