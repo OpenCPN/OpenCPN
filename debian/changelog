@@ -1,14 +1,15 @@
-opencpn (1:5.14.1+dfsg~beta2-1~bpo13+1) trixie-backports; urgency=medium
+opencpn (1:5.14.1+dfsg~beta2-2~bpo13+1) UNRELEASED; urgency=medium
 
   * New upstream release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 21 Feb 2026 10:13:10 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 01 Mar 2026 15:40:20 +0100
 
-opencpn (1:5.14.1+dfsg~beta2-1) sid; urgency=medium
+opencpn (1:5.14.1+dfsg~beta2-2) unstable; urgency=medium
 
   * New upstream release
+  * New o-charts dongle udev rule patch
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Feb 2026 09:32:09 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 01 Mar 2026 10:48:45 +0100
 
 opencpn (1:5.14.1+dfsg~beta1-1) unstable; urgency=medium
 

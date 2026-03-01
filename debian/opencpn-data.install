@@ -1,5 +1,5 @@
 
-
+usr/lib/udev/rules.d/98-opencpn-dongle.rules
 # license.html and license.txt is referenced in the code.
 usr/share/locale/*/LC_MESSAGES/*.mo
 usr/share/opencpn/authors.html
