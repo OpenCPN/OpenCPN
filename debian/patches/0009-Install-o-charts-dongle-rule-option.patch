@@ -1,0 +1,60 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 1 Mar 2026 09:53:55 +0100
+Subject: Install o-charts dongle rule option
+
+Unconditionally install the o-charts dongle udev file.
+
+Not acceptable upstream in this form, upstream will need somewhat
+messy conditionals depending in cmake version, user preferences
+and write access to /usr/lib/udev/rules.d
+
+Solves https://www.cruisersforum.com/forums/f134/ocpn-o-charts-on-rpi-cm5-problems-299041-3.html#post4058186
+
+Forwarded: not-needed
+---
+ CMakeLists.txt                   | 2 +-
+ data/98-opencpn-dongle.rules     | 2 ++
+ resources/opencpn.appdata.xml.in | 1 +
+ 3 files changed, 4 insertions(+), 1 deletion(-)
+ create mode 100644 data/98-opencpn-dongle.rules
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a5cfb74..e8d0c5d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -264,7 +264,6 @@ if (WIN32)
+ else ()
+   set(cmd_snd_default ON)
+ endif ()
+-
+ option(OCPN_ENABLE_SYSTEM_CMD_SOUND
+        "Use aplay(1), afplay(1) etc. to play sounds if available"
+        ${cmd_snd_default}
+@@ -1998,6 +1997,7 @@ add_subdirectory(libs/wxJSON)
+ #
+ install(FILES data/license.txt DESTINATION ${PREFIX_DATA}/${PACKAGE_NAME})
+ 
++install(FILES data/98-opencpn-dongle.rules DESTINATION /usr/lib/udev/rules.d)
+ if (NOT APPLE)
+   if (WIN32)
+     set(PREFIX_PKGDATA ".")
+diff --git a/data/98-opencpn-dongle.rules b/data/98-opencpn-dongle.rules
+new file mode 100644
+index 0000000..8a73d96
+--- /dev/null
++++ b/data/98-opencpn-dongle.rules
+@@ -0,0 +1,2 @@
++# opencpn o-charts hardware dongle
++SUBSYSTEM=="usb", ATTR{idVendor}=="1547", ATTR{idProduct}=="1000", TAG+="uaccess"
+diff --git a/resources/opencpn.appdata.xml.in b/resources/opencpn.appdata.xml.in
+index 9ef2581..612400d 100644
+--- a/resources/opencpn.appdata.xml.in
++++ b/resources/opencpn.appdata.xml.in
+@@ -12,6 +12,7 @@
+   <summary xml:lang="sv">Kartplotter och navigationsprogram</summary>
+   <provides>
+     <binary>opencpn</binary>
++    <modalias>usb:v1547p1000d* </modalias>
+   </provides>
+   <launchable type="desktop-id">opencpn.desktop</launchable>
+   <description>
