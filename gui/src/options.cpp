@@ -7117,6 +7117,10 @@ void options::OnApplyClick(wxCommandEvent& event) {
   //  or other major layout changes
   if ((m_returnChanges & FONT_CHANGED) ||
       (m_returnChanges & NEED_NEW_OPTIONS)) {
+    // This will require an options reload
+    //  Clear the plugin options pages toggle
+    if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxOK);
+
     m_callbacks.prepare_close(this, m_returnChanges);
     if (!(m_returnChanges & FONT_CHANGED_SAFE))
       top_frame::Get()->ScheduleReconfigAndSettingsReload(true, true);
@@ -7751,9 +7755,6 @@ void options::ApplyChanges(wxCommandEvent& event) {
   // if (m_pPlugInCtrl) m_pPlugInCtrl->UpdatePluginsOrder(); FIXME(leamas)
   g_pi_manager->UpdateConfig();
 
-  // PlugIns may have added panels
-  if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxOK);
-
   m_returnChanges |= GENERIC_CHANGED | k_vectorcharts | k_charts |
                      m_groups_changed | k_plugins;
 
@@ -7845,6 +7846,13 @@ void options::OnXidOkClick(wxCommandEvent& event) {
   // And for locale change
   if (m_returnChanges & LOCALE_CHANGED)
     top_frame::Get()->ScheduleDeleteSettingsDialog();
+
+  if ((m_returnChanges & FONT_CHANGED) ||
+      (m_returnChanges & NEED_NEW_OPTIONS)) {
+    // This will require an options reload
+    //  Clear the plugin options pages toggle
+    if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxOK);
+  }
 
   // Also for FORCE_RELOAD
   if (m_returnChanges & FORCE_RELOAD) top_frame::Get()->ScheduleReloadCharts();
@@ -8331,8 +8339,6 @@ void options::OnCancelClick(wxCommandEvent& event) {
   lastWindowPos = GetPosition();
   lastWindowSize = GetSize();
 
-  if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxCANCEL);
-
   pConfig->SetPath("/Settings");
   pConfig->Write("OptionsSizeX", lastWindowSize.x);
   pConfig->Write("OptionsSizeY", lastWindowSize.y);
@@ -8349,9 +8355,6 @@ void options::OnCancelClick(wxCommandEvent& event) {
 }
 
 void options::OnClose(wxCloseEvent& event) {
-  //      PlugIns may have added panels
-  if (g_pi_manager) g_pi_manager->CloseAllPlugInPanels((int)wxOK);
-
   m_pListbook->ChangeSelection(0);
 
   lastWindowPos = GetPosition();
