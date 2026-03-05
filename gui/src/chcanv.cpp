@@ -6881,7 +6881,9 @@ void ChartCanvas::UpdateShips() {
   //  Get the rectangle in the current dc which bounds the "ownship" symbol
 
   wxClientDC dc(this);
-  if (!dc.IsOk()) return;
+  // Sometimes during startup the dc x or y size is zero, which causes the
+  // bitmap creation to fail. Just skip the update in this case.
+  if (!dc.IsOk() || dc.GetSize().x < 1 || dc.GetSize().y < 1) return;
 
   wxBitmap test_bitmap(dc.GetSize().x, dc.GetSize().y);
   if (!test_bitmap.IsOk()) return;

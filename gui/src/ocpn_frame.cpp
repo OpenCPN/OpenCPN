@@ -1367,7 +1367,7 @@ int MyFrame::GetCanvasIndexUnderMouse() {
           return 0;
       }
       cc = ConfigMgr::Get().GetCanvasConfigArray().Item(1);
-      if (cc) {
+      if (cc && cc->canvas) {
         ChartCanvas *canvas = cc->canvas;
         if (canvas->GetScreenRect().Contains(
                 /*canvas->ScreenToClient*/ (screenPoint)))
