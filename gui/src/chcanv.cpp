@@ -2477,16 +2477,31 @@ int ChartCanvas::FindClosestCanvasChartdbIndex(int scale) {
     //    Using the current quilt, select a useable reference chart
     //    Said chart will be in the extended (possibly full-screen) stack,
     //    And will have a scale equal to or just greater than the stipulated
-    //    value
+    //    value, and will belong to the same chart family (RNC/ENC)
+    //    If no family match is found, then family requirement is ignored.
     unsigned int im = m_pQuilt->GetExtendedStackIndexArray().size();
     if (im > 0) {
+      // Find closest using scale and family
       for (unsigned int is = 0; is < im; is++) {
         const ChartTableEntry &m = ChartData->GetChartTableEntry(
             m_pQuilt->GetExtendedStackIndexArray()[is]);
-        if ((m.Scale_ge(
-                scale)) /* && (m_reference_family == m.GetChartFamily())*/) {
+        if ((m.Scale_ge(scale)) &&
+            (m_pQuilt->GetRefFamily() == m.GetChartFamily())) {
           new_dbIndex = m_pQuilt->GetExtendedStackIndexArray()[is];
           break;
+        }
+      }
+      // if not found, likely due to Family requirement
+      // That is, there is no matching family chart in the StackIndexArray.
+      // Try again, without consideration of family.
+      if (new_dbIndex < 0) {
+        for (unsigned int is = 0; is < im; is++) {
+          const ChartTableEntry &m = ChartData->GetChartTableEntry(
+              m_pQuilt->GetExtendedStackIndexArray()[is]);
+          if (m.Scale_ge(scale)) {
+            new_dbIndex = m_pQuilt->GetExtendedStackIndexArray()[is];
+            break;
+          }
         }
       }
     }
