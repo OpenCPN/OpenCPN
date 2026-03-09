@@ -85,27 +85,25 @@ private:
 };
 
 class CommDriverSignalKNetEvent;
-wxDECLARE_EVENT(wxEVT_COMMDRIVER_SIGNALK_NET, CommDriverSignalKNetEvent);
+
+// i. e. wxDEFINE_EVENT(), avoiding the evil macro.
+static const wxEventTypeTag<CommDriverSignalKNetEvent> SignalkEvtType(
+    wxNewEventType());
 
 class CommDriverSignalKNetEvent : public wxEvent {
 public:
-  CommDriverSignalKNetEvent(wxEventType commandType = wxEVT_NULL, int id = 0)
-      : wxEvent(id, commandType) {};
-  ~CommDriverSignalKNetEvent() {};
+  CommDriverSignalKNetEvent(const std::string& payload)
+      : wxEvent(0, SignalkEvtType), m_payload(payload) {};
 
-  // accessors
-  void SetPayload(std::shared_ptr<std::string> data) { m_payload = data; }
-  std::shared_ptr<std::string> GetPayload() { return m_payload; }
+  ~CommDriverSignalKNetEvent() = default;
+
+  std::string GetPayload() { return m_payload; }
 
   // required for sending with wxPostEvent()
-  wxEvent* Clone() const {
-    CommDriverSignalKNetEvent* newevent = new CommDriverSignalKNetEvent(*this);
-    newevent->m_payload = this->m_payload;
-    return newevent;
-  };
+  wxEvent* Clone() const { return new CommDriverSignalKNetEvent(m_payload); };
 
 private:
-  std::shared_ptr<std::string> m_payload;
+  const std::string m_payload;
 };
 
 //      WebSocket implementation
@@ -230,10 +228,7 @@ DriverStats WebSocketThread::GetStats() const {
 
 void WebSocketThread::HandleMessage(const std::string& message) {
   if (s_wsSKConsumer) {
-    CommDriverSignalKNetEvent signalKEvent(wxEVT_COMMDRIVER_SIGNALK_NET, 0);
-    auto buffer = std::make_shared<std::string>(message);
-
-    signalKEvent.SetPayload(buffer);
+    CommDriverSignalKNetEvent signalKEvent(message);
     s_wsSKConsumer->AddPendingEvent(signalKEvent);
     m_driver_stats.rx_count++;
   }
@@ -243,8 +238,6 @@ void WebSocketThread::HandleMessage(const std::string& message) {
 /*    CommDriverSignalKNet implementation
  * */
 
-wxDEFINE_EVENT(wxEVT_COMMDRIVER_SIGNALK_NET, CommDriverSignalKNetEvent);
-
 CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
                                            DriverListener& listener)
     : CommDriverSignalK(params->GetStrippedDSPort()),
@@ -253,8 +246,7 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
       m_listener(listener),
       m_stats_timer(*this, 2s) {
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(wxEVT_COMMDRIVER_SIGNALK_NET, &CommDriverSignalKNet::handle_SK_sentence,
-       this);
+  Bind(SignalkEvtType, &CommDriverSignalKNet::handle_SK_sentence, this);
 
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
@@ -398,20 +390,19 @@ void CommDriverSignalKNet::handle_SK_sentence(
 
   // LOG_DEBUG("%s\n", msg.c_str());
 
-  std::shared_ptr<const std::string> msg = event.GetPayload();
-
-  root.Parse(*msg);
+  std::string msg = event.GetPayload();
+  root.Parse(msg);
   if (root.HasParseError()) {
-    wxLogMessage(wxString::Format(
-        "SignalKDataStream ERROR: the JSON document is not well-formed:%d",
-        root.GetParseError()));
+    wxLogMessage(
+        "SignalKDataStream ERROR: the JSON document is not well-formed: %d",
+        root.GetParseError());
     return;
   }
 
   if (!root.IsObject()) {
     wxLogMessage(wxString::Format(
         "SignalKDataStream ERROR: Message is not a JSON Object: %s",
-        msg->c_str()));
+        msg.c_str()));
     return;
   }
 
@@ -440,7 +431,7 @@ void CommDriverSignalKNet::handle_SK_sentence(
   auto pos = iface.find(":");
   std::string comm_interface = "";
   if (pos != std::string::npos) comm_interface = iface.substr(pos + 1);
-  auto navmsg = std::make_shared<const SignalkMsg>(m_self, m_context, *msg,
+  auto navmsg = std::make_shared<const SignalkMsg>(m_self, m_context, msg,
                                                    comm_interface);
   m_listener.Notify(std::move(navmsg));
 }
