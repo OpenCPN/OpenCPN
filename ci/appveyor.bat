@@ -20,17 +20,17 @@ if exist N:\ (
   echo "Using virtual drive N: as base path"
 )
 
-call %SCRIPTDIR%..\buildwin\win_deps.bat wx32
-call %SCRIPTDIR%..\cache\wx-config.bat
-echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
-echo USING wxWidgets_ROOT_DIR: !wxWidgets_ROOT_DIR!
-
 if not defined VCINSTALLDIR (
   for /f "tokens=* USEBACKQ" %%p in (
     `"%programfiles(x86)%\Microsoft Visual Studio\Installer\vswhere" ^
     -latest -property installationPath`
   ) do call "%%p\Common7\Tools\vsDevCmd.bat"
 )
+
+call %SCRIPTDIR%..\buildwin\win_deps.bat wx32
+call %SCRIPTDIR%..\cache\wx-config.bat
+echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
+echo USING wxWidgets_ROOT_DIR: !wxWidgets_ROOT_DIR!
 
 where wxmsw32u_qa_vc14x.dll >nul 2>&1
 if errorlevel 1 (
@@ -44,7 +44,7 @@ mkdir build && cd build
 
 :: This id done in win_deps.bat, but for some reason stopped
 :: working since 2024-02-28, so work it around here
-set "PATH=%PATH%;C:\Program Files (x86)\Poedit\Gettexttools\bin"
+set "PATH=%PATH%;%PROGRAMFILES%\Poedit\Gettexttools\bin"
 
 cmake -A Win32 -G "Visual Studio 17 2022" ^
     -DCMAKE_GENERATOR_PLATFORM=Win32 ^
