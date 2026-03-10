@@ -50,42 +50,6 @@ static const int kTimerSocket = 9006;
 
 class CommDriverSignalKNetEvent;  // fwd
 
-class CommDriverSignalKNetThread : public wxThread {
-public:
-  CommDriverSignalKNetThread(CommDriverSignalKNet* Launcher,
-                             const wxString& PortName,
-                             const wxString& strBaudRate);
-
-  ~CommDriverSignalKNetThread();
-  void* Entry();
-  bool SetOutMsg(const wxString& msg);
-  void OnExit();
-
-private:
-  void ThreadMessage(const wxString& msg);
-  bool OpenComPortPhysical(const wxString& com_name, int baud_rate);
-  void CloseComPortPhysical();
-  size_t WriteComPortPhysical(std::vector<unsigned char> msg);
-  size_t WriteComPortPhysical(unsigned char* msg, size_t length);
-  void SetGatewayOperationMode();
-
-  CommDriverSignalKNet* m_pParentDriver;
-  wxString m_PortName;
-  wxString m_FullPortName;
-
-  unsigned char* put_ptr;
-  unsigned char* tak_ptr;
-
-  unsigned char* rx_buffer;
-
-  int m_baud;
-  int m_n_timeout;
-
-  //  n2k_atomic_queue<char*> out_que;
-};
-
-class CommDriverSignalKNetEvent;
-
 // i. e. wxDEFINE_EVENT(), avoiding the evil macro.
 static const wxEventTypeTag<CommDriverSignalKNetEvent> SignalkEvtType(
     wxNewEventType());
@@ -388,8 +352,6 @@ void CommDriverSignalKNet::handle_SK_sentence(
     CommDriverSignalKNetEvent& event) {
   rapidjson::Document root;
 
-  // LOG_DEBUG("%s\n", msg.c_str());
-
   std::string msg = event.GetPayload();
   root.Parse(msg);
   if (root.HasParseError()) {
@@ -439,10 +401,3 @@ void CommDriverSignalKNet::handle_SK_sentence(
 void CommDriverSignalKNet::initIXNetSystem() { ix::initNetSystem(); };
 
 void CommDriverSignalKNet::uninitIXNetSystem() { ix::uninitNetSystem(); };
-
-////////////
-
-//   std::vector<unsigned char>* payload = p.get();
-//
-//   // Extract the NMEA0183 sentence
-//   std::string full_sentence = std::string(payload->begin(), payload->end());
