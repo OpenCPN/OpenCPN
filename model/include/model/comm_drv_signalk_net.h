@@ -41,6 +41,7 @@
 #include "rapidjson/fwd.h"
 #include "model/conn_params.h"
 #include "model/comm_drv_signalk.h"
+#include "model/thread_ctrl.h"
 #include "comm_drv_stats.h"
 
 #define SIGNALK_SOCKET_ID 5011
@@ -66,8 +67,6 @@ public:
   static bool DiscoverSKServer(std::string serviceIdent, wxString &ip,
                                int &port, int tSec);
 
-  void SetThreadRunning(bool active) { m_threadActive = active; }
-  void SetThreadRunFlag(int run) { m_Thread_run_flag = run; }
   void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
   void SetWatchdog(int n) { m_dog_value = n; }
 
@@ -77,15 +76,11 @@ public:
 
   void OpenWebSocket();
   void CloseWebSocket();
-  bool IsThreadRunning() { return m_threadActive == 1; }
 
   DriverStats GetDriverStats() const override;
 
   std::string m_self;
   std::string m_context;
-
-  std::atomic_int m_Thread_run_flag;
-  std::atomic_int m_threadActive;
 
   ConnectionParams m_params;
   DriverListener &m_listener;

@@ -34,6 +34,7 @@
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
 #include "model/geodesic.h"
+#include "model/logger.h"
 #include "model/sys_events.h"
 #include "wxServDisc.h"
 
@@ -72,7 +73,7 @@ private:
 
 //      WebSocket implementation
 
-class WebSocketThread : public wxThread {
+class WebSocketThread : public wxThread, public ThreadCtrl {
 public:
   WebSocketThread(CommDriverSignalKNet* parent, wxIPV4address address,
                   wxEvtHandler* consumer, const std::string& token);
@@ -111,8 +112,6 @@ WebSocketThread::WebSocketThread(CommDriverSignalKNet* parent,
 void* WebSocketThread::Entry() {
   using namespace std::chrono_literals;
   bool not_done = true;
-
-  m_parentStream->SetThreadRunning(true);
 
   s_wsSKConsumer = m_consumer;
 
@@ -170,13 +169,13 @@ void* WebSocketThread::Entry() {
 
   ws.start();
 
-  while (m_parentStream->m_Thread_run_flag > 0) {
+  while (KeepGoing()) {
     std::this_thread::sleep_for(100ms);
   }
 
+  s_wsSKConsumer = nullptr;
   ws.stop();
-  m_parentStream->SetThreadRunning(false);
-  m_parentStream->m_Thread_run_flag = -1;
+  SignalExit();
   {
     std::lock_guard lock(m_stats_mutex);
     m_driver_stats.available = false;
@@ -204,7 +203,6 @@ void WebSocketThread::HandleMessage(const std::string& message) {
 CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
                                            DriverListener& listener)
     : CommDriverSignalK(params->GetStrippedDSPort()),
-      m_Thread_run_flag(-1),
       m_params(*params),
       m_listener(listener),
       m_stats_timer(*this, 2s) {
@@ -216,7 +214,6 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
   m_token = params->AuthToken;
   m_socketread_watchdog_timer.SetOwner(this, kTimerSocket);
   m_wsThread = NULL;
-  m_threadActive = false;
 
   // Dummy Driver Stats, may be polled before worker thread is active
   m_driver_stats.driver_bus = NavAddr::Bus::Signalk;
@@ -317,30 +314,23 @@ void CommDriverSignalKNet::OpenWebSocket() {
   ResetWatchdog();
   GetSocketThreadWatchdogTimer()->Start(1000,
                                         wxTIMER_ONE_SHOT);  // Start the dog
-  SetThreadRunFlag(1);
 
   m_wsThread->Run();
 }
 
 void CommDriverSignalKNet::CloseWebSocket() {
+  using namespace std::chrono;
   if (m_wsThread) {
-    if (IsThreadRunning()) {
+    if (m_wsThread->ThreadCtrl::IsRunning()) {
       wxLogMessage("Stopping Secondary SignalK Thread");
       m_stats_timer.Stop();
-
-      m_Thread_run_flag = 0;
-      int tsec = 10;
-      while (IsThreadRunning() && tsec) {
-        wxSleep(1);
-        tsec--;
-      }
-
-      wxString msg;
-      if (m_Thread_run_flag <= 0)
-        msg.Printf("Stopped in %d sec.", 10 - tsec);
+      milliseconds stop_delay;
+      m_wsThread->RequestStop();
+      bool stop_ok = m_wsThread->WaitUntilStopped(10s, stop_delay);
+      if (stop_ok)
+        MESSAGE_LOG << "Stopped in" << stop_delay.count() << " msec.";
       else
-        msg.Printf("Not Stopped after 10 sec.");
-      wxLogMessage(msg);
+        WARNING_LOG << "Not stopped after 10 sec.";
     }
 
     wxMilliSleep(100);
