@@ -192,8 +192,7 @@ DriverStats WebSocketThread::GetStats() const {
 
 void WebSocketThread::HandleMessage(const std::string& message) {
   if (s_wsSKConsumer) {
-    CommDriverSignalKNetEvent signalKEvent(message);
-    s_wsSKConsumer->AddPendingEvent(signalKEvent);
+    s_wsSKConsumer->QueueEvent(new CommDriverSignalKNetEvent(message));
     m_driver_stats.rx_count++;
   }
 }
