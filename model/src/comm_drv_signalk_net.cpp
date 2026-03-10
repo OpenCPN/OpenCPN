@@ -75,7 +75,7 @@ private:
 
 class WebSocketThread : public wxThread, public ThreadCtrl {
 public:
-  WebSocketThread(CommDriverSignalKNet* parent, wxIPV4address address,
+  WebSocketThread(const std::string& iface, wxIPV4address address,
                   wxEvtHandler* consumer, const std::string& token);
   virtual void* Entry();
 
@@ -86,7 +86,7 @@ private:
   wxEvtHandler* s_wsSKConsumer;
   wxIPV4address m_address;
   wxEvtHandler* m_consumer;
-  CommDriverSignalKNet* m_parentStream;
+  const std::string m_iface;
   std::string m_token;
   ix::WebSocket ws;
   ObsListener resume_listener;
@@ -94,13 +94,10 @@ private:
   mutable std::mutex m_stats_mutex;
 };
 
-WebSocketThread::WebSocketThread(CommDriverSignalKNet* parent,
+WebSocketThread::WebSocketThread(const std::string& iface,
                                  wxIPV4address address, wxEvtHandler* consumer,
                                  const std::string& token)
-    : m_address(address),
-      m_consumer(consumer),
-      m_parentStream(parent),
-      m_token(token) {
+    : m_address(address), m_consumer(consumer), m_iface(iface), m_token(token) {
   resume_listener.Init(SystemEvents::GetInstance().evt_resume,
                        [&](ObservedEvt& ev) {
                          ws.stop();
@@ -163,7 +160,7 @@ void* WebSocketThread::Entry() {
   {
     std::lock_guard lock(m_stats_mutex);
     m_driver_stats.driver_bus = NavAddr::Bus::Signalk;
-    m_driver_stats.driver_iface = m_parentStream->m_params.GetStrippedDSPort();
+    m_driver_stats.driver_iface = m_iface;
     m_driver_stats.available = false;
   }
 
@@ -304,7 +301,8 @@ void CommDriverSignalKNet::OpenWebSocket() {
 
   // Start a thread to run the client without blocking
 
-  m_wsThread = new WebSocketThread(this, GetAddr(), this, m_token);
+  m_wsThread = new WebSocketThread(m_params.GetStrippedDSPort(), GetAddr(),
+                                   this, m_token);
   if (m_wsThread->Create() != wxTHREAD_NO_ERROR) {
     wxLogError("Can't create WebSocketThread!");
 
