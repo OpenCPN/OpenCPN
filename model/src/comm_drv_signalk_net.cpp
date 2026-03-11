@@ -83,13 +83,13 @@ public:
 
 private:
   void HandleMessage(const std::string& message);
-  wxEvtHandler* s_wsSKConsumer;
+  wxEvtHandler* m_ws_sk_consumer;
   wxIPV4address m_address;
   wxEvtHandler* m_consumer;
   const std::string m_iface;
   std::string m_token;
-  ix::WebSocket ws;
-  ObsListener resume_listener;
+  ix::WebSocket m_ws;
+  ObsListener m_resume_listener;
   DriverStats m_driver_stats;
   mutable std::mutex m_stats_mutex;
 };
@@ -98,19 +98,19 @@ WebSocketThread::WebSocketThread(const std::string& iface,
                                  wxIPV4address address, wxEvtHandler* consumer,
                                  const std::string& token)
     : m_address(address), m_consumer(consumer), m_iface(iface), m_token(token) {
-  resume_listener.Init(SystemEvents::GetInstance().evt_resume,
-                       [&](ObservedEvt& ev) {
-                         ws.stop();
-                         ws.start();
-                         wxLogDebug("WebSocketThread: restarted");
-                       });
+  m_resume_listener.Init(SystemEvents::GetInstance().evt_resume,
+                         [&](ObservedEvt& ev) {
+                           m_ws.stop();
+                           m_ws.start();
+                           wxLogDebug("WebSocketThread: restarted");
+                         });
 }
 
 void* WebSocketThread::Entry() {
   using namespace std::chrono_literals;
   bool not_done = true;
 
-  s_wsSKConsumer = m_consumer;
+  m_ws_sk_consumer = m_consumer;
 
   wxString host = m_address.IPAddress();
   int port = m_address.Service();
@@ -128,12 +128,12 @@ void* WebSocketThread::Entry() {
     wssAddress << "&token=" << m_token;
   }
 
-  ws.setUrl(wssAddress.str());
+  m_ws.setUrl(wssAddress.str());
   ix::SocketTLSOptions opt;
   opt.disable_hostname_validation = true;
   opt.caFile = "NONE";
-  ws.setTLSOptions(opt);
-  ws.setPingInterval(30);
+  m_ws.setTLSOptions(opt);
+  m_ws.setPingInterval(30);
 
   auto message_callback = [&](const ix::WebSocketMessagePtr& msg) {
     if (msg->type == ix::WebSocketMessageType::Message) {
@@ -150,12 +150,12 @@ void* WebSocketThread::Entry() {
       std::lock_guard lock(m_stats_mutex);
       m_driver_stats.error_count++;
       wxLogDebug("websocket: error: %s", msg->errorInfo.reason.c_str());
-      ws.getUrl() == wsAddress.str() ? ws.setUrl(wssAddress.str())
-                                     : ws.setUrl(wsAddress.str());
+      m_ws.getUrl() == wsAddress.str() ? m_ws.setUrl(wssAddress.str())
+                                       : m_ws.setUrl(wsAddress.str());
     }
   };
 
-  ws.setOnMessageCallback(message_callback);
+  m_ws.setOnMessageCallback(message_callback);
 
   {
     std::lock_guard lock(m_stats_mutex);
@@ -164,14 +164,14 @@ void* WebSocketThread::Entry() {
     m_driver_stats.available = false;
   }
 
-  ws.start();
+  m_ws.start();
 
   while (KeepGoing()) {
     std::this_thread::sleep_for(100ms);
   }
 
-  s_wsSKConsumer = nullptr;
-  ws.stop();
+  m_ws_sk_consumer = nullptr;
+  m_ws.stop();
   SignalExit();
   {
     std::lock_guard lock(m_stats_mutex);
@@ -187,8 +187,8 @@ DriverStats WebSocketThread::GetStats() const {
 }
 
 void WebSocketThread::HandleMessage(const std::string& message) {
-  if (s_wsSKConsumer) {
-    s_wsSKConsumer->QueueEvent(new CommDriverSignalKNetEvent(message));
+  if (m_ws_sk_consumer) {
+    m_ws_sk_consumer->QueueEvent(new CommDriverSignalKNetEvent(message));
     m_driver_stats.rx_count++;
   }
 }
@@ -204,13 +204,13 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
       m_listener(listener),
       m_stats_timer(*this, 2s) {
   // Prepare the wxEventHandler to accept events from the actual hardware thread
-  Bind(SignalkEvtType, &CommDriverSignalKNet::handle_SK_sentence, this);
+  Bind(SignalkEvtType, &CommDriverSignalKNet::HandleSkSentence, this);
 
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
   m_token = params->AuthToken;
   m_socketread_watchdog_timer.SetOwner(this, kTimerSocket);
-  m_wsThread = NULL;
+  m_ws_thread = NULL;
 
   // Dummy Driver Stats, may be polled before worker thread is active
   m_driver_stats.driver_bus = NavAddr::Bus::Signalk;
@@ -223,8 +223,8 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
 CommDriverSignalKNet::~CommDriverSignalKNet() { Close(); }
 
 DriverStats CommDriverSignalKNet::GetDriverStats() const {
-  if (m_wsThread)
-    return m_wsThread->GetStats();
+  if (m_ws_thread)
+    return m_ws_thread->GetStats();
   else
     return m_driver_stats;
 }
@@ -237,7 +237,7 @@ void CommDriverSignalKNet::Open() {
 
   // if (m_useWebSocket)
   {
-    std::string serviceIdent =
+    std::string service_ident =
         std::string("_signalk-ws._tcp.local.");  // Works for node.js server
     OpenWebSocket();
   }
@@ -257,16 +257,16 @@ bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
       wxServDisc* namescan = new wxServDisc(0, result.name, QTYPE_SRV);
       for (int j = 0; j < 10; j++) {
         if (namescan->getResultCount()) {
-          auto namescanResult = namescan->getResults().at(0);
-          port = namescanResult.port;
+          auto namescan_result = namescan->getResults().at(0);
+          port = namescan_result.port;
           delete namescan;
 
           wxServDisc* addrscan =
-              new wxServDisc(0, namescanResult.name, QTYPE_A);
+              new wxServDisc(0, namescan_result.name, QTYPE_A);
           for (int k = 0; k < 10; k++) {
             if (addrscan->getResultCount()) {
-              auto addrscanResult = addrscan->getResults().at(0);
-              ip = addrscanResult.ip;
+              auto addrscan_result = addrscan->getResults().at(0);
+              ip = addrscan_result.ip;
               delete addrscan;
               return true;
               break;
@@ -301,9 +301,9 @@ void CommDriverSignalKNet::OpenWebSocket() {
 
   // Start a thread to run the client without blocking
 
-  m_wsThread = new WebSocketThread(m_params.GetStrippedDSPort(), GetAddr(),
-                                   this, m_token);
-  if (m_wsThread->Create() != wxTHREAD_NO_ERROR) {
+  m_ws_thread = new WebSocketThread(m_params.GetStrippedDSPort(), GetAddr(),
+                                    this, m_token);
+  if (m_ws_thread->Create() != wxTHREAD_NO_ERROR) {
     wxLogError("Can't create WebSocketThread!");
 
     return;
@@ -313,18 +313,18 @@ void CommDriverSignalKNet::OpenWebSocket() {
   GetSocketThreadWatchdogTimer()->Start(1000,
                                         wxTIMER_ONE_SHOT);  // Start the dog
 
-  m_wsThread->Run();
+  m_ws_thread->Run();
 }
 
 void CommDriverSignalKNet::CloseWebSocket() {
   using namespace std::chrono;
-  if (m_wsThread) {
-    if (m_wsThread->ThreadCtrl::IsRunning()) {
+  if (m_ws_thread) {
+    if (m_ws_thread->ThreadCtrl::IsRunning()) {
       wxLogMessage("Stopping Secondary SignalK Thread");
       m_stats_timer.Stop();
       milliseconds stop_delay;
-      m_wsThread->RequestStop();
-      bool stop_ok = m_wsThread->WaitUntilStopped(10s, stop_delay);
+      m_ws_thread->RequestStop();
+      bool stop_ok = m_ws_thread->WaitUntilStopped(10s, stop_delay);
       if (stop_ok)
         MESSAGE_LOG << "Stopped in" << stop_delay.count() << " msec.";
       else
@@ -335,8 +335,7 @@ void CommDriverSignalKNet::CloseWebSocket() {
   }
 }
 
-void CommDriverSignalKNet::handle_SK_sentence(
-    CommDriverSignalKNetEvent& event) {
+void CommDriverSignalKNet::HandleSkSentence(CommDriverSignalKNetEvent& event) {
   rapidjson::Document root;
 
   std::string msg = event.GetPayload();
