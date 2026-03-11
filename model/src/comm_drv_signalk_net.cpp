@@ -23,6 +23,7 @@
  */
 
 #include <vector>
+#include <memory>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
 #include <chrono>
@@ -246,28 +247,23 @@ void CommDriverSignalKNet::Close() { CloseWebSocket(); }
 
 bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
                                             wxString& ip, int& port, int tSec) {
-  wxServDisc* servscan =
-      new wxServDisc(0, wxString(serviceIdent.c_str()), QTYPE_PTR);
-
+  auto servscan = std::make_unique<wxServDisc>(
+      nullptr, wxString(serviceIdent.c_str()), QTYPE_PTR);
   for (int i = 0; i < 10; i++) {
     if (servscan->getResultCount()) {
       auto result = servscan->getResults().at(0);
-      delete servscan;
-
-      wxServDisc* namescan = new wxServDisc(0, result.name, QTYPE_SRV);
+      auto namescan =
+          std::make_unique<wxServDisc>(nullptr, result.name, QTYPE_SRV);
       for (int j = 0; j < 10; j++) {
         if (namescan->getResultCount()) {
           auto namescan_result = namescan->getResults().at(0);
           port = namescan_result.port;
-          delete namescan;
-
-          wxServDisc* addrscan =
-              new wxServDisc(0, namescan_result.name, QTYPE_A);
+          auto addrscan = std::make_unique<wxServDisc>(
+              nullptr, namescan_result.name, QTYPE_A);
           for (int k = 0; k < 10; k++) {
             if (addrscan->getResultCount()) {
               auto addrscan_result = addrscan->getResults().at(0);
               ip = addrscan_result.ip;
-              delete addrscan;
               return true;
               break;
             } else {
@@ -275,22 +271,18 @@ bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
               wxMilliSleep(1000 * tSec / 10);
             }
           }
-          delete addrscan;
           return false;
         } else {
           wxYield();
           wxMilliSleep(1000 * tSec / 10);
         }
       }
-      delete namescan;
       return false;
     } else {
       wxYield();
       wxMilliSleep(1000 * tSec / 10);
     }
   }
-
-  delete servscan;
   return false;
 }
 
