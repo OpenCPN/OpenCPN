@@ -695,6 +695,7 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
     for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
       const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
       if (cte.GetChartFamily() != Family) continue;
+      if (cte.IsBasemap()) continue;
 
       if (cte.GetScale() == target_scale) {
         target_index = index;
@@ -707,6 +708,7 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
       for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
         const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
         if (cte.GetChartFamily() != Family) continue;
+        if (cte.IsBasemap()) continue;
         if (cte.GetScale() <= target_scale) {
           target_index = index;
         }
@@ -718,6 +720,7 @@ static bool SelectChartFamily(int CanvasIndex, ChartFamilyEnumPI Family) {
       for (auto index : oCanvas->m_pQuilt->GetFullscreenIndexArray()) {
         const ChartTableEntry& cte = ChartData->GetChartTableEntry(index);
         if (cte.GetChartFamily() != Family) continue;
+        if (cte.IsBasemap()) continue;
         if (cte.GetScale() > target_scale) {
           target_index = index;
           break;

@@ -136,6 +136,7 @@ double g_plus_minus_zoom_factor = 0.0;
 double g_TrackDeltaDistance = 0.0;
 double g_TrackIntervalSeconds = 0.0;
 double g_UserVar = 0.0;
+double g_tile_basemap_zoom_factor = 4.0;
 
 float g_fNavAidRadarRingsStep = 0.0;
 float g_fWaypointRangeRingsStep = 0.0;

@@ -347,6 +347,8 @@ int MyConfig::LoadMyConfig() {
     g_cm93_zoom_factor =
         wxMax(g_cm93_zoom_factor, (-CM93_ZOOM_FACTOR_MAX_RANGE));
 
+    g_tile_basemap_zoom_factor = 4.0;
+
     if ((g_detailslider_dialog_x < 0) ||
         (g_detailslider_dialog_x > display_width))
       g_detailslider_dialog_x = 5;
@@ -596,6 +598,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   g_mouse_zoom_sensitivity_ui =
       MouseZoom::config_to_ui(g_mouse_zoom_sensitivity);
   Read("CM93DetailFactor", &g_cm93_zoom_factor);
+  Read("TileBasemapZoomFactor", &g_tile_basemap_zoom_factor);
 
   Read("CM93DetailZoomPosX", &g_detailslider_dialog_x);
   Read("CM93DetailZoomPosY", &g_detailslider_dialog_y);
