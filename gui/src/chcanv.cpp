@@ -476,7 +476,6 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   VPoint.view_scale_ppm = 1;
   VPoint.Invalidate();
   m_nMeasureState = 0;
-  m_ignore_next_leftup = false;
 
   m_canvas_scale_factor = 1.;
 
