@@ -9189,8 +9189,15 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
       if (m_routeState)  // creating route?
       {
-        if (m_ignore_next_leftup) {
-          m_ignore_next_leftup = false;
+        // Check displacement from touchdown to distinguish taps from pans.
+        // On touchscreens, even a "tap" can have several pixels of jitter,
+        // so use a generous threshold (20px) to avoid false positives.
+        int dx = x - m_touchdownPos.x;
+        int dy = y - m_touchdownPos.y;
+        int dist2 = dx * dx + dy * dy;
+        bool wasPan = (dist2 > 20 * 20);
+
+        if (wasPan) {
           return false;
         }
 
@@ -9474,9 +9481,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           return false;
         }
 
-        if (m_ignore_next_leftup) {
-          m_ignore_next_leftup = false;
-          return false;
+        // Skip if user panned (same logic as route handler above)
+        {
+          int mdx = x - m_touchdownPos.x;
+          int mdy = y - m_touchdownPos.y;
+          if (mdx * mdx + mdy * mdy > 20 * 20) return false;
         }
 
         if (m_nMeasureState == 1) {
@@ -10325,6 +10334,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     }
 
     last_drag.x = x, last_drag.y = y;
+    m_touchdownPos = wxPoint(x, y);
     panleftIsDown = true;
   }
 
@@ -10461,8 +10471,7 @@ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
     // Handle some special cases
     if (g_btouch) {
       if ((m_bMeasure_Active && m_nMeasureState) || (m_routeState)) {
-        // deactivate next LeftUp to ovoid creating an unexpected point
-        m_ignore_next_leftup = true;
+        // LeftUp handler uses displacement check to distinguish taps from pans.
         m_DoubleClickTimer->Start();
         singleClickEventIsValid = false;
       }
