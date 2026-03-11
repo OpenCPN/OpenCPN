@@ -39,6 +39,9 @@
 #include <wx/socket.h>
 
 #include "rapidjson/fwd.h"
+
+#include "ixwebsocket/IXWebSocket.h"
+
 #include "model/conn_params.h"
 #include "model/comm_drv_signalk.h"
 #include "model/thread_ctrl.h"
@@ -52,7 +55,26 @@ static const double kMsToKnotFactor = 1.9438444924406;
 
 class WebSocketThread;            // Forward in .cpp file
 class CommDriverSignalKNetEvent;  // Forward in .cpp file
+class WebSocketThread : public wxThread, public ThreadCtrl {
+public:
+  WebSocketThread(const std::string& iface, wxIPV4address address,
+                  wxEvtHandler* consumer, const std::string& token);
+  virtual void* Entry();
 
+  DriverStats GetStats() const;
+
+private:
+  void HandleMessage(const std::string& message);
+  wxEvtHandler* m_ws_sk_consumer;
+  wxIPV4address m_address;
+  wxEvtHandler* m_consumer;
+  const std::string m_iface;
+  std::string m_token;
+  ix::WebSocket m_ws;
+  ObsListener m_resume_listener;
+  DriverStats m_driver_stats;
+  mutable std::mutex m_stats_mutex;
+};
 class CommDriverSignalKNet : public CommDriverSignalK,
                              public wxEvtHandler,
                              public DriverStatsProvider {
