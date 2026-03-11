@@ -23,8 +23,8 @@
 
 // Originally by balp on 2018-07-28.
 
-#ifndef _SIGNALK_NET_H
-#define _SIGNALK_NET_H
+#ifndef SigNaLK_nEt_h_
+#define SigNaLK_nEt_h_
 
 #include <atomic>
 #include <string>
@@ -33,7 +33,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled header
+#endif
 
 #include <wx/datetime.h>
 #include <wx/socket.h>
@@ -48,69 +48,60 @@
 #define N_DOG_TIMEOUT 5             // seconds
 #define N_DOG_TIMEOUT_RECONNECT 10  // seconds
 
-static const double ms_to_knot_factor = 1.9438444924406;
+static const double kMsToKnotFactor = 1.9438444924406;
 
-class WebSocketThread;               // Forward in .cpp file
-class OCPN_WebSocketMessageHandler;  // Indirectly unused
-class CommDriverSignalKNetEvent;     // Forward in .cpp file
+class WebSocketThread;            // Forward in .cpp file
+class CommDriverSignalKNetEvent;  // Forward in .cpp file
 
 class CommDriverSignalKNet : public CommDriverSignalK,
                              public wxEvtHandler,
                              public DriverStatsProvider {
 public:
-  CommDriverSignalKNet(const ConnectionParams *params, DriverListener &l);
+  CommDriverSignalKNet(const ConnectionParams* params, DriverListener& l);
   virtual ~CommDriverSignalKNet();
+
+  static void initIXNetSystem();
+  static void uninitIXNetSystem();
+
+  static bool DiscoverSKServer(wxString& ip, int& port, int tSec);
+  static bool DiscoverSKServer(std::string serviceIdent, wxString& ip,
+                               int& port, int tSec);
+  DriverStats GetDriverStats() const override;
+
+private:
+  ConnectionParams m_params;
+  DriverListener& m_listener;
+  std::string m_context;
+  std::string m_self;
+  wxIPV4address m_addr;
+  int m_dog_value;
+  wxTimer m_socketread_watchdog_timer;
+  bool m_use_web_socket;
+  bool m_gps_valid_sk;
+  std::string m_token;
+  WebSocketThread* m_ws_thread;
+  StatsTimer m_stats_timer;
+  DriverStats m_driver_stats;
 
   void Open();
   void Close();
-  static bool DiscoverSKServer(wxString &ip, int &port, int tSec);
-  static bool DiscoverSKServer(std::string serviceIdent, wxString &ip,
-                               int &port, int tSec);
-
-  void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
-  void SetWatchdog(int n) { m_dog_value = n; }
-
-  void handle_SK_sentence(CommDriverSignalKNetEvent &event);
-  void handleUpdate(const rapidjson::Value &update);
-  void updateItem(const rapidjson::Value &item, wxString &sfixtime);
-
   void OpenWebSocket();
   void CloseWebSocket();
 
-  DriverStats GetDriverStats() const override;
+  bool SetOutputSocketOptions(wxSocketBase* sock);
 
-  std::string m_self;
-  std::string m_context;
-
-  ConnectionParams m_params;
-  DriverListener &m_listener;
-
-  static void initIXNetSystem();
-
-  static void uninitIXNetSystem();
-
-private:
-  wxIPV4address m_addr;
   wxIPV4address GetAddr() const { return m_addr; }
 
-  int m_dog_value;
-
-  wxTimer m_socketread_watchdog_timer;
-  wxTimer *GetSocketThreadWatchdogTimer() {
+  wxTimer* GetSocketThreadWatchdogTimer() {
     return &m_socketread_watchdog_timer;
   }
+  void HandleSkSentence(CommDriverSignalKNetEvent& event);
 
-  OCPN_WebSocketMessageHandler *m_eventHandler;
-  bool m_useWebSocket;
+  void HandleUpdate(const rapidjson::Value& update);
+  void UpdateItem(const rapidjson::Value& item, wxString& fixtime);
 
-  bool m_bGPSValid_SK;
-
-  bool SetOutputSocketOptions(wxSocketBase *sock);
-
-  std::string m_token;
-  WebSocketThread *m_wsThread;
-  StatsTimer m_stats_timer;
-  DriverStats m_driver_stats;
+  void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
+  void SetWatchdog(int n) { m_dog_value = n; }
 };
 
-#endif  // _SIGNALK_NET_H
+#endif  // SigNaLK_nEt_h_
