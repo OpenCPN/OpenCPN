@@ -4624,8 +4624,20 @@ void glChartCanvas::RenderSingleMBTileOverlay(const int dbIndex, bool bOverlay,
   // Size test for 5 GByte
   wxULongLong tileSizeMB = tileFile.GetSize() >> 20;
 
-  if (!ChartData->CheckAnyCanvasExclusiveTileGroup() ||
-      (tileSizeMB.GetLo() > 5000)) {
+  // Auto-show MBTiles in basemap directories
+  bool isBasemap = tileFile.GetPath().Lower().Contains("basemap");
+
+  // For basemap MBTiles, stop rendering when zoomed in past their max detail
+  // to allow S57 vector charts to show through
+  if (isBasemap) {
+    double chart_native_ppm = m_pParentCanvas->GetCanvasScaleFactor() /
+                              (double)chart->GetNativeScale();
+    double zoom_ratio = vp.view_scale_ppm / chart_native_ppm;
+    if (zoom_ratio > g_tile_basemap_zoom_factor) return;
+  }
+
+  if (!isBasemap && (!ChartData->CheckAnyCanvasExclusiveTileGroup() ||
+                     (tileSizeMB.GetLo() > 5000))) {
     // Check to see if the tile has been "clicked".
     // If so, do not add to no-show array again.
     if (!m_pParentCanvas->IsTileOverlayIndexInYesShow(dbIndex)) {
