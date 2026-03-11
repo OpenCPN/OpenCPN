@@ -26,7 +26,6 @@
 #ifndef SigNaLK_nEt_h_
 #define SigNaLK_nEt_h_
 
-#include <atomic>
 #include <string>
 
 #include <wx/wxprec.h>
@@ -35,10 +34,7 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/datetime.h>
 #include <wx/socket.h>
-
-#include "rapidjson/fwd.h"
 
 #include "ixwebsocket/IXWebSocket.h"
 
@@ -53,19 +49,20 @@
 
 static const double kMsToKnotFactor = 1.9438444924406;
 
-class WebSocketThread;            // Forward in .cpp file
 class CommDriverSignalKNetEvent;  // Forward in .cpp file
-class WebSocketThread : public wxThread, public ThreadCtrl {
+
+class WebSocketThread : public ThreadCtrl {
 public:
   WebSocketThread(const std::string& iface, wxIPV4address address,
                   wxEvtHandler* consumer, const std::string& token);
-  virtual void* Entry();
+
+  virtual ~WebSocketThread() = default;
+
+  void* Run();
 
   DriverStats GetStats() const;
 
 private:
-  void HandleMessage(const std::string& message);
-  wxEvtHandler* m_ws_sk_consumer;
   wxIPV4address m_address;
   wxEvtHandler* m_consumer;
   const std::string m_iface;
@@ -75,6 +72,7 @@ private:
   DriverStats m_driver_stats;
   mutable std::mutex m_stats_mutex;
 };
+
 class CommDriverSignalKNet : public CommDriverSignalK,
                              public wxEvtHandler,
                              public DriverStatsProvider {
@@ -95,13 +93,13 @@ private:
   DriverListener& m_listener;
   std::string m_context;
   std::string m_self;
-  wxIPV4address m_addr;
   int m_dog_value;
   wxTimer m_socketread_watchdog_timer;
   bool m_use_web_socket;
   bool m_gps_valid_sk;
   std::string m_token;
-  WebSocketThread* m_ws_thread;
+  std::thread m_std_thread;
+  WebSocketThread m_ws_thread;
   StatsTimer m_stats_timer;
   DriverStats m_driver_stats;
 
@@ -112,15 +110,10 @@ private:
 
   bool SetOutputSocketOptions(wxSocketBase* sock);
 
-  wxIPV4address GetAddr() const { return m_addr; }
-
   wxTimer* GetSocketThreadWatchdogTimer() {
     return &m_socketread_watchdog_timer;
   }
   void HandleSkSentence(CommDriverSignalKNetEvent& event);
-
-  void HandleUpdate(const rapidjson::Value& update);
-  void UpdateItem(const rapidjson::Value& item, wxString& fixtime);
 
   void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
   void SetWatchdog(int n) { m_dog_value = n; }
