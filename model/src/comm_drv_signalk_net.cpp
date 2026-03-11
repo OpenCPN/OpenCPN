@@ -51,6 +51,13 @@ class CommDriverSignalKNetEvent;  // fwd
 static const wxEventTypeTag<CommDriverSignalKNetEvent> SignalkEvtType(
     wxNewEventType());
 
+static wxIPV4address ParamsIpAddress(const ConnectionParams& params) {
+  wxIPV4address addr;
+  addr.Hostname(params.NetworkAddress);
+  addr.Service(params.NetworkPort);
+  return addr;
+}
+
 class CommDriverSignalKNetEvent : public wxEvent {
 public:
   CommDriverSignalKNetEvent(const std::string& payload)
@@ -80,11 +87,9 @@ WebSocketThread::WebSocketThread(const std::string& iface,
                          });
 }
 
-void* WebSocketThread::Entry() {
+void* WebSocketThread::Run() {
   using namespace std::chrono_literals;
   bool not_done = true;
-
-  m_ws_sk_consumer = m_consumer;
 
   wxString host = m_address.IPAddress();
   int port = m_address.Service();
@@ -111,9 +116,11 @@ void* WebSocketThread::Entry() {
 
   auto message_callback = [&](const ix::WebSocketMessagePtr& msg) {
     if (msg->type == ix::WebSocketMessageType::Message) {
-      HandleMessage(msg->str);
+      m_consumer->QueueEvent(new CommDriverSignalKNetEvent(msg->str));
+      m_driver_stats.rx_count++;
     } else if (msg->type == ix::WebSocketMessageType::Open) {
-      wxLogDebug("websocket: Connection established");
+      wxLogDebug("websocket: Connection to %s established",
+                 m_ws.getUrl().c_str());
       std::lock_guard lock(m_stats_mutex);
       m_driver_stats.available = true;
     } else if (msg->type == ix::WebSocketMessageType::Close) {
@@ -139,12 +146,9 @@ void* WebSocketThread::Entry() {
   }
 
   m_ws.start();
-
   while (KeepGoing()) {
     std::this_thread::sleep_for(100ms);
   }
-
-  m_ws_sk_consumer = nullptr;
   m_ws.stop();
   SignalExit();
   {
@@ -160,13 +164,6 @@ DriverStats WebSocketThread::GetStats() const {
   return m_driver_stats;
 }
 
-void WebSocketThread::HandleMessage(const std::string& message) {
-  if (m_ws_sk_consumer) {
-    m_ws_sk_consumer->QueueEvent(new CommDriverSignalKNetEvent(message));
-    m_driver_stats.rx_count++;
-  }
-}
-
 //========================================================================
 /*    CommDriverSignalKNet implementation
  * */
@@ -176,15 +173,14 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
     : CommDriverSignalK(params->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
+      m_ws_thread(params->GetStrippedDSPort(), ParamsIpAddress(*params), this,
+                  params->AuthToken.ToStdString()),
       m_stats_timer(*this, 2s) {
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(SignalkEvtType, &CommDriverSignalKNet::HandleSkSentence, this);
 
-  m_addr.Hostname(params->NetworkAddress);
-  m_addr.Service(params->NetworkPort);
   m_token = params->AuthToken;
   m_socketread_watchdog_timer.SetOwner(this, kTimerSocket);
-  m_ws_thread = NULL;
 
   // Dummy Driver Stats, may be polled before worker thread is active
   m_driver_stats.driver_bus = NavAddr::Bus::Signalk;
@@ -197,8 +193,8 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
 CommDriverSignalKNet::~CommDriverSignalKNet() { Close(); }
 
 DriverStats CommDriverSignalKNet::GetDriverStats() const {
-  if (m_ws_thread)
-    return m_ws_thread->GetStats();
+  if (m_std_thread.joinable())
+    return m_ws_thread.GetStats();
   else
     return m_driver_stats;
 }
@@ -260,43 +256,34 @@ bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
 }
 
 void CommDriverSignalKNet::OpenWebSocket() {
-  // printf("OpenWebSocket\n");
-  wxLogMessage(wxString::Format("Opening Signal K WebSocket client: %s",
-                                m_params.GetDSPort().c_str()));
-
-  // Start a thread to run the client without blocking
-
-  m_ws_thread = new WebSocketThread(m_params.GetStrippedDSPort(), GetAddr(),
-                                    this, m_token);
-  if (m_ws_thread->Create() != wxTHREAD_NO_ERROR) {
+  wxLogMessage("Opening Signal K WebSocket client: %s",
+               m_params.GetDSPort().c_str());
+  m_std_thread = std::thread([&] { m_ws_thread.Run(); });
+  if (!m_std_thread.joinable()) {
     wxLogError("Can't create WebSocketThread!");
-
     return;
   }
-
   ResetWatchdog();
-  GetSocketThreadWatchdogTimer()->Start(1000,
-                                        wxTIMER_ONE_SHOT);  // Start the dog
-
-  m_ws_thread->Run();
+  GetSocketThreadWatchdogTimer()->Start(1000, wxTIMER_ONE_SHOT);
 }
 
 void CommDriverSignalKNet::CloseWebSocket() {
-  using namespace std::chrono;
-  if (m_ws_thread) {
-    if (m_ws_thread->ThreadCtrl::IsRunning()) {
+  if (m_std_thread.joinable()) {
+    if (m_ws_thread.IsRunning()) {
       wxLogMessage("Stopping Secondary SignalK Thread");
       m_stats_timer.Stop();
-      milliseconds stop_delay;
-      m_ws_thread->RequestStop();
-      bool stop_ok = m_ws_thread->WaitUntilStopped(10s, stop_delay);
+      m_ws_thread.RequestStop();
+      std::chrono::milliseconds stop_delay;
+      bool stop_ok = m_ws_thread.WaitUntilStopped(10s, stop_delay);
       if (stop_ok)
         MESSAGE_LOG << "Stopped in" << stop_delay.count() << " msec.";
       else
         WARNING_LOG << "Not stopped after 10 sec.";
     }
-
     wxMilliSleep(100);
+    m_std_thread.join();
+  } else {
+    WARNING_LOG << "Thread unexpectedly died";
   }
 }
 
@@ -311,11 +298,9 @@ void CommDriverSignalKNet::HandleSkSentence(CommDriverSignalKNetEvent& event) {
         root.GetParseError());
     return;
   }
-
   if (!root.IsObject()) {
-    wxLogMessage(wxString::Format(
-        "SignalKDataStream ERROR: Message is not a JSON Object: %s",
-        msg.c_str()));
+    wxLogMessage("SignalKDataStream ERROR: Message is not a JSON Object: %s",
+                 msg.c_str());
     return;
   }
 
@@ -326,7 +311,6 @@ void CommDriverSignalKNet::HandleSkSentence(CommDriverSignalKNetEvent& event) {
     msg << (root["version"].GetString());
     wxLogMessage(msg);
   }
-
   if (root.HasMember("self")) {
     if (strncmp(root["self"].GetString(), "vessels.", 8) == 0)
       m_self = (root["self"].GetString());  // for java server, and OpenPlotter
@@ -335,7 +319,6 @@ void CommDriverSignalKNet::HandleSkSentence(CommDriverSignalKNetEvent& event) {
       m_self = std::string("vessels.")
                    .append(root["self"].GetString());  // for Node.js server
   }
-
   if (root.HasMember("context") && root["context"].IsString()) {
     m_context = root["context"].GetString();
   }
