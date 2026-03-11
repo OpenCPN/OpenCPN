@@ -22,29 +22,24 @@
  * Implement comm_drv_signalk_net.h -- IP netork SignalK driver
  */
 
-#include <vector>
+#include <chrono>
 #include <memory>
 #include <mutex>  // std::mutex
 #include <queue>  // std::queue
-#include <chrono>
 #include <thread>
+#include <vector>
 
 #include "rapidjson/document.h"
+#include "ixwebsocket/IXNetSystem.h"
+#include "ixwebsocket/IXSocketTLSOptions.h"
+#include "observable.h"
 
 #include "model/comm_drv_signalk_net.h"
 #include "model/comm_navmsg_bus.h"
-#include "model/comm_drv_registry.h"
 #include "model/geodesic.h"
 #include "model/logger.h"
 #include "model/sys_events.h"
 #include "wxServDisc.h"
-
-#include "observable.h"
-
-#include "ixwebsocket/IXNetSystem.h"
-#include "ixwebsocket/IXWebSocket.h"
-#include "ixwebsocket/IXUserAgent.h"
-#include "ixwebsocket/IXSocketTLSOptions.h"
 
 using namespace std::literals::chrono_literals;
 
@@ -73,28 +68,6 @@ private:
 };
 
 //      WebSocket implementation
-
-class WebSocketThread : public wxThread, public ThreadCtrl {
-public:
-  WebSocketThread(const std::string& iface, wxIPV4address address,
-                  wxEvtHandler* consumer, const std::string& token);
-  virtual void* Entry();
-
-  DriverStats GetStats() const;
-
-private:
-  void HandleMessage(const std::string& message);
-  wxEvtHandler* m_ws_sk_consumer;
-  wxIPV4address m_address;
-  wxEvtHandler* m_consumer;
-  const std::string m_iface;
-  std::string m_token;
-  ix::WebSocket m_ws;
-  ObsListener m_resume_listener;
-  DriverStats m_driver_stats;
-  mutable std::mutex m_stats_mutex;
-};
-
 WebSocketThread::WebSocketThread(const std::string& iface,
                                  wxIPV4address address, wxEvtHandler* consumer,
                                  const std::string& token)
