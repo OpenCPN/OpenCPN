@@ -43,20 +43,20 @@
 #include "model/thread_ctrl.h"
 #include "comm_drv_stats.h"
 
-#define SIGNALK_SOCKET_ID 5011
-#define N_DOG_TIMEOUT 5             // seconds
-#define N_DOG_TIMEOUT_RECONNECT 10  // seconds
+constexpr int kSignalkSocketId = 5011;
+constexpr int kDogTimeoutSeconds = 5;
+constexpr int kDogTimeoutReconnectSeconds = 10;
 
-static const double kMsToKnotFactor = 1.9438444924406;
+constexpr double kMsToKnotFactor = 1.9438444924406;
 
-class CommDriverSignalKNetEvent;  // Forward in .cpp file
+class CommDrvSignalkNetEvt;  // Forward in .cpp file
 
 class WebSocketThread : public ThreadCtrl {
 public:
-  WebSocketThread(const std::string& iface, wxIPV4address address,
+  WebSocketThread(const std::string& iface, const wxIPV4address& address,
                   wxEvtHandler* consumer, const std::string& token);
 
-  virtual ~WebSocketThread() = default;
+  ~WebSocketThread() override = default;
 
   void* Run();
 
@@ -78,14 +78,14 @@ class CommDriverSignalKNet : public CommDriverSignalK,
                              public DriverStatsProvider {
 public:
   CommDriverSignalKNet(const ConnectionParams* params, DriverListener& l);
-  virtual ~CommDriverSignalKNet();
+  ~CommDriverSignalKNet() override;
 
   static void initIXNetSystem();
   static void uninitIXNetSystem();
 
-  static bool DiscoverSKServer(wxString& ip, int& port, int tSec);
-  static bool DiscoverSKServer(std::string serviceIdent, wxString& ip,
+  static bool DiscoverSKServer(const std::string& serviceIdent, wxString& ip,
                                int& port, int tSec);
+
   DriverStats GetDriverStats() const override;
 
 private:
@@ -95,8 +95,6 @@ private:
   std::string m_self;
   int m_dog_value;
   wxTimer m_socketread_watchdog_timer;
-  bool m_use_web_socket;
-  bool m_gps_valid_sk;
   std::string m_token;
   std::thread m_std_thread;
   WebSocketThread m_ws_thread;
@@ -108,14 +106,12 @@ private:
   void OpenWebSocket();
   void CloseWebSocket();
 
-  bool SetOutputSocketOptions(wxSocketBase* sock);
-
   wxTimer* GetSocketThreadWatchdogTimer() {
     return &m_socketread_watchdog_timer;
   }
-  void HandleSkSentence(CommDriverSignalKNetEvent& event);
+  void HandleSkSentence(const CommDrvSignalkNetEvt& event);
 
-  void ResetWatchdog() { m_dog_value = N_DOG_TIMEOUT; }
+  void ResetWatchdog() { m_dog_value = kDogTimeoutSeconds; }
   void SetWatchdog(int n) { m_dog_value = n; }
 };
 
