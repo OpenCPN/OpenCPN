@@ -88,6 +88,7 @@ Langstrings_*.nsh.in text eol=crlf
 *.dat      binary
 *.cpt      binary
 *.enc      binary
+*.tdc      binary
 *.cmake    text
 
 
