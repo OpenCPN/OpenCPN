@@ -1702,6 +1702,7 @@ if (OCPN_BUNDLE_TCDATA)
   set(tcData
       data/tcdata/HARMONICS_NO_US data/tcdata/HARMONICS_NO_US.IDX
       data/tcdata/harmonics-dwf-20210110-free.tcd data/tcdata/README.harmonics
+      data/tcdata/ticon-europe-global.tcd
   )
 endif ()
 
