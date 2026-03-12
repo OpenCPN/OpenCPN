@@ -628,7 +628,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   m_Compass->SetScaleFactor(g_compass_scalefactor);
   m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
 
-  if (IsPrimaryCanvas()) {
+  if (IsPrimaryCanvas() && !g_disableNotifications) {
     m_notification_button = new NotificationButton(this);
     m_notification_button->SetScaleFactor(g_compass_scalefactor);
     m_notification_button->Show(true);
@@ -12929,13 +12929,15 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
     if (!g_CanvasHideNotificationIcon) {
       if (IsPrimaryCanvas()) {
         auto &noteman = NotificationManager::GetInstance();
-        if (noteman.GetNotificationCount()) {
-          m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
-          if (m_notification_button->UpdateStatus()) Refresh();
-          m_notification_button->Show(true);
-          m_notification_button->Paint(dc);
-        } else {
-          m_notification_button->Show(false);
+        if (m_notification_button) {
+          if (noteman.GetNotificationCount()) {
+            m_notification_button->SetIconSeverity(noteman.GetMaxSeverity());
+            if (m_notification_button->UpdateStatus()) Refresh();
+            m_notification_button->Show(true);
+            m_notification_button->Paint(dc);
+          } else {
+            m_notification_button->Show(false);
+          }
         }
       }
     }
