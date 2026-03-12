@@ -19,7 +19,7 @@
 /**
  * \file
  *
- * Implement comm_drv_signalk_net.h -- IP netork SignalK driver
+ * Implement comm_drv_signalk_net.h -- IP network SignalK driver
  */
 
 #include <chrono>
@@ -43,12 +43,12 @@
 
 using namespace std::literals::chrono_literals;
 
-static const int kTimerSocket = 9006;
+constexpr int kTimerSocket = 9006;
 
-class CommDriverSignalKNetEvent;  // fwd
+class CommDrvSignalkNetEvt;  // fwd
 
 // i. e. wxDEFINE_EVENT(), avoiding the evil macro.
-static const wxEventTypeTag<CommDriverSignalKNetEvent> SignalkEvtType(
+static const wxEventTypeTag<CommDrvSignalkNetEvt> SignalkEvtType(
     wxNewEventType());
 
 static wxIPV4address ParamsIpAddress(const ConnectionParams& params) {
@@ -58,17 +58,19 @@ static wxIPV4address ParamsIpAddress(const ConnectionParams& params) {
   return addr;
 }
 
-class CommDriverSignalKNetEvent : public wxEvent {
+class CommDrvSignalkNetEvt : public wxEvent {
 public:
-  CommDriverSignalKNetEvent(const std::string& payload)
-      : wxEvent(0, SignalkEvtType), m_payload(payload) {};
+  explicit CommDrvSignalkNetEvt(std::string payload)
+      : wxEvent(0, SignalkEvtType), m_payload(std::move(payload)) {};
 
-  ~CommDriverSignalKNetEvent() = default;
+  ~CommDrvSignalkNetEvt() override = default;
 
-  std::string GetPayload() { return m_payload; }
+  std::string GetPayload() const { return m_payload; }
 
   // required for sending with wxPostEvent()
-  wxEvent* Clone() const { return new CommDriverSignalKNetEvent(m_payload); };
+  [[nodiscard]] wxEvent* Clone() const override {
+    return new CommDrvSignalkNetEvt(m_payload);
+  };
 
 private:
   const std::string m_payload;
@@ -76,7 +78,8 @@ private:
 
 //      WebSocket implementation
 WebSocketThread::WebSocketThread(const std::string& iface,
-                                 wxIPV4address address, wxEvtHandler* consumer,
+                                 const wxIPV4address& address,
+                                 wxEvtHandler* consumer,
                                  const std::string& token)
     : m_address(address), m_consumer(consumer), m_iface(iface), m_token(token) {
   m_resume_listener.Init(SystemEvents::GetInstance().evt_resume,
@@ -89,7 +92,6 @@ WebSocketThread::WebSocketThread(const std::string& iface,
 
 void* WebSocketThread::Run() {
   using namespace std::chrono_literals;
-  bool not_done = true;
 
   wxString host = m_address.IPAddress();
   int port = m_address.Service();
@@ -116,7 +118,7 @@ void* WebSocketThread::Run() {
 
   auto message_callback = [&](const ix::WebSocketMessagePtr& msg) {
     if (msg->type == ix::WebSocketMessageType::Message) {
-      m_consumer->QueueEvent(new CommDriverSignalKNetEvent(msg->str));
+      m_consumer->QueueEvent(new CommDrvSignalkNetEvt(msg->str));
       m_driver_stats.rx_count++;
     } else if (msg->type == ix::WebSocketMessageType::Open) {
       wxLogDebug("websocket: Connection to %s established",
@@ -156,7 +158,7 @@ void* WebSocketThread::Run() {
     m_driver_stats.available = false;
   }
 
-  return 0;
+  return nullptr;
 }
 
 DriverStats WebSocketThread::GetStats() const {
@@ -173,6 +175,7 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
     : CommDriverSignalK(params->GetStrippedDSPort()),
       m_params(*params),
       m_listener(listener),
+      m_dog_value(kDogTimeoutSeconds),
       m_ws_thread(params->GetStrippedDSPort(), ParamsIpAddress(*params), this,
                   params->AuthToken.ToStdString()),
       m_stats_timer(*this, 2s) {
@@ -214,7 +217,7 @@ void CommDriverSignalKNet::Open() {
 }
 void CommDriverSignalKNet::Close() { CloseWebSocket(); }
 
-bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
+bool CommDriverSignalKNet::DiscoverSKServer(const std::string& serviceIdent,
                                             wxString& ip, int& port, int tSec) {
   auto servscan = std::make_unique<wxServDisc>(
       nullptr, wxString(serviceIdent.c_str()), QTYPE_PTR);
@@ -234,7 +237,6 @@ bool CommDriverSignalKNet::DiscoverSKServer(std::string serviceIdent,
               auto addrscan_result = addrscan->getResults().at(0);
               ip = addrscan_result.ip;
               return true;
-              break;
             } else {
               wxYield();
               wxMilliSleep(1000 * tSec / 10);
@@ -287,7 +289,7 @@ void CommDriverSignalKNet::CloseWebSocket() {
   }
 }
 
-void CommDriverSignalKNet::HandleSkSentence(CommDriverSignalKNetEvent& event) {
+void CommDriverSignalKNet::HandleSkSentence(const CommDrvSignalkNetEvt& event) {
   rapidjson::Document root;
 
   std::string msg = event.GetPayload();
@@ -307,9 +309,9 @@ void CommDriverSignalKNet::HandleSkSentence(CommDriverSignalKNetEvent& event) {
   // Decode just enough of string to extract some identifiers
   // such as the sK version, "self" context, and target context
   if (root.HasMember("version")) {
-    wxString msg = "Connected to Signal K server version: ";
-    msg << (root["version"].GetString());
-    wxLogMessage(msg);
+    wxString vers = "Connected to Signal K server version: ";
+    vers << (root["version"].GetString());
+    wxLogMessage(vers);
   }
   if (root.HasMember("self")) {
     if (strncmp(root["self"].GetString(), "vessels.", 8) == 0)
@@ -324,8 +326,8 @@ void CommDriverSignalKNet::HandleSkSentence(CommDriverSignalKNetEvent& event) {
   }
 
   // Notify all listeners
-  auto pos = iface.find(":");
-  std::string comm_interface = "";
+  auto pos = iface.find(':');
+  std::string comm_interface;
   if (pos != std::string::npos) comm_interface = iface.substr(pos + 1);
   auto navmsg = std::make_shared<const SignalkMsg>(m_self, m_context, msg,
                                                    comm_interface);
