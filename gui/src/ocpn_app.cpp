@@ -1221,12 +1221,17 @@ bool MyApp::OnInit() {
   wxString default_tcdata1 =
       (g_Platform->GetSharedDataDir() + "tcdata" +
        wxFileName::GetPathSeparator() + "HARMONICS_NO_US.IDX");
+  wxString default_tcdata2 =
+      (g_Platform->GetSharedDataDir() + "tcdata" +
+       wxFileName::GetPathSeparator() + "ticon-europe-global.tcd");
 
   if (TideCurrentDataSet.empty()) {
     TideCurrentDataSet.push_back(
         g_Platform->NormalizePath(default_tcdata0).ToStdString());
     TideCurrentDataSet.push_back(
         g_Platform->NormalizePath(default_tcdata1).ToStdString());
+    TideCurrentDataSet.push_back(
+        g_Platform->NormalizePath(default_tcdata2).ToStdString());
   }
 
   //  Check the global AIS alarm sound file
