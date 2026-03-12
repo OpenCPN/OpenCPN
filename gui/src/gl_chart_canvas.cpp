@@ -4529,7 +4529,8 @@ void glChartCanvas::Render() {
       g_bShowCompassWin)
     m_pParentCanvas->m_Compass->Paint(gldc);
 
-  if (m_pParentCanvas->IsPrimaryCanvas()) {
+  if (m_pParentCanvas->IsPrimaryCanvas() &&
+      m_pParentCanvas->m_notification_button) {
     auto &noteman = NotificationManager::GetInstance();
     if (noteman.GetNotificationCount()) {
       m_pParentCanvas->m_notification_button->SetIconSeverity(

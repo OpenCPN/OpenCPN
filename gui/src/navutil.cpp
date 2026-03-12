@@ -610,6 +610,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read("SetSystemTime", &s_bSetSystemTime);
   Read("EnableKioskStartup", &g_kiosk_startup);
+  Read("DisableNotifications", &g_disableNotifications, 0);
   Read("ShowStatusBar", &g_bShowStatusBar);
 #ifndef __WXOSX__
   Read("ShowMenuBar", &g_bShowMenuBar);
