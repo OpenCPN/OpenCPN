@@ -100,6 +100,20 @@ bool MWV::Parse( const SENTENCE& sentence )
    WindSpeedUnits = sentence.Field( 4 );
    IsDataValid    = sentence.Boolean( 5 );
 
+   // --- START NEGATIVE WIND NORMALIZATION ---
+    // 1. Fix negative wind angles (Convert -45 degrees port to 315 degrees standard)
+    if (WindAngle < 0.0) {
+        WindAngle += 360.0;
+    }
+    
+    // 2. Fix negative wind speeds (Rare, but catches heavily glitched sensors)
+    if (WindSpeed < 0.0) {
+        WindSpeed = -WindSpeed; 
+    }
+    // --- END NEGATIVE WIND NORMALIZATION ---
+
+
+
    return( TRUE );
 }
 

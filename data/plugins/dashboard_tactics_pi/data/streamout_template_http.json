@@ -1,0 +1,703 @@
+{
+    /* /////////////////////////////////////////////////////////////////////////
+      Purpose: Database schema and configuration options for InfluxDB.
+    ---------------------------------------------------------------------------
+      Edit the copy of the *_template-file, located in the program's data
+      directory (copied at first launch, name can be changed in ini-/conf-file)
+    ///////////////////////////////////////////////////////////////////////// */
+
+    /*
+      Definition of the data writing method:
+      Either file output (default) or HTTP Influx DB API (live dashboards)
+    */
+    "influxdb" : {
+        "target"    : "host.docker.internal:9999", /* set to InfluxDB HTTP API
+                                                      in Docker Desktop v3.x,
+                                                      note: has dependency in
+                                                      nginx.conf: proxy_pass,
+                                                      in case localhost is
+                                                      used. */
+        "api"       : "v2",             // HTTP: currently only v2 is supported
+        "org"       : "myboat",         // HTTP: Influx DB organization name
+        "bucket"    : "nmea",           // HTTP: Influx DB bucket to write to
+        "precision" : "ms",             // HTTP: timestamps "local" -> "ms"
+        "token"     : "piQjV9_89oU70xv8SauIP4CZlFqnUYDrgX5BHdWIS7ahlzAncrFWpJhqAv2ELdrvYMSmFWci9p-pnvSY8gZ4AA=="
+    }, // "token" to replace: InfluxDB UI generated, allows writing in "bucket"
+
+    // Data streamer configuration
+    "streamer" : {
+        "connectionretry" : 5,           // [s] (min.=1s to reduce CPU load)
+        "linesperwrite"   : 60,          /* number of lines per Write()
+                                            - optimize throughput by reducing
+                                              HTTP handshakes or file writes */
+        "timestamps"      : "local",     // "local" (file/HTTP) or "db" (HTTP)
+        "verbosity"       : 1            // 0=quiet,1=events,2=verbose,3+=debug
+    },
+
+    /*
+      Sentence mapping as a DB schema planned for InfluxDB time series database
+      The mapping of dashboard_tactics_pi sentences is according to
+        ../instruments.h : normally, do not change "sentence" and "mask" values.
+      The template DB schema is according to the Signal K schema, see
+          https://github.com/SignalK/specification/blob/master/schemas/
+
+      Sentence data management and throughput throttling settings.
+      HTTP INFLUX DB API (DOCKER) STREAMING SETTINGS
+      "store"=false: item will not be stored
+      "interval" 0 : save all the data items received
+                >0 : define in seconds the minimum time in seconds which shall
+                     be elapsed before the next data item can be sent
+    */
+    "dbschema" : [
+        {
+            "sentence"    : "OCPN_DBP_STC_LAT",
+            "mask"        : 0,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "navigation",
+            "prop1"       : "latitude",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "position",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.position.latitude"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_LON",
+            "mask"        : 1,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "navigation",
+            "prop1"       : "longitude",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "position",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.position.longitude"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_SOG",
+            "mask"        : 2,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "speedOverGround",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.speedOverGround"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_COG",
+            "mask"        : 3,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "courseOverGroundTrue",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.courseOverGroundTrue"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_STW",
+            "mask"        : 4,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "speedThroughWater",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.speedThroughWater"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_HDM",
+            "mask"        : 5,
+            "store"       : true,
+            "interval"    : 5,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "headingMagnetic",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.headingMagnetic"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_HDT",
+            "mask"        : 6,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "headingTrue",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.headingTrue"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_HMV",
+            "mask"        : 7,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "magneticVariation",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.magneticVariation"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_BRG",
+            "mask"        : 8,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "navigation",
+            "prop1"       : "nextPoint",
+            "prop2"       : "bearingTrue",
+            "prop3"       : "",
+            "field1"      : "courseRhumbline",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.courseRhumbline.nextPoint.bearingTrue"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_AWA",
+            "mask"        : 9,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "environment",
+            "prop1"       : "angleApparent",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "wind",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.wind.angleApparent"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_AWS",
+            "mask"        : 10,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "environment",
+            "prop1"       : "speedApparent",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "wind",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.wind.speedApparent"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_TWA",
+            "mask"        : 11,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "environment",
+            "prop1"       : "angleTrue",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "wind",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.wind.angleTrue"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_TWS",
+            "mask"        : 12,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "environment",
+            "prop1"       : "speedTrueGround",    // SOG based
+//            "prop1"       : "speedTrueWater",     // STW based
+            "prop2"       : "tws",
+            "prop3"       : "",
+            "field1"      : "wind",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.wind.speedTrueGround"
+//            "skpathe"     : "environment.wind.speedTrueWater"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_DPT",
+            "mask"        : 13,
+            "store"       : true,
+            "interval"    : 5,
+            "measurement" : "environment",
+            "prop1"       : "belowTransducer",    // select one
+//            "prop1"       : "belowKeel",
+//            "prop1"       : "belowSurface",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "depth",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.depth.belowTransducer"
+//            "skpathe"     : "environment.depth.belowKeel"
+//            "skpathe"     : "environment.depth.belowSurface"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_TMP",
+            "mask"        : 14,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "environment",
+            "prop1"       : "temperature",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "water",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.water.temperature"
+        },
+        /*
+          Select below VMG meaning in your case,
+          - either: navigation to next point (motor boats, cruirers)
+          - or:     performance (sailing boats, racers)
+        */
+        /* ---- OUT STARTS
+        {
+            "sentence"    : "OCPN_DBP_STC_VMG",
+            "mask"        : 15,
+            "store"       : true,
+            "interval"    : 0,
+            "measurement" : "navigation",
+            "prop1"       : "nextPoint",
+            "prop2"       : "velocityMadeGood",
+            "prop3"       : "",
+            "field1"      : "courseRhumbline",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.courseRhumbline.nextPoint.velocityMadeGood"
+        },
+        ---- OUT ENDS */
+        {
+            "sentence"    : "OCPN_DBP_STC_VMG",
+            "mask"        : 15,
+            "store"       : false,
+            "interval"    : 0,
+            "measurement" : "performance",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "velocityMadeGood",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.velocityMadeGood"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_RSA",
+            "mask"        : 16,
+            "store"       : false,
+            "interval"    : 0,
+            "measurement" : "steering",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "rudderAngle",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "steering.rudderAngle"
+        },
+        {
+            "sentence"   : "OCPN_DBP_STC_SAT",
+            "mask"       : 17,
+            "store"      : true,
+            "interval"   : 120,
+            "measurement" : "navigation",
+            "prop1"       : "satellites",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "gnss",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.gnss.satellites"
+        },
+        /*
+          OCPN_DBP_STC_GPS (18) not sent to to InfluxDB "instrument"
+        */
+        {
+            "sentence"    : "OCPN_DBP_STC_PLA",
+            "mask"        : 19,
+            "store"       : false,
+            "interval"    : 0,
+            "measurement" : "chart",
+            "prop1"       : "cursor",
+            "prop2"       : "latitude",
+            "prop3"       : "",
+            "field1"      : "position",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "chart.position.cursor.latitude"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_PLO",
+            "mask"        : 20,
+            "store"       : false,
+            "interval"    : 0,
+            "measurement" : "chart",
+            "prop1"       : "cursor",
+            "prop2"       : "longitude",
+            "prop3"       : "",
+            "field1"      : "position",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "chart.position.cursor.longitude"
+        },
+        /*
+          OCPN_DBP_STC_CLK (21) not sent to to InfluxDB "instrument"
+        */
+        /*
+          OCPN_DBP_STC_MON (22) not sent to to InfluxDB "instrument"
+        */
+        {
+            "sentence"    : "OCPN_DBP_STC_ATMP",
+            "mask"        : 23,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "environment",
+            "prop1"       : "temperature",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "outside",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.outside.temperature"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_TWD",
+            "mask"        : 24,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "environment",
+            "prop1"       : "directionTrue",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "wind",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.wind.directionTrue"
+        },
+        /*
+          (Undocumented) Dashboard relic of TWS2 sentence (of MWV)
+          to which none of the instruments is subscribed to.
+          But it is possible to store it in the DB. However,
+          make sure that you have a unique 'skpathe', i.e. not the
+          same as in OCPN_DBP_STC_TWS. Also, in this case, have
+          a unique "prop2" property to find it from the DB.
+        */
+        /* ---- OUT STARTS
+        {
+            "sentence"    : "OCPN_DBP_STC_TWS2", // MWV and MWD
+            "mask"        : 25,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "environment",
+            "prop1"       : "speedTrueGround",    // SOG based
+//            "prop1"       : "speedTrueWater",     // STW based
+            "prop2"       : "tws2",
+            "prop3"       : "",
+            "field1"      : "wind",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.wind.tws2.speedTrueGround"
+//            "skpathe"     : "environment.wind.tws2.speedTrueWater"
+        },
+        ---- OUT ENDS */
+        {
+            "sentence"    : "OCPN_DBP_STC_VLW1",
+            "mask"        : 26,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "logTrip",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.logTrip"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_VLW2",
+            "mask"        : 27,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "log",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.log"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_MDA",
+            "mask"        : 28,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "environment",
+            "prop1"       : "pressure",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "outside",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.outside.pressure"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_MCOG",
+            "mask"        : 29,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "navigation",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "courseOverGroundMagnetic",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.courseOverGroundMagnetic"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_PITCH",
+            "mask"        : 30,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "navigation",
+            "prop1"       : "pitch",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "attitude",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.attitude.pitch"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_HEEL",
+            "mask"        : 31,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "navigation",
+            "prop1"       : "roll",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "attitude",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.attitude.roll"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_LEEWAY",
+            "mask"        : 32,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "leeway",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.leeway"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_CURRDIR",
+            "mask"        : 33,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "environment",
+            "prop1"       : "setTrue",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "current",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.current.setTrue"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_CURRSPD",
+            "mask"        : 34,
+            "store"       : true,
+            "interval"    : 60,
+            "measurement" : "environment",
+            "prop1"       : "drift",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "current",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "environment.current.drift"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_DTW",
+            "mask"        : 35,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "navigation",
+            "prop1"       : "nextPoint",
+            "prop2"       : "distance",
+            "prop3"       : "",
+            "field1"      : "courseRhumbline",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "navigation.courseRhumbline.nextPoint.distance"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_TWAMARK",
+            "mask"        : 36,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "targetAngle",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.targetAngle"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_POLPERF",
+            "mask"        : 37,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "polarSpeedRatio",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "polar",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.polar.polarSpeedRatio"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_POLSPD",
+            "mask"        : 38,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "polarSpeed",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "polar",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.polar.polarSpeed"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_POLVMG",
+            "mask"        : 39,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "actual",
+            "prop2"       : "velocityMadeGood",
+            "prop3"       : "",
+            "field1"      : "polar",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.polar.actual.velocityMadeGood"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_POLTVMG",
+            "mask"        : 40,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "target",
+            "prop2"       : "velocityMadeGood",
+            "prop3"       : "",
+            "field1"      : "polar",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.polar.target.velocityMadeGood"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_POLTVMGANGLE",
+            "mask"        : 41,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "target",
+            "prop2"       : "targetAngle",
+            "prop3"       : "",
+            "field1"      : "polar",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.polar.target.targetAngle"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_POLCMG",
+            "mask"        : 42,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "actual",
+            "prop2"       : "courseMadeGood",
+            "prop3"       : "",
+            "field1"      : "polar",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.polar.actual.courseMadeGood"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_POLTCMG",
+            "mask"        : 43,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "target",
+            "prop2"       : "courseMadeGood",
+            "prop3"       : "",
+            "field1"      : "polar",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.polar.target.courseMadeGood"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_POLTCMGANGLE",
+            "mask"        : 44,
+            "store"       : false,
+            "interval"    : 1,
+            "measurement" : "performance",
+            "prop1"       : "target",
+            "prop2"       : "courseAngle",
+            "prop3"       : "",
+            "field1"      : "polar",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : "performance.polar.target.courseAngle"
+        },
+        {
+            "sentence"    : "OCPN_DBP_STC_SKSUBSCRIBE",
+            "mask"        : 63,
+            "store"       : true,
+            "interval"    : 1,
+            "measurement" : "measurement",
+            "prop1"       : "prop1",
+            "prop2"       : "",
+            "prop3"       : "",
+            "field1"      : "field1",
+            "field2"      : "",
+            "field3"      : "",
+            "skpathe"     : ""
+        }
+    ]
+}

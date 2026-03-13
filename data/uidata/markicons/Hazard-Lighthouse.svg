@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <mask id="c">
+            <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="964.84" y1="652.81" x2="1440.86" y2="652.81">
+                <stop offset="0" stop-color="#fff"/>
+                <stop offset="1" stop-opacity="0" stop-color="#fff"/>
+            </linearGradient>
+            <path fill="url(#a)" d="M955 492h496v323H955z"/>
+        </mask>
+        <mask id="d">
+            <linearGradient id="b" gradientUnits="userSpaceOnUse" x1="835.17" y1="652.81" x2="359.15" y2="652.81">
+                <stop offset="0" stop-color="#fff"/>
+                <stop offset="1" stop-opacity="0" stop-color="#fff"/>
+            </linearGradient>
+            <path fill="url(#b)" d="M349 492h496v323H349z"/>
+        </mask>
+    </defs>
+    <path fill="#FC0" mask="url(#c)" d="M965 704v-87l476-115v302z"/>
+    <path fill="#FC0" mask="url(#d)" d="M835 704v-87L359 502v302z"/>
+    <g stroke-width="20">
+        <path fill="#fff" stroke="#000" d="M833 728h134l67 528H766z"/>
+        <path fill="#fff" stroke="#373435" d="M823 704h153.247v23.576H823z"/>
+        <path stroke="#000" d="M746 1256h308.85v42.437H746z"/>
+        <path fill="#FC0" stroke="#000" d="M835 617h129.671v87.232H835z"/>
+        <path stroke="#000" d="M985 617H815l85-40z"/>
+        <path fill="red" stroke="#000" d="m984 860 17 132H799l17-132zm34 264 16 132H766l16-132z"/>
+    </g>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+</svg>

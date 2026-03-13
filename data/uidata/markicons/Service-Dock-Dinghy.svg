@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="#000" stroke-width="7.62" d="m932 612 163 227M697 711l235-99m-74 169 74-169m30 205-30-205"/>
+    <circle cx="932" cy="612" r="33"/>
+    <path fill="red" d="m1185 1130 112-65c-40-98-101-198-220-251-14 129 42 232 108 316z"/>
+    <path d="m910 1220 170-15c7-139-11-293-123-422-88 147-79 301-47 437z"/>
+    <path fill="#FFC90E" d="m698 1104 145 38c48-113 79-245 26-386-117 95-156 225-171 348z"/>
+    <path fill="gray" d="m503 1100 165 44c54-129 90-279 29-439-133 108-177 256-194 395z"/>
+</svg>
