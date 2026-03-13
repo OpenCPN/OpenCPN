@@ -88,6 +88,9 @@ the only transmitted messages.
 )---")
                                .c_str();
 
+static const char* kInterfaceExistsMessage =
+    _(R"(A driver using this interface already exists)").c_str();
+
 static bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
 }
@@ -108,6 +111,37 @@ static std::string BitsToDottedMask(const unsigned bits) {
   ss << ((mask & 0x0000ff00) >> 8) << ".";
   ss << (mask & 0x000000ff);
   return ss.str();
+}
+
+static ConnectionParams* FindConnectionByIface(ConnectionParams* new_cp) {
+  for (const auto& cp : TheConnectionParams()) {
+    if (cp->Type != new_cp->Type) continue;
+    switch (cp->Type) {
+      case SERIAL:
+        if (cp->Port != new_cp->Port) continue;
+        return cp;
+        break;
+      case NETWORK:
+        if (cp->NetProtocol != new_cp->NetProtocol) continue;
+        if (cp->NetworkAddress != new_cp->NetworkAddress) continue;
+        if (cp->NetworkPort != new_cp->NetworkPort) continue;
+        return cp;
+        break;
+      case INTERNAL_GPS:
+        return cp;
+        break;
+      case INTERNAL_BT:
+        return cp;
+        break;
+      case SOCKETCAN:
+        if (cp->socketCAN_port != new_cp->socketCAN_port) continue;
+        return cp;
+        break;
+      default:
+        continue;
+    }
+  }
+  return nullptr;
 }
 
 /** Standard icons bitmaps: settings gear, trash bin, etc. */
@@ -1220,7 +1254,12 @@ public:
     //  OK from NEW mode
     else {
       if (ConnectionParams* cp = m_edit_panel->GetParamsFromControls()) {
-        if (cp->GetValidPort()) {
+        if (FindConnectionByIface(cp)) {
+          wxMessageDialog dialog(this, kInterfaceExistsMessage,
+                                 _("Driver creation error"),
+                                 wxOK | wxCENTRE | wxICON_ERROR);
+          dialog.ShowModal();
+        } else if (cp->GetValidPort()) {
           cp->b_IsSetup = false;  // Trigger new stream
           TheConnectionParams().push_back(cp);
         } else {
