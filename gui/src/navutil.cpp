@@ -39,6 +39,8 @@
 #include <list>
 #include <limits>
 #include <string>
+#include <thread>
+#include <chrono>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -109,6 +111,7 @@
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
+#include <model/comm_vars.h>
 #endif
 
 #ifdef __ANDROID__
@@ -608,7 +611,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read("SkewCompUpdatePeriod", &g_SkewCompUpdatePeriod);
 
-  Read("SetSystemTime", &s_bSetSystemTime);
   Read("EnableKioskStartup", &g_kiosk_startup);
   Read("DisableNotifications", &g_disableNotifications, 0);
   Read("ShowStatusBar", &g_bShowStatusBar);
@@ -1888,7 +1890,6 @@ void MyConfig::UpdateSettings() {
 
   Write("Fullscreen", g_bFullscreen);
   Write("ShowCompassWindow", g_bShowCompassWin);
-  Write("SetSystemTime", s_bSetSystemTime);
   Write("ShowGrid", g_bDisplayGrid);
   Write("PlayShipsBells", g_bPlayShipsBells);
   Write("SoundDeviceIndex", g_iSoundDeviceIndex);
@@ -2889,6 +2890,69 @@ void SwitchInlandEcdisMode(bool Switch) {
       pConfig->Read("bDrawAISRealtime", &g_bDrawAISRealtime);
     }
     if (top_frame::Get()) top_frame::Get()->RequestNewToolbars(true);
+  }
+}
+
+//------------------------------------------------------------------------
+// Set system time from GPS time (nmea0183 RMC)
+//------------------------------------------------------------------------
+// This functon is started in it's own thread at startup
+// It does check for a valid fixtime every 10 seconds.
+// If found and updated once thread will be closed.
+void SetSystemtime() {
+  bool TimeSet = false;
+  while (!TimeSet) {
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    if ((gRmcTime != wxEmptyString) && (gRmcDate != wxEmptyString)) {
+      wxDateTime GPS_DT, SYS_DT;
+      wxDateSpan TimeDelta;
+      wxString::const_iterator end;
+      GPS_DT.ParseFormat(gRmcDate, "%d%m%y", &end);
+      GPS_DT.ParseFormat(gRmcTime, "%H%M%S", &end);
+      SYS_DT = wxDateTime::Now().ToGMT();
+      if (GPS_DT < SYS_DT) {
+        wxLogMessage("Sorry, we will NOT set systemtime backwards");
+        break;
+      }
+
+#ifdef __WXMSW__
+      //    Code snippet following borrowed from wxDateCtrl, MSW
+
+      const wxDateTime::Tm tm(GPS_DT.GetTm());
+
+      SYSTEMTIME stm;
+      stm.wYear = (WXWORD)tm.year;
+      stm.wMonth = (WXWORD)(tm.mon - wxDateTime::Jan + 1);
+      stm.wDay = tm.mday;
+
+      stm.wDayOfWeek = 0;
+      stm.wHour = GPS_DT.GetHour();
+      stm.wMinute = tm.min;
+      stm.wSecond = tm.sec;
+      stm.wMilliseconds = 0;
+
+      ::SetSystemTime(&stm);  // in GMT
+
+#else
+
+      //      This contortion sets the system date/time on POSIX host
+      //      Requires the following line in /etc/sudoers
+      //          user ALL=NOPASSWD:/bin/date -s *
+
+      wxString msg, sdate;
+      sdate = GPS_DT.Format(_T("sudo /bin/date -s \"%D %T\""));
+      msg.Printf(_T("Linux command is: "));
+      msg += sdate;
+      wxLogMessage(msg);
+      if (wxExecute(sdate, wxEXEC_ASYNC)) {
+        wxLogMessage(
+            "Could not set systemtime. Try to add\n user "
+            "ALL=NOPASSWD:/bin/date -s *\n to /etc/sudoers.");
+      }
+#endif  //__WXMSW__
+
+      TimeSet = true;  // to end while loop
+    }
   }
 }
 
