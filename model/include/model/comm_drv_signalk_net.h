@@ -26,7 +26,9 @@
 #ifndef SigNaLK_nEt_h_
 #define SigNaLK_nEt_h_
 
+#include <memory>
 #include <string>
+#include <thread>
 
 #include <wx/wxprec.h>
 
@@ -34,44 +36,15 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/socket.h>
-
-#include "ixwebsocket/IXWebSocket.h"
+#include <wx/event.h>
+#include <wx/string.h>
+#include <wx/timer.h>
 
 #include "model/conn_params.h"
 #include "model/comm_drv_signalk.h"
-#include "model/thread_ctrl.h"
 #include "comm_drv_stats.h"
 
-constexpr int kSignalkSocketId = 5011;
 constexpr int kDogTimeoutSeconds = 5;
-constexpr int kDogTimeoutReconnectSeconds = 10;
-
-constexpr double kMsToKnotFactor = 1.9438444924406;
-
-class CommDrvSignalkNetEvt;  // Forward in .cpp file
-
-class WebSocketThread : public ThreadCtrl {
-public:
-  WebSocketThread(const std::string& iface, const wxIPV4address& address,
-                  wxEvtHandler* consumer, const std::string& token);
-
-  ~WebSocketThread() override = default;
-
-  void* Run();
-
-  DriverStats GetStats() const;
-
-private:
-  wxIPV4address m_address;
-  wxEvtHandler* m_consumer;
-  const std::string m_iface;
-  std::string m_token;
-  ix::WebSocket m_ws;
-  ObsListener m_resume_listener;
-  DriverStats m_driver_stats;
-  mutable std::mutex m_stats_mutex;
-};
 
 class CommDriverSignalKNet : public CommDriverSignalK,
                              public wxEvtHandler,
@@ -80,24 +53,38 @@ public:
   CommDriverSignalKNet(const ConnectionParams* params, DriverListener& l);
   ~CommDriverSignalKNet() override;
 
-  static void initIXNetSystem();
-  static void uninitIXNetSystem();
-
-  static bool DiscoverSKServer(const std::string& serviceIdent, wxString& ip,
-                               int& port, int tSec);
+  /** \internal */
+  class InputEvt;
 
   DriverStats GetDriverStats() const override;
 
+  /** ix::initIXNetSystem wrapper */
+  static void initIXNetSystem();
+
+  /** ix::uninitIXNetSystem wrapper */
+  static void uninitIXNetSystem();
+
+  /**
+   * Scan for a SignalK server on local network using mDNS.
+   *
+   * @param service_ident   mDNS service to scan for
+   * @param ip On successful return found server IP address
+   * @param port On successful return found server IP port.
+   * @param tSec Scan timeout (seconds).
+   * @return true if a server is found, else false.
+   */
+  static bool DiscoverSkServer(const std::string& service_ident, wxString& ip,
+                               int& port, int tSec);
+
 private:
+  class IoThread;
+
   ConnectionParams m_params;
   DriverListener& m_listener;
-  std::string m_context;
-  std::string m_self;
   int m_dog_value;
   wxTimer m_socketread_watchdog_timer;
-  std::string m_token;
   std::thread m_std_thread;
-  WebSocketThread m_ws_thread;
+  std::unique_ptr<IoThread> m_io_thread;
   StatsTimer m_stats_timer;
   DriverStats m_driver_stats;
 
@@ -109,7 +96,8 @@ private:
   wxTimer* GetSocketThreadWatchdogTimer() {
     return &m_socketread_watchdog_timer;
   }
-  void HandleSkSentence(const CommDrvSignalkNetEvt& event);
+
+  void HandleSkSentence(const InputEvt& event);
 
   void ResetWatchdog() { m_dog_value = kDogTimeoutSeconds; }
   void SetWatchdog(int n) { m_dog_value = n; }
