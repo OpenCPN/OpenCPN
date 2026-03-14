@@ -87,15 +87,13 @@ private:
   std::unique_ptr<IoThread> m_io_thread;
   StatsTimer m_stats_timer;
   DriverStats m_driver_stats;
+  std::string m_context;
+  std::string m_self;
 
   void Open();
   void Close();
   void OpenWebSocket();
   void CloseWebSocket();
-
-  wxTimer* GetSocketThreadWatchdogTimer() {
-    return &m_socketread_watchdog_timer;
-  }
 
   void HandleSkSentence(const InputEvt& event);
 
