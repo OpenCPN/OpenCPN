@@ -95,10 +95,6 @@ private:
   void OpenWebSocket();
   void CloseWebSocket();
 
-  wxTimer* GetSocketThreadWatchdogTimer() {
-    return &m_socketread_watchdog_timer;
-  }
-
   void HandleSkSentence(const InputEvt& event);
 
   void ResetWatchdog() { m_dog_value = kDogTimeoutSeconds; }
