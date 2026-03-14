@@ -278,7 +278,7 @@ void CommDriverSignalKNet::OpenWebSocket() {
     return;
   }
   ResetWatchdog();
-  GetSocketThreadWatchdogTimer()->Start(1000, wxTIMER_ONE_SHOT);
+  m_socketread_watchdog_timer.Start(1000, wxTIMER_ONE_SHOT);
 }
 
 void CommDriverSignalKNet::CloseWebSocket() {
