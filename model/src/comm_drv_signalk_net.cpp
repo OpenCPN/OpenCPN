@@ -278,7 +278,7 @@ void CommDriverSignalKNet::OpenWebSocket() {
     return;
   }
   ResetWatchdog();
-  GetSocketThreadWatchdogTimer()->Start(1000, wxTIMER_ONE_SHOT);
+  m_socketread_watchdog_timer.Start(1000, wxTIMER_ONE_SHOT);
 }
 
 void CommDriverSignalKNet::CloseWebSocket() {
@@ -325,26 +325,24 @@ void CommDriverSignalKNet::HandleSkSentence(const InputEvt& event) {
     vers << (root["version"].GetString());
     wxLogMessage(vers);
   }
-  std::string self;
   if (root.HasMember("self")) {
     if (strncmp(root["self"].GetString(), "vessels.", 8) == 0)
-      self = (root["self"].GetString());  // for java server, and OpenPlotter
-                                          // node.js server 1.20
+      m_self = (root["self"].GetString());  // for java server, and OpenPlotter
+                                            // node.js server 1.20
     else
-      self = std::string("vessels.")
-                 .append(root["self"].GetString());  // for Node.js server
+      m_self = std::string("vessels.")
+                   .append(root["self"].GetString());  // for Node.js server
   }
-  std::string context;
   if (root.HasMember("context") && root["context"].IsString()) {
-    context = root["context"].GetString();
+    m_context = root["context"].GetString();
   }
 
   // Notify all listeners
   auto pos = iface.find(':');
   std::string comm_interface;
   if (pos != std::string::npos) comm_interface = iface.substr(pos + 1);
-  auto navmsg =
-      std::make_shared<const SignalkMsg>(self, context, msg, comm_interface);
+  auto navmsg = std::make_shared<const SignalkMsg>(m_self, m_context, msg,
+                                                   comm_interface);
   m_listener.Notify(std::move(navmsg));
 }
 
