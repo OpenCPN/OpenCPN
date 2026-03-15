@@ -3120,30 +3120,29 @@ Java_org_opencpn_FileDialogCallbackProxy_nativeFileDialogFinished(
 int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &title, const wxString &suggestion,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
-  wxString tresult;
-
-  if (g_androidUtilHandler) {
-    wxString activityResult;
-    if (dirOnly) {
-      std::string file = AndroidFileDialog::Show(initDir.ToStdString());
-      if (file == "cancel") {
-        return wxID_CANCEL;
-      } else {
-        wxString sfile(file.c_str());
-        *result = sfile.AfterFirst(':');
-        return wxID_OK;
-      }
-    } else
+  if (dirOnly) {
+    std::string file = AndroidFileDialog::Show(initDir.ToStdString());
+    if (file == "cancel") {
+      return wxID_CANCEL;
+    } else {
+      wxString sfile(file.c_str());
+      *result = sfile.AfterFirst(':');
+      return wxID_OK;
+    }
+  } else {
+    if (g_androidUtilHandler) {
+      wxString activityResult;
       activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
                                               title, suggestion, wildcard);
 
-    if (activityResult == _T("OK")) {
-      return wxID_OK;
-    } else if (activityResult == "cancel:") {
-      return wxID_CANCEL;
-    } else {
-      *result = activityResult.AfterFirst(':');
-      return wxID_OK;
+      if (activityResult == _T("OK")) {
+        return wxID_OK;
+      } else if (activityResult == "cancel:") {
+        return wxID_CANCEL;
+      } else {
+        *result = activityResult.AfterFirst(':');
+        return wxID_OK;
+      }
     }
   }
 
