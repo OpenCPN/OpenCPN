@@ -71,6 +71,8 @@
 #include <jni.h>
 #endif
 
+#include "std_filesystem.h"
+
 #ifdef __WXMAC__
 #define CATALOGS_NAME_WIDTH 300
 #define CATALOGS_DATE_WIDTH 120
@@ -109,6 +111,10 @@
 bool getDisplayMetrics();
 
 #define CHART_DIR "Charts"
+
+static bool IsWindows() {
+  return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
+}
 
 // Helper function to check if a path is safely inside the target directory
 // Returns true if normalizedPath is inside targetDir, false otherwise (path
@@ -1883,27 +1889,39 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString &aArchiveFile,
                                   archive_error_string(a)));
     if (r < ARCHIVE_WARN) return false;
     if (aStripPath) {
-      const char *currentFile = archive_entry_pathname(entry);
-      std::string fullOutputPath = currentFile;
-      size_t sep = fullOutputPath.find_last_of("\\/");
-      if (sep != std::string::npos)
-        fullOutputPath =
-            fullOutputPath.substr(sep + 1, fullOutputPath.size() - sep - 1);
-      archive_entry_set_pathname(entry, fullOutputPath.c_str());
+      fs::path path;
+      if (IsWindows()) {
+        const wchar_t *currentFile = archive_entry_pathname_w(entry);
+        path = fs::path(currentFile);
+      } else {
+        const char *currentFile = archive_entry_pathname_utf8(entry);
+        path = fs::path(currentFile);
+      }
+      std::string fullOutputPath = path.filename().u8string();
+      archive_entry_set_pathname_utf8(entry, fullOutputPath.c_str());
     }
     if (aTargetDir != wxEmptyString) {
-      const char *currentFile = archive_entry_pathname(entry);
-      wxString entryName = wxString::FromUTF8(currentFile);
-      wxString fullOutputPath;
-
-      // Path traversal protection: validate path stays inside target directory
-      if (!IsPathInsideDir(aTargetDir, entryName, fullOutputPath)) {
-        wxLogWarning(
-            _T("Skipping archive entry with path traversal attempt: ") +
-            entryName);
-        continue;
+      fs::path path;
+      if (IsWindows()) {
+        const wchar_t *currentFile = archive_entry_pathname_w(entry);
+        if (currentFile) path = fs::path(currentFile);
+      } else {
+        const char *currentFile = archive_entry_pathname_utf8(entry);
+        if (currentFile) path = fs::path(currentFile);
       }
-      archive_entry_set_pathname(entry, fullOutputPath.ToUTF8().data());
+      if (!path.empty()) {
+        wxString entryName = wxString::FromUTF8(path.u8string());
+        wxString fullOutputPath;
+        // Path traversal protection: validate path stays inside target
+        // directory
+        if (!IsPathInsideDir(aTargetDir, entryName, fullOutputPath)) {
+          wxLogWarning(
+              _T("Skipping archive entry with path traversal attempt: ") +
+              entryName);
+          continue;
+        }
+        archive_entry_set_pathname_utf8(entry, fullOutputPath.ToUTF8().data());
+      }
     }
     r = archive_write_header(ext, entry);
     if (r < ARCHIVE_OK)
