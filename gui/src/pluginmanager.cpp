@@ -5297,7 +5297,7 @@ _OCPN_DLStatus OCPN_downloadFile(const wxString& url,
   wxFileName tfn = wxFileName::CreateTempFileName(outputFile);
   wxFileOutputStream output(tfn.GetFullPath());
 
-  wxCurlDownloadDialog ddlg(url, &output, title, message + url, bitmap, parent,
+  wxCurlDownloadDialog ddlg(url, &output, title, message, bitmap, parent,
                             style);
   wxCurlDialogReturnFlag ret = ddlg.RunModal();
   output.Close();
