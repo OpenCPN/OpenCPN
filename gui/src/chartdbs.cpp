@@ -1836,8 +1836,12 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
       wxLogMessage("Updating GSHHG directory: %s", gshhg_dir.c_str());
       gWorldMapLocation = gshhg_dir;
     }
+
+    // If the user has added a directory containig an extended OSMSHP basemap
+    // then capture the location, and reset the basemap render amchine.
     if (dir_info.fullpath.Find("OSMSHP") != wxNOT_FOUND) {
       if (!wxDir::FindFirst(dir_info.fullpath, "basemap_*.shp").empty()) {
+        wxLogMessage("Updating OSMSHP directory: %s", dir_info.fullpath);
         gWorldShapefileLocation =
             dir_info.fullpath + wxFileName::GetPathSeparator();
         gShapeBasemap.Reset();

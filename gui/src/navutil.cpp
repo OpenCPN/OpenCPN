@@ -2282,7 +2282,9 @@ void MyConfig::UpdateSettings() {
   Write("GPXIODir", g_gpx_path);
   Write("TCDataDir", g_TCData_Dir);
   Write("BasemapDir", g_Platform->NormalizePath(gWorldMapLocation));
-  Write("BaseShapefileDir", g_Platform->NormalizePath(gWorldShapefileLocation));
+  if (gWorldShapefileLocation.Length())
+    Write("BaseShapefileDir",
+          g_Platform->NormalizePath(gWorldShapefileLocation));
   Write("pluginInstallDir", g_Platform->NormalizePath(g_winPluginDir));
 
   SetPath("/Settings/NMEADataSource");
