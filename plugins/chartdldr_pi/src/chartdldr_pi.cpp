@@ -1850,97 +1850,177 @@ bool chartdldr_pi::ExtractLibArchiveFiles(const wxString &aArchiveFile,
                                           bool aStripPath, wxDateTime aMTime,
                                           bool aRemoveArchive) {
 #ifndef __ANDROID__
-  struct archive *a;
-  struct archive *ext;
-  struct archive_entry *entry;
-  int flags;
-  int r;
+  struct archive *a = NULL;
+  struct archive *ext = NULL;
+  bool ok = false;
 
-  /* Select which attributes we want to restore. */
-  flags = ARCHIVE_EXTRACT_TIME;
-  /*
-  flags |= ARCHIVE_EXTRACT_PERM;
-  flags |= ARCHIVE_EXTRACT_ACL;
-  flags |= ARCHIVE_EXTRACT_FFLAGS;
-  */
+  int flags = ARCHIVE_EXTRACT_TIME;
+#ifdef ARCHIVE_EXTRACT_SECURE_NODOTDOT
+  flags |= ARCHIVE_EXTRACT_SECURE_NODOTDOT;
+#endif
+#ifdef ARCHIVE_EXTRACT_SECURE_SYMLINKS
+  flags |= ARCHIVE_EXTRACT_SECURE_SYMLINKS;
+#endif
 
   a = archive_read_new();
+  ext = archive_write_disk_new();
+
+  if (!a || !ext) {
+    wxLogError(_T("Chartdldr_pi: Failed to create libarchive objects."));
+    goto cleanup;
+  }
+
   archive_read_support_format_all(a);
   archive_read_support_filter_all(a);
+#if !defined(__clang__)
   archive_read_support_compression_all(a);
-  ext = archive_write_disk_new();
+#endif
+
   archive_write_disk_set_options(ext, flags);
   archive_write_disk_set_standard_lookup(ext);
-  if ((r = archive_read_open_filename(a, aArchiveFile.c_str(), 10240))) {
-    return false;
+
+#ifdef _WIN32
+  if (archive_read_open_filename_w(a, aArchiveFile.wc_str(), 10240) !=
+      ARCHIVE_OK) {
+    wxLogError(wxString::Format("Chartdldr_pi: LibArchive open error: %s",
+                                archive_error_string(a)));
+    goto cleanup;
   }
+#else
+  {
+    if (archive_read_open_filename(a, aArchiveFile.mb_str().data(), 10240) !=
+        ARCHIVE_OK) {
+      wxLogError(wxString::Format("Chartdldr_pi: LibArchive open error: %s",
+                                  archive_error_string(a)));
+      goto cleanup;
+    }
+  }
+#endif
+
   for (;;) {
-    r = archive_read_next_header(a, &entry);
-    if (r == ARCHIVE_EOF) break;
-    if (r < ARCHIVE_OK)
-      // fprintf(stderr, "%s\n", archive_error_string(a));
+    struct archive_entry *entry = NULL;
+    int r = archive_read_next_header(a, &entry);
+
+    if (r == ARCHIVE_EOF) {
+      break;
+    }
+
+    if (r < ARCHIVE_OK) {
       wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s",
                                   archive_error_string(a)));
-    if (r < ARCHIVE_WARN) return false;
-    if (aStripPath) {
-      const char *currentFile = archive_entry_pathname(entry);
-      std::string fullOutputPath = currentFile;
-      size_t sep = fullOutputPath.find_last_of("\\/");
-      if (sep != std::string::npos)
-        fullOutputPath =
-            fullOutputPath.substr(sep + 1, fullOutputPath.size() - sep - 1);
-      archive_entry_set_pathname(entry, fullOutputPath.c_str());
     }
-    if (aTargetDir != wxEmptyString) {
-      const char *currentFile = archive_entry_pathname(entry);
-      wxString entryName = wxString::FromUTF8(currentFile);
-      wxString fullOutputPath;
+    if (r < ARCHIVE_WARN) {
+      goto cleanup;
+    }
 
-      // Path traversal protection: validate path stays inside target directory
-      if (!IsPathInsideDir(aTargetDir, entryName, fullOutputPath)) {
+    wxString entryName;
+#ifdef _WIN32
+    const char *rawUtf8 = archive_entry_pathname_utf8(entry);
+    if (rawUtf8 && *rawUtf8) {
+      entryName = wxString::FromUTF8(rawUtf8);
+    } else {
+      const wchar_t *rawWide = archive_entry_pathname_w(entry);
+      if (rawWide && *rawWide) entryName = wxString(rawWide);
+    }
+#else
+    const char *rawPath = archive_entry_pathname(entry);
+    if (rawPath && *rawPath) {
+      entryName = wxString::FromUTF8(rawPath);
+      if (entryName.IsEmpty()) {
+        entryName = wxString::From8BitData(rawPath);
+      }
+    }
+#endif
+
+    if (entryName.IsEmpty()) {
+      wxLogWarning(_T("Skipping archive entry with empty pathname."));
+      continue;
+    }
+
+    if (aStripPath) {
+      wxFileName stripped(entryName);
+      entryName = stripped.GetFullName();
+
+      if (entryName.IsEmpty()) {
+        continue;
+      }
+    }
+
+    wxString outputPath = entryName;
+    if (aTargetDir != wxEmptyString) {
+      if (!IsPathInsideDir(aTargetDir, entryName, outputPath)) {
         wxLogWarning(
             _T("Skipping archive entry with path traversal attempt: ") +
             entryName);
         continue;
       }
-      archive_entry_set_pathname(entry, fullOutputPath.ToUTF8().data());
     }
+
+#ifdef _WIN32
+    archive_entry_copy_pathname_w(entry, outputPath.wc_str());
+#else
+    archive_entry_copy_pathname(entry, outputPath.fn_str().data());
+#endif
+
+    if (aMTime.IsValid()) {
+      archive_entry_set_mtime(entry, static_cast<time_t>(aMTime.GetTicks()), 0);
+    }
+
     r = archive_write_header(ext, entry);
-    if (r < ARCHIVE_OK)
-      // fprintf(stderr, "%s\n", archive_error_string(ext));
+    if (r < ARCHIVE_OK) {
       wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s",
                                   archive_error_string(ext)));
-    else if (archive_entry_size(entry) > 0) {
+    }
+    if (r < ARCHIVE_WARN) {
+      goto cleanup;
+    }
+
+    if (archive_entry_size(entry) > 0) {
       r = copy_data(a, ext);
-      if (r < ARCHIVE_OK)
-        // fprintf(stderr, "%s\n", archive_error_string(ext));
+      if (r < ARCHIVE_OK) {
         wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s",
                                     archive_error_string(ext)));
-      if (r < ARCHIVE_WARN) return false;
+      }
+      if (r < ARCHIVE_WARN) {
+        goto cleanup;
+      }
     }
-    r = archive_write_finish_entry(ext);
 
-    if (r < ARCHIVE_OK)
-      // fprintf(stderr, "%s\n", archive_error_string(ext));
+    r = archive_write_finish_entry(ext);
+    if (r < ARCHIVE_OK) {
       wxLogError(wxString::Format("Chartdldr_pi: LibArchive error: %s",
                                   archive_error_string(ext)));
-    if (r < ARCHIVE_WARN) return false;
+    }
+    if (r < ARCHIVE_WARN) {
+      goto cleanup;
+    }
   }
-  archive_read_close(a);
-  // archive_read_free(a);
-  archive_write_close(ext);
-  // archive_write_free(ext);
 
-  if (aRemoveArchive) wxRemoveFile(aArchiveFile);
-  return true;
+  ok = true;
+
+cleanup:
+  if (a) {
+    archive_read_close(a);
+    archive_read_free(a);
+  }
+  if (ext) {
+    archive_write_close(ext);
+    archive_write_free(ext);
+  }
+
+  if (ok && aRemoveArchive) wxRemoveFile(aArchiveFile);
+  return ok;
 
 #else
-
-  return rv;
-
-#endif  // Android
-}
+  wxUnusedVar(aArchiveFile);
+  wxUnusedVar(aTargetDir);
+  wxUnusedVar(aStripPath);
+  wxUnusedVar(aMTime);
+  wxUnusedVar(aRemoveArchive);
+  return false;
 #endif
+}
+#endif  // DLDR_USE_LIBARCHIVE
 
 #if defined(CHARTDLDR_RAR_UNARR) || !defined(DLDR_USE_LIBARCHIVE)
 ar_archive *ar_open_any_archive(ar_stream *stream, const char *fileext) {
