@@ -86,6 +86,7 @@
     <string name="ocpn_prefs_conn_daisy">dAISy AIS Receiver</string>
     <string name="ocpn_prefs_conn_FT232R">FTDI FT232R</string>
     <string name="ocpn_prefs_conn_FT231X">FTDI FT231X</string>
+    <string name="ocpn_prefs_conn_continuous">Включить непрерывную запись GPS трека</string>
     <string name="ocpn_prefs_conn_summary_internal">Активируйте GPS, чтобы включить этот выбор.</string>
     <string name="ocpn_prefs_conn_summary_compatible">   или совместимый GPS-приемник</string>
     <string name="ocpn_prefs_conn_summary_continuous">   ...даже во время паузы/сна</string>
@@ -127,6 +128,7 @@
     <string name="ocpn_grib_download_item_seatemp">Температура моря</string>
     <string name="ocpn_grib_download_summary_model">Выберите модель прогноза GRIB</string>
     <string name="ocpn_grib_download_summary_timestep">Установка временного интервала между прогнозами</string>
+    <string name="ocpn_grib_download_summary_days">Задать число дней прогноза в GRIB</string>
     <string name="ocpn_grib_download_summary_wind">Запрос скорости и направления ветра</string>
     <string name="ocpn_grib_download_summary_pressure">Запрос данных о давлении</string>
     <string name="ocpn_grib_download_summary_windgust">Запросить данные о ветре</string>

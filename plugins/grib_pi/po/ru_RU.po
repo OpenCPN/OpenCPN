@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-09 10:26-0500\n"
-"PO-Revision-Date: 2026-02-13 20:43\n"
+"PO-Revision-Date: 2026-03-19 13:53\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -663,11 +663,11 @@ msgstr "Параметры загрузки файла"
 
 #: src/GribUIDialogBase.cpp:2197
 msgid "Grib File Directory"
-msgstr ""
+msgstr "Каталог файлов Grib"
 
 #: src/GribUIDialogBase.cpp:2204
 msgid "Browse..."
-msgstr ""
+msgstr "Обзор..."
 
 #: src/GribUIDialogBase.cpp:2210 src/GribUIDialogBase.cpp:2329
 msgid "Start at the first forecast in GRIB file"
@@ -1113,12 +1113,12 @@ msgstr "Ваш прогнозируемый курс"
 #: src/GribRequestDialog.cpp:535
 #, c-format
 msgid "Downloading... %s kB / %s kB (%li%%)"
-msgstr ""
+msgstr "Загрузка... %s kB / %s kB (%li%%)"
 
 #: src/GribRequestDialog.cpp:540
 #, c-format
 msgid "Downloading... %s kB / ???"
-msgstr ""
+msgstr "Загрузка...  %s kB / ???"
 
 #: src/GribRequestDialog.cpp:602 src/GribRequestDialog.cpp:808
 #: src/GribRequestDialog.cpp:861 src/GribRequestDialog.cpp:912
