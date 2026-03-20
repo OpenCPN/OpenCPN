@@ -133,6 +133,7 @@ extern bool g_persist_active_route;
 extern bool g_useMUI;
 extern bool s_bSetSystemTime;
 extern bool g_kiosk_startup;
+extern bool g_disableNotifications;
 
 extern double g_COGAvg;  ///< Debug only usage
 extern double g_defaultBoatSpeed;
@@ -178,6 +179,7 @@ extern int g_detailslider_dialog_y;
 extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_GUIScaleFactor;
+extern double g_tile_basemap_zoom_factor;
 
 extern int g_iDistanceFormat;  // see extended docs below
 extern int g_iENCToolbarPosX;

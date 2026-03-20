@@ -1096,7 +1096,7 @@ const char *OGRGeometryTypeToName( OGRwkbGeometryType eType )
 
       default:
       {
-          static char szWorkName[33];
+          static thread_local char szWorkName[33];
           sprintf( szWorkName, "Unrecognised: %d", (int) eType );
           return szWorkName;
       }

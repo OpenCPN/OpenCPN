@@ -31,7 +31,7 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-static char **papszConfigOptions = NULL;
+static thread_local char **papszConfigOptions = NULL;
 
 /************************************************************************/
 /*                             CPLCalloc()                              */
@@ -296,7 +296,7 @@ char *CPLFGets( char *pszBuffer, int nBufferSize, FILE * fp )
         while( (chCheck != 13 && chCheck != EOF)
                || VSIFTell(fp) < nOriginalOffset + nActuallyRead )
         {
-            static int bWarned = FALSE;
+            static thread_local int bWarned = FALSE;
 
             if( !bWarned )
             {
@@ -339,8 +339,8 @@ char *CPLFGets( char *pszBuffer, int nBufferSize, FILE * fp )
 const char *CPLReadLine( FILE * fp )
 
 {
-    static char *pszRLBuffer = NULL;
-    static int  nRLBufferSize = 0;
+    static thread_local char *pszRLBuffer = NULL;
+    static thread_local int nRLBufferSize = 0;
     int         nReadSoFar = 0;
 
 /* -------------------------------------------------------------------- */
@@ -1098,7 +1098,7 @@ const char *CPLDecToDMS( double dfAngle, const char * pszAxis,
     int         nDegrees, nMinutes;
     double      dfSeconds, dfABSAngle, dfEpsilon;
     char        szFormat[30];
-    static char szBuffer[50];
+    static thread_local char szBuffer[50];
     const char  *pszHemisphere;
 
     dfEpsilon = (0.5/3600.0) * pow(0.1,nPrecision);

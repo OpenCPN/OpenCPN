@@ -66,30 +66,23 @@
 
 WX_DEFINE_LIST(PatchList);
 
-static int CompareScales(int i1, int i2) {
+// Compare chart Z stack based on scale
+// Equal scale charts will be stacked indiscriminately
+static int CompareScales(const int i1, const int i2) {
   if (!ChartData) return 0;
 
   const ChartTableEntry &cte1 = ChartData->GetChartTableEntry(i1);
   const ChartTableEntry &cte2 = ChartData->GetChartTableEntry(i2);
 
-  if (cte1.Scale_eq(cte2.GetScale())) {  // same scales, so sort on dbIndex
-    float lat1, lat2;
-    lat1 = cte1.GetLatMax();
-    lat2 = cte2.GetLatMax();
-    if (roundf(lat1 * 100.) == roundf(lat2 * 100.)) {
-      float lon1, lon2;
-      lon1 = cte1.GetLonMin();
-      lon2 = cte2.GetLonMin();
-      if (lon1 == lon2) {
-        return i1 - i2;
-      } else
-        return (lon1 < lon2) ? -1 : 1;
-    } else
-      return (lat1 < lat2) ? 1 : -1;
-  } else
-    return cte1.GetScale() - cte2.GetScale();
+  // Primary: scale (smaller scale value means larger scale chart)
+  return cte1.GetScale() - cte2.GetScale();
 }
+
 static bool CompareScalesStd(int i1, int i2) {
+  return CompareScales(i1, i2) < 0;
+}
+
+static bool CompareScalesStdFULLSCREEN(int i1, int i2) {
   return CompareScales(i1, i2) < 0;
 }
 
@@ -1638,7 +1631,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
   }
   // Sort the full screen array too
   std::sort(m_fullscreen_index_array.begin(), m_fullscreen_index_array.end(),
-            CompareScalesStd);
+            CompareScalesStdFULLSCREEN);
 
   return true;
 }

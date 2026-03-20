@@ -55,10 +55,10 @@
 #include "cpl_conv.h"
 #include "cpl_string.h"
 
-static int bFinderInitialized = FALSE;
-static int nFileFinders = 0;
-static CPLFileFinder *papfnFinders = NULL;
-static char **papszFinderLocations = NULL;
+static thread_local int bFinderInitialized = FALSE;
+static thread_local int nFileFinders = 0;
+static thread_local CPLFileFinder *papfnFinders = NULL;
+static thread_local char **papszFinderLocations = NULL;
 
 /************************************************************************/
 /*                           CPLFinderInit()                            */
