@@ -967,7 +967,7 @@ const char *OGRFeature::GetFieldAsString( int iField )
 
 {
     OGRFieldDefn        *poFDefn = poDefn->GetFieldDefn( iField );
-    static char         szTempBuffer[160];
+    static thread_local char         szTempBuffer[160];
     unsigned int max_line = 80;
 
     CPLAssert( poFDefn != NULL || iField == -1 );

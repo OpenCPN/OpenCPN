@@ -842,18 +842,26 @@ bool Routeman::DeleteRoute(Route *pRoute) {
 void Routeman::DeleteAllRoutes() {
   ::wxBeginBusyCursor();
 
-  //    Iterate on the RouteList
+  std::vector<Route *> delete_list;
+
+  //    Iterate on the RouteList and prepare list of deletion candidates
   for (Route *proute : *pRouteList) {
     if (proute == pAISMOBRoute) {
       if (!m_route_dlg_ctx.confirm_delete_ais_mob()) {
-        return;
+        continue;
       }
       pAISMOBRoute = 0;
-      ::wxBeginBusyCursor();
     }
     if (proute->m_bIsInLayer) continue;
 
-    DeleteRoute(proute);
+    delete_list.push_back(proute);
+  }
+
+  // Delete the listed candidates
+
+  while (delete_list.size()) {
+    DeleteRoute(delete_list.back());
+    delete_list.pop_back();
   }
 
   ::wxEndBusyCursor();

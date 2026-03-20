@@ -136,6 +136,10 @@ Files: data/tcdata/harmonics-dwf-20210110-free.tcd
 Copyright: no copyright
 License: Harmonics
 
+Files: data/tcdata/ticon-europe-global.tcd
+Copyright: DGFI-TUM (Deutsches Geodätisches Forschungsinstitut der Technischen Universität München)
+License: CC-BY-SA-4.0
+
 Files: data/wvsdata/*
 Copyright: 2017, wxTide Authors
 License: GPL-2+
@@ -2143,11 +2147,11 @@ License: BSD-3-clause
  .
    * Redistributions in binary form must reproduce the above copyright
      notice, this list of conditions and the following disclaimer in the
-     documentation and/or other materials provided with the distribution. 
+     documentation and/or other materials provided with the distribution.
  .
    * Neither the name of the copyright holder nor the names of its
      contributors may be used to endorse or promote products derived from
-     this software without specific prior written permission. 
+     this software without specific prior written permission.
  .
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
  IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
@@ -2780,12 +2784,12 @@ License: SGI-B-2.0
 
 License: Unlicense
  This is free and unencumbered software released into the public domain.
- . 
+ .
  Anyone is free to copy, modify, publish, use, compile, sell, or
  distribute this software, either in source code form or as a compiled
  binary, for any purpose, commercial or non-commercial, and by any
  means.
- . 
+ .
  In jurisdictions that recognize copyright laws, the author or authors
  of this software dedicate any and all copyright interest in the
  software to the public domain. We make this dedication for the benefit
@@ -2793,7 +2797,7 @@ License: Unlicense
  successors. We intend this dedication to be an overt act of
  relinquishment in perpetuity of all present and future rights to this
  software under copyright law.
- . 
+ .
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
@@ -2801,7 +2805,7 @@ License: Unlicense
  OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  OTHER DEALINGS IN THE SOFTWARE.
- . 
+ .
  For more information, please refer to <https://unlicense.org/>
 
 License: Zlib

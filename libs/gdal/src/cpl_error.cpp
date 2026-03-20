@@ -126,11 +126,11 @@
  * messages cannot be longer than 2000 chars... which is quite reasonable
  * (that's 25 lines of 80 chars!!!)
  */
-static char gszCPLLastErrMsg[2000] = "";
-static int  gnCPLLastErrNo = 0;
-static CPLErr geCPLLastErrType = CE_None;
+static thread_local char gszCPLLastErrMsg[2000] = "";
+static thread_local int  gnCPLLastErrNo = 0;
+static thread_local CPLErr geCPLLastErrType = CE_None;
 
-static CPLErrorHandler gpfnCPLErrorHandler = CPLDefaultErrorHandler;
+static thread_local CPLErrorHandler gpfnCPLErrorHandler = CPLDefaultErrorHandler;
 
 typedef struct errHandler
 {
@@ -138,7 +138,7 @@ typedef struct errHandler
     CPLErrorHandler     pfnHandler;
 } CPLErrorHandlerNode;
 
-static CPLErrorHandlerNode * psHandlerStack = NULL;
+static thread_local CPLErrorHandlerNode * psHandlerStack = NULL;
 
 /**********************************************************************
  *                          CPLError()
@@ -412,8 +412,8 @@ void CPLDefaultErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg )
 
 {
-    static int       bLogInit = FALSE;
-    static FILE *    fpLog = stderr;
+    static thread_local int       bLogInit = FALSE;
+    static thread_local FILE *    fpLog = stderr;
 
     if( !bLogInit )
     {
@@ -458,8 +458,8 @@ void CPLLoggingErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg )
 
 {
-    static int       bLogInit = FALSE;
-    static FILE *    fpLog = stderr;
+    static thread_local int       bLogInit = FALSE;
+    static thread_local FILE *    fpLog = stderr;
 
     if( !bLogInit )
     {
@@ -649,4 +649,3 @@ void _CPLAssert( const char * pszExpression, const char * pszFile,
               "in file `%s', line %d\n",
               pszExpression, pszFile, iLine );
 }
-

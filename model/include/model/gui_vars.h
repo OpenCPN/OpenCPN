@@ -50,6 +50,7 @@ extern bool g_bhide_route_console;
 extern bool g_b_legacy_input_filter_behaviour;
 extern bool g_bmasterToolbarFull;
 extern bool g_bopengl;
+extern bool g_b_needFinish;
 extern bool g_b_overzoom_x;  ///< Allow high overzoom
 extern bool g_bPauseTest;
 extern bool g_bquiting;
