@@ -347,6 +347,8 @@ int MyConfig::LoadMyConfig() {
     g_cm93_zoom_factor =
         wxMax(g_cm93_zoom_factor, (-CM93_ZOOM_FACTOR_MAX_RANGE));
 
+    g_tile_basemap_zoom_factor = 4.0;
+
     if ((g_detailslider_dialog_x < 0) ||
         (g_detailslider_dialog_x > display_width))
       g_detailslider_dialog_x = 5;
@@ -554,6 +556,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
     Read("GPUTextureMemSize", &g_GLOptions.m_iTextureMemorySize);
     Read("DebugOpenGL", &g_bDebugOGL);
     Read("OpenGL", &g_bopengl);
+    Read("OpenGLFinsihNeeded", &g_b_needFinish);
     Read("SoftwareGL", &g_bSoftwareGL);
   }
 #endif
@@ -595,6 +598,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   g_mouse_zoom_sensitivity_ui =
       MouseZoom::config_to_ui(g_mouse_zoom_sensitivity);
   Read("CM93DetailFactor", &g_cm93_zoom_factor);
+  Read("TileBasemapZoomFactor", &g_tile_basemap_zoom_factor);
 
   Read("CM93DetailZoomPosX", &g_detailslider_dialog_x);
   Read("CM93DetailZoomPosY", &g_detailslider_dialog_y);
@@ -606,6 +610,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   Read("SetSystemTime", &s_bSetSystemTime);
   Read("EnableKioskStartup", &g_kiosk_startup);
+  Read("DisableNotifications", &g_disableNotifications, 0);
   Read("ShowStatusBar", &g_bShowStatusBar);
 #ifndef __WXOSX__
   Read("ShowMenuBar", &g_bShowMenuBar);
@@ -2277,7 +2282,9 @@ void MyConfig::UpdateSettings() {
   Write("GPXIODir", g_gpx_path);
   Write("TCDataDir", g_TCData_Dir);
   Write("BasemapDir", g_Platform->NormalizePath(gWorldMapLocation));
-  Write("BaseShapefileDir", g_Platform->NormalizePath(gWorldShapefileLocation));
+  if (gWorldShapefileLocation.Length())
+    Write("BaseShapefileDir",
+          g_Platform->NormalizePath(gWorldShapefileLocation));
   Write("pluginInstallDir", g_Platform->NormalizePath(g_winPluginDir));
 
   SetPath("/Settings/NMEADataSource");

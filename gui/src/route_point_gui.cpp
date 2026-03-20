@@ -613,7 +613,7 @@ void RoutePointGui::DrawGL(ViewPort &vp, ChartCanvas *canvas, ocpnDC &dc,
   }
 
   // Render Drag handle if enabled
-  if (m_point.m_bDrawDragHandle) {
+  if (m_point.m_bDrawDragHandle && m_point.m_dragIcon.IsOk()) {
     //  A line, southeast, scaled to the size of the icon
     double platform_pen_width = wxRound(
         wxMax(1.0, g_Platform->GetDisplayDPmm() /

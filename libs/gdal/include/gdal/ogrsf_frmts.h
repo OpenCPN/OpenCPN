@@ -32,6 +32,8 @@
 #ifndef _OGRSF_FRMTS_H_INCLUDED
 #define _OGRSF_FRMTS_H_INCLUDED
 
+#include <atomic>
+
 #include "ogr_feature.h"
 
 /**
@@ -105,7 +107,7 @@ class CPL_DLL OGRLayer
 //    OGRFeatureQuery     *m_poAttrQuery;
     OGRLayerAttrIndex   *m_poAttrIndex;
 
-    int                  m_nRefCount;
+    std::atomic<int>     m_nRefCount;
 };
 
 
@@ -166,7 +168,7 @@ class CPL_DLL OGRDataSource
     OGRErr              ProcessSQLDropIndex( const char * );
 
     OGRStyleTable      *m_poStyleTable;
-    int                 m_nRefCount;
+    std::atomic<int>   m_nRefCount;
 };
 
 /************************************************************************/
