@@ -876,8 +876,6 @@ bool ChartTableEntry::Write(const ChartDatabase *pDb, wxOutputStream &os) {
 ///////////////////////////////////////////////////////////////////////
 
 void ChartTableEntry::Clear() {
-  //    memset(this, 0, sizeof(ChartTableEntry));
-
   pFullPath = NULL;
   pPlyTable = NULL;
   pAuxPlyTable = NULL;
@@ -892,6 +890,7 @@ void ChartTableEntry::Clear() {
 
   m_pfilename = NULL;  // a helper member, not on disk
   m_psFullPath = NULL;
+  Scale = 1e8;  // Very small scale
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -1372,12 +1371,11 @@ void ChartDatabase::UpdateChartClassDescriptorArray() {
   }
 }
 
-ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) const {
-  // if (index < GetChartTableEntries())
-  return *active_chartTable[index];
-  // TODO fix
-  // else
-  // return m_ChartTableEntryDummy;
+ChartTableEntry &ChartDatabase::GetChartTableEntry(int index) {
+  if (index < GetChartTableEntries())
+    return *active_chartTable[index];
+  else
+    return m_ChartTableEntryDummy;
 }
 
 bool ChartDatabase::CompareChartDirArray(ArrayOfCDI &test_array) {
@@ -1838,8 +1836,12 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
       wxLogMessage("Updating GSHHG directory: %s", gshhg_dir.c_str());
       gWorldMapLocation = gshhg_dir;
     }
+
+    // If the user has added a directory containig an extended OSMSHP basemap
+    // then capture the location, and reset the basemap render amchine.
     if (dir_info.fullpath.Find("OSMSHP") != wxNOT_FOUND) {
       if (!wxDir::FindFirst(dir_info.fullpath, "basemap_*.shp").empty()) {
+        wxLogMessage("Updating OSMSHP directory: %s", dir_info.fullpath);
         gWorldShapefileLocation =
             dir_info.fullpath + wxFileName::GetPathSeparator();
         gShapeBasemap.Reset();

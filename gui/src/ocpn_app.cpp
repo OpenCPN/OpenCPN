@@ -1221,12 +1221,17 @@ bool MyApp::OnInit() {
   wxString default_tcdata1 =
       (g_Platform->GetSharedDataDir() + "tcdata" +
        wxFileName::GetPathSeparator() + "HARMONICS_NO_US.IDX");
+  wxString default_tcdata2 =
+      (g_Platform->GetSharedDataDir() + "tcdata" +
+       wxFileName::GetPathSeparator() + "ticon-europe-global.tcd");
 
   if (TideCurrentDataSet.empty()) {
     TideCurrentDataSet.push_back(
         g_Platform->NormalizePath(default_tcdata0).ToStdString());
     TideCurrentDataSet.push_back(
         g_Platform->NormalizePath(default_tcdata1).ToStdString());
+    TideCurrentDataSet.push_back(
+        g_Platform->NormalizePath(default_tcdata2).ToStdString());
   }
 
   //  Check the global AIS alarm sound file
@@ -1726,7 +1731,7 @@ void MyApp::LoadChartDatabase() {
 
   //      Try to load the current chart list Data file
   ChartData = new ChartDB();
-  if (g_NeedDBUpdate == 0 &&
+  if (g_NeedDBUpdate == 0 && ChartDirArray.GetCount() &&
       !ChartData->LoadBinary(ChartListFileName, ChartDirArray)) {
     g_NeedDBUpdate = 1;
     g_restore_dbindex = 0;

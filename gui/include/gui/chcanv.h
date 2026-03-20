@@ -965,6 +965,8 @@ private:
   RoutePoint *m_lastRoutePointEditTarget;
   SelectItem *m_pFoundPoint;
   bool m_bChartDragging;
+  wxPoint
+      m_touchdownPos;  // LeftDown position for touch drag displacement check
   Route *m_pSelectedRoute;
   Track *m_pSelectedTrack;
   wxArrayPtrVoid *m_pEditRouteArray;
@@ -1087,7 +1089,6 @@ private:
 
   wxPoint last_drag;
   wxPoint m_last_touch_down_pos;
-  bool m_ignore_next_leftup;
 
   wxMemoryDC *pmemdc;
 

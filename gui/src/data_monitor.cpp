@@ -900,14 +900,14 @@ DataLogger::DataLogger(wxWindow* parent) : DataLogger(parent, NullLogfile()) {}
 void DataLogger::SetLogging(bool logging) { m_is_logging = logging; }
 
 void DataLogger::SetLogfile(const fs::path& path) {
-  m_stream = std::ofstream(path);
-  m_stream << "# timestamp_format: EPOCH_MILLIS\n";
   const auto now = std::chrono::system_clock::now();
   const std::time_t t_c = std::chrono::system_clock::to_time_t(now);
-  m_stream << "# Created at: " << std::ctime(&t_c) << " \n";
-  m_stream << "received_at,protocol,source,msg_type,raw_data\n";
-  m_stream << std::flush;
   m_path = path;
+  std::stringstream ss;
+  ss << "# timestamp_format: EPOCH_MILLIS\n";
+  ss << "# Created at: " << std::ctime(&t_c) << " \n";
+  ss << "received_at,protocol,source,msg_type,raw_data\n";
+  m_header = ss.str();
   OnNewLogfile.Notify(path.string());
 }
 
@@ -931,6 +931,11 @@ std::string DataLogger::GetFileDlgTypes() const {
 
 void DataLogger::Add(const Logline& ll) {
   if (!m_is_logging || !ll.navmsg) return;
+  if (!m_header.empty()) {
+    m_stream = std::ofstream(m_path);
+    m_stream << m_header;
+    m_header.clear();
+  }
   if (m_format == Format::kVdr && ll.navmsg->to_vdr().empty()) return;
   if (m_format == DataLogger::Format::kVdr)
     AddVdrLogline(ll, m_stream);
