@@ -1,8 +1,8 @@
-opencpn (1:5.14.1+dfsg~beta3-1~bpo22.04~ppa1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta3-1~bpo22.04~ppa1) jammy; urgency=medium
 
   * New upstream release
 
- -- al <al@ubuntu-jammy.myguest.virtualbox.org>  Fri, 20 Mar 2026 14:50:11 +0100
+ -- al <al@ubuntu-jammy.myguest.virtualbox.org>  Fri, 20 Mar 2026 15:44:52 +0100
 
 opencpn (1:5.14.1+dfsg~beta3-1) unstable; urgency=medium
 
