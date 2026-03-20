@@ -1,3 +1,9 @@
+opencpn (1:5.14.1+dfsg~beta3-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Mar 2026 10:03:45 +0100
+
 opencpn (1:5.14.1+dfsg~beta2-2) unstable; urgency=medium
 
   * New upstream release
