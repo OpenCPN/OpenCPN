@@ -64,6 +64,7 @@ void NotificationManager::OnTimer(wxTimerEvent& event) {
 }
 
 void NotificationManager::ScrubNotificationDirectory(int days_to_retain) {
+  if (g_disableNotifications) return;
   wxString note_directory = g_BasePlatform->GetPrivateDataDir() +
                             wxFileName::GetPathSeparator() + "notifications" +
                             wxFileName::GetPathSeparator();
@@ -125,6 +126,8 @@ NotificationSeverity NotificationManager::GetMaxSeverity() {
 
 std::string NotificationManager::AddNotification(
     std::shared_ptr<Notification> _notification) {
+  if (g_disableNotifications) return "";
+
   active_notifications.push_back(_notification);
   PersistNotificationAsFile(_notification);
   evt_notificationlist_change.Notify();

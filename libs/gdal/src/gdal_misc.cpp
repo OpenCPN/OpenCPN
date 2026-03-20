@@ -184,7 +184,7 @@ void __pure_virtual()
            const char *GDALVersionInfo( const char *pszRequest )
 
 {
-    static char szResult[128];
+    static thread_local char szResult[128];
 
 
     if( pszRequest == NULL || EQUAL(pszRequest,"VERSION_NUM") )
@@ -202,4 +202,3 @@ void __pure_virtual()
 
     return szResult;
 }
-

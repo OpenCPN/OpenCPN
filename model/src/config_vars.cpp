@@ -41,6 +41,8 @@ bool g_bCourseUp = false;
 bool g_bDebugCM93 = false;
 bool g_bDebugGPSD = false;
 bool g_bDebugOGL = false;
+//    For VBO(s)
+bool g_b_needFinish = false;  // Need glFinish() call on each frame?
 bool g_bDebugS57 = false;
 bool g_bDisplayGrid = false;
 bool g_bEmailCrashReport = false;
@@ -116,6 +118,7 @@ bool g_persist_active_route = false;
 bool g_useMUI = false;
 bool s_bSetSystemTime = false;
 bool g_kiosk_startup = false;
+bool g_disableNotifications = false;
 
 double g_COGAvg = 0.0;
 double g_defaultBoatSpeed = 0.0;
@@ -134,6 +137,7 @@ double g_plus_minus_zoom_factor = 0.0;
 double g_TrackDeltaDistance = 0.0;
 double g_TrackIntervalSeconds = 0.0;
 double g_UserVar = 0.0;
+double g_tile_basemap_zoom_factor = 4.0;
 
 float g_fNavAidRadarRingsStep = 0.0;
 float g_fWaypointRangeRingsStep = 0.0;

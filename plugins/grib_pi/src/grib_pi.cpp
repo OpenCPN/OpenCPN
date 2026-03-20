@@ -245,13 +245,15 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_rbLoadOptions->SetSelection(m_bLoadLastOpenFile);
   Pref->m_rbStartOptions->SetSelection(m_bStartOptions);
 
-  wxFileConfig *pConf = GetOCPNConfigObject();
-  if (pConf) {
-    wxString l_grib_dir;
-    pConf->SetPath(_T ( "/Directories" ));
-    pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
-    Pref->m_grib_dir_sel = l_grib_dir;
-    Pref->m_textDirectory->ChangeValue(l_grib_dir);
+  if (Pref->m_textDirectory) {  // not present on Android
+    wxFileConfig *pConf = GetOCPNConfigObject();
+    if (pConf) {
+      wxString l_grib_dir;
+      pConf->SetPath(_T ( "/Directories" ));
+      pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
+      Pref->m_grib_dir_sel = l_grib_dir;
+      Pref->m_textDirectory->ChangeValue(l_grib_dir);
+    }
   }
 
 #ifdef __WXMSW__

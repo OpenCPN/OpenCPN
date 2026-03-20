@@ -1031,6 +1031,12 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate(bool blog) {
       CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
       if (pce->RecentTime < LRUTime && !pce->n_lock) {
         if (!IsSingleChart((ChartBase *)(pce->pChart))) {
+          // Protect basemap MBTiles from cache eviction
+          ChartBase *pChart = (ChartBase *)(pce->pChart);
+          if (pChart && pChart->GetChartType() == CHART_TYPE_MBTILES) {
+            wxFileName fn(pChart->GetFullPath());
+            if (fn.GetPath().Lower().Contains("basemap")) continue;
+          }
           LRUTime = pce->RecentTime;
           iOldest = i;
         }
@@ -1345,10 +1351,13 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag) {
           // Size test for 5 GByte
           wxULongLong tileSizeMB = tileFile.GetSize() >> 20;
 
+          // Auto-show MBTiles in basemap directories
+          bool isBasemap = tileFile.GetPath().Lower().Contains("basemap");
+
           auto &config_array = ConfigMgr::Get().GetCanvasConfigArray();
 
-          if (!CheckAnyCanvasExclusiveTileGroup() ||
-              (tileSizeMB.GetLo() > 5000)) {
+          if (!isBasemap && (!CheckAnyCanvasExclusiveTileGroup() ||
+                             (tileSizeMB.GetLo() > 5000))) {
             // Check to see if the tile has been "clicked" in either canvas.
             // If so, do not add to no-show array again.
             bool b_clicked = false;
