@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<OpenCPNWeatherRoutingBoat version="1.10" creator="Opencpn Weather Routing plugin">
+    <Polar FileName="Example/Test-TWS-0-20+60.pol" CrossOverPercentage="0" />
+</OpenCPNWeatherRoutingBoat>

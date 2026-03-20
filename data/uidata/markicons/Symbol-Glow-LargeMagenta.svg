@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <radialGradient id="a" gradientUnits="userSpaceOnUse" cx="974.35" cy="825.66" r="246.95" fx="974.35" fy="825.66">
+            <stop offset="0" stop-color="#FFD1FF"/>
+            <stop offset="1" stop-color="#f0f"/>
+        </radialGradient>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <circle fill="url(#a)" cx="900" cy="900" r="248"/>
+</svg>
