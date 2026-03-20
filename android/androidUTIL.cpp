@@ -40,6 +40,7 @@
 #include <wx/matrix.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
+#include <QtAndroidExtras/QAndroidJniEnvironment>
 #include "o_sound/o_sound.h"
 
 #include "model/ais_state_vars.h"
@@ -3010,64 +3011,139 @@ bool androidWriteSerial(wxString &portname, wxString &message) {
   return true;
 }
 
+#include <atomic>
+#include <string>
+#include <functional>
+#include <thread>
+
+#include <wx/event.h>
+
+#include <QtAndroidExtras/QAndroidJniObject>
+#include <QtAndroidExtras/QAndroidJniEnvironment>
+
+std::atomic<bool> AndroidFileDialog::g_done(false);
+std::string AndroidFileDialog::g_result;
+
+// Synchronous wxWidgets-style file dialog
+std::string AndroidFileDialog::Show(const std::string &startDir,
+                                    bool allowCreate = true) {
+  g_done = false;
+  g_result.clear();
+
+  // Call Java dialog (Java handles runOnUiThread internally)
+  showDialogJNI(startDir, allowCreate);
+
+  // Spin loop to emulate synchronous dialog
+  auto start = std::chrono::steady_clock::now();
+  while (!g_done.load(std::memory_order_acquire)) {
+    if (std::chrono::steady_clock::now() - start > std::chrono::seconds(60))
+      break;
+    wxYield();
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+
+  if (!g_done.load()) return "cancel";
+
+  return g_result;
+}
+
+void AndroidFileDialog::CallbackFromJava(const std::string &path) {
+  g_result = path;
+  g_done.store(true, std::memory_order_release);
+}
+
+void AndroidFileDialog::showDialogJNI(const std::string &startDir,
+                                      bool allowCreate) {
+  QAndroidJniEnvironment env;
+
+  // Obtain Qt Android Activity
+  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
+      "org/qtproject/qt5/android/QtNative", "activity",
+      "()Landroid/app/Activity;");
+
+  if (!activity.isValid()) return;
+
+  // --- Hide keyboard (prevents IME finishComposingText deadlock) ---
+
+  QAndroidJniObject serviceName = QAndroidJniObject::getStaticObjectField(
+      "android/content/Context", "INPUT_METHOD_SERVICE", "Ljava/lang/String;");
+
+  QAndroidJniObject imm = activity.callObjectMethod(
+      "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;",
+      serviceName.object<jstring>());
+
+  if (imm.isValid()) {
+    QAndroidJniObject window =
+        activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+
+    QAndroidJniObject decor =
+        window.callObjectMethod("getDecorView", "()Landroid/view/View;");
+
+    QAndroidJniObject token =
+        decor.callObjectMethod("getWindowToken", "()Landroid/os/IBinder;");
+
+    imm.callMethod<jboolean>("hideSoftInputFromWindow",
+                             "(Landroid/os/IBinder;I)Z",
+                             token.object<jobject>(), 0);
+  }
+
+  // --- Create callback proxy ---
+  QAndroidJniObject callback("org/opencpn/FileDialogCallbackProxy", "()V");
+
+  QAndroidJniObject jStartDir =
+      QAndroidJniObject::fromString(QString::fromStdString(startDir));
+
+  // --- Call Java dialog ---
+  QAndroidJniObject::callStaticMethod<void>(
+      "org/opencpn/OCPNFileDialog", "showFileDialog",
+      "(Landroid/app/Activity;Ljava/lang/String;Lorg/opencpn/"
+      "OCPNFileDialog$Callback;Z)V",
+      activity.object<jobject>(), jStartDir.object<jstring>(),
+      callback.object<jobject>(), allowCreate ? JNI_TRUE : JNI_FALSE);
+
+  if (env->ExceptionCheck()) {
+    env->ExceptionDescribe();
+    env->ExceptionClear();
+  }
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_opencpn_FileDialogCallbackProxy_nativeFileDialogFinished(
+    JNIEnv *env, jclass, jstring jPath) {
+  const char *pathChars = env->GetStringUTFChars(jPath, nullptr);
+  std::string path(pathChars);
+  env->ReleaseStringUTFChars(jPath, pathChars);
+
+  AndroidFileDialog::CallbackFromJava(path);
+}
+
 int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &title, const wxString &suggestion,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
-  wxString tresult;
-
-  if (g_androidUtilHandler) {
-    wxString activityResult;
-    if (dirOnly)
-      activityResult = callActivityMethod_s2s2i("DirChooserDialog", initDir,
-                                                title, addFile, 0);
-
-    else
+  if (dirOnly) {
+    std::string file = AndroidFileDialog::Show(initDir.ToStdString());
+    if (file == "cancel") {
+      return wxID_CANCEL;
+    } else {
+      wxString sfile(file.c_str());
+      *result = sfile.AfterFirst(':');
+      return wxID_OK;
+    }
+  } else {
+    if (g_androidUtilHandler) {
+      wxString activityResult;
       activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
                                               title, suggestion, wildcard);
 
-    if (activityResult == _T("OK")) {
-      return wxID_OK;
-    } else if (activityResult == "cancel:") {
-      return wxID_CANCEL;
-    } else {
-      *result = activityResult.AfterFirst(':');
-      return wxID_OK;
-    }
-
-#if 0
-      // qDebug() << "ResultOK, starting spin loop";
-      g_androidUtilHandler->m_action = ACTION_FILECHOOSER_END;
-      g_androidUtilHandler->m_eventTimer.Start(1000, wxTIMER_CONTINUOUS);
-
-      //  Spin, waiting for result
-      while (!g_androidUtilHandler->m_done) {
-        wxMilliSleep(50);
-        wxSafeYield(NULL, true);
-      }
-
-      // qDebug() << "out of spin loop";
-      g_androidUtilHandler->m_action = ACTION_NONE;
-      g_androidUtilHandler->m_eventTimer.Stop();
-
-      tresult = g_androidUtilHandler->GetStringResult();
-
-      if (tresult.StartsWith(_T("cancel:"))) {
-        // qDebug() << "Cancel1";
+      if (activityResult == _T("OK")) {
+        return wxID_OK;
+      } else if (activityResult == "cancel:") {
         return wxID_CANCEL;
-      } else if (tresult.StartsWith(_T("file:"))) {
-        if (result) {
-          *result = tresult.AfterFirst(':');
-          // qDebug() << "OK";
-          return wxID_OK;
-        } else {
-          // qDebug() << "Cancel2";
-          return wxID_CANCEL;
-        }
+      } else {
+        *result = activityResult.AfterFirst(':');
+        return wxID_OK;
       }
-    } else {
-      // qDebug() << "Result NOT OK";
     }
-#endif
   }
 
   return wxID_CANCEL;

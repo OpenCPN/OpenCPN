@@ -500,7 +500,7 @@ public:
   void UpdateCanvasConfigDescriptors();
   void ScheduleSettingsDialog();
   void ScheduleSettingsDialogNew();
-  static void RebuildChartDatabase();
+  static void StartRebuildChartDatabase();
   void PositionIENCToolbar();
 
   void InitAppMsgBusListener();
