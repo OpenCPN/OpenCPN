@@ -1,5 +1,5 @@
 
-
+usr/lib/udev/rules.d/98-opencpn-dongle.rules
 # license.html and license.txt is referenced in the code.
 usr/share/locale/*/LC_MESSAGES/*.mo
 usr/share/opencpn/authors.html
@@ -17,6 +17,7 @@ usr/share/opencpn/sounds/phonering1.wav
 usr/share/opencpn/ssfndata
 usr/share/opencpn/tcdata/HARMONICS_NO_US.IDX
 usr/share/opencpn/tcdata/HARMONICS_NO_US
+usr/share/opencpn/tcdata/ticon-europe-global.tcd
 usr/share/opencpn/uidata
 usr/share/opencpn/doc/help_web.html
 usr/share/opencpn/LINUX_DEVICES.md usr/share/doc/opencpn-data
