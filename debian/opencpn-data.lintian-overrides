@@ -1,3 +1,5 @@
 # Used in runtime
 package-contains-documentation-outside-usr-share-doc [usr/share/opencpn/doc/help_web.html]
 package-contains-documentation-outside-usr-share-doc [usr/share/opencpn/license.html]
+# False negative, probably caused by providing both  a binary and a usb device
+appstream-metadata-missing-modalias-provide

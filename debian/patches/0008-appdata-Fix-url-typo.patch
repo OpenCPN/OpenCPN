@@ -1,0 +1,26 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sat, 21 Feb 2026 14:06:10 +0100
+Subject: appdata: Fix url typo
+
+The url for donations is indeed 'donation', not 'donate'
+
+See: https://manpages.debian.org/testing/appstream/appstreamcli.1.en.html
+
+Applied-upstream: no
+---
+ resources/opencpn.appdata.xml.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/resources/opencpn.appdata.xml.in b/resources/opencpn.appdata.xml.in
+index 80d37ae..9ef2581 100644
+--- a/resources/opencpn.appdata.xml.in
++++ b/resources/opencpn.appdata.xml.in
+@@ -54,7 +54,7 @@
+   <url type="bugtracker">https://www.cruisersforum.com/forums/f134/</url>
+   <url type="help">https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn</url>
+   <url type="translate">https://crowdin.com/project/opencpn</url>
+-  <url type="donate">https://www.paypal.com/donate/?item_name=Donation+to+OpenCPN&amp;cmd=_donations&amp;business=bdbcat%40yahoo.com</url>
++  <url type="donation">https://www.paypal.com/donate/?item_name=Donation+to+OpenCPN&amp;cmd=_donations&amp;business=bdbcat%40yahoo.com</url>
+   <update_contact>https://opencpn.zulipchat.com/</update_contact>
+   <content_rating type="oars-1.0" />
+ </component>
