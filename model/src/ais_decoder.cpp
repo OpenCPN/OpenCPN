@@ -2349,6 +2349,17 @@ void AisDecoder::updateItem(const std::shared_ptr<AisTargetData> &pTargetData,
       pTargetData->Destination[0] = '\0';
       strncpy(pTargetData->Destination, destination.c_str(),
               DESTINATION_LEN - 1);
+    } else if (update_path == "navigation.destination.eta") {
+      const wxString &eta = item["value"].GetString();
+      if (eta.Len()) {
+        // Parse ISO 8601 date/time
+        wxDateTime tz;
+        ParseGPXDateTime(tz, eta);
+        pTargetData->ETA_Mo = tz.GetMonth();
+        pTargetData->ETA_Day = tz.GetDay();
+        pTargetData->ETA_Hr = tz.GetHour();
+        pTargetData->ETA_Min = tz.GetMinute();
+      }
     } else if (update_path == "navigation.specialManeuver") {
       if (strcmp("not available", item["value"].GetString()) != 0 &&
           pTargetData->IMO < 1) {
@@ -2374,7 +2385,7 @@ void AisDecoder::updateItem(const std::shared_ptr<AisTargetData> &pTargetData,
 
       // METEO Data
     } else if (update_path == "environment.date") {
-      wxString issued = item["value"].GetString();
+      const wxString &issued = item["value"].GetString();
       if (issued.Len()) {
         // Parse ISO 8601 date/time
         wxDateTime tz;
