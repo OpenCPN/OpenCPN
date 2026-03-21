@@ -8,7 +8,6 @@ Add an environment variable as a hook for these cases.
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/5091
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/542385a85
-
 ---
  model/src/base_platform.cpp | 12 ++++++++++--
  test/cli_server.cpp         |  8 ++++++--

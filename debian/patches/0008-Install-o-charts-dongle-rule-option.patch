@@ -19,7 +19,7 @@ Forwarded: not-needed
  create mode 100644 data/98-opencpn-dongle.rules
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a5cfb74..e8d0c5d 100644
+index f129313..40b536e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -264,7 +264,6 @@ if (WIN32)
