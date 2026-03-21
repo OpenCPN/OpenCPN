@@ -6,7 +6,9 @@ When running tests in constrained environment like the one in
 in debian's pbuilder we need a usable home directory location. 
 Add an environment variable as a hook for these cases.
 
-bug: https://github.com/OpenCPN/OpenCPN/issues/5091
+Bug: https://github.com/OpenCPN/OpenCPN/issues/5091
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/542385a85
+
 ---
  model/src/base_platform.cpp | 12 ++++++++++--
  test/cli_server.cpp         |  8 ++++++--

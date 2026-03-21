@@ -6,7 +6,7 @@ The url for donations is indeed 'donation', not 'donate'
 
 See: https://manpages.debian.org/testing/appstream/appstreamcli.1.en.html
 
-Applied-upstream: no
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/f52e902f50
 ---
  resources/opencpn.appdata.xml.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
