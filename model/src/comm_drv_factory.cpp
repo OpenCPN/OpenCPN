@@ -43,6 +43,7 @@
 #include "model/comm_drv_signalk_net.h"
 #include "model/comm_drv_n0183_android_int.h"
 #include "model/comm_drv_n0183_android_bt.h"
+#include "model/comm_drv_internal.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
 
@@ -73,6 +74,11 @@ public:
 
 void MakeLoopbackDriver() {
   auto driver = std::make_unique<LoopbackDriver>(NavMsgBus::GetInstance());
+  CommDriverRegistry::GetInstance().Activate(std::move(driver));
+}
+
+void MakeInternalDriver(DriverListener& listener) {
+  auto driver = std::make_unique<CommDriverInternal>(listener);
   CommDriverRegistry::GetInstance().Activate(std::move(driver));
 }
 
