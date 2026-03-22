@@ -44,6 +44,7 @@ CommDriverInternal::CommDriverInternal(DriverListener& listener)
     : AbstractCommDriver(NavAddr::Bus::Plugin, "internal"),
       m_listener(listener) {
   this->attributes["commPort"] = "internal";
+  this->attributes["protocol"] = "internal";
   this->attributes["ioDirection"] = "OUT";
 }
 

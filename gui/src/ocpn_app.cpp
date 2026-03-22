@@ -1556,6 +1556,7 @@ void MyApp::BuildMainFrame() {
     }
   }
   MakeLoopbackDriver();
+  MakeInternalDriver();
 
   // Load and initialize plugins
   auto style = g_StyleManager->GetCurrentStyle();
