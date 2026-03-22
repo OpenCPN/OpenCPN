@@ -6463,9 +6463,9 @@ GetAttributes(DriverHandle handle);
  * Send a non-NMEA2000 message. The call is not blocking.
  * @param handle Obtained from GetActiveDrivers()
  * @param payload Message data, for example a complete Nmea0183 message.<br/>
- *        From 1.19: if the handle "protocol" attribute is "internal" it is
+ *        From 5.16.1: if the handle "protocol" attribute is "internal" it is
  *        parsed as <id><space><message> where the id is used when listening/
- *        subscribing to message.<br/>
+ *        subscribing, message the json payload .<br/>
  *        From 5.12.4: if handle "protocol" attribute is "loopback" it is
  *        parsed as one of
  *          - "signalk" <source> <context_self> <json payload>
