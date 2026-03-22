@@ -211,8 +211,9 @@ CommDriverResult WriteCommDriver(
     if (space_pos == std::string::npos) return RESULT_COMM_INVALID_PARMS;
     auto plugin_msg = std::make_shared<PluginMsg>(msg.substr(0, space_pos),
                                                   msg.substr(space_pos + 1));
-    NavMsgBus::GetInstance().Notify(static_pointer_cast<NavMsg>(plugin_msg));
-    return RESULT_COMM_NO_ERROR;
+    auto address = std::make_shared<NavAddr>();
+    bool xmit_ok = found->SendMessage(plugin_msg, address);
+    return xmit_ok ? RESULT_COMM_NO_ERROR : RESULT_COMM_TX_ERROR;
   } else if (protocol == "loopback") {
     auto navmsg = LoopbackDriver::ParsePluginMessage(msg);
     if (!navmsg) return RESULT_COMM_INVALID_PARMS;

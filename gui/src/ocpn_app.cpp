@@ -105,6 +105,7 @@
 #include "model/cmdline.h"
 #include "model/comm_bridge.h"
 #include "model/comm_drv_factory.h"
+#include "model/comm_navmsg.h"
 #include "model/comm_n0183_output.h"
 #include "model/comm_vars.h"
 #include "model/config_vars.h"
@@ -121,6 +122,7 @@
 #include "model/navutil_base.h"
 #include "model/notification_manager.h"
 #include "model/own_ship.h"
+#include "model/plugin_comm.h"
 #include "model/plugin_handler.h"
 #include "model/route.h"
 #include "model/routeman.h"
@@ -291,6 +293,30 @@ extern sigjmp_buf env;  // the context saved by sigsetjmp();
 DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
             0x6b, 0xba, 0xe7, 0x22, 0xc0);
 #endif
+
+class MyApp::PluginMsgListener : public DriverListener {
+public:
+  PluginMsgListener() = default;
+
+  void Notify(std::shared_ptr<const NavMsg> nav_msg) override {
+    auto plugin_msg = std::dynamic_pointer_cast<const PluginMsg>(nav_msg);
+    if (!plugin_msg) {
+      wxLogWarning("PluginMsgHandler: Illegal message type");
+      return;
+    }
+    wxJSONValue root;
+    wxJSONReader json_reader;
+    int num_errors = json_reader.Parse(plugin_msg->message, &root);
+    if (num_errors > 0) {
+      wxLogWarning("PluginMsgHandler: cannot parse json: %s",
+                   plugin_msg->message.substr(0, 30));
+      return;
+    }
+    SendJSONMessageToAllPlugins(plugin_msg->GetKey(), root);
+  }
+
+  void Notify(const AbstractCommDriver &driver) override {};
+};
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -699,7 +725,8 @@ MyApp::MyApp()
       m_rest_server(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
                     g_bportable),
       m_usb_watcher(UsbWatchDaemon::GetInstance()),
-      m_exitcode(-2) {
+      m_exitcode(-2),
+      m_plugin_msg_listener(std::make_unique<PluginMsgListener>()) {
 #ifdef __linux__
   // Handle e. g., wayland default display -- see #1166.
   if (!wxGetEnv("OCPN_DISABLE_X11_GDK_BACKEND", NULL)) {
@@ -1556,7 +1583,7 @@ void MyApp::BuildMainFrame() {
     }
   }
   MakeLoopbackDriver();
-  MakeInternalDriver();
+  MakeInternalDriver(*m_plugin_msg_listener);
 
   // Load and initialize plugins
   auto style = g_StyleManager->GetCurrentStyle();

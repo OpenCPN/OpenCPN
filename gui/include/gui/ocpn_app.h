@@ -48,6 +48,8 @@ public:
   MyApp();
   ~MyApp() {};
 
+  class PluginMsgListener;
+
   bool OnInit() override;
   void BuildMainFrame();
   void LoadChartDatabase();
@@ -98,6 +100,7 @@ private:
   void InitRestListeners();
   ObsListener rest_activate_listener;
   ObsListener rest_reverse_listener;
+  std::unique_ptr<PluginMsgListener> m_plugin_msg_listener;
 };
 
 wxDECLARE_APP(MyApp);

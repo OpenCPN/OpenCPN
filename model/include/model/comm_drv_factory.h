@@ -46,7 +46,7 @@ void MakeCommDriver(const ConnectionParams* params);
 void MakeLoopbackDriver();
 
 /** Create and register the internal driver. */
-void MakeInternalDriver();
+void MakeInternalDriver(DriverListener& listener);
 
 void initIXNetSystem();
 void uninitIXNetSystem();

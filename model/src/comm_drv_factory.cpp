@@ -77,8 +77,8 @@ void MakeLoopbackDriver() {
   CommDriverRegistry::GetInstance().Activate(std::move(driver));
 }
 
-void MakeInternalDriver() {
-  auto driver = std::make_unique<CommDriverInternal>(NavMsgBus::GetInstance());
+void MakeInternalDriver(DriverListener& listener) {
+  auto driver = std::make_unique<CommDriverInternal>(listener);
   CommDriverRegistry::GetInstance().Activate(std::move(driver));
 }
 
