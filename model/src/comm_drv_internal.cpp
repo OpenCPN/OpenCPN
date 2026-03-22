@@ -32,13 +32,15 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
+#include "observable.h"
+#include "wx/jsonreader.h"
+
 #include "config.h"
 #include "model/comm_drv_internal.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/logger.h"
-
-#include "observable.h"
+#include "model/plugin_comm.h"
 
 CommDriverInternal::CommDriverInternal(DriverListener& listener)
     : AbstractCommDriver(NavAddr::Bus::Plugin, "internal"),
@@ -50,11 +52,19 @@ CommDriverInternal::CommDriverInternal(DriverListener& listener)
 
 bool CommDriverInternal::SendMessage(std::shared_ptr<const NavMsg> msg,
                                      std::shared_ptr<const NavAddr> addr) {
-  auto msg_plugin = std::dynamic_pointer_cast<const PluginMsg>(msg);
-  if (!msg_plugin) {
-    WARNING_LOG << " CommDriverInternal::SendMessage::Illegal message type";
+  auto plugin_msg = std::dynamic_pointer_cast<const PluginMsg>(msg);
+  if (!plugin_msg) {
+    WARNING_LOG << "SendMessage(): Illegal message type";
     return false;
   }
-  NavMsgBus::GetInstance().Notify(msg_plugin);
+  wxJSONValue root;
+  wxJSONReader json_reader;
+  int num_errors = json_reader.Parse(plugin_msg->message, &root);
+  if (num_errors > 0) {
+    WARNING_LOG << "SendMessage(): cannot parse json: "
+                << plugin_msg->message.substr(0, 30);
+    return false;
+  }
+  m_listener.Notify(plugin_msg);
   return true;
 }
