@@ -2355,7 +2355,7 @@ void AisDecoder::updateItem(const std::shared_ptr<AisTargetData> &pTargetData,
         // Parse ISO 8601 date/time
         wxDateTime tz;
         ParseGPXDateTime(tz, eta);
-        pTargetData->ETA_Mo = tz.GetMonth();
+        pTargetData->ETA_Mo = tz.GetMonth() + 1;
         pTargetData->ETA_Day = tz.GetDay();
         pTargetData->ETA_Hr = tz.GetHour();
         pTargetData->ETA_Min = tz.GetMinute();
