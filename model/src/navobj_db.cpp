@@ -1734,6 +1734,16 @@ bool NavObj_dB::LoadAllRoutes() {
       auto containing_route =
           g_pRouteMan->FindRouteContainingWaypoint(point_guid);
 
+      // Special case, the route may be "closed form", i.e. circular.
+      // If so, the closing point is not really a shared point.
+      // Detect that case, and make it so.
+      bool b_closed_route = false;
+      if (!containing_route) {
+        RoutePoint* close_point = route->GetPoint(point_guid);
+        b_closed_route = close_point != nullptr;
+        existing_point = close_point;
+      }
+
       if (containing_route) {  // In a route already?
         existing_point = containing_route->GetPoint(point_guid);
       }
@@ -1744,8 +1754,10 @@ bool NavObj_dB::LoadAllRoutes() {
 
       if (existing_point) {
         point = existing_point;
-        point->SetShared(true);  // by definition
-        point->m_bIsolatedMark = false;
+        if (!b_closed_route) {
+          point->SetShared(true);  // by definition, unless point is a closer.
+          point->m_bIsolatedMark = false;
+        }
       } else {
         point =
             new RoutePoint(latitude, longitude, symbol, name, point_guid, true);
