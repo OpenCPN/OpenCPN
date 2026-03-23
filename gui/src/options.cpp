@@ -1533,6 +1533,10 @@ void options::OptionsFinalizeChartDBUpdate() {
         *m_pWorkDirList;  // Perform a deep copy back to main database.
   // Re-enable RNC texture caching
   g_GLOptions.m_bTextureCompressionCaching = m_bTextureCacheingSave;
+
+  m_OKButton->Enable();
+  m_CancelButton->Enable();
+  m_ApplyButton->Enable();
 }
 
 void options::RecalculateSize(int hint_x, int hint_y) {
@@ -7942,6 +7946,10 @@ void options::OnButtondeleteClick(wxCommandEvent& event) {
 }
 
 void options::DoDBSUpdate(bool force_full) {
+  m_OKButton->Disable();
+  m_CancelButton->Disable();
+  m_ApplyButton->Disable();
+
   wxString longmsg = _("OpenCPN Chart Update");
   longmsg +=
       ".................................................................."
