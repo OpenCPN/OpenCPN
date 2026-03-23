@@ -148,6 +148,11 @@ Files: data/svg/MUI_flat/help-info.svg
 Copyright: no copyright
 License: GPL-3
 
+Files: data/svg/MUI_flat/cross-small-symbolic.svg
+Copyright: no copyright
+License: GPL-3+
+Comment: From https://flathub.org/apps/org.gnome.design.IconLibrary
+
 Files: debian/*
 Copyright: 2023-2025, Alec Leamas
 License: GPL-2+
@@ -1017,7 +1022,7 @@ License: FSFULLR
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/libtool.m4
 Copyright: 1996-2001, 2003-2019, 2021, 2022, Free Software
-License: (FSFULLR and/or GPL-2) with Libtool exception
+License: Libtool
 
 Files: libs/libdnet/libdnet-libdnet-1.18.0/m4/ltsugar.m4
 Copyright: 2004, 2005, 2007, 2008, 2011-2019, 2021, 2022, Free Software
@@ -1229,17 +1234,9 @@ Files: libs/manual/*
 Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-2+
 
-Files: libs/mdns/*
-Copyright: 2017, Mattias Jansson
-License: Unlicense
-
 Files: libs/mdns/CMakeLists.txt
 Copyright: 2023, 2024, Alec Leamas <leamas.alec@gmail.com>
 License: GPL-3+
-
-Files: libs/mdns/mdns-util.h
-Copyright: 2017, Mattias Jansson
-License: public-domain
 
 Files: libs/mdns/mdns-1.4.3/*
 Copyright: 2017, Mattias Jansson
@@ -2904,3 +2901,8 @@ License: GPL-2+ with Libtool exception
  .
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+License: Libtool
+ This file is free software; the Free Software Foundation gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
