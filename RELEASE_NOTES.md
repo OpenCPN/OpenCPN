@@ -3,39 +3,42 @@ OpenCPN 5.14 Release Notes
 
 Major user-facing updates in this version:
 ------------------------------------------
+  - Remove deprecated option for COG/SOG estimation from position fixes
+
   - Allow NMEA0183 sentences without Checksum. If present it must though be
     correct.
-  - Correct fault in GPX file import with file name containing UTF-8 chars,
-    Android.
   - DataMonitor: Filter selection bugfix and several feature updates, various
     ui clean up.
   - DataMonitor: Add capability to replay DM recordings using the VDR plugin
-  - Improve ENC sounding rendering performance.
-  - Correct auto-follow behavior and other handling on touch screen interface.
-  - Enable MMSI Properties dialog in Options | Ships for Android.
-  - Refine the selection method for quilted charts.
-  - Handle invalid time cases in new route.
-  - Add N0183 sentence $xxTHS for true heading.
-  - Fix RangeRingColours for Isolated Marks.
-  - Improve tide station window.
-    Tides are updated for reliable real time presentation.
-  - Enable selection of tide/current graph by double-click.
   - Add tidal currents for the Baltic and North Sea.
   - Add Ticon tidal database for extended tide station support, including
     Mediterranean Sea.
-  - Correct AIS ATON icon rendering logic.
   - Add a search ship name function to the AIS target list.
+  - Add N0183 sentence $xxTHS for true heading.
+  - Add user initiated navobj data backup.
+
+  - Enable MMSI Properties dialog in Options | Ships for Android.
+  - Refine the selection method for quilted charts.
+  - Handle invalid time cases in new route.
+  - Fix RangeRingColours for Isolated Marks.
+  - Improve tide station window. Tides are updated for reliable real time
+    presentation.
+  - Enable selection of tide/current graph by double-click.
+  - Correct AIS ATON icon rendering logic.
+  - Correct auto-follow behavior and other handling on touch screen interface.
   - Fix input of negative latitudes / longitudes.
   - Restrict Notification button "Bell" to primary canvas.
   - Implement delayed AIS alert dialog and sound effect to reduce disruptive
     false alerts.
   - Improve AIS Alert deferral logic on repeated alerts
-  - Streamline the rebuilding of the chart database
   - Improve deferred chart update progress dialog
-  - Remove deprecated option for COG/SOG estimation from position fixes
   - Correct AIS Query handling of message 14 Safety Broadcast Message
+  - Correct fault in GPX file import with file name containing UTF-8 chars,
+    Android.
+
+  - Streamline the rebuilding of the chart database
   - Improved performance for chart database update process.
-  - Add user initiated navobj data backup
+  - Improve ENC sounding rendering performance.
 
 
 Internal code updates:
@@ -56,7 +59,7 @@ Known issues:
 ------------
 
 - Defining two signalK drivers using the same address/port might
-  lead to a crash -  see #5119
+  lead to a crash - see #5119
 
 
 Issues closed since 5.12.4:
