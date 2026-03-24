@@ -35,6 +35,7 @@ Major user-facing updates in this version:
   - Remove deprecated option for COG/SOG estimation from position fixes
   - Correct AIS Query handling of message 14 Safety Broadcast Message
   - Improved performance for chart database update process.
+  - Add user initiated navobj data backup
 
 
 Internal code updates:
