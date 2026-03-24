@@ -501,12 +501,15 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
       pR->m_PlannedDeparture = wxDateTime::Now().ToUTC();
     }
 
-    m_tz_selection = GLOBAL_SETTINGS_INPUT;  // Honor global setting by default
     if (pR != m_pRoute) {
       if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
         m_tz_selection = UTCINPUT;
       else if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL)
         m_tz_selection = LMTINPUT;
+      else if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_PC)
+        m_tz_selection = LTINPUT;
+      else
+        m_tz_selection = GLOBAL_SETTINGS_INPUT;
       m_pEnroutePoint = NULL;
       m_bStartNow = false;
     }
