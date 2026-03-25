@@ -4724,14 +4724,6 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         wxLogMessage(laymsg);
         pConfig->LoadLayers(layerdir);
       }
-
-      // Set GPS Compass box sizes, at adjusted initial scale
-      SetGPSCompassScale();
-      for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
-        ChartCanvas *cc = g_canvasArray.Item(i);
-        if (cc) cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
-      }
-
       break;
     }
     case 8: {
@@ -4808,6 +4800,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         if (cc) {
           cc->CreateMUIBar();
           cc->CheckGroupValid();
+          cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
+          cc->SetShowGPSCompassWindow(true);
         }
       }
 
