@@ -623,10 +623,10 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
 
   m_Piano = new Piano(this);
 
-  m_bShowCompassWin = true;
+  m_bShowCompassWin = false;
   m_Compass = new ocpnCompass(this);
   m_Compass->SetScaleFactor(g_compass_scalefactor);
-  m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
+  m_Compass->Show(false);  // Will be shown later during init chain.
 
   if (IsPrimaryCanvas() && !g_disableNotifications) {
     m_notification_button = new NotificationButton(this);
