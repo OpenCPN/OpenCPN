@@ -539,7 +539,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
                      2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
                      1.0);
   mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
-                            -vp->pix_width / 2, -vp->pix_height / 2, 0);
+                            -vp->pix_width / 2.0f, -vp->pix_height / 2.0f, 0);
 }
 
 void glChartCanvas::MouseEvent(wxMouseEvent &event) {
