@@ -804,18 +804,20 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
             if (a == 0x0a) break;
           }
 
-          if (line[0] != ';') {
-            wxStringTokenizer tkz(line, "|");
-            if (tkz.CountTokens()) {
-              //  6 attribute label
-              wxString class_name = tkz.GetNextToken();
+          if (!line.IsEmpty()) {
+            if (line[0] != ';') {
+              wxStringTokenizer tkz(line, "|");
+              if (tkz.CountTokens()) {
+                //  6 attribute label
+                wxString class_name = tkz.GetNextToken();
 
-              //  attribute number, ascii
-              wxString token = tkz.GetNextToken();
-              long liattr;
-              token.ToLong(&liattr);
-              int iattr = liattr;
-              if (iattr > iattr_max) iattr_max = iattr;
+                //  attribute number, ascii
+                wxString token = tkz.GetNextToken();
+                long liattr;
+                token.ToLong(&liattr);
+                int iattr = liattr;
+                if (iattr > iattr_max) iattr_max = iattr;
+              }
             }
           }
         }
@@ -844,40 +846,42 @@ bool cm93_dictionary::LoadDictionary(const wxString &dictionary_dir) {
             if (a == 0x0a) break;
           }
 
-          if (line[0] != ';') {
-            wxStringTokenizer tkz(line, "|\r\n");
-            if (tkz.CountTokens() >= 3) {
-              //  6 char class name
-              wxString attr_name = tkz.GetNextToken();
+          if (!line.IsEmpty()) {
+            if (line[0] != ';') {
+              wxStringTokenizer tkz(line, "|\r\n");
+              if (tkz.CountTokens() >= 3) {
+                //  6 char class name
+                wxString attr_name = tkz.GetNextToken();
 
-              //  class number, ascii
-              wxString token = tkz.GetNextToken();
-              long liattr;
-              token.ToLong(&liattr);
-              int iattr = liattr;
+                //  class number, ascii
+                wxString token = tkz.GetNextToken();
+                long liattr;
+                token.ToLong(&liattr);
+                int iattr = liattr;
 
-              m_AttrArray->Insert(attr_name, iattr);
-              m_AttrArray->RemoveAt(iattr + 1);
+                m_AttrArray->Insert(attr_name, iattr);
+                m_AttrArray->RemoveAt(iattr + 1);
 
-              token = tkz.GetNextToken().Trim();
+                token = tkz.GetNextToken().Trim();
 
-              char atype = '?';
-              if (token.IsSameAs("aFLOAT"))
-                atype = 'R';
-              else if (token.IsSameAs("aBYTE"))
-                atype = 'B';
-              else if (token.IsSameAs("aSTRING"))
-                atype = 'S';
-              else if (token.IsSameAs("aCMPLX"))
-                atype = 'C';
-              else if (token.IsSameAs("aLIST"))
-                atype = 'L';
-              else if (token.IsSameAs("aWORD10"))
-                atype = 'W';
-              else if (token.IsSameAs("aLONG"))
-                atype = 'G';
+                char atype = '?';
+                if (token.IsSameAs("aFLOAT"))
+                  atype = 'R';
+                else if (token.IsSameAs("aBYTE"))
+                  atype = 'B';
+                else if (token.IsSameAs("aSTRING"))
+                  atype = 'S';
+                else if (token.IsSameAs("aCMPLX"))
+                  atype = 'C';
+                else if (token.IsSameAs("aLIST"))
+                  atype = 'L';
+                else if (token.IsSameAs("aWORD10"))
+                  atype = 'W';
+                else if (token.IsSameAs("aLONG"))
+                  atype = 'G';
 
-              m_ValTypeArray[iattr] = atype;
+                m_ValTypeArray[iattr] = atype;
+              }
             }
           }
         }

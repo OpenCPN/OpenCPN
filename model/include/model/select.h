@@ -42,8 +42,7 @@
 
 class Select;  // forward
 
-extern Select *pSelect;    ///< Global instance
-extern Select *pSelectTC;  ///< Global instance
+extern Select *pSelect;  ///< Global instance
 
 struct SelectCtx {
   const bool show_nav_objects;

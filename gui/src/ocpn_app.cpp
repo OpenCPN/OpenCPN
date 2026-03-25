@@ -937,11 +937,6 @@ bool MyApp::OnInit() {
   pSelect = new Select();
   pSelect->SetSelectPixelRadius(12);
 
-  //      Init the Selectable Tide/Current Items List
-  pSelectTC = new Select();
-  //  Increase the select radius for tide/current stations
-  pSelectTC->SetSelectPixelRadius(25);
-
   //      Init the Selectable AIS Target List
   pSelectAIS = new Select();
   pSelectAIS->SetSelectPixelRadius(12);
@@ -1072,7 +1067,6 @@ bool MyApp::OnInit() {
     int SelectPixelRadius = 50;
 
     pSelect->SetSelectPixelRadius(SelectPixelRadius);
-    pSelectTC->SetSelectPixelRadius(wxMax(25, SelectPixelRadius));
     pSelectAIS->SetSelectPixelRadius(SelectPixelRadius);
   }
 
@@ -1803,7 +1797,6 @@ int MyApp::OnExit() {
 
   delete pConfig;
   delete pSelect;
-  delete pSelectTC;
   delete pSelectAIS;
 
   delete ps52plib;

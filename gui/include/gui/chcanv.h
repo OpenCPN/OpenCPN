@@ -992,6 +992,8 @@ private:
   bool bShowingCurrent;
   bool bShowingTide;
 
+  Select *pSelectTC;
+
   /**
    * Display-specific scale factor in logical pixels per meter for the physical
    * screen.

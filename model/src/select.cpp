@@ -34,7 +34,6 @@
 #include "vector2D.h"
 
 Select *pSelect;
-Select *pSelectTC;
 
 Select::Select() {
   pSelectList = new SelectableItemList;

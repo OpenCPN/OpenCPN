@@ -668,6 +668,15 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
   }
 #endif
 
+  // Init the Selectable Tide/Current Items List
+  pSelectTC = new Select();
+  //  Increase the select radius for tide/current stations
+  pSelectTC->SetSelectPixelRadius(25);
+  if (g_btouch) {
+    int SelectPixelRadius = 50;
+    pSelectTC->SetSelectPixelRadius(wxMax(25, SelectPixelRadius));
+  }
+
   // Listen for notification events
   auto &noteman = NotificationManager::GetInstance();
 
@@ -734,6 +743,8 @@ ChartCanvas::~ChartCanvas() {
   delete m_pos_image_user_yellow_day;
   delete m_pos_image_user_yellow_dusk;
   delete m_pos_image_user_yellow_night;
+
+  delete pSelectTC;
 
   delete undo;
 #ifdef ocpnUSE_GL
