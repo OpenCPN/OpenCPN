@@ -72,6 +72,7 @@ public:
 
   // Maintainance
   bool Backup(wxString fileName);
+  bool FullSchemaMigrate(wxFrame *frame);
 
 private:
   NavObj_dB();
