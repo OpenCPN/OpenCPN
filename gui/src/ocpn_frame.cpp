@@ -4702,6 +4702,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
+      NavObj_dB::GetInstance().FullSchemaMigrate(this);
       NavObj_dB::GetInstance().ImportLegacyNavobj(this);
       NavObj_dB::GetInstance().LoadNavObjects();
 
