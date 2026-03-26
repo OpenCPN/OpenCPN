@@ -808,17 +808,17 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
   Station_Data *pmsd = pIDX->pref_sta_data;
   if (pmsd) {
     if (CURRENT_PLOT == m_plot_type) {
-      //
+      // Use user's speed unit for Y-axis label instead of station units
       wxString speed_unit = getUsrSpeedUnit();
       dc.GetTextExtent(speed_unit, &w, &h);
       dc.DrawRotatedText(speed_unit, 0,
                          m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
-    }else{
+    } else {
       // Use user's height unit for Y-axis label instead of station units
       wxString height_unit = getUsrHeightUnit();
       dc.GetTextExtent(height_unit, &w, &h);
       dc.DrawRotatedText(height_unit, 0,
-                        m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
+                         m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
     }
   }
 
@@ -1238,19 +1238,19 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
       }
       // Now convert from meters to preferred height units
       if (CURRENT_PLOT == m_plot_type)
-          t_converted = toUsrSpeed(t_converted);
-        else
-          t_converted = toUsrHeight(t_converted);
+        t_converted = toUsrSpeed(t_converted);
+      else
+        t_converted = toUsrHeight(t_converted);
     }
 
     s.Printf("%3.2f ", t_converted);
     p.Append(s);
 
-    // set unit - use preferred height unit abbreviation
+    // set unit - use preferred speed/height unit abbreviation
     if (CURRENT_PLOT == m_plot_type)
-        p.Append(getUsrSpeedUnit());
-      else
-        p.Append(getUsrHeightUnit());
+      p.Append(getUsrSpeedUnit());
+    else
+      p.Append(getUsrHeightUnit());
 
     // set current direction
     if (CURRENT_PLOT == m_plot_type) {
