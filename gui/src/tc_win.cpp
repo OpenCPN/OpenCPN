@@ -585,7 +585,10 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
           tcv[i] = tcv[i] * TCDataFactory::known_units[unit_c].conv_factor;
         }
         // Now convert from meters to preferred height units
-        tcv[i] = toUsrHeight(tcv[i]);
+        if (CURRENT_PLOT == m_plot_type)
+          tcv[i] = toUsrSpeed(tcv[i]);
+        else
+          tcv[i] = toUsrHeight(tcv[i]);
       }
 
       if (tcv[i] > tcmax) tcmax = tcv[i];
@@ -621,7 +624,10 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
                     TCDataFactory::known_units[unit_c].conv_factor;
               }
               // Now convert from meters to preferred height units
-              tcvalue_converted = toUsrHeight(tcvalue_converted);
+              if (CURRENT_PLOT == m_plot_type)
+                tcvalue_converted = toUsrSpeed(tcvalue_converted);
+              else
+                tcvalue_converted = toUsrHeight(tcvalue_converted);
             }
 
             s1.Printf("%05.2f ", tcvalue_converted);  // write converted value
@@ -653,7 +659,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
         s1.Printf("%05.2f ",
                   fabs(tcv[i]));  // tcv[i] is already converted to height units
         s.Append(s1);
-        s.Append(getUsrHeightUnit());
+        s.Append(getUsrSpeedUnit());
         s1.Printf("  %03.0f", dir);  // write direction
         s.Append(s1);
 
@@ -801,11 +807,19 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
 
   Station_Data *pmsd = pIDX->pref_sta_data;
   if (pmsd) {
-    // Use user's height unit for Y-axis label instead of station units
-    wxString height_unit = getUsrHeightUnit();
-    dc.GetTextExtent(height_unit, &w, &h);
-    dc.DrawRotatedText(height_unit, 0,
-                       m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
+    if (CURRENT_PLOT == m_plot_type) {
+      //
+      wxString speed_unit = getUsrSpeedUnit();
+      dc.GetTextExtent(speed_unit, &w, &h);
+      dc.DrawRotatedText(speed_unit, 0,
+                         m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
+    }else{
+      // Use user's height unit for Y-axis label instead of station units
+      wxString height_unit = getUsrHeightUnit();
+      dc.GetTextExtent(height_unit, &w, &h);
+      dc.DrawRotatedText(height_unit, 0,
+                        m_graph_rect.y + m_graph_rect.height / 2 + w / 2, 90.);
+    }
   }
 
   //      Show flood and ebb directions
@@ -1223,14 +1237,20 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
             t_converted * TCDataFactory::known_units[unit_c].conv_factor;
       }
       // Now convert from meters to preferred height units
-      t_converted = toUsrHeight(t_converted);
+      if (CURRENT_PLOT == m_plot_type)
+          t_converted = toUsrSpeed(t_converted);
+        else
+          t_converted = toUsrHeight(t_converted);
     }
 
     s.Printf("%3.2f ", t_converted);
     p.Append(s);
 
     // set unit - use preferred height unit abbreviation
-    p.Append(getUsrHeightUnit());
+    if (CURRENT_PLOT == m_plot_type)
+        p.Append(getUsrSpeedUnit());
+      else
+        p.Append(getUsrHeightUnit());
 
     // set current direction
     if (CURRENT_PLOT == m_plot_type) {
