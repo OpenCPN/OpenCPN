@@ -13764,6 +13764,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
                 if (bDrawCurrentValues) {
                   dc.SetFont(*pTCFont);
+                  tcvalue = toUsrSpeed(tcvalue);
                   snprintf(sbuf, 19, "%3.1f", fabs(tcvalue));
                   dc.DrawText(wxString(sbuf, wxConvUTF8), pixxc, pixyc);
                 }
