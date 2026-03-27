@@ -13598,11 +13598,26 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                       dc.SetPen(*pblue_pen);
                     dc.DrawLines(3, arrow);
                   }
+                  // Convert nowlev to preferred height units (it comes from
+                  // GetHightOrLowTide in station units)
+                  double nowlev_converted = nowlev;
+                  Station_Data *pmsd = pIDX->pref_sta_data;
+                  if (pmsd) {
+                    // Convert from station units to meters first
+                    int unit_c = TCDataFactory::findunit(pmsd->unit);
+                    if (unit_c >= 0) {
+                      nowlev_converted =
+                          nowlev_converted *
+                          TCDataFactory::known_units[unit_c].conv_factor;
+                    }
+                    // Now convert from meters to preferred height units
+                    nowlev_converted = toUsrHeight(nowlev_converted);
+                  }
                   // draw tide level text
                   wxString s;
-                  s.Printf("%3.1f", nowlev);
-                  Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
-                  if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
+                  s.Printf("%3.1f", nowlev_converted);
+                  // Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
+                  if (pmsd) s.Append(getUsrHeightUnit());
                   int wx1;
                   dc.GetTextExtent(s, &wx1, NULL);
                   wx1 *= g_Platform->GetDisplayDIPMult(this);
