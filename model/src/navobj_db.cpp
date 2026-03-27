@@ -628,6 +628,16 @@ bool NavObj_dB::FullSchemaMigrate(wxFrame* frame) {
     } else
       wxLogMessage("Schema update and migration 0->1 successful");
   }
+
+  try {
+    setUserVersion(m_db,
+                   1);  // Be sure all users get updated to version 1 at least
+  } catch (const std::runtime_error& e) {
+    // Known errors (e.g., SQLite issues)
+    wxLogMessage("Error on: Schema update and migration 0->1, setUserVersion");
+    wxLogMessage(wxString(std::string(e.what())).c_str());
+  }
+
   //  More schema updates in sequence here.
   // ...
 

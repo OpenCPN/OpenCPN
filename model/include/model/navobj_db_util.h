@@ -24,6 +24,8 @@
 
 class wxFrame;
 
+void setUserVersion(sqlite3* db, int v);
+
 // Utility functions for perform database schema updates, to be applied in
 // succession.
 
