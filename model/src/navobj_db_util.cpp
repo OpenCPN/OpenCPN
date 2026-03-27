@@ -46,6 +46,19 @@ int getUserVersion(sqlite3* db) {
   return version;
 }
 
+void setUserVersion(sqlite3* db, int v) {
+  std::string sql = "PRAGMA user_version = " + std::to_string(v) + ";";
+
+  char* errMsg = nullptr;
+  int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg);
+
+  if (rc != SQLITE_OK) {
+    std::string err = errMsg ? errMsg : "Failed to set user_version";
+    sqlite3_free(errMsg);
+    throw std::runtime_error(err);
+  }
+}
+
 inline bool columnInPrimaryKey(sqlite3* db, const std::string& table,
                                const std::string& column) {
   std::string sql = "PRAGMA table_info(" + table + ");";
@@ -95,8 +108,6 @@ std::string SchemaUpdate_0_1(sqlite3* db, wxFrame* frame) {
   if (needsMigration_0_1(db)) {
     // Configure and execute migrator for 0->1 migration
     DbMigrator migrator(db);
-
-    // Migration 0->1
     migrator.addMigration(1, [](sqlite3* db) {
       char* errMsg = nullptr;
 
