@@ -23,6 +23,7 @@
 
 #include <cmath>
 #include <iomanip>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -138,6 +139,7 @@ bool CreateTables(sqlite3* db) {
             viz_name INTEGER,
             shared INTEGER,
             isolated INTEGER,
+            linked_layer_guid TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
 
@@ -173,6 +175,9 @@ bool CreateTables(sqlite3* db) {
         )";
 
   if (!executeSQL(db, create_tables_sql)) return false;
+
+  // Add new columns if the database was created with an older schema.
+  executeSQL(db, "ALTER TABLE routepoints ADD COLUMN linked_layer_guid TEXT");
 
   return true;
 }
@@ -1438,7 +1443,8 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
       "visibility = ?, "
       "viz_name = ?, "
       "shared = ?, "
-      "isolated = ? "
+      "isolated = ?, "
+      "linked_layer_guid = ? "
       "WHERE guid = ?";
 
   sqlite3_stmt* stmt;
@@ -1458,7 +1464,6 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
     if (point->GetManualETD().IsValid()) etd = point->GetManualETD().GetTicks();
     sqlite3_bind_int(stmt, 8, etd);
     sqlite3_bind_text(stmt, 9, "type", -1, SQLITE_TRANSIENT);
-    std::string timit = point->m_timestring.ToStdString().c_str();
     sqlite3_bind_text(stmt, 10, point->m_timestring.ToStdString().c_str(), -1,
                       SQLITE_TRANSIENT);
     sqlite3_bind_double(stmt, 11, point->m_WaypointArrivalRadius);
@@ -1484,7 +1489,9 @@ bool NavObj_dB::UpdateDBRoutePointAttributes(RoutePoint* point) {
     int iso = point->m_bIsolatedMark;
     sqlite3_bind_int(stmt, 23, iso);  // point->m_bIsolatedMark);
 
-    sqlite3_bind_text(stmt, 24, point->m_GUID.ToStdString().c_str(), -1,
+    sqlite3_bind_text(stmt, 24, point->m_LinkedLayerGUID.ToStdString().c_str(),
+                      -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 25, point->m_GUID.ToStdString().c_str(), -1,
                       SQLITE_TRANSIENT);
 
   } else {
@@ -1644,6 +1651,13 @@ bool NavObj_dB::LoadAllRoutes() {
         reinterpret_cast<const char*>(sqlite3_column_text(stmt, 12));
 
     Route* route = NULL;
+    std::map<std::string, RoutePoint*> linked_clones;
+    const auto resolve_linked_clone =
+        [&linked_clones](const std::string& guid) -> RoutePoint* {
+      auto it = linked_clones.find(guid);
+      if (it != linked_clones.end()) return it->second;
+      return NULL;
+    };
 
     //  Add the route_points
     const char* sql = R"(
@@ -1678,6 +1692,7 @@ bool NavObj_dB::LoadAllRoutes() {
         "p.viz_name, "
         "p.shared, "
         "p.isolated, "
+        "p.linked_layer_guid, "
         "p.created_at "
         "FROM routepoints_link tp "
         "JOIN routepoints p ON p.guid = tp.point_guid "
@@ -1753,6 +1768,10 @@ bool NavObj_dB::LoadAllRoutes() {
       int viz_name = sqlite3_column_int(stmtp, col++);
       int shared = sqlite3_column_int(stmtp, col++);
       int isolated = sqlite3_column_int(stmtp, col++);
+      const unsigned char* linked_guid_text = sqlite3_column_text(stmtp, col++);
+      std::string linked_layer_guid;
+      if (linked_guid_text)
+        linked_layer_guid = reinterpret_cast<const char*>(linked_guid_text);
       std::string point_created_at =
           reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
 
@@ -1778,6 +1797,16 @@ bool NavObj_dB::LoadAllRoutes() {
       // Or isolated?
       if (!existing_point) {
         existing_point = pWayPointMan->FindRoutePointByGUID(point_guid.c_str());
+      }
+      if (!existing_point && !linked_layer_guid.empty()) {
+        existing_point = resolve_linked_clone(linked_layer_guid);
+      }
+      if (!existing_point && !linked_layer_guid.empty()) {
+        existing_point = pWayPointMan->FindRoutePointByGUID(linked_layer_guid);
+        if (existing_point && (!existing_point->m_bIsInLayer ||
+                               !existing_point->m_bLayerGuidIsPersistent)) {
+          existing_point = NULL;
+        }
       }
 
       if (existing_point) {
@@ -1815,6 +1844,8 @@ bool NavObj_dB::LoadAllRoutes() {
         point->SetNameShown(viz_name == 1);
         point->SetShared(shared == 1);
         point->m_bIsolatedMark = (isolated == 1);
+        if (!linked_layer_guid.empty())
+          point->m_LinkedLayerGUID = linked_layer_guid;
 
         if (point_created_at.size()) {
           // Convert from sqLite default date/time format to wxDateTime
@@ -1857,6 +1888,42 @@ bool NavObj_dB::LoadAllRoutes() {
 
             point->m_HyperlinkList->push_back(h);
           }
+        }
+      }
+
+      if (point->m_bIsInLayer) {
+        RoutePoint* cloned =
+            new RoutePoint(point->m_lat, point->m_lon, point->GetIconName(),
+                           point->GetName(), point_guid, true);
+        cloned->m_MarkDescription = point->m_MarkDescription;
+        cloned->m_TideStation = point->m_TideStation;
+        cloned->SetPlannedSpeed(point->GetPlannedSpeed());
+        cloned->SetETD(point->GetETD());
+
+        cloned->m_WaypointArrivalRadius = point->m_WaypointArrivalRadius;
+        cloned->m_iWaypointRangeRingsNumber =
+            point->m_iWaypointRangeRingsNumber;
+        cloned->m_fWaypointRangeRingsStep = point->m_fWaypointRangeRingsStep;
+        cloned->m_iWaypointRangeRingsStepUnits =
+            point->m_iWaypointRangeRingsStepUnits;
+        cloned->SetShowWaypointRangeRings(point->m_bShowWaypointRangeRings);
+        cloned->m_wxcWaypointRangeRingsColour =
+            point->m_wxcWaypointRangeRingsColour;
+        cloned->SetScaMin(point->GetScaMin());
+        cloned->SetScaMax(point->GetScaMax());
+        cloned->SetUseSca(point->GetUseSca());
+        cloned->SetVisible(point->IsVisible());
+        cloned->SetNameShown(point->IsNameShown());
+        cloned->SetShared(shared == 1);
+        cloned->m_bIsolatedMark = (isolated == 1);
+        if (!linked_layer_guid.empty()) {
+          cloned->m_LinkedLayerGUID = linked_layer_guid;
+        } else if (point->m_bLayerGuidIsPersistent) {
+          cloned->m_LinkedLayerGUID = point->m_GUID;
+        }
+        point = cloned;
+        if (!cloned->m_LinkedLayerGUID.IsEmpty()) {
+          linked_clones[cloned->m_LinkedLayerGUID.ToStdString()] = cloned;
         }
       }
 
@@ -1956,6 +2023,7 @@ bool NavObj_dB::LoadAllPoints() {
       "p.viz_name, "
       "p.shared, "
       "p.isolated, "
+      "p.linked_layer_guid, "
       "p.created_at "
       "FROM routepoints p ";
 
@@ -2004,6 +2072,10 @@ bool NavObj_dB::LoadAllPoints() {
     int viz_name = sqlite3_column_int(stmtp, col++);
     int shared = sqlite3_column_int(stmtp, col++);
     int isolated = sqlite3_column_int(stmtp, col++);
+    const unsigned char* linked_guid_text = sqlite3_column_text(stmtp, col++);
+    std::string linked_layer_guid;
+    if (linked_guid_text)
+      linked_layer_guid = reinterpret_cast<const char*>(linked_guid_text);
     std::string point_created_at =
         reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
 
@@ -2031,6 +2103,8 @@ bool NavObj_dB::LoadAllPoints() {
       point->SetNameShown(viz_name == 1);
       point->SetShared(shared == 1);
       point->m_bIsolatedMark = (isolated == 1);
+      if (!linked_layer_guid.empty())
+        point->m_LinkedLayerGUID = linked_layer_guid;
 
       if (point_created_at.size()) {
         // Convert from sqLite default date/time format to wxDateTime
