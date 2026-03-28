@@ -630,9 +630,13 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 #endif
   fs::path gl_util_path = ep.parent_path().append(gl_util_exe);
 
-  if (!fs::exists(gl_util_path)) {  // TODO: What to do if the utility is not
-                                    // found (Which it is not for developer
-                                    // builds that are not installed)?
+  if (!fs::exists(gl_util_path)) {
+    gl_util_path =
+        ep.parent_path().parent_path().append("libexec").append(gl_util_exe);
+  }
+  if (!fs::exists(gl_util_path)) {
+    // TODO: What to do if the utility is not found (Which it is not for
+    // developer builds that are not installed)?
     wxLogMessage("OpenGL test utility not found at %s.", gl_util_path.c_str());
     return false;
   }

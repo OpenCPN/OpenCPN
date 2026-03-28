@@ -520,16 +520,16 @@ wxString AisTargetData::BuildQueryResult() {
          << _("Class") << "</font></td></tr>" << rowStartH << "<b>" << MMSIstr
          << "</b></td><td>&nbsp;</td><td align=right><b>" << ClassStr << rowEnd
          << "</table></td></tr>";
-
-  if ((Class != AIS_SART))  //&& (Class != AIS_DSC))
-    html << "<tr><td colspan=2><table width=100% border=0 cellpadding=0 "
-            "cellspacing=0>"
-         << rowStart
-         << ((Class == AIS_BASE || Class == AIS_ATON || Class == AIS_METEO)
+  html << "<tr><td colspan=2><table width=100% border=0 cellpadding=0 "
+          "cellspacing=0>"
+       << rowStart;
+  if ((Class != AIS_SART) && (Class != AIS_ARPA)) {
+    html << ((Class == AIS_BASE || Class == AIS_ATON || Class == AIS_METEO)
                  ? _("Nation")
                  : _("Flag"))
          << rowEnd << "</font></td></tr>" << rowStartH << "<font size=-1><b>"
          << GetCountryCode(true);
+  }
   if (Class == AIS_CLASS_B && MMSIstr.StartsWith("8")) {
     html << "<td align=right>" << _("Handheld");
   }
@@ -1395,7 +1395,7 @@ bool AisTargetData::IsValidMID(int mid) {
 // Get country name and code according to ITU 2023-02
 // (http://www.itu.int/en/ITU-R/terrestrial/fmd/Pages/mid.aspx)
 wxString AisTargetData::GetCountryCode(bool b_CntryLongStr) {
-  if (Class == AIS_BUOY) return "";
+  if (Class == AIS_BUOY || Class == AIS_ARPA) return "";
   /***** Check for a valid MID *****/
   // Meteo adaption
   int tmpMmsi = met_data.original_mmsi ? met_data.original_mmsi : MMSI;
