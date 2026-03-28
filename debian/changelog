@@ -1,8 +1,8 @@
-opencpn (1:5.14.1+dfsg~beta4-1~bpo13+1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta4-1~bpo13+1) trixie-backports; urgency=medium
 
   * New upstream release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 28 Mar 2026 10:28:26 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 28 Mar 2026 11:12:01 +0100
 
 opencpn (1:5.14.1+dfsg~beta4-1) unstable; urgency=medium
 
