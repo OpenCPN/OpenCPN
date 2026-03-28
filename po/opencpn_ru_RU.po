@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-03-15 14:22-0400\n"
-"PO-Revision-Date: 2026-03-19 13:53\n"
+"PO-Revision-Date: 2026-03-27 23:38\n"
 "Last-Translator: \n"
 "Language-Team: Russian\n"
 "Language: ru_RU\n"
@@ -518,7 +518,7 @@ msgstr "Влево"
 #: gui/src/route_prop_dlg.cpp:406 gui/src/track_printout.cpp:89
 #: gui/src/track_prop_dlg.cpp:314 gui/src/track_prop_dlg.cpp:1360
 msgid "Speed"
-msgstr "Скорость"
+msgstr "SOG"
 
 #: model/src/ais_target_data.cpp:838 gui/src/route_printout.cpp:90
 #: gui/src/route_prop_dlg.cpp:418 gui/src/track_printout.cpp:80
@@ -531,7 +531,7 @@ msgstr "Направление"
 
 #: model/src/ais_target_data.cpp:848
 msgid "Turn Rate"
-msgstr "Скорость поворота"
+msgstr "ROT"
 
 #: model/src/ais_target_data.cpp:853 gui/src/ais_target_list_dlg.cpp:618
 msgid "Range"
@@ -3568,7 +3568,7 @@ msgstr "Скрыть"
 #: gui/src/canvas_menu.cpp:690 gui/src/routemanagerdialog.cpp:426
 #: gui/src/routemanagerdialog.cpp:608
 msgid "Show"
-msgstr "Показ"
+msgstr "Показать"
 
 #: gui/src/canvas_menu.cpp:692 gui/src/chcanv.cpp:7068
 msgid "CPA alarm "
@@ -3630,7 +3630,7 @@ msgstr "Разделить по Плечу"
 #: gui/src/canvas_menu.cpp:756 gui/src/canvas_menu.cpp:809
 #: gui/src/canvas_menu.cpp:868 gui/src/canvas_menu.cpp:921
 msgid "Copy as KML"
-msgstr "Скопировать в буфер в формате KML"
+msgstr "Копировать как KML"
 
 #: gui/src/canvas_menu.cpp:757 gui/src/canvas_menu.cpp:810
 #: gui/src/canvas_menu.cpp:871 gui/src/canvas_menu.cpp:924
@@ -4138,7 +4138,7 @@ msgstr "(безымянный)"
 
 #: gui/src/chcanv.cpp:4056
 msgid "Total Length: "
-msgstr "Полная длина: "
+msgstr "Общ. длина: "
 
 #: gui/src/chcanv.cpp:4058
 msgid "Leg: from "
@@ -4254,7 +4254,7 @@ msgstr "Хотите добавить ортодромические проме�
 
 #: gui/src/chcanv.cpp:9748 gui/src/chcanv.cpp:10020
 msgid "Replace this RoutePoint by the nearby Waypoint?"
-msgstr "Заменить эту точку маршрута на ближайшую путевую точку?"
+msgstr "Заменить эту Маршрутную Точку на ближайшую путевую точку?"
 
 #: gui/src/chcanv.cpp:9750 gui/src/chcanv.cpp:10022
 msgid "OpenCPN RoutePoint change"
@@ -5599,7 +5599,7 @@ msgstr "Номер"
 #: gui/src/route_prop_dlg.cpp:377 gui/src/track_printout.cpp:83
 #: gui/src/track_prop_dlg.cpp:306
 msgid "Distance"
-msgstr "Расстояние"
+msgstr "DIST"
 
 #: gui/src/mark_info.cpp:511 gui/src/options.cpp:2060
 #: gui/src/route_prop_dlg.cpp:268 gui/src/track_prop_dlg.cpp:484
@@ -8694,7 +8694,7 @@ msgstr "Пункт отправления"
 #: gui/src/route_prop_dlg_impl.cpp:763 gui/src/track_prop_dlg.cpp:394
 #: gui/src/track_prop_dlg.cpp:789 gui/src/track_prop_dlg.cpp:1359
 msgid "Total distance"
-msgstr "Суммарное расстояние"
+msgstr "Общ. DIST"
 
 #: gui/src/route_prop_dlg_impl.cpp:764
 msgid "Speed (Kts)"

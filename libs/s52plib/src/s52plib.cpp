@@ -6158,14 +6158,18 @@ int s52plib::BuildLCSymbolTexture(char *str, char *col, wxPoint &r,
   // Render the symbol on wxMemoryDC
   HPGL->SetVP(&vp_plib);
   wxMemoryDC mdc;
-  wxBitmap bmp(width, height, 32);
+
+#if (defined(__WXMSW__) || defined(__WXMAC__) || defined(ANDROID))
+  wxBitmap bmp(width, height, 24);
   mdc.SelectObject(bmp);
-  HPGL->SetTargetDC(&mdc);
-#if (defined(__WXMSW__) || defined(__WXMAC__))
   mdc.SetBackground(wxBrush(m_unused_wxColor));
   mdc.Clear();
+#else
+  wxBitmap bmp(width, height, 32);
+  mdc.SelectObject(bmp);
 #endif
 
+  HPGL->SetTargetDC(&mdc);
   wxPoint rt(0, 0);
   HPGL->Render(str, col, rt, origin, wxPoint(0, 0), 1.0, 0, false);
   mdc.SelectObject(wxNullBitmap);
@@ -6175,6 +6179,12 @@ int s52plib::BuildLCSymbolTexture(char *str, char *col, wxPoint &r,
 
   unsigned char *source = image.GetData();
   unsigned char *alpha = image.GetAlpha();
+
+  // Correct for Android bug
+  //  24 bit image should have no alpha channel data
+#ifdef ANDROID
+  alpha = nullptr;
+#endif
 
   unsigned char mr, mg, mb;
   if (!alpha) {

@@ -236,8 +236,9 @@ void ConnectionEditDialog::Init() {
 
   m_btnSizer = nullptr;
   m_btnSizerBox = nullptr;
+  m_btnOK = nullptr;
 
-  // Setup some inital values
+  // Setup some initial values
   m_buttonScanBT = 0;
   m_stBTPairs = 0;
   m_choiceBTDataSources = 0;
@@ -998,6 +999,8 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
 
 void ConnectionEditDialog::ShowNMEANet(bool visible) {
   bool advanced = m_advanced;
+  if (m_btnOK) m_btnOK->Enable();
+
   m_stNetAddr->Show(visible);
   m_tNetAddress->Show(visible);
   m_stNetDataProtocol->Show(visible);
@@ -1018,6 +1021,8 @@ void ConnectionEditDialog::ShowNMEANet(bool visible) {
 
 void ConnectionEditDialog::ShowNMEASerial(bool visible) {
   bool advanced = m_advanced;
+  if (m_btnOK) m_btnOK->Enable();
+
   m_stSerBaudrate->Show(visible);
   m_choiceBaudRate->Show(visible);
   m_stSerPort->Show(visible);
@@ -1030,6 +1035,8 @@ void ConnectionEditDialog::ShowNMEASerial(bool visible) {
 }
 
 void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
+  if (m_btnOK) m_btnOK->Enable();
+
   m_cbCheckSKDiscover->Hide();
   m_ButtonSKDiscover->Hide();
   m_stAuthToken->Hide();
@@ -1038,6 +1045,7 @@ void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
 }
 
 void ConnectionEditDialog::ShowNMEACAN(bool visible) {
+  if (m_btnOK) m_btnOK->Enable();
   m_stCANSource->Show(visible);
   m_choiceCANSource->Show(visible);
   if (visible && m_btnOK && m_choiceCANSource->IsEmpty())
@@ -1045,6 +1053,8 @@ void ConnectionEditDialog::ShowNMEACAN(bool visible) {
 }
 
 void ConnectionEditDialog::ShowNMEABT(bool visible) {
+  if (m_btnOK) m_btnOK->Enable();
+
   if (visible) {
     if (m_buttonScanBT) m_buttonScanBT->Show();
     if (m_stBTPairs) m_stBTPairs->Show();
@@ -1070,6 +1080,8 @@ void ConnectionEditDialog::ShowNMEABT(bool visible) {
 
 void ConnectionEditDialog::SetNMEAFormToSerial() {
   bool advanced = m_advanced;
+  if (m_btnOK) m_btnOK->Enable();
+
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);
@@ -1082,6 +1094,8 @@ void ConnectionEditDialog::SetNMEAFormToSerial() {
 
 void ConnectionEditDialog::SetNMEAFormToNet() {
   bool advanced = m_advanced;
+  if (m_btnOK) m_btnOK->Enable();
+
   ShowNMEACommon(TRUE);
   ShowNMEANet(TRUE);
   ShowNMEAGPS(FALSE);
@@ -1096,6 +1110,8 @@ void ConnectionEditDialog::SetNMEAFormToNet() {
 
 void ConnectionEditDialog::SetNMEAFormToCAN() {
   bool advanced = m_advanced;
+  if (m_btnOK) m_btnOK->Enable();
+
   ShowNMEACommon(FALSE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);
