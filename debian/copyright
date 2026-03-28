@@ -136,6 +136,10 @@ Files: data/tcdata/harmonics-dwf-20210110-free.tcd
 Copyright: no copyright
 License: Harmonics
 
+Files: data/tcdata/ticon-europe-global.tcd
+Copyright: DGFI-TUM (Deutsches Geodätisches Forschungsinstitut der Technischen Universität München)
+License: CC-BY-SA-4.0
+
 Files: data/wvsdata/*
 Copyright: 2017, wxTide Authors
 License: GPL-2+
@@ -143,6 +147,11 @@ License: GPL-2+
 Files: data/svg/MUI_flat/help-info.svg
 Copyright: no copyright
 License: GPL-3
+
+Files: data/svg/MUI_flat/cross-small-symbolic.svg
+Copyright: no copyright
+License: GPL-3+
+Comment: From https://flathub.org/apps/org.gnome.design.IconLibrary
 
 Files: debian/*
 Copyright: 2023-2025, Alec Leamas

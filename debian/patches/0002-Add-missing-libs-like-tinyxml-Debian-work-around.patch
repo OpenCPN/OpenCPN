@@ -18,7 +18,7 @@ Forwarded: not-needed
  create mode 100644 cmake/SystemLibs.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7e5593b..a47e708 100644
+index 5fa1a30..55ba40f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1505,7 +1505,6 @@ message(STATUS "    Adding local LIBTESS2")
