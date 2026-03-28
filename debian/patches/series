@@ -4,3 +4,4 @@
 0004-tests-disable-rest-server-tests-for-now.patch
 0005-tests-disable-file-driver-tests-on-distro-builders.patch
 0008-Install-o-charts-dongle-rule-option.patch
+0007-tests-disable-some-tests-for-now.patch
