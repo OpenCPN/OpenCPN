@@ -27,7 +27,7 @@
 #include <wx/wx.h>
 #endif
 #include <wx/arrimpl.cpp>
-
+#include <algorithm>
 #include "model/config_vars.h"
 #include "model/gui_vars.h"
 #include "model/cutil.h"
@@ -363,7 +363,7 @@ void Piano::DrawGLSL(int off) {
 
   int y1 = off, y2 = y1 + h;
 
-  int nKeys = m_composite_array.size();
+  int nKeys = std::min(KeyRect.size(), m_composite_array.size());
 
   // we could cache the coordinates and recompute only when the piano hash
   // changes, but the performance is already fast enough at this point

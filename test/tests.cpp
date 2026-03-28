@@ -1078,11 +1078,22 @@ public:
     EXPECT_TRUE(line);
   }
   static std::string GetSocketPath() {
-    wxFileName path("~/.opencpn", "opencpn-ipc");
+    wxFileName path;
+    try {
+    if (getenv("OCPN_TEST_HOMEDIR"))
+      path = wxFileName(getenv("OCPN_TEST_HOMEDIR"), "opencpn-ipc");
+    else
+      path = wxFileName("~/.opencpn", "opencpn-ipc");
     path.Normalize(wxPATH_NORM_TILDE);
     auto dirpath = path.GetPath();
     if (!wxFileName::DirExists(dirpath)) wxFileName::Mkdir(dirpath);
     return path.GetFullPath().ToStdString();
+    } catch (std::exception& e) {
+        std::string what = e.what();
+        what += ", using path: " + path.GetFullPath().ToStdString();
+        throw std::runtime_error(what);
+    }
+
   }
 
 protected:

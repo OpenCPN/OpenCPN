@@ -623,10 +623,10 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
 
   m_Piano = new Piano(this);
 
-  m_bShowCompassWin = true;
+  m_bShowCompassWin = false;
   m_Compass = new ocpnCompass(this);
   m_Compass->SetScaleFactor(g_compass_scalefactor);
-  m_Compass->Show(m_bShowCompassWin && g_bShowCompassWin);
+  m_Compass->Show(false);  // Will be shown later during init chain.
 
   if (IsPrimaryCanvas() && !g_disableNotifications) {
     m_notification_button = new NotificationButton(this);
@@ -13342,6 +13342,7 @@ double ChartCanvas::GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint) {
 //------------------------------------------------------------------------------------------
 void ChartCanvas::RebuildTideSelectList(LLBBox &BBox) {
   if (!ptcmgr) return;
+  if (this != wxWindow::FindFocus()) return;
 
   pSelectTC->DeleteAllSelectableTypePoints(SELTYPE_TIDEPOINT);
 
@@ -13598,11 +13599,26 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
                       dc.SetPen(*pblue_pen);
                     dc.DrawLines(3, arrow);
                   }
+                  // Convert nowlev to preferred height units (it comes from
+                  // GetHightOrLowTide in station units)
+                  double nowlev_converted = nowlev;
+                  Station_Data *pmsd = pIDX->pref_sta_data;
+                  if (pmsd) {
+                    // Convert from station units to meters first
+                    int unit_c = TCDataFactory::findunit(pmsd->unit);
+                    if (unit_c >= 0) {
+                      nowlev_converted =
+                          nowlev_converted *
+                          TCDataFactory::known_units[unit_c].conv_factor;
+                    }
+                    // Now convert from meters to preferred height units
+                    nowlev_converted = toUsrHeight(nowlev_converted);
+                  }
                   // draw tide level text
                   wxString s;
-                  s.Printf("%3.1f", nowlev);
-                  Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
-                  if (pmsd) s.Append(wxString(pmsd->units_abbrv, wxConvUTF8));
+                  s.Printf("%3.1f", nowlev_converted);
+                  // Station_Data *pmsd = pIDX->pref_sta_data;  // write unit
+                  if (pmsd) s.Append(getUsrHeightUnit());
                   int wx1;
                   dc.GetTextExtent(s, &wx1, NULL);
                   wx1 *= g_Platform->GetDisplayDIPMult(this);
@@ -13764,6 +13780,7 @@ void ChartCanvas::DrawAllCurrentsInBBox(ocpnDC &dc, LLBBox &BBox) {
 
                 if (bDrawCurrentValues) {
                   dc.SetFont(*pTCFont);
+                  tcvalue = toUsrSpeed(tcvalue);
                   snprintf(sbuf, 19, "%3.1f", fabs(tcvalue));
                   dc.DrawText(wxString(sbuf, wxConvUTF8), pixxc, pixyc);
                 }

@@ -13,7 +13,7 @@ jobs:
           password: $DOCKER_PW
     environment:
       - OCPN_TARGET: bookworm
-      - PACKAGE_BRANCH: ci/bookworm-backports
+      - PACKAGE_BRANCH: ci/trixie-backports
     steps:
       - checkout
       - run: cat /etc/apt/sources.list

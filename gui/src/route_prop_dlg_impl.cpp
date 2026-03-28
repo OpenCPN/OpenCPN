@@ -331,7 +331,6 @@ void RoutePropDlgImpl::RecalculateSize() {
 
 void RoutePropDlgImpl::UpdatePoints() {
   if (!m_pRoute) return;
-  wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
   int selected_row = m_dvlcWaypoints->GetSelectedRow();
   m_dvlcWaypoints->DeleteAllItems();
 
@@ -466,9 +465,14 @@ void RoutePropDlgImpl::UpdatePoints() {
     data.clear();
     in++;
   }
-  if (selected_row > 0) {
-    m_dvlcWaypoints->SelectRow(selected_row);
-    m_dvlcWaypoints->EnsureVisible(selection);
+  // Restore the previous row selection after rebuilding the waypoint list.
+  // If the list now contains fewer rows than before, clamp the selection to
+  // the last valid row and scroll it into view so the user's context is kept.
+  int count = m_dvlcWaypoints->GetItemCount();
+  if (selected_row >= 0 && count > 0) {
+    m_dvlcWaypoints->SelectRow(selected_row < count ? selected_row : count - 1);
+    wxDataViewItem selection = m_dvlcWaypoints->GetSelection();
+    if (selection.IsOk()) m_dvlcWaypoints->EnsureVisible(selection);
   }
 }
 
@@ -497,12 +501,15 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
       pR->m_PlannedDeparture = wxDateTime::Now().ToUTC();
     }
 
-    m_tz_selection = GLOBAL_SETTINGS_INPUT;  // Honor global setting by default
     if (pR != m_pRoute) {
       if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
         m_tz_selection = UTCINPUT;
       else if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL)
         m_tz_selection = LMTINPUT;
+      else if (pR->m_TimeDisplayFormat == RTE_TIME_DISP_PC)
+        m_tz_selection = LTINPUT;
+      else
+        m_tz_selection = GLOBAL_SETTINGS_INPUT;
       m_pEnroutePoint = NULL;
       m_bStartNow = false;
     }

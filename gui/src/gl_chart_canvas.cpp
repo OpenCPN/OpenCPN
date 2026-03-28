@@ -539,7 +539,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
                      2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
                      1.0);
   mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
-                            -vp->pix_width / 2, -vp->pix_height / 2, 0);
+                            -vp->pix_width / 2.0f, -vp->pix_height / 2.0f, 0);
 }
 
 void glChartCanvas::MouseEvent(wxMouseEvent &event) {
@@ -3880,35 +3880,6 @@ void glChartCanvas::Render() {
   // Take a copy for use later by DC
   m_glcanvas_width = gl_width;
   m_glcanvas_height = gl_height;
-
-  // Avoid some harmonic difficulties with odd-size glCanvas
-  bool b_odd = false;
-  if (gl_height & 1) {
-    gl_height -= 1;
-    ViewPort *vp = m_pParentCanvas->GetpVP();
-    vp->pix_height = gl_height;
-    b_odd = true;
-  }
-
-  if (gl_width & 1) {
-    gl_width -= 1;
-    ViewPort *vp = m_pParentCanvas->GetpVP();
-    vp->pix_width = gl_width;
-    b_odd = true;
-  }
-
-  //  Set the shader viewport transform matrix
-  //  Using the adjusted dimensions
-  if (b_odd) {
-    ViewPort *vp = m_pParentCanvas->GetpVP();
-    mat4x4 m;
-    mat4x4_identity(m);
-    mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
-                       2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
-                       1.0);
-    mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
-                              -vp->pix_width / 2, -vp->pix_height / 2, 0);
-  }
 
   // @todo: If the intention was to work with the same ViewPort object, use a
   // reference instead. Making a copy of VPoint here means that any changes to

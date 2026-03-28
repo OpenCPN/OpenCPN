@@ -4702,6 +4702,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         }
       }
 
+      NavObj_dB::GetInstance().FullSchemaMigrate(this);
       NavObj_dB::GetInstance().ImportLegacyNavobj(this);
       NavObj_dB::GetInstance().LoadNavObjects();
 
@@ -4800,6 +4801,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
         if (cc) {
           cc->CreateMUIBar();
           cc->CheckGroupValid();
+          cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
+          cc->SetShowGPSCompassWindow(true);
         }
       }
 
