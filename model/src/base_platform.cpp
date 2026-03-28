@@ -355,7 +355,10 @@ wxString& AbstractPlatform::DefaultPrivateDataDir() {
     appendOSDirSlash(&m_PrivateDataDir);
     m_PrivateDataDir.Append("opencpn");
 #else
-    m_PrivateDataDir = std_path.GetUserDataDir();  // should be ~/.opencpn
+    if (getenv("OCPN_TEST_HOMEDIR"))
+      m_PrivateDataDir = getenv("OCPN_TEST_HOMEDIR");
+    else
+      m_PrivateDataDir = std_path.GetUserDataDir();  // should be ~/.opencpn
 #endif
 
     if (g_bportable) m_PrivateDataDir = GetHomeDir();
@@ -679,7 +682,8 @@ bool BasePlatform::InitializeLogFile() {
   wxFileName wxLogFiledir(mlog_file);
   if (true != wxLogFiledir.DirExists(wxLogFiledir.GetPath())) {
     if (!wxLogFiledir.Mkdir(wxLogFiledir.GetPath())) {
-      wxASSERT_MSG(false, "Cannot create opencpn log directory");
+      wxASSERT_MSG(false, wxString("Cannot create opencpn log directory: ") +
+                              wxLogFiledir.GetPath());
       return false;
     }
   }

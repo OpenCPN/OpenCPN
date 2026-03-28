@@ -54,7 +54,7 @@ endif ()
 if (WIN32)
   install(TARGETS ${APP_TARGET} RUNTIME DESTINATION ".")
 else()
-  install(TARGETS ${APP_TARGET} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+  install(TARGETS ${APP_TARGET} RUNTIME DESTINATION ${CMAKE_INSTALL_LIBEXECDIR})
 endif ()
 #
 # If this is a local MSVC Windows build, copy output products to

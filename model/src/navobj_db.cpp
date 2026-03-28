@@ -33,6 +33,7 @@
 #include "model/base_platform.h"
 #include "model/comm_appmsg_bus.h"
 #include "model/navobj_db.h"
+#include "model/navobj_db_util.h"
 #include "model/navutil_base.h"
 #include "model/notification.h"
 #include "model/notification_manager.h"
@@ -614,6 +615,33 @@ NavObj_dB::~NavObj_dB() { sqlite3_close_v2(m_db); }
 void NavObj_dB::Close() {
   sqlite3_close_v2(m_db);
   m_db = nullptr;
+}
+
+bool NavObj_dB::FullSchemaMigrate(wxFrame* frame) {
+  // Call successive schema updates as defined.
+  if (needsMigration_0_1(m_db)) {
+    std::string rs = SchemaUpdate_0_1(m_db, frame);
+    if (rs.size()) {
+      wxLogMessage("Error on: Schema update and migration 0->1");
+      wxLogMessage(wxString(rs.c_str()));
+      return false;
+    } else
+      wxLogMessage("Schema update and migration 0->1 successful");
+  }
+
+  try {
+    setUserVersion(m_db,
+                   1);  // Be sure all users get updated to version 1 at least
+  } catch (const std::runtime_error& e) {
+    // Known errors (e.g., SQLite issues)
+    wxLogMessage("Error on: Schema update and migration 0->1, setUserVersion");
+    wxLogMessage(wxString(std::string(e.what())).c_str());
+  }
+
+  //  More schema updates in sequence here.
+  // ...
+
+  return true;
 }
 
 bool NavObj_dB::ImportLegacyNavobj(wxFrame* frame) {
@@ -1734,6 +1762,16 @@ bool NavObj_dB::LoadAllRoutes() {
       auto containing_route =
           g_pRouteMan->FindRouteContainingWaypoint(point_guid);
 
+      // Special case, the route may be "closed form", i.e. circular.
+      // If so, the closing point is not really a shared point.
+      // Detect that case, and make it so.
+      bool b_closed_route = false;
+      if (!containing_route) {
+        RoutePoint* close_point = route->GetPoint(point_guid);
+        b_closed_route = close_point != nullptr;
+        existing_point = close_point;
+      }
+
       if (containing_route) {  // In a route already?
         existing_point = containing_route->GetPoint(point_guid);
       }
@@ -1744,8 +1782,10 @@ bool NavObj_dB::LoadAllRoutes() {
 
       if (existing_point) {
         point = existing_point;
-        point->SetShared(true);  // by definition
-        point->m_bIsolatedMark = false;
+        if (!b_closed_route) {
+          point->SetShared(true);  // by definition, unless point is a closer.
+          point->m_bIsolatedMark = false;
+        }
       } else {
         point =
             new RoutePoint(latitude, longitude, symbol, name, point_guid, true);
