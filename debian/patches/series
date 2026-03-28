@@ -3,6 +3,4 @@
 0003-CMakeLists-handle-help_web.html-location.patch
 0004-tests-disable-rest-server-tests-for-now.patch
 0005-tests-disable-file-driver-tests-on-distro-builders.patch
-0006-base_platform-Add-homedir-environment-override.patch
-0007-appdata-Fix-url-typo.patch
 0008-Install-o-charts-dongle-rule-option.patch
