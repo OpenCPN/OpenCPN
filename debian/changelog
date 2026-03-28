@@ -1,8 +1,10 @@
-opencpn (1:5.14.1+dfsg~beta4-1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg~beta4-1) unstable; urgency=medium
 
   * New upstream beta release
+  * d/patches: Disable some non-functional tests
+  * Handle opencpn-glutil now in libexec
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 28 Mar 2026 07:57:31 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 28 Mar 2026 09:19:15 +0100
 
 opencpn (1:5.14.1+dfsg~beta3-1) unstable; urgency=medium
 
