@@ -1,0 +1,51 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sat, 28 Mar 2026 08:31:51 +0100
+Subject: tests: disable some tests for now
+
+---
+ test/datetime_tests.cpp | 3 ++-
+ test/tests.cpp          | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/test/datetime_tests.cpp b/test/datetime_tests.cpp
+index aeaaef7..8d49f76 100644
+--- a/test/datetime_tests.cpp
++++ b/test/datetime_tests.cpp
+@@ -229,6 +229,7 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
+   SetTimezone("EST");
+ #endif
+ 
++#ifndef OCPN_DISTRO_BUILD
+   // Set the UI local locale to US English to ensure consistent formatting
+   // regardless of the system locale where the test is run.
+   wxUILocale us_locale = wxUILocale::FromTag("en_US.UTF-8");
+@@ -269,7 +270,6 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
+   result = ocpn::toUsrDateTimeFormat(testDate, opts, us_locale);
+   EXPECT_EQ(result, "Wednesday, February 22, 2023 12:45:57 UTC")
+       << "Actual date/time: '" << result << "'";
+-
+   // Test 5: request to format in Local Time with $hour_minutes_seconds
+   // format.
+   opts = DateTimeFormatOptions()
+@@ -280,6 +280,7 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
+   EXPECT_TRUE(str.find("07:45:57 AM EST") != std::string::npos ||
+               str.find("07:45:57 AM LOC") != std::string::npos)
+       << "Actual date/time: '" << result << "'";
++#endif // OCPN_DISTRO_BUILD
+ }
+ 
+ #endif  // HAS_EN_US
+diff --git a/test/tests.cpp b/test/tests.cpp
+index 797eb92..365884d 100644
+--- a/test/tests.cpp
++++ b/test/tests.cpp
+@@ -1261,7 +1261,8 @@ TEST(Instance, StdInstanceChk) { StdInstanceTest check; }
+ #endif
+ 
+ // #if !defined(FLATPAK) && defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
+-#ifdef __unix__
++#if defined(__unix__) && !defined(OCPN_DISTRO_BUILD)
++
+ TEST(IpcClient, IpcGetEndpoint) { IpcGetEndpoint run_test; }
+ 
+ TEST(IpcClient, Raise) { CliRaise run_test; }

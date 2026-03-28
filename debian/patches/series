@@ -2,8 +2,6 @@
 0002-Add-missing-libs-like-tinyxml-Debian-work-around.patch
 0003-CMakeLists-handle-help_web.html-location.patch
 0004-tests-disable-rest-server-tests-for-now.patch
-0005-build-add-latomic-linkage.patch
-0006-tests-disable-file-driver-tests-on-distro-builders.patch
-0007-base_platform-Add-homedir-environment-override.patch
-0008-appdata-Fix-url-typo.patch
-0009-Install-o-charts-dongle-rule-option.patch
+0005-tests-disable-file-driver-tests-on-distro-builders.patch
+0008-Install-o-charts-dongle-rule-option.patch
+0007-tests-disable-some-tests-for-now.patch
