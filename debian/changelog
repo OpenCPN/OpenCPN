@@ -4,29 +4,12 @@ opencpn (1:5.14.1+dfsg~beta4-1~bpo13+1) UNRELEASED; urgency=medium
 
  -- Alec Leamas <leamas.alec@gmail.com>  Sat, 28 Mar 2026 10:28:26 +0100
 
-opencpn (1:5.14.1+dfsg~beta3-1~bpo13+1) trixie-backports; urgency=medium
-
-  * New upstream release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Mar 2026 11:47:00 +0100
-
-opencpn (1:5.14.1+dfsg~beta2-2~bpo13+1) trixie-backports; urgency=medium
-
-  * New upstream release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 01 Mar 2026 15:40:20 +0100
-
-opencpn (1:5.14.1+dfsg~beta2-2) unstable; urgency=medium
-
-  * New upstream release
-  * New o-charts dongle udev rule patch
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 01 Mar 2026 10:48:45 +0100
-
-opencpn (1:5.14.1+dfsg~beta1-1) unstable; urgency=medium
+opencpn (1:5.14.1+dfsg~beta4-1) unstable; urgency=medium
 
   * New upstream beta release
-  * d/patches: rebased
-  * d/copyright: Updated for new sources
+  * d/patches: Disable some non-functional tests
+  * Handle opencpn-glutil now in libexec
 
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 10:29:34 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 28 Mar 2026 09:19:15 +0100
+
+
