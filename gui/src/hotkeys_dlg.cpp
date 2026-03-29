@@ -141,7 +141,7 @@ private:
        {_("Start measure mode"), "F4",
                                    _("Stop measure mode"), "Esc"},
        {_("Drop mark"), _("Ctrl O, space bar"),
-                                   _("Open Data Monitor"), "E"}}};  // clang-format on
+                                   _("Open Data Monitor"), "Alt E"}}};  // clang-format on
 };
 
 HotkeysDlg::HotkeysDlg(wxWindow* parent)

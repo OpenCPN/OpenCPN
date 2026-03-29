@@ -3667,12 +3667,14 @@ void MyFrame::RegisterGlobalMenuItems() {
   m_pMenuBar->Append(ais_menu, _("&AIS"));
 
   wxMenu *tools_menu = new wxMenu();
+#ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
                      _menuText(_("Data Monitor"), "E"));
-#ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), "M"));
 #else
+  tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
+                     _menuText(_("Data Monitor"), "Alt-E"));
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), "Alt-M"));
 #endif
