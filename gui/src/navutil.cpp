@@ -459,6 +459,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("UseSimplifiedScalebar", &g_bsimplifiedScalebar);
   Read("ShowTide", &g_bShowTide);
   Read("ShowCurrent", &g_bShowCurrent);
+  Read("EnableBasemapTiles", &g_enable_basemap_tiles, 1);
 
   wxString size_mm;
   Read("DisplaySizeMM", &size_mm);
@@ -1871,6 +1872,7 @@ void MyConfig::UpdateSettings() {
   Write("CmdSoundString", g_CmdSoundString);
   Write("NavMessageShown", n_NavMessageShown);
   Write("InlandEcdis", g_bInlandEcdis);
+  Write("EnableBasemapTiles", g_enable_basemap_tiles);
 
   Write("AndroidVersionCode", g_AndroidVersionCode);
 
