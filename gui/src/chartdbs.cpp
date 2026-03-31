@@ -1091,7 +1091,6 @@ void ChartDatabase::OnDBSProgressUpdate(wxCommandEvent &evt) {
 static int in_event;
 void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
   if (in_event) int yyp = 4;
-
   in_event++;
   // Capture the completed job tickets
   auto ticket = event.GetTicket();
@@ -1101,7 +1100,11 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
   }
 
   // Update progress dialog, if present
-  if (1 /*ticket->b_thread_safe*/) {
+#ifdef __ANDROID__
+  if (ticket->b_thread_safe) {
+#else
+  {
+#endif
     if (m_pprog && (m_jobsRemaining > 1)) {
       m_progcount++;
       double ratio = 100. * (double)m_progcount / m_ticketcount;
@@ -1110,18 +1113,7 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
         if (val != m_progint) {
           m_progint = val;
           // printf("%d %d\n", m_progcount, val);
-#ifdef x__WXMSW__
-          // On Windows, Update may pump messages even without
-          // CAN_ABORT/ELAPSED_TIME
-          wxEventLoopBase *loop = wxEventLoopBase::GetActive();
-          if (loop) {
-            // Temporarily deactivate the active loop to prevent re-entrancy
-            wxEventLoopActivator noLoop(nullptr);
-            m_pprog->Update(val);
-          }
-#else
           m_pprog->Update(val);
-#endif
         }
       }
     }
@@ -1884,7 +1876,10 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
 
   // Start up the queued threads, if necessary
   if (m_jobsRemaining) {
-    const int workerCount = 4;
+    int workerCount = 4;
+#ifdef __ANDROID__
+    workerCount = 2;  // A little easier on busy phones.
+#endif
     if (m_pool.GetWorkerCount() < workerCount) {
       int threads_needed = workerCount - m_pool.GetWorkerCount();
       for (int i = 0; i < threads_needed; ++i) {
