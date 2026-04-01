@@ -2240,7 +2240,7 @@ androidGetCacheDir()  // Used for raster_texture_cache, mmsitoname.csv, etc
 
 wxString androidGetExtStorageDir()  // Used for Chart storage, typically
 {
-  if (g_Android_SDK_Version >= 30)
+  if (g_Android_SDK_Version >= 29)
     return g_androidExtFilesDir;  // Scoped storage model
   else
     return g_androidExtStorageDir;
