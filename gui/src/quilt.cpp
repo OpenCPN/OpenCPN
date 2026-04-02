@@ -1354,7 +1354,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     if (cte.GetChartType() == CHART_TYPE_MBTILES) {
       wxFileName fn(cte.GetFullPath());
       if (fn.GetPath().Lower().Contains("basemap")) {
-        if (!g_enable_basemap_tiles) {
+        if (!m_parent->GetbEnableBasemapTile()) {
           m_extended_stack_array.pop_back();
           continue;
         }
@@ -1456,7 +1456,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
     if (cte.GetChartType() == CHART_TYPE_MBTILES) {
       wxFileName fn(cte.GetFullPath());
       if (fn.GetPath().Lower().Contains("basemap")) {
-        if (!g_enable_basemap_tiles) {
+        if (!m_parent->GetbEnableBasemapTile()) {
           continue;
         }
       }

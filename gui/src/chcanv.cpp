@@ -1178,6 +1178,8 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
   SetShowAIS(pcc->bShowAIS);
   SetAttenAIS(pcc->bAttenAIS);
 
+  SetbEnableBasemapTile((pcc->bEnableBasemapTile));
+
   // ENC options
   SetShowENCText(pcc->bShowENCText);
   m_encDisplayCategory = pcc->nENCDisplayCategory;
