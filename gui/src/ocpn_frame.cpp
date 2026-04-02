@@ -3913,6 +3913,7 @@ void MyFrame::UpdateCanvasConfigDescriptors() {
         cc->bShowGrid = chart->GetShowGrid();
         cc->bShowOutlines = chart->GetShowOutlines();
         cc->bShowDepthUnits = chart->GetShowDepthUnits();
+        cc->bEnableBasemapTile = chart->GetbEnableBasemapTile();
 
         cc->bFollow = chart->m_bFollow;
         cc->bLookahead = chart->m_bLookAhead;

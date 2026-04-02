@@ -119,7 +119,6 @@ bool g_useMUI = false;
 bool s_bSetSystemTime = false;
 bool g_kiosk_startup = false;
 bool g_disableNotifications = false;
-bool g_enable_basemap_tiles = true;
 
 double g_COGAvg = 0.0;
 double g_defaultBoatSpeed = 0.0;

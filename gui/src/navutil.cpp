@@ -459,7 +459,6 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("UseSimplifiedScalebar", &g_bsimplifiedScalebar);
   Read("ShowTide", &g_bShowTide);
   Read("ShowCurrent", &g_bShowCurrent);
-  Read("EnableBasemapTiles", &g_enable_basemap_tiles, 1);
 
   wxString size_mm;
   Read("DisplaySizeMM", &size_mm);
@@ -1717,6 +1716,8 @@ void MyConfig::LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate) {
   Read("canvasShowTides", &cConfig->bShowTides, 0);
   Read("canvasShowCurrents", &cConfig->bShowCurrents, 0);
 
+  Read("canvasEnableBasemapTile", &cConfig->bEnableBasemapTile, 1);
+
   Read("canvasQuilt", &cConfig->bQuilt, 1);
   Read("canvasShowGrid", &cConfig->bShowGrid, 0);
   Read("canvasShowOutlines", &cConfig->bShowOutlines, 0);
@@ -1825,6 +1826,8 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
     Write("canvasShowTides", cConfig->canvas->GetbShowTide());
     Write("canvasShowCurrents", cConfig->canvas->GetbShowCurrent());
 
+    Write("canvasEnableBasemapTile", cConfig->canvas->GetbEnableBasemapTile());
+
     // ENC options
     Write("canvasShowENCText", cConfig->canvas->GetShowENCText());
     Write("canvasENCDisplayCategory", cConfig->canvas->GetENCDisplayCategory());
@@ -1872,7 +1875,6 @@ void MyConfig::UpdateSettings() {
   Write("CmdSoundString", g_CmdSoundString);
   Write("NavMessageShown", n_NavMessageShown);
   Write("InlandEcdis", g_bInlandEcdis);
-  Write("EnableBasemapTiles", g_enable_basemap_tiles);
 
   Write("AndroidVersionCode", g_AndroidVersionCode);
 
