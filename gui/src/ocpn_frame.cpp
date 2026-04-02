@@ -4804,7 +4804,8 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           cc->CreateMUIBar();
           cc->CheckGroupValid();
           cc->GetCompass()->SetScaleFactor(g_compass_scalefactor);
-          cc->SetShowGPSCompassWindow(true);
+          // Honor any settings by plugin made during LateInit() call
+          cc->SetShowGPSCompassWindow(cc->GetShowGPSCompassWindow());
         }
       }
 
