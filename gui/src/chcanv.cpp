@@ -623,7 +623,7 @@ ChartCanvas::ChartCanvas(wxFrame *frame, int canvasIndex, wxWindow *nmea_log)
 
   m_Piano = new Piano(this);
 
-  m_bShowCompassWin = false;
+  m_bShowCompassWin = true;
   m_Compass = new ocpnCompass(this);
   m_Compass->SetScaleFactor(g_compass_scalefactor);
   m_Compass->Show(false);  // Will be shown later during init chain.
