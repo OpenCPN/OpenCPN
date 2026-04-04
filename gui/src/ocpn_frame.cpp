@@ -1231,6 +1231,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       cc->SetColorScheme(global_color_scheme);
       cc->SetShowGPS(true);
       cc->CreateMUIBar();
+      cc->SetShowGPSCompassWindow(true);
 
       g_pauimgr->AddPane(cc);
       g_pauimgr->GetPane(cc).Name("ChartCanvas2");
