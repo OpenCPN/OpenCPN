@@ -52,6 +52,9 @@ public:
 WX_DECLARE_OBJARRAY(ChartDirInfo, ArrayOfCDI);
 WX_DECLARE_STRING_HASH_MAP(int, ChartCollisionsHashMap);
 
+#define ID_TIMER_UPDATE_PROGRESS 10337
+#define ID_TIMER_UPDATE_COMPLETE 10338
+
 ///////////////////////////////////////////////////////////////////////
 
 static const int DB_VERSION_PREVIOUS = 17;
@@ -418,6 +421,10 @@ private:
                 bool bthis_dir_in_dB);
 
   bool Check_CM93_Structure(wxString dir_name);
+  void OnProgessTimer(wxTimerEvent &event);
+  void OnUpdateComplete(wxTimerEvent &event);
+
+  void ProcessThreadQueueEmpty();
 
   bool bValid;
   wxArrayString m_chartDirs;
@@ -437,6 +444,7 @@ private:
   std::atomic<int> m_jobsRemaining{0};
   JobQueueCTE m_pool;
   JobQueueCTE m_pool_deferred;
+
   std::vector<std::shared_ptr<ChartTableEntryJobTicket>> m_ticket_vector;
   std::vector<std::shared_ptr<ChartTableEntryJobTicket>>
       m_deferred_ticket_vector;
@@ -444,6 +452,11 @@ private:
   int m_progcount;
   int m_ticketcount;
   wxGenericProgressDialog *m_pprog;
+  wxTimer m_progress_timer;
+  std::atomic<bool> m_progress_dirty{false};
+  int m_progress_value = 0;
+  wxTimer m_update_competion_timer;
+
   int m_progint;
   int m_nFileProgressQuantum;
   wxString m_gshhg_chart_loc;
