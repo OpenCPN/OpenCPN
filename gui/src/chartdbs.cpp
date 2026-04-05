@@ -1100,7 +1100,7 @@ void ChartDatabase::OnProgessTimer(wxTimerEvent &event) {
 #ifdef __ANDROID__
       qDebug() << "   ***Update()" << m_jobsRemaining;
 #endif
-      m_pprog->Update(m_progress_value);
+      m_pprog->Update(m_progress_value, m_progress_message);
 #ifdef __ANDROID__
       qDebug() << "   ---Update() out" << m_jobsRemaining;
 #endif
@@ -1127,7 +1127,7 @@ void ChartDatabase::ProcessThreadQueueEmpty() {
     m_progint = 0;
     m_ticketcount = m_jobsRemaining;
     m_nFileProgressQuantum = 1;  // wxMax(m_ticketcount / 10, 2);
-    if (m_pprog) m_pprog->Update(0, _("Processing charts."));
+    m_progress_message = _("Processing charts");
     m_progress_timer.Start(50, wxTIMER_CONTINUOUS);
 
     // Start up the queued thread, if necessary
@@ -1902,7 +1902,8 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_progint = 0;
   m_ticketcount = m_jobsRemaining;
   m_nFileProgressQuantum = 1;  // wxMax(m_ticketcount / 10, 2);
-  if (pprog) pprog->Update(0, _("Processing charts."));
+  m_progress_message = _("Processing charts");
+
   m_progress_timer.Start(50, wxTIMER_CONTINUOUS);
 
   // Start up the queued threads, if necessary

@@ -455,6 +455,7 @@ private:
   wxTimer m_progress_timer;
   std::atomic<bool> m_progress_dirty{false};
   int m_progress_value = 0;
+  wxString m_progress_message;
   wxTimer m_update_competion_timer;
 
   int m_progint;
