@@ -1,46 +1,26 @@
 opencpn (1:5.14.1+dfsg-1~bpo24.04~ppa1) UNRELEASED; urgency=medium
 
-  * New upstream release 
-  * Add b-d  libunarr-dev since libarchive is too old.
-
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 09:16:59 +0200
-
-opencpn (1:5.14.1+dfsg~beta4-1~bpo24.04~ppa2) noble; urgency=medium
-
-  * Fix missing b-d libunarr-dev
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 28 Mar 2026 12:44:38 +0100
-
-opencpn (1:5.14.1+dfsg~beta4-1~bpo24.04~ppa1) noble; urgency=medium
-
   * New upstream release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 28 Mar 2026 12:22:02 +0100
-
-opencpn (1:5.14.1+dfsg~beta3-1~bpo24.04~ppa1) noble; urgency=medium
-
-  * New upstream release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Mar 2026 12:39:26 +0100
-
-opencpn (1:5.14.1+dfsg~beta2-1~bpo24.04~ppa1) noble; urgency=medium
-
-  * New upstream release
-  * Add b-d  libunarr-dev since libarchive is too old.
-  * Add patch for yet not supported opencpn.appdata items
-
- -- Alec Leamas <leamas.alec@gmail.com>  Sat, 21 Feb 2026 00:35:01 +0100
-
-opencpn (1:5.14.1+dfsg~beta2-1) sid; urgency=medium
-
-  * New upstream release
-
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 20 Feb 2026 09:32:09 +0100
-
-opencpn (1:5.14.1+dfsg~beta1-1) unstable; urgency=medium
-
-  * New upstream beta release
-  * d/patches: rebased
   * d/copyright: Updated for new sources
+  * Handle opencpn-glutil now in libexec
+  * d/patches: Rebased
+  * d/patches: Disable some non-functional tests
+  * New o-charts dongle udev rule patch
 
- -- Alec Leamas <leamas.alec@gmail.com>  Tue, 03 Feb 2026 10:29:34 +0100
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 08:52:15 +0200
+
+opencpn (1:5.12.4+dfsg-1) unstable; urgency=medium
+
+  * New upstream release
+  * Update standards-version to 4.7.2, no changes
+  * Verify builds using gcc-15. Closes: #1097517
+  * d/patches: Add missing annotations.
+  * d/patches: rebased, dropped 6 upstreamed patches:
+      - 0007-DataMonitor-Filter-selection-bugfix-4693.patch
+      - 0008-Correct-RoutePoint-creation-time-loading-from-dB.-47.patch
+      - 0009-data_monitor-Fix-broken-logfile-column-spec-4717.patch
+      - 0010-Dashb.-Don-t-resize-a-docked-panel-after-changed-pre.patch
+      - 0011-Fix-RangeRingColours-for-Isolated-Marks-4727.patch
+      - 0012-OCPNRegion-Fix-uninitialized-variable-FTBFS-on-some-.patch
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sat, 13 Sep 2025 11:55:29 +0200
