@@ -347,8 +347,6 @@ int MyConfig::LoadMyConfig() {
     g_cm93_zoom_factor =
         wxMax(g_cm93_zoom_factor, (-CM93_ZOOM_FACTOR_MAX_RANGE));
 
-    g_tile_basemap_zoom_factor = 4.0;
-
     if ((g_detailslider_dialog_x < 0) ||
         (g_detailslider_dialog_x > display_width))
       g_detailslider_dialog_x = 5;
@@ -1716,6 +1714,8 @@ void MyConfig::LoadConfigCanvas(canvasConfig *cConfig, bool bApplyAsTemplate) {
   Read("canvasShowTides", &cConfig->bShowTides, 0);
   Read("canvasShowCurrents", &cConfig->bShowCurrents, 0);
 
+  Read("canvasEnableBasemapTile", &cConfig->bEnableBasemapTile, 1);
+
   Read("canvasQuilt", &cConfig->bQuilt, 1);
   Read("canvasShowGrid", &cConfig->bShowGrid, 0);
   Read("canvasShowOutlines", &cConfig->bShowOutlines, 0);
@@ -1823,6 +1823,8 @@ void MyConfig::SaveConfigCanvas(canvasConfig *cConfig) {
 
     Write("canvasShowTides", cConfig->canvas->GetbShowTide());
     Write("canvasShowCurrents", cConfig->canvas->GetbShowCurrent());
+
+    Write("canvasEnableBasemapTile", cConfig->canvas->GetbEnableBasemapTile());
 
     // ENC options
     Write("canvasShowENCText", cConfig->canvas->GetShowENCText());

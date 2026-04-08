@@ -65,32 +65,34 @@ Known issues:
 Issues closed since 5.12.4:
 ---------------------------
 
-#5148 Connections New/Edit "SocketCAN" disables "OK" button for all connections after it's used<br/>
-#5147 Deleting the last waypoint in a route list causes exception<br/>
-#5134 Default world map location seems to be confused<br/>
-#5132 No position recieved using signalk data<br/>
-#5130 The mouse pointer changes very early to a green arrow<br/>
-#5123 Chart downloader can't type some language special letters made by Windows<br/>
-#5122 AIS, MOB, EPIRB target query formatting problem<br/>
-#5119 segmentation fault linux signalK<br/>
-#5117 Options dialog changes second canvas chart type<br/>
-#5107 OpenCPN fails to terminate, top-left toolbar not shown...<br/>
-#5104 OpenCPN freezes after 10 times opening and closing the optiondialog<br/>
-#5096 GDAL library is not "thread-safe"<br/>
-#5094 opencpn-glutil: linux: Wrong installation directory<br/>
-#5092 Humidity in Nmea0183 MDA<br/>
-#5091 tests fails in debian pbuilder<br/>
-#5088 Not able to filter out NMEA0183 "ZDA"<br/>
-#5086 OpenCPN send N2k Message in a Format that is not self acceptance by itself<br/>
-#5084 data/copyright is outdated<br/>
-#5083 Spurious  console output<br/>
-#5080 SART Alarm Not Properly Acknowledged or Silenced (Repeating Popup)<br/>
-#5075 demo plugin: Incompatible license<br/>
-#5074 Dashboard Sunrise/Sunset instrument has UTC time even if it says LCL<br/>
-#5073 tests: failures<br/>
-#5070 Data monitor: polish needed<br/>
-#5068 OCPN crash while creating a route. (Mouse point related?)<br/>
-#5067 Weather Routing Bug - Save Route Options<br/>
-#5066 _build-flatpak-x86-2506_ and also _build-flatpak-arm64-2506_ FTB<br/>
-#5064 Data Monitor (DM) : blank log lines<br/>
-#5063 When closing window with alt + F4 after closing polar plugin then OpenCPN thinks it is crashing<br/>
+
+#5175 Address Space Warning pops up multiple times<br>
+#5152 Ubuntu 24.04 LTS get the beta version on stable channel<br>
+#5150 Setting a route to explicitly use Local Time is not retrievved correctly when the properties are reopened<br>
+#5148 Connections New/Edit "SocketCAN" disables "OK" button for all connections after it's used<br>
+#5147 Deleting the last waypoint in a route list causes exception<br>
+#5135 On MacOS, Object Query gives different results for double-click vs context menu.<br>
+#5134 Default world map location seems to be confused<br>
+#5132 No position recieved using signalk data<br>
+#5130 The mouse pointer changes very early to a green arrow<br>
+#5123 Chart downloader can't type some language special letters made by Windows<br>
+#5122 AIS, MOB, EPIRB target query formatting problem<br>
+#5119 segmentation fault linux signalK<br>
+#5117 Options dialog changes second canvas chart type<br>
+#5114 Potential quilt ordering and null dereference issues<br>
+#5107 OpenCPN fails to terminate, top-left toolbar not shown...<br>
+#5104 OpenCPN freezes after 10 times opening and closing the optiondialog<br>
+#5096 GDAL library is not "thread-safe"<br>
+#5094 opencpn-glutil: linux: Wrong installation directory<br>
+#5092 Humidity in Nmea0183 MDA<br>
+#5091 tests fails in debian pbuilder<br>
+#5088 Not able to filter out NMEA0183 "ZDA"<br>
+#5086 OpenCPN send N2k Message in a Format that is not self acceptance by itself<br>
+#5084 data/copyright is outdated<br>
+#5083 Spurious  console output<br>
+#5080 SART Alarm Not Properly Acknowledged or Silenced (Repeating Popup)<br>
+#5075 demo plugin: Incompatible license<br>
+#5074 Dashboard Sunrise/Sunset instrument has UTC time even if it says LCL<br>
+#5073 tests: failures<br>
+#5070 Data monitor: polish needed<br>
+#5068 OCPN crash while creating a route. (Mouse point related?)<br>
