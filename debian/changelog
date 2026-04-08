@@ -1,4 +1,4 @@
-opencpn (1:5.14.1+dfsg-1~bpo24.04~ppa1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg-1~bpo24.04~ppa1) noble; urgency=medium
 
   * New upstream release
   * d/copyright: Updated for new sources
@@ -7,7 +7,7 @@ opencpn (1:5.14.1+dfsg-1~bpo24.04~ppa1) UNRELEASED; urgency=medium
   * d/patches: Disable some non-functional tests
   * New o-charts dongle udev rule patch
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 08:52:15 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 09:55:23 +0200
 
 opencpn (1:5.12.4+dfsg-1) unstable; urgency=medium
 
