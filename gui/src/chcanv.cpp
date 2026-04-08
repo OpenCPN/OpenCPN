@@ -3723,6 +3723,10 @@ void ChartCanvas::DoMovement(long dt) {
       else if (zoom_factor < 1) {
         if (VPoint.chart_scale / zoom_factor >= m_zoom_target)
           zoom_factor = VPoint.chart_scale / m_zoom_target;
+
+        // Enforce clamp on absolute zoom-out level
+        if ((GetVPScale()) < (m_absolute_min_scale_ppm * 1.00001))
+          zoom_factor = 1;
       }
     }
 
