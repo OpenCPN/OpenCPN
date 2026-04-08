@@ -1,4 +1,4 @@
-opencpn (1:5.14.1+dfsg-1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg-1) unstable; urgency=medium
 
   * New upstream release
   * d/patches: rebased
@@ -7,7 +7,7 @@ opencpn (1:5.14.1+dfsg-1) UNRELEASED; urgency=medium
   * d/copyright: Updated for new sources
   * Handle opencpn-glutil now in libexec
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 08:52:15 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 10:37:04 +0200
 
 opencpn (1:5.12.4+dfsg-1) unstable; urgency=medium
 
