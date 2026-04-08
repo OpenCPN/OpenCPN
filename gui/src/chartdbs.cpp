@@ -1077,52 +1077,118 @@ ChartDatabase::ChartDatabase() {
   Bind(wxEVT_COMMAND_MENU_SELECTED, &ChartDatabase::OnDBSProgressUpdate, this,
        ID_DBS_PROGRESS_UPDATE);
 
+  m_progress_timer.SetOwner(this, ID_TIMER_UPDATE_PROGRESS);
+  Bind(wxEVT_TIMER, &ChartDatabase::OnProgessTimer, this,
+       ID_TIMER_UPDATE_PROGRESS);
+
+  m_update_competion_timer.SetOwner(this, ID_TIMER_UPDATE_COMPLETE);
+  Bind(wxEVT_TIMER, &ChartDatabase::OnUpdateComplete, this,
+       ID_TIMER_UPDATE_COMPLETE);
+
   UpdateChartClassDescriptorArray();
 }
 
-void ChartDatabase::OnDBSProgressUpdate(wxCommandEvent &evt) {
-  int value = evt.GetInt();  // retrieve progress value
-  if (m_pprog) {
-    // Update dialog safely
-    m_pprog->Update(value);
+void ChartDatabase::OnDBSProgressUpdate(wxCommandEvent &evt) {}
+
+void ChartDatabase::OnUpdateComplete(wxTimerEvent &event) {
+  ProcessThreadQueueEmpty();
+}
+
+void ChartDatabase::OnProgessTimer(wxTimerEvent &event) {
+  if (m_pprog && m_progress_timer.IsRunning() && (m_jobsRemaining > 1)) {
+    if (m_progress_dirty.exchange(false)) {
+#ifdef __ANDROID__
+      qDebug() << "   ***Update()" << m_jobsRemaining;
+#endif
+      m_pprog->Update(m_progress_value, m_progress_message);
+#ifdef __ANDROID__
+      qDebug() << "   ---Update() out" << m_jobsRemaining;
+#endif
+    }
   }
 }
 
-static int in_event;
-void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
-  if (in_event) int yyp = 4;
+void ChartDatabase::ProcessThreadQueueEmpty() {
+#ifdef __ANDROID__
+  qDebug() << "ProcessThreadQueueEmpty";
+#endif
+  if (m_deferred_ticket_vector.size()) {
+    // Process the deferred charts in a single thread pool
+    // load the thread pool from the prepared array
+    // Enqueue jobs
+    for (auto &ticket_d : m_deferred_ticket_vector) {
+      m_pool_deferred.Push(ticket_d);
+      m_jobsRemaining++;
+    }
+    m_deferred_ticket_vector.clear();
 
-  in_event++;
+    // Initialize progress dialog
+    m_progcount = 0;
+    m_progint = 0;
+    m_ticketcount = m_jobsRemaining;
+    m_nFileProgressQuantum = 1;  // wxMax(m_ticketcount / 10, 2);
+    m_progress_message = _("Processing charts");
+    m_progress_timer.Start(50, wxTIMER_CONTINUOUS);
+
+    // Start up the queued thread, if necessary
+    if (m_jobsRemaining) {
+      const int workerCount = 1;
+      if (m_pool_deferred.GetWorkerCount() < workerCount) {
+        int threads_needed = workerCount - m_pool_deferred.GetWorkerCount();
+        for (int i = 0; i < threads_needed; ++i) {
+          (new PoolWorkerThread(m_pool_deferred, this))->Run();
+          m_pool_deferred.AddWorker();
+        }
+      }
+    }
+    return;  // Let the thread run
+  }
+
+  m_progress_timer.Stop();
+  if (m_pprog) m_pprog->Hide();
+
+  // Now m_ticket_vector is populated with verified tickets
+  // for all specified directories.
+
+  // Add the CTEs from the tickets to the active table
+  // NB: The active_chartTable was cleared by the Update() method
+  // before this point
+
+  for (auto &ticket_valid : m_ticket_vector) {
+    if (ticket_valid->m_chart_table_entry)
+      active_chartTable.push_back(ticket_valid->m_chart_table_entry);
+  }
+
+  // Release references to tickets
+  m_ticket_vector.clear();
+
+#ifdef __ANDROID__
+  qDebug() << "FinalizeChartUpdate";
+#endif
+
+  FinalizeChartUpdate();
+}
+
+void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
+#ifdef __ANDROID__
+  qDebug() << "Remaining: " << m_jobsRemaining;
+#endif
   // Capture the completed job tickets
   auto ticket = event.GetTicket();
   if (!ticket) {
-    in_event--;
     return;
   }
 
   // Update progress dialog, if present
-  if (1 /*ticket->b_thread_safe*/) {
-    if (m_pprog && (m_jobsRemaining > 1)) {
-      m_progcount++;
-      double ratio = 100. * (double)m_progcount / m_ticketcount;
-      int val = ratio;
-      if (((m_progcount % m_nFileProgressQuantum) == 0)) {
-        if (val != m_progint) {
-          m_progint = val;
-          // printf("%d %d\n", m_progcount, val);
-#ifdef x__WXMSW__
-          // On Windows, Update may pump messages even without
-          // CAN_ABORT/ELAPSED_TIME
-          wxEventLoopBase *loop = wxEventLoopBase::GetActive();
-          if (loop) {
-            // Temporarily deactivate the active loop to prevent re-entrancy
-            wxEventLoopActivator noLoop(nullptr);
-            m_pprog->Update(val);
-          }
-#else
-          m_pprog->Update(val);
-#endif
-        }
+  if (m_pprog && (m_jobsRemaining > 1)) {
+    m_progcount++;
+    double ratio = 100. * (double)m_progcount / m_ticketcount;
+    int val = ratio;
+    if (((m_progcount % m_nFileProgressQuantum) == 0)) {
+      if (val != m_progint) {
+        m_progint = val;
+        m_progress_value = val;
+        m_progress_dirty = true;
       }
     }
   }
@@ -1153,64 +1219,20 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
 
   int remaining = --m_jobsRemaining;
 
+  // Update throttle.
+  m_pool.pending_events--;
+  m_pool_deferred.pending_events--;
+
   if (remaining == 0) {
     m_pool.Shutdown();
     m_pool_deferred.Shutdown();
-    size_t a = m_ticket_vector.size();
+    m_progress_timer.Stop();
 
-    if (m_deferred_ticket_vector.size()) {
-      // Process the deferred charts in a single thread pool
-      // load the thread pool from the prepared array
-      // Enqueue jobs
-      for (auto &ticket_d : m_deferred_ticket_vector) {
-        m_pool_deferred.Push(ticket_d);
-        m_jobsRemaining++;
-      }
-      m_deferred_ticket_vector.clear();
-
-      // Initialize progress dialog
-      m_progcount = 0;
-      m_progint = 0;
-      m_ticketcount = m_jobsRemaining;
-      m_nFileProgressQuantum = 1;  // wxMax(m_ticketcount / 10, 2);
-      if (m_pprog) m_pprog->Update(0, _("Processing charts."));
-
-      // Start up the queued thread, if necessary
-      if (m_jobsRemaining) {
-        const int workerCount = 1;
-        if (m_pool_deferred.GetWorkerCount() < workerCount) {
-          int threads_needed = workerCount - m_pool_deferred.GetWorkerCount();
-          for (int i = 0; i < threads_needed; ++i) {
-            (new PoolWorkerThread(m_pool_deferred, this))->Run();
-            m_pool_deferred.AddWorker();
-          }
-        }
-      }
-      in_event--;
-      return;  // Let the thread run
-    }
-
-    // Now m_ticket_vector is populated with verified tickets
-    // for all specified directories.
-
-    // Add the CTEs from the tickets to the active table
-    // NB: The active_chartTable was cleared by the Update() method
-    // before this point
-
-    for (auto &ticket_valid : m_ticket_vector) {
-      if (ticket_valid->m_chart_table_entry)
-        active_chartTable.push_back(ticket_valid->m_chart_table_entry);
-    }
-    size_t c = m_ticket_vector.size();
-    size_t d = active_chartTable.size();
-
-    // Release references to tickets
-    m_ticket_vector.clear();
-
-    FinalizeChartUpdate();
-    in_event--;
-  } else
-    in_event--;
+#ifdef __ANDROID__
+    qDebug() << "Fire completion Oneshot";
+#endif
+    m_update_competion_timer.Start(100, wxTIMER_ONE_SHOT);
+  }
 }
 
 void ChartDatabase::FinalizeChartUpdate() {
@@ -1879,12 +1901,17 @@ bool ChartDatabase::Update(ArrayOfCDI &dir_array, bool bForce,
   m_progcount = 0;
   m_progint = 0;
   m_ticketcount = m_jobsRemaining;
-  m_nFileProgressQuantum = wxMax(m_ticketcount / 10, 2);
-  if (pprog) pprog->Update(0, _("Processing charts."));
+  m_nFileProgressQuantum = 1;  // wxMax(m_ticketcount / 10, 2);
+  m_progress_message = _("Processing charts");
+
+  m_progress_timer.Start(50, wxTIMER_CONTINUOUS);
 
   // Start up the queued threads, if necessary
   if (m_jobsRemaining) {
-    const int workerCount = 4;
+    int workerCount = 4;
+#ifdef __ANDROID__
+    workerCount = 1;  // A little less stress on busy phones.
+#endif
     if (m_pool.GetWorkerCount() < workerCount) {
       int threads_needed = workerCount - m_pool.GetWorkerCount();
       for (int i = 0; i < threads_needed; ++i) {
@@ -2820,6 +2847,9 @@ ChartTableEntry *ChartDatabase::CreateChartTableEntry(
   msg_fn.Replace("%", "%%");
   wxLogMessage(wxString::Format("Loading chart data for %s", msg_fn.c_str()));
 
+#ifdef __ANDROID__
+  qDebug() << "   CCTE: " << filePath.ToStdString().c_str();
+#endif
   ChartBase *pch = GetChart(filePath, chart_desc);
   if (pch == NULL) {
     wxLogMessage(

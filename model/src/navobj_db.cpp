@@ -1614,34 +1614,34 @@ bool NavObj_dB::LoadAllRoutes() {
       "FROM routes "
       "ORDER BY created_at ASC";
 
-  sqlite3_stmt* stmt;
-  if (sqlite3_prepare_v2(m_db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+  sqlite3_stmt* stmt_routes;
+  if (sqlite3_prepare_v2(m_db, sql, -1, &stmt_routes, nullptr) != SQLITE_OK) {
     return false;
   }
 
   int errcode0 = SQLITE_OK;
-  while ((errcode0 = sqlite3_step(stmt)) == SQLITE_ROW) {
+  while ((errcode0 = sqlite3_step(stmt_routes)) == SQLITE_ROW) {
     std::string guid =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 0));
     std::string name =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 1));
     std::string description =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 2));
     std::string start_string =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 3));
     std::string end_string =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
-    int visibility = sqlite3_column_int(stmt, 5);
-    int sharewp_viz = sqlite3_column_int(stmt, 6);
-    time_t planned_departure_ticks = sqlite3_column_int(stmt, 7);
-    double plan_speed = sqlite3_column_double(stmt, 8);
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 4));
+    int visibility = sqlite3_column_int(stmt_routes, 5);
+    int sharewp_viz = sqlite3_column_int(stmt_routes, 6);
+    time_t planned_departure_ticks = sqlite3_column_int(stmt_routes, 7);
+    double plan_speed = sqlite3_column_double(stmt_routes, 8);
     std::string time_format =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 9));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 9));
 
-    int width = sqlite3_column_int(stmt, 10);
-    int style = sqlite3_column_int(stmt, 11);
+    int width = sqlite3_column_int(stmt_routes, 10);
+    int style = sqlite3_column_int(stmt_routes, 11);
     std::string color =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 12));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 12));
 
     Route* route = NULL;
 
@@ -1684,17 +1684,17 @@ bool NavObj_dB::LoadAllRoutes() {
         "WHERE tp.route_guid = ? "
         "ORDER BY tp.point_order ASC";
 
-    sqlite3_stmt* stmtp;
-    if (sqlite3_prepare_v2(m_db, sqlp, -1, &stmtp, nullptr) != SQLITE_OK) {
+    sqlite3_stmt* stmt_rp;
+    if (sqlite3_prepare_v2(m_db, sqlp, -1, &stmt_rp, nullptr) != SQLITE_OK) {
       ReportError("LoadAllRoutes-B:prepare");
       return false;
     }
 
-    sqlite3_bind_text(stmtp, 1, guid.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt_rp, 1, guid.c_str(), -1, SQLITE_TRANSIENT);
 
     int GPXSeg = 0;
     int errcode = SQLITE_OK;
-    while ((errcode = sqlite3_step(stmtp)) == SQLITE_ROW) {
+    while ((errcode = sqlite3_step(stmt_rp)) == SQLITE_ROW) {
       if (!route) {
         route = new Route;
         route->m_GUID = guid;
@@ -1719,42 +1719,42 @@ bool NavObj_dB::LoadAllRoutes() {
       // Grab all the point attributes from the SELECT statement
       int col = 0;
       std::string point_guid =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-      double latitude = sqlite3_column_double(stmtp, col++);
-      double longitude = sqlite3_column_double(stmtp, col++);
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
+      double latitude = sqlite3_column_double(stmt_rp, col++);
+      double longitude = sqlite3_column_double(stmt_rp, col++);
       std::string symbol =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
       std::string name =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
       std::string description =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
       std::string tide_station =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-      double plan_speed = sqlite3_column_double(stmtp, col++);
-      time_t etd_epoch = sqlite3_column_int(stmtp, col++);
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
+      double plan_speed = sqlite3_column_double(stmt_rp, col++);
+      time_t etd_epoch = sqlite3_column_int(stmt_rp, col++);
       std::string type =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
       std::string time =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-      double arrival_radius = sqlite3_column_double(stmtp, col++);
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
+      double arrival_radius = sqlite3_column_double(stmt_rp, col++);
 
-      int range_ring_number = sqlite3_column_int(stmtp, col++);
-      double range_ring_step = sqlite3_column_double(stmtp, col++);
-      int range_ring_units = sqlite3_column_int(stmtp, col++);
-      int range_ring_visible = sqlite3_column_int(stmtp, col++);
+      int range_ring_number = sqlite3_column_int(stmt_rp, col++);
+      double range_ring_step = sqlite3_column_double(stmt_rp, col++);
+      int range_ring_units = sqlite3_column_int(stmt_rp, col++);
+      int range_ring_visible = sqlite3_column_int(stmt_rp, col++);
       std::string range_ring_color =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
 
-      int scamin = sqlite3_column_int(stmtp, col++);
-      int scamax = sqlite3_column_int(stmtp, col++);
-      int use_scaminmax = sqlite3_column_int(stmtp, col++);
+      int scamin = sqlite3_column_int(stmt_rp, col++);
+      int scamax = sqlite3_column_int(stmt_rp, col++);
+      int use_scaminmax = sqlite3_column_int(stmt_rp, col++);
 
-      int visibility = sqlite3_column_int(stmtp, col++);
-      int viz_name = sqlite3_column_int(stmtp, col++);
-      int shared = sqlite3_column_int(stmtp, col++);
-      int isolated = sqlite3_column_int(stmtp, col++);
+      int visibility = sqlite3_column_int(stmt_rp, col++);
+      int viz_name = sqlite3_column_int(stmt_rp, col++);
+      int shared = sqlite3_column_int(stmt_rp, col++);
+      int isolated = sqlite3_column_int(stmt_rp, col++);
       std::string point_created_at =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
 
       RoutePoint* point;
       // RoutePoint exists already, in another route or isolated??
@@ -1834,21 +1834,23 @@ bool NavObj_dB::LoadAllRoutes() {
         ORDER BY html_type ASC
         )";
 
-        sqlite3_stmt* stmt;
+        sqlite3_stmt* stmt_point_link;
 
-        if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt, nullptr) == SQLITE_OK) {
-          sqlite3_bind_text(stmt, 1, point->m_GUID.ToStdString().c_str(), -1,
+        if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt_point_link, nullptr) ==
+            SQLITE_OK) {
+          sqlite3_bind_text(stmt_point_link, 1,
+                            point->m_GUID.ToStdString().c_str(), -1,
                             SQLITE_TRANSIENT);
 
-          while (sqlite3_step(stmt) == SQLITE_ROW) {
-            std::string link_guid =
-                reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-            std::string link_link =
-                reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-            std::string link_description =
-                reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-            std::string link_type =
-                reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+          while (sqlite3_step(stmt_point_link) == SQLITE_ROW) {
+            std::string link_guid = reinterpret_cast<const char*>(
+                sqlite3_column_text(stmt_point_link, 0));
+            std::string link_link = reinterpret_cast<const char*>(
+                sqlite3_column_text(stmt_point_link, 1));
+            std::string link_description = reinterpret_cast<const char*>(
+                sqlite3_column_text(stmt_point_link, 2));
+            std::string link_type = reinterpret_cast<const char*>(
+                sqlite3_column_text(stmt_point_link, 3));
 
             Hyperlink* h = new Hyperlink();
             h->DescrText = link_description;
@@ -1857,12 +1859,13 @@ bool NavObj_dB::LoadAllRoutes() {
 
             point->m_HyperlinkList->push_back(h);
           }
+          sqlite3_finalize(stmt_point_link);
         }
-      }
+      }  // new point
 
       route->AddPoint(point);
     }  // route points
-    sqlite3_finalize(stmtp);
+    sqlite3_finalize(stmt_rp);
     if (errcode != SQLITE_DONE) {
       ReportError("LoadAllRoutes-A:step");
       return false;
@@ -1878,22 +1881,24 @@ bool NavObj_dB::LoadAllRoutes() {
         ORDER BY html_type ASC
     )";
 
-      sqlite3_stmt* stmt;
+      sqlite3_stmt* stmt_route_links;
 
-      if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt, nullptr) == SQLITE_OK) {
-        sqlite3_bind_text(stmt, 1, route->m_GUID.ToStdString().c_str(), -1,
+      if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt_route_links, nullptr) ==
+          SQLITE_OK) {
+        sqlite3_bind_text(stmt_route_links, 1,
+                          route->m_GUID.ToStdString().c_str(), -1,
                           SQLITE_TRANSIENT);
 
         int errcode2 = SQLITE_OK;
-        while ((errcode2 = sqlite3_step(stmt)) == SQLITE_ROW) {
-          std::string link_guid =
-              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-          std::string link_link =
-              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-          std::string link_description =
-              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-          std::string link_type =
-              reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        while ((errcode2 = sqlite3_step(stmt_route_links)) == SQLITE_ROW) {
+          std::string link_guid = reinterpret_cast<const char*>(
+              sqlite3_column_text(stmt_route_links, 0));
+          std::string link_link = reinterpret_cast<const char*>(
+              sqlite3_column_text(stmt_route_links, 1));
+          std::string link_description = reinterpret_cast<const char*>(
+              sqlite3_column_text(stmt_route_links, 2));
+          std::string link_type = reinterpret_cast<const char*>(
+              sqlite3_column_text(stmt_route_links, 3));
 
           Hyperlink* h = new Hyperlink();
           h->DescrText = link_description;
@@ -1907,7 +1912,7 @@ bool NavObj_dB::LoadAllRoutes() {
           return false;
         }
 
-        sqlite3_finalize(stmt);
+        sqlite3_finalize(stmt_route_links);
 
       } else {
         ReportError("LoadAllRoutes-B:prepare");
@@ -1961,51 +1966,51 @@ bool NavObj_dB::LoadAllPoints() {
 
   RoutePoint* point = nullptr;
 
-  sqlite3_stmt* stmtp;
-  if (sqlite3_prepare_v2(m_db, sqlp, -1, &stmtp, nullptr) != SQLITE_OK) {
+  sqlite3_stmt* stmt_point;
+  if (sqlite3_prepare_v2(m_db, sqlp, -1, &stmt_point, nullptr) != SQLITE_OK) {
     return false;
   }
 
-  while (sqlite3_step(stmtp) == SQLITE_ROW) {
+  while (sqlite3_step(stmt_point) == SQLITE_ROW) {
     // Grab all the point attributes from the SELECT statement
     int col = 0;
     std::string point_guid =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    double latitude = sqlite3_column_double(stmtp, col++);
-    double longitude = sqlite3_column_double(stmtp, col++);
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
+    double latitude = sqlite3_column_double(stmt_point, col++);
+    double longitude = sqlite3_column_double(stmt_point, col++);
     std::string symbol =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
     std::string name =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
     std::string description =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
     std::string tide_station =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    double plan_speed = sqlite3_column_double(stmtp, col++);
-    time_t etd = sqlite3_column_int(stmtp, col++);
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
+    double plan_speed = sqlite3_column_double(stmt_point, col++);
+    time_t etd = sqlite3_column_int(stmt_point, col++);
     std::string type =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
     std::string point_time_string =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
-    double arrival_radius = sqlite3_column_double(stmtp, col++);
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
+    double arrival_radius = sqlite3_column_double(stmt_point, col++);
 
-    int range_ring_number = sqlite3_column_int(stmtp, col++);
-    double range_ring_step = sqlite3_column_double(stmtp, col++);
-    int range_ring_units = sqlite3_column_int(stmtp, col++);
-    int range_ring_visible = sqlite3_column_int(stmtp, col++);
+    int range_ring_number = sqlite3_column_int(stmt_point, col++);
+    double range_ring_step = sqlite3_column_double(stmt_point, col++);
+    int range_ring_units = sqlite3_column_int(stmt_point, col++);
+    int range_ring_visible = sqlite3_column_int(stmt_point, col++);
     std::string range_ring_color =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
 
-    int scamin = sqlite3_column_int(stmtp, col++);
-    int scamax = sqlite3_column_int(stmtp, col++);
-    int use_scaminmax = sqlite3_column_int(stmtp, col++);
+    int scamin = sqlite3_column_int(stmt_point, col++);
+    int scamax = sqlite3_column_int(stmt_point, col++);
+    int use_scaminmax = sqlite3_column_int(stmt_point, col++);
 
-    int visibility = sqlite3_column_int(stmtp, col++);
-    int viz_name = sqlite3_column_int(stmtp, col++);
-    int shared = sqlite3_column_int(stmtp, col++);
-    int isolated = sqlite3_column_int(stmtp, col++);
+    int visibility = sqlite3_column_int(stmt_point, col++);
+    int viz_name = sqlite3_column_int(stmt_point, col++);
+    int shared = sqlite3_column_int(stmt_point, col++);
+    int isolated = sqlite3_column_int(stmt_point, col++);
     std::string point_created_at =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmtp, col++));
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
 
     if (isolated) {
       point =
@@ -2045,49 +2050,45 @@ bool NavObj_dB::LoadAllPoints() {
       // Add it here
       pWayPointMan->AddRoutePoint(point);
       pSelect->AddSelectableRoutePoint(point->m_lat, point->m_lon, point);
-    }
-  }  // points
-  sqlite3_finalize(stmtp);
 
-  if (point) {
-    //    Add the point HTML links
-    const char* sqlh = R"(
-        SELECT guid, html_link, html_description, html_type
-        FROM routepoint_html_links
-        WHERE routepoint_guid = ?
-        ORDER BY html_type ASC
-    )";
+      // Check for and process HTML links
+      const char* sqlh = R"(
+      SELECT guid, html_link, html_description, html_type
+      FROM routepoint_html_links
+      WHERE routepoint_guid = ?
+      ORDER BY html_type ASC
+      )";
 
-    sqlite3_stmt* stmt;
+      sqlite3_stmt* stmt_links;
 
-    if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt, nullptr) == SQLITE_OK) {
-      sqlite3_bind_text(stmt, 1, point->m_GUID.ToStdString().c_str(), -1,
-                        SQLITE_TRANSIENT);
+      if (sqlite3_prepare_v2(m_db, sqlh, -1, &stmt_links, nullptr) ==
+          SQLITE_OK) {
+        sqlite3_bind_text(stmt_links, 1, point->m_GUID.ToStdString().c_str(),
+                          -1, SQLITE_TRANSIENT);
 
-      while (sqlite3_step(stmt) == SQLITE_ROW) {
-        std::string link_guid =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        std::string link_link =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        std::string link_description =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        std::string link_type =
-            reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        while (sqlite3_step(stmt_links) == SQLITE_ROW) {
+          std::string link_guid =
+              reinterpret_cast<const char*>(sqlite3_column_text(stmt_links, 0));
+          std::string link_link =
+              reinterpret_cast<const char*>(sqlite3_column_text(stmt_links, 1));
+          std::string link_description =
+              reinterpret_cast<const char*>(sqlite3_column_text(stmt_links, 2));
+          std::string link_type =
+              reinterpret_cast<const char*>(sqlite3_column_text(stmt_links, 3));
 
-        Hyperlink* h = new Hyperlink();
-        h->DescrText = link_description;
-        h->Link = link_link;
-        h->LType = link_type;
+          Hyperlink* h = new Hyperlink();
+          h->DescrText = link_description;
+          h->Link = link_link;
+          h->LType = link_type;
 
-        point->m_HyperlinkList->push_back(h);
+          point->m_HyperlinkList->push_back(h);
+        }
+        sqlite3_finalize(stmt_links);  // free the inner loop (links) staement
       }
+    }  // isolated
+  }  // points
+  sqlite3_finalize(stmt_point);  // free the outer loop (point) statement
 
-      sqlite3_finalize(stmt);
-
-    } else {
-      return false;
-    }
-  }
   return true;
 }
 bool NavObj_dB::InsertRoutePoint(RoutePoint* point) {

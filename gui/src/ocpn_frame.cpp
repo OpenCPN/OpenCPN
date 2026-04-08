@@ -1231,6 +1231,7 @@ void MyFrame::CreateCanvasLayout(bool b_useStoredSize) {
       cc->SetColorScheme(global_color_scheme);
       cc->SetShowGPS(true);
       cc->CreateMUIBar();
+      cc->SetShowGPSCompassWindow(true);
 
       g_pauimgr->AddPane(cc);
       g_pauimgr->GetPane(cc).Name("ChartCanvas2");
@@ -3667,12 +3668,14 @@ void MyFrame::RegisterGlobalMenuItems() {
   m_pMenuBar->Append(ais_menu, _("&AIS"));
 
   wxMenu *tools_menu = new wxMenu();
+#ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
                      _menuText(_("Data Monitor"), "E"));
-#ifndef __WXOSX__
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), "M"));
 #else
+  tools_menu->Append(ID_MENU_TOOL_NMEA_DBG_LOG,
+                     _menuText(_("Data Monitor"), "Alt-E"));
   tools_menu->Append(ID_MENU_TOOL_MEASURE,
                      _menuText(_("Measure Distance"), "Alt-M"));
 #endif
@@ -3911,6 +3914,7 @@ void MyFrame::UpdateCanvasConfigDescriptors() {
         cc->bShowGrid = chart->GetShowGrid();
         cc->bShowOutlines = chart->GetShowOutlines();
         cc->bShowDepthUnits = chart->GetShowDepthUnits();
+        cc->bEnableBasemapTile = chart->GetbEnableBasemapTile();
 
         cc->bFollow = chart->m_bFollow;
         cc->bLookahead = chart->m_bLookAhead;
