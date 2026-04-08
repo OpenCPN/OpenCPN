@@ -1,8 +1,8 @@
-opencpn (1:5.14.1+dfsg-1~bpo12+1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg-1~bpo12+1) bookworm-backports; urgency=medium
 
   * New upstream release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 16:15:20 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 16:49:15 +0200
 
 opencpn (1:5.14.1+dfsg-1) unstable; urgency=medium
 
