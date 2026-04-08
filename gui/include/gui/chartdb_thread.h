@@ -167,10 +167,12 @@ public:
     m_shutdown = true;
     m_cv.notify_all();
     n_workers = 0;
+    pending_events = 0;
   }
 
   void AddWorker() { n_workers++; }
   int GetWorkerCount() { return n_workers; }
+  std::atomic<int> pending_events{0};
 
 private:
   std::queue<std::shared_ptr<ChartTableEntryJobTicket>> m_queue;
@@ -179,6 +181,12 @@ private:
   bool m_shutdown = false;
   int n_workers = 0;
 };
+
+#ifndef __ANDROID__
+#define kMAX_EVENT_THROTTLE 20
+#else
+#define kMAX_EVENT_THROTTLE 2
+#endif
 
 class PoolWorkerThread : public wxThread {
 public:
@@ -192,6 +200,12 @@ protected:
     std::shared_ptr<ChartTableEntryJobTicket> job;
 
     while (m_queue.Pop(job)) {
+      // Throttle event generation
+      while (m_queue.pending_events.load(std::memory_order_relaxed) >
+             kMAX_EVENT_THROTTLE) {
+        wxMilliSleep(1);
+      }
+
       if (!job->DoJob()) {
         job->b_isaborted = true;
         printf("job aborted\n");
@@ -202,6 +216,7 @@ protected:
           new OCPN_ChartTableEntryThreadEvent(wxEVT_OCPN_CHARTTABLEENTRYTHREAD);
       evt->SetTicket(job);
       wxQueueEvent(m_target, evt);
+      m_queue.pending_events++;
     }
 
     return 0;

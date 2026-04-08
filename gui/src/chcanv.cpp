@@ -1178,6 +1178,8 @@ void ChartCanvas::ApplyCanvasConfig(canvasConfig *pcc) {
   SetShowAIS(pcc->bShowAIS);
   SetAttenAIS(pcc->bAttenAIS);
 
+  SetbEnableBasemapTile((pcc->bEnableBasemapTile));
+
   // ENC options
   SetShowENCText(pcc->bShowENCText);
   m_encDisplayCategory = pcc->nENCDisplayCategory;
@@ -3524,7 +3526,15 @@ void ChartCanvas::OnChartDragInertiaTimer(wxTimerEvent &event) {
   double destination_y = (GetCanvasHeight() / 2) + wxRound(dy);
   double inertia_lat, inertia_lon;
   GetCanvasPixPoint(destination_x, destination_y, inertia_lat, inertia_lon);
+  double prev_clat = VPoint.clat;
   SetViewPoint(inertia_lat, inertia_lon);  // about 1 msec
+  // Stop inertia if we hit a latitude clamp (viewport edge at limit)
+  if (fabs(VPoint.clat - prev_clat) < 1e-9 && fabs(dy) > 1) {
+    m_chart_drag_inertia_timer.Stop();
+    m_chart_drag_inertia_active = false;
+    DoCanvasUpdate();
+    return;
+  }
   // Check if ownship has moved off-screen
   if (!IsOwnshipOnScreen()) {
     m_bFollow = false;  // update the follow flag
@@ -3713,6 +3723,10 @@ void ChartCanvas::DoMovement(long dt) {
       else if (zoom_factor < 1) {
         if (VPoint.chart_scale / zoom_factor >= m_zoom_target)
           zoom_factor = VPoint.chart_scale / m_zoom_target;
+
+        // Enforce clamp on absolute zoom-out level
+        if ((GetVPScale()) < (m_absolute_min_scale_ppm * 1.00001))
+          zoom_factor = 1;
       }
     }
 
@@ -5124,12 +5138,6 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
     if (fabs(dx) < 1 && fabs(dy) < 1) return false;
   }
 
-  // avoid overshooting the poles
-  if (dlat > 90)
-    dlat = 90;
-  else if (dlat < -90)
-    dlat = -90;
-
   if (dlon > 360.) dlon -= 360.;
   if (dlon < -360.) dlon += 360.;
 
@@ -5447,14 +5455,41 @@ bool ChartCanvas::SetViewPoint(double lat, double lon, double scale_ppm,
   else if (VPoint.m_projection_type == PROJECTION_UNKNOWN)
     VPoint.SetProjectionType(PROJECTION_MERCATOR);
 
-  // don't allow latitude above 88 for mercator (90 is infinity)
-  if (VPoint.m_projection_type == PROJECTION_MERCATOR ||
-      VPoint.m_projection_type == PROJECTION_TRANSVERSE_MERCATOR) {
-    if (VPoint.clat > 89.5)
-      VPoint.clat = 89.5;
-    else if (VPoint.clat < -89.5)
-      VPoint.clat = -89.5;
+  // Clamp so the viewport edges don't extend beyond the maximum latitude
+  // coverage. The basemap covers ±85°, and Mercator is undefined at ±90°.
+  // Iterate to converge since Mercator is non-linear.
+  static const double MAX_LAT = 85.0;
+
+  if (VPoint.pix_height > 0 && scale_ppm > 0) {
+    double edge_lat, edge_lon;
+
+    for (int i = 0; i < 3; i++) {
+      VPoint.GetLLFromPix(wxPoint2DDouble(VPoint.pix_width / 2.0, 0), &edge_lat,
+                          &edge_lon);
+      if (!std::isnan(edge_lat) && edge_lat > MAX_LAT) {
+        VPoint.clat -= (edge_lat - MAX_LAT);
+      } else {
+        break;
+      }
+    }
+
+    for (int i = 0; i < 3; i++) {
+      VPoint.GetLLFromPix(
+          wxPoint2DDouble(VPoint.pix_width / 2.0, VPoint.pix_height), &edge_lat,
+          &edge_lon);
+      if (!std::isnan(edge_lat) && edge_lat < -MAX_LAT) {
+        VPoint.clat -= (edge_lat + MAX_LAT);
+      } else {
+        break;
+      }
+    }
   }
+
+  // Hard clamp as safety net
+  if (VPoint.clat > MAX_LAT)
+    VPoint.clat = MAX_LAT;
+  else if (VPoint.clat < -MAX_LAT)
+    VPoint.clat = -MAX_LAT;
 
   // don't zoom out too far for transverse mercator polyconic until we resolve
   // issues

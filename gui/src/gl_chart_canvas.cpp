@@ -493,17 +493,10 @@ void glChartCanvas::OnActivate(wxActivateEvent &event) {
 }
 
 void glChartCanvas::OnSize(wxSizeEvent &event) {
-#if 0
-#ifdef __ANDROID__
-     if(!g_running){
-         wxLogMessage("Got OnSize event while NOT running");
-         event.Skip();
-         qDebug() << "OnSizeB";
-
-         return;
-     }
-#endif
-#endif
+  //  Set the shader viewport transform matrix
+  //  Always safe, simple math based on parent VP
+  ViewPort *vp = m_pParentCanvas->GetpVP();
+  vp->SetVPTransformMatrix();
 
 #ifndef __ANDROID__
   if (!m_bsetup) return;
@@ -526,20 +519,8 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
     SetCurrent(*m_pcontext);
   }
 
-  // SetSize(m_pParentCanvas->GetClientSize());
-
   wxLogDebug("BuildFBO 3");
   BuildFBO();
-
-  //  Set the shader viewport transform matrix
-  ViewPort *vp = m_pParentCanvas->GetpVP();
-  mat4x4 m;
-  mat4x4_identity(m);
-  mat4x4_scale_aniso((float(*)[4])vp->vp_matrix_transform, m,
-                     2.0 / (float)vp->pix_width, -2.0 / (float)vp->pix_height,
-                     1.0);
-  mat4x4_translate_in_place((float(*)[4])vp->vp_matrix_transform,
-                            -vp->pix_width / 2.0f, -vp->pix_height / 2.0f, 0);
 }
 
 void glChartCanvas::MouseEvent(wxMouseEvent &event) {
