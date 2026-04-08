@@ -1351,6 +1351,16 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(istack);
 
+    if (cte.GetChartType() == CHART_TYPE_MBTILES) {
+      wxFileName fn(cte.GetFullPath());
+      if (fn.GetPath().Lower().Contains("basemap")) {
+        if (!m_parent->GetbEnableBasemapTile()) {
+          m_extended_stack_array.pop_back();
+          continue;
+        }
+      }
+    }
+
     // only charts of the proper projection and type may be quilted....
     // Also, only unskewed charts if so directed
     // and we avoid adding CM93 Composite until later
@@ -1369,8 +1379,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
         // The chart is a possible basemap if the chart path name
         // contains the string "basemap", not case-sensitive
 
-        wxFileName fn(cte.GetFullPath());
-        if (!fn.GetPath().Lower().Contains("basemap")) continue;
+        wxFileName fnb(cte.GetFullPath());
+        if (!fnb.GetPath().Lower().Contains("basemap")) continue;
       }
     }
 
@@ -1442,6 +1452,15 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(int ref_db_index,
       continue;
 
     const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+
+    if (cte.GetChartType() == CHART_TYPE_MBTILES) {
+      wxFileName fn(cte.GetFullPath());
+      if (fn.GetPath().Lower().Contains("basemap")) {
+        if (!m_parent->GetbEnableBasemapTile()) {
+          continue;
+        }
+      }
+    }
 
     // Skip any charts in Exclude array
     if (ChartData->IsChartDirectoryExcluded(cte.GetFullPath())) continue;

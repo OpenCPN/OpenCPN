@@ -69,6 +69,7 @@ void canvasConfig::Reset() {
   bShowENCDataQuality = 0;
   bShowENCBuoyLabels = 0;
   bShowENCLightDescriptions = 1;
+  bEnableBasemapTile = true;
 }
 
 void canvasConfig::LoadFromLegacyConfig(wxConfigBase *conf) {

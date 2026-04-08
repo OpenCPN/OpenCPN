@@ -2697,10 +2697,7 @@ void EnableMUIBar(bool enable, int CanvasIndex) {
 bool GetEnableMUIBar(int CanvasIndex) { return g_useMUI; }
 
 void EnableCompassGPSIcon(bool enable, int CanvasIndex) {
-  if (CanvasIndex < GetCanvasCount()) {
-    ChartCanvas* cc = g_canvasArray.Item(CanvasIndex);
-    if (cc) cc->SetShowGPSCompassWindow(enable);
-  }
+  g_bShowCompassWin = enable;
 }
 
 bool GetEnableCompassGPSIcon(int CanvasIndex) {
