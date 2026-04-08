@@ -1,3 +1,10 @@
+opencpn (1:5.14.1+dfsg-1~bpo24.04~ppa1) UNRELEASED; urgency=medium
+
+  * New upstream release 
+  * Add b-d  libunarr-dev since libarchive is too old.
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 09:16:59 +0200
+
 opencpn (1:5.14.1+dfsg~beta4-1~bpo24.04~ppa2) noble; urgency=medium
 
   * Fix missing b-d libunarr-dev
