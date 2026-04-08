@@ -278,6 +278,9 @@ Track *ActiveTrack::DoExtendDaily() {
 
   for (Track *ptrack : g_TrackList) {
     if (!ptrack->m_bIsInLayer && ptrack->m_GUID != m_GUID) {
+      // Do not consider automatically named AIS target tracks
+      if (ptrack->GetName().StartsWith(("AIS"))) continue;
+
       TrackPoint *track_node = ptrack->GetLastPoint();
       if (!track_node->GetCreateTime().IsValid())
         continue;  // Skip this bad track

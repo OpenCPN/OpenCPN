@@ -540,6 +540,8 @@ public:
   bool GetShowVisibleSectors() { return m_bShowVisibleSectors; }
   /** Get the number of logical pixels per millimeter on the screen. */
   double GetPixPerMM() { return m_pix_per_mm; }
+  void SetbEnableBasemapTile(bool f) { m_bEnableBasemapTile = f; }
+  bool GetbEnableBasemapTile() { return m_bEnableBasemapTile; }
 
   void SetOwnShipState(ownship_state_t state) { m_ownship_state = state; }
   void SetCursorStatus(double cursor_lat, double cursor_lon);
@@ -951,6 +953,7 @@ private:
   double m_scaleValue;
   bool m_bShowScaleInStatusBar;
   wxRect bbRect;
+  bool m_bEnableBasemapTile;
 
   wxPoint LastShipPoint;
   wxPoint LastPredPoint;
