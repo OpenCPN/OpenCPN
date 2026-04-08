@@ -1,8 +1,10 @@
-opencpn (1:5.14.1+dfsg-1~bpo22.04~ppa1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg-1~bpo22.04~ppa1) jammy; urgency=medium
 
   * New upstream release
+  * Add missing b-d libunarr-dev
+  * Drop unknown lintian-overrides tag
 
- -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 10:10:31 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 08 Apr 2026 10:22:13 +0200
 
 opencpn (1:5.14.1+dfsg-1) unstable; urgency=medium
 
