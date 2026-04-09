@@ -1,3 +1,10 @@
+opencpn (1:5.14.1+dfsg-2) unstable; urgency=medium
+
+  * Restore accidentally modified sources
+  * Add cmake 4.3.1 FTBFS patch
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Thu, 09 Apr 2026 15:38:51 +0200
+
 opencpn (1:5.14.1+dfsg-1) unstable; urgency=medium
 
   * New upstream release
