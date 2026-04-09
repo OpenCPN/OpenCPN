@@ -641,8 +641,7 @@ if (OPENGL_FOUND AND CMAKE_HOST_WIN32)
   link_libraries(${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.lib)
 elseif (OPENGL_FOUND AND NOT APPLE)
   find_package(GLEW REQUIRED)
-  include_directories(${GLEW_INCLUDE_DIRS})
-  link_libraries(${GLEW_LIBRARIES})
+  link_libraries(GLEW::GLEW)
 endif ()
 
 
