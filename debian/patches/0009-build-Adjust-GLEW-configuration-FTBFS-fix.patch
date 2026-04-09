@@ -1,0 +1,24 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Thu, 9 Apr 2026 15:08:01 +0200
+Subject: build: Adjust GLEW configuration - FTBFS fix
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/5183
+
+---
+ CMakeLists.txt | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 40b536e..110dfc8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -640,8 +640,7 @@ if (OPENGL_FOUND AND CMAKE_HOST_WIN32)
+   link_libraries(${CMAKE_SOURCE_DIR}/cache/buildwin/glew32.lib)
+ elseif (OPENGL_FOUND AND NOT APPLE)
+   find_package(GLEW REQUIRED)
+-  include_directories(${GLEW_INCLUDE_DIRS})
+-  link_libraries(${GLEW_LIBRARIES})
++  link_libraries(GLEW::GLEW)
+ endif ()
+ 
+ 
