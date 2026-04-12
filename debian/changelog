@@ -1,3 +1,10 @@
+opencpn (1:5.14.1+dfsg-3) UNRELEASED; urgency=medium
+
+  [Helmut Grohne]
+  * Add libdnet cross compile patch. Closes: #1121371
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 12 Apr 2026 10:16:52 +0200
+
 opencpn (1:5.14.1+dfsg-2) unstable; urgency=medium
 
   * Restore accidentally modified sources
