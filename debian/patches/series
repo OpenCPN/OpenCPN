@@ -6,3 +6,4 @@
 0007-tests-disable-some-tests-for-now.patch
 0008-Install-o-charts-dongle-rule-option.patch
 0009-build-Adjust-GLEW-configuration-FTBFS-fix.patch
+0010-libdnet-Handle-libdnet-cross-compile-error-1121371.patch

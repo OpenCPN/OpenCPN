@@ -3,7 +3,6 @@ Date: Thu, 9 Apr 2026 15:08:01 +0200
 Subject: build: Adjust GLEW configuration - FTBFS fix
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/5183
-
 ---
  CMakeLists.txt | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
