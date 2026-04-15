@@ -7,3 +7,5 @@
 0008-Install-o-charts-dongle-rule-option.patch
 0009-build-Adjust-GLEW-configuration-FTBFS-fix.patch
 0010-libdnet-Handle-libdnet-cross-compile-error-1121371.patch
+0011-chartdb_thread.cpp-Mute-gcc-16-false-positive-5189.patch
+0012-tcds_binary_harmonic.cpp-Fix-gcc-16-build-problem-51.patch
