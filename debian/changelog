@@ -1,5 +1,10 @@
 opencpn (1:5.14.1+dfsg-3) UNRELEASED; urgency=medium
 
+  * Add two gcc-16 patches. Closes:#1133594
+  * d/control: standards-version 4.7.2 -> 4.7.4, no changes
+  * d/control: Update Vcs-Browser to point to correct branch
+  * Add comm_drv_n2k_net patch muting compiler warnings
+
   [Helmut Grohne]
   * Add libdnet cross compile patch. Closes: #1121371
 
