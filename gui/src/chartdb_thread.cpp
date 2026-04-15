@@ -34,6 +34,11 @@ wxDEFINE_EVENT(wxEVT_OCPN_CHARTTABLEENTRYTHREAD,
 extern ChartDB *ChartData;
 
 //  ChartTableEntryJobTicket implementation
+
+// Seems like a gcc 16 false positive in handling ChartTableEntry.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+
 bool ChartTableEntryJobTicket::DoJob() {
   // printf("DoJob\n");
   ChartDatabase *db = dynamic_cast<ChartDatabase *>(ChartData);
@@ -46,3 +51,4 @@ bool ChartTableEntryJobTicket::DoJob() {
 
   return true;
 }
+#pragma GCC diagnostic pop
