@@ -3061,6 +3061,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
+#ifndef __ANDROID__
     //  Display size/DPI
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
                                          _("Physical Screen Width")),
@@ -3085,11 +3086,11 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     pmmRow->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("mm")),
                 inputFlags);
-
+#endif
     // ChartBar Options
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Bar")),
-        labelFlags);
+        inputFlags);
     wxBoxSizer* ChartBarSizer = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizerUI->Add(ChartBarSizer, 0, 0, 0);
 
@@ -3097,13 +3098,14 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                  _("Show extended chart bar information."));
     ChartBarSizer->Add(pChartBarEX, inputFlags);
 
+#ifndef __ANDROID__
     pRBSizeAuto->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                          wxCommandEventHandler(options::OnSizeAutoButton), NULL,
                          this);
     pRBSizeManual->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                            wxCommandEventHandler(options::OnSizeManualButton),
                            NULL, this);
-
+#endif
   }
 
   else {
@@ -3252,6 +3254,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
+#ifndef __ANDROID__
     //  Display size/DPI
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
                                          _("Physical Screen Width")),
@@ -3280,7 +3283,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     pRBSizeManual->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                            wxCommandEventHandler(options::OnSizeManualButton),
                            NULL, this);
-
+#endif
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -6575,6 +6578,7 @@ void options::SetInitialSettings() {
   m_pSlider_Text_Factor->SetValue(g_ENCSoundingScaleFactor);
   m_pSlider_ENCText_Factor->SetValue(g_ENCTextScaleFactor);
   m_pMouse_Zoom_Slider->SetValue(g_mouse_zoom_sensitivity_ui);
+#ifndef __ANDROID__
   wxString screenmm;
   if (!g_config_display_size_manual) {
     pRBSizeAuto->SetValue(TRUE);
@@ -6592,6 +6596,7 @@ void options::SetInitialSettings() {
   }
 
   pScreenMM->SetValue(screenmm);
+#endif
 
   pDepthUnitSelect->SetSelection(g_nDepthUnitDisplay);
   UpdateOptionsUnits();  // sets depth values using the user's unit preference
@@ -7276,7 +7281,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   }
 
   g_bShowChartBar = pShowChartBar->GetValue();
-
+#ifndef __ANDROID__
   wxString screenmm = pScreenMM->GetValue();
   wxStringTokenizer tkz(screenmm, ",");
   g_config_display_size_mm.clear();
@@ -7290,6 +7295,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
     }
   }
   g_config_display_size_manual = pRBSizeManual->GetValue();
+#endif
 
   // Connections page.
   comm_dialog->ApplySettings();
