@@ -1899,12 +1899,12 @@ double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
   //  This may be approximated in a device orientation-independent way as:
   //   45pixels * DENSITY
   double premult = 1.0;
-  if (g_config_display_size_manual && g_config_display_size_mm[0] > 0) {
-    double target_size = 9.0;  // mm
-
-    double basic_tool_size_mm = tool_size / GetDisplayDPmm();
-    premult = target_size / basic_tool_size_mm;
-
+  if (g_config_display_size_manual && g_config_display_size_mm.size()) {
+    if (g_config_display_size_mm[0] > 0) {
+      double target_size = 9.0;  // mm
+      double basic_tool_size_mm = tool_size / GetDisplayDPmm();
+      premult = target_size / basic_tool_size_mm;
+    }
   } else {
     premult = wxMax(45 * getAndroidDisplayDensity(), 45) /
               tool_size;  // make sure not too small
