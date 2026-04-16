@@ -868,10 +868,6 @@ bool GetTideHeight(int stationIndex, time_t time, float* height) {
   return ptcmgr->GetTideOrCurrent(time, stationIndex, *height, dir);
 }
 
-std::unique_ptr<HostApi> GetHostApi() {
-  return std::make_unique<HostApi121>(HostApi121());
-}
-
 bool HostApi121::AddRoute(HostApi121::Route* route, bool permanent) {
   return ::AddPlugInRouteExV3(route, permanent);
 }

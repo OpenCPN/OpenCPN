@@ -7236,10 +7236,15 @@ public:
  */
 extern DECL_EXP std::unique_ptr<HostApi> GetHostApi();
 
-// To gain access to api121, do something like this:
-// auto host_api = std::move(GetHostApi());
-// auto api_121 = std::dynamic_pointer_cast<HostApi121>(host_api);
-
+/**
+ *  Locked down interface published in 5.14.1.
+ *  Usage something like:
+ *
+ *       std::shared_ptr<HostApi> host_api = std::move(GetHostApi());
+ *       std::shared_ptr<HostApi121> api_121 =
+ *               std::dynamic_pointer_cast<HostApi121>(m_host_api);
+ *
+ */
 class HostApi121 : public HostApi {
 public:
   HostApi121()
@@ -7376,5 +7381,8 @@ public:
                                      PlugIn_TideStation *station);
   virtual bool GetTideHeight(int stationIndex, time_t time, float *height);
 };
+
+/** Unstable development API */
+class HostApi122 : public HostApi121 {};
 
 #endif  //_PLUGIN_H_
