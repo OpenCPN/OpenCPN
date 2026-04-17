@@ -72,8 +72,7 @@ For local development the wxWidgets from Homebrew (or built locally) can be used
  $ brew install wxwidgets
 
 But to get results fully compatible with the official OpenCPN
-builds, which retain compatibility with older macOS versions, wxWidgets must be version 3.2.5 built manually.
-For very old Intel machines you may download the prebuilt binaries archive from https://dl.cloudsmith.io/public/nohal/opencpn-dependencies/raw/files/macos_deps_intel_legacy.tar.xz
+builds, which retain compatibility with older macOS versions, wxWidgets must be version 3.2.x (>=3.2.5)  built manually.
 For modern Macs, OpenCPN is built as a universal binary against set of prebuilt dependencies available from https://dl.cloudsmith.io/public/nohal/opencpn-dependencies/raw/files/macos_deps_universal-opencpn.tar.xz
 
 To build wxWidgets manually, you may use the following process:
