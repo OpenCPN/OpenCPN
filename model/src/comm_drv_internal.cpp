@@ -32,28 +32,50 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
+#include "observable.h"
+#include "wx/jsonreader.h"
+
 #include "config.h"
 #include "model/comm_drv_internal.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/logger.h"
+#include "model/plugin_comm.h"
 
-#include "observable.h"
+class DummyListener : public DriverListener {
+public:
+  DummyListener() = default;
 
-CommDriverInternal::CommDriverInternal(DriverListener& listener)
+  void Notify(std::shared_ptr<const NavMsg> nav_msg) override {}
+  void Notify(const AbstractCommDriver& driver) override {}
+};
+
+static DummyListener dummy_listener;
+
+CommDriverInternal::CommDriverInternal()
     : AbstractCommDriver(NavAddr::Bus::Plugin, "internal"),
-      m_listener(listener) {
+      m_listener(dummy_listener) {
   this->attributes["commPort"] = "internal";
+  this->attributes["protocol"] = "internal";
   this->attributes["ioDirection"] = "OUT";
 }
 
 bool CommDriverInternal::SendMessage(std::shared_ptr<const NavMsg> msg,
                                      std::shared_ptr<const NavAddr> addr) {
-  auto msg_plugin = std::dynamic_pointer_cast<const PluginMsg>(msg);
-  if (!msg_plugin) {
+  auto plugin_msg = std::dynamic_pointer_cast<const PluginMsg>(msg);
+  if (!plugin_msg) {
     WARNING_LOG << " CommDriverInternal::SendMessage::Illegal message type";
     return false;
   }
-  NavMsgBus::GetInstance().Notify(msg_plugin);
+  wxJSONValue root;
+  wxJSONReader json_reader;
+  int num_errors = json_reader.Parse(plugin_msg->message, &root);
+  if (num_errors > 0) {
+    wxLogWarning("PluginMsgHandler: cannot parse json: %s",
+                 plugin_msg->message.substr(0, 30));
+    return false;
+  }
+
+  SendJSONMessageToAllPlugins(plugin_msg->GetKey(), root);
   return true;
 }

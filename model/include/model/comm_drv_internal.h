@@ -31,7 +31,7 @@
  */
 class CommDriverInternal : public AbstractCommDriver {
 public:
-  CommDriverInternal(DriverListener& l);
+  CommDriverInternal();
 
   ~CommDriverInternal() = default;
 
