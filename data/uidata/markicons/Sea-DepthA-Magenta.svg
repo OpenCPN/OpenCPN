@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <ellipse fill="#fff" cx="900" cy="576" rx="27" ry="25"/>
+    <path fill="#f0f" d="M704 1291h392.904v31.122H704z"/>
+    <circle stroke="#f0f" stroke-width="7.62" cx="900" cy="1307" r="39"/>
+    <path fill="#f0f" fill-rule="nonzero" d="M847 454v405h-71l124 404 124-404h-71V454z"/>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+</svg>

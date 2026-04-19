@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <clipPath id="a">
+            <path d="M503 1176h794l-280-481H783l-280 481z"/>
+        </clipPath>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#A45E4D" d="M534 796h63.5v394.2H534z"/>
+    <ellipse fill="#A98F71" cx="565" cy="795" rx="32" ry="9"/>
+    <path fill="#A45E4D" d="M1203 796h63.5v394.2H1203z"/>
+    <ellipse fill="#A98F71" cx="1235" cy="795" rx="32" ry="9"/>
+    <path fill="#A45E4D" d="M657 691h38.8v240.869H657z"/>
+    <ellipse fill="#A98F71" cx="676" cy="691" rx="19" ry="6"/>
+    <path fill="#A45E4D" d="M755 614h24.63v152.902H755z"/>
+    <ellipse fill="#A98F71" cx="768" cy="613" rx="12" ry="4"/>
+    <path fill="#A45E4D" d="M1104 691h38.8v240.869H1104z"/>
+    <ellipse fill="#A98F71" cx="1124" cy="691" rx="19" ry="6"/>
+    <path fill="#A45E4D" d="M1020 614h24.63v152.902H1020z"/>
+    <ellipse fill="#A98F71" cx="1032" cy="613" rx="12" ry="4"/>
+    <g clip-path="url(#a)">
+        <path fill="#847059" d="M480 1120h840v107H480z"/>
+        <path fill="#630" d="M508 1071h784v101H508v-101z"/>
+        <path fill="#A98F71" d="M537 1022h726v95H537v-95z"/>
+        <path fill="#847059" d="M565 973h670v89H565v-89z"/>
+        <path fill="#A98F71" d="M593 924h614v84H593v-84z"/>
+        <path fill="#C7B082" d="M622 875h556v78H622v-78z"/>
+        <path fill="#A98F71" d="M650 827h500v71H650v-71z"/>
+        <path fill="#630" d="M679 778h442v65H679v-65z"/>
+        <path fill="#8C6C44" d="M707 729h386v59H707v-59z"/>
+        <path fill="#B9A070" d="M735 680h329.41v53.58H735z"/>
+    </g>
+    <path fill="none" stroke="#C93" stroke-width="7.62" d="M503 1176h794l-280-481H783z"/>
+</svg>
