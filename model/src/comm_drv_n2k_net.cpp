@@ -617,14 +617,15 @@ void CommDriverN2KNet::HandleCanFrameInput(can_frame frame) {
   }
 }
 
-bool isASCII(std::vector<unsigned char> packet) {
+static bool isASCII(const std::vector<unsigned char>& packet) {
   for (unsigned char c : packet) {
     if (!isascii(c)) return false;
   }
   return true;
 }
 
-N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
+N2K_Format CommDriverN2KNet::DetectFormat(
+    const std::vector<unsigned char>& packet) {
   // A simplistic attempt at identifying which of the various available
   //    on-wire (or air) formats being emitted by a configured
   //    Actisense N2k<->ethernet device.

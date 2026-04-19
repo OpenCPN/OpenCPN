@@ -174,7 +174,7 @@ private:
   bool ChecksumOK(const std::string& sentence);
   void SetOk(bool ok) { m_bok = ok; };
 
-  N2K_Format DetectFormat(std::vector<unsigned char> packet);
+  N2K_Format DetectFormat(const std::vector<unsigned char>& packet);
   bool ProcessActisense_ASCII_RAW(std::vector<unsigned char> packet);
   bool ProcessActisense_ASCII_N2K(std::vector<unsigned char> packet);
   bool ProcessActisense_N2K(std::vector<unsigned char> packet);
