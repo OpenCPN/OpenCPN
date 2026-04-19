@@ -1,0 +1,50 @@
+From 1393058f9c299d980054c1f77fc81eada068b395 Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 19 Apr 2026 08:54:34 +0000
+Subject: [PATCH] comm_drv_n2k_net: Avoid unnecessary allocations
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/5196
+Applied-upstream: https://github.com/leamas/OpenCPN/commit/f9898613
+
+---
+ model/include/model/comm_drv_n2k_net.h | 2 +-
+ model/src/comm_drv_n2k_net.cpp         | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/model/include/model/comm_drv_n2k_net.h b/model/include/model/comm_drv_n2k_net.h
+index 197b0ca89..ff96355b0 100644
+--- a/model/include/model/comm_drv_n2k_net.h
++++ b/model/include/model/comm_drv_n2k_net.h
+@@ -174,7 +174,7 @@ private:
+   bool ChecksumOK(const std::string& sentence);
+   void SetOk(bool ok) { m_bok = ok; };
+ 
+-  N2K_Format DetectFormat(std::vector<unsigned char> packet);
++  N2K_Format DetectFormat(const std::vector<unsigned char>& packet);
+   bool ProcessActisense_ASCII_RAW(std::vector<unsigned char> packet);
+   bool ProcessActisense_ASCII_N2K(std::vector<unsigned char> packet);
+   bool ProcessActisense_N2K(std::vector<unsigned char> packet);
+diff --git a/model/src/comm_drv_n2k_net.cpp b/model/src/comm_drv_n2k_net.cpp
+index 47062285c..87290e9f0 100644
+--- a/model/src/comm_drv_n2k_net.cpp
++++ b/model/src/comm_drv_n2k_net.cpp
+@@ -617,14 +617,14 @@ void CommDriverN2KNet::HandleCanFrameInput(can_frame frame) {
+   }
+ }
+ 
+-bool isASCII(std::vector<unsigned char> packet) {
++static bool isASCII(const std::vector<unsigned char>& packet) {
+   for (unsigned char c : packet) {
+     if (!isascii(c)) return false;
+   }
+   return true;
+ }
+ 
+-N2K_Format CommDriverN2KNet::DetectFormat(std::vector<unsigned char> packet) {
++N2K_Format CommDriverN2KNet::DetectFormat(const std::vector<unsigned char>& packet) {
+   // A simplistic attempt at identifying which of the various available
+   //    on-wire (or air) formats being emitted by a configured
+   //    Actisense N2k<->ethernet device.
+-- 
+2.53.0
+
