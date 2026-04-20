@@ -1118,9 +1118,15 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
   m_pWind->SetValue(!IsRTOFS);
   m_pPress->SetValue(!IsRTOFS);
   m_pWaves->SetValue(m_RequestConfigBase.GetChar(8) == 'X' && IsGFS);
+  m_pWindWaves->SetValue(m_RequestConfigBase.GetChar(22) == 'X' && IsGFS);
+  m_pSwellWaves->SetValue(m_RequestConfigBase.GetChar(23) == 'X' && IsGFS);
   m_pWaves->Enable(IsECMWF ||
                    (IsGFS && m_pTimeRange->GetCurrentSelection() < 7));
   // gfs & time range less than 8 days
+  m_pWindWaves->Enable(IsGFS && m_pTimeRange->GetCurrentSelection() < 7);
+  // Only GFS supports separate wind waves (ECMWF only has combined waves)
+  m_pSwellWaves->Enable(IsGFS && m_pTimeRange->GetCurrentSelection() < 7);
+  // Only GFS supports separate swell waves (ECMWF only has combined waves)
   m_pRainfall->SetValue(m_RequestConfigBase.GetChar(9) == 'X' &&
                         (IsGFS || IsHRRR));
   m_pRainfall->Enable(IsGFS || IsHRRR);
@@ -1169,7 +1175,9 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
 
   m_fgLog->ShowItems(IsZYGRIB);  // show/hide zigrib login
 
-  m_pWModel->Show(IsZYGRIB && m_pWaves->IsChecked());  // show/hide waves model
+  m_pWModel->Show(IsZYGRIB &&
+                  (m_pWaves->IsChecked() || m_pWindWaves->IsChecked() ||
+                   m_pSwellWaves->IsChecked()));  // show/hide waves model
 
   m_fgAltitudeData->ShowItems(
       m_pAltitudeData->IsChecked());  // show/hide altitude params
@@ -1402,7 +1410,9 @@ void GribRequestSetting::OnCoordinatesChange(wxSpinEvent &event) {
 void GribRequestSetting::OnAnyChange(wxCommandEvent &event) {
   m_fgAltitudeData->ShowItems(m_pAltitudeData->IsChecked());
 
-  m_pWModel->Show(IsZYGRIB && m_pWaves->IsChecked());
+  m_pWModel->Show(IsZYGRIB &&
+                  (m_pWaves->IsChecked() || m_pWindWaves->IsChecked() ||
+                   m_pSwellWaves->IsChecked()));
 
   if (m_AllowSend) m_MailImage->SetValue(WriteMail());
 
@@ -1410,13 +1420,19 @@ void GribRequestSetting::OnAnyChange(wxCommandEvent &event) {
 }
 
 void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event) {
-  m_pWModel->Show(IsZYGRIB && m_pWaves->IsChecked());
+  m_pWModel->Show(IsZYGRIB &&
+                  (m_pWaves->IsChecked() || m_pWindWaves->IsChecked() ||
+                   m_pSwellWaves->IsChecked()));
 
   if (m_pModel->GetCurrentSelection() == 0) {  // gfs
     if (m_pTimeRange->GetCurrentSelection() >
         6) {  // time range more than 8 days
       m_pWaves->SetValue(0);
+      m_pWindWaves->SetValue(0);
+      m_pSwellWaves->SetValue(0);
       m_pWaves->Enable(false);
+      m_pWindWaves->Enable(false);
+      m_pSwellWaves->Enable(false);
       OCPNMessageBox_PlugIn(
           this,
           _("You request a forecast for more than 8 days horizon.\nThis is "
@@ -1425,8 +1441,11 @@ void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event) {
             "resolution will be only 2.5\u00B0x2.5\u00B0\nand the time "
             "intervall 12 hours."),
           _("Warning!"));
-    } else
+    } else {
       m_pWaves->Enable(true);
+      m_pWindWaves->Enable(true);
+      m_pSwellWaves->Enable(true);
+    }
   }
 
   if (m_AllowSend) m_MailImage->SetValue(WriteMail());
@@ -1472,8 +1491,15 @@ void GribRequestSetting::OnOK(wxCommandEvent &event) {
   if (!IsCOAMPS && !IsRTOFS) {
     m_pWindGust->IsChecked() ? m_RequestConfigBase.SetChar(14, 'X')  // Gust
                              : m_RequestConfigBase.SetChar(14, '.');
-    m_pWaves->IsChecked() ? m_RequestConfigBase.SetChar(8, 'X')  // waves
-                          : m_RequestConfigBase.SetChar(8, '.');
+    m_pWaves->IsChecked()
+        ? m_RequestConfigBase.SetChar(8, 'X')  // combined waves
+        : m_RequestConfigBase.SetChar(8, '.');
+    m_pWindWaves->IsChecked()
+        ? m_RequestConfigBase.SetChar(22, 'X')  // wind waves
+        : m_RequestConfigBase.SetChar(22, '.');
+    m_pSwellWaves->IsChecked()
+        ? m_RequestConfigBase.SetChar(23, 'X')  // swell waves
+        : m_RequestConfigBase.SetChar(23, '.');
     m_pRainfall->IsChecked() ? m_RequestConfigBase.SetChar(9, 'X')  // rainfall
                              : m_RequestConfigBase.SetChar(9, '.');
     m_pCloudCover->IsChecked() ? m_RequestConfigBase.SetChar(10, 'X')  // clouds
@@ -1516,23 +1542,70 @@ wxString GribRequestSetting::WriteMail() {
   m_MailError_Nb = 0;
   // some useful strings
   const wxString s[] = {_T(","), _T(" ")};  // separators
-  const wxString p[][11] = {
+  const wxString p[][13] = {
       // parameters GFS from Saildocs
-      {_T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("HTSGW,WVPER,WVDIR"),
-       _T("SEATMP"), _T("GUST"), _T("CAPE"), wxEmptyString, wxEmptyString,
-       _T("WIND500,HGT500"), wxEmptyString},
-      {},  // COAMPS
-      {},  // RTOFS
-      {},  // HRRR = same parameters as GFS
-      // parametres ICON
-      {_T(""), _T(""), _T("AIRTMP"), _T(""), _T("SFCTMP"), _T("GUST"), _T(""),
-       _T(""), _T(""), _T("WIND500,HGT500"), _T("")},
-      // parametres ECMWF
-      {_T(""), _T(""), _T("TEMP"), _T("WAVES"), _T(""), _T(""), _T(""), _T(""),
-       _T(""), _T("WIND500,HGT500"), _T("")},
-      // parameters GFS from zygrib
-      {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString,
-       _T("GUST"), _T("CAPE"), _T("A850"), _T("A700"), _T("A500"), _T("A300")}};
+      {_T("APCP"),                // Accumulated precipitation
+       _T("CLOUDS"),              // Total cloud cover
+       _T("AIRTMP"),              // Air temperature (2m above surface)
+       _T("HTSGW,DIRPW,PERPW"),   // Combined waves (significant height,
+                                  // direction, period from GFS-wave/WW3)
+       _T("SFCTMP"),              // Sea surface temperature
+       _T("GUST"),                // Wind gust (10m above surface)
+       _T("CAPE"),                // Clear Air Potential Energy
+       wxEmptyString,             // 850mb (not used)
+       wxEmptyString,             // 700mb (not used)
+       _T("WIND500,HGT500"),      // Wind velocity and height at 500mb
+       wxEmptyString,             // 300mb (not used)
+       _T("WVHGT,WVPER,WVDIR"),   // Wind waves (height, period, direction from
+                                  // GFS-wave/WW3)
+       _T("SWELL,SWDIR,SWPER")},  // Swell waves (height, direction, period from
+                                  // GFS-wave/WW3)
+      {},                         // COAMPS - hard-coded to Wind and Pressure
+      {},                         // RTOFS - hard-coded to ocean currents
+      {},                         // HRRR = same parameters as GFS
+      // parameters ICON
+      {_T(""),                // Precipitation (not available)
+       _T(""),                // Cloud cover (not available)
+       _T("AIRTMP"),          // Air temperature
+       _T(""),                // Combined waves (not available)
+       _T("SFCTMP"),          // Surface temperature
+       _T("GUST"),            // Wind gust
+       _T(""),                // CAPE (not available)
+       _T(""),                // 850mb (not used)
+       _T(""),                // 700mb (not used)
+       _T("WIND500,HGT500"),  // Wind velocity and height at 500mb
+       _T(""),                // 300mb (not used)
+       _T(""),                // Wind waves (not available)
+       _T("")},               // Swell waves (not available)
+      // parameters ECMWF
+      {_T(""),                   // Precipitation (not available)
+       _T(""),                   // Cloud cover (not available)
+       _T("TEMP"),               // Air temperature (2-meter air temp)
+       _T("HTSGW,DIRPW,PERPW"),  // Combined waves (significant wave height,
+                                 // direction, period)
+       _T(""),                   // Sea temperature (not available)
+       _T(""),                   // Wind gust (not available)
+       _T(""),                   // CAPE (not available)
+       _T(""),                   // 850mb (not used)
+       _T(""),                   // 700mb (not used)
+       _T("WIND500,HGT500"),     // Wind velocity and height at 500mb
+       _T(""),                   // 300mb (not used)
+       _T(""),   // Wind waves (not separately available - use combined waves)
+       _T("")},  // Swell waves (not separately available - use combined waves)
+      // parameters GFS from zyGrib
+      {_T("PRECIP"),        // Precipitation
+       _T("CLOUD"),         // Cloud cover
+       _T("TEMP"),          // Air temperature
+       _T("WVSIG WVWIND"),  // Combined waves
+       wxEmptyString,       // Sea temperature (not used)
+       _T("GUST"),          // Wind gust
+       _T("CAPE"),          // Clear Air Potential Energy
+       _T("A850"),          // Altitude 850mb
+       _T("A700"),          // Altitude 700mb
+       _T("A500"),          // Altitude 500mb
+       _T("A300"),          // Altitude 300mb
+       _T("WVSIG WVWIND"),  // Wind waves (same as combined)
+       _T("SWELLS")}};
 
   wxString r_topmess, r_parameters, r_zone;
   // write the top part of the mail
@@ -1576,7 +1649,8 @@ wxString GribRequestSetting::WriteMail() {
       r_topmess.append(m_pTimeRange->GetStringSelection() + _T("\n"));
       r_topmess.Append(wxT("hours : "));
       r_topmess.append(m_pInterval->GetStringSelection() + _T("\n"));
-      if (m_pWaves->IsChecked()) {
+      if (m_pWaves->IsChecked() || m_pWindWaves->IsChecked() ||
+          m_pSwellWaves->IsChecked()) {
         r_topmess.Append(wxT("waves : "));
         r_topmess.append(m_pWModel->GetStringSelection() + _T("\n"));
       }
@@ -1604,6 +1678,12 @@ wxString GribRequestSetting::WriteMail() {
       if (m_pWaves->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
                             p[GFS + GFSZ][3]);
+      if (m_pWindWaves->IsChecked())
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
+                            p[GFS + GFSZ][11]);
+      if (m_pSwellWaves->IsChecked())
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
+                            p[GFS + GFSZ][12]);
       if (m_pSeaTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
                             p[GFS + GFSZ][4]);
@@ -1675,6 +1755,10 @@ wxString GribRequestSetting::WriteMail() {
       }
       if (m_pWaves->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ECMWF][3]);
+      if (m_pWindWaves->IsChecked())
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ECMWF][11]);
+      if (m_pSwellWaves->IsChecked())
+        r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ECMWF][12]);
       break;
   }
   if (!IsZYGRIB && m_cMovingGribEnabled->IsChecked())  // moving grib
@@ -1741,7 +1825,10 @@ int GribRequestSetting::EstimateFileSize(double *size) {
   int nbrec = (int)(time * 24 / inter) + 1;
   int nbPress = (m_pPress->IsChecked()) ? nbrec : 0;
   int nbWind = (m_pWind->IsChecked()) ? 2 * nbrec : 0;
-  int nbwave = (m_pWaves->IsChecked()) ? 2 * nbrec : 0;
+  int nbwave = 0;
+  if (m_pWaves->IsChecked()) nbwave += 2 * nbrec;       // Combined waves
+  if (m_pWindWaves->IsChecked()) nbwave += 2 * nbrec;   // Wind waves
+  if (m_pSwellWaves->IsChecked()) nbwave += 2 * nbrec;  // Swell waves
   int nbRain = (m_pRainfall->IsChecked()) ? nbrec - 1 : 0;
   int nbCloud = (m_pCloudCover->IsChecked()) ? nbrec - 1 : 0;
   int nbTemp = (m_pAirTemp->IsChecked()) ? nbrec : 0;
@@ -2028,6 +2115,9 @@ wxString GribRequestSetting::BuildXyGribUrl() {
     }
     if (m_xygribPanel->m_windwave_cbox->IsChecked()) {
       wParams << "h;d;p;";
+    }
+    if (m_xygribPanel->m_swellwave_cbox->IsChecked()) {
+      wParams << "H;D;P;";
     }
     if (wParams.length() > 0) {
       urlStr << wxString::Format("%s&wpar=%s", modelStr.c_str(),
@@ -2394,6 +2484,7 @@ void GribRequestSetting::OnXyGribWaveModelChoice(wxCommandEvent &event) {
     m_selectedWaveModelIndex = -1;
     m_xygribPanel->m_waveheight_cbox->Disable();
     m_xygribPanel->m_windwave_cbox->Disable();
+    m_xygribPanel->m_swellwave_cbox->Disable();
     MemorizeXyGribConfiguration();
     return;
   }
@@ -2411,6 +2502,12 @@ void GribRequestSetting::OnXyGribWaveModelChoice(wxCommandEvent &event) {
     m_xygribPanel->m_windwave_cbox->Enable();
   } else {
     m_xygribPanel->m_windwave_cbox->Disable();
+  }
+
+  if (selectedModel->swellWaves) {
+    m_xygribPanel->m_swellwave_cbox->Enable();
+  } else {
+    m_xygribPanel->m_swellwave_cbox->Disable();
   }
   MemorizeXyGribConfiguration();
 }
@@ -2539,6 +2636,11 @@ void GribRequestSetting::InitializeXygribDialog() {
   else
     m_xygribPanel->m_windwave_cbox->Disable();
 
+  if ((selectedWaveModel != nullptr) && (selectedWaveModel->swellWaves))
+    m_xygribPanel->m_swellwave_cbox->Enable();
+  else
+    m_xygribPanel->m_swellwave_cbox->Disable();
+
   ApplyXyGribConfiguration();
 }
 
@@ -2565,6 +2667,7 @@ void GribRequestSetting::ApplyXyGribConfiguration() {
       m_parent.xyGribConfig.precipitation);
   m_xygribPanel->m_waveheight_cbox->SetValue(m_parent.xyGribConfig.waveHeight);
   m_xygribPanel->m_windwave_cbox->SetValue(m_parent.xyGribConfig.windWaves);
+  m_xygribPanel->m_swellwave_cbox->SetValue(m_parent.xyGribConfig.swellWaves);
   m_xygribPanel->m_resolution_choice->SetSelection(
       m_parent.xyGribConfig.resolutionIndex);
   m_xygribPanel->m_duration_choice->SetSelection(
@@ -2601,6 +2704,8 @@ void GribRequestSetting::MemorizeXyGribConfiguration() {
   m_parent.xyGribConfig.waveHeight =
       m_xygribPanel->m_waveheight_cbox->IsChecked();
   m_parent.xyGribConfig.windWaves = m_xygribPanel->m_windwave_cbox->IsChecked();
+  m_parent.xyGribConfig.swellWaves =
+      m_xygribPanel->m_swellwave_cbox->IsChecked();
 
   m_parent.xyGribConfig.resolutionIndex =
       m_xygribPanel->m_resolution_choice->GetSelection();
@@ -2753,6 +2858,15 @@ void GribRequestSetting::UpdateGribSizeEstimate() {
   }
 
   if (m_xygribPanel->m_windwave_cbox->IsChecked()) {
+    nbits = 15;
+    estimate += nbrec * (head + (nbits * npts) / 8 + 2);
+    nbits = 8;
+    estimate += nbrec * (head + (nbits * npts) / 8 + 2);
+    nbits = 10;
+    estimate += nbrec * (head + (nbits * npts) / 8 + 2);
+  }
+
+  if (m_xygribPanel->m_swellwave_cbox->IsChecked()) {
     nbits = 15;
     estimate += nbrec * (head + (nbits * npts) / 8 + 2);
     nbits = 8;
