@@ -843,8 +843,9 @@ enum {
   mlIgnore,
   mlMOB,
   mlVDM,
+  mlShipName,
   mlFollower,
-  mlShipName
+
 };  // MMSIListCtrl Columns;
 
 class MMSIListCtrl : private Uncopyable, public wxListCtrl {
