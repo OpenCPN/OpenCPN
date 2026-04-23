@@ -508,6 +508,8 @@ void OCPNPlatform::Initialize_2() {
     }
   }
 
+  if (!g_TCData_Dir.Length()) g_TCData_Dir = GetPrivateDataDir();
+
 #endif
 
   //  Set a global toolbar scale factor
