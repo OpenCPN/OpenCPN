@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2023 by David Register                                  *
- *   Copyright (C) 2023 Alec Leamas                                        *
+ *   Copyright (C) 2026 Alec Leamas                                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -83,54 +83,6 @@ public:
   }
 };
 
-// circular_buffer implementation
-
-circular_buffer::circular_buffer(size_t size)
-    : buf_(std::unique_ptr<unsigned char[]>(new unsigned char[size])),
-      max_size_(size) {}
-
-// void circular_buffer::reset()
-//{}
-
-// size_t circular_buffer::capacity() const
-//{}
-
-// size_t circular_buffer::size() const
-//{}
-
-bool circular_buffer::empty() const {
-  // if head and tail are equal, we are empty
-  return (!full_ && (head_ == tail_));
-}
-
-bool circular_buffer::full() const {
-  // If tail is ahead the head by 1, we are full
-  return full_;
-}
-
-void circular_buffer::put(unsigned char item) {
-  std::lock_guard<std::mutex> lock(mutex_);
-  buf_[head_] = item;
-  if (full_) tail_ = (tail_ + 1) % max_size_;
-
-  head_ = (head_ + 1) % max_size_;
-
-  full_ = head_ == tail_;
-}
-
-unsigned char circular_buffer::get() {
-  std::lock_guard<std::mutex> lock(mutex_);
-
-  if (empty()) return 0;
-
-  // Read data and advance the tail (we now have a free space)
-  auto val = buf_[tail_];
-  full_ = false;
-  tail_ = (tail_ + 1) % max_size_;
-
-  return val;
-}
-
 /// CAN v2.0 29 bit header as used by NMEA 2000
 CanHeader::CanHeader()
     : priority('\0'), source('\0'), destination('\0'), pgn(-1) {};
@@ -201,6 +153,7 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       m_io_select(params->IOSelect),
       m_connection_type(params->Type),
       m_bok(false),
+      m_circle(RX_BUFFER_SIZE_NET),
       m_TX_available(false) {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
@@ -230,7 +183,6 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
   m_bGotESC = false;
   m_bGotSOT = false;
   rx_buffer = new unsigned char[RX_BUFFER_SIZE_NET + 1];
-  m_circle = new circular_buffer(RX_BUFFER_SIZE_NET);
 
   fast_messages = new FastMessageMap();
   m_order = 0;  // initialize the fast message sequence ID bits, for TX
@@ -246,7 +198,6 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
 CommDriverN2KNet::~CommDriverN2KNet() {
   delete m_mrq_container;
   delete[] rx_buffer;
-  delete m_circle;
 
   Close();
 }
@@ -663,8 +614,8 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
   bool bGotESC = false;
   bool bGotSOT = false;
 
-  while (!m_circle->empty()) {
-    uint8_t next_byte = m_circle->get();
+  while (!m_circle.IsEmpty()) {
+    uint8_t next_byte = m_circle.Get();
 
     if (bInMsg) {
       if (bGotESC) {
@@ -777,8 +728,8 @@ bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
   bool bGotESC = false;
   bool bGotSOT = false;
 
-  while (!m_circle->empty()) {
-    uint8_t next_byte = m_circle->get();
+  while (!m_circle.IsEmpty()) {
+    uint8_t next_byte = m_circle.Get();
 
     if (bInMsg) {
       if (bGotESC) {
@@ -852,8 +803,8 @@ bool CommDriverN2KNet::ProcessActisense_NGT(std::vector<unsigned char> packet) {
   bool bGotESC = false;
   bool bGotSOT = false;
 
-  while (!m_circle->empty()) {
-    uint8_t next_byte = m_circle->get();
+  while (!m_circle.IsEmpty()) {
+    uint8_t next_byte = m_circle.Get();
 
     if (bInMsg) {
       if (bGotESC) {
@@ -913,8 +864,8 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(
     std::vector<unsigned char> packet) {
   can_frame frame;
 
-  while (!m_circle->empty()) {
-    char b = m_circle->get();
+  while (!m_circle.IsEmpty()) {
+    char b = m_circle.Get();
     if ((b != 0x0a) && (b != 0x0d)) {
       m_sentence += b;
     }
@@ -963,8 +914,8 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(
   // A001001.732 04FF6 1FA03 C8FBA80329026400
   std::string sentence;
 
-  while (!m_circle->empty()) {
-    char b = m_circle->get();
+  while (!m_circle.IsEmpty()) {
+    char b = m_circle.Get();
     if ((b != 0x0a) && (b != 0x0d)) {
       sentence += b;
     }
@@ -1034,8 +985,8 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(
 }
 
 bool CommDriverN2KNet::ProcessSeaSmart(std::vector<unsigned char> packet) {
-  while (!m_circle->empty()) {
-    char b = m_circle->get();
+  while (!m_circle.IsEmpty()) {
+    char b = m_circle.Get();
     if ((b != 0x0a) && (b != 0x0d)) {
       m_sentence += b;
     }
@@ -1199,8 +1150,8 @@ bool CommDriverN2KNet::ProcessMiniPlex(std::vector<unsigned char> packet) {
   $MXPGN,01F200,2816,FFFF7FFFFF43F800*10\r\n
   $MXPGN,01F205,2816,FF050D3A1D4CFC00*19\r\n"
   */
-  while (!m_circle->empty()) {
-    char b = m_circle->get();
+  while (!m_circle.IsEmpty()) {
+    char b = m_circle.Get();
     if ((b != 0x0a) && (b != 0x0d)) {
       m_sentence += b;
     }
@@ -1300,7 +1251,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
       bool done = false;
       if (newdata > 0) {
         for (int i = 0; i < newdata; i++) {
-          m_circle->put(data[i]);
+          if (!m_circle.IsFull()) m_circle.Put(data[i]);
           // printf("%c", data.at(i));
         }
       }

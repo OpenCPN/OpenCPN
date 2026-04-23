@@ -37,6 +37,7 @@
 
 #include <wx/datetime.h>
 
+#include "model/comm_buffers.h"
 #include "model/comm_can_util.h"
 #include "model/comm_drv_n2k.h"
 #include "model/comm_drv_n2k_net.h"
@@ -79,26 +80,6 @@ typedef enum { TX_FORMAT_YDEN = 0, TX_FORMAT_ACTISENSE } GW_TX_FORMAT;
 
 class MrqContainer;           // forward in .cpp file
 class CommDriverN2KNetEvent;  // Internal
-
-class circular_buffer {
-public:
-  circular_buffer(size_t size);
-  void reset();
-  size_t capacity() const;
-  size_t size() const;
-  bool empty() const;
-  bool full() const;
-  void put(unsigned char item);
-  unsigned char get();
-
-private:
-  std::mutex mutex_;
-  std::unique_ptr<unsigned char[]> buf_;
-  size_t head_ = 0;
-  size_t tail_ = 0;
-  const size_t max_size_;
-  bool full_ = 0;
-};
 
 class CommDriverN2KNet : public CommDriverN2K,
                          public wxEvtHandler,
@@ -226,7 +207,7 @@ private:
   int m_ib;
   bool m_bInMsg, m_bGotESC, m_bGotSOT;
 
-  circular_buffer* m_circle;
+  CircularBuffer<unsigned char> m_circle;
   unsigned char* rx_buffer;
   std::string m_sentence;
 
