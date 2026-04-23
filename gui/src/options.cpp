@@ -3827,7 +3827,11 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
     w = w1 > w ? w1 : w;
     ++id;
   }
+
+  // Disturbs Android Layout
+#ifndef __ANDROID__
   tcDataSelected->SetColumnWidth(0, 20 + w);
+#endif
 
   //    Add the "Insert/Remove" buttons
   wxButton* insertButton =
