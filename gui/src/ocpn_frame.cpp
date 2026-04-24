@@ -2021,11 +2021,22 @@ void MyFrame::OnIconize(wxIconizeEvent &event) {
 #endif
 }
 
-void MyFrame::OnSize(wxSizeEvent &event) { ODoSetSize(); }
+void MyFrame::OnSize(wxSizeEvent &event) {
+#ifdef __ANDROID__
+  qDebug() << "^^^^^^^^^^^^^^^^^^Frame onSize" << event.m_size.GetWidth()
+           << event.m_size.GetHeight();
+#endif
+  ODoSetSize();
+}
 
 void MyFrame::ODoSetSize() {
   int x, y;
   GetClientSize(&x, &y);
+#ifdef __ANDROID__
+  qDebug() << "************Frame onSize" << x << y;
+
+#endif
+
   //      Resize the children
 
   if (m_pStatusBar != NULL) {

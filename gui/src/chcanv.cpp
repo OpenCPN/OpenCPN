@@ -7116,6 +7116,11 @@ void ChartCanvas::OnSize(wxSizeEvent &event) {
   // GetClientSize returns the size of the canvas area in logical pixels.
   GetClientSize(&m_canvas_width, &m_canvas_height);
 
+#ifdef __ANDROID__
+  qDebug() << "^^^^^^^^^^^^^^^^^^Canvas onSize" << event.m_size.GetWidth()
+           << event.m_size.GetHeight();
+#endif
+
 #ifdef __WXOSX__
   // Support scaled HDPI displays.
   m_displayScale = GetContentScaleFactor();
