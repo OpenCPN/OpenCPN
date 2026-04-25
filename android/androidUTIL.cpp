@@ -851,16 +851,14 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event) {
     //  This timer step needs to be long enough to allow Java induced size
     //  change to take effect in another thread. The results will be checked in
     //  sequence 1.
-    m_resizeTimer.Start(2000, wxTIMER_ONE_SHOT);
+    m_resizeTimer.Start(1000, wxTIMER_ONE_SHOT);
     return;
   }
 
   if (timer_sequence == 1) {
     qDebug() << "sequence 1";
 
-    wxSize new_size = getAndroidDisplayDimensions();
-    qDebug() << "****$$ NewSize: " << new_size.x << new_size.y;
-    qDebug() << "****$$ config_size: " << config_size.x << config_size.y;
+    qDebug() << "****config_size: " << config_size.x << config_size.y;
 
     wxSize szt = gFrame->GetSize();
     qDebug() << "****Frame Size: " << szt.x << szt.y;
@@ -872,7 +870,6 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event) {
     // However, if we can detect the ones that do properly resize the app Frame,
     // we can skip all this.
 
-#if 0
     wxSize new_size = getAndroidDisplayDimensions();
     qDebug() << "****NewSize: " << new_size.x << new_size.y;
 
@@ -884,30 +881,18 @@ void androidUtilHandler::OnResizeTimer(wxTimerEvent &event) {
         return;
     }
 
-#endif
-
-    qDebug() << "****____________________Force config change" << config_size.x
-             << config_size.y;
+    qDebug() << "****Force config change";
     gFrame->SetSize(config_size);
     timer_sequence++;
-    if (!m_bskipConfirm) m_resizeTimer.Start(1000, wxTIMER_ONE_SHOT);
+    if (!m_bskipConfirm) m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
     m_bskipConfirm = false;
-    qDebug() << "Exit S1";
     return;
   }
 
   if (timer_sequence == 2) {
     qDebug() << "sequence 2";
     timer_sequence++;
-    gFrame->SetSize(config_size);
-    g_pauimgr->Update();
-    auto cc = g_canvasArray.Item(0);
-    gFrame->CreateCanvasLayout();
-    gFrame->SendSizeEvent();
-    g_pauimgr->Update();
-
     m_resizeTimer.Start(10, wxTIMER_ONE_SHOT);
-    qDebug() << "Exit S2";
     return;
   }
 
@@ -1085,8 +1070,6 @@ wxString androidGetIpV4Address(void) {
 wxSize getAndroidConfigSize() { return config_size; }
 
 void resizeAndroidPersistents() {
-  return;
-
   qDebug() << "resizeAndroidPersistents()";
 
   if (g_androidUtilHandler) {
@@ -1418,7 +1401,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onConfigChange(
   if (g_androidUtilHandler) {
     wxCommandEvent evt(wxEVT_COMMAND_MENU_SELECTED);
     evt.SetId(ID_CMD_TRIGGER_RESIZE);
-    // g_androidUtilHandler->AddPendingEvent(evt);
+    g_androidUtilHandler->AddPendingEvent(evt);
   }
 
   return 77;
