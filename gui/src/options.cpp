@@ -1148,11 +1148,15 @@ void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
         delete props_new;
       }
       pd->Destroy();
+
+      if (g_options->pPropsPanel) g_options->pPropsPanel->UpdateMMSIList();
       break;
     }
     case ID_DEF_MENU_MMSI_DELETE:
       g_MMSI_Props_Array.RemoveAt(context_item);
       delete props;
+
+      if (g_options->pPropsPanel) g_options->pPropsPanel->UpdateMMSIList();
       break;
   }
 }
@@ -5130,7 +5134,7 @@ void options::CreatePanel_MMSI(size_t parent, int border_size,
       new wxStaticBoxSizer(itemStaticBoxMMSI, wxVERTICAL);
   MMSISizer->Add(itemStaticBoxSizerMMSI, 0, wxALL | wxEXPAND, border_size);
 
-  MMSI_Props_Panel* pPropsPanel = new MMSI_Props_Panel(panelMMSI);
+  pPropsPanel = new MMSI_Props_Panel(panelMMSI);
 
   pPropsPanel->UpdateMMSIList();
 
