@@ -11818,8 +11818,15 @@ void RenderFromHPGL::Circle(wxPoint center, int radius, bool filled) {
   if (renderToDC) {
     if (filled)
       targetDC->SetBrush(*brush);
-    else
+    else {
+#ifdef __ANDROID__
+      // This is strange behavior of wxDC in wxQT
+      // Fill color is always "text background" color.
+      // So make it transparent.
+      targetDC->SetTextBackground(wxColor(0,0,0,0));
+#endif
       targetDC->SetBrush(*wxTRANSPARENT_BRUSH);
+    }
     targetDC->DrawCircle(center, radius);
   }
 #ifdef ocpnUSE_GL
