@@ -1187,66 +1187,22 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
 
   // m_pListCtrlMMSI->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
   int dx = GetCharWidth();
+#ifdef __ANDROID__
+  GetTextExtent("W", &dx, NULL, NULL, NULL, qFont);
+#endif
 
-  width = dx * 5;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 13);
-  }
-  m_pListCtrlMMSI->InsertColumn(mlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 12;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 25);
-  }
+  m_pListCtrlMMSI->InsertColumn(mlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, dx * 10);
   m_pListCtrlMMSI->InsertColumn(mlTrackMode, _("Track Mode"),
-                                wxLIST_FORMAT_CENTER, width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
+                                wxLIST_FORMAT_CENTER, dx * 20);
   m_pListCtrlMMSI->InsertColumn(mlIgnore, _("Ignore"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(mlMOB, _("MOB"), wxLIST_FORMAT_CENTER, width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 15);
-  }
+                                dx * 7);
+  m_pListCtrlMMSI->InsertColumn(mlMOB, _("MOB"), wxLIST_FORMAT_CENTER, dx * 5);
   m_pListCtrlMMSI->InsertColumn(mlVDM, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
-  }
+                                dx * 10);
   m_pListCtrlMMSI->InsertColumn(mlShipName, _("Ship name"),
-                                wxLIST_FORMAT_CENTER, width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
+                                wxLIST_FORMAT_CENTER, dx * 20);
   m_pListCtrlMMSI->InsertColumn(mlFollower, _("Follower"), wxLIST_FORMAT_CENTER,
-                                width);  // Has
+                                dx * 9);  // Has
 
   topSizer->Add(m_pListCtrlMMSI, 1, wxEXPAND | wxALL, 0);
 
