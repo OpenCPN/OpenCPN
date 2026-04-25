@@ -1374,12 +1374,11 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     g_n_ownship_min_mm = 8;
     g_toolbarConfig = "X.....XX.......XX.XXXXXXXXXXX";
 
-    //  Experience indicates a slightly larger default font size is better
-    pConfig->DeleteGroup("/Settings/QTFonts");
-    g_default_font_size = 20;
-    g_default_font_facename = "Roboto";
-
-    FontMgr::Get().Shutdown();  // Restart the font manager
+    // Avoid changing fonts on app upgrade.
+    // pConfig->DeleteGroup("/Settings/QTFonts");
+    // g_default_font_size = 20;
+    // g_default_font_facename = "Roboto";
+    // FontMgr::Get().Shutdown();  // Restart the font manager
 
     // Reshow the zoom buttons
     g_bShowMuiZoomButtons = true;
