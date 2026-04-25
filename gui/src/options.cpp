@@ -1106,11 +1106,20 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
   m_context_item = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
   if (m_context_item == wxNOT_FOUND) return;
   wxMenu* menu = new wxMenu(_("MMSI Properties"));
+
   wxMenuItem* item_edit =
       new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _("Edit") + "...");
+#ifdef __ANDROID__
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+  item_edit->SetFont(sFont);
+#endif
   menu->Append(item_edit);
+
   wxMenuItem* item_delete =
       new wxMenuItem(menu, ID_DEF_MENU_MMSI_DELETE, _("Delete"));
+#ifdef __ANDROID__
+  item_delete->SetFont(sFont);
+#endif
   menu->Append(item_delete);
 
 #ifdef __WXMSW__
