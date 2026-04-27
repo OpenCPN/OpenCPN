@@ -34,8 +34,8 @@ Build-Depends: debhelper-compat (= 13),
  portaudio19-dev,
  rapidjson-dev
 Standards-Version: 4.7.4
-Vcs-Browser: https://github.com/OpenCPN/OpenCPN/tree/debian/sid
-Vcs-Git: https://github.com/opencpn/opencpn.git -b debian/sid
+Vcs-Browser: https://github.com/OpenCPN/OpenCPN/tree/ubuntu/resolute
+Vcs-Git: https://github.com/opencpn/opencpn.git -b ubuntu/resolute
 Homepage: https://opencpn.org
 
 Package: opencpn
