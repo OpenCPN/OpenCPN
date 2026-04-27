@@ -1,8 +1,9 @@
-opencpn (1:5.14.1+dfsg-3~bpo26.04~1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg-3~bpo26.04~1) resolute; urgency=medium
 
+  [ Alec Leamas ]
   * New upstream release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 27 Apr 2026 07:07:10 +0000
+ -- al <al@resolute.kolmodin.net>  Mon, 27 Apr 2026 08:06:15 +0000
 
 opencpn (1:5.14.1+dfsg-3) unstable; urgency=medium
 
