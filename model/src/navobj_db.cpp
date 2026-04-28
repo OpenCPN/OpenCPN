@@ -1063,6 +1063,7 @@ bool NavObj_dB::LoadAllTracks() {
         // Set all the track attributes
         new_trk->SetVisible(visibility == 1);
         new_trk->SetName(name.c_str());
+        new_trk->m_TrackDescription = description.c_str();
         new_trk->m_TrackStartString = start_string.c_str();
         new_trk->m_TrackEndString = end_string.c_str();
         new_trk->m_width = width;
