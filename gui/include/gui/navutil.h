@@ -196,5 +196,5 @@ private:
 };
 
 void SwitchInlandEcdisMode(bool Switch);
-
+void SetSystemtime();
 #endif
