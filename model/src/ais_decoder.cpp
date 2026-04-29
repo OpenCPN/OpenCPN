@@ -3798,13 +3798,15 @@ void AisDecoder::UpdateOneTrack(AisTargetData *ptarget) {
   }
 
   // Avoid duplicate track points
-  // Do not add track point if time since last point is < 2 seconds.
-  if ((ptarget->PositionReportTicks - ptarget->LastPositionReportTicks) > 2) {
+  // Do not add track point if time since last track point is < 2 seconds.
+  const time_t now_ticks = wxDateTime::Now().GetTicks();
+  if (ptarget->m_ptrack.empty() ||
+       (now_ticks - ptarget->m_ptrack.back().m_time) >= 2) {
     //    Create the newest point
     AISTargetTrackPoint ptrackpoint;
     ptrackpoint.m_lat = ptarget->Lat;
     ptrackpoint.m_lon = ptarget->Lon;
-    ptrackpoint.m_time = wxDateTime::Now().GetTicks();
+    ptrackpoint.m_time = now_ticks;
 
     ptarget->m_ptrack.push_back(ptrackpoint);
 
