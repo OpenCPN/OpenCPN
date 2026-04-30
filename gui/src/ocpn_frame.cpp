@@ -1694,13 +1694,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   // g_MainToolbar = NULL;
 #endif
 
-  if (g_iENCToolbar) {
-    // wxPoint locn = g_iENCToolbar->GetPosition();
-    // g_iENCToolbarPosY = locn.y;
-    // g_iENCToolbarPosX = locn.x;
-    // g_iENCToolbar->Destroy();
-  }
-
   if (g_pAISTargetList) {
     g_pAISTargetList->Disconnect_decoder();
     g_pAISTargetList->Destroy();
@@ -1828,6 +1821,10 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   delete g_glTextureManager;
 #endif
   uninitIXNetSystem();
+
+  delete g_iENCToolbar;
+  g_iENCToolbar = NULL;
+
   this->Destroy();
   gFrame = NULL;
 
