@@ -1,9 +1,9 @@
-opencpn (1:5.14.1+dfsg-3~bpo26.04~1) resolute; urgency=medium
+opencpn (1:5.14.1+dfsg-3~bpo26.04~2) resolute; urgency=medium
 
   [ Dave Register ]
   * New upstream release
 
- -- dsr <dsr@yahoo.com>  Fri, 01 May 2026 12:36:02 -0400
+ -- dsr <bdbcat@yahoo.com>  Fri, 01 May 2026 12:48:37 -0400
 
 opencpn (1:5.14.1+dfsg-3~bpo26.04~1) resolute; urgency=medium
 
