@@ -323,6 +323,7 @@ AudioDoneCallback s_soundCallBack;
 void *s_soundData;
 
 bool g_detect_smt590;
+bool g_detect_SMT63x;
 int g_orientation;
 int g_Android_SDK_Version;
 MigrateAssistantDialog *g_migrateDialog;
@@ -2152,6 +2153,13 @@ wxString androidGetDeviceInfo() {
                    2))  // Assumes API comes before Model/Product.
         g_detect_smt590 = true;
     }
+    // (2) Samsung SM-T63x which has physical buttons
+    if (wxNOT_FOUND != s1.Find(_T("SM-T638"))) {
+      g_detect_SMT63x = true;
+    }
+    if (wxNOT_FOUND != s1.Find(_T("SM-T636"))) {
+      g_detect_SMT63x = true;
+    }
   }
 
   return g_deviceInfo;
@@ -2546,6 +2554,8 @@ wxSize getAndroidDisplayDimensions(void) {
   }
 
   // 167.802994;1.000000;160;1024;527;1024;552;1024;552;56
+  long NavBarHeight = 0;
+
   wxStringTokenizer tk(return_string, _T(";"));
   if (tk.HasMoreTokens()) {
     wxString token = tk.GetNextToken();  // xdpi
@@ -2568,10 +2578,18 @@ wxSize getAndroidDisplayDimensions(void) {
     long abh = 0;
     token = tk.GetNextToken();  //  ActionBar height, if shown
     if (token.ToLong(&abh)) sz_ret.y -= abh;
+    token = tk.GetNextToken();  //  text size, float
+    token = tk.GetNextToken();  //  NavBarHeight
+    token.ToLong(&NavBarHeight);
+  }
+
+  // Account for physical Nav buttons, hacking Java insets logic
+  if (g_detect_SMT63x) {
+    if (sz_ret.x > sz_ret.y)  // only in Landscape orientation.
+      sz_ret.y += NavBarHeight;
   }
 
   // qDebug() << "getAndroidDisplayDimensions" << sz_ret.x << sz_ret.y;
-
   return sz_ret;
 }
 
