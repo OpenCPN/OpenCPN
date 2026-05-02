@@ -774,34 +774,34 @@ void ocpnDC::DrawLines(int n, wxPoint points[], wxCoord xoffset,
     }
 
 #if 0  // Use AA lines
-      GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
-      shader->Bind();
+    GLShaderProgram *shader = pAALine_shader_program[m_canvasIndex];
+    shader->Bind();
 
-      // Assuming here that transform matrix for this shader is preset for canvas.
-      //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
+    // Assuming here that transform matrix for this shader is preset for canvas.
+    //shader->SetUniformMatrix4fv("MVMatrix", (GLfloat *)m_glchartCanvas->m_pParentCanvas->GetpVP()->vp_matrix_transform);
 
-      float vpx[2];
-      int width = 0;
-      int height = 0;
-      GetSize(&width, &height);
-      vpx[0] = width;
-      vpx[1] = height;
+    float vpx[2];
+    int width = 0;
+    int height = 0;
+    GetSize(&width, &height);
+    vpx[0] = width;
+    vpx[1] = height;
 
-      shader->SetUniform2fv("uViewPort", vpx);
+    shader->SetUniform2fv("uViewPort", vpx);
 
-      float colorv[4];
-      colorv[0] = m_pen.GetColour().Red() / float(256);
-      colorv[1] = m_pen.GetColour().Green() / float(256);
-      colorv[2] = m_pen.GetColour().Blue() / float(256);
-      colorv[3] = 1.0;
+    float colorv[4];
+    colorv[0] = m_pen.GetColour().Red() / float(256);
+    colorv[1] = m_pen.GetColour().Green() / float(256);
+    colorv[2] = m_pen.GetColour().Blue() / float(256);
+    colorv[3] = 1.0;
 
-      shader->SetUniform4fv("color", colorv);
+    shader->SetUniform4fv("color", colorv);
 
-      shader->SetAttributePointerf("position", workBuf);
+    shader->SetAttributePointerf("position", workBuf);
 
-      glDrawArrays(GL_LINE_STRIP, 0, n);
+    glDrawArrays(GL_LINE_STRIP, 0, n);
 
-      shader->UnBind();
+    shader->UnBind();
 #else
     GLShaderProgram *shader;
     if (m_glchartCanvas) {
@@ -1482,20 +1482,21 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
                     (_GLUfuncptr)&odc_endCallbackD_GLSL);
     gluTessCallback(m_tobj, GLU_TESS_COMBINE_DATA,
                     (_GLUfuncptr)&odc_combineCallbackD);
-    // s_tessVP = vp;
 
     gluTessNormal(m_tobj, 0, 0, 1);
     gluTessProperty(m_tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 
     if (ConfigureBrush()) {
+      std::vector<std::unique_ptr<double[]>> vertex_data;
+      vertex_data.reserve(n);
+
       gluTessBeginPolygon(m_tobj, this);
       gluTessBeginContour(m_tobj);
 
-      ViewPort *pvp = m_glchartCanvas->m_pParentCanvas
-                          ->GetpVP();  // gFrame->GetPrimaryCanvas()->GetpVP();
+      ViewPort *pvp = m_glchartCanvas->m_pParentCanvas->GetpVP();
 
       for (int i = 0; i < n; i++) {
-        double *p = new double[6];
+        auto p = std::make_unique<double[]>(6);
 
         if (fabs(pvp->rotation) > 0.01) {
           float cx = pvp->pix_width / 2.;
@@ -1510,10 +1511,12 @@ void ocpnDC::DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
         } else
           p[0] = points[i].x, p[1] = points[i].y, p[2] = 0;
 
-        gluTessVertex(m_tobj, p, p);
+        gluTessVertex(m_tobj, p.get(), p.get());
+        vertex_data.push_back(std::move(p));
       }
       gluTessEndContour(m_tobj);
       gluTessEndPolygon(m_tobj);
+      // vertex_data automatically cleans up when going out of scope
     }
 
     gluDeleteTess(m_tobj);
