@@ -1357,12 +1357,14 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
         mTrLOG_Watchdog = no_nav_watchdog_timeout_ticks;
 
-        SendSentenceToAllInstruments(
-            OCPN_DBP_STC_VLW2,
-            toUsrDistance_Plugin(m_NMEA0183.Vlw.TotalMileage,
-                                 g_iDashDistanceUnit),
-            getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
-        mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
+        if (!g_bUseInternSumLog) {
+          SendSentenceToAllInstruments(
+              OCPN_DBP_STC_VLW2,
+              toUsrDistance_Plugin(m_NMEA0183.Vlw.TotalMileage,
+                                   g_iDashDistanceUnit),
+              getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
+          mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
+        }
       }
 
     }
@@ -2195,7 +2197,7 @@ void dashboard_pi::HandleN2K_128275(ObservedEvt ev) {
 
   // Get log & Trip log
   if (ParseN2kPGN128275(v, DaysSince1970, SecondsSinceMidnight, Log, TripLog)) {
-    if (!N2kIsNA(Log)) {
+    if (!N2kIsNA(Log) && !g_bUseInternSumLog) {
       double m_slog = METERS2NM((double)Log);
       SendSentenceToAllInstruments(
           OCPN_DBP_STC_VLW2, toUsrDistance_Plugin(m_slog, g_iDashDistanceUnit),
@@ -3090,7 +3092,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           OCPN_DBP_STC_VLW1, toUsrDistance_Plugin(m_tlog, g_iDashDistanceUnit),
           getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
       mTrLOG_Watchdog = no_nav_watchdog_timeout_ticks;
-    } else if (update_path == _T("navigation.log")) {  // m
+    } else if (update_path == _T("navigation.log") &&
+               !g_bUseInternSumLog) {  // m
       double m_slog = GetJsonDouble(value);
       if (std::isnan(m_slog)) return;
 
