@@ -103,6 +103,12 @@ if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-armhf")
   target_link_libraries(${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/buildandroid/ndk/linux-atomic.o")
 endif ()
 
+if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
+  set(CMAKE_SHARED_LINKER_FLAGS
+        "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384"
+        )
+endif()
+
 add_compile_definitions(
   __WXQT__
   __OCPN__ANDROID__
