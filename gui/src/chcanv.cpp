@@ -5170,6 +5170,10 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
       }
     }
 
+#ifndef __ANDROID__
+    // ToDo:  Have seen crashes on "if (m_pCurrentStack->nEntry)"
+    //  Action: convert  m_pCurrentStack to member object, not pointer.
+
     if (new_ref_dbIndex == -1) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
@@ -5181,8 +5185,7 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
       // scale chart on the screen to be a new reference chart.
       int trial_index = -1;
       if (m_pCurrentStack->nEntry) {
-        int trial_index =
-            m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
+        trial_index = m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
       }
 
       if (trial_index < 0) {
@@ -5199,6 +5202,7 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
       }
 #pragma GCC diagnostic pop
     }
+#endif
   }
 
   //  Turn off bFollow only if the ownship has left the screen
