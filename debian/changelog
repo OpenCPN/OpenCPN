@@ -1,4 +1,4 @@
-opencpn (1:5.14.1+dfsg-3) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg-3) unstable; urgency=medium
 
   * Add two gcc-16 patches. Closes:#1133594
   * d/control: standards-version 4.7.2 -> 4.7.4, no changes
@@ -8,7 +8,7 @@ opencpn (1:5.14.1+dfsg-3) UNRELEASED; urgency=medium
   [Helmut Grohne]
   * Add libdnet cross compile patch. Closes: #1121371
 
- -- Alec Leamas <leamas.alec@gmail.com>  Sun, 12 Apr 2026 10:16:52 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 22 May 2026 10:28:50 +0200
 
 opencpn (1:5.14.1+dfsg-2) unstable; urgency=medium
 
