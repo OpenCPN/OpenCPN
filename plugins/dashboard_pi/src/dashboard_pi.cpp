@@ -1786,7 +1786,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           // XDR Airtemp
           if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")) {
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
+                    .TransducerName.Upper()
                     .Contains(_T("AIR")) ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("Te") ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
@@ -1804,7 +1804,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               }
             }  // Water temp
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
+                    .TransducerName.Upper()
                     .Contains("WATER") ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == "WTHI") {
               if (mPriWTP >= 3) {
@@ -1823,7 +1823,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           // XDR Pressure
           if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "P") {
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
+                    .TransducerName.Upper()
                     .Contains(_T("BARO")) &&
                 mPriMDA >= 4) {
               if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == "B") {
@@ -1841,7 +1841,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.Contains(
                     _T("PTCH")) ||
                 m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
+                    .TransducerName.Upper()
                     .Contains(_T("PITCH"))) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
@@ -1862,7 +1862,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             }
             // XDR Heel
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
+                    .TransducerName.Upper()
                     .Contains("ROLL")) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
@@ -1883,7 +1883,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             }
             // XDR Rudder Angle
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
+                    .TransducerName.Upper()
                     .Contains("RUDDER")) {
               if (mPriRSA > 4) {
                 SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, xdrdata,
