@@ -6,6 +6,7 @@
 .idea
 .vs
 .vscode
+.qtcreator/CMakeLists.txt.user
 build
 buildwin/NSIS_Unicode/Include/Langstrings_*.nsh
 buildwin/crashrpt/CrashRpt1402.dll
