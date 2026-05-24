@@ -30,6 +30,7 @@
 #include <wx/filename.h>
 #include <wx/sizer.h>
 
+#include "model/base_platform.h"
 #include "model/cmdline.h"
 #include "model/ocpn_utils.h"
 #include "model/safe_mode.h"
@@ -70,6 +71,11 @@ void check_last_start() {
   std::stringstream html;
   html << "<html><body>";
   html << LAST_RUN_ERROR_MSG;
+  html << "<p>" << "Logfile location: " << g_BasePlatform->GetLogFileName()
+       << "</p>";
+  html << "<p>"
+       << "Config file location: " << g_BasePlatform->GetConfigFileName()
+       << "</p>";
   html << "</body></html>";
   dlg.AddHtmlContent(html);
 
