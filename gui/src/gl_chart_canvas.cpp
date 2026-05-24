@@ -233,12 +233,8 @@ static int panx, pany;
 bool g_true_zoom;
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
-static int s_tess_vertex_idx;
-static int s_tess_vertex_idx_this;
-static int s_tess_buf_len;
-static GLfloat *s_tess_work_buf;
+std::vector<GLfloat> s_tess_vertex_work;
 static GLenum s_tess_mode;
-static int s_nvertex;
 static ViewPort s_tessVP;
 #endif
 
@@ -2755,59 +2751,45 @@ static void combineCallbackD(GLdouble coords[3], GLdouble *vertex_data[4],
 
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
 void vertexCallbackD_GLSL(GLvoid *vertex) {
-  // Grow the work buffer if necessary
-  if (s_tess_vertex_idx > s_tess_buf_len - 8) {
-    int new_buf_len = s_tess_buf_len + 100;
-    GLfloat *tmp = s_tess_work_buf;
-
-    s_tess_work_buf =
-        (GLfloat *)realloc(s_tess_work_buf, new_buf_len * sizeof(GLfloat));
-    if (NULL == s_tess_work_buf) {
-      free(tmp);
-      tmp = NULL;
-    } else
-      s_tess_buf_len = new_buf_len;
-  }
-
   GLdouble *pointer = (GLdouble *)vertex;
-
-  s_tess_work_buf[s_tess_vertex_idx++] = (float)pointer[0];
-  s_tess_work_buf[s_tess_vertex_idx++] = (float)pointer[1];
-
-  s_nvertex++;
+  s_tess_vertex_work.push_back(pointer[0]);
+  s_tess_vertex_work.push_back(pointer[1]);
 }
 
 void beginCallbackD_GLSL(GLenum mode) {
-  s_tess_vertex_idx_this = s_tess_vertex_idx;
   s_tess_mode = mode;
-  s_nvertex = 0;
+  s_tess_vertex_work.clear();
 }
 
 void endCallbackD_GLSL() {
-  GLShaderProgram *shader = pStaticShader;
-  shader->Bind();
+  if (!s_tess_vertex_work.empty() && (s_tess_vertex_work.size() % 2 == 0)) {
+    GLShaderProgram *shader = pStaticShader;
+    shader->Bind();
 
-  shader->SetUniformMatrix4fv("MVMatrix",
-                              (GLfloat *)s_tessVP.vp_matrix_transform);
+    shader->SetUniformMatrix4fv("MVMatrix",
+                                (GLfloat *)s_tessVP.vp_matrix_transform);
 
-  mat4x4 identityMatrix;
-  mat4x4_identity(identityMatrix);
-  shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)identityMatrix);
+    mat4x4 identityMatrix;
+    mat4x4_identity(identityMatrix);
+    shader->SetUniformMatrix4fv("TransformMatrix", (GLfloat *)identityMatrix);
 
-  // Use color stored in static variable.
-  float colorv[4];
-  colorv[0] = s_regionColor.Red() / float(256);
-  colorv[1] = s_regionColor.Green() / float(256);
-  colorv[2] = s_regionColor.Blue() / float(256);
-  colorv[3] = s_regionColor.Alpha() / float(256);
-  shader->SetUniform4fv("color", colorv);
+    // Use color stored in static variable.
+    float colorv[4];
+    colorv[0] = s_regionColor.Red() / float(256);
+    colorv[1] = s_regionColor.Green() / float(256);
+    colorv[2] = s_regionColor.Blue() / float(256);
+    colorv[3] = s_regionColor.Alpha() / float(256);
+    shader->SetUniform4fv("color", colorv);
+    shader->SetAttributePointerf("position", s_tess_vertex_work.data());
 
-  float *bufPt = &s_tess_work_buf[s_tess_vertex_idx_this];
-  shader->SetAttributePointerf("position", bufPt);
+    glDrawArrays(s_tess_mode, 0, s_tess_vertex_work.size() / 2);
 
-  glDrawArrays(s_tess_mode, 0, s_nvertex);
-
-  shader->UnBind();
+    shader->UnBind();
+  } else
+    wxLogError(
+        "::endCallbackD_GLSL() called with wrong tess vertex vector length "
+        "(%d).",
+        s_tess_vertex_work.size());
 }
 #else
 void vertexCallbackD(GLvoid *vertex) { glVertex3dv((GLdouble *)vertex); }
@@ -3832,7 +3814,6 @@ void glChartCanvas::Render() {
 
   // qDebug() << "RenderTime1" << sw.GetTime();
 
-  s_tess_vertex_idx = 0;
   quiltHash = m_pParentCanvas->m_pQuilt->GetXStackHash();
   refChartIndex = m_pParentCanvas->m_pQuilt->GetRefChartdbIndex();
 
