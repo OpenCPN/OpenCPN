@@ -69,6 +69,7 @@ private:
   void MenuAppend(wxMenu *menu, int id, wxString label, int setting);
   void OnCBAny(wxCommandEvent &event);
   void OnMenuCallBack(wxMouseEvent &event);
+  int GetSettingsIdFromCheckboxId(int checkboxId);
 
   GRIBUICtrlBar &m_gparent;
   bool m_bLeftDown;

@@ -66,8 +66,9 @@ typedef struct {
 typedef struct {
   wxString name;
   wxString reqName;
-  bool significantHeight;
+  bool significantHeight;  ///< Combined wave height
   bool windWaves;
+  bool swellWaves;
 } WaveModelDef_t;
 
 extern AtmModelDef_t *xygribAtmModelList[];

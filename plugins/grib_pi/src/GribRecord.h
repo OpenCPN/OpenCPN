@@ -56,6 +56,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //--------------------------------------------------------
 // dataTypes    Cf function translateDataType()
 //--------------------------------------------------------
+/**
+ * GRIB1 Parameter Identifiers (PDS Octet 9)
+ *
+ * These constants define meteorological parameters using their official GRIB1
+ * parameter numbers as specified in NCEP Office Note 388 (ON388) Table 2.
+ * The numbers correspond directly to the parameter identifiers used in GRIB1
+ * files.
+ *
+ * Parameter meanings can vary between originating centers, but these
+ * definitions follow NCEP's Parameter Table Version 2 (PDS Octet 4 = 2), which
+ * is used by:
+ * - NOAA GFS (Global Forecast System)
+ * - NOAA NCEP WW3 (Wave Watch III)
+ * - Saildocs weather routing data
+ * - Most NCEP operational models
+ *
+ * Reference: https://www.nco.ncep.noaa.gov/pmb/docs/on388/table2.html
+ * Authority: NCEP Office Note 388 - GRIB1 Documentation
+ */
 #define GRB_PRESSURE 2   /* Pa     */
 #define GRB_GEOPOT_HGT 7 /* gpm    */
 #define GRB_TEMP 11      /* K      */
@@ -80,22 +99,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GRB_PRECIP_TOT 61  /* l/m2   */
 #define GRB_SNOW_DEPTH 66  /* m      */
 #define GRB_CLOUD_TOT 71   /* %      */
-#define GRB_HTSGW 100      /* m      */
 #define GRB_WTMP 80        /* "Water Temperature", "K" */
 #define GRB_COMP_REFL 212  /* dBZ */
 
-#define GRB_WVDIR 101
-#define GRB_WVHGT 102
-#define GRB_WVPER 103
-#define GRB_SWDIR 104
-#define GRB_SWELL 105
-#define GRB_SWPER 106
+/** Significant Height of Combined Wind Waves and Swell (m) */
+#define GRB_HTSGW 100
+#define GRB_WVDIR 101  // Direction of Wind Waves
+#define GRB_WVHGT 102  // Significant Height of Wind Waves
+#define GRB_WVPER 103  // Mean Period of Wind Waves
+#define GRB_SWDIR 104  // Direction of Swell Waves
+#define GRB_SWELL 105  // Significant Height of Swell Waves
+#define GRB_SWPER 106  // Mean Period of Swell Waves
+/**
+ * Direction of Primary Waves.
+ * May be used as proxy for GRIB v2 "Combined Wave Direction" which has no v1
+ * equivalent.
+ */
 #define GRB_DIRPW 107
+/**
+ * Period of Primary Waves.
+ * May be used as proxy for GRIB v2 "Combined Wave Period" which has no v1
+ * equivalent.
+ */
 #define GRB_PERPW 108
-#define GRB_DIRSW 109
-#define GRB_PERSW 110
-#define GRB_PER 209
-#define GRB_DIR 210
+#define GRB_DIRSW 109  // Direction of Secondary Waves
+#define GRB_PERSW 110  // Period of Secondary Waves
 
 #define GRB_CRAIN 140         /* "Categorical rain", "yes=1;no=0" */
 #define GRB_FRZRAIN_CATEG 141 /* 1=yes 0=no */

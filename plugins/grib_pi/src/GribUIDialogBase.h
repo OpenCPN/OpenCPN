@@ -90,7 +90,9 @@
 #define ID_CB_WIND 1014
 #define ID_CB_WIND_GUSTS 1015
 #define ID_CB_PRESSURE 1016
-#define ID_CB_WAVES 1017
+#define ID_CB_WAVES 1017        // Combined waves
+#define ID_CB_WIND_WAVES 1076   // Wind wave parameters
+#define ID_CB_SWELL_WAVES 1077  // Swell wave parameters
 #define ID_CB_CURRENT 1018
 #define ID_CB_RAINFALL 1019
 #define ID_CB_CLOUD_COVER 1020
@@ -259,9 +261,22 @@ protected:
   wxTextCtrl* m_tcWindDirection;
   wxTextCtrl* m_tcWindGust;
   wxTextCtrl* m_tcPressure;
+
+  // Combined wave controls
   wxTextCtrl* m_tcWaveHeight;
   wxTextCtrl* m_tcWavePeriode;
   wxTextCtrl* m_tcWaveDirection;
+
+  // Wind Wave Parameters
+  wxTextCtrl* m_tcWindWaveHeight;
+  wxTextCtrl* m_tcWindWaveDirection;
+  wxTextCtrl* m_tcWindWavePeriod;
+
+  // Swell Wave Parameters
+  wxTextCtrl* m_tcSwellHeight;
+  wxTextCtrl* m_tcSwellDirection;
+  wxTextCtrl* m_tcSwellPeriod;
+
   wxTextCtrl* m_tcCurrentVelocity;
   wxTextCtrl* m_tcCurrentDirection;
   wxTextCtrl* m_tcPrecipitation;
@@ -286,7 +301,12 @@ public:
   wxCheckBox* m_cbWind;
   wxCheckBox* m_cbWindGust;
   wxCheckBox* m_cbPressure;
-  wxCheckBox* m_cbWave;
+
+  // Wave Categories with WW3 support
+  wxCheckBox* m_cbWave;        // Combined waves
+  wxCheckBox* m_cbWindWaves;   // Wind wave parameters
+  wxCheckBox* m_cbSwellWaves;  // Swell wave parameters
+
   wxCheckBox* m_cbCurrent;
   wxCheckBox* m_cbPrecipitation;
   wxCheckBox* m_cbCloud;
@@ -534,7 +554,9 @@ protected:
   wxCheckBox* m_pReflectivity;
   wxCheckBox* m_pSeaTemp;
   wxCheckBox* m_pCurrent;
-  wxCheckBox* m_pWaves;
+  wxCheckBox* m_pWaves;  // Combined waves
+  wxCheckBox* m_pWindWaves;
+  wxCheckBox* m_pSwellWaves;
   wxChoice* m_pWModel;
   wxCheckBox* m_pAltitudeData;
   wxFlexGridSizer* m_fgAltitudeData;

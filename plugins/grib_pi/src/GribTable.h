@@ -104,7 +104,57 @@ private:
   wxString GetWind(GribRecord **recordarray, int datatype, double &wdir);
   wxString GetWindGust(GribRecord **recordarray, int datatype);
   wxString GetPressure(GribRecord **recordarray);
-  wxString GetWaves(GribRecord **recordarray, int datatype, double &wdir);
+  /**
+   * Get a combined wave property (height, period, or direction) from the GRIB
+   * record array.
+   *
+   * @param recordarray Array of pointers to GRIB records for the current time
+   * step.
+   * @param datatype    The GRIB data type (e.g., significant wave height,
+   * period, or direction).
+   * @param wdir        Output: direction (degrees) if applicable, otherwise set
+   * to GRIB_NOTDEF.
+   * @return            String representation of the requested property, or
+   * empty if not available or if direction is requested.
+   */
+  wxString GetCombinedWaves(GribRecord **recordarray, int datatype,
+                            double &wdir);
+  /**
+   * Get a wind wave property (height, period, or direction) from the GRIB
+   * record array.
+   *
+   * Depending on the datatype, returns the wind wave height or period as a
+   * formatted string. If the datatype is direction (e.g., Idx_WINDWAVE_DIR),
+   * sets wdir to the direction in degrees and returns an empty string.
+   *
+   * @param recordarray Array of pointers to GRIB records for the current time
+   * step.
+   * @param datatype    The GRIB data type (e.g., Idx_WINDWAVE_HT,
+   * Idx_WINDWAVE_PER, Idx_WINDWAVE_DIR).
+   * @param wdir        Output: wind wave direction (degrees) if applicable,
+   * otherwise set to GRIB_NOTDEF.
+   * @return            String representation of the requested property (height
+   * or period), or empty if not available or if direction is requested.
+   */
+  wxString GetWindWaves(GribRecord **recordarray, int datatype, double &wdir);
+  /**
+   * Get a swell wave property (height, period, or direction) from the GRIB
+   * record array.
+   *
+   * Depending on the datatype, returns the swell wave height or period as a
+   * formatted string. If the datatype is direction (e.g., Idx_SWELL_DIR), sets
+   * wdir to the direction in degrees and returns an empty string.
+   *
+   * @param recordarray Array of pointers to GRIB records for the current time
+   * step.
+   * @param datatype    The GRIB data type (e.g., Idx_SWELL_HT, Idx_SWELL_PER,
+   * Idx_SWELL_DIR).
+   * @param wdir        Output: swell wave direction (degrees) if applicable,
+   * otherwise set to GRIB_NOTDEF.
+   * @return            String representation of the requested property (height
+   * or period), or empty if not available or if direction is requested.
+   */
+  wxString GetSwellWaves(GribRecord **recordarray, int datatype, double &wdir);
   wxString GetRainfall(GribRecord **recordarray);
   wxString GetCloudCover(GribRecord **recordarray);
   wxString GetAirTemp(GribRecord **recordarray);

@@ -482,9 +482,19 @@ void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy,
         idx = Idx_PRESSURE;
       }
       break;
-    case GribOverlaySettings::WAVE:
+    case GribOverlaySettings::COMBINED_WAVES:
       if (!m_Altitude) {
-        idx = Idx_HTSIGW, idy = Idx_WVDIR, polar = true;
+        idx = Idx_HTSIGW, idy = Idx_DIRPW, polar = true;
+      }
+      break;
+    case GribOverlaySettings::WIND_WAVES:
+      if (!m_Altitude) {
+        idx = Idx_WIND_WAVE_HGT, idy = Idx_WIND_WAVE_DIR, polar = true;
+      }
+      break;
+    case GribOverlaySettings::SWELL_WAVES:
+      if (!m_Altitude) {
+        idx = Idx_SWELL_HGT, idy = Idx_SWELL_DIR, polar = true;
       }
       break;
     case GribOverlaySettings::CURRENT:
@@ -1053,21 +1063,31 @@ static ColorMap WindyMap[] = {
     {90, _T("#CDC470")}, {93, _T("#CDC470")}, {96, _T("#CDC470")},
     {99, _T("#808080")}};
 
-#if 0
-static ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
-#endif
-
-enum {
-  GENERIC_GRAPHIC_INDEX,
-  WIND_GRAPHIC_INDEX,
-  AIRTEMP__GRAPHIC_INDEX,
-  SEATEMP_GRAPHIC_INDEX,
-  PRECIPITATION_GRAPHIC_INDEX,
-  CLOUD_GRAPHIC_INDEX,
-  CURRENT_GRAPHIC_INDEX,
-  CAPE_GRAPHIC_INDEX,
-  REFC_GRAPHIC_INDEX,
-  WINDY_GRAPHIC_INDEX
+//    Wave height color map.
+//    Color progression from calm (blue) to extreme seas (magenta/red)
+//    Based on Beaufort scale wave height ranges
+static ColorMap WaveMap[] = {
+    {0.0, _T("#000080")},   // Calm - Deep blue
+    {0.2, _T("#0040C0")},   // Ripples - Blue
+    {0.5, _T("#0080FF")},   // Small wavelets - Light blue
+    {1.0, _T("#00BFFF")},   // Large wavelets - Sky blue
+    {1.5, _T("#00FFFF")},   // Small waves - Cyan
+    {2.0, _T("#40FF80")},   // Moderate waves - Light green
+    {2.5, _T("#80FF40")},   // Large waves - Yellow-green
+    {3.0, _T("#FFFF00")},   // High waves - Yellow
+    {4.0, _T("#FFB000")},   // Very high waves - Orange
+    {5.0, _T("#FF8000")},   // High waves - Red-orange
+    {6.0, _T("#FF4000")},   // Very high waves - Red
+    {7.0, _T("#FF0040")},   // High waves - Red-magenta
+    {8.0, _T("#FF0080")},   // Very high waves - Magenta
+    {9.0, _T("#C000C0")},   // Phenomenal waves - Purple
+    {10.0, _T("#800080")},  // Extreme waves - Dark purple
+    {12.0, _T("#400040")},  // Exceptional waves - Very dark purple
+    {15.0, _T("#200020")},  // Catastrophic waves - Almost black
+    {18.0, _T("#100010")},  // Hurricane waves - Very dark
+    {22.0, _T("#080008")},  // Extreme hurricane waves - Nearly black
+    {26.0, _T("#040004")},  // Record-breaking waves - Nearly black
+    {30.0, _T("#000000")}   // Maximum extreme waves - Black
 };
 
 static void InitColor(ColorMap *map, size_t maplen) {
@@ -1092,6 +1112,7 @@ void GRIBOverlayFactory::InitColorsTable() {
   InitColor(CAPEMap, (sizeof CAPEMap) / (sizeof *CAPEMap));
   InitColor(REFCMap, (sizeof REFCMap) / (sizeof *REFCMap));
   InitColor(WindyMap, (sizeof WindyMap) / (sizeof *WindyMap));
+  InitColor(WaveMap, (sizeof WaveMap) / (sizeof *WaveMap));
 }
 
 void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
@@ -1148,6 +1169,10 @@ void GRIBOverlayFactory::GetGraphicColor(int settings, double val_in,
       map = WindyMap;
       maplen = (sizeof WindyMap) / (sizeof *WindyMap);
       break;
+    case WAVE_GRAPHIC_INDEX:
+      map = WaveMap;
+      maplen = (sizeof WaveMap) / (sizeof *WaveMap);
+      break;
     default:
       return;
   }
@@ -1186,7 +1211,7 @@ wxString GRIBOverlayFactory::getLabelString(double value, int settings) {
   wxString f = _T("%.*f");
 
   switch (settings) {
-    case GribOverlaySettings::PRESSURE: /* 2 */
+    case GribOverlaySettings::PRESSURE:
       p = 0;
       if (m_Settings.Settings[settings].m_Units == 2)
         p = 2;
@@ -1196,13 +1221,15 @@ wxString GRIBOverlayFactory::getLabelString(double value, int settings) {
         f = _T("%02.*f");
       }
       break;
-    case GribOverlaySettings::WAVE:            /* 3 */
-    case GribOverlaySettings::CURRENT:         /* 4 */
-    case GribOverlaySettings::AIR_TEMPERATURE: /* 7 */
-    case GribOverlaySettings::SEA_TEMPERATURE: /* 8 */
+    case GribOverlaySettings::COMBINED_WAVES:
+    case GribOverlaySettings::WIND_WAVES:
+    case GribOverlaySettings::SWELL_WAVES:
+    case GribOverlaySettings::CURRENT:
+    case GribOverlaySettings::AIR_TEMPERATURE:
+    case GribOverlaySettings::SEA_TEMPERATURE:
       p = 1;
       break;
-    case GribOverlaySettings::PRECIPITATION: /* 5 */
+    case GribOverlaySettings::PRECIPITATION:
       p = value < 100. ? 2 : value < 10. ? 1 : 0;
       p += m_Settings.Settings[settings].m_Units == 1 ? 1 : 0;
       break;
