@@ -133,7 +133,7 @@ public:
 
   EditDialog(wxWindow *parent, InstrumentProperties &Properties,
              wxWindowID id = wxID_ANY,
-             const wxString &title = wxT("Edit Instrument"),
+             const wxString &title = "Edit Instrument",
              const wxPoint &pos = wxDefaultPosition,
              const wxSize &size = wxSize(-1, -1),
              long style = wxDEFAULT_DIALOG_STYLE);

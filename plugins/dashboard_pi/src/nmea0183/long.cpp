@@ -92,14 +92,14 @@ void LONGITUDE::Write(SENTENCE& sentence) {
 
   if (neg) d = -d;
 
-  temp_string.Printf(_T("%03d%02d.%03d"), d, m / 1000, m % 1000);
+  temp_string.Printf("%03d%02d.%03d", d, m / 1000, m % 1000);
 
   sentence += temp_string;
 
   if (Easting == East) {
-    sentence += _T("E");
+    sentence += "E";
   } else if (Easting == West) {
-    sentence += _T("W");
+    sentence += "W";
   } else {
     /*
     ** Add Nothing

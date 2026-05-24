@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( MWV, RESPONSE )
 
 VWR::VWR() {
-  Mnemonic = _T("VWR");
+  Mnemonic = "VWR";
   Empty();
 }
 
@@ -87,7 +87,7 @@ bool VWR::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(9) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

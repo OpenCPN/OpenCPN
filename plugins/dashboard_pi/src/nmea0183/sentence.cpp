@@ -51,9 +51,9 @@ NMEA0183_BOOLEAN SENTENCE::Boolean(int field_number) const {
 
   field_data = Field(field_number);
 
-  if (field_data.StartsWith(_T("A"))) {
+  if (field_data.StartsWith("A")) {
     return (NTrue);
-  } else if (field_data.StartsWith(_T("V"))) {
+  } else if (field_data.StartsWith("V")) {
     return (NFalse);
   } else {
     return (Unknown0183);
@@ -67,25 +67,25 @@ COMMUNICATIONS_MODE SENTENCE::CommunicationsMode(int field_number) const {
 
   field_data = Field(field_number);
 
-  if (field_data == _T("d")) {
+  if (field_data == "d") {
     return (F3E_G3E_SimplexTelephone);
-  } else if (field_data == _T("e")) {
+  } else if (field_data == "e") {
     return (F3E_G3E_DuplexTelephone);
-  } else if (field_data == _T("m")) {
+  } else if (field_data == "m") {
     return (J3E_Telephone);
-  } else if (field_data == _T("o")) {
+  } else if (field_data == "o") {
     return (H3E_Telephone);
-  } else if (field_data == _T("q")) {
+  } else if (field_data == "q") {
     return (F1B_J2B_FEC_NBDP_TelexTeleprinter);
-  } else if (field_data == _T("s")) {
+  } else if (field_data == "s") {
     return (F1B_J2B_ARQ_NBDP_TelexTeleprinter);
-  } else if (field_data == _T("w")) {
+  } else if (field_data == "w") {
     return (F1B_J2B_ReceiveOnlyTeleprinterDSC);
-  } else if (field_data == _T("x")) {
+  } else if (field_data == "x") {
     return (A1A_MorseTapeRecorder);
-  } else if (field_data == _T("{")) {
+  } else if (field_data == "{") {
     return (A1A_MorseKeyHeadset);
-  } else if (field_data == _T("|")) {
+  } else if (field_data == "|") {
     return (F1C_F2C_F3C_FaxMachine);
   } else {
     return (CommunicationsModeUnknown);
@@ -134,9 +134,9 @@ EASTWEST SENTENCE::EastOrWest(int field_number) const {
 
   field_data = Field(field_number);
 
-  if (field_data == _T("E")) {
+  if (field_data == "E") {
     return (East);
-  } else if (field_data == _T("W")) {
+  } else if (field_data == "W") {
     return (West);
   } else {
     return (EW_Unknown);
@@ -207,8 +207,7 @@ void SENTENCE::Finish(void) {
 
   wxString temp_string;
 
-  temp_string.Printf(_T("*%02X%c%c"), (int)checksum, CARRIAGE_RETURN,
-                     LINE_FEED);
+  temp_string.Printf("*%02X%c%c", (int)checksum, CARRIAGE_RETURN, LINE_FEED);
   Sentence += temp_string;
 }
 
@@ -232,7 +231,7 @@ NMEA0183_BOOLEAN SENTENCE::IsChecksumBad(int checksum_field_number) const {
 
   wxString checksum_in_sentence = Field(checksum_field_number);
 
-  if (checksum_in_sentence == _T("")) {
+  if (checksum_in_sentence == "") {
     return (Unknown0183);
   }
 
@@ -251,9 +250,9 @@ LEFTRIGHT SENTENCE::LeftOrRight(int field_number) const {
 
   field_data = Field(field_number);
 
-  if (field_data == _T("L")) {
+  if (field_data == "L") {
     return (Left);
-  } else if (field_data == _T("R")) {
+  } else if (field_data == "R") {
     return (Right);
   } else {
     return (LR_Unknown);
@@ -267,9 +266,9 @@ NORTHSOUTH SENTENCE::NorthOrSouth(int field_number) const {
 
   field_data = Field(field_number);
 
-  if (field_data == _T("N")) {
+  if (field_data == "N") {
     return (North);
-  } else if (field_data == _T("S")) {
+  } else if (field_data == "S") {
     return (South);
   } else {
     return (NS_Unknown);
@@ -283,15 +282,15 @@ REFERENCE SENTENCE::Reference(int field_number) const {
 
   field_data = Field(field_number);
 
-  if (field_data == _T("B")) {
+  if (field_data == "B") {
     return (BottomTrackingLog);
-  } else if (field_data == _T("M")) {
+  } else if (field_data == "M") {
     return (ManuallyEntered);
-  } else if (field_data == _T("W")) {
+  } else if (field_data == "W") {
     return (WaterReferenced);
-  } else if (field_data == _T("R")) {
+  } else if (field_data == "R") {
     return (RadarTrackingOfFixedTarget);
-  } else if (field_data == _T("P")) {
+  } else if (field_data == "P") {
     return (PositioningSystemGroundReference);
   } else {
     return (ReferenceUnknown);
@@ -305,25 +304,25 @@ TRANSDUCER_TYPE SENTENCE::TransducerType(int field_number) const {
 
   field_data = Field(field_number);
 
-  if (field_data == _T("A")) {
+  if (field_data == "A") {
     return (AngularDisplacementTransducer);
-  } else if (field_data == _T("D")) {
+  } else if (field_data == "D") {
     return (LinearDisplacementTransducer);
-  } else if (field_data == _T("C")) {
+  } else if (field_data == "C") {
     return (TemperatureTransducer);
-  } else if (field_data == _T("F")) {
+  } else if (field_data == "F") {
     return (FrequencyTransducer);
-  } else if (field_data == _T("N")) {
+  } else if (field_data == "N") {
     return (ForceTransducer);
-  } else if (field_data == _T("P")) {
+  } else if (field_data == "P") {
     return (PressureTransducer);
-  } else if (field_data == _T("R")) {
+  } else if (field_data == "R") {
     return (FlowRateTransducer);
-  } else if (field_data == _T("T")) {
+  } else if (field_data == "T") {
     return (TachometerTransducer);
-  } else if (field_data == _T("H")) {
+  } else if (field_data == "H") {
     return (HumidityTransducer);
-  } else if (field_data == _T("V")) {
+  } else if (field_data == "V") {
     return (VolumeTransducer);
   } else {
     return (TransducerUnknown);
@@ -359,7 +358,7 @@ const SENTENCE& SENTENCE::operator=(const wxString& source) {
 const SENTENCE& SENTENCE::operator+=(const wxString& source) {
   //   ASSERT_VALID( this );
 
-  Sentence += _T(",");
+  Sentence += ",";
   Sentence += source;
 
   return (*this);
@@ -370,9 +369,9 @@ const SENTENCE& SENTENCE::operator+=(double value) {
 
   wxString temp_string;
 
-  temp_string.Printf(_T("%.3f"), value);
+  temp_string.Printf("%.3f", value);
 
-  Sentence += _T(",");
+  Sentence += ",";
   Sentence += temp_string;
 
   return (*this);
@@ -381,57 +380,57 @@ const SENTENCE& SENTENCE::operator+=(double value) {
 const SENTENCE& SENTENCE::operator+=(COMMUNICATIONS_MODE mode) {
   //   ASSERT_VALID( this );
 
-  Sentence += _T(",");
+  Sentence += ",";
 
   switch (mode) {
     case F3E_G3E_SimplexTelephone:
 
-      Sentence += _T("d");
+      Sentence += "d";
       break;
 
     case F3E_G3E_DuplexTelephone:
 
-      Sentence += _T("e");
+      Sentence += "e";
       break;
 
     case J3E_Telephone:
 
-      Sentence += _T("m");
+      Sentence += "m";
       break;
 
     case H3E_Telephone:
 
-      Sentence += _T("o");
+      Sentence += "o";
       break;
 
     case F1B_J2B_FEC_NBDP_TelexTeleprinter:
 
-      Sentence += _T("q");
+      Sentence += "q";
       break;
 
     case F1B_J2B_ARQ_NBDP_TelexTeleprinter:
 
-      Sentence += _T("s");
+      Sentence += "s";
       break;
 
     case F1B_J2B_ReceiveOnlyTeleprinterDSC:
 
-      Sentence += _T("w");
+      Sentence += "w";
       break;
 
     case A1A_MorseTapeRecorder:
 
-      Sentence += _T("x");
+      Sentence += "x";
       break;
 
     case A1A_MorseKeyHeadset:
 
-      Sentence += _T("{");
+      Sentence += "{";
       break;
 
     case F1C_F2C_F3C_FaxMachine:
 
-      Sentence += _T("|");
+      Sentence += "|";
       break;
 
     case CommunicationsModeUnknown:
@@ -445,62 +444,62 @@ const SENTENCE& SENTENCE::operator+=(COMMUNICATIONS_MODE mode) {
 const SENTENCE& SENTENCE::operator+=(TRANSDUCER_TYPE transducer) {
   //   ASSERT_VALID( this );
 
-  Sentence += _T(",");
+  Sentence += ",";
 
   switch (transducer) {
     case TemperatureTransducer:
 
-      Sentence += _T("C");
+      Sentence += "C";
       break;
 
     case AngularDisplacementTransducer:
 
-      Sentence += _T("A");
+      Sentence += "A";
       break;
 
     case LinearDisplacementTransducer:
 
-      Sentence += _T("D");
+      Sentence += "D";
       break;
 
     case FrequencyTransducer:
 
-      Sentence += _T("F");
+      Sentence += "F";
       break;
 
     case ForceTransducer:
 
-      Sentence += _T("N");
+      Sentence += "N";
       break;
 
     case PressureTransducer:
 
-      Sentence += _T("P");
+      Sentence += "P";
       break;
 
     case FlowRateTransducer:
 
-      Sentence += _T("R");
+      Sentence += "R";
       break;
 
     case TachometerTransducer:
 
-      Sentence += _T("T");
+      Sentence += "T";
       break;
 
     case HumidityTransducer:
 
-      Sentence += _T("H");
+      Sentence += "H";
       break;
 
     case VolumeTransducer:
 
-      Sentence += _T("V");
+      Sentence += "V";
       break;
 
     case TransducerUnknown:
 
-      Sentence += _T("?");
+      Sentence += "?";
       break;
   }
 
@@ -510,12 +509,12 @@ const SENTENCE& SENTENCE::operator+=(TRANSDUCER_TYPE transducer) {
 const SENTENCE& SENTENCE::operator+=(NORTHSOUTH northing) {
   //   ASSERT_VALID( this );
 
-  Sentence += _T(",");
+  Sentence += ",";
 
   if (northing == North) {
-    Sentence += _T("N");
+    Sentence += "N";
   } else if (northing == South) {
-    Sentence += _T("S");
+    Sentence += "S";
   }
 
   return (*this);
@@ -526,9 +525,9 @@ const SENTENCE& SENTENCE::operator+=(int value) {
 
   wxString temp_string;
 
-  temp_string.Printf(_T("%d"), value);
+  temp_string.Printf("%d", value);
 
-  Sentence += _T(",");
+  Sentence += ",";
   Sentence += temp_string;
 
   return (*this);
@@ -537,12 +536,12 @@ const SENTENCE& SENTENCE::operator+=(int value) {
 const SENTENCE& SENTENCE::operator+=(EASTWEST easting) {
   //   ASSERT_VALID( this );
 
-  Sentence += _T(",");
+  Sentence += ",";
 
   if (easting == East) {
-    Sentence += _T("E");
+    Sentence += "E";
   } else if (easting == West) {
-    Sentence += _T("W");
+    Sentence += "W";
   }
 
   return (*this);
@@ -551,12 +550,12 @@ const SENTENCE& SENTENCE::operator+=(EASTWEST easting) {
 const SENTENCE& SENTENCE::operator+=(NMEA0183_BOOLEAN boolean) {
   //   ASSERT_VALID( this );
 
-  Sentence += _T(",");
+  Sentence += ",";
 
   if (boolean == NTrue) {
-    Sentence += _T("A");
+    Sentence += "A";
   } else if (boolean == NFalse) {
-    Sentence += _T("V");
+    Sentence += "V";
   }
 
   return (*this);

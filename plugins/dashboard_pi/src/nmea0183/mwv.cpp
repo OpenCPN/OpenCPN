@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( MWV, RESPONSE )
 
 MWV::MWV() {
-  Mnemonic = _T("MWV");
+  Mnemonic = "MWV";
   Empty();
 }
 
@@ -85,7 +85,7 @@ bool MWV::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(6) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

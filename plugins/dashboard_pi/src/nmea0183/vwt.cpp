@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( MWV, RESPONSE )
 
 VWT::VWT() {
-  Mnemonic = _T("VWT");
+  Mnemonic = "VWT";
   Empty();
 }
 
@@ -87,7 +87,7 @@ bool VWT::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(9) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

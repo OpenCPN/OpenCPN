@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( MTW, RESPONSE )
 
 MTW::MTW() {
-  Mnemonic = _T("MTW");
+  Mnemonic = "MTW";
   Empty();
 }
 
@@ -79,7 +79,7 @@ bool MTW::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(3) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

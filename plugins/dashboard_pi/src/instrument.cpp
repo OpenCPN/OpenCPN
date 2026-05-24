@@ -296,14 +296,14 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
   wxAutoBufferedPaintDC pdc(this);
   if (!pdc.IsOk()) {
     wxLogMessage(
-        _T("DashboardInstrument::OnPaint() fatal: ")
-        _T("wxAutoBufferedPaintDC.IsOk() false."));
+        "DashboardInstrument::OnPaint() fatal: "
+        "wxAutoBufferedPaintDC.IsOk() false.");
     return;
   }
 
   wxSize size = GetClientSize();
   if (size.x == 0 || size.y == 0) {
-    wxLogMessage(_T("DashboardInstrument::OnPaint() fatal: Zero size DC."));
+    wxLogMessage("DashboardInstrument::OnPaint() fatal: Zero size DC.");
     return;
   }
 
@@ -317,7 +317,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
     dc.SetBackground(
         GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour));
   } else {
-    GetGlobalColor(_T("DASHB"), &cl);
+    GetGlobalColor("DASHB", &cl);
     dc.SetBackground(cl);
   }
 #ifdef __WXGTK__
@@ -339,7 +339,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
       dc.SetBrush(GetColourSchemeBackgroundColour(
           m_Properties->m_TitleBackgroundColour));
     } else {
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor("DASHL", &cl);
       pen.SetColour(cl);
       dc.SetPen(pen);
       dc.SetBrush(cl);
@@ -358,7 +358,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
       f = g_pFontTitle->GetChosenFont();
       dc.SetFont(f);
       dc.SetTextForeground(GetColourSchemeFont(g_pFontTitle->GetColour()));
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor("DASHL", &cl);
       dc.SetTextBackground(cl);
     }
     // GetGlobalColor(_T("DASHF"), &cl);
@@ -384,13 +384,13 @@ DashboardInstrument_Single::DashboardInstrument_Single(
     InstrumentProperties* Properties, DASH_CAP cap_flag, wxString format)
     : DashboardInstrument(pparent, id, title, cap_flag, Properties) {
   m_format = format;
-  m_data = _T("---");
+  m_data = "---";
 }
 
 wxSize DashboardInstrument_Single::GetSize(int orient, wxSize hint) {
   InitTitleSize();
   int w;
-  InitDataTextHeight(_T("000"), w);
+  InitDataTextHeight("000", w);
 
   int drawHeight = m_DataTextHeight * (1 + g_TitleVerticalOffset);
   InitTitleAndDataPosition(drawHeight);
@@ -429,26 +429,25 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
       wxString format =
           (m_Properties && m_Properties->m_Format != "" ? m_Properties->m_Format
                                                         : m_format);
-      if (unit == _T("C"))
+      if (unit == "C")
         m_data = wxString::Format(format, data) +
-                 (showUnit ? DEGREE_SIGN + _T("C") : "");
-      else if (unit == _T("\u00B0"))
+                 (showUnit ? DEGREE_SIGN + "C" : "");
+      else if (unit == "\u00B0")
         m_data = wxString::Format(format, data) + (showUnit ? DEGREE_SIGN : "");
-      else if (unit == _T("\u00B0T"))
+      else if (unit == "\u00B0T")
         m_data = wxString::Format(format, data) +
                  (showUnit ? DEGREE_SIGN + _(" true") : "");
-      else if (unit == _T("\u00B0M"))
+      else if (unit == "\u00B0M")
         m_data = wxString::Format(format, data) +
                  (showUnit ? DEGREE_SIGN + _(" mag") : "");
-      else if (unit == _T("\u00B0L"))
-        m_data = _T(">") + wxString::Format(format, data) +
+      else if (unit == "\u00B0L")
+        m_data = ">" + wxString::Format(format, data) +
                  (showUnit ? DEGREE_SIGN : "");
-      else if (unit == _T("\u00B0R"))
+      else if (unit == "\u00B0R")
         m_data = wxString::Format(format, data) +
-                 (showUnit ? DEGREE_SIGN + _T("<") : "");
-      else if (unit == _T("N"))  // Knots
-        m_data =
-            wxString::Format(format, data) + (showUnit ? _T(" Kts") : _T(""));
+                 (showUnit ? DEGREE_SIGN + "<" : "");
+      else if (unit == "N")  // Knots
+        m_data = wxString::Format(format, data) + (showUnit ? " Kts" : "");
       /* maybe in the future ...
                       else if (unit == _T("M")) // m/s
                         m_data = wxString::Format(m_format, data)+_T(" m/s");
@@ -457,10 +456,9 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
        ... to be completed
        */
       else
-        m_data =
-            wxString::Format(format, data) + (showUnit ? _T(" ") + unit : "");
+        m_data = wxString::Format(format, data) + (showUnit ? " " + unit : "");
     } else
-      m_data = _T("---");
+      m_data = "---";
 
     Refresh();
   }
@@ -478,8 +476,8 @@ DashboardInstrument_Position::DashboardInstrument_Position(
     : DashboardInstrument(pparent, id, title, cap_flag1, Properties) {
   m_cap_flag.set(cap_flag2);
 
-  m_data1 = _T("---");
-  m_data2 = _T("---");
+  m_data1 = "---";
+  m_data2 = "---";
   m_cap_flag1 = cap_flag1;
   m_cap_flag2 = cap_flag2;
 }
@@ -487,7 +485,7 @@ DashboardInstrument_Position::DashboardInstrument_Position(
 wxSize DashboardInstrument_Position::GetSize(int orient, wxSize hint) {
   InitTitleSize();
   int w;
-  InitDataTextHeight(_T("000  00.0000 W"), w);
+  InitDataTextHeight("000  00.0000 W", w);
 
   int drawHeight =
       m_DataTextHeight * 2 + m_DataTextHeight * g_TitleVerticalOffset;

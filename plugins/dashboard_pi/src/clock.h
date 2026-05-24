@@ -56,7 +56,7 @@ public:
   DashboardInstrument_Clock(wxWindow *parent, wxWindowID id, wxString title,
                             InstrumentProperties *Properties,
                             DASH_CAP cap_flag = OCPN_DBP_STC_CLK,
-                            wxString format = _T("%02i:%02i:%02i UTC"));
+                            wxString format = "%02i:%02i:%02i UTC");
 
   ~DashboardInstrument_Clock(void) {}
 
@@ -104,7 +104,7 @@ class DashboardInstrument_Sun : public DashboardInstrument_Clock {
 public:
   DashboardInstrument_Sun(wxWindow *parent, wxWindowID id, wxString title,
                           InstrumentProperties *Properties,
-                          wxString format = _T( "%02i:%02i:%02i UTC" ));
+                          wxString format = "%02i:%02i:%02i UTC");
 
   ~DashboardInstrument_Sun() {}
 
@@ -131,7 +131,7 @@ class DashboardInstrument_CPUClock : public DashboardInstrument_Clock {
 public:
   DashboardInstrument_CPUClock(wxWindow *parent, wxWindowID id, wxString title,
                                InstrumentProperties *Properties,
-                               wxString format = _T( "%02i:%02i:%02i UTC" ));
+                               wxString format = "%02i:%02i:%02i UTC");
 
   ~DashboardInstrument_CPUClock() {}
 

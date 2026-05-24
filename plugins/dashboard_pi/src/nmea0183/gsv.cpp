@@ -40,7 +40,7 @@
 */
 
 GSV::GSV() {
-  Mnemonic = _T("GSV");
+  Mnemonic = "GSV";
   Empty();
 }
 
@@ -104,12 +104,12 @@ bool GSV::Parse(const SENTENCE& sentence) {
   int nNumberOfDataFields = sentence.GetNumberOfDataFields();
   int satInfoCnt = (nNumberOfDataFields - 3) / 4;
   if (satInfoCnt < 1) {
-    SetErrorMessage(_T("Invalid Field count"));
+    SetErrorMessage("Invalid Field count");
     return (FALSE);
   }
 
   if (sentence.IsChecksumBad(nNumberOfDataFields + 1) == NTrue) {
-    SetErrorMessage(_T("Invalid Checksum" ));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

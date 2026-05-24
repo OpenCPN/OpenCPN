@@ -47,8 +47,8 @@
 #include <wx/fontdata.h>
 
 const wxString DEGREE_SIGN = wxString::Format(
-    _T("%c"), 0x00B0);  // This is the degree sign in UTF8. It should be
-                        // correctly handled on both Win & Unix
+    "%c", 0x00B0);  // This is the degree sign in UTF8. It should be
+                    // correctly handled on both Win & Unix
 #define DefaultWidth 150
 
 extern wxFontData *g_pFontTitle;
@@ -146,10 +146,10 @@ public:
     m_USLabelFont = *(g_pUSFontLabel);
     m_SmallFont = *(g_pFontSmall);
     m_USSmallFont = *(g_pUSFontSmall);
-    GetGlobalColor(_T("DASHL"), &m_TitleBackgroundColour);
-    GetGlobalColor(_T("DASHB"), &m_DataBackgroundColour);
-    GetGlobalColor(_T("DASHN"), &m_Arrow_First_Colour);
-    GetGlobalColor(_T("BLUE3"), &m_Arrow_Second_Colour);
+    GetGlobalColor("DASHL", &m_TitleBackgroundColour);
+    GetGlobalColor("DASHB", &m_DataBackgroundColour);
+    GetGlobalColor("DASHN", &m_Arrow_First_Colour);
+    GetGlobalColor("BLUE3", &m_Arrow_Second_Colour);
   }
   ~InstrumentProperties() {}
   void SetDefault() {
@@ -169,10 +169,10 @@ public:
     m_USLabelFont = *(g_pUSFontLabel);
     m_SmallFont = *(g_pFontSmall);
     m_USSmallFont = *(g_pUSFontSmall);
-    GetGlobalColor(_T("DASHL"), &m_TitleBackgroundColour);
-    GetGlobalColor(_T("DASHB"), &m_DataBackgroundColour);
-    GetGlobalColor(_T("DASHN"), &m_Arrow_First_Colour);
-    GetGlobalColor(_T("BLUE3"), &m_Arrow_Second_Colour);
+    GetGlobalColor("DASHL", &m_TitleBackgroundColour);
+    GetGlobalColor("DASHB", &m_DataBackgroundColour);
+    GetGlobalColor("DASHN", &m_Arrow_First_Colour);
+    GetGlobalColor("BLUE3", &m_Arrow_Second_Colour);
   };
   int m_aInstrument;
   int m_Listplace;

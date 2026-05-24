@@ -40,7 +40,7 @@
 */
 
 HDM::HDM() {
-  Mnemonic = _T("HDM");
+  Mnemonic = "HDM";
   Empty();
 }
 
@@ -67,7 +67,7 @@ bool HDM::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(3) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -84,7 +84,7 @@ bool HDM::Write(SENTENCE& sentence) {
   RESPONSE::Write(sentence);
 
   sentence += DegreesMagnetic;
-  sentence += _T("M");
+  sentence += "M";
 
   sentence.Finish();
 

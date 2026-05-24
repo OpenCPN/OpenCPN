@@ -40,7 +40,7 @@
 */
 
 VLW::VLW() {
-  Mnemonic = _T("VLW");
+  Mnemonic = "VLW";
   Empty();
 }
 
@@ -76,7 +76,7 @@ Field Number:
   */
 
   if (sentence.IsChecksumBad(5) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -94,9 +94,9 @@ bool VLW::Write(SENTENCE& sentence) {
   RESPONSE::Write(sentence);
 
   sentence += TotalMileage;
-  sentence += _T("N");
+  sentence += "N";
   sentence += TripMileage;
-  sentence += _T("N");
+  sentence += "N";
   sentence.Finish();
 
   return (TRUE);

@@ -52,7 +52,7 @@ wxString& expand_talker_id(const wxString& identifier) {
   ** Set up our default return value
   */
 
-  expanded_identifier = _T("Unknown - ");
+  expanded_identifier = "Unknown - ";
   expanded_identifier += identifier;
 
   switch (first_character) {
@@ -61,12 +61,12 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'G':  // AG
 
-          expanded_identifier = _T("Autopilot - General");
+          expanded_identifier = "Autopilot - General";
           break;
 
         case 'P':  // AP
 
-          expanded_identifier = _T("Autopilot - Magnetic");
+          expanded_identifier = "Autopilot - Magnetic";
           break;
       }
 
@@ -77,39 +77,38 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'C':  // CC
 
-          expanded_identifier =
-              _T("Commputer - Programmed Calculator (outdated)");
+          expanded_identifier = "Commputer - Programmed Calculator (outdated)";
           break;
 
         case 'D':  // CD
 
           expanded_identifier =
-              _T("Communications - Digital Selective Calling (DSC)");
+              "Communications - Digital Selective Calling (DSC)";
           break;
 
         case 'M':  // CM
 
-          expanded_identifier = _T("Computer - Memory Data (outdated)");
+          expanded_identifier = "Computer - Memory Data (outdated)";
           break;
 
         case 'S':  // CS
 
-          expanded_identifier = _T("Communications - Satellite");
+          expanded_identifier = "Communications - Satellite";
           break;
 
         case 'T':  // CT
 
-          expanded_identifier = _T("Communications - Radio-Telephone (MF/HF)");
+          expanded_identifier = "Communications - Radio-Telephone (MF/HF)";
           break;
 
         case 'V':  // CV
 
-          expanded_identifier = _T("Communications - Radio-Telephone (VHF)");
+          expanded_identifier = "Communications - Radio-Telephone (VHF)";
           break;
 
         case 'X':  // CX
 
-          expanded_identifier = _T("Communications - Scanning Receiver");
+          expanded_identifier = "Communications - Scanning Receiver";
           break;
       }
 
@@ -120,12 +119,12 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'E':  // DE
 
-          expanded_identifier = _T("DECCA Navigation");
+          expanded_identifier = "DECCA Navigation";
           break;
 
         case 'F':  // DF
 
-          expanded_identifier = _T("Direction Finder");
+          expanded_identifier = "Direction Finder";
           break;
       }
 
@@ -137,18 +136,17 @@ wxString& expand_talker_id(const wxString& identifier) {
         case 'C':  // EC
 
           expanded_identifier =
-              _T("Electronic Chart Display & Information System (ECDIS)");
+              "Electronic Chart Display & Information System (ECDIS)";
           break;
 
         case 'P':  // EP
 
-          expanded_identifier =
-              _T("Emergency Position Indicating Beacon (EPIRB)");
+          expanded_identifier = "Emergency Position Indicating Beacon (EPIRB)";
           break;
 
         case 'R':  // ER
 
-          expanded_identifier = _T("Engine Room Monitoring Systems");
+          expanded_identifier = "Engine Room Monitoring Systems";
           break;
       }
 
@@ -159,7 +157,7 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'P':  // GP
 
-          expanded_identifier = _T("Global Positioning System (GPS)");
+          expanded_identifier = "Global Positioning System (GPS)";
           break;
       }
 
@@ -170,17 +168,17 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'C':  // HC
 
-          expanded_identifier = _T("Heading - Magnetic Compass");
+          expanded_identifier = "Heading - Magnetic Compass";
           break;
 
         case 'E':  // HE
 
-          expanded_identifier = _T("Heading - North Seeking Gyro");
+          expanded_identifier = "Heading - North Seeking Gyro";
           break;
 
         case 'N':  // HN
 
-          expanded_identifier = _T("Heading - Non North Seeking Gyro");
+          expanded_identifier = "Heading - Non North Seeking Gyro";
           break;
       }
 
@@ -191,12 +189,12 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'I':  // II
 
-          expanded_identifier = _T("Integrated Instrumentation");
+          expanded_identifier = "Integrated Instrumentation";
           break;
 
         case 'N':  // IN
 
-          expanded_identifier = _T("Integrated Navigation");
+          expanded_identifier = "Integrated Navigation";
           break;
       }
 
@@ -207,12 +205,12 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'A':  // LA
 
-          expanded_identifier = _T("Loran A");
+          expanded_identifier = "Loran A";
           break;
 
         case 'C':  // LC
 
-          expanded_identifier = _T("Loran C");
+          expanded_identifier = "Loran C";
           break;
       }
 
@@ -223,7 +221,7 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'P':  // MP
 
-          expanded_identifier = _T("Microwave Positioning System (outdated)");
+          expanded_identifier = "Microwave Positioning System (outdated)";
           break;
       }
 
@@ -234,12 +232,12 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'M':  // OM
 
-          expanded_identifier = _T("OMEGA Navigation System");
+          expanded_identifier = "OMEGA Navigation System";
           break;
 
         case 'S':  // OS
 
-          expanded_identifier = _T("Distress Alarm System (outdated)");
+          expanded_identifier = "Distress Alarm System (outdated)";
           break;
       }
 
@@ -254,7 +252,7 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'A':  // RA
 
-          expanded_identifier = _T("RADAR and/or ARPA");
+          expanded_identifier = "RADAR and/or ARPA";
           break;
       }
 
@@ -265,18 +263,17 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'D':  // SD
 
-          expanded_identifier = _T("Sounder, Depth");
+          expanded_identifier = "Sounder, Depth";
           break;
 
         case 'N':  // SN
 
-          expanded_identifier =
-              _T("Electronic Positioning System, other/general");
+          expanded_identifier = "Electronic Positioning System, other/general";
           break;
 
         case 'S':  // SS
 
-          expanded_identifier = _T("Sounder, Scanning");
+          expanded_identifier = "Sounder, Scanning";
           break;
       }
 
@@ -287,12 +284,12 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'I':  // TI
 
-          expanded_identifier = _T("Turn Rate Indicator");
+          expanded_identifier = "Turn Rate Indicator";
           break;
 
         case 'R':  // TR
 
-          expanded_identifier = _T("TRANSIT Navigation System");
+          expanded_identifier = "TRANSIT Navigation System";
           break;
       }
 
@@ -303,19 +300,17 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'D':  // VD
 
-          expanded_identifier = _T("Velocity Sensor, Doppler, other/general");
+          expanded_identifier = "Velocity Sensor, Doppler, other/general";
           break;
 
         case 'M':  // VM
 
-          expanded_identifier =
-              _T("Velocity Sensor, Speed Log, Water, Magnetic");
+          expanded_identifier = "Velocity Sensor, Speed Log, Water, Magnetic";
           break;
 
         case 'W':  // VW
 
-          expanded_identifier =
-              _T("Velocity Sensor, Speed Log, Water, Mechanical");
+          expanded_identifier = "Velocity Sensor, Speed Log, Water, Mechanical";
           break;
       }
 
@@ -326,7 +321,7 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'I':  // WI
 
-          expanded_identifier = _T("Weather Instruments");
+          expanded_identifier = "Weather Instruments";
           break;
       }
 
@@ -337,48 +332,48 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'C':  // YC
 
-          expanded_identifier = _T("Transducer - Temperature (outdated)");
+          expanded_identifier = "Transducer - Temperature (outdated)";
           break;
 
         case 'D':  // YD
 
           expanded_identifier =
-              _T("Transducer - Displacement, Angular or Linear (outdated)");
+              "Transducer - Displacement, Angular or Linear (outdated)";
           break;
 
         case 'F':  // YF
 
-          expanded_identifier = _T("Transducer - Frequency (outdated)");
+          expanded_identifier = "Transducer - Frequency (outdated)";
           break;
 
         case 'L':  // YL
 
-          expanded_identifier = _T("Transducer - Level (outdated)");
+          expanded_identifier = "Transducer - Level (outdated)";
           break;
 
         case 'P':  // YP
 
-          expanded_identifier = _T("Transducer - Pressure (outdated)");
+          expanded_identifier = "Transducer - Pressure (outdated)";
           break;
 
         case 'R':  // YR
 
-          expanded_identifier = _T("Transducer - Flow Rate (outdated)");
+          expanded_identifier = "Transducer - Flow Rate (outdated)";
           break;
 
         case 'T':  // YT
 
-          expanded_identifier = _T("Transducer - Tachometer (outdated)");
+          expanded_identifier = "Transducer - Tachometer (outdated)";
           break;
 
         case 'V':  // YV
 
-          expanded_identifier = _T("Transducer - Volume (outdated)");
+          expanded_identifier = "Transducer - Volume (outdated)";
           break;
 
         case 'X':  // YX
 
-          expanded_identifier = _T("Transducer");
+          expanded_identifier = "Transducer";
           break;
       }
 
@@ -389,22 +384,22 @@ wxString& expand_talker_id(const wxString& identifier) {
       switch (second_character) {
         case 'A':  // ZA
 
-          expanded_identifier = _T("Timekeeper - Atomic Clock");
+          expanded_identifier = "Timekeeper - Atomic Clock";
           break;
 
         case 'C':  // ZC
 
-          expanded_identifier = _T("Timekeeper - Chronometer");
+          expanded_identifier = "Timekeeper - Chronometer";
           break;
 
         case 'Q':  // ZQ
 
-          expanded_identifier = _T("Timekeeper - Quartz");
+          expanded_identifier = "Timekeeper - Quartz";
           break;
 
         case 'V':  // ZV
 
-          expanded_identifier = _T("Timekeeper - Radio Update, WWV or WWVH");
+          expanded_identifier = "Timekeeper - Radio Update, WWV or WWVH";
           break;
       }
 

@@ -40,7 +40,7 @@
 */
 
 RMC::RMC() {
-  Mnemonic = _T("RMC");
+  Mnemonic = "RMC";
   Empty();
 }
 
@@ -107,9 +107,9 @@ bool RMC::Parse(const SENTENCE& sentence) {
      */
     wxString checksum_in_sentence = sentence.Field(nFields + 1);
     if (checksum_in_sentence.StartsWith(
-            _T("*")))  // Field is a valid erroneous checksum
+            "*"))  // Field is a valid erroneous checksum
     {
-      SetErrorMessage(_T("Invalid Checksum"));
+      SetErrorMessage("Invalid Checksum");
       return (FALSE);
     }
   }
@@ -117,8 +117,8 @@ bool RMC::Parse(const SENTENCE& sentence) {
   //   Is this at least a 2.3 message?
   bool bext_valid = true;
   wxString checksum_in_sentence = sentence.Field(nFields);
-  if (!checksum_in_sentence.StartsWith(_T("*"))) {
-    if ((checksum_in_sentence == _T("N")) || (checksum_in_sentence == _T("S")))
+  if (!checksum_in_sentence.StartsWith("*")) {
+    if ((checksum_in_sentence == "N") || (checksum_in_sentence == "S"))
       bext_valid = false;
   }
 

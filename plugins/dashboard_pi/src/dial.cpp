@@ -61,11 +61,11 @@ DashboardInstrument_Dial::DashboardInstrument_Dial(
 
   m_MainValue = s_value;
   m_ExtraValue = 0;
-  m_MainValueFormat = _T("%d");
-  m_MainValueUnit = _T("");
+  m_MainValueFormat = "%d";
+  m_MainValueUnit = "";
   m_MainValueOption = DIAL_POSITION_NONE;
-  m_ExtraValueFormat = _T("%d");
-  m_ExtraValueUnit = _T("");
+  m_ExtraValueFormat = "%d";
+  m_ExtraValueUnit = "";
   m_ExtraValueOption = DIAL_POSITION_NONE;
   m_MarkerOption = DIAL_MARKER_SIMPLE;
   m_MarkerStep = 1;
@@ -106,7 +106,7 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
     bdc->SetBackground(b1);
   } else {
     wxColour c1;
-    GetGlobalColor(_T("DASHB"), &c1);
+    GetGlobalColor("DASHB", &c1);
     wxBrush b1(c1);
     bdc->SetBackground(b1);
   }
@@ -123,7 +123,7 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
     f = m_Properties->m_LabelFont.GetChosenFont();
   else
     f = g_pFontLabel->GetChosenFont();
-  bdc->GetTextExtent(_T("000"), &width, &height, 0, 0, &f);
+  bdc->GetTextExtent("000", &width, &height, 0, 0, &f);
   m_cy = m_DataTop + 2;
   m_cy += availableHeight / 2;
   m_radius = availableHeight / 2;
@@ -145,7 +145,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
   if (m_Properties) {
     cl = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
   } else {
-    GetGlobalColor(_T("DASHL"), &cl);
+    GetGlobalColor("DASHL", &cl);
   }
   dc->SetTextForeground(cl);
   dc->SetBrush(*wxTRANSPARENT_BRUSH);
@@ -155,7 +155,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
 
   if (m_MarkerOption == DIAL_MARKER_REDGREENBAR) {
     pen.SetWidth(penwidth * 2);
-    GetGlobalColor(_T("DASHR"), &cl);
+    GetGlobalColor("DASHR", &cl);
     pen.SetColour(cl);
     dc->SetPen(pen);
     double angle1 = deg2rad(270);  // 305-ANGLE_OFFSET
@@ -167,7 +167,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
     wxCoord y2 = m_cy + ((radi)*sin(angle2));
     dc->DrawArc(x1, y1, x2, y2, m_cx, m_cy);
 
-    GetGlobalColor(_T("DASHG"), &cl);
+    GetGlobalColor("DASHG", &cl);
     pen.SetColour(cl);
     dc->SetPen(pen);
     angle1 = deg2rad(89);   // 305-ANGLE_OFFSET
@@ -180,7 +180,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
 
     // Some platforms have trouble with transparent pen.
     // so we simply draw arcs for the outer ring.
-    GetGlobalColor(_T("DASHF"), &cl);
+    GetGlobalColor("DASHF", &cl);
     pen.SetWidth(penwidth);
     pen.SetColour(cl);
     dc->SetPen(pen);
@@ -196,7 +196,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
     dc->DrawArc(x2, y2, x1, y1, m_cx, m_cy);
 
   } else {
-    GetGlobalColor(_T("DASHF"), &cl);
+    GetGlobalColor("DASHF", &cl);
     pen.SetColour(cl);
     dc->SetPen(pen);
     dc->DrawCircle(m_cx, m_cy, m_radius);
@@ -207,7 +207,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
   if (m_MarkerOption == DIAL_MARKER_NONE) return;
 
   wxColour cl;
-  GetGlobalColor(_T("DASHF"), &cl);
+  GetGlobalColor("DASHF", &cl);
   int penwidth = GetClientSize().x / 100;
   wxPen pen(cl, penwidth, wxPENSTYLE_SOLID);
   dc->SetPen(pen);
@@ -224,11 +224,11 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
     if (m_MarkerOption == DIAL_MARKER_REDGREEN) {
       int a = int(angle + ANGLE_OFFSET) % 360;
       if (a > 180)
-        GetGlobalColor(_T("DASHR"), &cl);
+        GetGlobalColor("DASHR", &cl);
       else if ((a > 0) && (a < 180))
-        GetGlobalColor(_T("DASHG"), &cl);
+        GetGlobalColor("DASHG", &cl);
       else
-        GetGlobalColor(_T("DASHF"), &cl);
+        GetGlobalColor("DASHF", &cl);
 
       pen.SetColour(cl);
       dc->SetPen(pen);
@@ -247,7 +247,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
   }
   // We must reset pen color so following drawings are fine
   if (m_MarkerOption == DIAL_MARKER_REDGREEN) {
-    GetGlobalColor(_T("DASHF"), &cl);
+    GetGlobalColor("DASHF", &cl);
     pen.SetStyle(wxPENSTYLE_SOLID);
     pen.SetColour(cl);
     dc->SetPen(pen);
@@ -260,7 +260,7 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
   wxPoint TextPoint;
   wxPen pen;
   wxColor cl;
-  GetGlobalColor(_T("DASHF"), &cl);
+  GetGlobalColor("DASHF", &cl);
 
   if (m_Properties) {
     dc->SetFont(m_Properties->m_SmallFont.GetChosenFont());
@@ -282,9 +282,8 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
   wxFont f;
   for (double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle;
        angle += abm) {
-    wxString label =
-        (m_LabelArray.GetCount() ? m_LabelArray.Item(offset)
-                                 : wxString::Format(_T("%d"), value));
+    wxString label = (m_LabelArray.GetCount() ? m_LabelArray.Item(offset)
+                                              : wxString::Format("%d", value));
     if (m_Properties)
       f = m_Properties->m_SmallFont.GetChosenFont();
     else
@@ -340,24 +339,23 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
 
   wxString text;
   if (!std::isnan(value)) {
-    if (unit == _T("\u00B0"))
+    if (unit == "\u00B0")
       text = wxString::Format(format, value) + DEGREE_SIGN;
-    else if (unit == _T("\u00B0L"))  // No special display for now, might be
-                                     // XX�< (as in text-only instrument)
+    else if (unit == "\u00B0L")  // No special display for now, might be
+                                 // XX�< (as in text-only instrument)
       text = wxString::Format(format, value) + DEGREE_SIGN;
-    else if (unit ==
-             _T("\u00B0R"))  // No special display for now, might be >XX�
+    else if (unit == "\u00B0R")  // No special display for now, might be >XX�
       text = wxString::Format(format, value) + DEGREE_SIGN;
-    else if (unit == _T("\u00B0T"))
-      text = wxString::Format(format, value) + DEGREE_SIGN + _T("T");
-    else if (unit == _T("\u00B0M"))
-      text = wxString::Format(format, value) + DEGREE_SIGN + _T("M");
-    else if (unit == _T("N"))  // Knots
-      text = wxString::Format(format, value) + _T(" Kts");
+    else if (unit == "\u00B0T")
+      text = wxString::Format(format, value) + DEGREE_SIGN + "T";
+    else if (unit == "\u00B0M")
+      text = wxString::Format(format, value) + DEGREE_SIGN + "M";
+    else if (unit == "N")  // Knots
+      text = wxString::Format(format, value) + " Kts";
     else
-      text = wxString::Format(format, value) + _T(" ") + unit;
+      text = wxString::Format(format, value) + " " + unit;
   } else
-    text = _T("---");
+    text = "---";
 
   int width, height;
   wxFont f;
@@ -384,7 +382,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
         cl = GetColourSchemeBackgroundColour(
             m_Properties->m_TitleBackgroundColour);
       else
-        GetGlobalColor(_T("DASHL"), &cl);
+        GetGlobalColor("DASHL", &cl);
       int penwidth = size.x / 100;
       wxPen* pen =
           wxThePenList->FindOrCreatePen(cl, penwidth, wxPENSTYLE_SOLID);
@@ -393,7 +391,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
         cl = GetColourSchemeBackgroundColour(
             m_Properties->m_DataBackgroundColour);
       else
-        GetGlobalColor(_T("DASHB"), &cl);
+        GetGlobalColor("DASHB", &cl);
       dc->SetBrush(cl);
       // There might be a background drawn below
       // so we must clear it first.
@@ -432,9 +430,9 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
   // wxColour c2;
   // GetGlobalColor(_T("DASHB"), &c2);
   wxColour c3;
-  GetGlobalColor(_T("DASHF"), &c3);
+  GetGlobalColor("DASHF", &c3);
 
-  wxStringTokenizer tkz(text, _T("\n"));
+  wxStringTokenizer tkz(text, "\n");
   wxString token;
 
   token = tkz.GetNextToken();
@@ -453,13 +451,13 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
 void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
   // The default foreground is the arrow used in most dials
   wxColour cl;
-  GetGlobalColor(_T("DASH2"), &cl);
+  GetGlobalColor("DASH2", &cl);
   wxPen pen1;
   pen1.SetStyle(wxPENSTYLE_SOLID);
   pen1.SetColour(cl);
   pen1.SetWidth(2);
   dc->SetPen(pen1);
-  GetGlobalColor(_T("DASH1"), &cl);
+  GetGlobalColor("DASH1", &cl);
   wxBrush brush1;
   brush1.SetStyle(wxBRUSHSTYLE_SOLID);
   brush1.SetColour(cl);
@@ -470,7 +468,7 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
   if (m_Properties)
     cl = GetColourSchemeFont(m_Properties->m_Arrow_First_Colour);
   else
-    GetGlobalColor(_T("DASHN"), &cl);
+    GetGlobalColor("DASHN", &cl);
   wxBrush brush;
   brush.SetStyle(wxBRUSHSTYLE_SOLID);
   brush.SetColour(cl);
@@ -479,7 +477,7 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
   /* this is fix for a +/-180� round instrument, when m_MainValue is supplied as
    * <0..180><L | R> for example TWA & AWA */
   double data;
-  if (m_MainValueUnit == _T("\u00B0L"))
+  if (m_MainValueUnit == "\u00B0L")
     data = 360 - m_MainValue;
   else
     data = m_MainValue;
@@ -524,11 +522,11 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
 
   wxColour cl;
   wxPen* pen;
-  GetGlobalColor(_T("DASH2"), &cl);
+  GetGlobalColor("DASH2", &cl);
   pen = wxThePenList->FindOrCreatePen(cl, 1, wxPENSTYLE_SOLID);
   wxBrush* b2 = wxTheBrushList->FindOrCreateBrush(cl);
 
-  GetGlobalColor(_T("DASH1"), &cl);
+  GetGlobalColor("DASH1", &cl);
   wxBrush* b1 = wxTheBrushList->FindOrCreateBrush(cl);
 
   dc->SetPen(*pen);
@@ -594,10 +592,10 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
 void DrawBoat(wxGCDC* dc, int cx, int cy, int radius) {
   // Now draw the boat
   wxColour cl;
-  GetGlobalColor(_T("DASH2"), &cl);
+  GetGlobalColor("DASH2", &cl);
   wxPen* pen = wxThePenList->FindOrCreatePen(cl, 1, wxPENSTYLE_SOLID);
   dc->SetPen(*pen);
-  GetGlobalColor(_T("DASH1"), &cl);
+  GetGlobalColor("DASH1", &cl);
   dc->SetBrush(cl);
   wxPoint points[7];
 

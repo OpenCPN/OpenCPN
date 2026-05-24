@@ -42,8 +42,8 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(
   m_cap_flag.set(cap_flag2);
   m_cap_flag.set(cap_flag3);
   m_cap_flag.set(cap_flag4);
-  m_data1 = _T("---");
-  m_data2 = _T("---");
+  m_data1 = "---";
+  m_data2 = "---";
   m_cap_flag1 = cap_flag1;
   m_cap_flag2 = cap_flag2;
   m_cap_flag3 = cap_flag3;
@@ -88,14 +88,13 @@ void DashboardInstrument_FromOwnship::SetData(DASH_CAP st, double data,
         (m_Properties ? (m_Properties->m_ShowUnit == 1) : g_bShowUnit);
     DistanceBearingMercator_Plugin(c_lat, c_lon, s_lat, s_lon, &brg, &dist);
     if (showUnit) {
-      m_data1.Printf(_T("%03d ") + DEGREE_SIGN, (int)brg);
-      m_data2.Printf(_T("%3.2f %s"),
+      m_data1.Printf("%03d " + DEGREE_SIGN, (int)brg);
+      m_data2.Printf("%3.2f %s",
                      toUsrDistance_Plugin(dist, g_iDashDistanceUnit),
                      getUsrDistanceUnit_Plugin(g_iDashDistanceUnit).c_str());
     } else {
-      m_data1.Printf(_T("%03d"), (int)brg);
-      m_data2.Printf(_T("%3.2f"),
-                     toUsrDistance_Plugin(dist, g_iDashDistanceUnit));
+      m_data1.Printf("%03d", (int)brg);
+      m_data2.Printf("%3.2f", toUsrDistance_Plugin(dist, g_iDashDistanceUnit));
     }
   }
 
@@ -109,9 +108,9 @@ wxSize DashboardInstrument_FromOwnship::GetSize(int orient, wxSize hint) {
   wxString sampleText;
 
   if (m_Properties ? (m_Properties->m_ShowUnit == 1) : g_bShowUnit) {
-    sampleText = _T("000.00 NMi");
+    sampleText = "000.00 NMi";
   } else {
-    sampleText = _T("000.00");
+    sampleText = "000.00";
   }
   InitDataTextHeight(sampleText, w);
 

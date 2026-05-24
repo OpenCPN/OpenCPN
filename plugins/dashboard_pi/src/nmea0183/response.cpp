@@ -54,7 +54,7 @@ void RESPONSE::SetContainer(NMEA0183* container) { container_p = container; }
 
 void RESPONSE::SetErrorMessage(const wxString& error_message) {
   ErrorMessage = Mnemonic;
-  ErrorMessage += _T(", ");
+  ErrorMessage += ", ";
   ErrorMessage += error_message;
 }
 
@@ -63,10 +63,10 @@ bool RESPONSE::Write(SENTENCE& sentence) {
   ** All NMEA0183 sentences begin with the mnemonic...
   */
 
-  sentence = _T("$");
+  sentence = "$";
 
   if (NULL == container_p)
-    sentence.Sentence.Append(_T("--"));
+    sentence.Sentence.Append("--");
   else
     sentence.Sentence.Append(container_p->TalkerID);
 

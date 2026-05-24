@@ -34,7 +34,7 @@
 // IMPLEMENT_DYNAMIC( MWD, RESPONSE )
 
 MWD::MWD() {
-  Mnemonic = _T("MWD");
+  Mnemonic = "MWD";
   Empty();
 }
 
@@ -80,7 +80,7 @@ bool MWD::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(9) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -102,13 +102,13 @@ bool MWD::Write(SENTENCE& sentence) {
   RESPONSE::Write(sentence);
 
   sentence += WindAngleTrue;
-  sentence += _T("T");
+  sentence += "T";
   sentence += WindAngleMagnetic;
-  sentence += _T("M");
+  sentence += "M";
   sentence += WindSpeedKnots;
-  sentence += _T("N");
+  sentence += "N";
   sentence += WindSpeedms;
-  sentence += _T("M");
+  sentence += "M";
 
   sentence.Finish();
 

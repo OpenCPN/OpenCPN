@@ -43,7 +43,7 @@
 // IMPLEMENT_DYNAMIC( VTG, RESPONSE )
 
 VTG::VTG() {
-  Mnemonic = _T("VTG");
+  Mnemonic = "VTG";
   Empty();
 }
 
@@ -97,9 +97,9 @@ bool VTG::Parse(const SENTENCE& sentence) {
      */
     wxString checksum_in_sentence = sentence.Field(9);
     if (checksum_in_sentence.StartsWith(
-            _T("*")))  // Field is a valid erroneous checksum
+            "*"))  // Field is a valid erroneous checksum
     {
-      SetErrorMessage(_T("Invalid Checksum"));
+      SetErrorMessage("Invalid Checksum");
       return (FALSE);
     }
 
@@ -107,14 +107,14 @@ bool VTG::Parse(const SENTENCE& sentence) {
       target_field_count = 9;
       check = sentence.IsChecksumBad(10);
       if (check == NTrue) {
-        SetErrorMessage(_T("Invalid Checksum"));
+        SetErrorMessage("Invalid Checksum");
         return (FALSE);
       }
     }
   }
 
   if (sentence.GetNumberOfDataFields() != target_field_count) {
-    SetErrorMessage(_T("Invalid FieldCount"));
+    SetErrorMessage("Invalid FieldCount");
     return (FALSE);
   }
 
@@ -136,13 +136,13 @@ bool VTG::Write(SENTENCE& sentence) {
   RESPONSE::Write(sentence);
 
   sentence += TrackDegreesTrue;
-  sentence += _T("T");
+  sentence += "T";
   sentence += TrackDegreesMagnetic;
-  sentence += _T("M");
+  sentence += "M";
   sentence += SpeedKnots;
-  sentence += _T("N");
+  sentence += "N";
   sentence += SpeedKilometersPerHour;
-  sentence += _T("K");
+  sentence += "K";
 
   sentence.Finish();
 
