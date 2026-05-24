@@ -46,7 +46,7 @@ DashboardInstrument_Depth::DashboardInstrument_Depth(
   m_MaxDepth = 0;
   m_Depth = 0;
   m_DepthUnit = getUsrDistanceUnit_Plugin(g_iDashDepthUnit);
-  m_Temp = _T("--");
+  m_Temp = "--";
   for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++) {
     m_ArrayDepth[idx] = 0;
   }
@@ -55,7 +55,7 @@ DashboardInstrument_Depth::DashboardInstrument_Depth(
 wxSize DashboardInstrument_Depth::GetSize(int orient, wxSize hint) {
   InitTitleSize();
   int w;
-  InitDataTextHeight(_T("15.7 Feet"), w);
+  InitDataTextHeight("15.7 Feet", w);
 
   wxClientDC dc(this);
   wxFont f;
@@ -96,7 +96,7 @@ void DashboardInstrument_Depth::SetData(DASH_CAP st, double data,
     m_DepthUnit = unit;
   } else if (st == OCPN_DBP_STC_TMP) {
     if (!std::isnan(data)) {
-      m_Temp = wxString::Format(_T("%.1f"), data) + DEGREE_SIGN + unit;
+      m_Temp = wxString::Format("%.1f", data) + DEGREE_SIGN + unit;
     } else {
       m_Temp = "---";
     }
@@ -117,7 +117,7 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
   } else {
     if (GetColourSchemeFont(g_pFontSmall->GetColour()) ==
         GetColourSchemeFont(g_pFontLabel->GetColour())) {
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor("DASHL", &cl);
       dc->SetTextForeground(cl);
     } else
       dc->SetTextForeground(GetColourSchemeFont(g_pFontLabel->GetColour()));
@@ -174,7 +174,7 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
   m_MaxDepth *= 1.2;
 
   wxString label;
-  label.Printf(_T("%.0f ") + m_DepthUnit, 0.0);
+  label.Printf("%.0f " + m_DepthUnit, 0.0);
   int width, height;
   wxFont f;
   if (m_Properties)
@@ -184,7 +184,7 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
   dc->GetTextExtent(label, &width, &height, 0, 0, &f);
   dc->DrawText(label, size.x - width - 1, m_plotup - height);
 
-  label.Printf(_T("%.0f ") + m_DepthUnit, m_MaxDepth);
+  label.Printf("%.0f " + m_DepthUnit, m_MaxDepth);
   if (m_Properties)
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
@@ -201,7 +201,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
   } else {
     if (GetColourSchemeFont(g_pFontSmall->GetColour()) ==
         GetColourSchemeFont(g_pFontLabel->GetColour()))
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor("DASHL", &cl);
     else
       cl = GetColourSchemeFont(g_pFontLabel->GetColour());
   }
@@ -264,13 +264,13 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
     dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
     dc->SetFont(g_pFontData->GetChosenFont());
   }
-  if (m_DepthUnit != _T("-")) {  // Watchdog
-    wxString s_depth = wxString::Format(_T("%.2f"), m_Depth);
+  if (m_DepthUnit != "-") {  // Watchdog
+    wxString s_depth = wxString::Format("%.2f", m_Depth);
     // We want only one decimal but for security not rounded up.
     s_depth = s_depth.Mid(0, s_depth.length() - 1);
-    dc->DrawText(s_depth + _T(" ") + m_DepthUnit, 10, m_DataTop);
+    dc->DrawText(s_depth + " " + m_DepthUnit, 10, m_DataTop);
   } else
-    dc->DrawText(_T("---"), 10, m_DataTop);
+    dc->DrawText("---", 10, m_DataTop);
   if (m_Properties)
     dc->SetFont(m_Properties->m_LabelFont.GetChosenFont());
   else

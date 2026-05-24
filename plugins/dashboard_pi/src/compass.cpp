@@ -48,7 +48,7 @@ DashboardInstrument_Compass::DashboardInstrument_Compass(
                                0, 360) {
   SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
   SetOptionLabel(20, DIAL_LABEL_ROTATED);
-  SetOptionMainValue(_T("%.0f"), DIAL_POSITION_INSIDE);
+  SetOptionMainValue("%.0f", DIAL_POSITION_INSIDE);
 }
 
 void DashboardInstrument_Compass::SetData(DASH_CAP st, double data,

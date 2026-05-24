@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( RSA, RESPONSE )
 
 RSA::RSA() {
-  Mnemonic = _T("RSA");
+  Mnemonic = "RSA";
   Empty();
 }
 
@@ -83,7 +83,7 @@ bool RSA::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(5) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

@@ -34,7 +34,7 @@
 // IMPLEMENT_DYNAMIC( XDR, RESPONSE )
 
 XDR::XDR() {
-  Mnemonic = _T("XDR");
+  Mnemonic = "XDR";
   Empty();
 }
 
@@ -83,12 +83,12 @@ bool XDR::Parse(const SENTENCE& sentence) {
   TransducerCnt = (int)sentence.GetNumberOfDataFields() / 4;
   cksumFieldNr = sentence.GetNumberOfDataFields() + 1;
   if (TransducerCnt == 0 || TransducerCnt > MaxTransducerCnt) {
-    SetErrorMessage(_T("Invalid Field count" ));
+    SetErrorMessage("Invalid Field count");
     return (FALSE);
   }
 
   if (sentence.IsChecksumBad(cksumFieldNr) == NTrue) {
-    SetErrorMessage(_T("Invalid Checksum" ));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
   for (int idx = 0; idx < TransducerCnt; idx++) {

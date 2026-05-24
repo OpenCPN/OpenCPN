@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( VHW, RESPONSE )
 
 VHW::VHW() {
-  Mnemonic = _T("VHW");
+  Mnemonic = "VHW";
   Empty();
 }
 
@@ -87,7 +87,7 @@ bool VHW::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(9) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -109,13 +109,13 @@ bool VHW::Write(SENTENCE& sentence) {
   RESPONSE::Write(sentence);
 
   sentence += DegreesTrue;
-  sentence += _T("T");
+  sentence += "T";
   sentence += DegreesMagnetic;
-  sentence += _T("M");
+  sentence += "M";
   sentence += Knots;
-  sentence += _T("N");
+  sentence += "N";
   sentence += KilometersPerHour;
-  sentence += _T("K");
+  sentence += "K";
 
   sentence.Finish();
 

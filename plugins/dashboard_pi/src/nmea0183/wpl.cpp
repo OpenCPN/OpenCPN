@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( WPL, RESPONSE )
 
 WPL::WPL() {
-  Mnemonic = _T("WPL");
+  Mnemonic = "WPL";
   Empty();
 }
 
@@ -75,7 +75,7 @@ bool WPL::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(6) == NTrue) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

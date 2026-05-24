@@ -43,7 +43,7 @@
 // IMPLEMENT_DYNAMIC( GLL, RESPONSE )
 
 GLL::GLL() {
-  Mnemonic = _T("GLL");
+  Mnemonic = "GLL";
   Empty();
 }
 
@@ -93,9 +93,9 @@ bool GLL::Parse(const SENTENCE& sentence) {
      */
     wxString checksum_in_sentence = sentence.Field(7);
     if (checksum_in_sentence.StartsWith(
-            _T("*")))  // Field is a valid erroneous checksum
+            "*"))  // Field is a valid erroneous checksum
     {
-      SetErrorMessage(_T("Invalid Checksum"));
+      SetErrorMessage("Invalid Checksum");
       return (FALSE);
     }
 
@@ -103,7 +103,7 @@ bool GLL::Parse(const SENTENCE& sentence) {
       target_field_count = 7;
       check = sentence.IsChecksumBad(8);
       if (check == NTrue) {
-        SetErrorMessage(_T("Invalid Checksum"));
+        SetErrorMessage("Invalid Checksum");
         return (FALSE);
       }
     }
@@ -126,7 +126,7 @@ bool GLL::Parse(const SENTENCE& sentence) {
   }
 
   //    A real error...
-  SetErrorMessage(_T("Invalid FieldCount"));
+  SetErrorMessage("Invalid FieldCount");
   return (FALSE);
 }
 

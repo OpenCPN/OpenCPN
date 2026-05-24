@@ -40,7 +40,7 @@
 */
 
 RMB::RMB() {
-  Mnemonic = _T("RMB");
+  Mnemonic = "RMB";
   Empty();
 }
 
@@ -100,7 +100,7 @@ bool RMB::Parse(const SENTENCE& sentence) {
   NMEA0183_BOOLEAN check = sentence.IsChecksumBad(nFields + 1);
 
   if (check == NTrue) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -109,9 +109,9 @@ bool RMB::Parse(const SENTENCE& sentence) {
   bool mode_valid = true;
   if (nFields >= 14) {
     wxString mode_string = sentence.Field(14);
-    if (!mode_string.StartsWith(_T("*"))) {
-      if ((mode_string == _T("N")) ||
-          (mode_string == _T("S")))  // Not valid, or simulator mode
+    if (!mode_string.StartsWith("*")) {
+      if ((mode_string == "N") ||
+          (mode_string == "S"))  // Not valid, or simulator mode
         mode_valid = false;
     }
   }
@@ -147,9 +147,9 @@ bool RMB::Write(SENTENCE& sentence) {
   sentence += IsDataValid;
   sentence += CrossTrackError;
   if (DirectionToSteer == Left)
-    sentence += _T("L");
+    sentence += "L";
   else
-    sentence += _T("R");
+    sentence += "R";
 
   sentence += From;
   sentence += To;

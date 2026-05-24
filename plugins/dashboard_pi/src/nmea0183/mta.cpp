@@ -41,7 +41,7 @@
 // IMPLEMENT_DYNAMIC( MTA, RESPONSE )
 
 MTA::MTA() {
-  Mnemonic = _T("MTA");
+  Mnemonic = "MTA";
   Empty();
 }
 
@@ -78,7 +78,7 @@ bool MTA::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(3) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

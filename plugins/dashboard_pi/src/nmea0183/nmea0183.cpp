@@ -250,7 +250,7 @@ bool NMEA0183::PreParse(void) {
      */
 
     if (mnemonic.Left(1) == 'P')
-      mnemonic = _T("P");
+      mnemonic = "P";
 
     else
       mnemonic = mnemonic.Right(3);
@@ -273,7 +273,7 @@ bool NMEA0183::Parse(void) {
     */
 
     if (mnemonic.Left(1) == 'P') {
-      mnemonic = _T("P");
+      mnemonic = "P";
     } else {
       mnemonic = mnemonic.Right(3);
     }
@@ -283,7 +283,7 @@ bool NMEA0183::Parse(void) {
     */
 
     ErrorMessage = mnemonic;
-    ErrorMessage += _T(" is an unknown type of sentence");
+    ErrorMessage += " is an unknown type of sentence";
 
     LastSentenceIDReceived = mnemonic;
 
@@ -309,7 +309,7 @@ bool NMEA0183::Parse(void) {
         */
 
         if (return_value == TRUE) {
-          ErrorMessage = _T("No Error");
+          ErrorMessage = "No Error";
           LastSentenceIDParsed = response_p->Mnemonic;
           TalkerID = talker_id(sentence);
           ExpandedTalkerID = expand_talker_id(TalkerID);
