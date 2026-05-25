@@ -920,8 +920,8 @@ int wxJSONReader::SkipWhiteSpace(wxInputStream& is) {
 */
 int wxJSONReader::SkipComment(wxInputStream& is) {
   static const wxChar* warn =
-      _T("Comments may be tolerated in JSON text but they are not part of ")
-      _T("JSON syntax");
+      L"Comments may be tolerated in JSON text but they are not part of "
+      L"JSON syntax";
 
   // if it is a comment, then a warning is added to the array
   // otherwise it is an error: values cannot start with a '/'
@@ -1775,7 +1775,7 @@ union byte_union {
 
 int wxJSONReader::ReadMemoryBuff(wxInputStream& is, wxJSONValue& val) {
   static const wxChar* membuffError =
-      _T("the \'memory buffer\' type contains %d invalid digits" );
+      L"the \'memory buffer\' type contains %d invalid digits";
 
   AddWarning(wxJSONREADER_MEMORYBUFF,
              "the \'memory buffer\' type is not valid JSON text");
