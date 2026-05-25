@@ -85,13 +85,13 @@ wxMapiSession::~wxMapiSession() {
 void wxMapiSession::Initialise() {
   // First make sure the "WIN.INI" entry for MAPI is present aswell
   // as the MAPI32 dll being present on the system
-  bool bMapiInstalled = (GetProfileInt(_T("MAIL"), _T("MAPI"), 0) != 0) &&
-                        (SearchPath(nullptr, _T("MAPI32.DLL"), nullptr, 0,
-                                    nullptr, nullptr) != 0);
+  bool bMapiInstalled =
+      (GetProfileInt(L"MAIL", L"MAPI", 0) != 0) &&
+      (SearchPath(nullptr, L"MAPI32.DLL", nullptr, 0, nullptr, nullptr) != 0);
 
   if (bMapiInstalled) {
     // Load up the MAPI dll and get the function pointers we are interested in
-    m_data->m_hMapi = ::LoadLibrary(_T("MAPI32.DLL"));
+    m_data->m_hMapi = ::LoadLibrary(L"MAPI32.DLL");
     if (m_data->m_hMapi) {
       m_data->m_lpfnMAPILogon =
           (LPMAPILOGON)GetProcAddress(m_data->m_hMapi, "MAPILogon");
@@ -111,8 +111,8 @@ void wxMapiSession::Initialise() {
           m_data->m_lpfnMAPIResolveName == nullptr ||
           m_data->m_lpfnMAPIFreeBuffer == nullptr) {
         wxLogMessage(
-            _T("MAIL Error: Failed to get one of the functions pointer in ")
-            _T("MAPI32.DLL\n"));
+            "MAIL Error: Failed to get one of the functions pointer in "
+            "MAPI32.DLL\n");
         Deinitialise();
       }
     }
@@ -199,8 +199,8 @@ bool wxMapiSession::Logon(const wxString& sProfileName,
       bSuccess = TRUE;
     } else {
       wxLogMessage(
-          _T("MAIL Error: Failed to logon to MAPI using a shared session, ")
-          _T("Error:%ld\n"),
+          "MAIL Error: Failed to logon to MAPI using a shared session, "
+          "Error:%ld\n",
           nError);
       m_data->m_nLastError = nError;
     }
@@ -229,7 +229,7 @@ bool wxMapiSession::Logoff() {
     // Call the MAPILogoff function
     ULONG nError = m_data->m_lpfnMAPILogoff(m_data->m_hSession, 0, 0, 0);
     if (nError != SUCCESS_SUCCESS) {
-      wxLogMessage(_T("MAIL Error: Failed in call to MapiLogoff, Error:%ld"),
+      wxLogMessage("MAIL Error: Failed in call to MapiLogoff, Error:%ld",
                    nError);
       m_data->m_nLastError = nError;
       bSuccess = TRUE;
@@ -262,7 +262,7 @@ bool wxMapiSession::Resolve(const wxString& sName, void* lppRecip1) {
   ULONG nError = m_data->m_lpfnMAPIResolveName(m_data->m_hSession, 0,
                                                lpszAsciiName, 0, 0, lppRecip);
   if (nError != SUCCESS_SUCCESS) {
-    wxLogMessage(_T("MAIL Error: Failed to resolve the name: %s, Error:%ld\n"),
+    wxLogMessage("MAIL Error: Failed to resolve the name: %s, Error:%ld\n",
                  sName.c_str(), nError);
     m_data->m_nLastError = nError;
   }
@@ -447,7 +447,7 @@ bool wxMapiSession::Send(wxMailMessage& message) {
     bSuccess = TRUE;
     m_data->m_nLastError = SUCCESS_SUCCESS;
   } else {
-    wxLogMessage(_T("MAIL Error: Failed to send mail message, Error:%ld\n"),
+    wxLogMessage("MAIL Error: Failed to send mail message, Error:%ld\n",
                  nError);
     m_data->m_nLastError = nError;
   }

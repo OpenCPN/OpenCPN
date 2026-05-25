@@ -39,7 +39,7 @@ GribReader::GribReader() {
 GribReader::GribReader(const wxString fname) {
   ok = false;
   dewpointDataStatus = NO_DATA_IN_FILE;
-  if (fname != _T("")) {
+  if (fname != "") {
     openFile(fname);
   } else {
     clean_all_vectors();
