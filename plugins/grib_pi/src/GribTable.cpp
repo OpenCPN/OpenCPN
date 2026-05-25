@@ -53,7 +53,7 @@ void GRIBTable::InitGribTable(ArrayOfGribRecordSets *rsa, int NowIndex) {
   // populate "cursor position" display
   wxString l;
   l.Append(toSDMM_PlugIn(1, m_cursor_lat))
-      .Append(_T("   "))
+      .Append("   ")
       .Append(toSDMM_PlugIn(2, m_cursor_lon));
   m_pCursorPosition->SetLabel(l);
   m_pCursorPosition->SetFont(
@@ -253,11 +253,11 @@ void GRIBTable::SetTableSizePosition(int vpWidth, int vpHeight) {
   int x = -1, y = -1, w = -1, h = -1;
   wxFileConfig *pConf = GetOCPNConfigObject();
   if (pConf) {
-    pConf->SetPath(_T("/Settings/GRIB"));
-    pConf->Read(_T("GribDataTablePosition_x"), &x);
-    pConf->Read(_T("GribDataTablePosition_y"), &y);
-    pConf->Read(_T("GribDataTableWidth"), &w);
-    pConf->Read(_T("GribDataTableHeight"), &h);
+    pConf->SetPath("/Settings/GRIB");
+    pConf->Read("GribDataTablePosition_x", &x);
+    pConf->Read("GribDataTablePosition_y", &y);
+    pConf->Read("GribDataTableWidth", &w);
+    pConf->Read("GribDataTableHeight", &h);
   }
   wxPoint final_pos = GetOCPNCanvasWindow()->ClientToScreen(wxPoint(x, y));
   // set a default size & position if saved values are outside of limits
@@ -374,15 +374,15 @@ wxString GRIBTable::GetWind(GribRecord **recordarray, int datatype,
         m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(
             GribOverlaySettings::WIND, cvkn);
     skn.Printf(wxString::Format(
-        _T("%2d bf"),
+        "%2d bf",
         (int)wxRound(m_pGDialog->m_OverlaySettings.GetmstobfFactor(vkn) *
                      vkn)));
     if (datatype == 2) {  // wind speed unit other than bf
-      skn.Prepend(wxString::Format(
-                      _T("%2d ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                                       GribOverlaySettings::WIND),
-                      (int)wxRound(cvkn)) +
-                  _T(" - "));
+      skn.Prepend(
+          wxString::Format("%2d " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                                        GribOverlaySettings::WIND),
+                           (int)wxRound(cvkn)) +
+          " - ");
     }
   }
   return skn;
@@ -401,16 +401,15 @@ wxString GRIBTable::GetWindGust(GribRecord **recordarray, int datatype) {
               GribOverlaySettings::WIND_GUST, cvkn);
 
       skn.Printf(wxString::Format(
-          _T("%2d bf"),
+          "%2d bf",
           (int)wxRound(m_pGDialog->m_OverlaySettings.GetmstobfFactor(vkn) *
                        vkn)));  // wind gust unit bf
       if (datatype == 1) {      // wind gust unit other than bf
-        skn.Prepend(
-            wxString::Format(
-                _T("%2d ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                                 GribOverlaySettings::WIND_GUST),
-                (int)wxRound(cvkn)) +
-            _T(" - " ));
+        skn.Prepend(wxString::Format(
+                        "%2d " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                                     GribOverlaySettings::WIND_GUST),
+                        (int)wxRound(cvkn)) +
+                    _T(" - " ));
       }
     }
   }
@@ -432,8 +431,8 @@ wxString GRIBTable::GetPressure(GribRecord **recordarray) {
               ? 2
               : 0;  // if PRESSURE & inHG = two decimals
       skn.Printf(wxString::Format(
-          _T("%2.*f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                             GribOverlaySettings::PRESSURE),
+          "%2.*f " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                         GribOverlaySettings::PRESSURE),
           p, (press)));
     }
   }
@@ -453,8 +452,8 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray, int datatype,
           double cheight = m_pGDialog->m_OverlaySettings.CalibrateValue(
               GribOverlaySettings::WAVE, height);
           skn.Printf(wxString::Format(
-              _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                                 GribOverlaySettings::WAVE),
+              "%4.1f " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                             GribOverlaySettings::WAVE),
               cheight));
           m_pDataCellsColour =
               m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(
@@ -475,7 +474,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray, int datatype,
         double period = recordarray[Idx_WVPER]->getInterpolatedValue(
             m_cursor_lon, m_cursor_lat, true);
         if (period != GRIB_NOTDEF)
-          skn.Printf(wxString::Format(_T("%01ds"), (int)(period + 0.5)));
+          skn.Printf(wxString::Format("%01ds", (int)(period + 0.5)));
       }
   }
   return skn;
@@ -490,8 +489,8 @@ wxString GRIBTable::GetRainfall(GribRecord **recordarray) {
     if (precip != GRIB_NOTDEF) {
       precip = m_pGDialog->m_OverlaySettings.CalibrateValue(
           GribOverlaySettings::PRECIPITATION, precip);
-      skn.Printf(_T("%6.2f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                                    GribOverlaySettings::PRECIPITATION),
+      skn.Printf("%6.2f " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                                GribOverlaySettings::PRECIPITATION),
                  precip);
       m_pDataCellsColour =
           m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(
@@ -510,7 +509,7 @@ wxString GRIBTable::GetCloudCover(GribRecord **recordarray) {
     if (cloud != GRIB_NOTDEF) {
       cloud = m_pGDialog->m_OverlaySettings.CalibrateValue(
           GribOverlaySettings::CLOUD, cloud);
-      skn.Printf(_T("%5.1f "), cloud);
+      skn.Printf("%5.1f ", cloud);
       skn.Append(m_pGDialog->m_OverlaySettings.GetUnitSymbol(
           GribOverlaySettings::CLOUD));
       m_pDataCellsColour =
@@ -530,8 +529,8 @@ wxString GRIBTable::GetAirTemp(GribRecord **recordarray) {
     if (temp != GRIB_NOTDEF) {
       temp = m_pGDialog->m_OverlaySettings.CalibrateValue(
           GribOverlaySettings::AIR_TEMPERATURE, temp);
-      skn.Printf(_T("%5.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                                    GribOverlaySettings::AIR_TEMPERATURE),
+      skn.Printf("%5.1f " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                                GribOverlaySettings::AIR_TEMPERATURE),
                  temp);
       m_pDataCellsColour =
           m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(
@@ -550,8 +549,8 @@ wxString GRIBTable::GetSeaTemp(GribRecord **recordarray) {
     if (temp != GRIB_NOTDEF) {
       temp = m_pGDialog->m_OverlaySettings.CalibrateValue(
           GribOverlaySettings::SEA_TEMPERATURE, temp);
-      skn.Printf(_T("%5.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                                    GribOverlaySettings::SEA_TEMPERATURE),
+      skn.Printf("%5.1f " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                                GribOverlaySettings::SEA_TEMPERATURE),
                  temp);
       m_pDataCellsColour =
           m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(
@@ -571,8 +570,8 @@ wxString GRIBTable::GetCAPE(GribRecord **recordarray) {
       cape = m_pGDialog->m_OverlaySettings.CalibrateValue(
           GribOverlaySettings::CAPE, cape);
       skn.Printf(wxString::Format(
-          _T("%5.0f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                             GribOverlaySettings::CAPE),
+          "%5.0f " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                         GribOverlaySettings::CAPE),
           cape));
       m_pDataCellsColour =
           m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(
@@ -592,8 +591,8 @@ wxString GRIBTable::GetCompRefl(GribRecord **recordarray) {
       refl = m_pGDialog->m_OverlaySettings.CalibrateValue(
           GribOverlaySettings::COMP_REFL, refl);
       skn.Printf(wxString::Format(
-          _T("%5.0f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                             GribOverlaySettings::COMP_REFL),
+          "%5.0f " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                         GribOverlaySettings::COMP_REFL),
           refl));
       m_pDataCellsColour =
           m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(
@@ -617,10 +616,10 @@ wxString GRIBTable::GetCurrent(GribRecord **recordarray, int datatype,
     }
     vkn = m_pGDialog->m_OverlaySettings.CalibrateValue(
         GribOverlaySettings::CURRENT, vkn);
-    skn.Printf(wxString::Format(
-        _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
-                           GribOverlaySettings::CURRENT),
-        vkn));
+    skn.Printf(
+        wxString::Format("%4.1f " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
+                                        GribOverlaySettings::CURRENT),
+                         vkn));
     m_pDataCellsColour =
         m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(
             GribOverlaySettings::CURRENT, vkn);

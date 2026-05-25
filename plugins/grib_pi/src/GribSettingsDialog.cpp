@@ -43,19 +43,19 @@ static const wxString *unit_names[] = {
     units0_names, units1_names, units2_names, units3_names, units4_names,
     units5_names, units6_names, units7_names, units8_names};
 
-static const wxString name_from_index[] = {_T("Wind"),
-                                           _T("WindGust"),
-                                           _T("Pressure"),
-                                           _T("Waves"),
-                                           _T("Current"),
-                                           _T("Rainfall"),
-                                           _T("CloudCover"),
-                                           _T("AirTemperature"),
-                                           _T("SeaTemperature"),
-                                           _T("CAPE"),
-                                           _T("CompositeReflectivity"),
-                                           _T("Altitude"),
-                                           _T("RelativeHumidity")};
+static const wxString name_from_index[] = {"Wind",
+                                           "WindGust",
+                                           "Pressure",
+                                           "Waves",
+                                           "Current",
+                                           "Rainfall",
+                                           "CloudCover",
+                                           "AirTemperature",
+                                           "SeaTemperature",
+                                           "CAPE",
+                                           "CompositeReflectivity",
+                                           "Altitude",
+                                           "RelativeHumidity"};
 static const wxString tname_from_index[] = {_("Wind"),
                                             _("Wind Gust"),
                                             _("Pressure"),
@@ -66,7 +66,7 @@ static const wxString tname_from_index[] = {_("Wind"),
                                             _("Air Temperature"),
                                             _("Sea Temperature"),
                                             _("CAPE"),
-                                            _T("Composite Reflectivity"),
+                                            "Composite Reflectivity",
                                             _("Altitude(Geopotential)"),
                                             _("Relative Humidity")};
 
@@ -77,9 +77,9 @@ static const int minuttes_from_index[] = {2,  5,   10,  20,  30,  60,
                                           90, 180, 360, 720, 1440};
 
 static const wxString altitude_from_index[3][5] = {
-    {_T("Std"), _T("850"), _T("700"), _T("500"), _T("300")},
-    {_T("Std"), _T("637"), _T("525"), _T("375"), _T("225")},
-    {_T("Std"), _T("25.2"), _T("20.7"), _T("14.8"), _T("8.9")}};
+    {"Std", "850", "700", "500", "300"},
+    {"Std", "637", "525", "375", "225"},
+    {"Std", "25.2", "20.7", "14.8", "8.9"}};
 
 #ifdef __ANDROID__
 
@@ -509,83 +509,83 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings) {
     case 0:
       switch (Settings[settings].m_Units) {
         case KNOTS:
-          return _T("kts");
+          return "kts";
         case M_S:
-          return _T("m/s");
+          return "m/s";
         case MPH:
-          return _T("mph");
+          return "mph";
         case KPH:
-          return _T("km/h");
+          return "km/h";
         case BFS:
-          return _T("bf");
+          return "bf";
       }
       break;
     case 1:
       switch (Settings[settings].m_Units) {
         case MILLIBARS:
-          return _T("hPa");
+          return "hPa";
         case MMHG:
-          return _T("mmHg");
+          return "mmHg";
         case INHG:
-          return _T("inHg");
+          return "inHg";
       }
       break;
     case 2:
       switch (Settings[settings].m_Units) {
         case METERS:
-          return _T("m");
+          return "m";
         case FEET:
-          return _T("ft");
+          return "ft";
       }
       break;
     case 3:
       switch (Settings[settings].m_Units) {
         case CELCIUS:
-          return _T("\u00B0C");
+          return "\u00B0C";
         case FAHRENHEIT:
-          return _T("\u00B0F");
+          return "\u00B0F";
       }
       break;
     case 4:
       switch (Settings[settings].m_Units) {
         case MILLIMETERS:
-          return _T("mm");
+          return "mm";
         case INCHES:
-          return _T("in");
+          return "in";
       }
       break;
     case 5:
       switch (Settings[settings].m_Units) {
         case PERCENTAGE:
-          return _T("%");
+          return "%";
       }
       break;
     case 6:
       switch (Settings[settings].m_Units) {
         case JPKG:
-          return _T("j/kg");
+          return "j/kg";
       }
       break;
     case 7:
       switch (Settings[settings].m_Units) {
         case KNOTS:
-          return _T("kts");
+          return "kts";
         case M_S:
-          return _T("m/s");
+          return "m/s";
         case MPH:
-          return _T("mph");
+          return "mph";
         case KPH:
-          return _T("km/h");
+          return "km/h";
       }
       break;
     case 8:
       switch (Settings[settings].m_Units) {
         case DBZ:
-          return _T("dBZ");
+          return "dBZ";
       }
       break;
   }
-  return _T("");
+  return "";
 }
 
 double GribOverlaySettings::GetMin(int settings) {
@@ -656,31 +656,29 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent,
   m_sSlicesPerUpdate->Clear();
   for (int i = 0; i < fileIntervalIndex + 1; i++) {
     int mn = m_Settings.GetMinFromIndex(i);
-    m_sSlicesPerUpdate->Append(wxString::Format(_T("%2d "), mn / 60) + _("h") +
-                               wxString::Format(_T(" %.2d "), mn % 60) +
-                               _("mn"));
+    m_sSlicesPerUpdate->Append(wxString::Format("%2d ", mn / 60) + _("h") +
+                               wxString::Format(" %.2d ", mn % 60) + _("mn"));
   }
   // Set Bitmap
-  m_biAltitude->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(altitude), _T("altitude"), parent.GetScaleFactor()));
-  m_biNow->SetBitmap(parent.GetScaledBitmap(wxBitmap(now), _T("now"),
-                                            parent.GetScaleFactor()));
-  m_biZoomToCenter->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(zoomto), _T("zoomto"), parent.GetScaleFactor()));
+  m_biAltitude->SetBitmap(parent.GetScaledBitmap(wxBitmap(altitude), "altitude",
+                                                 parent.GetScaleFactor()));
+  m_biNow->SetBitmap(
+      parent.GetScaledBitmap(wxBitmap(now), "now", parent.GetScaleFactor()));
+  m_biZoomToCenter->SetBitmap(parent.GetScaledBitmap(wxBitmap(zoomto), "zoomto",
+                                                     parent.GetScaleFactor()));
   m_biShowCursorData->SetBitmap(parent.GetScaledBitmap(
       parent.m_CDataIsShown ? wxBitmap(curdata) : wxBitmap(ncurdata),
-      parent.m_CDataIsShown ? _T("curdata") : _T("ncurdata"),
-      parent.GetScaleFactor()));
-  m_biPlay->SetBitmap(parent.GetScaledBitmap(wxBitmap(play), _T("play"),
-                                             parent.GetScaleFactor()));
-  m_biTimeSlider->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(slider), _T("slider"), parent.GetScaleFactor()));
-  m_biOpenFile->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(openfile), _T("openfile"), parent.GetScaleFactor()));
-  m_biSettings->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(setting), _T("setting"), parent.GetScaleFactor()));
-  m_biRequest->SetBitmap(parent.GetScaledBitmap(
-      wxBitmap(request), _T("request"), parent.GetScaleFactor()));
+      parent.m_CDataIsShown ? "curdata" : "ncurdata", parent.GetScaleFactor()));
+  m_biPlay->SetBitmap(
+      parent.GetScaledBitmap(wxBitmap(play), "play", parent.GetScaleFactor()));
+  m_biTimeSlider->SetBitmap(parent.GetScaledBitmap(wxBitmap(slider), "slider",
+                                                   parent.GetScaleFactor()));
+  m_biOpenFile->SetBitmap(parent.GetScaledBitmap(wxBitmap(openfile), "openfile",
+                                                 parent.GetScaleFactor()));
+  m_biSettings->SetBitmap(parent.GetScaledBitmap(wxBitmap(setting), "setting",
+                                                 parent.GetScaleFactor()));
+  m_biRequest->SetBitmap(parent.GetScaledBitmap(wxBitmap(request), "request",
+                                                parent.GetScaleFactor()));
   // read bookpage
   wxFileConfig *pConf = GetOCPNConfigObject();
   if (pConf) {
@@ -1001,13 +999,13 @@ void GribSettingsDialog::ShowFittingSettings(int settings) {
 
   wxString l = (m_lastdatatype == GribOverlaySettings::PRESSURE &&
                 m_cDataUnits->GetSelection() == GribOverlaySettings::INHG)
-                   ? _T("(0.03 " )
-                   : _T("(");
+                   ? "(0.03 "
+                   : "(";
   m_tIsoBarSpacing->SetLabel(
       wxString(_("Spacing"))
           .Append(l)
           .Append(m_Settings.GetUnitSymbol(m_lastdatatype))
-          .Append(_T(")")));
+          .Append(")"));
 }
 
 void GribSettingsDialog::ShowSettings(int params, bool show) {
@@ -1078,13 +1076,13 @@ void GribSettingsDialog::OnUnitChange(wxCommandEvent &event) {
   m_Settings.Settings[m_lastdatatype].m_Units = m_cDataUnits->GetSelection();
   wxString l = (m_lastdatatype == GribOverlaySettings::PRESSURE &&
                 m_cDataUnits->GetSelection() == GribOverlaySettings::INHG)
-                   ? _T("(0.03 " )
-                   : _T("(");
+                   ? "(0.03 "
+                   : "(";
   m_tIsoBarSpacing->SetLabel(
       wxString(_("Spacing"))
           .Append(l)
           .Append(m_Settings.GetUnitSymbol(m_lastdatatype))
-          .Append(_T(")")));
+          .Append(")"));
   SetSettingsDialogSize();
 }
 
@@ -1190,7 +1188,7 @@ wxString GribOverlaySettings::SettingsToJSON(wxString json) {
 
   for (int i = 0; i < SETTINGS_COUNT; i++) {
     wxString units;
-    units.Printf(_T("%d"), (int)Settings[i].m_Units);
+    units.Printf("%d", (int)Settings[i].m_Units);
     v[name_from_index[i] + _T ( "Units" )] = units;
 
     if (i == WIND) {

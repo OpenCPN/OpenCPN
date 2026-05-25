@@ -50,10 +50,10 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   // init rows pref
   wxFileConfig* pConf = GetOCPNConfigObject();
   if (pConf) {
-    pConf->SetPath(_T("/Settings/GRIB"));
-    m_IsDigit = pConf->Read(_T("GribDataTableRowPref"), _T("XXX"));
+    pConf->SetPath("/Settings/GRIB");
+    m_IsDigit = pConf->Read("GribDataTableRowPref", "XXX");
   }
-  if (m_IsDigit.Len() != wxString(_T("XXX")).Len()) m_IsDigit = _T("XXX");
+  if (m_IsDigit.Len() != wxString("XXX").Len()) m_IsDigit = "XXX";
   // create structure for all numerical rows
   for (unsigned int i = 0; i < m_IsDigit.Len(); i++) {
     m_NumRow.push_back(wxNOT_FOUND);
@@ -64,17 +64,17 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   SetLabelFont(labelfont);
   wxColour colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
   if (colour.Red() > 128) {
-    GetGlobalColor(_T("DILG0"), &colour);
-    GetGlobalColor(_T("GREEN1"), &m_greenColour);
-    GetGlobalColor(_T("DILG1"), &m_greyColour);
+    GetGlobalColor("DILG0", &colour);
+    GetGlobalColor("GREEN1", &m_greenColour);
+    GetGlobalColor("DILG1", &m_greyColour);
   } else {
-    GetGlobalColor(_T("GREEN2"), &m_greenColour);
+    GetGlobalColor("GREEN2", &m_greenColour);
     m_greyColour = colour;
   }
   SetLabelBackgroundColour(colour);
   // set row label size
   int w;
-  GetTextExtent(_T("Ab"), &w, nullptr, 0, 0, &labelfont);
+  GetTextExtent("Ab", &w, nullptr, 0, 0, &labelfont);
   double x = (double)w * 6.5;
   SetRowLabelSize((int)x);
 
@@ -149,7 +149,7 @@ void CustomGrid::DrawRowLabel(wxDC& dc, int row) {
   dc.SetFont(m_labelFont);
   dc.SetPen(GetDefaultGridLinePen());
   dc.SetBrush(wxBrush(m_labelBackgroundColour, wxBRUSHSTYLE_SOLID));
-  int w = dc.GetTextExtent(_T("Speed")).x;
+  int w = dc.GetTextExtent("Speed").x;
   wxString label1, label2;
   label1 = GetRowLabelValue(row).BeforeFirst(',', &label2);
   bool pline = true;
@@ -157,7 +157,7 @@ void CustomGrid::DrawRowLabel(wxDC& dc, int row) {
   if (GetNumberRows() > row + 2 &&
       label1 == GetRowLabelValue(row + 2).BeforeFirst(',')) {
     pline = false;
-    if (IsRowVisible(row + 2)) label1 = _T(" ");
+    if (IsRowVisible(row + 2)) label1 = " ";
   }
   // row is the second of 3 or the first of 2
   else if (GetNumberRows() > row + 1 &&
@@ -165,16 +165,16 @@ void CustomGrid::DrawRowLabel(wxDC& dc, int row) {
     pline = false;
     if (row > 0 &&
         label1 == GetRowLabelValue(row - 1).BeforeFirst(',')) {  // second of 3
-      if (!IsRowVisible(row + 1)) label1 = _T(" ");
+      if (!IsRowVisible(row + 1)) label1 = " ";
     }
   }
   // row is the last of 3
   else if (row > 1 && label1 == GetRowLabelValue(row - 2).BeforeFirst(',')) {
-    if (IsRowVisible(row - 1)) label1 = _T(" ");
+    if (IsRowVisible(row - 1)) label1 = " ";
   }
   // row is the last of 2
   else if (row > 0 && label1 == GetRowLabelValue(row - 1).BeforeFirst(',')) {
-    if (IsRowVisible(row - 1)) label1 = _T(" ");
+    if (IsRowVisible(row - 1)) label1 = " ";
   }
   // draw first part of the label
   wxRect aRect(5, GetRowTop(row), m_rowLabelWidth - w, GetRowHeight(row));
@@ -201,7 +201,7 @@ void CustomGrid::DrawCornerLabel(wxDC& dc) {
   double hc = m_colLabelHeight;
   double hb = wxBitmap(now).GetHeight();
   double scfac = ((hc / hb) * 4) / 4;
-  wxBitmap bmp = m_gParent->GetScaledBitmap(wxBitmap(now), _T("now"), scfac);
+  wxBitmap bmp = m_gParent->GetScaledBitmap(wxBitmap(now), "now", scfac);
   // center bitmap
   int x = (m_rowLabelWidth - bmp.GetWidth()) / 2;
   int y = (m_colLabelHeight == bmp.GetHeight())
@@ -395,7 +395,7 @@ void CustomRenderer::Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
   dc.DrawRectangle(rect);
   if (m_IsDigit || m_dDir == GRIB_NOTDEF) {  // digital format
     wxString text(wxEmptyString);
-    if (m_dDir != GRIB_NOTDEF) text.Printf(_T("%03d%c"), (int)m_dDir, 0x00B0);
+    if (m_dDir != GRIB_NOTDEF) text.Printf("%03d%c", (int)m_dDir, 0x00B0);
     dc.DrawLabel(text, rect,
                  wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL);
   } else {  // graphical format

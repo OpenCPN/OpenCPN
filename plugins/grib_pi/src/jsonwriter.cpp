@@ -25,7 +25,7 @@
 #include <wx/log.h>
 
 #if wxDEBUG_LEVEL > 0
-static const wxChar* writerTraceMask = _T("traceWriter");
+static const wxChar* writerTraceMask = "traceWriter";
 #endif
 
 /*! \class wxJSONWriter
@@ -253,7 +253,7 @@ wxJSONWriter::~wxJSONWriter() {}
    writer.Write( root, mem );
    wxStreamError err = mem.GetLastError();
    if ( err != wxSTREAM_NO_ERROR )  {
-     MessageBox( _T("ERROR: cannot write the JSON text output"));
+     MessageBox( "ERROR: cannot write the JSON text output");
    }
 \endcode
 */
@@ -382,8 +382,8 @@ int wxJSONWriter::DoWrite(wxOutputStream& os, const wxJSONValue& value,
     case wxJSONTYPE_INVALID:
       WriteInvalid(os);
       wxFAIL_MSG(
-          _T("wxJSONWriter::WriteEmpty() cannot be called (not a valid JSON ")
-          _T("text"));
+          "wxJSONWriter::WriteEmpty() cannot be called (not a valid JSON "
+          "text");
       break;
 
     case wxJSONTYPE_INT:
@@ -506,7 +506,7 @@ int wxJSONWriter::DoWrite(wxOutputStream& os, const wxJSONValue& value,
 
     default:
       // a not yet defined wxJSONType: we FAIL
-      wxFAIL_MSG(_T("wxJSONWriter::DoWrite() undefined wxJSONType type"));
+      wxFAIL_MSG("wxJSONWriter::DoWrite() undefined wxJSONType type");
       break;
   }
 
@@ -811,8 +811,8 @@ int wxJSONWriter::WriteStringValue(wxOutputStream& os, const wxString& str) {
  The function converts the string \c str to UTF-8 and writes the buffer..
 */
 int wxJSONWriter::WriteString(wxOutputStream& os, const wxString& str) {
-  wxLogTrace(writerTraceMask, _T("(%s) string to write=%s"),
-             __PRETTY_FUNCTION__, str.c_str());
+  wxLogTrace(writerTraceMask, "(%s) string to write=%s", __PRETTY_FUNCTION__,
+             str.c_str());
   int lastChar = 0;
   char* writeBuff = nullptr;
 
@@ -846,8 +846,7 @@ int wxJSONWriter::WriteString(wxOutputStream& os, const wxString& str) {
     return -1;
   }
 
-  wxLogTrace(writerTraceMask, _T("(%s) result=%d"), __PRETTY_FUNCTION__,
-             lastChar);
+  wxLogTrace(writerTraceMask, "(%s) result=%d", __PRETTY_FUNCTION__, lastChar);
   return lastChar;
 }
 
@@ -887,7 +886,7 @@ int wxJSONWriter::WriteIntValue(wxOutputStream& os, const wxJSONValue& value) {
   // format specifier, we use the wxString's sprintf() function and then
   // convert to UTF-8 before writing to the stream
   wxString s;
-  s.Printf(_T("%") wxLongLongFmtSpec _T("d"), data->m_value.m_valInt64);
+  s.Printf("%" wxLongLongFmtSpec "d", data->m_value.m_valInt64);
   wxCharBuffer cb = s.ToUTF8();
   const char* cbData = cb.data();
   len = strlen(cbData);
@@ -938,7 +937,7 @@ int wxJSONWriter::WriteUIntValue(wxOutputStream& os, const wxJSONValue& value) {
   // format specifier, we use the wxString's sprintf() function and then
   // convert to UTF-8 before writing to the stream
   wxString s;
-  s.Printf(_T("%") wxLongLongFmtSpec _T("u"), data->m_value.m_valInt64);
+  s.Printf("%" wxLongLongFmtSpec "u", data->m_value.m_valInt64);
   wxCharBuffer cb = s.ToUTF8();
   const char* cbData = cb.data();
   len = strlen(cbData);
@@ -1015,7 +1014,7 @@ int wxJSONWriter::WriteBoolValue(wxOutputStream& os, const wxJSONValue& value) {
 
 //! Write the key of a key/value element to the output stream.
 int wxJSONWriter::WriteKey(wxOutputStream& os, const wxString& key) {
-  wxLogTrace(writerTraceMask, _T("(%s) key write=%s"), __PRETTY_FUNCTION__,
+  wxLogTrace(writerTraceMask, "(%s) key write=%s", __PRETTY_FUNCTION__,
              key.c_str());
 
   int lastChar = WriteStringValue(os, key);
@@ -1041,8 +1040,8 @@ int wxJSONWriter::WriteKey(wxOutputStream& os, const wxString& key) {
 */
 int wxJSONWriter::WriteInvalid(wxOutputStream& os) {
   wxFAIL_MSG(
-      _T("wxJSONWriter::WriteInvalid() cannot be called (not a valid JSON ")
-      _T("text"));
+      "wxJSONWriter::WriteInvalid() cannot be called (not a valid JSON "
+      "text");
   int lastChar = 0;
   os.Write("<invalid JSON value>", 9);
   return lastChar;

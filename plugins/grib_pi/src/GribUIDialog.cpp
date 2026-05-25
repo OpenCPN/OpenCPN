@@ -352,7 +352,7 @@ GRIBUICtrlBar::~GRIBUICtrlBar() {
 
     for (unsigned int i = 0; i < m_file_names.GetCount(); i++) {
       wxString key;
-      key.Printf(_T("Filename%d"), i);
+      key.Printf("Filename%d", i);
       pConf->Write(key, m_file_names[i]);
     }
 
@@ -387,25 +387,25 @@ void GRIBUICtrlBar::SetScaledBitmap(double factor) {
   m_ScaledFactor = wxRound(factor * 4.0) / 4.0;
   // set buttons bitmap
   m_bpPrev->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(prev), _T("prev"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(prev), "prev", m_ScaledFactor));
   m_bpNext->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(next), _T("next"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(next), "next", m_ScaledFactor));
   m_bpAltitude->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(altitude), _T("altitude"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(altitude), "altitude", m_ScaledFactor));
   m_bpNow->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(now), _T("now"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(now), "now", m_ScaledFactor));
   m_bpZoomToCenter->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(zoomto), _T("zoomto"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(zoomto), "zoomto", m_ScaledFactor));
   m_bpPlay->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
-  m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap(
-      wxBitmap(m_CDataIsShown ? curdata : ncurdata),
-      m_CDataIsShown ? _T("curdata") : _T("ncurdata"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(play), "play", m_ScaledFactor));
+  m_bpShowCursorData->SetBitmapLabel(
+      GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata),
+                      m_CDataIsShown ? "curdata" : "ncurdata", m_ScaledFactor));
   if (m_bpOpenFile)
     m_bpOpenFile->SetBitmapLabel(
-        GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
+        GetScaledBitmap(wxBitmap(openfile), "openfile", m_ScaledFactor));
   m_bpSettings->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(setting), _T("setting"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(setting), "setting", m_ScaledFactor));
 
   SetRequestButtonBitmap(m_ZoneSelMode);
 
@@ -423,13 +423,13 @@ void GRIBUICtrlBar::SetScaledBitmap(double factor) {
 void GRIBUICtrlBar::SetRequestButtonBitmap(int type) {
   if (nullptr == m_bpRequest) return;
   m_bpRequest->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(request), _T("request"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(request), "request", m_ScaledFactor));
   m_bpRequest->SetToolTip(_("Start a download request"));
 }
 
 void GRIBUICtrlBar::OpenFile(bool newestFile) {
   m_bpPlay->SetBitmapLabel(
-      GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
+      GetScaledBitmap(wxBitmap(play), "play", m_ScaledFactor));
   m_cRecordForecast->Clear();
   pPlugIn->GetGRIBOverlayFactory()->ClearParticles();
   m_Altitude = 0;
@@ -652,7 +652,7 @@ wxArrayString GRIBUICtrlBar::GetFilesInDirectory() {
 
   //    Get an array of GRIB file names in the target directory, not descending
   //    into subdirs
-  wxRegEx pattern(_T(".+\\.gri?b2?(\\.(bz2|gz))?$"),
+  wxRegEx pattern(".+\\.gri?b2?(\\.(bz2|gz))?$",
                   wxRE_EXTENDED | wxRE_ICASE | wxRE_NOSUB);
   FileCollector collector(file_array, pattern);
   wxDir dir(m_grib_dir);
@@ -690,9 +690,9 @@ void GRIBUICtrlBar::UpdateTrackingControl() {
 
 void GRIBUICtrlBar::OnShowCursorData(wxCommandEvent &event) {
   m_CDataIsShown = !m_CDataIsShown;
-  m_bpShowCursorData->SetBitmapLabel(GetScaledBitmap(
-      wxBitmap(m_CDataIsShown ? curdata : ncurdata),
-      m_CDataIsShown ? _T("curdata") : _T("ncurdata"), m_ScaledFactor));
+  m_bpShowCursorData->SetBitmapLabel(
+      GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata),
+                      m_CDataIsShown ? "curdata" : "ncurdata", m_ScaledFactor));
   SetDialogsStyleSizePosition(true);
 }
 
@@ -816,7 +816,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
         sFont = FindOrCreateFont_PlugIn(pointSize, wxFONTFAMILY_DEFAULT,
                                         wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL,
                                         FALSE);
-        dc.GetTextExtent(_T("W"), &width, &height, nullptr, nullptr, sFont);
+        dc.GetTextExtent("W", &width, &height, nullptr, nullptr, sFont);
         if (width <= target_char_width) bOK = true;
         pointSize--;
         if (pointSize <= 10) bOK = true;
@@ -932,7 +932,7 @@ void GRIBUICtrlBar::OnMenuEvent(wxMenuEvent &event) {
 void GRIBUICtrlBar::MenuAppend(wxMenu *menu, int id, wxString label,
                                wxItemKind kind, wxBitmap bitmap,
                                wxMenu *submenu) {
-  wxMenuItem *item = new wxMenuItem(menu, id, label, _T(""), kind);
+  wxMenuItem *item = new wxMenuItem(menu, id, label, "", kind);
   // add a submenu to this item if necessary
   if (submenu) {
     item->SetSubMenu(submenu);
@@ -984,33 +984,31 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
       smenu->Check(ID_CTRLALTITUDE + 1000 + m_Altitude, true);
       MenuAppend(
           xmenu, wxID_ANY, _("Select geopotential altitude"), wxITEM_NORMAL,
-          GetScaledBitmap(wxBitmap(altitude), _T("altitude"), m_ScaledFactor),
+          GetScaledBitmap(wxBitmap(altitude), "altitude", m_ScaledFactor),
           smenu);
     }
     MenuAppend(xmenu, ID_BTNNOW, _("Now"), wxITEM_NORMAL,
-               GetScaledBitmap(wxBitmap(now), _T("now"), m_ScaledFactor));
+               GetScaledBitmap(wxBitmap(now), "now", m_ScaledFactor));
     MenuAppend(xmenu, ID_BTNZOOMTC, _("Zoom To Center"), wxITEM_NORMAL,
-               GetScaledBitmap(wxBitmap(zoomto), _T("zoomto"), m_ScaledFactor));
+               GetScaledBitmap(wxBitmap(zoomto), "zoomto", m_ScaledFactor));
     MenuAppend(
         xmenu, ID_BTNSHOWCDATA,
         m_CDataIsShown ? _("Hide data at cursor") : _("Show data at cursor"),
         wxITEM_NORMAL,
         GetScaledBitmap(wxBitmap(m_CDataIsShown ? curdata : ncurdata),
-                        m_CDataIsShown ? _T("curdata") : _T("ncurdata"),
+                        m_CDataIsShown ? "curdata" : "ncurdata",
                         m_ScaledFactor));
     MenuAppend(
         xmenu, ID_BTNPLAY,
         m_tPlayStop.IsRunning() ? _("Stop play back") : _("Start play back"),
         wxITEM_NORMAL,
         GetScaledBitmap(wxBitmap(m_tPlayStop.IsRunning() ? stop : play),
-                        m_tPlayStop.IsRunning() ? _T("stop") : _T("play"),
+                        m_tPlayStop.IsRunning() ? "stop" : "play",
                         m_ScaledFactor));
-    MenuAppend(
-        xmenu, ID_BTNOPENFILE, _("Open a new file"), wxITEM_NORMAL,
-        GetScaledBitmap(wxBitmap(openfile), _T("openfile"), m_ScaledFactor));
-    MenuAppend(
-        xmenu, ID_BTNSETTING, _("Settings"), wxITEM_NORMAL,
-        GetScaledBitmap(wxBitmap(setting), _T("setting"), m_ScaledFactor));
+    MenuAppend(xmenu, ID_BTNOPENFILE, _("Open a new file"), wxITEM_NORMAL,
+               GetScaledBitmap(wxBitmap(openfile), "openfile", m_ScaledFactor));
+    MenuAppend(xmenu, ID_BTNSETTING, _("Settings"), wxITEM_NORMAL,
+               GetScaledBitmap(wxBitmap(setting), "setting", m_ScaledFactor));
     bool requeststate1 = m_ZoneSelMode == AUTO_SELECTION ||
                          m_ZoneSelMode == SAVED_SELECTION ||
                          m_ZoneSelMode == START_SELECTION;
@@ -1024,9 +1022,9 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
                GetScaledBitmap(wxBitmap(requeststate1   ? request
                                         : requeststate3 ? selzone
                                                         : request_end),
-                               requeststate1   ? _T("request")
-                               : requeststate3 ? _T("selzone")
-                                               : _T("request_end"),
+                               requeststate1   ? "request"
+                               : requeststate3 ? "selzone"
+                                               : "request_end",
                                m_ScaledFactor));
 
     PopupMenu(xmenu);
@@ -1235,14 +1233,14 @@ void GRIBUICtrlBar::OnCompositeDialog(wxCommandEvent &event) {
     return;
   }
 
-  v[_T("latMin")] = lat_min;
-  v[_T("latMax")] = lat_max;
-  v[_T("lonMin")] = lon_min;
-  v[_T("lonMax")] = lon_max;
+  v["latMin"] = lat_min;
+  v["latMax"] = lat_max;
+  v["lonMin"] = lon_min;
+  v["lonMax"] = lon_max;
 
   //  Clear the file name field, so that a retrieved or selected file name can
   //  be returned
-  v[_T("grib_file")] = _T("");
+  v["grib_file"] = "";
 
   wxJSONWriter w;
   wxString json_final;
@@ -1268,7 +1266,7 @@ void GRIBUICtrlBar::OpenFileFromJSON(wxString json) {
     return;
   }
 
-  wxString file = root[(_T("grib_file"))].AsString();
+  wxString file = root[("grib_file")].AsString();
 
   if (file.Length() && wxFileExists(file)) {
     wxFileName fn(file);
@@ -1284,7 +1282,7 @@ void GRIBUICtrlBar::OnPlayStop(wxCommandEvent &event) {
     StopPlayBack();
   } else {
     m_bpPlay->SetBitmapLabel(
-        GetScaledBitmap(wxBitmap(stop), _T("stop"), m_ScaledFactor));
+        GetScaledBitmap(wxBitmap(stop), "stop", m_ScaledFactor));
     m_bpPlay->SetToolTip(_("Stop play back"));
     m_tPlayStop.Start(3000 / m_OverlaySettings.m_UpdatesPerSecond,
                       wxTIMER_CONTINUOUS);
@@ -1324,7 +1322,7 @@ void GRIBUICtrlBar::StopPlayBack() {
   if (m_tPlayStop.IsRunning()) {
     m_tPlayStop.Stop();
     m_bpPlay->SetBitmapLabel(
-        GetScaledBitmap(wxBitmap(play), _T("play"), m_ScaledFactor));
+        GetScaledBitmap(wxBitmap(play), "play", m_ScaledFactor));
     m_bpPlay->SetToolTip(_("Start play back"));
   }
 }
@@ -1707,7 +1705,7 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
 
   wxString file;
   int response = PlatformFileSelectorDialog(
-      nullptr, &file, _("Select a GRIB file"), m_grib_dir, _T(""), _T("*.*"));
+      nullptr, &file, _("Select a GRIB file"), m_grib_dir, "", "*.*");
 
   if (response == wxID_OK) {
     wxFileName fn(file);
@@ -2440,16 +2438,16 @@ bool CheckPendingJNIException() {
 wxString callActivityMethod_ss(const char *method, wxString parm) {
   if (!java_vm) {
     // qDebug() << "java_vm is nullptr.";
-    return _T("NOK");
+    return "NOK";
   }
 
-  if (CheckPendingJNIException()) return _T("NOK");
+  if (CheckPendingJNIException()) return "NOK";
 
   wxString return_string;
   QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
       "org/qtproject/qt5/android/QtNative", "activity",
       "()Landroid/app/Activity;");
-  if (CheckPendingJNIException()) return _T("NOK");
+  if (CheckPendingJNIException()) return "NOK";
 
   if (!activity.isValid()) {
     // qDebug() << "Activity is not valid";
@@ -2471,7 +2469,7 @@ wxString callActivityMethod_ss(const char *method, wxString parm) {
 
   QAndroidJniObject data = activity.callObjectMethod(
       method, "(Ljava/lang/String;)Ljava/lang/String;", p);
-  if (CheckPendingJNIException()) return _T("NOK");
+  if (CheckPendingJNIException()) return "NOK";
 
   // qDebug() << "Back from method_ss";
 

@@ -154,13 +154,13 @@
   wxJSONReader reader;
 
   // open a text file that contains the UTF-8 encoded JSON text
-  wxFFileInputStream jsonText( _T("filename.utf8"), _T("r"));
+  wxFFileInputStream jsonText( "filename.utf8", "r");
 
   // read the file
   int numErrors = reader.Parse( jsonText, &value );
 
   if ( numErrors > 0 )  {
-    ::MessageBox( _T("Error reading the input file"));
+    ::MessageBox( "Error reading the input file");
   }
  \endcode
 
@@ -174,8 +174,8 @@
 // WXTRACE=traceReader StoreComment
 // environment variable
 #if wxDEBUG_LEVEL > 0
-static const wxChar* traceMask = _T("traceReader");
-static const wxChar* storeTraceMask = _T("StoreComment");
+static const wxChar* traceMask = "traceReader";
+static const wxChar* storeTraceMask = "StoreComment";
 #endif
 
 //! Ctor
@@ -576,14 +576,14 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
       case '{':
         if (parent.IsObject()) {
           if (key.empty()) {
-            AddError(_T("\'{\' is not allowed here (\'name\' is missing"));
+            AddError("\'{\' is not allowed here (\'name\' is missing");
           }
           if (value.IsValid()) {
-            AddError(_T("\'{\' cannot follow a \'value\'"));
+            AddError("\'{\' cannot follow a \'value\'");
           }
         } else if (parent.IsArray()) {
           if (value.IsValid()) {
-            AddError(_T("\'{\' cannot follow a \'value\' in JSON array"));
+            AddError("\'{\' cannot follow a \'value\' in JSON array");
           }
         } else {
           wxJSON_ASSERT(0);  // always fails
@@ -612,14 +612,14 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
       case '[':
         if (parent.IsObject()) {
           if (key.empty()) {
-            AddError(_T("\'[\' is not allowed here (\'name\' is missing"));
+            AddError("\'[\' is not allowed here (\'name\' is missing");
           }
           if (value.IsValid()) {
-            AddError(_T("\'[\' cannot follow a \'value\' text"));
+            AddError("\'[\' cannot follow a \'value\' text");
           }
         } else if (parent.IsArray()) {
           if (value.IsValid()) {
-            AddError(_T("\'[\' cannot follow a \'value\'"));
+            AddError("\'[\' cannot follow a \'value\'");
           }
         } else {
           wxJSON_ASSERT(0);  // always fails
@@ -697,9 +697,9 @@ int wxJSONReader::DoRead(wxInputStream& is, wxJSONValue& parent) {
   // if we are here, the EOF condition was encontered so one or more
   // close-something characters are missing
   if (parent.IsArray()) {
-    AddWarning(wxJSONREADER_MISSING, _T("\']\' missing at end of file"));
+    AddWarning(wxJSONREADER_MISSING, "\']\' missing at end of file");
   } else if (parent.IsObject()) {
-    AddWarning(wxJSONREADER_MISSING, _T("\'}\' missing at end of file"));
+    AddWarning(wxJSONREADER_MISSING, "\'}\' missing at end of file");
   } else {
     wxJSON_ASSERT(0);
   }
@@ -732,9 +732,9 @@ void wxJSONReader::StoreValue(int ch, const wxString& key, wxJSONValue& value,
   //
   // if 'ch' == , (comma) value AND key (for TypeMap) cannot be empty
   //
-  wxLogTrace(traceMask, _T("(%s) ch=%d char=%c"), __PRETTY_FUNCTION__, ch,
+  wxLogTrace(traceMask, "(%s) ch=%d char=%c", __PRETTY_FUNCTION__, ch,
              (char)ch);
-  wxLogTrace(traceMask, _T("(%s) value=%s"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) value=%s", __PRETTY_FUNCTION__,
              value.AsString().c_str());
 
   m_current = 0;
@@ -746,25 +746,25 @@ void wxJSONReader::StoreValue(int ch, const wxString& key, wxJSONValue& value,
     // OK, if the char read is a close-object or close-array
     if (ch == '}' || ch == ']') {
       m_lastStored = 0;
-      wxLogTrace(traceMask, _T("(%s) key and value are empty, returning"),
+      wxLogTrace(traceMask, "(%s) key and value are empty, returning",
                  __PRETTY_FUNCTION__);
     } else {
-      AddError(_T("key or value is missing for JSON value"));
+      AddError("key or value is missing for JSON value");
     }
   } else {
     // key or value are not empty
     if (parent.IsObject()) {
       if (!value.IsValid()) {
         AddError(
-            _T("cannot store the value: \'value\' is missing for JSON object ")
-            _T("type"));
+            "cannot store the value: \'value\' is missing for JSON object "
+            "type");
       } else if (key.empty()) {
         AddError(
-            _T("cannot store the value: \'key\' is missing for JSON object ")
-            _T("type"));
+            "cannot store the value: \'key\' is missing for JSON object "
+            "type");
       } else {
         // OK, adding the value to parent key/value map
-        wxLogTrace(traceMask, _T("(%s) adding value to key:%s"),
+        wxLogTrace(traceMask, "(%s) adding value to key:%s",
                    __PRETTY_FUNCTION__, key.c_str());
         parent[key] = value;
         m_lastStored = &(parent[key]);
@@ -773,16 +773,16 @@ void wxJSONReader::StoreValue(int ch, const wxString& key, wxJSONValue& value,
     } else if (parent.IsArray()) {
       if (!value.IsValid()) {
         AddError(
-            _T("cannot store the item: \'value\' is missing for JSON array ")
-            _T("type"));
+            "cannot store the item: \'value\' is missing for JSON array "
+            "type");
       }
       if (!key.empty()) {
         AddError(
-            _T("cannot store the item: \'key\' (\'%s\') is not permitted in ")
-            _T("JSON array type"),
+            "cannot store the item: \'key\' (\'%s\') is not permitted in "
+            "JSON array type",
             key);
       }
-      wxLogTrace(traceMask, _T("(%s) appending value to parent array"),
+      wxLogTrace(traceMask, "(%s) appending value to parent array",
                  __PRETTY_FUNCTION__);
       parent.Append(value);
       const wxJSONInternalArray* arr = parent.AsArray();
@@ -815,15 +815,14 @@ void wxJSONReader::StoreValue(int ch, const wxString& key, wxJSONValue& value,
 */
 void wxJSONReader::AddError(const wxString& msg) {
   wxString err;
-  err.Printf(_T("Error: line %d, col %d - %s"), m_lineNo, m_colNo, msg.c_str());
+  err.Printf("Error: line %d, col %d - %s", m_lineNo, m_colNo, msg.c_str());
 
-  wxLogTrace(traceMask, _T("(%s) %s"), __PRETTY_FUNCTION__, err.c_str());
+  wxLogTrace(traceMask, "(%s) %s", __PRETTY_FUNCTION__, err.c_str());
 
   if ((int)m_errors.size() < m_maxErrors) {
     m_errors.Add(err);
   } else if ((int)m_errors.size() == m_maxErrors) {
-    m_errors.Add(
-        _T("ERROR: too many error messages - ignoring further errors"));
+    m_errors.Add("ERROR: too many error messages - ignoring further errors");
   }
   // else if ( m_errors > m_maxErrors ) do nothing, thus ignore the error
   // message
@@ -880,12 +879,12 @@ void wxJSONReader::AddWarning(int type, const wxString& msg) {
   err.Printf(_T( "Warning: line %d, col %d - %s"), m_lineNo, m_colNo,
              msg.c_str());
 
-  wxLogTrace(traceMask, _T("(%s) %s"), __PRETTY_FUNCTION__, err.c_str());
+  wxLogTrace(traceMask, "(%s) %s", __PRETTY_FUNCTION__, err.c_str());
   if ((int)m_warnings.size() < m_maxErrors) {
     m_warnings.Add(err);
   } else if ((int)m_warnings.size() == m_maxErrors) {
     m_warnings.Add(
-        _T("Error: too many warning messages - ignoring further warnings"));
+        "Error: too many warning messages - ignoring further warnings");
   }
   // else do nothing, thus ignore the warning message
 }
@@ -908,7 +907,7 @@ int wxJSONReader::SkipWhiteSpace(wxInputStream& is) {
       break;
     }
   } while (ch == ' ' || ch == '\n' || ch == '\t');
-  wxLogTrace(traceMask, _T("(%s) end whitespaces line=%d col=%d"),
+  wxLogTrace(traceMask, "(%s) end whitespaces line=%d col=%d",
              __PRETTY_FUNCTION__, m_lineNo, m_colNo);
   return ch;
 }
@@ -927,8 +926,8 @@ int wxJSONReader::SkipWhiteSpace(wxInputStream& is) {
 */
 int wxJSONReader::SkipComment(wxInputStream& is) {
   static const wxChar* warn =
-      _T("Comments may be tolerated in JSON text but they are not part of ")
-      _T("JSON syntax");
+      "Comments may be tolerated in JSON text but they are not part of "
+      "JSON syntax";
 
   // if it is a comment, then a warning is added to the array
   // otherwise it is an error: values cannot start with a '/'
@@ -938,7 +937,7 @@ int wxJSONReader::SkipComment(wxInputStream& is) {
     return -1;
   }
 
-  wxLogTrace(storeTraceMask, _T("(%s) start comment line=%d col=%d"),
+  wxLogTrace(storeTraceMask, "(%s) start comment line=%d col=%d",
              __PRETTY_FUNCTION__, m_lineNo, m_colNo);
 
   // the temporary UTF-8/ANSI buffer that holds the comment string. This will be
@@ -1022,11 +1021,11 @@ int wxJSONReader::SkipComment(wxInputStream& is) {
     // read the next char that will be returned
     ch = ReadChar(is);
   }
-  wxLogTrace(traceMask, _T("(%s) end comment line=%d col=%d"),
+  wxLogTrace(traceMask, "(%s) end comment line=%d col=%d", __PRETTY_FUNCTION__,
+             m_lineNo, m_colNo);
+  wxLogTrace(storeTraceMask, "(%s) end comment line=%d col=%d",
              __PRETTY_FUNCTION__, m_lineNo, m_colNo);
-  wxLogTrace(storeTraceMask, _T("(%s) end comment line=%d col=%d"),
-             __PRETTY_FUNCTION__, m_lineNo, m_colNo);
-  wxLogTrace(storeTraceMask, _T("(%s) comment=%s"), __PRETTY_FUNCTION__,
+  wxLogTrace(storeTraceMask, "(%s) comment=%s", __PRETTY_FUNCTION__,
              m_comment.c_str());
   return ch;
 }
@@ -1180,11 +1179,10 @@ int wxJSONReader::ReadString(wxInputStream& is, wxJSONValue& val) {
 #endif
     }
   }
-  wxLogTrace(traceMask, _T("(%s) line=%d col=%d"), __PRETTY_FUNCTION__,
-             m_lineNo, m_colNo);
-  wxLogTrace(traceMask, _T("(%s) string read=%s"), __PRETTY_FUNCTION__,
-             s.c_str());
-  wxLogTrace(traceMask, _T("(%s) value=%s"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) line=%d col=%d", __PRETTY_FUNCTION__, m_lineNo,
+             m_colNo);
+  wxLogTrace(traceMask, "(%s) string read=%s", __PRETTY_FUNCTION__, s.c_str());
+  wxLogTrace(traceMask, "(%s) value=%s", __PRETTY_FUNCTION__,
              val.AsString().c_str());
 
   // now assign the string to the JSON-value 'value'
@@ -1192,13 +1190,13 @@ int wxJSONReader::ReadString(wxInputStream& is, wxJSONValue& val) {
   //   'value'  is empty
   //   'value'  is a string; concatenate it but emit warning
   if (!val.IsValid()) {
-    wxLogTrace(traceMask, _T("(%s) assigning the string to value"),
+    wxLogTrace(traceMask, "(%s) assigning the string to value",
                __PRETTY_FUNCTION__);
     val = s;
   } else if (val.IsString()) {
     AddWarning(wxJSONREADER_MULTISTRING,
-               _T("Multiline strings are not allowed by JSON syntax"));
-    wxLogTrace(traceMask, _T("(%s) concatenate the string to value"),
+               "Multiline strings are not allowed by JSON syntax");
+    wxLogTrace(traceMask, "(%s) concatenate the string to value",
                __PRETTY_FUNCTION__);
     val.Cat(s);
   } else {
@@ -1250,9 +1248,9 @@ int wxJSONReader::ReadToken(wxInputStream& is, int ch, wxString& s) {
       case '\n':
       case '\r':
       case '\b':
-        wxLogTrace(traceMask, _T("(%s) line=%d col=%d"), __PRETTY_FUNCTION__,
+        wxLogTrace(traceMask, "(%s) line=%d col=%d", __PRETTY_FUNCTION__,
                    m_lineNo, m_colNo);
-        wxLogTrace(traceMask, _T("(%s) token read=%s"), __PRETTY_FUNCTION__,
+        wxLogTrace(traceMask, "(%s) token read=%s", __PRETTY_FUNCTION__,
                    s.c_str());
         return nextCh;
         break;
@@ -1263,9 +1261,9 @@ int wxJSONReader::ReadToken(wxInputStream& is, int ch, wxString& s) {
     // read the next character
     nextCh = ReadChar(is);
   }
-  wxLogTrace(traceMask, _T("(%s) EOF on line=%d col=%d"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) EOF on line=%d col=%d", __PRETTY_FUNCTION__,
              m_lineNo, m_colNo);
-  wxLogTrace(traceMask, _T("(%s) EOF - token read=%s"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) EOF - token read=%s", __PRETTY_FUNCTION__,
              s.c_str());
   return nextCh;
 }
@@ -1297,7 +1295,7 @@ int wxJSONReader::ReadToken(wxInputStream& is, int ch, wxString& s) {
 int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
   wxString s;
   int nextCh = ReadToken(is, ch, s);
-  wxLogTrace(traceMask, _T("(%s) value=%s"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) value=%s", __PRETTY_FUNCTION__,
              val.AsString().c_str());
 
   if (val.IsValid()) {
@@ -1318,32 +1316,32 @@ int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
 #endif
 
   // first try the literal strings lowercase and nocase
-  if (s == _T("null")) {
+  if (s == "null") {
     val.SetType(wxJSONTYPE_NULL);
-    wxLogTrace(traceMask, _T("(%s) value = nullptr"), __PRETTY_FUNCTION__);
+    wxLogTrace(traceMask, "(%s) value = nullptr", __PRETTY_FUNCTION__);
     return nextCh;
   } else if (s.CmpNoCase(_T( "null" )) == 0) {
-    wxLogTrace(traceMask, _T("(%s) value = nullptr"), __PRETTY_FUNCTION__);
+    wxLogTrace(traceMask, "(%s) value = nullptr", __PRETTY_FUNCTION__);
     AddWarning(wxJSONREADER_CASE,
                _T( "the \'null\' literal must be lowercase" ));
     val.SetType(wxJSONTYPE_NULL);
     return nextCh;
-  } else if (s == _T("true")) {
-    wxLogTrace(traceMask, _T("(%s) value = TRUE"), __PRETTY_FUNCTION__);
+  } else if (s == "true") {
+    wxLogTrace(traceMask, "(%s) value = TRUE", __PRETTY_FUNCTION__);
     val = true;
     return nextCh;
   } else if (s.CmpNoCase(_T( "true" )) == 0) {
-    wxLogTrace(traceMask, _T("(%s) value = TRUE"), __PRETTY_FUNCTION__);
+    wxLogTrace(traceMask, "(%s) value = TRUE", __PRETTY_FUNCTION__);
     AddWarning(wxJSONREADER_CASE,
                _T( "the \'true\' literal must be lowercase" ));
     val = true;
     return nextCh;
-  } else if (s == _T("false")) {
-    wxLogTrace(traceMask, _T("(%s) value = FALSE"), __PRETTY_FUNCTION__);
+  } else if (s == "false") {
+    wxLogTrace(traceMask, "(%s) value = FALSE", __PRETTY_FUNCTION__);
     val = false;
     return nextCh;
   } else if (s.CmpNoCase(_T( "false" )) == 0) {
-    wxLogTrace(traceMask, _T("(%s) value = FALSE"), __PRETTY_FUNCTION__);
+    wxLogTrace(traceMask, "(%s) value = FALSE", __PRETTY_FUNCTION__);
     AddWarning(wxJSONREADER_CASE,
                _T( "the \'false\' literal must be lowercase" ));
     val = false;
@@ -1387,7 +1385,7 @@ int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
   if (tSigned) {
 #if defined(wxJSON_64BIT_INT)
     r = Strtoll(s, &i64);
-    wxLogTrace(traceMask, _T("(%s) convert to wxInt64 result=%d"),
+    wxLogTrace(traceMask, "(%s) convert to wxInt64 result=%d",
                __PRETTY_FUNCTION__, r);
     if (r) {
       // store the value
@@ -1396,8 +1394,8 @@ int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
     }
 #else
     r = s.ToLong(&l);
-    wxLogTrace(traceMask, _T("(%s) convert to int result=%d"),
-               __PRETTY_FUNCTION__, r);
+    wxLogTrace(traceMask, "(%s) convert to int result=%d", __PRETTY_FUNCTION__,
+               r);
     if (r) {
       // store the value
       val = (int)l;
@@ -1409,7 +1407,7 @@ int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
   if (tUnsigned) {
 #if defined(wxJSON_64BIT_INT)
     r = Strtoull(s, &ui64);
-    wxLogTrace(traceMask, _T("(%s) convert to wxUint64 result=%d"),
+    wxLogTrace(traceMask, "(%s) convert to wxUint64 result=%d",
                __PRETTY_FUNCTION__, r);
     if (r) {
       // store the value
@@ -1418,8 +1416,8 @@ int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
     }
 #else
     r = s.ToULong(&ul);
-    wxLogTrace(traceMask, _T("(%s) convert to int result=%d"),
-               __PRETTY_FUNCTION__, r);
+    wxLogTrace(traceMask, "(%s) convert to int result=%d", __PRETTY_FUNCTION__,
+               r);
     if (r) {
       // store the value
       val = (unsigned int)ul;
@@ -1430,7 +1428,7 @@ int wxJSONReader::ReadValue(wxInputStream& is, int ch, wxJSONValue& val) {
 
   if (tDouble) {
     r = s.ToDouble(&d);
-    wxLogTrace(traceMask, _T("(%s) convert to double result=%d"),
+    wxLogTrace(traceMask, "(%s) convert to double result=%d",
                __PRETTY_FUNCTION__, r);
     if (r) {
       // store the value
@@ -1512,7 +1510,7 @@ int wxJSONReader::AppendUES(wxMemoryBuffer& utf8Buff, const char* uesBuffer) {
     AddError(_T( "Invalid Unicode Escaped Sequence"));
     return -1;
   }
-  wxLogTrace(traceMask, _T("(%s) unicode sequence=%s code=%ld"),
+  wxLogTrace(traceMask, "(%s) unicode sequence=%s code=%ld",
              __PRETTY_FUNCTION__, uesBuffer, l);
 
   wchar_t ch = (wchar_t)l;
@@ -1558,14 +1556,14 @@ int wxJSONReader::AppendUES(wxMemoryBuffer& utf8Buff, const char* uesBuffer) {
  an error is reported (note: not a warning but an error).
 */
 void wxJSONReader::StoreComment(const wxJSONValue* parent) {
-  wxLogTrace(storeTraceMask, _T("(%s) m_comment=%s"), __PRETTY_FUNCTION__,
+  wxLogTrace(storeTraceMask, "(%s) m_comment=%s", __PRETTY_FUNCTION__,
              m_comment.c_str());
-  wxLogTrace(storeTraceMask, _T("(%s) m_flags=%d m_commentLine=%d"),
+  wxLogTrace(storeTraceMask, "(%s) m_flags=%d m_commentLine=%d",
              __PRETTY_FUNCTION__, m_flags, m_commentLine);
-  wxLogTrace(storeTraceMask, _T("(%s) m_current=%p"), __PRETTY_FUNCTION__,
+  wxLogTrace(storeTraceMask, "(%s) m_current=%p", __PRETTY_FUNCTION__,
              m_current);
-  wxLogTrace(storeTraceMask, _T("(%s) m_next=%p"), __PRETTY_FUNCTION__, m_next);
-  wxLogTrace(storeTraceMask, _T("(%s) m_lastStored=%p"), __PRETTY_FUNCTION__,
+  wxLogTrace(storeTraceMask, "(%s) m_next=%p", __PRETTY_FUNCTION__, m_next);
+  wxLogTrace(storeTraceMask, "(%s) m_lastStored=%p", __PRETTY_FUNCTION__,
              m_lastStored);
 
   // first check if the 'store comment' bit is on
@@ -1577,11 +1575,10 @@ void wxJSONReader::StoreComment(const wxJSONValue* parent) {
   // check if the comment is on the same line of one of the
   // 'current', 'next' or 'lastStored' value
   if (m_current != 0) {
-    wxLogTrace(storeTraceMask, _T("(%s) m_current->lineNo=%d"),
-               __PRETTY_FUNCTION__, m_current->GetLineNo());
+    wxLogTrace(storeTraceMask, "(%s) m_current->lineNo=%d", __PRETTY_FUNCTION__,
+               m_current->GetLineNo());
     if (m_current->GetLineNo() == m_commentLine) {
-      wxLogTrace(storeTraceMask,
-                 _T("(%s) comment added to \'m_current\' INLINE"),
+      wxLogTrace(storeTraceMask, "(%s) comment added to \'m_current\' INLINE",
                  __PRETTY_FUNCTION__);
       m_current->AddComment(m_comment, wxJSONVALUE_COMMENT_INLINE);
       m_comment.clear();
@@ -1589,10 +1586,10 @@ void wxJSONReader::StoreComment(const wxJSONValue* parent) {
     }
   }
   if (m_next != 0) {
-    wxLogTrace(storeTraceMask, _T("(%s) m_next->lineNo=%d"),
-               __PRETTY_FUNCTION__, m_next->GetLineNo());
+    wxLogTrace(storeTraceMask, "(%s) m_next->lineNo=%d", __PRETTY_FUNCTION__,
+               m_next->GetLineNo());
     if (m_next->GetLineNo() == m_commentLine) {
-      wxLogTrace(storeTraceMask, _T("(%s) comment added to \'m_next\' INLINE"),
+      wxLogTrace(storeTraceMask, "(%s) comment added to \'m_next\' INLINE",
                  __PRETTY_FUNCTION__);
       m_next->AddComment(m_comment, wxJSONVALUE_COMMENT_INLINE);
       m_comment.clear();
@@ -1600,11 +1597,11 @@ void wxJSONReader::StoreComment(const wxJSONValue* parent) {
     }
   }
   if (m_lastStored != 0) {
-    wxLogTrace(storeTraceMask, _T("(%s) m_lastStored->lineNo=%d"),
+    wxLogTrace(storeTraceMask, "(%s) m_lastStored->lineNo=%d",
                __PRETTY_FUNCTION__, m_lastStored->GetLineNo());
     if (m_lastStored->GetLineNo() == m_commentLine) {
       wxLogTrace(storeTraceMask,
-                 _T("(%s) comment added to \'m_lastStored\' INLINE"),
+                 "(%s) comment added to \'m_lastStored\' INLINE",
                  __PRETTY_FUNCTION__);
       m_lastStored->AddComment(m_comment, wxJSONVALUE_COMMENT_INLINE);
       m_comment.clear();
@@ -1620,33 +1617,30 @@ void wxJSONReader::StoreComment(const wxJSONValue* parent) {
   if (m_flags & wxJSONREADER_COMMENTS_AFTER) {  // comment AFTER
     if (m_current) {
       if (m_current == parent || !m_current->IsValid()) {
-        AddError(
-            _T("Cannot find a value for storing the comment (flag AFTER)"));
+        AddError("Cannot find a value for storing the comment (flag AFTER)");
       } else {
-        wxLogTrace(storeTraceMask,
-                   _T("(%s) comment added to m_current (AFTER)"),
+        wxLogTrace(storeTraceMask, "(%s) comment added to m_current (AFTER)",
                    __PRETTY_FUNCTION__);
         m_current->AddComment(m_comment, wxJSONVALUE_COMMENT_AFTER);
       }
     } else if (m_lastStored) {
-      wxLogTrace(storeTraceMask,
-                 _T("(%s) comment added to m_lastStored (AFTER)"),
+      wxLogTrace(storeTraceMask, "(%s) comment added to m_lastStored (AFTER)",
                  __PRETTY_FUNCTION__);
       m_lastStored->AddComment(m_comment, wxJSONVALUE_COMMENT_AFTER);
     } else {
       wxLogTrace(storeTraceMask,
-                 _T("(%s) cannot find a value for storing the AFTER comment"),
+                 "(%s) cannot find a value for storing the AFTER comment",
                  __PRETTY_FUNCTION__);
-      AddError(_T("Cannot find a value for storing the comment (flag AFTER)"));
+      AddError("Cannot find a value for storing the comment (flag AFTER)");
     }
   } else {  // comment BEFORE can only be added to the 'next' value
     if (m_next) {
-      wxLogTrace(storeTraceMask, _T("(%s) comment added to m_next (BEFORE)"),
+      wxLogTrace(storeTraceMask, "(%s) comment added to m_next (BEFORE)",
                  __PRETTY_FUNCTION__);
       m_next->AddComment(m_comment, wxJSONVALUE_COMMENT_BEFORE);
     } else {
       // cannot find a value for storing the comment
-      AddError(_T("Cannot find a value for storing the comment (flag BEFORE)"));
+      AddError("Cannot find a value for storing the comment (flag BEFORE)");
     }
   }
   m_comment.clear();
@@ -1844,11 +1838,11 @@ int wxJSONReader::ReadMemoryBuff(wxInputStream& is, wxJSONValue& val) {
   //   'value'  is invalid OR
   //   'value'  is a memory buffer; concatenate it
   if (!val.IsValid()) {
-    wxLogTrace(traceMask, _T("(%s) assigning the memory buffer to value"),
+    wxLogTrace(traceMask, "(%s) assigning the memory buffer to value",
                __PRETTY_FUNCTION__);
     val = buff;
   } else if (val.IsMemoryBuff()) {
-    wxLogTrace(traceMask, _T("(%s) concatenate memory buffer to value"),
+    wxLogTrace(traceMask, "(%s) concatenate memory buffer to value",
                __PRETTY_FUNCTION__);
     val.Cat(buff);
   } else {
@@ -2008,7 +2002,7 @@ bool wxJSONReader::DoStrto_ll(const wxString& str, wxUint64* ui64,
   // check the overflow: check the string length and the individual digits
   // of the string; the overflow is checked for unsigned long long
   if (strLen == maxDigits) {
-    wxString uLongMax(_T("18446744073709551615"));
+    wxString uLongMax("18446744073709551615");
     int j = 0;
     for (int i = index; i < strLen - 1; i++) {
       ch = str[i];

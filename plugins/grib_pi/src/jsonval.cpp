@@ -39,10 +39,10 @@ WX_DEFINE_OBJARRAY(wxJSONInternalArray);
 #endif
 
 // the trace mask used in wxLogTrace() function
-// static const wxChar* traceMask = _T("jsonval");
+// static const wxChar* traceMask = "jsonval";
 #if wxDEBUG_LEVEL > 0
-static const wxChar* traceMask = _T("jsonval");
-static const wxChar* compareTraceMask = _T("sameas");
+static const wxChar* traceMask = "jsonval";
+static const wxChar* compareTraceMask = "sameas";
 static const wxChar* cowTraceMask = _T("traceCOW" );
 #endif
 
@@ -77,8 +77,8 @@ wxJSONRefData::wxJSONRefData() {
 #if defined(WXJSON_USE_VALUE_COUNTER)
   m_progr = sm_progr;
   ++sm_progr;
-  wxLogTrace(traceMask, _T("(%s) JSON refData ctor progr=%d"),
-             __PRETTY_FUNCTION__, m_progr);
+  wxLogTrace(traceMask, "(%s) JSON refData ctor progr=%d", __PRETTY_FUNCTION__,
+             m_progr);
 #endif
 }
 
@@ -214,7 +214,7 @@ wxJSONRefData* wxJSONValue::Init(wxJSONType type) {
 #if defined(WXJSON_USE_VALUE_COUNTER)
   m_progr = sm_progr;
   ++sm_progr;
-  wxLogTrace(cowTraceMask, _T("(%s) Init a new object progr=%d"),
+  wxLogTrace(cowTraceMask, "(%s) Init a new object progr=%d",
              __PRETTY_FUNCTION__, m_progr);
 #endif
   return data;
@@ -394,7 +394,7 @@ wxJSONValue::wxJSONValue(const wxJSONValue& other) {
 #if defined(WXJSON_USE_VALUE_COUNTER)
   m_progr = sm_progr;
   ++sm_progr;
-  wxLogTrace(cowTraceMask, _T("(%s) Copy ctor - progr=%d other progr=%d"),
+  wxLogTrace(cowTraceMask, "(%s) Copy ctor - progr=%d other progr=%d",
              __PRETTY_FUNCTION__, m_progr, other.m_progr);
 #endif
 }
@@ -883,25 +883,23 @@ wxString wxJSONValue::AsString() const {
       break;
     case wxJSONTYPE_INT:
 #if defined(wxJSON_64BIT_INT)
-      s.Printf(_T("%") compatibleLongLongFmtSpec _T("i"),
-               data->m_value.m_valInt64);
+      s.Printf("%" compatibleLongLongFmtSpec "i", data->m_value.m_valInt64);
 #else
-      s.Printf(_T("%ld"), data->m_value.m_valLong);
+      s.Printf("%ld", data->m_value.m_valLong);
 #endif
       break;
     case wxJSONTYPE_UINT:
 #if defined(wxJSON_64BIT_INT)
-      s.Printf(_T("%") compatibleLongLongFmtSpec _T("u"),
-               data->m_value.m_valUInt64);
+      s.Printf("%" compatibleLongLongFmtSpec "u", data->m_value.m_valUInt64);
 #else
-      s.Printf(_T("%lu"), data->m_value.m_valULong);
+      s.Printf("%lu", data->m_value.m_valULong);
 #endif
       break;
     case wxJSONTYPE_DOUBLE:
-      s.Printf(_T("%.10g"), data->m_value.m_valDouble);
+      s.Printf("%.10g", data->m_value.m_valDouble);
       break;
     case wxJSONTYPE_BOOL:
-      s.assign((data->m_value.m_valBool ? _T("true") : _T("false")));
+      s.assign((data->m_value.m_valBool ? "true" : "false"));
       break;
     case wxJSONTYPE_NULL:
       s.assign(_T( "null"));
@@ -910,10 +908,10 @@ wxString wxJSONValue::AsString() const {
       s.assign(_T( "<invalid>"));
       break;
     case wxJSONTYPE_ARRAY:
-      s.Printf(_T("[%d]"), size);
+      s.Printf("[%d]", size);
       break;
     case wxJSONTYPE_OBJECT:
-      s.Printf(_T("{%d}"), size);
+      s.Printf("{%d}", size);
       break;
     case wxJSONTYPE_MEMORYBUFF:
       s = MemoryBuffToString(*(data->m_memBuff), 5);
@@ -1628,10 +1626,10 @@ wxJSONValue& wxJSONValue::Item(unsigned index) {
  replaced by a map object.
 */
 wxJSONValue& wxJSONValue::Item(const wxString& key) {
-  wxLogTrace(traceMask, _T("(%s) searched key=\'%s\'"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) searched key=\'%s\'", __PRETTY_FUNCTION__,
              key.c_str());
 #if !wxCHECK_VERSION(2, 9, 0)
-  wxLogTrace(traceMask, _T("(%s) actual object: %s"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) actual object: %s", __PRETTY_FUNCTION__,
              GetInfo().c_str());
 #endif
 
@@ -1643,7 +1641,7 @@ wxJSONValue& wxJSONValue::Item(const wxString& key) {
     data = SetType(wxJSONTYPE_OBJECT);
     return data->m_valMap[key];
   }
-  wxLogTrace(traceMask, _T("(%s) searching key \'%s' in the actual object"),
+  wxLogTrace(traceMask, "(%s) searching key \'%s' in the actual object",
              __PRETTY_FUNCTION__, key.c_str());
   return data->m_valMap[key];
 }
@@ -1676,9 +1674,9 @@ wxJSONValue wxJSONValue::ItemAt(unsigned index) const {
  If \c key does not exist, an \b invalid value is returned.
 */
 wxJSONValue wxJSONValue::ItemAt(const wxString& key) const {
-  wxLogTrace(traceMask, _T("(%s) searched key=\'%s\'"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) searched key=\'%s\'", __PRETTY_FUNCTION__,
              key.c_str());
-  wxLogTrace(traceMask, _T("(%s) actual object: %s"), __PRETTY_FUNCTION__,
+  wxLogTrace(traceMask, "(%s) actual object: %s", __PRETTY_FUNCTION__,
              GetInfo().c_str());
 
   wxJSONRefData* data = GetRefData();
@@ -2014,15 +2012,14 @@ wxString wxJSONValue::Dump(bool deep, int indent) const {
   wxString s1;
   wxString s2;
 #if defined(WXJSON_USE_VALUE_COUNTER)
-  s1.Printf(_T("Object: Progr=%d Type=%s Size=%d comments=%d\n"), m_progr,
+  s1.Printf("Object: Progr=%d Type=%s Size=%d comments=%d\n", m_progr,
             TypeToString(type).c_str(), Size(), data->m_comments.GetCount());
-  s2.Printf(_T("      : RefData=%p Progr=%d Num shares=%d\n"), data,
-            data->m_progr, data->GetRefCount());
-#else
-  s1.Printf(_T("Object: Type=%s Size=%d comments=%d\n"),
-            TypeToString(type).c_str(), Size(), data->m_comments.GetCount());
-  s2.Printf(_T("      : RefData=%p Num shares=%d\n"), data,
+  s2.Printf("      : RefData=%p Progr=%d Num shares=%d\n", data, data->m_progr,
             data->GetRefCount());
+#else
+  s1.Printf("Object: Type=%s Size=%d comments=%d\n", TypeToString(type).c_str(),
+            Size(), data->m_comments.GetCount());
+  s2.Printf("      : RefData=%p Num shares=%d\n", data, data->GetRefCount());
 #endif
   s.append(s1);
   if (indent > 0) {
@@ -2078,20 +2075,20 @@ wxString wxJSONValue::GetInfo() const {
 
   wxString s;
 #if defined(WXJSON_USE_VALUE_CONTER)
-  s.Printf(_T("Object: Progr=%d Type=%s Size=%d comments=%d\n"), data->m_progr,
+  s.Printf("Object: Progr=%d Type=%s Size=%d comments=%d\n", data->m_progr,
            wxJSONValue::TypeToString(data->m_type).c_str(), Size(),
            data->m_comments.GetCount());
 #else
-  s.Printf(_T("Object: Type=%s Size=%d comments=%d\n"),
+  s.Printf("Object: Type=%s Size=%d comments=%d\n",
            wxJSONValue::TypeToString(data->m_type).c_str(), Size(),
            data->m_comments.GetCount());
 #endif
   if (data->m_type == wxJSONTYPE_OBJECT) {
     wxArrayString arr = GetMemberNames();
     for (unsigned int i = 0; i < arr.size(); i++) {
-      s.append(_T("    Member name: "));
+      s.append("    Member name: ");
       s.append(arr[i]);
-      s.append(_T("\n"));
+      s.append("\n");
     }
   }
   return s;
@@ -2138,7 +2135,7 @@ bool wxJSONValue::IsSameAs(const wxJSONValue& other) const {
 
   if (data == otherData) {
     wxLogTrace(compareTraceMask,
-               _T("(%s) objects share the same referenced data - r=TRUE"),
+               "(%s) objects share the same referenced data - r=TRUE",
                __PRETTY_FUNCTION__);
     return true;
   }
@@ -2261,19 +2258,18 @@ bool wxJSONValue::IsSameAs(const wxJSONValue& other) const {
       break;
     case wxJSONTYPE_ARRAY:
       size = Size();
-      wxLogTrace(compareTraceMask,
-                 _T("(%s) Comparing an array object - size=%d"),
+      wxLogTrace(compareTraceMask, "(%s) Comparing an array object - size=%d",
                  __PRETTY_FUNCTION__, size);
 
       if (size != other.Size()) {
-        wxLogTrace(compareTraceMask, _T("(%s) Sizes does not match"),
+        wxLogTrace(compareTraceMask, "(%s) Sizes does not match",
                    __PRETTY_FUNCTION__);
         return false;
       }
       // compares every element in this object with the element of
       // the same index in the 'other' object
       for (int i = 0; i < size; i++) {
-        wxLogTrace(compareTraceMask, _T("(%s) Comparing array element=%d"),
+        wxLogTrace(compareTraceMask, "(%s) Comparing array element=%d",
                    __PRETTY_FUNCTION__, i);
         wxJSONValue v1 = ItemAt(i);
         wxJSONValue v2 = other.ItemAt(i);
@@ -2285,12 +2281,12 @@ bool wxJSONValue::IsSameAs(const wxJSONValue& other) const {
       break;
     case wxJSONTYPE_OBJECT:
       size = Size();
-      wxLogTrace(compareTraceMask, _T("(%s) Comparing a map obejct - size=%d"),
+      wxLogTrace(compareTraceMask, "(%s) Comparing a map obejct - size=%d",
                  __PRETTY_FUNCTION__, size);
 
       if (size != other.Size()) {
         wxLogTrace(compareTraceMask,
-                   _T("(%s) Comparison failed - sizes does not match"),
+                   "(%s) Comparison failed - sizes does not match",
                    __PRETTY_FUNCTION__);
         return false;
       }
@@ -2298,13 +2294,13 @@ bool wxJSONValue::IsSameAs(const wxJSONValue& other) const {
       // the other object. if 'key' does no exist, returns FALSE
       for (it = data->m_valMap.begin(); it != data->m_valMap.end(); it++) {
         wxString key = it->first;
-        wxLogTrace(compareTraceMask, _T("(%s) Comparing map object - key=%s"),
+        wxLogTrace(compareTraceMask, "(%s) Comparing map object - key=%s",
                    __PRETTY_FUNCTION__, key.c_str());
         wxJSONValue otherVal = other.ItemAt(key);
         bool isSame = it->second.IsSameAs(otherVal);
         if (!isSame) {
           wxLogTrace(compareTraceMask,
-                     _T("(%s) Comparison failed for the last object"),
+                     "(%s) Comparison failed for the last object",
                      __PRETTY_FUNCTION__);
           return false;
         }
@@ -2312,7 +2308,7 @@ bool wxJSONValue::IsSameAs(const wxJSONValue& other) const {
       break;
     default:
       // should never happen
-      wxFAIL_MSG(_T("wxJSONValue::IsSameAs() unexpected wxJSONType"));
+      wxFAIL_MSG("wxJSONValue::IsSameAs() unexpected wxJSONType");
       break;
   }
   return r;
@@ -2347,16 +2343,15 @@ int wxJSONValue::AddComment(const wxString& str, int position) {
   wxJSONRefData* data = COW();
   wxJSON_ASSERT(data);
 
-  wxLogTrace(traceMask, _T("(%s) comment=%s"), __PRETTY_FUNCTION__,
-             str.c_str());
+  wxLogTrace(traceMask, "(%s) comment=%s", __PRETTY_FUNCTION__, str.c_str());
   int r = -1;
   int len = str.length();
   if (len < 2) {
-    wxLogTrace(traceMask, _T("     error: len < 2"));
+    wxLogTrace(traceMask, "     error: len < 2");
     return -1;
   }
   if (str[0] != '/') {
-    wxLogTrace(traceMask, _T("     error: does not start with\'/\'"));
+    wxLogTrace(traceMask, "     error: does not start with\'/\'");
     return -1;
   }
   if (str[1] == '/') {  // a C++ comment: check that it ends with '\n'
@@ -2365,14 +2360,14 @@ int wxJSONValue::AddComment(const wxString& str, int position) {
       wxString temp(str);
       temp.append(1, '\n');
       data->m_comments.Add(temp);
-      wxLogTrace(traceMask, _T("     C++ comment: LF added"));
+      wxLogTrace(traceMask, "     C++ comment: LF added");
     } else {
       data->m_comments.Add(str);
     }
     r = data->m_comments.size();
   } else if (str[1] ==
              '*') {  // a C-style comment: check that it ends with '*/'
-    wxLogTrace(traceMask, _T("     C-style comment"));
+    wxLogTrace(traceMask, "     C-style comment");
     int lastPos = len - 1;
     wxChar ch = str.GetChar(lastPos);
     // skip leading whitespaces
@@ -2385,7 +2380,7 @@ int wxJSONValue::AddComment(const wxString& str, int position) {
       r = data->m_comments.size();
     }
   } else {
-    wxLogTrace(traceMask, _T("     error: is not a valid comment string"));
+    wxLogTrace(traceMask, "     error: is not a valid comment string");
     r = -1;
   }
   // if the comment was stored, store the position
@@ -2443,7 +2438,7 @@ int wxJSONValue::GetCommentCount() const {
   wxJSON_ASSERT(data);
 
   int d = data->m_comments.GetCount();
-  wxLogTrace(traceMask, _T("(%s) comment count=%d"), __PRETTY_FUNCTION__, d);
+  wxLogTrace(traceMask, "(%s) comment count=%d", __PRETTY_FUNCTION__, d);
   return d;
 }
 
@@ -2657,7 +2652,7 @@ void wxJSONValue::Ref(const wxJSONValue& clone) {
 */
 void wxJSONValue::UnRef() {
   if (m_refData) {
-    wxASSERT_MSG(m_refData->m_refCount > 0, _T("invalid ref data count"));
+    wxASSERT_MSG(m_refData->m_refCount > 0, "invalid ref data count");
 
     if (--m_refData->m_refCount == 0) {
       delete m_refData;
@@ -2727,7 +2722,7 @@ wxJSONRefData* wxJSONValue::CloneRefData(const wxJSONRefData* otherData) const {
     }
   }
 
-  wxLogTrace(cowTraceMask, _T("(%s) CloneRefData() PROGR: other=%d data=%d"),
+  wxLogTrace(cowTraceMask, "(%s) CloneRefData() PROGR: other=%d data=%d",
              __PRETTY_FUNCTION__, other->GetRefCount(), data->GetRefCount());
 
   return data;
@@ -2755,11 +2750,11 @@ wxJSONRefData* wxJSONValue::CreateRefData() const {
 */
 wxJSONRefData* wxJSONValue::COW() {
   wxJSONRefData* data = GetRefData();
-  wxLogTrace(cowTraceMask, _T("(%s) COW() START data=%p data->m_count=%d"),
+  wxLogTrace(cowTraceMask, "(%s) COW() START data=%p data->m_count=%d",
              __PRETTY_FUNCTION__, data, data->GetRefCount());
   UnShare();
   data = GetRefData();
-  wxLogTrace(cowTraceMask, _T("(%s) COW() END data=%p data->m_count=%d"),
+  wxLogTrace(cowTraceMask, "(%s) COW() END data=%p data->m_count=%d",
              __PRETTY_FUNCTION__, data, data->GetRefCount());
   return GetRefData();
 }
@@ -2779,7 +2774,7 @@ void wxJSONValue::AllocExclusive() {
   // else: ref count is 1, we are exclusive owners of m_refData anyhow
 
   wxASSERT_MSG(m_refData && m_refData->GetRefCount() == 1,
-               _T("wxObject::AllocExclusive() failed."));
+               "wxObject::AllocExclusive() failed.");
 }
 
 //! Convert memory buffer object to a string representation.
@@ -2836,7 +2831,7 @@ wxString wxJSONValue::MemoryBuffToString(const void* buff, size_t len,
   if (buffLen == (size_t)-1) {
     buffLen = len;
   }
-  s.Printf(_T("%p (%u) "), buff, buffLen);
+  s.Printf("%p (%u) ", buff, buffLen);
   unsigned char* ptr = (unsigned char*)buff;
   for (unsigned int i = 0; i < len; i++) {
     unsigned char c = *ptr;

@@ -96,7 +96,7 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
   pgc = nullptr;
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs("en_US");
   workBuf = nullptr;
   workBufSize = 0;
   s_odc_tess_work_buf = nullptr;
@@ -131,7 +131,7 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
   }
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs("en_US");
   workBuf = nullptr;
   workBufSize = 0;
 #ifdef ocpnUSE_GL
@@ -149,7 +149,7 @@ pi_ocpnDC::pi_ocpnDC()
   pgc = nullptr;
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = false;  // GetLocaleCanonicalName().IsSameAs("en_US");
   workBuf = nullptr;
   workBufSize = 0;
 #ifdef ocpnUSE_GL
@@ -1605,7 +1605,7 @@ void APIENTRY ocpnDCvertexCallback(GLvoid *arg) {
 void APIENTRY ocpnDCerrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
+  // wxLogMessage( "OpenGL Tessellation Error: %s", (char *)estring );
 }
 
 void APIENTRY ocpnDCbeginCallback(GLenum type) { glBegin(type); }
