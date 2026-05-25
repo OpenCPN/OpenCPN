@@ -171,8 +171,8 @@
 // WXTRACE=traceReader StoreComment
 // environment variable
 #if wxDEBUG_LEVEL > 0
-static const wxChar* traceMask = "traceReader";
-static const wxChar* storeTraceMask = "StoreComment";
+static const wxChar* traceMask = L"traceReader";
+static const wxChar* storeTraceMask = L"StoreComment";
 #endif
 
 //! Ctor
