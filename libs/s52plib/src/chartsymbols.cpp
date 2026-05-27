@@ -788,9 +788,9 @@ int ChartSymbols::LoadRasterFileForColorTable(int tableNo, bool flush,
                       GL_CLAMP_TO_EDGE);
 
       glTexParameteri(ctx.m_texture_rectangle_format, GL_TEXTURE_MAG_FILTER,
-                      GL_NEAREST);  // No mipmapping
+                      GL_LINEAR);  // No mipmapping
       glTexParameteri(ctx.m_texture_rectangle_format, GL_TEXTURE_MIN_FILTER,
-                      GL_NEAREST);
+                      GL_LINEAR);
 
       rasterSymbolsTextureSize = wxSize(w, h);
 
