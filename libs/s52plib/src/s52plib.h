@@ -122,7 +122,7 @@ WX_DECLARE_STRING_HASH_MAP(int, CARC_DL_Hash);
 
 struct SoundingSym {
   Rule *prule;
-  wxPoint r;
+  wxPoint2DDouble r;
   wxUint32 color_RGB;
 };
 
@@ -480,6 +480,7 @@ private:
 
   int reduceLOD(double LOD_meters, int nPoints, double *source,
                 wxPoint2DDouble **dest, int *maskIn, int **maskOut);
+  int ComputeWinding(ObjRazRules *rzRules, Rules *rules);
 
   int RenderLSLegacy(ObjRazRules *rzRules, Rules *rules);
   int RenderLCLegacy(ObjRazRules *rzRules, Rules *rules);
@@ -491,7 +492,7 @@ private:
 
   int RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules);
 
-  void DrawDashLine(wxPen &pen, wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
+  void DrawDashLine(wxPen &pen, double x1, double y1, double x2, double y2);
 
   render_canvas_parms *CreatePatternBufferSpec(ObjRazRules *rzRules,
                                                Rules *rules, bool b_revrgb,
@@ -501,20 +502,20 @@ private:
                                    S52color *c, render_canvas_parms *pb_spec,
                                    render_canvas_parms *patt_spec);
 
-  void draw_lc_poly_texture(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
+  void draw_lc_poly_texture(wxDC *pdc, wxColor &color, int width, wxPoint2DDouble *ptp,
                             int *mask, int npt, float sym_len, float sym_height,
-                            float sym_factor, Rule *draw_rule);
+                            float sym_factor, Rule *draw_rule, bool winding_cw);
   void draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
                     int *mask, int npt, float sym_len, float sym_height,
                     float sym_factor, Rule *draw_rule);
 
-  bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
+  bool RenderHPGL(ObjRazRules *rzRules, Rule *rule_in, wxPoint2DDouble &r,
                   float rot_angle = 0., double uScale = 1.0);
-  bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
+  bool RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint2DDouble &r,
                           float rot_angle = 0.);
-  bool RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
+  bool RenderCachedVectorSymbol(ObjRazRules *rzRules, Rule *rule_in, wxPoint2DDouble &r,
                                 float rot_angle, double uScale);
-  int BuildHPGLTexture(ObjRazRules *rzRules, Rule *rule_in, wxPoint &r,
+  int BuildHPGLTexture(ObjRazRules *rzRules, Rule *rule_in, wxPoint2DDouble &r,
                        float rot_angle, double uScale);
 
   void SetupSoundingFont();
@@ -522,7 +523,7 @@ private:
                             wxColor symColor, float rot_angle = 0.);
   wxImage RuleXBMToImage(Rule *prule);
 
-  bool RenderText(wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRectDrawn,
+  bool RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y, wxRect *pRectDrawn,
                   S57Obj *pobj, bool bCheckOverlap);
 
   bool CheckTextRectList(const wxRect &test_rect, S52_TextC *ptext);
@@ -563,6 +564,10 @@ private:
   void GetPixPointSingle(int pixx, int pixy, double *plat, double *plon);
   void GetPixPointSingleNoRotate(int pixx, int pixy, double *plat,
                                  double *plon);
+  bool GetDoublePointPixSingle(ObjRazRules *rzRules, float north, float east,
+                                        wxPoint2DDouble *r);
+  bool GetDoublePointPixArray(ObjRazRules *rzRules, wxPoint2DDouble *pd, wxPoint2DDouble *pp,
+                        int nv);
 
   void GetLLFromPix(const wxPoint2DDouble &p, double *lat, double *lon);
   wxPoint GetPixFromLL(double lat, double lon);
@@ -672,7 +677,7 @@ public:
 #endif
   void SetVP(VPointCompat *pVP) { m_vp = pVP; }
   void SetContentScaleFactor(double factor) { m_content_scale_factor = factor; }
-  bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, wxPoint origin,
+  bool Render(char *str, char *col, wxPoint2DDouble &r, wxPoint &pivot, wxPoint origin,
               float scale, double rot_angle, bool bSymbol);
   wxBrush *getBrush() { return brush; }
 
@@ -686,11 +691,11 @@ public:
 
 private:
   const char *findColorNameInRef(char colorCode, char *col);
-  void RotatePoint(wxPoint &point, wxPoint origin, double angle);
+  void RotatePoint(wxPoint2DDouble &point, wxPoint origin, double angle);
   wxPoint ParsePoint(wxString &argument);
   void SetPen();
-  void Line(wxPoint from, wxPoint to);
-  void Circle(wxPoint center, int radius, bool filled = false);
+  void Line(wxPoint2DDouble from, wxPoint2DDouble to);
+  void Circle(wxPoint2DDouble center, int radius, bool filled = false);
   void Polygon();
 
   void DrawPolygonTessellated(int n, wxPoint points[], wxCoord xoffset,
