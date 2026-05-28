@@ -1,0 +1,21 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Sun, 12 Apr 2026 10:02:12 +0200
+Subject: libdnet: Handle libdnet cross compile error - #1121371
+
+---
+ libs/libdnet/CMakeLists.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libs/libdnet/CMakeLists.txt b/libs/libdnet/CMakeLists.txt
+index 7d70d22..113a26f 100644
+--- a/libs/libdnet/CMakeLists.txt
++++ b/libs/libdnet/CMakeLists.txt
+@@ -54,6 +54,8 @@ ExternalProject_Add(
+       -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchFile.cmake
+   CMAKE_ARGS
+       -G${CMAKE_GENERATOR}
++      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
++      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+       -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/libdnet-src/installed
+       -DCMAKE_INSTALL_LIBDIR=lib
+       -DCMAKE_INSTALL_INCLUDEDIR=include
