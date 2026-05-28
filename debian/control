@@ -1,7 +1,6 @@
 Source: opencpn
 Maintainer: Alec Leamas <leamas.alec@gmail.com>
 Section: misc
-Priority: optional
 Build-Depends: debhelper-compat (= 13),
  cmake,
  dbus-daemon,
