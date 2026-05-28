@@ -5,7 +5,7 @@ Subject: Install o-charts dongle rule option
 Unconditionally install the o-charts dongle udev file.
 
 Not acceptable upstream in this form, upstream will need somewhat
-messy conditionals depending in cmake version, user preferences
+messy conditionals depending on cmake version, user preferences
 and write access to /usr/lib/udev/rules.d
 
 Solves https://www.cruisersforum.com/forums/f134/ocpn-o-charts-on-rpi-cm5-problems-299041-3.html#post4058186

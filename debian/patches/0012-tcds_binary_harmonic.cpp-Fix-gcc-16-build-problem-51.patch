@@ -1,8 +1,7 @@
 From 884e508f7ca407a802ffaccc7485970d6541f03f Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Wed, 15 Apr 2026 13:21:40 +0200
-Subject: [PATCH 12/12] tcds_binary_harmonic.cpp: Fix gcc-16 build §problem -
- #5189
+Subject: tcds_binary_harmonic.cpp: Fix gcc-16 build §problem - #5189
 
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/884e508f7
 

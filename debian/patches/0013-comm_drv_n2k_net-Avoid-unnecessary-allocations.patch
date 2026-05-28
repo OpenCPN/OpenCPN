@@ -1,7 +1,7 @@
 From 1393058f9c299d980054c1f77fc81eada068b395 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Sun, 19 Apr 2026 08:54:34 +0000
-Subject: [PATCH] comm_drv_n2k_net: Avoid unnecessary allocations
+Subject: comm_drv_n2k_net: Avoid unnecessary allocations
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/5196
 Applied-upstream: https://github.com/leamas/OpenCPN/commit/f9898613

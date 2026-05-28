@@ -1,7 +1,7 @@
 From 08876c8956b3dd3427dd36fe5ca4e8123f272427 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 1 Jun 2026 00:13:29 +0200
-Subject: [PATCH] certificates:  Handle libssl 4.0 FTBFS - #5252
+Subject: certificates:  Handle libssl 4.0 FTBFS - #5252
 
 Bug: https://github.com/OpenCPN/OpenCPN/issues/5252
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/08876c89
