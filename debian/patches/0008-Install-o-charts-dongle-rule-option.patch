@@ -47,7 +47,7 @@ index 0000000..8a73d96
 +# opencpn o-charts hardware dongle
 +SUBSYSTEM=="usb", ATTR{idVendor}=="1547", ATTR{idProduct}=="1000", TAG+="uaccess"
 diff --git a/resources/opencpn.appdata.xml.in b/resources/opencpn.appdata.xml.in
-index 9ef2581..612400d 100644
+index 9ef2581..caebaf2 100644
 --- a/resources/opencpn.appdata.xml.in
 +++ b/resources/opencpn.appdata.xml.in
 @@ -12,6 +12,7 @@

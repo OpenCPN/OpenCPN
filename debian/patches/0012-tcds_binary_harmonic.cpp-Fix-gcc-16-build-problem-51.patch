@@ -1,0 +1,41 @@
+From 884e508f7ca407a802ffaccc7485970d6541f03f Mon Sep 17 00:00:00 2001
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 15 Apr 2026 13:21:40 +0200
+Subject: [PATCH 12/12] tcds_binary_harmonic.cpp: Fix gcc-16 build §problem -
+ #5189
+
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/884e508f7
+
+---
+ gui/src/tcds_binary_harmonic.cpp | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/gui/src/tcds_binary_harmonic.cpp b/gui/src/tcds_binary_harmonic.cpp
+index f45393bc9..941e0f889 100644
+--- a/gui/src/tcds_binary_harmonic.cpp
++++ b/gui/src/tcds_binary_harmonic.cpp
+@@ -23,6 +23,7 @@
+  */
+ 
+ /* Declarations for zoneinfo compatibility */
++#include <climits>
+ #include <string>
+ 
+ #include "tcds_binary_harmonic.h"
+@@ -367,8 +368,11 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
+   }
+ 
+   //  Node factors
+-
+-  m_cst_nodes = (double **)malloc(num_csts * sizeof(double *));
++  unsigned nodes_size = num_csts * sizeof(double *);
++#ifndef __APPLE__
++  assert(nodes_size < PTRDIFF_MAX);  // AppleClang barfs, probably a bug.
++#endif
++  m_cst_nodes = (double **)malloc(nodes_size);
+   for (int a = 0; a < num_csts; a++)
+     m_cst_nodes[a] = (double *)malloc(num_nodes * sizeof(double));
+ 
+-- 
+2.53.0
+
