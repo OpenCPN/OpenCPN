@@ -506,8 +506,29 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
 #
 include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
 
-string(TIMESTAMP VERSION_DATE "%Y-%m-%d")
-string(TIMESTAMP UNIX_TIMESTAMP "%s")
+set(VERSION_DATE ${VERSION_GIT_DATE})
+set(UNIX_TIMESTAMP ${VERSION_GIT_STAMP})
+if (${VERSION_DATE} STREQUAL "%git_date%")
+  message(STATUS
+    "Commit date cannot be determined, using current last commit"
+  )
+  execute_process(
+    COMMAND "git" "log" "-1" "--pretty=format:%cs"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE VERSION_DATE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  execute_process(
+    COMMAND "git" "log" "-1" "--pretty=format:%ct"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE UNIX_TIMESTAMP
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  message(STATUS
+    "Using commit date: ${VERSION_DATE}, stamp: ${UNIX_TIMESTAMP}"
+  )
+endif ()
+
 if (OCPN_CI_BUILD)
   include(Utils)
   commit_id(COMMIT)

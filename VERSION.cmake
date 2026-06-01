@@ -1,4 +1,7 @@
+# filtered, see .gitattributes
 SET(VERSION_MAJOR "5")
 SET(VERSION_MINOR "15")
 SET(VERSION_PATCH "0")
 SET(VERSION_DATE "2026-04-17")
+SET(VERSION_GIT_DATE %git_date%)
+SET(VERSION_GIT_STAMP %git_stamp%)
