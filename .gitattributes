@@ -102,3 +102,6 @@ Langstrings_*.nsh.in text eol=crlf
 .gitattributes export-ignore
 .gitignore     export-ignore
 .gitkeep       export-ignore
+
+# Define keyword substitution for VERSION.cmake
+VERSION.cmake filter=filter_date

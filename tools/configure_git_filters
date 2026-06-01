@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Set up configuration of GIT_COMMIT_DATE and GIT_COMMIT_STAMP
+# in VERSION.cmake, see .gitattributes
+
+srcdir=$(git rev-parse --show-toplevel)
+git config --local filter.filter_date.clean \
+    "$srcdir/tools/filter_date.sh clean"
+git config --local filter.filter_date.smudge \
+    "$srcdir/tools/filter_date.sh smudge"
+git config --local filter.filter_date.required  true
