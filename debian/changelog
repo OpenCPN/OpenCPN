@@ -1,8 +1,8 @@
-opencpn (1:5.14.1+dfsg-3~bpo13+1) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg-3~bpo13+1) trixie-backports; urgency=medium
 
   * New Debian release
 
- -- Alec Leamas <leamas.alec@gmail.com>  Thu, 28 May 2026 22:30:53 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 02 Jun 2026 11:57:44 +0200
 
 opencpn (1:5.14.1+dfsg-3) unstable; urgency=medium
 
