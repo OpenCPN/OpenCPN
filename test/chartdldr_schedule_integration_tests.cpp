@@ -54,8 +54,8 @@ TEST(ChartDldrScheduleIntegration, FailedBulkAllowsSameDayRetry) {
 
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(
-      schedule, ChartDldrScheduledOutcomeFromBulkResult(0, 4, 4),
-      ChartDldrScheduledStatusFromBulkResult(0, 4, 4, 0, 0), &run_time);
+      schedule,
+      ChartDldrScheduledBulkResultFromStats(0, 4, 4, 0, 0), &run_time);
   EXPECT_TRUE(schedule.last_run_iso.empty());
   EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
 }
@@ -67,8 +67,8 @@ TEST(ChartDldrScheduleIntegration, SuccessfulBulkBlocksSameDay) {
 
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(
-      schedule, ChartDldrScheduledOutcomeFromBulkResult(2, 3, 0),
-      ChartDldrScheduledStatusFromBulkResult(2, 3, 0, 1, 1), &run_time);
+      schedule,
+      ChartDldrScheduledBulkResultFromStats(2, 3, 0, 1, 1), &run_time);
   EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
 }
 

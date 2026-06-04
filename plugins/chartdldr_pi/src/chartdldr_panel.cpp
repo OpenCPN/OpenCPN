@@ -14,40 +14,9 @@
 #include <wx/panel.h>
 #include <wx/sizer.h>
 
-// Scheduled bulk uses a hidden panel for downloads only. Bulk iteration uses
-// m_ChartSources indices (PrepareBulkCatalog / UpdateChartListForCatalog), not
-// wxListCtrl selection; ChartDldrBulkRunUiPolicy gates remaining UI side effects.
-
 bool ChartDldrPanelOnOptionsPage(const chartdldr_pi* pi) {
   return pi && pi->m_dldrpanel && pi->m_pOptionsPage &&
          pi->m_dldrpanel->GetParent() == pi->m_pOptionsPage;
-}
-
-bool ChartDldrEnsureDownloaderPanel(chartdldr_pi* pi) {
-  if (!pi || pi->m_dldrpanel) {
-    return pi && pi->m_dldrpanel;
-  }
-  if (!pi->m_parent_window) {
-    return false;
-  }
-
-  if (!pi->m_panel_host) {
-    pi->m_panel_host = new wxPanel(pi->m_parent_window, wxID_ANY,
-                                   wxDefaultPosition, wxDefaultSize,
-                                   wxNO_BORDER);
-    pi->m_panel_host->Hide();
-  }
-
-  pi->m_dldrpanel = new ChartDldrPanelImpl(pi, pi->m_panel_host, wxID_ANY,
-                                          wxDefaultPosition, wxDefaultSize,
-                                          wxDEFAULT_DIALOG_STYLE);
-  pi->m_dldrpanel->Hide();
-
-  wxBoxSizer* host_sizer = new wxBoxSizer(wxVERTICAL);
-  pi->m_panel_host->SetSizer(host_sizer);
-  host_sizer->Add(pi->m_dldrpanel, 1, wxEXPAND);
-  pi->m_dldrpanel->SetBulkUpdate(pi->m_allow_bulk_update);
-  return true;
 }
 
 void ChartDldrAttachDownloaderPanelToOptions(chartdldr_pi* pi,

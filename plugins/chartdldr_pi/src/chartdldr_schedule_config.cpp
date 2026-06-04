@@ -35,7 +35,7 @@ void ChartDldrScheduleConfig::Load(wxFileConfig* conf) {
   }
   conf->Read(_T("ScheduledUpdateLastStatus"), &last_status, wxEmptyString);
   conf->Read(_T("ScheduledUpdateLastAttempt"), &last_attempt_iso,
-              wxEmptyString);
+             wxEmptyString);
   ChartDldrMigrateLegacyScheduleStatus(*this);
   SetTime(hour, minute);
 }

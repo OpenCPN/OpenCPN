@@ -970,12 +970,13 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   sbSizerBehavior->Add(m_buttonDownloadMasterCatalog, 0, wxALL, 4);
 
   m_sbScheduledUpdate = new wxStaticBoxSizer(
-      new wxStaticBox(prefsPanel, wxID_ANY, _("Scheduled updates")), wxVERTICAL);
+      new wxStaticBox(prefsPanel, wxID_ANY, _("Scheduled updates")),
+      wxVERTICAL);
 
   m_cbScheduledEnable =
       new wxCheckBox(prefsPanel, wxID_ANY,
-                    _("Enable daily bulk update while OpenCPN is running"),
-                    wxDefaultPosition, wxDefaultSize, 0);
+                     _("Enable daily bulk update while OpenCPN is running"),
+                     wxDefaultPosition, wxDefaultSize, 0);
   m_sbScheduledUpdate->Add(m_cbScheduledEnable, 0, wxALL, 4);
 
   wxFlexGridSizer* timeSizer = new wxFlexGridSizer(1, 3, 4, 4);
@@ -986,7 +987,8 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   m_tcScheduledTime->SetToolTip(
       _("Local time in 24-hour HH:MM form, for example 03:00 or 15:30."));
   timeSizer->Add(m_tcScheduledTime, 0, wxALL | wxALIGN_CENTER_VERTICAL, 4);
-  m_stScheduledTimePreview = new wxStaticText(prefsPanel, wxID_ANY, wxEmptyString);
+  m_stScheduledTimePreview =
+      new wxStaticText(prefsPanel, wxID_ANY, wxEmptyString);
   timeSizer->Add(m_stScheduledTimePreview, 1,
                  wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, 4);
   m_sbScheduledUpdate->Add(timeSizer, 0, wxEXPAND | wxALL, 4);

@@ -9,9 +9,8 @@
 
 #include "chartdldr_bulk_schedule.h"
 
-#include "chartdldr_bulk_execute.h"
-#include "chartdldr_bulk_request.h"
-#include "chartdldr_panel.h"
+#include "chartdldr_bulk.h"
+#include "chartdldr_bulk_runner.h"
 #include "chartdldr_pi.h"
 #include "chartdldr_schedule_state.h"
 
@@ -26,9 +25,10 @@ void ApplyScheduledSkip(chartdldr_pi* pi, ChartDldrScheduledSkipReason reason) {
     return;
   }
   const wxString status = ChartDldrScheduledSkipStatus(reason);
-  ChartDldrApplyScheduledRunOutcome(pi->ScheduleConfig(),
-                                   ChartDldrScheduledRunOutcome::Skipped,
-                                   status);
+  ChartDldrScheduledBulkResult result;
+  result.outcome = ChartDldrScheduledRunOutcome::Skipped;
+  result.status_detail = status;
+  ChartDldrApplyScheduledRunOutcome(pi->ScheduleConfig(), result);
   wxLogMessage("chartdldr_pi: %s", status.c_str());
   pi->SaveConfig();
 }
@@ -60,7 +60,8 @@ void ChartDldrOnScheduleTimer(chartdldr_pi* pi, wxTimerEvent& event) {
 
 bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
   const ChartDldrBulkRequestInput input = pi->MakeBulkRequestInput();
-  ChartDldrScheduledSkipReason scheduled_skip = ChartDldrScheduledSkipReason::None;
+  ChartDldrScheduledSkipReason scheduled_skip =
+      ChartDldrScheduledSkipReason::None;
   if (!ChartDldrCanStartBulkRequest(input, kind, &scheduled_skip)) {
     if (ChartDldrBulkRunIsScheduled(kind) &&
         scheduled_skip != ChartDldrScheduledSkipReason::None) {
@@ -69,7 +70,7 @@ bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
     return false;
   }
 
-  if (!ChartDldrEnsureDownloaderPanel(pi)) {
+  if (!pi->EnsureDownloaderPanel()) {
     if (ChartDldrBulkRunIsScheduled(kind)) {
       ApplyScheduledSkip(pi, ChartDldrScheduledSkipReason::PanelUnavailable);
     }
@@ -77,7 +78,7 @@ bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
   }
 
   wxCommandEvent evt;
-  return pi->GetDownloaderPanel()->RunBulkUpdate(kind, evt);
+  return ChartDldrRunBulkUpdate(pi, kind, evt);
 }
 
 void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi,
@@ -86,33 +87,31 @@ void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi,
     return;
   }
 
-  const int downloaded_ok = stats.downloaded_ok();
-  const ChartDldrScheduledRunOutcome outcome =
-      ChartDldrScheduledOutcomeFromBulkResult(downloaded_ok, stats.attempted,
-                                              stats.failed);
-  const wxString status = ChartDldrScheduledStatusFromBulkResult(
-      downloaded_ok, stats.attempted, stats.failed, stats.new_downloads,
-      stats.updated_downloads);
+  const ChartDldrScheduledBulkResult result =
+      ChartDldrScheduledBulkResultFromStats(
+          stats.downloaded_ok(), stats.attempted, stats.failed,
+          stats.new_downloads, stats.updated_downloads);
 
-  ChartDldrApplyScheduledRunOutcome(pi->ScheduleConfig(), outcome, status);
+  ChartDldrApplyScheduledRunOutcome(pi->ScheduleConfig(), result);
 
-  switch (outcome) {
+  switch (result.outcome) {
     case ChartDldrScheduledRunOutcome::BulkSuccess:
       wxLogMessage("chartdldr_pi: scheduled bulk update finished: %s",
-                   status.c_str());
+                   result.status_detail.c_str());
       break;
     case ChartDldrScheduledRunOutcome::BulkPartialSuccess:
       wxLogMessage(
           "chartdldr_pi: scheduled bulk update finished with failures: %s",
-          status.c_str());
+          result.status_detail.c_str());
       break;
     case ChartDldrScheduledRunOutcome::BulkNoAttempts:
-      wxLogMessage("chartdldr_pi: scheduled bulk update: %s", status.c_str());
+      wxLogMessage("chartdldr_pi: scheduled bulk update: %s",
+                   result.status_detail.c_str());
       break;
     case ChartDldrScheduledRunOutcome::BulkAllFailed:
       wxLogMessage(
           "chartdldr_pi: scheduled bulk update: %s; will retry later today",
-          status.c_str());
+          result.status_detail.c_str());
       break;
     case ChartDldrScheduledRunOutcome::Skipped:
       break;

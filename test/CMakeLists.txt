@@ -61,8 +61,7 @@ set(SRC
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_state.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_chart_classify.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_prefs_time.cpp
-  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_request.cpp
-  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_run.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_policy.cpp
 )
 
 if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)

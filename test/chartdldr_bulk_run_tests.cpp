@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 
-#include "chartdldr_bulk_run.h"
+#include "chartdldr_bulk.h"
 
 TEST(ChartDldrBulkRunKind, ScheduledVsInteractive) {
   EXPECT_TRUE(ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind::Scheduled));
@@ -20,30 +20,48 @@ TEST(ChartDldrBulkRunKind, ScheduledVsInteractive) {
 TEST(ChartDldrBulkRunUiPolicy, ScheduledUsesQuietHiddenPanelFlow) {
   const ChartDldrBulkRunUiPolicy visible =
       ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind::Scheduled, true);
-  EXPECT_TRUE(visible.quiet_downloads);
-  EXPECT_FALSE(visible.confirm_before_start);
-  EXPECT_FALSE(visible.show_failure_summary);
-  EXPECT_TRUE(visible.restore_notebook_page);
-  EXPECT_TRUE(visible.select_download_tab);
-  EXPECT_FALSE(visible.sync_list_selection);
+  EXPECT_EQ(visible.mode, ChartDldrDownloadUiMode::ScheduledBulk);
+  EXPECT_TRUE(ChartDldrPolicyUsesLogForErrors(visible));
+  EXPECT_FALSE(ChartDldrPolicyConfirmBeforeStart(visible));
+  EXPECT_FALSE(ChartDldrPolicyShowFailureSummary(visible));
+  EXPECT_TRUE(ChartDldrPolicyRestoreNotebookPage(visible));
+  EXPECT_TRUE(ChartDldrPolicySelectDownloadTab(visible));
+  EXPECT_FALSE(ChartDldrPolicySyncListSelection(visible));
 
   const ChartDldrBulkRunUiPolicy hidden =
       ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind::Scheduled, false);
-  EXPECT_TRUE(hidden.quiet_downloads);
-  EXPECT_FALSE(hidden.restore_notebook_page);
-  EXPECT_FALSE(hidden.select_download_tab);
-  EXPECT_FALSE(hidden.sync_list_selection);
+  EXPECT_EQ(hidden.mode, ChartDldrDownloadUiMode::ScheduledBulk);
+  EXPECT_TRUE(ChartDldrPolicyUsesLogForErrors(hidden));
+  EXPECT_FALSE(ChartDldrPolicyRestoreNotebookPage(hidden));
+  EXPECT_FALSE(ChartDldrPolicySelectDownloadTab(hidden));
+  EXPECT_FALSE(ChartDldrPolicySyncListSelection(hidden));
 }
 
 TEST(ChartDldrBulkRunUiPolicy, InteractiveShowsConfirmAndErrors) {
   const ChartDldrBulkRunUiPolicy policy =
       ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind::Interactive, true);
-  EXPECT_FALSE(policy.quiet_downloads);
-  EXPECT_TRUE(policy.confirm_before_start);
-  EXPECT_TRUE(policy.show_failure_summary);
-  EXPECT_TRUE(policy.restore_notebook_page);
-  EXPECT_TRUE(policy.select_download_tab);
-  EXPECT_TRUE(policy.sync_list_selection);
+  EXPECT_EQ(policy.mode, ChartDldrDownloadUiMode::InteractiveBulk);
+  EXPECT_FALSE(ChartDldrPolicyUsesLogForErrors(policy));
+  EXPECT_TRUE(ChartDldrPolicyConfirmBeforeStart(policy));
+  EXPECT_TRUE(ChartDldrPolicyShowFailureSummary(policy));
+  EXPECT_TRUE(ChartDldrPolicyRestoreNotebookPage(policy));
+  EXPECT_TRUE(ChartDldrPolicySelectDownloadTab(policy));
+  EXPECT_TRUE(ChartDldrPolicySyncListSelection(policy));
+}
+
+TEST(ChartDldrBulkRunUiPolicy, SelectedChartsAndCatalogPresets) {
+  const ChartDldrBulkRunUiPolicy selected =
+      ChartDldrSelectedChartsDownloadPolicy();
+  EXPECT_EQ(selected.mode, ChartDldrDownloadUiMode::SelectedCharts);
+  EXPECT_FALSE(ChartDldrPolicyDeferChartDbApply(selected));
+  EXPECT_FALSE(ChartDldrPolicyAllowEmptySelection(selected));
+  EXPECT_TRUE(ChartDldrPolicyShowDownloadResultDialogs(selected));
+
+  const ChartDldrBulkRunUiPolicy catalog =
+      ChartDldrInteractiveCatalogUpdatePolicy();
+  EXPECT_EQ(catalog.mode, ChartDldrDownloadUiMode::CatalogRefresh);
+  EXPECT_TRUE(ChartDldrPolicyShowCatalogProgressDialog(catalog));
+  EXPECT_FALSE(ChartDldrPolicyDeferChartDbApply(catalog));
 }
 
 TEST(ChartDldrBulkRunUiPolicy, RestoreOnlyWhenPanelWasVisible) {

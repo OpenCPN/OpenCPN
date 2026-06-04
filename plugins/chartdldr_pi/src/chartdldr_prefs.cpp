@@ -9,7 +9,7 @@
 
 #include "chartdldr_prefs.h"
 
-#include "chartdldr_bulk_run.h"
+#include "chartdldr_bulk.h"
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_pi.h"
 #include "chartdldr_prefs_time.h"
@@ -63,9 +63,9 @@ void ChartDldrPrefsDlgImpl::WarnScheduledPrerequisites() {
         "tab before scheduled updates can download charts.\n");
   }
   if (!m_cbSelectNew->GetValue() || !m_cbSelectUpdated->GetValue()) {
-    msg += _(
-        "Enable both \"All new charts\" and \"All updated charts\" so "
-        "scheduled runs download the full set of available updates.\n");
+    msg +=
+        _("Enable both \"All new charts\" and \"All updated charts\" so "
+          "scheduled runs download the full set of available updates.\n");
   }
   if (!msg.IsEmpty()) {
     OCPNMessageBox_PlugIn(this, msg, _("Scheduled updates"),
@@ -117,7 +117,7 @@ bool ChartDldrPrefsDlgImpl::ValidateScheduledTimeInput() {
   int hour = 0;
   int minute = 0;
   if (!ChartDldrParseScheduledTimeEntry(m_tcScheduledTime->GetValue(), hour,
-                                      minute)) {
+                                        minute)) {
     OCPNMessageBox_PlugIn(
         this,
         _("Enter the scheduled time as HH:MM in 24-hour local time "
@@ -158,7 +158,7 @@ bool ChartDldrPrefsDlgImpl::GetSchedulePreferences(
   int hour = 0;
   int minute = 0;
   if (!ChartDldrParseScheduledTimeEntry(m_tcScheduledTime->GetValue(), hour,
-                                      minute)) {
+                                        minute)) {
     return false;
   }
   schedule.SetTime(hour, minute);

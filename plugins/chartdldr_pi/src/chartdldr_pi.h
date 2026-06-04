@@ -54,8 +54,7 @@
 
 #include "chartdldrgui.h"
 #include "chartcatalog.h"
-#include "chartdldr_bulk_execute.h"
-#include "chartdldr_bulk_request.h"
+#include "chartdldr_bulk.h"
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_chart_classify.h"
 #include "chartdldr_schedule_config.h"
@@ -120,6 +119,8 @@ public:
 
   void UpdatePrefs(ChartDldrPrefsDlgImpl* dialog);
 
+  bool EnsureDownloaderPanel();
+  void AttachDownloaderPanelToOptions(wxScrolledWindow* page);
   bool RequestBulkUpdate(ChartDldrBulkRunKind kind);
   void ApplyChartDatabaseUpdate();
   bool HasChartSources() const { return !m_ChartSources.empty(); }
@@ -189,23 +190,16 @@ private:
 };
 
 /** Implementing ChartDldrPanel */
+class ChartDldrBulkRunner;
+
 class ChartDldrPanelImpl : public ChartDldrPanel {
   friend class chartdldr_pi;
-  friend bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi,
-                                         ChartDldrBulkRunKind kind);
-  friend bool ChartDldrExecuteBulkUpdate(ChartDldrPanelImpl* panel,
-                                         ChartDldrBulkRunKind kind,
-                                         wxCommandEvent& event,
-                                         ChartDldrBulkRunStats& stats);
-  friend bool ChartDldrEnsureDownloaderPanel(chartdldr_pi* pi);
-  friend void ChartDldrAttachDownloaderPanelToOptions(chartdldr_pi* pi,
-                                                      wxScrolledWindow* page);
+  friend class ChartDldrBulkRunner;
 
 private:
   bool DownloadChart(wxString url, wxString file, wxString title);
   int to_download;
 
-  int updatingAll;
   bool cancelled;
   bool DownloadIsCancel;
   chartdldr_pi* pPlugIn;
@@ -246,7 +240,7 @@ protected:
   void EditSource(wxCommandEvent& event) override;
   void UpdateChartList(wxCommandEvent& event) override;
   void UpdateChartListForCatalog(int catalog_index, wxCommandEvent& event,
-                                 bool quiet);
+                                 const ChartDldrBulkRunUiPolicy& policy);
   void PrepareBulkCatalog(int catalog_index, bool sync_list_selection);
   void EnsureDownloadHandlerConnected();
   bool WaitForBackgroundDownload(bool allow_ui_updates);
@@ -260,7 +254,7 @@ protected:
   void OnSelectUpdatedCharts(wxCommandEvent& event);
   void OnSelectAllCharts(wxCommandEvent& event);
 
-  void DownloadCharts(bool quiet = false);
+  void DownloadCharts(const ChartDldrBulkRunUiPolicy& policy);
   void DoHelp(wxCommandEvent& event) override {
 #ifdef __WXMSW__
     wxLaunchDefaultBrowser(_T("file:///") + *GetpSharedDataLocation() +
@@ -270,7 +264,6 @@ protected:
                            _T("plugins/chartdldr_pi/data/doc/index.html"));
 #endif
   }
-  bool RunBulkUpdate(ChartDldrBulkRunKind kind, wxCommandEvent& event);
   void UpdateAllCharts(wxCommandEvent& event) override;
   void OnShowLocalDir(wxCommandEvent& event) override;
   void OnPaint(wxPaintEvent& event) override;
@@ -293,7 +286,6 @@ protected:
   void CheckUpdatedCharts(bool value);
 
 public:
-  // ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
   ~ChartDldrPanelImpl();
   ChartDldrPanelImpl(chartdldr_pi* plugin = NULL, wxWindow* parent = NULL,
                      wxWindowID id = wxID_ANY,

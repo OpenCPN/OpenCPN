@@ -42,6 +42,16 @@ wxString ChartDldrFormatScheduledLastRunDisplay(
 bool ChartDldrScheduledOutcomeAdvancesLastRun(
     ChartDldrScheduledRunOutcome outcome);
 
+struct ChartDldrScheduledBulkResult {
+  ChartDldrScheduledRunOutcome outcome =
+      ChartDldrScheduledRunOutcome::BulkNoAttempts;
+  wxString status_detail;
+};
+
+ChartDldrScheduledBulkResult ChartDldrScheduledBulkResultFromStats(
+    int downloaded_ok, int attempted, int failed, int new_downloads,
+    int updated_downloads);
+
 ChartDldrScheduledRunOutcome ChartDldrScheduledOutcomeFromBulkResult(
     int downloaded_ok, int attempted, int failed);
 
@@ -50,10 +60,19 @@ wxString ChartDldrScheduledStatusFromBulkResult(int downloaded_ok,
                                                 int new_downloads,
                                                 int updated_downloads);
 
-void ChartDldrApplyScheduledRunOutcome(ChartDldrScheduleConfig& schedule,
-                                       ChartDldrScheduledRunOutcome outcome,
-                                       const wxString& status_detail,
-                                       const wxDateTime* run_time = nullptr);
+void ChartDldrApplyScheduledRunOutcome(
+    ChartDldrScheduleConfig& schedule,
+    const ChartDldrScheduledBulkResult& result,
+    const wxDateTime* run_time = nullptr);
+
+inline void ChartDldrApplyScheduledRunOutcome(
+    ChartDldrScheduleConfig& schedule, ChartDldrScheduledRunOutcome outcome,
+    const wxString& status_detail, const wxDateTime* run_time = nullptr) {
+  ChartDldrScheduledBulkResult result;
+  result.outcome = outcome;
+  result.status_detail = status_detail;
+  ChartDldrApplyScheduledRunOutcome(schedule, result, run_time);
+}
 
 void ChartDldrMigrateLegacyScheduleStatus(ChartDldrScheduleConfig& schedule);
 

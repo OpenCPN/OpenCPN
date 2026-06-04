@@ -10,7 +10,7 @@
 #ifndef CHARTDLDR_BULK_SCHEDULE_H_
 #define CHARTDLDR_BULK_SCHEDULE_H_
 
-#include "chartdldr_bulk_run.h"
+#include "chartdldr_bulk.h"
 
 class chartdldr_pi;
 class wxTimer;

@@ -133,12 +133,9 @@ TEST(ChartDldrScheduleState, MigrateLegacyCombinedStatus) {
   EXPECT_FALSE(schedule.last_run_iso.empty());
 }
 
-TEST(ChartDldrScheduleState, MigrateCombinedStatusWithDisplaySeparator) {
-  ChartDldrScheduleConfig schedule;
-  schedule.last_status =
-      ScheduledDisplay("2026-06-02 15:30", "2 update 3 new");
-  schedule.last_run_iso = wxEmptyString;
-  ChartDldrMigrateLegacyScheduleStatus(schedule);
-  EXPECT_EQ(schedule.last_status, "2 update 3 new");
-  EXPECT_FALSE(schedule.last_attempt_iso.empty());
+TEST(ChartDldrScheduleState, ScheduledBulkResultFromStats) {
+  const ChartDldrScheduledBulkResult result =
+      ChartDldrScheduledBulkResultFromStats(3, 5, 2, 2, 1);
+  EXPECT_EQ(result.outcome, ChartDldrScheduledRunOutcome::BulkPartialSuccess);
+  EXPECT_EQ(result.status_detail, "1 update 2 new, 2 failed");
 }

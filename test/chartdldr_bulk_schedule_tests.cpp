@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 
-#include "chartdldr_bulk_run.h"
+#include "chartdldr_bulk.h"
 #include "chartdldr_schedule_state.h"
 
 TEST(ChartDldrBulkSchedule, SkipAndSuccessShareAdvancePolicy) {

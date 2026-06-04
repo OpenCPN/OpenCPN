@@ -16,31 +16,6 @@
 
 namespace {
 
-constexpr int kScheduledStampChars = 16;  // "%Y-%m-%d %H:%M"
-
-bool TrySplitCombinedStatusAtSeparator(const wxString& separator,
-                                       wxString& status,
-                                       wxString& attempt_iso) {
-  if (status.length() <= kScheduledStampChars + separator.length()) {
-    return false;
-  }
-
-  const wxString stamp = status.Left(kScheduledStampChars);
-  wxDateTime parsed;
-  if (!parsed.ParseFormat(stamp, _("%Y-%m-%d %H:%M"))) {
-    return false;
-  }
-
-  if (!status.Mid(kScheduledStampChars).StartsWith(separator)) {
-    return false;
-  }
-
-  attempt_iso = ChartDldrFormatScheduleRunIso(parsed);
-  status = status.Mid(kScheduledStampChars + separator.length());
-  status.Trim(false);
-  return true;
-}
-
 bool TrySplitLegacyCombinedStatus(wxString& status, wxString& attempt_iso) {
   if (status.length() < 18) {
     return false;
@@ -100,13 +75,7 @@ void ChartDldrMigrateLegacyScheduleStatus(ChartDldrScheduleConfig& schedule) {
   }
 
   wxString attempt_iso;
-  const wxString hyphen_sep = ChartDldrScheduledDisplaySeparator();
-  const wxString em_dash_sep = wxString::FromUTF8(" \xe2\x80\x94 ");
-  if (TrySplitCombinedStatusAtSeparator(hyphen_sep, schedule.last_status,
-                                      attempt_iso) ||
-      TrySplitCombinedStatusAtSeparator(em_dash_sep, schedule.last_status,
-                                      attempt_iso) ||
-      TrySplitLegacyCombinedStatus(schedule.last_status, attempt_iso)) {
+  if (TrySplitLegacyCombinedStatus(schedule.last_status, attempt_iso)) {
     schedule.last_attempt_iso = attempt_iso;
     if (schedule.last_run_iso.IsEmpty()) {
       schedule.last_run_iso = attempt_iso;
@@ -156,6 +125,17 @@ bool ChartDldrScheduledOutcomeAdvancesLastRun(
   return false;
 }
 
+ChartDldrScheduledBulkResult ChartDldrScheduledBulkResultFromStats(
+    int downloaded_ok, int attempted, int failed, int new_downloads,
+    int updated_downloads) {
+  ChartDldrScheduledBulkResult result;
+  result.outcome =
+      ChartDldrScheduledOutcomeFromBulkResult(downloaded_ok, attempted, failed);
+  result.status_detail = ChartDldrScheduledStatusFromBulkResult(
+      downloaded_ok, attempted, failed, new_downloads, updated_downloads);
+  return result;
+}
+
 ChartDldrScheduledRunOutcome ChartDldrScheduledOutcomeFromBulkResult(
     int downloaded_ok, int attempted, int failed) {
   if (attempted == 0) {
@@ -188,18 +168,17 @@ wxString ChartDldrScheduledStatusFromBulkResult(int downloaded_ok,
   return wxString::Format(_("failed: %d of %d charts"), failed, attempted);
 }
 
-void ChartDldrApplyScheduledRunOutcome(ChartDldrScheduleConfig& schedule,
-                                       ChartDldrScheduledRunOutcome outcome,
-                                       const wxString& status_detail,
-                                       const wxDateTime* run_time) {
+void ChartDldrApplyScheduledRunOutcome(
+    ChartDldrScheduleConfig& schedule,
+    const ChartDldrScheduledBulkResult& result, const wxDateTime* run_time) {
   wxDateTime when = wxDateTime::Now();
   if (run_time && run_time->IsValid()) {
     when = *run_time;
   }
 
-  schedule.last_status = status_detail;
+  schedule.last_status = result.status_detail;
   schedule.last_attempt_iso = ChartDldrFormatScheduleRunIso(when);
-  if (ChartDldrScheduledOutcomeAdvancesLastRun(outcome)) {
+  if (ChartDldrScheduledOutcomeAdvancesLastRun(result.outcome)) {
     schedule.last_run_iso = schedule.last_attempt_iso;
   }
 }

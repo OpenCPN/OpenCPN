@@ -15,7 +15,6 @@ class wxScrolledWindow;
 class chartdldr_pi;
 
 bool ChartDldrPanelOnOptionsPage(const chartdldr_pi* pi);
-bool ChartDldrEnsureDownloaderPanel(chartdldr_pi* pi);
 void ChartDldrAttachDownloaderPanelToOptions(chartdldr_pi* pi,
                                              wxScrolledWindow* page);
 void ChartDldrDestroyDownloaderUI(chartdldr_pi* pi);
