@@ -16,16 +16,18 @@ TEST(ChartDldrBulkSchedule, SkipAndSuccessShareAdvancePolicy) {
   EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
       ChartDldrScheduledRunOutcome::Skipped));
   EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
-      ChartDldrScheduledOutcomeFromBulkResult(1, 3)));
+      ChartDldrScheduledOutcomeFromBulkResult(1, 3, 0)));
   EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(
-      ChartDldrScheduledOutcomeFromBulkResult(0, 3)));
+      ChartDldrScheduledOutcomeFromBulkResult(0, 3, 3)));
   EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
-      ChartDldrScheduledOutcomeFromBulkResult(0, 0)));
+      ChartDldrScheduledOutcomeFromBulkResult(0, 0, 0)));
 }
 
-TEST(ChartDldrBulkSchedule, PartialFailureStillSuccessWhenDownloadsOk) {
-  EXPECT_EQ(ChartDldrScheduledOutcomeFromBulkResult(2, 5),
-            ChartDldrScheduledRunOutcome::BulkSuccess);
+TEST(ChartDldrBulkSchedule, PartialFailureIsDistinctOutcome) {
+  EXPECT_EQ(ChartDldrScheduledOutcomeFromBulkResult(2, 5, 3),
+            ChartDldrScheduledRunOutcome::BulkPartialSuccess);
   EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
-      ChartDldrScheduledOutcomeFromBulkResult(2, 5)));
+      ChartDldrScheduledOutcomeFromBulkResult(2, 5, 3)));
+  EXPECT_EQ(ChartDldrScheduledStatusFromBulkResult(2, 5, 3, 1, 1),
+            "1 update 1 new, 3 failed");
 }

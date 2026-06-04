@@ -22,6 +22,9 @@ public:
   int hour = 3;
   int minute = 0;
   wxString last_run_iso;
+  /** ISO timestamp of the last attempt (display + bookkeeping). */
+  wxString last_attempt_iso;
+  /** Detail only, e.g. "2 update 3 new" (no timestamp prefix). */
   wxString last_status;
 
   void Load(wxFileConfig* conf);

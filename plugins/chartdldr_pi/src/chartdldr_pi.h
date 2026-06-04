@@ -54,7 +54,10 @@
 
 #include "chartdldrgui.h"
 #include "chartcatalog.h"
+#include "chartdldr_bulk_execute.h"
+#include "chartdldr_bulk_request.h"
 #include "chartdldr_bulk_schedule.h"
+#include "chartdldr_chart_classify.h"
 #include "chartdldr_schedule_config.h"
 
 #define UPDATE_DATA_FILENAME "chartdldr_pi.dat"
@@ -120,6 +123,7 @@ public:
   bool RequestBulkUpdate(ChartDldrBulkRunKind kind);
   void ApplyChartDatabaseUpdate();
   bool HasChartSources() const { return !m_ChartSources.empty(); }
+  ChartDldrBulkRequestInput MakeBulkRequestInput() const;
 
   ChartDldrScheduleConfig& ScheduleConfig() { return m_schedule; }
   const ChartDldrScheduleConfig& ScheduleConfig() const { return m_schedule; }
@@ -187,7 +191,12 @@ private:
 /** Implementing ChartDldrPanel */
 class ChartDldrPanelImpl : public ChartDldrPanel {
   friend class chartdldr_pi;
-  friend bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind);
+  friend bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi,
+                                         ChartDldrBulkRunKind kind);
+  friend bool ChartDldrExecuteBulkUpdate(ChartDldrPanelImpl* panel,
+                                         ChartDldrBulkRunKind kind,
+                                         wxCommandEvent& event,
+                                         ChartDldrBulkRunStats& stats);
   friend bool ChartDldrEnsureDownloaderPanel(chartdldr_pi* pi);
   friend void ChartDldrAttachDownloaderPanelToOptions(chartdldr_pi* pi,
                                                       wxScrolledWindow* page);
@@ -216,8 +225,11 @@ private:
   int m_bulkDownloadedNew;
   int m_bulkDownloadedUpdated;
 
-  bool ChartWasNewBeforeDownload(int chart_index);
-  bool ChartWasUpdatedBeforeDownload(int chart_index);
+  ChartDldrChartUpdateKind ClassifyChartForDownload(int chart_index);
+  void FinalizePendingChartDownload(int chart_index,
+                                    ChartDldrChartUpdateKind kind,
+                                    ChartSource& source,
+                                    const wxString& full_path);
 
   void DisableForDownload(bool enabled);
   bool m_bconnected;

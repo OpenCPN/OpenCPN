@@ -65,6 +65,10 @@ set(SRC_CHARTDLDR
     src/chartdldr_bulk_run.cpp
     src/chartdldr_bulk_schedule.h
     src/chartdldr_bulk_schedule.cpp
+    src/chartdldr_bulk_execute.h
+    src/chartdldr_bulk_execute.cpp
+    src/chartdldr_chart_classify.h
+    src/chartdldr_chart_classify.cpp
     src/chartdldr_pi.h
     src/chartdldr_pi.cpp
     src/icons.h

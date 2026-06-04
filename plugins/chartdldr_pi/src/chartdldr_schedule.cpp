@@ -9,6 +9,8 @@
 
 #include "chartdldr_schedule.h"
 
+#include "chartdldr_schedule_state.h"
+
 #include <wx/utils.h>
 
 namespace {
@@ -28,7 +30,7 @@ wxDateTime ParseLastRun(const wxString& last_run_iso, int hour, int minute) {
   }
 
   wxDateTime parsed;
-  if (parsed.ParseISOCombined(last_run_iso)) {
+  if (ChartDldrParseScheduleRunIso(last_run_iso, parsed)) {
     return parsed;
   }
 

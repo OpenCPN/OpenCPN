@@ -9,6 +9,7 @@
 
 #include "chartdldr_bulk_schedule.h"
 
+#include "chartdldr_bulk_execute.h"
 #include "chartdldr_bulk_request.h"
 #include "chartdldr_panel.h"
 #include "chartdldr_pi.h"
@@ -19,17 +20,6 @@
 #include <wx/window.h>
 
 namespace {
-
-ChartDldrBulkRequestInput MakeBulkRequestInput(const chartdldr_pi* pi) {
-  ChartDldrBulkRequestInput input;
-  if (!pi) {
-    return input;
-  }
-  input.allow_bulk_update = pi->m_allow_bulk_update;
-  input.has_chart_sources = !pi->m_ChartSources.empty();
-  input.bulk_run_active = pi->m_bulk_run_active;
-  return input;
-}
 
 void ApplyScheduledSkip(chartdldr_pi* pi, ChartDldrScheduledSkipReason reason) {
   if (!pi || reason == ChartDldrScheduledSkipReason::None) {
@@ -69,7 +59,7 @@ void ChartDldrOnScheduleTimer(chartdldr_pi* pi, wxTimerEvent& event) {
 }
 
 bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
-  const ChartDldrBulkRequestInput input = MakeBulkRequestInput(pi);
+  const ChartDldrBulkRequestInput input = pi->MakeBulkRequestInput();
   ChartDldrScheduledSkipReason scheduled_skip = ChartDldrScheduledSkipReason::None;
   if (!ChartDldrCanStartBulkRequest(input, kind, &scheduled_skip)) {
     if (ChartDldrBulkRunIsScheduled(kind) &&
@@ -90,33 +80,42 @@ bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
   return pi->GetDownloaderPanel()->RunBulkUpdate(kind, evt);
 }
 
-void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi, int downloaded_ok,
-                                     int attempted, int failed,
-                                     int new_downloads, int updated_downloads) {
+void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi,
+                                     const ChartDldrBulkRunStats& stats) {
   if (!pi) {
     return;
   }
 
+  const int downloaded_ok = stats.downloaded_ok();
   const ChartDldrScheduledRunOutcome outcome =
-      ChartDldrScheduledOutcomeFromBulkResult(downloaded_ok, attempted);
+      ChartDldrScheduledOutcomeFromBulkResult(downloaded_ok, stats.attempted,
+                                              stats.failed);
   const wxString status = ChartDldrScheduledStatusFromBulkResult(
-      downloaded_ok, attempted, failed, new_downloads, updated_downloads);
+      downloaded_ok, stats.attempted, stats.failed, stats.new_downloads,
+      stats.updated_downloads);
 
   ChartDldrApplyScheduledRunOutcome(pi->ScheduleConfig(), outcome, status);
 
-  if (outcome == ChartDldrScheduledRunOutcome::BulkSuccess) {
-    wxLogMessage("chartdldr_pi: scheduled bulk update finished: %s",
-                 status.c_str());
-  } else if (outcome == ChartDldrScheduledRunOutcome::BulkNoAttempts) {
-    wxLogMessage(
-        "chartdldr_pi: scheduled bulk update: %s; will retry later today if "
-        "still past the scheduled time",
-        status.c_str());
-  } else {
-    wxLogMessage(
-        "chartdldr_pi: scheduled bulk update: %s; no successful downloads, "
-        "will retry later today",
-        status.c_str());
+  switch (outcome) {
+    case ChartDldrScheduledRunOutcome::BulkSuccess:
+      wxLogMessage("chartdldr_pi: scheduled bulk update finished: %s",
+                   status.c_str());
+      break;
+    case ChartDldrScheduledRunOutcome::BulkPartialSuccess:
+      wxLogMessage(
+          "chartdldr_pi: scheduled bulk update finished with failures: %s",
+          status.c_str());
+      break;
+    case ChartDldrScheduledRunOutcome::BulkNoAttempts:
+      wxLogMessage("chartdldr_pi: scheduled bulk update: %s", status.c_str());
+      break;
+    case ChartDldrScheduledRunOutcome::BulkAllFailed:
+      wxLogMessage(
+          "chartdldr_pi: scheduled bulk update: %s; will retry later today",
+          status.c_str());
+      break;
+    case ChartDldrScheduledRunOutcome::Skipped:
+      break;
   }
   pi->SaveConfig();
 }

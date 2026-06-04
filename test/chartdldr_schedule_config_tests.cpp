@@ -50,7 +50,8 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     written.enabled = true;
     written.SetTime(14, 45);
     written.last_run_iso = "2026-06-02 14:45:00";
-    written.last_status = "OK (2 charts)";
+    written.last_attempt_iso = "2026-06-02 14:45:00";
+    written.last_status = "2 update 1 new";
     written.Save(&conf);
     conf.Flush();
   }
@@ -63,7 +64,8 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     EXPECT_EQ(loaded.hour, 14);
     EXPECT_EQ(loaded.minute, 45);
     EXPECT_EQ(loaded.last_run_iso, "2026-06-02 14:45:00");
-    EXPECT_EQ(loaded.last_status, "OK (2 charts)");
+    EXPECT_EQ(loaded.last_attempt_iso, "2026-06-02 14:45:00");
+    EXPECT_EQ(loaded.last_status, "2 update 1 new");
   }
 
   wxRemoveFile(path);

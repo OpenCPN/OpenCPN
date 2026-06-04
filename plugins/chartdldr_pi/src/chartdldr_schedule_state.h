@@ -17,19 +17,24 @@ class ChartDldrScheduleConfig;
 
 /** Result of a scheduled bulk attempt (timer or prefs "Run update now"). */
 enum class ChartDldrScheduledRunOutcome {
-  /** Preconditions failed; do not retry until tomorrow. */
   Skipped,
-  /** Bulk ran but nothing was attempted (e.g. no charts selected). */
   BulkNoAttempts,
-  /** Charts were attempted but none succeeded. */
   BulkAllFailed,
-  /** At least one chart downloaded successfully. */
+  BulkPartialSuccess,
   BulkSuccess,
 };
 
 wxString ChartDldrScheduledNeverRunDisplayText();
 
+/** Separator between timestamp and detail in last-run display (" - "). */
+wxString ChartDldrScheduledDisplaySeparator();
+
 wxString ChartDldrFormatScheduledRunTimestamp(const wxDateTime& run_time);
+
+/** Persisted attempt/run timestamp (local time, seconds). */
+wxString ChartDldrFormatScheduleRunIso(const wxDateTime& run_time);
+
+bool ChartDldrParseScheduleRunIso(const wxString& iso, wxDateTime& out);
 
 wxString ChartDldrFormatScheduledLastRunDisplay(
     const ChartDldrScheduleConfig& schedule);
@@ -38,7 +43,7 @@ bool ChartDldrScheduledOutcomeAdvancesLastRun(
     ChartDldrScheduledRunOutcome outcome);
 
 ChartDldrScheduledRunOutcome ChartDldrScheduledOutcomeFromBulkResult(
-    int downloaded_ok, int attempted);
+    int downloaded_ok, int attempted, int failed);
 
 wxString ChartDldrScheduledStatusFromBulkResult(int downloaded_ok,
                                                 int attempted, int failed,
@@ -49,5 +54,7 @@ void ChartDldrApplyScheduledRunOutcome(ChartDldrScheduleConfig& schedule,
                                        ChartDldrScheduledRunOutcome outcome,
                                        const wxString& status_detail,
                                        const wxDateTime* run_time = nullptr);
+
+void ChartDldrMigrateLegacyScheduleStatus(ChartDldrScheduleConfig& schedule);
 
 #endif  // CHARTDLDR_SCHEDULE_STATE_H_

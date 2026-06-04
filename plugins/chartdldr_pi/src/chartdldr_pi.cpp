@@ -33,8 +33,10 @@
 #endif  // precompiled headers
 
 #include "chartdldr_pi.h"
+#include "chartdldr_bulk_execute.h"
 #include "chartdldr_bulk_run.h"
 #include "chartdldr_bulk_schedule.h"
+#include "chartdldr_chart_classify.h"
 #include "chartdldr_panel.h"
 #include "chartdldr_prefs.h"
 #include "wxWTranslateCatalog.h"
@@ -508,6 +510,14 @@ bool chartdldr_pi::RequestBulkUpdate(ChartDldrBulkRunKind kind) {
   return ChartDldrRequestBulkUpdate(this, kind);
 }
 
+ChartDldrBulkRequestInput chartdldr_pi::MakeBulkRequestInput() const {
+  ChartDldrBulkRequestInput input;
+  input.allow_bulk_update = m_allow_bulk_update;
+  input.has_chart_sources = HasChartSources();
+  input.bulk_run_active = m_bulk_run_active;
+  return input;
+}
+
 bool getDisplayMetrics() {
 #ifdef __ANDROID__
 
@@ -925,28 +935,49 @@ void ChartDldrPanelImpl::PrepareBulkCatalog(int catalog_index,
   SetSource(catalog_index);
 }
 
-bool ChartDldrPanelImpl::ChartWasNewBeforeDownload(int chart_index) {
+ChartDldrChartUpdateKind ChartDldrPanelImpl::ClassifyChartForDownload(
+    int chart_index) {
   if (!pPlugIn->m_pChartSource || chart_index < 0 ||
       chart_index >= static_cast<int>(pPlugIn->m_pChartCatalog.charts.size())) {
-    return false;
+    return ChartDldrChartUpdateKind::None;
   }
   Chart* chart = pPlugIn->m_pChartCatalog.charts.at(chart_index).get();
   const wxString file = chart->GetChartFilename(true);
-  return !pPlugIn->m_pChartSource->ExistsLocaly(chart->number, file);
+  const bool exists =
+      pPlugIn->m_pChartSource->ExistsLocaly(chart->number, file);
+  const bool newer =
+      exists && pPlugIn->m_pChartSource->IsNewerThanLocal(
+                      chart->number, file, chart->GetUpdateDatetime());
+  return ChartDldrClassifyChart(exists, newer);
 }
 
-bool ChartDldrPanelImpl::ChartWasUpdatedBeforeDownload(int chart_index) {
-  if (!pPlugIn->m_pChartSource || chart_index < 0 ||
+void ChartDldrPanelImpl::FinalizePendingChartDownload(
+    int chart_index, ChartDldrChartUpdateKind kind, ChartSource& source,
+    const wxString& full_path) {
+  if (chart_index < 0 ||
       chart_index >= static_cast<int>(pPlugIn->m_pChartCatalog.charts.size())) {
-    return false;
+    return;
   }
-  Chart* chart = pPlugIn->m_pChartCatalog.charts.at(chart_index).get();
-  const wxString file = chart->GetChartFilename(true);
-  if (!pPlugIn->m_pChartSource->ExistsLocaly(chart->number, file)) {
-    return false;
+
+  wxFileName fn(full_path);
+  if (pPlugIn->ProcessFile(full_path, fn.GetPath(), true,
+                           pPlugIn->m_pChartCatalog.charts.at(chart_index)
+                               ->GetUpdateDatetime())) {
+    source.ChartUpdated(
+        pPlugIn->m_pChartCatalog.charts.at(chart_index)->number,
+        pPlugIn->m_pChartCatalog.charts.at(chart_index)
+            ->GetUpdateDatetime()
+            .GetTicks());
+    if (updatingAll) {
+      if (kind == ChartDldrChartUpdateKind::New) {
+        m_bulkDownloadedNew++;
+      } else if (kind == ChartDldrChartUpdateKind::Updated) {
+        m_bulkDownloadedUpdated++;
+      }
+    }
+  } else {
+    m_failed_downloads++;
   }
-  return pPlugIn->m_pChartSource->IsNewerThanLocal(
-      chart->number, file, chart->GetUpdateDatetime());
 }
 
 void ChartDldrPanelImpl::EnsureDownloadHandlerConnected() {
@@ -1198,98 +1229,13 @@ void ChartDldrPanelImpl::UpdateAllCharts(wxCommandEvent &event) {
 
 bool ChartDldrPanelImpl::RunBulkUpdate(ChartDldrBulkRunKind kind,
                                        wxCommandEvent &event) {
-  if (pPlugIn->m_bulk_run_active) {
+  ChartDldrBulkRunStats stats;
+  if (!ChartDldrExecuteBulkUpdate(this, kind, event, stats)) {
     return false;
   }
 
-  const bool panel_visible = IsShownOnScreen();
-  const ChartDldrBulkRunUiPolicy ui =
-      ChartDldrBulkRunUiPolicyFor(kind, panel_visible);
-  ChartDldrBulkRunUiSnapshot ui_before;
-  ui_before.panel_visible = panel_visible;
-  ui_before.notebook_page = m_DLoadNB->GetSelection();
-
-  if (ui.confirm_before_start) {
-    if ((pPlugIn->m_preselect_new) && (pPlugIn->m_preselect_updated)) {
-      wxMessageDialog mess(
-          this,
-          _("You have chosen to update all chart catalogs.\nThen download all "
-            "new and updated charts.\nThis may take a long time."),
-          _("Chart Downloader"), wxOK | wxCANCEL);
-      if (mess.ShowModal() == wxID_CANCEL) return false;
-    } else if (pPlugIn->m_preselect_new) {
-      wxMessageDialog mess(
-          this,
-          _("You have chosen to update all chart catalogs.\nThen download only "
-            "new (but not updated) charts.\nThis may take a long time."),
-          _("Chart Downloader"), wxOK | wxCANCEL);
-      if (mess.ShowModal() == wxID_CANCEL) return false;
-    } else if (pPlugIn->m_preselect_updated) {
-      wxMessageDialog mess(
-          this,
-          _("You have chosen to update all chart catalogs.\nThen download only "
-            "updated (but not new) charts.\nThis may take a long time."),
-          _("Chart Downloader"), wxOK | wxCANCEL);
-      if (mess.ShowModal() == wxID_CANCEL) return false;
-    }
-  }
-
-  pPlugIn->m_bulk_run_active = true;
-  updatingAll = true;
-  cancelled = false;
-  m_bulkDownloadedNew = 0;
-  m_bulkDownloadedUpdated = 0;
-
-  int failed_to_update = 0;
-  int attempted_to_update = 0;
-
-  if (ui.select_download_tab) {
-    m_DLoadNB->SetSelection(1);
-  }
-
-  for (size_t chart_index = 0; chart_index < pPlugIn->m_ChartSources.size();
-       ++chart_index) {
-    if (cancelled) {
-      break;
-    }
-    PrepareBulkCatalog(static_cast<int>(chart_index), ui.sync_list_selection);
-    UpdateChartListForCatalog(static_cast<int>(chart_index), event,
-                              ui.quiet_downloads);
-    DownloadCharts(ui.quiet_downloads);
-    attempted_to_update += m_downloading;
-    failed_to_update += m_failed_downloads;
-  }
-
-  wxLogMessage(wxString::Format(
-      _T("chartdldr_pi::RunBulkUpdate() downloaded %d out of %d charts."),
-      attempted_to_update - failed_to_update, attempted_to_update));
-
-  if (ui.show_failure_summary && failed_to_update > 0) {
-    OCPNMessageBox_PlugIn(
-        this,
-        wxString::Format(_("%d out of %d charts failed to download.\nCheck the "
-                           "list, verify there is a working Internet "
-                           "connection and repeat the operation if needed."),
-                         failed_to_update, attempted_to_update),
-        _("Chart Downloader"), wxOK | wxICON_ERROR);
-  }
-
-  const int downloaded_ok = attempted_to_update - failed_to_update;
-  if (downloaded_ok > 0) {
-    pPlugIn->ApplyChartDatabaseUpdate();
-  }
   if (ChartDldrBulkRunIsScheduled(kind)) {
-    ChartDldrFinishScheduledBulkRun(pPlugIn, downloaded_ok, attempted_to_update,
-                                    failed_to_update, m_bulkDownloadedNew,
-                                    m_bulkDownloadedUpdated);
-  }
-
-  updatingAll = false;
-  cancelled = false;
-  pPlugIn->m_bulk_run_active = false;
-
-  if (ChartDldrBulkRunShouldRestoreUi(ui, ui_before)) {
-    m_DLoadNB->SetSelection(ui_before.notebook_page);
+    ChartDldrFinishScheduledBulkRun(pPlugIn, stats);
   }
   return true;
 }
@@ -1580,12 +1526,24 @@ void ChartDldrPanelImpl::DownloadCharts(bool quiet) {
 
   wxFileName downloaded_p;
   int idx = -1;
+  ChartDldrChartUpdateKind pending_kind = ChartDldrChartUpdateKind::None;
 
   for (int i = 0; i < GetChartCount() && to_download; i++) {
     int index = i;
-    if (cancelled) break;
-    // Prepare download queues
-    if (!isChartChecked(i)) continue;
+    if (cancelled) {
+      break;
+    }
+
+    if (idx >= 0) {
+      FinalizePendingChartDownload(idx, pending_kind, *cs,
+                                   downloaded_p.GetFullPath());
+      idx = -1;
+      pending_kind = ChartDldrChartUpdateKind::None;
+    }
+
+    if (!isChartChecked(i)) {
+      continue;
+    }
     m_bTransferComplete = false;
     m_bTransferSuccess = true;
     m_totalsize = -1;
@@ -1643,22 +1601,10 @@ After downloading the charts, please extract them to %s"),
     wxString file_path = fn.GetFullPath();
 #endif
 
+    pending_kind = ClassifyChartForDownload(index);
+
     long handle;
     OCPN_downloadFileBackground(url.BuildURI(), file_path, this, &handle);
-
-    if (idx >= 0) {
-      if (pPlugIn->ProcessFile(
-              downloaded_p.GetFullPath(), downloaded_p.GetPath(), true,
-              pPlugIn->m_pChartCatalog.charts.at(idx)->GetUpdateDatetime())) {
-        cs->ChartUpdated(pPlugIn->m_pChartCatalog.charts.at(idx)->number,
-                         pPlugIn->m_pChartCatalog.charts.at(idx)
-                             ->GetUpdateDatetime()
-                             .GetTicks());
-      } else {
-        m_failed_downloads++;
-      }
-      idx = -1;
-    }
 
     while (!m_bTransferComplete && m_bTransferSuccess && !cancelled) {
       if (allow_download_ui_updates) {
@@ -1696,23 +1642,8 @@ After downloading the charts, please extract them to %s"),
     }
   }
   if (idx >= 0) {
-    if (pPlugIn->ProcessFile(
-            downloaded_p.GetFullPath(), downloaded_p.GetPath(), true,
-            pPlugIn->m_pChartCatalog.charts.at(idx)->GetUpdateDatetime())) {
-      cs->ChartUpdated(pPlugIn->m_pChartCatalog.charts.at(idx)->number,
-                       pPlugIn->m_pChartCatalog.charts.at(idx)
-                           ->GetUpdateDatetime()
-                           .GetTicks());
-      if (updatingAll) {
-        if (ChartWasNewBeforeDownload(idx)) {
-          m_bulkDownloadedNew++;
-        } else if (ChartWasUpdatedBeforeDownload(idx)) {
-          m_bulkDownloadedUpdated++;
-        }
-      }
-    } else {
-      m_failed_downloads++;
-    }
+    FinalizePendingChartDownload(idx, pending_kind, *cs,
+                                 downloaded_p.GetFullPath());
   }
   DisableForDownload(true);
   m_bDnldCharts->SetLabel(_("Download selected charts"));

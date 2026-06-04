@@ -10,6 +10,7 @@
 #include "chartdldr_schedule_config.h"
 
 #include "chartdldr_schedule.h"
+#include "chartdldr_schedule_state.h"
 
 #include <wx/fileconf.h>
 #include <wx/utils.h>
@@ -33,6 +34,9 @@ void ChartDldrScheduleConfig::Load(wxFileConfig* conf) {
     last_run_iso = legacy_date;
   }
   conf->Read(_T("ScheduledUpdateLastStatus"), &last_status, wxEmptyString);
+  conf->Read(_T("ScheduledUpdateLastAttempt"), &last_attempt_iso,
+              wxEmptyString);
+  ChartDldrMigrateLegacyScheduleStatus(*this);
   SetTime(hour, minute);
 }
 
@@ -45,6 +49,7 @@ void ChartDldrScheduleConfig::Save(wxFileConfig* conf) const {
   conf->Write(_T("ScheduledUpdateMinute"), minute);
   conf->Write(_T("ScheduledUpdateLastRun"), last_run_iso);
   conf->Write(_T("ScheduledUpdateLastStatus"), last_status);
+  conf->Write(_T("ScheduledUpdateLastAttempt"), last_attempt_iso);
 }
 
 bool ChartDldrScheduleConfig::ShouldRunNow(const wxDateTime& now) const {
