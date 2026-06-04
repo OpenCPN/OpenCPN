@@ -42,6 +42,7 @@ endif ()
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
+  chartdldr_test_wx_init.cpp
   chartdldr_schedule_tests.cpp
   chartdldr_schedule_config_tests.cpp
   chartdldr_schedule_state_tests.cpp

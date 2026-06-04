@@ -9,7 +9,10 @@
 
 #include <gtest/gtest.h>
 
+#include <fstream>
+
 #include <wx/datetime.h>
+#include <wx/ffile.h>
 #include <wx/fileconf.h>
 #include <wx/filename.h>
 
@@ -21,6 +24,41 @@ wxDateTime LocalTime(int day, int hour, int minute) {
   wxDateTime dt;
   dt.Set(day, wxDateTime::Jun, 2026, hour, minute, 0);
   return dt;
+}
+
+// Windows CI hangs when wxFileConfig creates/flushes under the system temp dir
+// or without wxWidgets initialized (see Actions at LoadSaveRoundTrip).
+class ScopedConfigFile {
+ public:
+  explicit ScopedConfigFile(const char* stem) {
+    static unsigned serial = 0;
+    const wxString name =
+        wxString::Format("%s_%u.conf", stem, static_cast<unsigned>(++serial));
+    path_ = wxFileName(wxString::FromUTF8(TESTDATA), name).GetFullPath();
+    if (wxFileExists(path_)) {
+      wxRemoveFile(path_);
+    }
+  }
+
+  const wxString& path() const { return path_; }
+
+  ~ScopedConfigFile() {
+    if (wxFileExists(path_)) {
+      wxRemoveFile(path_);
+    }
+  }
+
+ private:
+  wxString path_;
+};
+
+bool WriteLegacyLastRunDateIni(const wxString& path, const wxString& date) {
+  std::ofstream out(path.ToStdString());
+  if (!out.good()) {
+    return false;
+  }
+  out << "ScheduledUpdateLastRunDate=" << date.ToUTF8().data() << "\n";
+  return out.good();
 }
 
 }  // namespace
@@ -41,8 +79,13 @@ TEST(ChartDldrScheduleConfig, ShouldRunDelegatesToScheduleGate) {
 }
 
 TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
-  const wxString path = wxFileName::CreateTempFileName("chartdldr_sched_test");
-  ASSERT_FALSE(path.empty());
+  ScopedConfigFile config_file("chartdldr_sched_test");
+  const wxString& path = config_file.path();
+
+  {
+    wxFFile touch(path, "wb");
+    ASSERT_TRUE(touch.IsOpened());
+  }
 
   {
     wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
@@ -53,7 +96,7 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     written.last_attempt_iso = "2026-06-02 14:45:00";
     written.last_status = "2 update 1 new";
     written.Save(&conf);
-    conf.Flush();
+    ASSERT_TRUE(conf.Flush());
   }
 
   {
@@ -67,26 +110,16 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     EXPECT_EQ(loaded.last_attempt_iso, "2026-06-02 14:45:00");
     EXPECT_EQ(loaded.last_status, "2 update 1 new");
   }
-
-  wxRemoveFile(path);
 }
 
 TEST(ChartDldrScheduleConfig, LoadMigratesLegacyLastRunDate) {
-  const wxString path = wxFileName::CreateTempFileName("chartdldr_sched_legacy");
-  ASSERT_FALSE(path.empty());
+  ScopedConfigFile config_file("chartdldr_sched_legacy");
+  const wxString& path = config_file.path();
 
-  {
-    wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
-    conf.Write("ScheduledUpdateLastRunDate", "2026-06-01");
-    conf.Flush();
-  }
+  ASSERT_TRUE(WriteLegacyLastRunDateIni(path, "2026-06-01"));
 
-  {
-    wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
-    ChartDldrScheduleConfig loaded;
-    loaded.Load(&conf);
-    EXPECT_EQ(loaded.last_run_iso, "2026-06-01");
-  }
-
-  wxRemoveFile(path);
+  wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
+  ChartDldrScheduleConfig loaded;
+  loaded.Load(&conf);
+  EXPECT_EQ(loaded.last_run_iso, "2026-06-01");
 }
