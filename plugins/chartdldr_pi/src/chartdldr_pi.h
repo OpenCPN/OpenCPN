@@ -115,6 +115,10 @@ public:
 
   void UpdatePrefs(ChartDldrPrefsDlgImpl* dialog);
 
+  bool RequestBulkUpdate(bool interactive);
+  void ApplyChartDatabaseUpdate();
+  wxString GetScheduledLastStatus() const { return m_scheduled_last_status; }
+
   //    Public properties
   std::vector<std::unique_ptr<ChartSource>> m_ChartSources;
   wxWindow* m_parent_window;
@@ -126,8 +130,16 @@ public:
   bool m_preselect_new;
   bool m_preselect_updated;
   bool m_allow_bulk_update;
+  bool m_scheduled_enabled;
+  int m_scheduled_hour;
+  int m_scheduled_minute;
+  wxString m_scheduled_last_run_iso;
+  wxString m_scheduled_last_status;
+  bool m_bulk_run_active;
 
-private:
+  void OnScheduleTimer(wxTimerEvent& event);
+
+  wxTimer* m_schedule_timer;
   wxFileConfig* m_pconfig;
   wxScrolledWindow* m_pOptionsPage;
   bool LoadConfig(void);
@@ -136,6 +148,7 @@ private:
   int m_selected_source;
 
   ChartDldrPanelImpl* m_dldrpanel;
+  wxPanel* m_panel_host;
   wxString m_base_chart_dir;
 };
 
@@ -173,6 +186,10 @@ private:
 /** Implementing ChartDldrPanel */
 class ChartDldrPanelImpl : public ChartDldrPanel {
   friend class chartdldr_pi;
+  friend bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, bool interactive);
+  friend bool ChartDldrEnsureDownloaderPanel(chartdldr_pi* pi);
+  friend void ChartDldrAttachDownloaderPanelToOptions(chartdldr_pi* pi,
+                                                      wxScrolledWindow* page);
 
 private:
   bool DownloadChart(wxString url, wxString file, wxString title);
@@ -217,7 +234,7 @@ protected:
   void OnSelectUpdatedCharts(wxCommandEvent& event);
   void OnSelectAllCharts(wxCommandEvent& event);
 
-  void DownloadCharts();
+  void DownloadCharts(bool quiet = false);
   void DoHelp(wxCommandEvent& event) override {
 #ifdef __WXMSW__
     wxLaunchDefaultBrowser(_T("file:///") + *GetpSharedDataLocation() +
@@ -227,6 +244,7 @@ protected:
                            _T("plugins/chartdldr_pi/data/doc/index.html"));
 #endif
   }
+  bool RunBulkUpdate(bool interactive, wxCommandEvent& event);
   void UpdateAllCharts(wxCommandEvent& event) override;
   void OnShowLocalDir(wxCommandEvent& event) override;
   void OnPaint(wxPaintEvent& event) override;
@@ -303,16 +321,24 @@ private:
 class ChartDldrPrefsDlgImpl : public ChartDldrPrefsDlg {
 protected:
   void OnOkClick(wxCommandEvent& event);
+  void OnScheduledEnable(wxCommandEvent& event);
+  void OnScheduledTimeChanged(wxCommandEvent& event);
+  void UpdateScheduledTimePreview();
 
 public:
+  bool ValidateScheduledTimeInput();
   ChartDldrPrefsDlgImpl(wxWindow* parent);
   ~ChartDldrPrefsDlgImpl();
+  void ApplyScheduledPrerequisitesUI(bool warn_user);
   wxString GetPath() { return m_tcDefaultDir->GetValue(); }
   void SetPath(const wxString path);
   void GetPreferences(bool& preselect_new, bool& preselect_updated,
                       bool& bulk_update);
   void SetPreferences(bool preselect_new, bool preselect_updated,
                       bool bulk_update);
+  void GetSchedulePreferences(bool& enabled, int& hour, int& minute);
+  void SetSchedulePreferences(bool enabled, int hour, int minute,
+                              const wxString& last_status);
 };
 
 #endif

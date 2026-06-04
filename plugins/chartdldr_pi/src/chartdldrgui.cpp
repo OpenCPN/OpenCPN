@@ -11,6 +11,7 @@
 #include "../../../libs/manual/include/manual.h"
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
+#include <wx/spinctrl.h>
 #include <wx/textwrapper.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -973,6 +974,38 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
 
   sbSizerBehavior->Add(m_buttonDownloadMasterCatalog, 0, wxALL, 5);
 
+  m_sbScheduledUpdate = new wxStaticBoxSizer(
+      new wxStaticBox(scrollWin, wxID_ANY, _("Scheduled updates")), wxVERTICAL);
+
+  m_cbScheduledEnable =
+      new wxCheckBox(scrollWin, wxID_ANY,
+                    _("Enable daily bulk update while OpenCPN is running"),
+                    wxDefaultPosition, wxDefaultSize, 0);
+  m_sbScheduledUpdate->Add(m_cbScheduledEnable, 0, wxALL, 5);
+
+  wxFlexGridSizer* timeSizer = new wxFlexGridSizer(1, 3, 5, 5);
+  timeSizer->Add(new wxStaticText(scrollWin, wxID_ANY, _("Run at:")), 0,
+                 wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  m_tcScheduledTime = new wxTextCtrl(scrollWin, wxID_ANY, wxT("03:00"),
+                                     wxDefaultPosition, wxSize(64, -1), 0);
+  m_tcScheduledTime->SetToolTip(
+      _("Local time in 24-hour HH:MM form, for example 03:00 or 15:30."));
+  timeSizer->Add(m_tcScheduledTime, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  m_stScheduledTimePreview = new wxStaticText(scrollWin, wxID_ANY, wxEmptyString);
+  timeSizer->Add(m_stScheduledTimePreview, 1,
+                 wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, 5);
+  m_sbScheduledUpdate->Add(timeSizer, 0, wxEXPAND | wxALL, 5);
+
+  m_stScheduledLastRun =
+      new wxStaticText(scrollWin, wxID_ANY, _("Last run: (never)"));
+  m_sbScheduledUpdate->Add(m_stScheduledLastRun, 0, wxALL, 5);
+
+  m_btnRunScheduledNow =
+      new wxButton(scrollWin, wxID_ANY, _("Run update now"));
+  m_sbScheduledUpdate->Add(m_btnRunScheduledNow, 0, wxALL, 5);
+
+  sbSizerBehavior->Add(m_sbScheduledUpdate, 0, wxEXPAND | wxALL, 5);
+
   bSizerPrefsMain->Add(sbSizerBehavior, 1, wxALL | wxEXPAND, 5);
 
   this->Fit();
@@ -1005,11 +1038,33 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPrefsDlg::OnDownloadMasterCatalog), NULL,
       this);
+  m_btnRunScheduledNow->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ChartDldrPrefsDlg::OnRunScheduledUpdateNow), NULL,
+      this);
   m_bHelp->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
     wxString datadir = GetPluginDataDir("manual_pi");
     Manual manual(this, datadir.ToStdString());
     manual.Launch("Chartdldr");
   });
+}
+
+void ChartDldrPrefsDlg::OnRunScheduledUpdateNow(wxCommandEvent& event) {
+  event.Skip();
+  ChartDldrPrefsDlgImpl* dlg = dynamic_cast<ChartDldrPrefsDlgImpl*>(this);
+  if (!g_pi || !dlg) {
+    return;
+  }
+  if (!dlg->ValidateScheduledTimeInput()) {
+    return;
+  }
+  dlg->ApplyScheduledPrerequisitesUI(true);
+  g_pi->UpdatePrefs(dlg);
+  if (g_pi->RequestBulkUpdate(false)) {
+    dlg->SetSchedulePreferences(g_pi->m_scheduled_enabled, g_pi->m_scheduled_hour,
+                                g_pi->m_scheduled_minute,
+                                g_pi->GetScheduledLastStatus());
+  }
 }
 
 void ChartDldrPrefsDlg::OnDownloadMasterCatalog(wxCommandEvent& event) {

@@ -42,11 +42,15 @@ endif ()
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
+  chartdldr_schedule_tests.cpp
+  chartdldr_bulk_schedule_tests.cpp
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
   navutil_base_tests.cpp
   route_point_tests.cpp
   ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_policy.cpp
 )
 
 if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)
@@ -87,6 +91,9 @@ target_compile_definitions(tests
 )
 add_dependencies(tests config_tests)
 
+target_include_directories(tests
+  PRIVATE ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src
+)
 target_link_libraries(tests PRIVATE ocpn::model-src ocpn::gtest win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(tests PRIVATE -fsanitize=${ENABLE_SANITIZER})

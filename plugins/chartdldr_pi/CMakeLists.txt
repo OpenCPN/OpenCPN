@@ -15,8 +15,8 @@ set(CPACK_PACKAGE_CONTACT "Pavel Kalian")
 
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "4")
-set(VERSION_PATCH "0")
-set(VERSION_DATE "2019-12-09")
+set(VERSION_PATCH "1")
+set(VERSION_DATE "2026-06-02")
 
 
 # LibArchive_VERSION is defined by cmake 3.17+ i. e. Focal+; Focal needs unarr.
@@ -47,6 +47,14 @@ set(CMAKE_MACOSX_RPATH "ON")
 include("cmake/PluginConfigure.cmake")
 
 set(SRC_CHARTDLDR
+    src/chartdldr_schedule.h
+    src/chartdldr_schedule.cpp
+    src/chartdldr_panel.h
+    src/chartdldr_panel.cpp
+    src/chartdldr_bulk_policy.h
+    src/chartdldr_bulk_policy.cpp
+    src/chartdldr_bulk_schedule.h
+    src/chartdldr_bulk_schedule.cpp
     src/chartdldr_pi.h
     src/chartdldr_pi.cpp
     src/icons.h

@@ -132,6 +132,30 @@ charts. You can configure the plugin to automatically preselect the
 updated and/or new charts after an update of the chart catalog in the
 preferences.
 
+==== Scheduled bulk update (optional)
+
+In *Chart Downloader → Preferences*, you can enable a *daily bulk update*
+while OpenCPN is running. This performs the same steps as *Update All* for
+each configured chart source (refresh catalog, then download preselected new
+and updated charts), then rescans the OpenCPN chart database.
+
+* Disabled by default.
+* Enabling it also turns on *Allow bulk update* in the same preferences dialog.
+* Configure chart sources on the Chart Downloader tab (you are warned if none are set).
+* OpenCPN must be running at the scheduled local time.
+* Charts that require manual download in a browser are skipped during
+  scheduled runs (logged only).
+* After the scheduled local time, OpenCPN checks about once per minute whether
+  a run is due.
+* *Skipped* runs (for example bulk update disabled, no chart sources, or panel
+  unavailable) are recorded once for that day and are not retried until the next
+  day.
+* *Failed* runs (no charts selected, or downloads attempted but none succeeded)
+  do not count as completed for that day; OpenCPN will try again on later checks
+  the same day.
+
+Use *Run update now* in preferences to trigger the same operation immediately.
+
 image::15-chart-status-selection.png[]
 
 NOTE: In addition to the right-click chart selection, you can Highlight
@@ -160,9 +184,10 @@ We’ll do that in the next step.
 
 === After the download
 
-Upon *Closing* the Chart Downloader will automatically complete a *Scan
-and Database Rebuild* of the Chart Database, so the charts will be ready
-for use. For vector charts, one sensible step remains. Go to
+After bulk or selected downloads complete, the chart database is rescanned
+automatically so new files are ready for use. When using the Chart Downloader
+options page, closing the options dialog still applies your catalog settings
+as before. For vector charts, one sensible step remains. Go to
 Options→Charts→Chart Files and press the button *Prepare all ENC
 Charts*. This will preprocess all new vector charts and updates, and
 prevent delays when actually using the charts

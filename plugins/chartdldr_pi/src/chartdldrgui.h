@@ -33,6 +33,7 @@
 #include <wx/combobox.h>
 #include <wx/checkbox.h>
 #include <wx/statline.h>
+#include <wx/spinctrl.h>
 #include <wx/dcmemory.h>
 #include "ocpn_plugin.h"
 
@@ -206,6 +207,12 @@ protected:
   wxCheckBox* m_cbSelectNew;
   wxStaticLine* m_staticline1;
   wxCheckBox* m_cbBulkUpdate;
+  wxStaticBoxSizer* m_sbScheduledUpdate;
+  wxCheckBox* m_cbScheduledEnable;
+  wxTextCtrl* m_tcScheduledTime;
+  wxStaticText* m_stScheduledTimePreview;
+  wxStaticText* m_stScheduledLastRun;
+  wxButton* m_btnRunScheduledNow;
   wxStdDialogButtonSizer* m_sdbSizerBtns;
   wxButton* m_bHelp;
   wxButton* m_sdbSizerBtnsOK;
@@ -217,6 +224,7 @@ protected:
 
   void OnDirSelClick(wxCommandEvent& event);
   void OnDownloadMasterCatalog(wxCommandEvent& event);
+  void OnRunScheduledUpdateNow(wxCommandEvent& event);
 
   // Virtual event handlers, overide them in your derived class
   virtual void OnCancelClick(wxCommandEvent& event);
