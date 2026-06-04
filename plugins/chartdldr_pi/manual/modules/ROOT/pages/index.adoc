@@ -142,17 +142,13 @@ and updated charts), then rescans the OpenCPN chart database.
 * Disabled by default.
 * Enabling it also turns on *Allow bulk update* in the same preferences dialog.
 * Configure chart sources on the Chart Downloader tab (you are warned if none are set).
-* OpenCPN must be running at the scheduled local time.
+* OpenCPN must be running after the scheduled local time (checked about once per minute).
 * Charts that require manual download in a browser are skipped during
   scheduled runs (logged only).
-* After the scheduled local time, OpenCPN checks about once per minute whether
-  a run is due.
-* *Skipped* runs (for example bulk update disabled, no chart sources, or panel
-  unavailable) are recorded once for that day and are not retried until the next
-  day.
-* *Failed* runs (no charts selected, or downloads attempted but none succeeded)
-  do not count as completed for that day; OpenCPN will try again on later checks
-  the same day.
+* *Skipped* runs (bulk update disabled, no chart sources, or panel unavailable)
+  are recorded for that day and not retried until the next day.
+* *All downloads failed* does not count as completed; later checks the same day
+  will retry. *No charts to update* is recorded for that day and not retried.
 
 Use *Run update now* in preferences to trigger the same operation immediately.
 
