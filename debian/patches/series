@@ -11,3 +11,4 @@
 0012-tcds_binary_harmonic.cpp-Fix-gcc-16-build-problem-51.patch
 0013-comm_drv_n2k_net-Avoid-unnecessary-allocations.patch
 0014-certificates-Handle-libssl-4.0-FTBFS-5252.patch
+0015-VERSION.cmake-Add-automatic-git-date-variables-5253.patch
