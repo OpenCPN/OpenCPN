@@ -1065,6 +1065,7 @@ void TCWin::NXEvent(wxCommandEvent &event) {
   m_t_graphday_GMT = t_graphday_00;
 
   btc_valid = false;
+  m_chartPanel->Refresh();
   Refresh();
 }
 
@@ -1082,6 +1083,7 @@ void TCWin::PREvent(wxCommandEvent &event) {
   m_t_graphday_GMT = t_graphday_00;
 
   btc_valid = false;
+  m_chartPanel->Refresh();
   Refresh();
 }
 
