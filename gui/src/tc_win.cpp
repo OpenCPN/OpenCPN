@@ -413,6 +413,7 @@ void TCWin::InitializeStationText() {
 
   m_ptextctrl->AppendText(dsource);
 
+  m_ptextctrl->SetInsertionPoint(0);
   m_ptextctrl->ShowPosition(0);
 }
 
