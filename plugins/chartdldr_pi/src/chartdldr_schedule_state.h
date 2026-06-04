@@ -10,6 +10,7 @@
 #ifndef CHARTDLDR_SCHEDULE_STATE_H_
 #define CHARTDLDR_SCHEDULE_STATE_H_
 
+#include <wx/datetime.h>
 #include <wx/string.h>
 
 class ChartDldrScheduleConfig;
@@ -26,6 +27,13 @@ enum class ChartDldrScheduledRunOutcome {
   BulkSuccess,
 };
 
+wxString ChartDldrScheduledNeverRunDisplayText();
+
+wxString ChartDldrFormatScheduledRunTimestamp(const wxDateTime& run_time);
+
+wxString ChartDldrFormatScheduledLastRunDisplay(
+    const ChartDldrScheduleConfig& schedule);
+
 bool ChartDldrScheduledOutcomeAdvancesLastRun(
     ChartDldrScheduledRunOutcome outcome);
 
@@ -33,10 +41,13 @@ ChartDldrScheduledRunOutcome ChartDldrScheduledOutcomeFromBulkResult(
     int downloaded_ok, int attempted);
 
 wxString ChartDldrScheduledStatusFromBulkResult(int downloaded_ok,
-                                                int attempted, int failed);
+                                                int attempted, int failed,
+                                                int new_downloads,
+                                                int updated_downloads);
 
 void ChartDldrApplyScheduledRunOutcome(ChartDldrScheduleConfig& schedule,
                                        ChartDldrScheduledRunOutcome outcome,
-                                       const wxString& status);
+                                       const wxString& status_detail,
+                                       const wxDateTime* run_time = nullptr);
 
 #endif  // CHARTDLDR_SCHEDULE_STATE_H_

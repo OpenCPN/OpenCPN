@@ -992,7 +992,7 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   m_sbScheduledUpdate->Add(timeSizer, 0, wxEXPAND | wxALL, 4);
 
   m_stScheduledLastRun =
-      new wxStaticText(prefsPanel, wxID_ANY, _("Last run: (never)"));
+      new wxStaticText(prefsPanel, wxID_ANY, _("Last run: -- : --"));
   m_sbScheduledUpdate->Add(m_stScheduledLastRun, 0, wxALL, 4);
 
   m_btnRunScheduledNow =

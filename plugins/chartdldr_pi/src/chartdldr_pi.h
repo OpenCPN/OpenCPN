@@ -213,6 +213,11 @@ private:
   long m_transferredsize;
   int m_failed_downloads;
   int m_downloading;
+  int m_bulkDownloadedNew;
+  int m_bulkDownloadedUpdated;
+
+  bool ChartWasNewBeforeDownload(int chart_index);
+  bool ChartWasUpdatedBeforeDownload(int chart_index);
 
   void DisableForDownload(bool enabled);
   bool m_bconnected;
@@ -231,6 +236,11 @@ protected:
   void UpdateChartListForCatalog(int catalog_index, wxCommandEvent& event,
                                  bool quiet);
   void PrepareBulkCatalog(int catalog_index, bool sync_list_selection);
+  void EnsureDownloadHandlerConnected();
+  bool WaitForBackgroundDownload(bool allow_ui_updates);
+  _OCPN_DLStatus DownloadCatalogFile(const wxString& url,
+                                     const wxString& output_path,
+                                     bool show_progress_dialog);
   void OnDownloadCharts(wxCommandEvent& event) override;
 
   void OnSelectChartItem(wxCommandEvent& event);

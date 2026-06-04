@@ -19,7 +19,7 @@ TEST(ChartDldrBulkSchedule, SkipAndSuccessShareAdvancePolicy) {
       ChartDldrScheduledOutcomeFromBulkResult(1, 3)));
   EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(
       ChartDldrScheduledOutcomeFromBulkResult(0, 3)));
-  EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(
+  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
       ChartDldrScheduledOutcomeFromBulkResult(0, 0)));
 }
 

@@ -47,11 +47,11 @@ ChartDldrScheduledSkipReason ChartDldrEvaluateScheduledBulkSkip(
 wxString ChartDldrScheduledSkipStatus(ChartDldrScheduledSkipReason reason) {
   switch (reason) {
     case ChartDldrScheduledSkipReason::BulkDisabled:
-      return _("Skipped: enable bulk update in preferences");
+      return _("bulk update disabled in preferences");
     case ChartDldrScheduledSkipReason::NoSources:
-      return _("Skipped: no chart sources configured");
+      return _("no chart sources configured");
     case ChartDldrScheduledSkipReason::PanelUnavailable:
-      return _("Skipped: downloader panel unavailable");
+      return _("downloader panel unavailable");
     case ChartDldrScheduledSkipReason::None:
       break;
   }

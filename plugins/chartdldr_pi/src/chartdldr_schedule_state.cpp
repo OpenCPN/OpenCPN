@@ -14,9 +14,31 @@
 #include <wx/datetime.h>
 #include <wx/intl.h>
 
+wxString ChartDldrScheduledNeverRunDisplayText() { return _("-- : --"); }
+
+wxString ChartDldrFormatScheduledRunTimestamp(const wxDateTime& run_time) {
+  return run_time.Format(_("%Y-%m-%d %H:%M"));
+}
+
+wxString ChartDldrFormatScheduledLastRunDisplay(
+    const ChartDldrScheduleConfig& schedule) {
+  if (schedule.last_status.IsEmpty() && schedule.last_run_iso.IsEmpty()) {
+    return ChartDldrScheduledNeverRunDisplayText();
+  }
+  if (!schedule.last_status.IsEmpty()) {
+    return schedule.last_status;
+  }
+  wxDateTime run_time;
+  if (run_time.ParseISOCombined(schedule.last_run_iso)) {
+    return ChartDldrFormatScheduledRunTimestamp(run_time);
+  }
+  return schedule.last_run_iso;
+}
+
 bool ChartDldrScheduledOutcomeAdvancesLastRun(
     ChartDldrScheduledRunOutcome outcome) {
   return outcome == ChartDldrScheduledRunOutcome::Skipped ||
+         outcome == ChartDldrScheduledRunOutcome::BulkNoAttempts ||
          outcome == ChartDldrScheduledRunOutcome::BulkSuccess;
 }
 
@@ -32,21 +54,31 @@ ChartDldrScheduledRunOutcome ChartDldrScheduledOutcomeFromBulkResult(
 }
 
 wxString ChartDldrScheduledStatusFromBulkResult(int downloaded_ok,
-                                                int attempted, int failed) {
+                                                int attempted, int failed,
+                                                int new_downloads,
+                                                int updated_downloads) {
   if (attempted == 0) {
-    return _("No charts downloaded");
+    return _("No charts to update");
   }
-  if (failed == 0) {
-    return wxString::Format(_("OK (%d charts)"), downloaded_ok);
+  if (downloaded_ok > 0) {
+    return wxString::Format(_("%d update %d new"), updated_downloads,
+                            new_downloads);
   }
-  return wxString::Format(_("%d failed of %d"), failed, attempted);
+  return wxString::Format(_("failed: %d of %d charts"), failed, attempted);
 }
 
 void ChartDldrApplyScheduledRunOutcome(ChartDldrScheduleConfig& schedule,
                                        ChartDldrScheduledRunOutcome outcome,
-                                       const wxString& status) {
-  schedule.SetLastStatus(status);
+                                       const wxString& status_detail,
+                                       const wxDateTime* run_time) {
+  wxDateTime when = wxDateTime::Now();
+  if (run_time && run_time->IsValid()) {
+    when = *run_time;
+  }
+
+  const wxString stamp = ChartDldrFormatScheduledRunTimestamp(when);
+  schedule.last_status = stamp + " " + status_detail;
   if (ChartDldrScheduledOutcomeAdvancesLastRun(outcome)) {
-    schedule.last_run_iso = wxDateTime::Now().FormatISOCombined(' ');
+    schedule.last_run_iso = when.FormatISOCombined(' ');
   }
 }

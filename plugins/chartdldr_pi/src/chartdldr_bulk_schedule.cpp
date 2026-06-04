@@ -91,15 +91,16 @@ bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
 }
 
 void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi, int downloaded_ok,
-                                     int attempted, int failed) {
+                                     int attempted, int failed,
+                                     int new_downloads, int updated_downloads) {
   if (!pi) {
     return;
   }
 
   const ChartDldrScheduledRunOutcome outcome =
       ChartDldrScheduledOutcomeFromBulkResult(downloaded_ok, attempted);
-  const wxString status =
-      ChartDldrScheduledStatusFromBulkResult(downloaded_ok, attempted, failed);
+  const wxString status = ChartDldrScheduledStatusFromBulkResult(
+      downloaded_ok, attempted, failed, new_downloads, updated_downloads);
 
   ChartDldrApplyScheduledRunOutcome(pi->ScheduleConfig(), outcome, status);
 

@@ -21,7 +21,8 @@ void ChartDldrRestartScheduleTimer(chartdldr_pi* pi, wxTimer* timer);
 void ChartDldrOnScheduleTimer(chartdldr_pi* pi, wxTimerEvent& event);
 bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind);
 void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi, int downloaded_ok,
-                                   int attempted, int failed);
+                                   int attempted, int failed,
+                                   int new_downloads, int updated_downloads);
 
 class ChartDldrScheduler {
 public:

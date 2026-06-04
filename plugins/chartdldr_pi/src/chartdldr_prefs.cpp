@@ -13,6 +13,7 @@
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_pi.h"
 #include "chartdldr_prefs_time.h"
+#include "chartdldr_schedule_state.h"
 
 #include <wx/intl.h>
 
@@ -170,11 +171,7 @@ void ChartDldrPrefsDlgImpl::SetSchedulePreferences(
   m_tcScheduledTime->SetValue(
       ChartDldrFormatScheduledTimeEntry(schedule.hour, schedule.minute));
   wxString label = _("Last run:");
-  if (schedule.last_status.IsEmpty()) {
-    label << " " << _("(never)");
-  } else {
-    label << " " << schedule.last_status;
-  }
+  label << " " << ChartDldrFormatScheduledLastRunDisplay(schedule);
   m_stScheduledLastRun->SetLabel(label);
   ChartDldrUpdateScheduledTimePreviewWidgets(m_tcScheduledTime,
                                              m_stScheduledTimePreview);

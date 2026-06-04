@@ -12,6 +12,22 @@
 #include "chartdldr_schedule_config.h"
 #include "chartdldr_schedule_state.h"
 
+namespace {
+
+wxDateTime FixedRunTime() {
+  wxDateTime dt;
+  dt.Set(2, wxDateTime::Jun, 2026, 15, 30, 0);
+  return dt;
+}
+
+}  // namespace
+
+TEST(ChartDldrScheduleState, NeverRunDisplayText) {
+  ChartDldrScheduleConfig schedule;
+  EXPECT_EQ(ChartDldrScheduledNeverRunDisplayText(), "-- : --");
+  EXPECT_EQ(ChartDldrFormatScheduledLastRunDisplay(schedule), "-- : --");
+}
+
 TEST(ChartDldrScheduleState, OutcomeFromBulkResult) {
   EXPECT_EQ(ChartDldrScheduledOutcomeFromBulkResult(0, 0),
             ChartDldrScheduledRunOutcome::BulkNoAttempts);
@@ -28,7 +44,7 @@ TEST(ChartDldrScheduleState, AdvanceLastRunPolicy) {
       ChartDldrScheduledRunOutcome::Skipped));
   EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
       ChartDldrScheduledRunOutcome::BulkSuccess));
-  EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(
+  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
       ChartDldrScheduledRunOutcome::BulkNoAttempts));
   EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(
       ChartDldrScheduledRunOutcome::BulkAllFailed));
@@ -37,56 +53,53 @@ TEST(ChartDldrScheduleState, AdvanceLastRunPolicy) {
 TEST(ChartDldrScheduleState, SkippedAdvancesLastRunIso) {
   ChartDldrScheduleConfig schedule;
   schedule.last_run_iso = wxEmptyString;
+  const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(schedule,
                                    ChartDldrScheduledRunOutcome::Skipped,
-                                   "Skipped: test");
+                                   "no chart sources configured", &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
-  EXPECT_EQ(schedule.last_status, "Skipped: test");
+  EXPECT_EQ(schedule.last_status, "2026-06-02 15:30 no chart sources configured");
 }
 
 TEST(ChartDldrScheduleState, BulkAllFailedDoesNotAdvanceLastRunIso) {
   ChartDldrScheduleConfig schedule;
   schedule.last_run_iso = wxEmptyString;
+  const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(schedule,
                                    ChartDldrScheduledRunOutcome::BulkAllFailed,
-                                   "failed");
+                                   "failed: 4 of 4 charts", &run_time);
   EXPECT_TRUE(schedule.last_run_iso.empty());
-  EXPECT_EQ(schedule.last_status, "failed");
+  EXPECT_EQ(schedule.last_status, "2026-06-02 15:30 failed: 4 of 4 charts");
 }
 
-TEST(ChartDldrScheduleState, BulkNoAttemptsDoesNotAdvanceLastRunIso) {
+TEST(ChartDldrScheduleState, BulkNoAttemptsAdvancesLastRunIso) {
   ChartDldrScheduleConfig schedule;
-  schedule.last_run_iso = "2026-06-01 03:00:00";
-  const wxString prior = schedule.last_run_iso;
-  ChartDldrApplyScheduledRunOutcome(
-      schedule, ChartDldrScheduledRunOutcome::BulkNoAttempts, "empty");
-  EXPECT_EQ(schedule.last_run_iso, prior);
+  schedule.last_run_iso = wxEmptyString;
+  const wxDateTime run_time = FixedRunTime();
+  ChartDldrApplyScheduledRunOutcome(schedule,
+                                   ChartDldrScheduledRunOutcome::BulkNoAttempts,
+                                   "No charts to update", &run_time);
+  EXPECT_FALSE(schedule.last_run_iso.empty());
+  EXPECT_EQ(schedule.last_status,
+            "2026-06-02 15:30 No charts to update");
 }
 
 TEST(ChartDldrScheduleState, BulkSuccessAdvancesLastRunIso) {
   ChartDldrScheduleConfig schedule;
   schedule.last_run_iso = wxEmptyString;
+  const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(schedule,
                                    ChartDldrScheduledRunOutcome::BulkSuccess,
-                                   "OK (3 charts)");
+                                   "2 update 3 new", &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
-}
-
-TEST(ChartDldrScheduleState, SkippedAndBulkSuccessAreOnlyAdvancingOutcomes) {
-  for (auto outcome :
-       {ChartDldrScheduledRunOutcome::BulkNoAttempts,
-        ChartDldrScheduledRunOutcome::BulkAllFailed}) {
-    EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(outcome));
-  }
+  EXPECT_EQ(schedule.last_status, "2026-06-02 15:30 2 update 3 new");
 }
 
 TEST(ChartDldrScheduleState, StatusFromBulkResult) {
-  const wxString none = ChartDldrScheduledStatusFromBulkResult(0, 0, 0);
-  const wxString partial = ChartDldrScheduledStatusFromBulkResult(3, 5, 2);
-  const wxString ok = ChartDldrScheduledStatusFromBulkResult(5, 5, 0);
-  EXPECT_FALSE(none.empty());
-  EXPECT_FALSE(partial.empty());
-  EXPECT_FALSE(ok.empty());
-  EXPECT_NE(partial, ok);
-  EXPECT_NE(none, ok);
+  EXPECT_EQ(ChartDldrScheduledStatusFromBulkResult(0, 0, 0, 0, 0),
+            "No charts to update");
+  EXPECT_EQ(ChartDldrScheduledStatusFromBulkResult(3, 5, 2, 2, 1),
+            "1 update 2 new");
+  EXPECT_EQ(ChartDldrScheduledStatusFromBulkResult(0, 4, 4, 0, 0),
+            "failed: 4 of 4 charts");
 }

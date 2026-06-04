@@ -50,13 +50,16 @@ TEST(ChartDldrBulkRequest, EvaluateSkipReasonPriority) {
 
 TEST(ChartDldrBulkRequest, SkipStatusAdvancesLastRun) {
   ChartDldrScheduleConfig schedule;
-  ChartDldrApplyScheduledRunOutcome(
-      schedule, ChartDldrScheduledRunOutcome::Skipped,
-      ChartDldrScheduledSkipStatus(ChartDldrScheduledSkipReason::NoSources));
+  wxDateTime run_time;
+  run_time.Set(2, wxDateTime::Jun, 2026, 12, 0, 0);
+  const wxString reason =
+      ChartDldrScheduledSkipStatus(ChartDldrScheduledSkipReason::NoSources);
+  ChartDldrApplyScheduledRunOutcome(schedule,
+                                   ChartDldrScheduledRunOutcome::Skipped,
+                                   reason, &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
-  EXPECT_FALSE(
-      ChartDldrScheduledSkipStatus(ChartDldrScheduledSkipReason::NoSources)
-          .empty());
+  EXPECT_TRUE(schedule.last_status.EndsWith(reason));
+  EXPECT_FALSE(reason.empty());
 }
 
 TEST(ChartDldrBulkRequest, EachSkipReasonHasStatusText) {
