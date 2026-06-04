@@ -57,10 +57,12 @@ set(SRC_CHARTDLDR
     src/chartdldr_prefs_time.cpp
     src/chartdldr_prefs.h
     src/chartdldr_prefs.cpp
-    src/chartdldr_scheduler.h
-    src/chartdldr_scheduler.cpp
     src/chartdldr_panel.h
     src/chartdldr_panel.cpp
+    src/chartdldr_bulk_request.h
+    src/chartdldr_bulk_request.cpp
+    src/chartdldr_bulk_run.h
+    src/chartdldr_bulk_run.cpp
     src/chartdldr_bulk_schedule.h
     src/chartdldr_bulk_schedule.cpp
     src/chartdldr_pi.h

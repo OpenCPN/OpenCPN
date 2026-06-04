@@ -9,14 +9,8 @@
 
 #include <gtest/gtest.h>
 
-#include "chartdldr_run_kind.h"
+#include "chartdldr_bulk_run.h"
 #include "chartdldr_schedule_state.h"
-
-TEST(ChartDldrBulkRunKind, ScheduledVsInteractive) {
-  EXPECT_TRUE(ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind::Scheduled));
-  EXPECT_FALSE(
-      ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind::Interactive));
-}
 
 TEST(ChartDldrBulkSchedule, SkipAndSuccessShareAdvancePolicy) {
   EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(

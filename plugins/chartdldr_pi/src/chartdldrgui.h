@@ -233,7 +233,7 @@ public:
   ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id = wxID_ANY,
                     const wxString& title = _("Chart Downloader Preferences"),
                     const wxPoint& pos = wxDefaultPosition,
-                    const wxSize& size = wxSize(480, 420),
+                    const wxSize& size = wxSize(480, -1),
                     long style = wxDEFAULT_DIALOG_STYLE);
   ~ChartDldrPrefsDlg();
 };

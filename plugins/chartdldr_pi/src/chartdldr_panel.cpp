@@ -14,7 +14,9 @@
 #include <wx/panel.h>
 #include <wx/sizer.h>
 
-// A headless bulk coordinator could avoid this hidden panel; see chartdldr_pi.
+// Scheduled bulk uses a hidden panel for downloads only. Bulk iteration uses
+// m_ChartSources indices (PrepareBulkCatalog / UpdateChartListForCatalog), not
+// wxListCtrl selection; ChartDldrBulkRunUiPolicy gates remaining UI side effects.
 
 bool ChartDldrPanelOnOptionsPage(const chartdldr_pi* pi) {
   return pi && pi->m_dldrpanel && pi->m_pOptionsPage &&

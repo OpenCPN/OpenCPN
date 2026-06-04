@@ -47,6 +47,8 @@ set(SRC
   chartdldr_schedule_state_tests.cpp
   chartdldr_prefs_time_tests.cpp
   chartdldr_bulk_schedule_tests.cpp
+  chartdldr_bulk_request_tests.cpp
+  chartdldr_bulk_run_tests.cpp
   chartdldr_schedule_integration_tests.cpp
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
@@ -57,6 +59,8 @@ set(SRC
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_config.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_state.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_prefs_time.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_request.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_run.cpp
 )
 
 if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)

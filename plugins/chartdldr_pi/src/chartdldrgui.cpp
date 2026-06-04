@@ -897,7 +897,7 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   SetSizer(itemBoxSizerMainPanel);
 
   wxPanel* prefsPanel = new wxPanel(this, wxID_ANY);
-  itemBoxSizerMainPanel->Add(prefsPanel, 1, wxEXPAND | wxALL, 0);
+  itemBoxSizerMainPanel->Add(prefsPanel, 0, wxEXPAND | wxALL, 0);
 
   m_sdbSizerBtns = new wxStdDialogButtonSizer();
   m_bHelp = new wxButton(this, wxID_HELP);
@@ -924,14 +924,14 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   //      m_dpDefaultDir, 0, wxALL|wxEXPAND, 5 );
 
   m_tcDefaultDir = new wxTextCtrl(prefsPanel, wxID_ANY, _T(""),
-                                  wxDefaultPosition, wxSize(-1, -1), wxHSCROLL);
-  sbSizerPaths->Add(m_tcDefaultDir, 3, wxALL | wxEXPAND, 5);
+                                  wxDefaultPosition, wxDefaultSize, wxHSCROLL);
+  sbSizerPaths->Add(m_tcDefaultDir, 0, wxALL | wxEXPAND, 4);
 
   m_buttonChartDirectory =
       new wxButton(prefsPanel, wxID_ANY, _("Select a folder"));
-  sbSizerPaths->Add(m_buttonChartDirectory, 1, wxALIGN_RIGHT | wxALL, 5);
+  sbSizerPaths->Add(m_buttonChartDirectory, 0, wxALIGN_RIGHT | wxALL, 4);
 
-  bSizerPrefsMain->Add(sbSizerPaths, 0, wxALL | wxEXPAND, 5);
+  bSizerPrefsMain->Add(sbSizerPaths, 0, wxALL | wxEXPAND, 4);
 
   wxStaticBoxSizer* sbSizerBehavior;
   sbSizerBehavior = new wxStaticBoxSizer(
@@ -941,33 +941,33 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
       prefsPanel, wxID_ANY, _("After catalog update select for download"),
       wxDefaultPosition, wxDefaultSize, 0);
   m_stPreselect->Wrap(-1);
-  sbSizerBehavior->Add(m_stPreselect, 0, wxALL, 5);
+  sbSizerBehavior->Add(m_stPreselect, 0, wxALL, 4);
 
   m_cbSelectUpdated =
       new wxCheckBox(prefsPanel, wxID_ANY, _("All updated charts"),
                      wxDefaultPosition, wxDefaultSize, 0);
   m_cbSelectUpdated->SetValue(true);
-  sbSizerBehavior->Add(m_cbSelectUpdated, 0, wxALL, 5);
+  sbSizerBehavior->Add(m_cbSelectUpdated, 0, wxALL, 4);
 
   m_cbSelectNew = new wxCheckBox(prefsPanel, wxID_ANY, _("All new charts"),
                                  wxDefaultPosition, wxDefaultSize, 0);
-  sbSizerBehavior->Add(m_cbSelectNew, 0, wxALL, 5);
+  sbSizerBehavior->Add(m_cbSelectNew, 0, wxALL, 4);
 
   m_staticline1 = new wxStaticLine(prefsPanel, wxID_ANY, wxDefaultPosition,
                                    wxDefaultSize, wxLI_HORIZONTAL);
-  sbSizerBehavior->Add(m_staticline1, 0, wxEXPAND | wxALL, 5);
+  sbSizerBehavior->Add(m_staticline1, 0, wxEXPAND | wxALL, 4);
 
   m_cbBulkUpdate = new wxCheckBox(
       prefsPanel, wxID_ANY,
       _("Allow bulk update of all configured chart sources and charts"),
       wxDefaultPosition, wxDefaultSize, 0);
-  sbSizerBehavior->Add(m_cbBulkUpdate, 0, wxALL, 5);
+  sbSizerBehavior->Add(m_cbBulkUpdate, 0, wxALL, 4);
 
   m_buttonDownloadMasterCatalog =
       new wxButton(prefsPanel, wxID_ANY, _("Update chart source catalog"),
                    wxDefaultPosition, wxDefaultSize, 0);
 
-  sbSizerBehavior->Add(m_buttonDownloadMasterCatalog, 0, wxALL, 5);
+  sbSizerBehavior->Add(m_buttonDownloadMasterCatalog, 0, wxALL, 4);
 
   m_sbScheduledUpdate = new wxStaticBoxSizer(
       new wxStaticBox(prefsPanel, wxID_ANY, _("Scheduled updates")), wxVERTICAL);
@@ -976,39 +976,38 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
       new wxCheckBox(prefsPanel, wxID_ANY,
                     _("Enable daily bulk update while OpenCPN is running"),
                     wxDefaultPosition, wxDefaultSize, 0);
-  m_sbScheduledUpdate->Add(m_cbScheduledEnable, 0, wxALL, 5);
+  m_sbScheduledUpdate->Add(m_cbScheduledEnable, 0, wxALL, 4);
 
-  wxFlexGridSizer* timeSizer = new wxFlexGridSizer(1, 3, 5, 5);
+  wxFlexGridSizer* timeSizer = new wxFlexGridSizer(1, 3, 4, 4);
   timeSizer->Add(new wxStaticText(prefsPanel, wxID_ANY, _("Run at:")), 0,
-                 wxALL | wxALIGN_CENTER_VERTICAL, 5);
+                 wxALL | wxALIGN_CENTER_VERTICAL, 4);
   m_tcScheduledTime = new wxTextCtrl(prefsPanel, wxID_ANY, wxT("03:00"),
                                      wxDefaultPosition, wxSize(64, -1), 0);
   m_tcScheduledTime->SetToolTip(
       _("Local time in 24-hour HH:MM form, for example 03:00 or 15:30."));
-  timeSizer->Add(m_tcScheduledTime, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  timeSizer->Add(m_tcScheduledTime, 0, wxALL | wxALIGN_CENTER_VERTICAL, 4);
   m_stScheduledTimePreview = new wxStaticText(prefsPanel, wxID_ANY, wxEmptyString);
   timeSizer->Add(m_stScheduledTimePreview, 1,
-                 wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, 5);
-  m_sbScheduledUpdate->Add(timeSizer, 0, wxEXPAND | wxALL, 5);
+                 wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, 4);
+  m_sbScheduledUpdate->Add(timeSizer, 0, wxEXPAND | wxALL, 4);
 
   m_stScheduledLastRun =
       new wxStaticText(prefsPanel, wxID_ANY, _("Last run: (never)"));
-  m_sbScheduledUpdate->Add(m_stScheduledLastRun, 0, wxALL, 5);
+  m_sbScheduledUpdate->Add(m_stScheduledLastRun, 0, wxALL, 4);
 
   m_btnRunScheduledNow =
       new wxButton(prefsPanel, wxID_ANY, _("Run update now"));
-  m_sbScheduledUpdate->Add(m_btnRunScheduledNow, 0, wxALL, 5);
+  m_sbScheduledUpdate->Add(m_btnRunScheduledNow, 0, wxALL, 4);
 
-  sbSizerBehavior->Add(m_sbScheduledUpdate, 0, wxEXPAND | wxALL, 5);
+  sbSizerBehavior->Add(m_sbScheduledUpdate, 0, wxEXPAND | wxALL, 4);
 
-  bSizerPrefsMain->Add(sbSizerBehavior, 0, wxALL | wxEXPAND, 5);
+  bSizerPrefsMain->Add(sbSizerBehavior, 0, wxALL | wxEXPAND, 4);
 
   Layout();
   Fit();
 
   wxSize dialogSize = GetBestSize();
   dialogSize.x = wxMax(dialogSize.x, 60 * GetCharWidth());
-  dialogSize.y += 8;
   const wxSize canvas_size = GetOCPNCanvasWindow()->GetSize();
   dialogSize.x = wxMin(dialogSize.x, canvas_size.x);
   dialogSize.y = wxMin(dialogSize.y, canvas_size.y);

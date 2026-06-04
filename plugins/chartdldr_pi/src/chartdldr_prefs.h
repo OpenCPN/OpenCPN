@@ -13,6 +13,8 @@
 #include "chartdldrgui.h"
 #include "chartdldr_schedule_config.h"
 
+class chartdldr_pi;
+
 class ChartDldrPrefsDlgImpl : public ChartDldrPrefsDlg {
 protected:
   void OnOkClick(wxCommandEvent& event);
@@ -23,9 +25,11 @@ protected:
   void WarnScheduledPrerequisites();
   void ApplyScheduledPrerequisitesOnSave();
 
+  chartdldr_pi* plugin_;
+
 public:
   bool ValidateScheduledTimeInput();
-  ChartDldrPrefsDlgImpl(wxWindow* parent);
+  ChartDldrPrefsDlgImpl(wxWindow* parent, chartdldr_pi* plugin);
   ~ChartDldrPrefsDlgImpl();
 
   wxString GetPath() { return m_tcDefaultDir->GetValue(); }

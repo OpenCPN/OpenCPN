@@ -9,21 +9,33 @@
 
 #include "chartdldr_bulk_schedule.h"
 
+#include "chartdldr_bulk_request.h"
 #include "chartdldr_panel.h"
 #include "chartdldr_pi.h"
-#include "chartdldr_schedule_config.h"
 #include "chartdldr_schedule_state.h"
 
-#include <wx/intl.h>
 #include <wx/log.h>
 #include <wx/timer.h>
+#include <wx/window.h>
 
 namespace {
 
-void FinishScheduledSkip(chartdldr_pi* pi, const wxString& status) {
+ChartDldrBulkRequestInput MakeBulkRequestInput(const chartdldr_pi* pi) {
+  ChartDldrBulkRequestInput input;
   if (!pi) {
+    return input;
+  }
+  input.allow_bulk_update = pi->m_allow_bulk_update;
+  input.has_chart_sources = !pi->m_ChartSources.empty();
+  input.bulk_run_active = pi->m_bulk_run_active;
+  return input;
+}
+
+void ApplyScheduledSkip(chartdldr_pi* pi, ChartDldrScheduledSkipReason reason) {
+  if (!pi || reason == ChartDldrScheduledSkipReason::None) {
     return;
   }
+  const wxString status = ChartDldrScheduledSkipStatus(reason);
   ChartDldrApplyScheduledRunOutcome(pi->ScheduleConfig(),
                                    ChartDldrScheduledRunOutcome::Skipped,
                                    status);
@@ -45,7 +57,7 @@ void ChartDldrRestartScheduleTimer(chartdldr_pi* pi, wxTimer* timer) {
 
 void ChartDldrOnScheduleTimer(chartdldr_pi* pi, wxTimerEvent& event) {
   event.Skip();
-  if (!pi || pi->m_bulk_run_active) {
+  if (!pi) {
     return;
   }
 
@@ -57,36 +69,24 @@ void ChartDldrOnScheduleTimer(chartdldr_pi* pi, wxTimerEvent& event) {
 }
 
 bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
-  if (!pi || pi->m_bulk_run_active) {
-    return false;
-  }
-
-  const bool scheduled = ChartDldrBulkRunIsScheduled(kind);
-
-  if (!pi->m_allow_bulk_update) {
-    if (scheduled) {
-      FinishScheduledSkip(pi,
-                          _("Skipped: enable bulk update in preferences"));
+  const ChartDldrBulkRequestInput input = MakeBulkRequestInput(pi);
+  ChartDldrScheduledSkipReason scheduled_skip = ChartDldrScheduledSkipReason::None;
+  if (!ChartDldrCanStartBulkRequest(input, kind, &scheduled_skip)) {
+    if (ChartDldrBulkRunIsScheduled(kind) &&
+        scheduled_skip != ChartDldrScheduledSkipReason::None) {
+      ApplyScheduledSkip(pi, scheduled_skip);
     }
     return false;
   }
-  if (pi->m_ChartSources.empty()) {
-    if (scheduled) {
-      FinishScheduledSkip(pi, _("Skipped: no chart sources configured"));
-    }
-    return false;
-  }
+
   if (!ChartDldrEnsureDownloaderPanel(pi)) {
-    if (scheduled) {
-      FinishScheduledSkip(pi, _("Skipped: downloader panel unavailable"));
+    if (ChartDldrBulkRunIsScheduled(kind)) {
+      ApplyScheduledSkip(pi, ChartDldrScheduledSkipReason::PanelUnavailable);
     }
     return false;
   }
 
   wxCommandEvent evt;
-  if (!pi->GetDownloaderPanel()) {
-    return false;
-  }
   return pi->GetDownloaderPanel()->RunBulkUpdate(kind, evt);
 }
 
@@ -118,4 +118,41 @@ void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi, int downloaded_ok,
         status.c_str());
   }
   pi->SaveConfig();
+}
+
+ChartDldrScheduler::ChartDldrScheduler(chartdldr_pi* pi)
+    : pi_(pi), parent_(nullptr), timer_(nullptr) {}
+
+ChartDldrScheduler::~ChartDldrScheduler() { Detach(); }
+
+void ChartDldrScheduler::Attach(wxWindow* parent) {
+  Detach();
+  if (!parent || !pi_) {
+    return;
+  }
+  parent_ = parent;
+  timer_ = new wxTimer(parent_);
+  parent_->Bind(wxEVT_TIMER, &ChartDldrScheduler::OnTimer, this,
+                timer_->GetId());
+}
+
+void ChartDldrScheduler::Detach() {
+  if (timer_) {
+    timer_->Stop();
+    if (parent_) {
+      parent_->Unbind(wxEVT_TIMER, &ChartDldrScheduler::OnTimer, this,
+                      timer_->GetId());
+    }
+    delete timer_;
+    timer_ = nullptr;
+  }
+  parent_ = nullptr;
+}
+
+void ChartDldrScheduler::Restart() {
+  ChartDldrRestartScheduleTimer(pi_, timer_);
+}
+
+void ChartDldrScheduler::OnTimer(wxTimerEvent& event) {
+  ChartDldrOnScheduleTimer(pi_, event);
 }

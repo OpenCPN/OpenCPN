@@ -54,9 +54,8 @@
 
 #include "chartdldrgui.h"
 #include "chartcatalog.h"
-#include "chartdldr_run_kind.h"
+#include "chartdldr_bulk_schedule.h"
 #include "chartdldr_schedule_config.h"
-#include "chartdldr_scheduler.h"
 
 #define UPDATE_DATA_FILENAME "chartdldr_pi.dat"
 
@@ -120,6 +119,7 @@ public:
 
   bool RequestBulkUpdate(ChartDldrBulkRunKind kind);
   void ApplyChartDatabaseUpdate();
+  bool HasChartSources() const { return !m_ChartSources.empty(); }
 
   ChartDldrScheduleConfig& ScheduleConfig() { return m_schedule; }
   const ChartDldrScheduleConfig& ScheduleConfig() const { return m_schedule; }
@@ -228,6 +228,9 @@ protected:
   void DeleteSource(wxCommandEvent& event) override;
   void EditSource(wxCommandEvent& event) override;
   void UpdateChartList(wxCommandEvent& event) override;
+  void UpdateChartListForCatalog(int catalog_index, wxCommandEvent& event,
+                                 bool quiet);
+  void PrepareBulkCatalog(int catalog_index, bool sync_list_selection);
   void OnDownloadCharts(wxCommandEvent& event) override;
 
   void OnSelectChartItem(wxCommandEvent& event);

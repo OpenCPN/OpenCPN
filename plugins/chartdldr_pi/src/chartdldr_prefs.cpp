@@ -9,17 +9,16 @@
 
 #include "chartdldr_prefs.h"
 
+#include "chartdldr_bulk_run.h"
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_pi.h"
 #include "chartdldr_prefs_time.h"
-#include "chartdldr_run_kind.h"
 
 #include <wx/intl.h>
 
-extern chartdldr_pi* g_pi;
-
-ChartDldrPrefsDlgImpl::ChartDldrPrefsDlgImpl(wxWindow* parent)
-    : ChartDldrPrefsDlg(parent) {
+ChartDldrPrefsDlgImpl::ChartDldrPrefsDlgImpl(wxWindow* parent,
+                                             chartdldr_pi* plugin)
+    : ChartDldrPrefsDlg(parent), plugin_(plugin) {
   m_sdbSizerBtnsOK->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ChartDldrPrefsDlgImpl::OnOkClick), NULL, this);
@@ -52,12 +51,12 @@ ChartDldrPrefsDlgImpl::~ChartDldrPrefsDlgImpl() {
 }
 
 void ChartDldrPrefsDlgImpl::WarnScheduledPrerequisites() {
-  if (!g_pi) {
+  if (!plugin_) {
     return;
   }
 
   wxString msg;
-  if (g_pi->m_ChartSources.empty()) {
+  if (!plugin_->HasChartSources()) {
     msg += _(
         "No chart sources are configured. Add sources on the Chart Downloader "
         "tab before scheduled updates can download charts.\n");
@@ -99,7 +98,7 @@ void ChartDldrPrefsDlgImpl::OnScheduledTimeChanged(wxCommandEvent& event) {
 
 void ChartDldrPrefsDlgImpl::OnRunScheduledUpdateNow(wxCommandEvent& event) {
   event.Skip();
-  if (!g_pi) {
+  if (!plugin_) {
     return;
   }
   if (!ValidateScheduledTimeInput()) {
@@ -107,9 +106,9 @@ void ChartDldrPrefsDlgImpl::OnRunScheduledUpdateNow(wxCommandEvent& event) {
   }
   ApplyScheduledPrerequisitesOnSave();
   WarnScheduledPrerequisites();
-  g_pi->UpdatePrefs(this);
-  if (g_pi->RequestBulkUpdate(ChartDldrBulkRunKind::Scheduled)) {
-    SetSchedulePreferences(g_pi->ScheduleConfig());
+  plugin_->UpdatePrefs(this);
+  if (plugin_->RequestBulkUpdate(ChartDldrBulkRunKind::Scheduled)) {
+    SetSchedulePreferences(plugin_->ScheduleConfig());
   }
 }
 
@@ -203,8 +202,8 @@ void ChartDldrPrefsDlgImpl::OnOkClick(wxCommandEvent& event) {
     WarnScheduledPrerequisites();
   }
 
-  if (g_pi) {
-    g_pi->UpdatePrefs(this);
+  if (plugin_) {
+    plugin_->UpdatePrefs(this);
   }
 
   event.Skip();
