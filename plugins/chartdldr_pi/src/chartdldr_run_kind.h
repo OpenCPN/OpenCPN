@@ -7,10 +7,13 @@
  *   (at your option) any later version.                                   *
  ***************************************************************************/
 
-#include "chartdldr_bulk_policy.h"
+#ifndef CHARTDLDR_RUN_KIND_H_
+#define CHARTDLDR_RUN_KIND_H_
 
-bool ChartDldrShouldAdvanceScheduledLastRun(int downloaded_ok, int attempted,
-                                            int failed) {
-  (void)failed;
-  return attempted > 0 && downloaded_ok > 0;
+enum class ChartDldrBulkRunKind { Interactive, Scheduled };
+
+inline bool ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind kind) {
+  return kind == ChartDldrBulkRunKind::Scheduled;
 }
+
+#endif  // CHARTDLDR_RUN_KIND_H_

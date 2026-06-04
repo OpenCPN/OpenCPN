@@ -7,11 +7,29 @@
  *   (at your option) any later version.                                   *
  ***************************************************************************/
 
-#ifndef CHARTDLDR_BULK_POLICY_H_
-#define CHARTDLDR_BULK_POLICY_H_
+#ifndef CHARTDLDR_SCHEDULER_H_
+#define CHARTDLDR_SCHEDULER_H_
 
-/** True when a completed scheduled run should advance ScheduledUpdateLastRun. */
-bool ChartDldrShouldAdvanceScheduledLastRun(int downloaded_ok, int attempted,
-                                            int failed);
+class chartdldr_pi;
+class wxTimer;
+class wxTimerEvent;
+class wxWindow;
 
-#endif  // CHARTDLDR_BULK_POLICY_H_
+class ChartDldrScheduler {
+public:
+  explicit ChartDldrScheduler(chartdldr_pi* pi);
+  ~ChartDldrScheduler();
+
+  void Attach(wxWindow* parent);
+  void Detach();
+  void Restart();
+
+private:
+  void OnTimer(wxTimerEvent& event);
+
+  chartdldr_pi* pi_;
+  wxWindow* parent_;
+  wxTimer* timer_;
+};
+
+#endif  // CHARTDLDR_SCHEDULER_H_

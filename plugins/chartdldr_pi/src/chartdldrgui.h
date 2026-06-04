@@ -224,7 +224,6 @@ protected:
 
   void OnDirSelClick(wxCommandEvent& event);
   void OnDownloadMasterCatalog(wxCommandEvent& event);
-  void OnRunScheduledUpdateNow(wxCommandEvent& event);
 
   // Virtual event handlers, overide them in your derived class
   virtual void OnCancelClick(wxCommandEvent& event);
@@ -234,7 +233,7 @@ public:
   ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id = wxID_ANY,
                     const wxString& title = _("Chart Downloader Preferences"),
                     const wxPoint& pos = wxDefaultPosition,
-                    const wxSize& size = wxSize(462, 331),
+                    const wxSize& size = wxSize(480, 420),
                     long style = wxDEFAULT_DIALOG_STYLE);
   ~ChartDldrPrefsDlg();
 };

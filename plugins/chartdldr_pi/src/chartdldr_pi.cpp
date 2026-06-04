@@ -35,6 +35,7 @@
 #include "chartdldr_pi.h"
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_panel.h"
+#include "chartdldr_prefs.h"
 #include "wxWTranslateCatalog.h"
 #include <wx/stdpaths.h>
 #include <wx/url.h>
@@ -206,7 +207,8 @@ chartdldr_pi *g_pi;
 //
 //---------------------------------------------------------------------------------------------------------
 
-chartdldr_pi::chartdldr_pi(void *ppimgr) : opencpn_plugin_113(ppimgr) {
+chartdldr_pi::chartdldr_pi(void *ppimgr)
+    : opencpn_plugin_113(ppimgr), m_scheduler(this) {
   // Create the PlugIn icons
   initialize_images();
 
@@ -216,11 +218,7 @@ chartdldr_pi::chartdldr_pi(void *ppimgr) : opencpn_plugin_113(ppimgr) {
   m_preselect_new = false;
   m_preselect_updated = false;
   m_allow_bulk_update = false;
-  m_scheduled_enabled = false;
-  m_scheduled_hour = 3;
-  m_scheduled_minute = 0;
   m_bulk_run_active = false;
-  m_schedule_timer = nullptr;
   m_pOptionsPage = NULL;
   m_selected_source = -1;
   m_dldrpanel = NULL;
@@ -237,9 +235,7 @@ int chartdldr_pi::Init(void) {
   //    POI Manager dialog
   m_parent_window = GetOCPNCanvasWindow();
 
-  m_schedule_timer = new wxTimer(m_parent_window);
-  m_parent_window->Bind(wxEVT_TIMER, &chartdldr_pi::OnScheduleTimer, this,
-                        m_schedule_timer->GetId());
+  m_scheduler.Attach(m_parent_window);
 
   //    Get a pointer to the opencpn configuration object
   m_pconfig = GetOCPNConfigObject();
@@ -266,7 +262,7 @@ int chartdldr_pi::Init(void) {
   }
 
   ChartDldrEnsureDownloaderPanel(this);
-  ChartDldrRestartScheduleTimer(this);
+  m_scheduler.Restart();
 
   return (WANTS_PREFERENCES | WANTS_CONFIG | INSTALLS_TOOLBOX_PAGE);
 }
@@ -274,15 +270,7 @@ int chartdldr_pi::Init(void) {
 bool chartdldr_pi::DeInit(void) {
   wxLogMessage(_T("chartdldr_pi: DeInit"));
 
-  if (m_schedule_timer) {
-    m_schedule_timer->Stop();
-    if (m_parent_window) {
-      m_parent_window->Unbind(wxEVT_TIMER, &chartdldr_pi::OnScheduleTimer, this,
-                              m_schedule_timer->GetId());
-    }
-    delete m_schedule_timer;
-    m_schedule_timer = nullptr;
-  }
+  m_scheduler.Detach();
 
   m_ChartSources.clear();
   ChartDldrDestroyDownloaderUI(this);
@@ -380,19 +368,7 @@ bool chartdldr_pi::LoadConfig(void) {
     pConf->Read(_T ( "PreselectNew" ), &m_preselect_new, true);
     pConf->Read(_T ( "PreselectUpdated" ), &m_preselect_updated, true);
     pConf->Read(_T ( "AllowBulkUpdate" ), &m_allow_bulk_update, false);
-    pConf->Read(_T("ScheduledUpdateEnabled"), &m_scheduled_enabled, false);
-    pConf->Read(_T("ScheduledUpdateHour"), &m_scheduled_hour, 3);
-    pConf->Read(_T("ScheduledUpdateMinute"), &m_scheduled_minute, 0);
-    pConf->Read(_T("ScheduledUpdateLastRun"), &m_scheduled_last_run_iso,
-                wxEmptyString);
-    if (m_scheduled_last_run_iso.empty()) {
-      wxString legacy_date;
-      pConf->Read(_T("ScheduledUpdateLastRunDate"), &legacy_date,
-                  wxEmptyString);
-      m_scheduled_last_run_iso = legacy_date;
-    }
-    pConf->Read(_T("ScheduledUpdateLastStatus"), &m_scheduled_last_status,
-                wxEmptyString);
+    m_schedule.Load(pConf);
     return true;
   } else
     return false;
@@ -418,11 +394,7 @@ bool chartdldr_pi::SaveConfig(void) {
     pConf->Write(_T ( "PreselectNew" ), m_preselect_new);
     pConf->Write(_T ( "PreselectUpdated" ), m_preselect_updated);
     pConf->Write(_T ( "AllowBulkUpdate" ), m_allow_bulk_update);
-    pConf->Write(_T("ScheduledUpdateEnabled"), m_scheduled_enabled);
-    pConf->Write(_T("ScheduledUpdateHour"), m_scheduled_hour);
-    pConf->Write(_T("ScheduledUpdateMinute"), m_scheduled_minute);
-    pConf->Write(_T("ScheduledUpdateLastRun"), m_scheduled_last_run_iso);
-    pConf->Write(_T("ScheduledUpdateLastStatus"), m_scheduled_last_status);
+    m_schedule.Save(pConf);
 
     return true;
   } else
@@ -505,8 +477,7 @@ void chartdldr_pi::ShowPreferencesDialog(wxWindow *parent) {
   dialog->SetPath(m_base_chart_dir);
   dialog->SetPreferences(m_preselect_new, m_preselect_updated,
                          m_allow_bulk_update);
-  dialog->SetSchedulePreferences(m_scheduled_enabled, m_scheduled_hour,
-                                 m_scheduled_minute, m_scheduled_last_status);
+  dialog->SetSchedulePreferences(m_schedule);
 
   dialog->ShowModal();
   dialog->Destroy();
@@ -516,11 +487,13 @@ void chartdldr_pi::UpdatePrefs(ChartDldrPrefsDlgImpl *dialog) {
   m_base_chart_dir = dialog->GetPath();
   dialog->GetPreferences(m_preselect_new, m_preselect_updated,
                          m_allow_bulk_update);
-  dialog->GetSchedulePreferences(m_scheduled_enabled, m_scheduled_hour,
-                                 m_scheduled_minute);
+  ChartDldrScheduleConfig schedule = m_schedule;
+  if (dialog->GetSchedulePreferences(schedule)) {
+    m_schedule = schedule;
+  }
   SaveConfig();
   if (m_dldrpanel) m_dldrpanel->SetBulkUpdate(m_allow_bulk_update);
-  ChartDldrRestartScheduleTimer(this);
+  m_scheduler.Restart();
 }
 
 void chartdldr_pi::ApplyChartDatabaseUpdate() {
@@ -530,12 +503,8 @@ void chartdldr_pi::ApplyChartDatabaseUpdate() {
   }
 }
 
-void chartdldr_pi::OnScheduleTimer(wxTimerEvent &event) {
-  ChartDldrOnScheduleTimer(this, event);
-}
-
-bool chartdldr_pi::RequestBulkUpdate(bool interactive) {
-  return ChartDldrRequestBulkUpdate(this, interactive);
+bool chartdldr_pi::RequestBulkUpdate(ChartDldrBulkRunKind kind) {
+  return ChartDldrRequestBulkUpdate(this, kind);
 }
 
 bool getDisplayMetrics() {
@@ -969,16 +938,16 @@ void ChartDldrPanelImpl::AppendCatalog(std::unique_ptr<ChartSource> &cs) {
 }
 
 void ChartDldrPanelImpl::UpdateAllCharts(wxCommandEvent &event) {
-  RunBulkUpdate(true, event);
+  RunBulkUpdate(ChartDldrBulkRunKind::Interactive, event);
 }
 
-bool ChartDldrPanelImpl::RunBulkUpdate(bool interactive,
+bool ChartDldrPanelImpl::RunBulkUpdate(ChartDldrBulkRunKind kind,
                                        wxCommandEvent &event) {
   if (pPlugIn->m_bulk_run_active) {
     return false;
   }
 
-  if (interactive) {
+  if (kind == ChartDldrBulkRunKind::Interactive) {
     if ((pPlugIn->m_preselect_new) && (pPlugIn->m_preselect_updated)) {
       wxMessageDialog mess(
           this,
@@ -1018,7 +987,7 @@ bool ChartDldrPanelImpl::RunBulkUpdate(bool interactive,
                                    wxLIST_STATE_SELECTED);
     if (cancelled) break;
     UpdateChartList(event);
-    DownloadCharts(!interactive);
+    DownloadCharts(ChartDldrBulkRunIsScheduled(kind));
     attempted_to_update += m_downloading;
     failed_to_update += m_failed_downloads;
   }
@@ -1027,7 +996,7 @@ bool ChartDldrPanelImpl::RunBulkUpdate(bool interactive,
       _T("chartdldr_pi::RunBulkUpdate() downloaded %d out of %d charts."),
       attempted_to_update - failed_to_update, attempted_to_update));
 
-  if (interactive && failed_to_update > 0) {
+  if (kind == ChartDldrBulkRunKind::Interactive && failed_to_update > 0) {
     OCPNMessageBox_PlugIn(
         this,
         wxString::Format(_("%d out of %d charts failed to download.\nCheck the "
@@ -1041,10 +1010,9 @@ bool ChartDldrPanelImpl::RunBulkUpdate(bool interactive,
   if (downloaded_ok > 0) {
     pPlugIn->ApplyChartDatabaseUpdate();
   }
-  if (!interactive) {
-    ChartDldrRecordScheduledBulkRunResult(pPlugIn, downloaded_ok,
-                                          attempted_to_update,
-                                          failed_to_update);
+  if (ChartDldrBulkRunIsScheduled(kind)) {
+    ChartDldrFinishScheduledBulkRun(pPlugIn, downloaded_ok, attempted_to_update,
+                                    failed_to_update);
   }
 
   updatingAll = false;
@@ -2551,209 +2519,6 @@ void ChartDldrGuiAddSourceDlg::SetSourceEdit(std::unique_ptr<ChartSource> &cs) {
   m_buttonChartDirectory->Enable();
 }
 
-ChartDldrPrefsDlgImpl::ChartDldrPrefsDlgImpl(wxWindow *parent)
-    : ChartDldrPrefsDlg(parent) {
-  m_cbScheduledEnable->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ChartDldrPrefsDlgImpl::OnScheduledEnable), NULL,
-      this);
-  m_tcScheduledTime->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(ChartDldrPrefsDlgImpl::OnScheduledTimeChanged),
-      NULL, this);
-  UpdateScheduledTimePreview();
-}
-
-ChartDldrPrefsDlgImpl::~ChartDldrPrefsDlgImpl() {}
-
-void ChartDldrPrefsDlgImpl::ApplyScheduledPrerequisitesUI(bool warn_user) {
-  m_cbBulkUpdate->SetValue(true);
-
-  if (!warn_user || !g_pi) {
-    return;
-  }
-
-  wxString msg;
-  if (g_pi->m_ChartSources.empty()) {
-    msg += _(
-        "No chart sources are configured. Add sources on the Chart Downloader "
-        "tab before scheduled updates can download charts.\n");
-  }
-  if (!m_cbSelectNew->GetValue() || !m_cbSelectUpdated->GetValue()) {
-    msg += _(
-        "Enable both \"All new charts\" and \"All updated charts\" so "
-        "scheduled runs download the full set of available updates.\n");
-  }
-  if (!msg.IsEmpty()) {
-    OCPNMessageBox_PlugIn(this, msg, _("Scheduled updates"),
-                          wxOK | wxICON_WARNING);
-  }
-}
-
-void ChartDldrPrefsDlgImpl::OnScheduledEnable(wxCommandEvent &event) {
-  if (m_cbScheduledEnable->GetValue()) {
-    ApplyScheduledPrerequisitesUI(true);
-  }
-  UpdateScheduledTimePreview();
-  event.Skip();
-}
-
-void ChartDldrPrefsDlgImpl::OnScheduledTimeChanged(wxCommandEvent &event) {
-  UpdateScheduledTimePreview();
-  event.Skip();
-}
-
-namespace {
-
-bool ScheduleUsesTwelveHourClock() {
-  const wxDateTime probe(1, wxDateTime::Jan, 2020, 13, 30, 0);
-  DateTimeFormatOptions opts;
-  opts.SetFormatString("$hour_minutes_seconds");
-  opts.SetTimezone("Local Time");
-  opts.SetShowTimezone(false);
-  const wxString sample = toUsrDateTimeFormat_Plugin(probe, opts);
-  return sample.Contains("PM") || sample.Contains("pm");
-}
-
-wxString FormatScheduledTimeDisplay(int hour, int minute) {
-  if (ScheduleUsesTwelveHourClock()) {
-    int h12 = hour % 12;
-    if (h12 == 0) {
-      h12 = 12;
-    }
-    const wxString ampm = hour < 12 ? _("AM") : _("PM");
-    return wxString::Format("%d:%02d %s", h12, minute, ampm);
-  }
-  return wxString::Format("%d:%02d", hour, minute);
-}
-
-wxString FormatScheduledTimeEntry(int hour, int minute) {
-  return wxString::Format("%02d:%02d", wxMin(23, wxMax(0, hour)),
-                          wxMin(59, wxMax(0, minute)));
-}
-
-bool ParseScheduledTimeEntry(const wxString& text, int& hour, int& minute) {
-  wxString trimmed = text;
-  trimmed.Trim(true).Trim(false);
-
-  long h = 0;
-  long m = 0;
-  if (wxSscanf(trimmed, "%ld:%ld", &h, &m) != 2) {
-    return false;
-  }
-  if (h < 0 || h > 23 || m < 0 || m > 59) {
-    return false;
-  }
-
-  hour = static_cast<int>(h);
-  minute = static_cast<int>(m);
-  return true;
-}
-
-}  // namespace
-
-void ChartDldrPrefsDlgImpl::UpdateScheduledTimePreview() {
-  if (!m_stScheduledTimePreview || !m_tcScheduledTime) {
-    return;
-  }
-
-  if (!ScheduleUsesTwelveHourClock()) {
-    m_stScheduledTimePreview->SetLabel(wxEmptyString);
-    m_stScheduledTimePreview->Hide();
-    if (wxWindow* row = m_tcScheduledTime->GetParent()) {
-      row->Layout();
-    }
-    return;
-  }
-
-  m_stScheduledTimePreview->Show();
-
-  int hour = 0;
-  int minute = 0;
-  if (!ParseScheduledTimeEntry(m_tcScheduledTime->GetValue(), hour, minute)) {
-    m_stScheduledTimePreview->SetLabel(wxEmptyString);
-    if (wxWindow* row = m_tcScheduledTime->GetParent()) {
-      row->Layout();
-    }
-    return;
-  }
-
-  m_stScheduledTimePreview->SetLabel(
-      FormatScheduledTimeDisplay(hour, minute));
-  if (wxWindow* row = m_tcScheduledTime->GetParent()) {
-    row->Layout();
-  }
-}
-
-bool ChartDldrPrefsDlgImpl::ValidateScheduledTimeInput() {
-  int hour = 0;
-  int minute = 0;
-  if (!ParseScheduledTimeEntry(m_tcScheduledTime->GetValue(), hour, minute)) {
-    OCPNMessageBox_PlugIn(
-        this,
-        _("Enter the scheduled time as HH:MM in 24-hour local time "
-          "(for example 03:00 or 15:30)."),
-        _("Scheduled updates"), wxOK | wxICON_WARNING);
-    return false;
-  }
-
-  m_tcScheduledTime->SetValue(FormatScheduledTimeEntry(hour, minute));
-  UpdateScheduledTimePreview();
-  return true;
-}
-
-void ChartDldrPrefsDlgImpl::SetPath(const wxString path) {
-  // if( !wxDirExists(path) )
-  // if( !wxFileName::Mkdir(path, 0755, wxPATH_MKDIR_FULL) )
-  //{
-  //    OCPNMessageBox_PlugIn(this, wxString::Format(_("Directory %s can't be
-  //    created."), m_dpDefaultDir->GetTextCtrlValue().c_str()), _("Chart
-  //    Downloader")); return;
-  //}
-  m_tcDefaultDir->SetValue(path);
-}
-
-void ChartDldrPrefsDlgImpl::GetPreferences(bool &preselect_new,
-                                           bool &preselect_updated,
-                                           bool &bulk_update) {
-  preselect_new = m_cbSelectNew->GetValue();
-  preselect_updated = m_cbSelectUpdated->GetValue();
-  bulk_update = m_cbBulkUpdate->GetValue();
-}
-void ChartDldrPrefsDlgImpl::SetPreferences(bool preselect_new,
-                                           bool preselect_updated,
-                                           bool bulk_update) {
-  m_cbSelectNew->SetValue(preselect_new);
-  m_cbSelectUpdated->SetValue(preselect_updated);
-  m_cbBulkUpdate->SetValue(bulk_update);
-}
-
-void ChartDldrPrefsDlgImpl::GetSchedulePreferences(bool &enabled, int &hour,
-                                                   int &minute) {
-  enabled = m_cbScheduledEnable->GetValue();
-  if (!ParseScheduledTimeEntry(m_tcScheduledTime->GetValue(), hour, minute)) {
-    hour = 3;
-    minute = 0;
-  }
-}
-
-void ChartDldrPrefsDlgImpl::SetSchedulePreferences(bool enabled, int hour,
-                                                   int minute,
-                                                   const wxString &last_status) {
-  m_cbScheduledEnable->SetValue(enabled);
-  m_tcScheduledTime->SetValue(
-      FormatScheduledTimeEntry(wxMin(23, wxMax(0, hour)),
-                               wxMin(59, wxMax(0, minute))));
-  wxString label = _("Last run:");
-  if (last_status.IsEmpty()) {
-    label << " " << _("(never)");
-  } else {
-    label << " " << last_status;
-  }
-  m_stScheduledLastRun->SetLabel(label);
-  UpdateScheduledTimePreview();
-}
-
 void ChartDldrGuiAddSourceDlg::OnOkClick(wxCommandEvent &event) {
   wxString msg = wxEmptyString;
 
@@ -2801,34 +2566,6 @@ void ChartDldrGuiAddSourceDlg::OnOkClick(wxCommandEvent &event) {
 void ChartDldrGuiAddSourceDlg::OnCancelClick(wxCommandEvent &event) {
   SetReturnCode(wxID_CANCEL);
   EndModal(wxID_CANCEL);
-}
-
-void ChartDldrPrefsDlgImpl::OnOkClick(wxCommandEvent &event) {
-  if (!ValidateScheduledTimeInput()) {
-    return;
-  }
-
-  if (!wxDirExists(m_tcDefaultDir->GetValue())) {
-    if (!wxFileName::Mkdir(m_tcDefaultDir->GetValue(), 0755,
-                           wxPATH_MKDIR_FULL)) {
-      OCPNMessageBox_PlugIn(
-          this,
-          wxString::Format(_("Directory %s can't be created."),
-                           m_tcDefaultDir->GetValue().c_str()),
-          _("Chart Downloader"));
-      return;
-    }
-  }
-
-  if (g_pi) {
-    g_pi->UpdatePrefs(this);
-  }
-
-  event.Skip();
-  EndModal(wxID_OK);
-
-  // Hide();
-  // Close();
 }
 
 void ChartDldrPrefsDlg::OnCancelClick(wxCommandEvent &event) {

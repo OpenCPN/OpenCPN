@@ -49,10 +49,18 @@ include("cmake/PluginConfigure.cmake")
 set(SRC_CHARTDLDR
     src/chartdldr_schedule.h
     src/chartdldr_schedule.cpp
+    src/chartdldr_schedule_config.h
+    src/chartdldr_schedule_config.cpp
+    src/chartdldr_schedule_state.h
+    src/chartdldr_schedule_state.cpp
+    src/chartdldr_prefs_time.h
+    src/chartdldr_prefs_time.cpp
+    src/chartdldr_prefs.h
+    src/chartdldr_prefs.cpp
+    src/chartdldr_scheduler.h
+    src/chartdldr_scheduler.cpp
     src/chartdldr_panel.h
     src/chartdldr_panel.cpp
-    src/chartdldr_bulk_policy.h
-    src/chartdldr_bulk_policy.cpp
     src/chartdldr_bulk_schedule.h
     src/chartdldr_bulk_schedule.cpp
     src/chartdldr_pi.h

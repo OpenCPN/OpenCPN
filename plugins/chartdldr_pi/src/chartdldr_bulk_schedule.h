@@ -10,13 +10,16 @@
 #ifndef CHARTDLDR_BULK_SCHEDULE_H_
 #define CHARTDLDR_BULK_SCHEDULE_H_
 
+#include "chartdldr_run_kind.h"
+
 class chartdldr_pi;
+class wxTimer;
 class wxTimerEvent;
 
-void ChartDldrRestartScheduleTimer(chartdldr_pi* pi);
+void ChartDldrRestartScheduleTimer(chartdldr_pi* pi, wxTimer* timer);
 void ChartDldrOnScheduleTimer(chartdldr_pi* pi, wxTimerEvent& event);
-bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, bool interactive);
-void ChartDldrRecordScheduledBulkRunResult(chartdldr_pi* pi, int downloaded_ok,
-                                           int attempted, int failed);
+bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind);
+void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi, int downloaded_ok,
+                                   int attempted, int failed);
 
 #endif  // CHARTDLDR_BULK_SCHEDULE_H_

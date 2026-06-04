@@ -9,12 +9,29 @@
 
 #include <gtest/gtest.h>
 
-#include "chartdldr_bulk_policy.h"
+#include "chartdldr_run_kind.h"
+#include "chartdldr_schedule_state.h"
 
-TEST(ChartDldrBulkSchedule, AdvanceLastRunOnlyAfterSuccessfulDownload) {
-  EXPECT_FALSE(ChartDldrShouldAdvanceScheduledLastRun(0, 0, 0));
-  EXPECT_FALSE(ChartDldrShouldAdvanceScheduledLastRun(0, 5, 5));
-  EXPECT_FALSE(ChartDldrShouldAdvanceScheduledLastRun(0, 5, 2));
-  EXPECT_TRUE(ChartDldrShouldAdvanceScheduledLastRun(3, 5, 2));
-  EXPECT_TRUE(ChartDldrShouldAdvanceScheduledLastRun(1, 1, 0));
+TEST(ChartDldrBulkRunKind, ScheduledVsInteractive) {
+  EXPECT_TRUE(ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind::Scheduled));
+  EXPECT_FALSE(
+      ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind::Interactive));
+}
+
+TEST(ChartDldrBulkSchedule, SkipAndSuccessShareAdvancePolicy) {
+  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
+      ChartDldrScheduledRunOutcome::Skipped));
+  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
+      ChartDldrScheduledOutcomeFromBulkResult(1, 3)));
+  EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(
+      ChartDldrScheduledOutcomeFromBulkResult(0, 3)));
+  EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(
+      ChartDldrScheduledOutcomeFromBulkResult(0, 0)));
+}
+
+TEST(ChartDldrBulkSchedule, PartialFailureStillSuccessWhenDownloadsOk) {
+  EXPECT_EQ(ChartDldrScheduledOutcomeFromBulkResult(2, 5),
+            ChartDldrScheduledRunOutcome::BulkSuccess);
+  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
+      ChartDldrScheduledOutcomeFromBulkResult(2, 5)));
 }
