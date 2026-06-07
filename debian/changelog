@@ -4,7 +4,7 @@ opencpn (1:5.14.1+dfsg-3~bpo12+1) bookworm-backports-sloppy; urgency=medium
   * Add b-d libunarr-dev, libarchive is too old
   * d/control: Update Vcs branches
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 05 Jun 2026 05:31:48 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 07 Jun 2026 09:30:52 +0200
 
 opencpn (1:5.14.1+dfsg-3) unstable; urgency=medium
 
