@@ -13,6 +13,7 @@
 #include "ocpn_plugin.h"
 
 #include <wx/filename.h>
+#include <wx/regex.h>
 #include <wx/uri.h>
 
 #ifdef __ANDROID__
@@ -281,4 +282,20 @@ void ChartDldrGuiAddSourceDlg::OnOkClick(wxCommandEvent &event) {
 void ChartDldrGuiAddSourceDlg::OnCancelClick(wxCommandEvent &event) {
   SetReturnCode(wxID_CANCEL);
   EndModal(wxID_CANCEL);
+}
+
+bool ChartDldrGuiAddSourceDlg::ValidateUrl(const wxString Url,
+                                           bool catalog_xml) {
+  wxRegEx re;
+  if (catalog_xml)
+    re.Compile(
+        _T("^https?\\://[a-zA-Z0-9\\./_-]*\\.[xX][mM][lL]$"));  // TODO: wxRegEx
+                                                                // sucks a bit,
+                                                                // this RE is
+                                                                // way too naive
+  else
+    re.Compile(
+        _T("^https?\\://[a-zA-Z0-9\\./_-]*$"));  // TODO: wxRegEx sucks a bit,
+                                                 // this RE is way too naive
+  return re.Matches(Url);
 }
