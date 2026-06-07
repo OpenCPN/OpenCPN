@@ -164,8 +164,7 @@ void ChartDldrScheduler::OnTimer(wxTimerEvent& event) {
 }
 
 void ChartDldrScheduler::OnIdle(wxIdleEvent& event) {
-  ChartDldrPanelImpl* const panel =
-      pi_ ? pi_->GetDownloaderPanel() : nullptr;
+  ChartDldrPanelImpl* const panel = pi_ ? pi_->GetDownloaderPanel() : nullptr;
   if (!panel || !panel->Bulk().IsScheduledRunActive()) {
     EnsureIdleWatch(false);
     return;

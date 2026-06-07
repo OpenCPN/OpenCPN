@@ -30,7 +30,8 @@ public:
   bool enabled = false;
   int hour = 3;
   int minute = 0;
-  /** Legacy key (ScheduledUpdateLastRun); eligibility uses last_attempt_iso only. */
+  /** Legacy key (ScheduledUpdateLastRun); eligibility uses last_attempt_iso
+   * only. */
   wxString last_run_iso;
   /** Authoritative attempt timestamp; drives eligibility with last_outcome. */
   wxString last_attempt_iso;
@@ -57,7 +58,8 @@ public:
   /** Drops unparseable persisted timestamps (prevents retry storms). */
   void SanitizeTimestamps();
 
-  /** Keeps ScheduledUpdateLastRun in sync with last_attempt_iso for legacy readers. */
+  /** Keeps ScheduledUpdateLastRun in sync with last_attempt_iso for legacy
+   * readers. */
   void SyncLegacyLastRunMirror();
 };
 

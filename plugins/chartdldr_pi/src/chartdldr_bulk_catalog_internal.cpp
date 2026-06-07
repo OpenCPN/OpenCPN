@@ -16,7 +16,7 @@
 namespace ChartDldrBulkCatalogInternal {
 
 bool PrepareDownloadPaths(int catalog_index, chartdldr_pi* pi, wxURI& url,
-                            wxFileName& output_fn) {
+                          wxFileName& output_fn) {
   if (!pi || catalog_index < 0 ||
       catalog_index >= static_cast<int>(pi->m_ChartSources.size())) {
     return false;
@@ -56,7 +56,8 @@ wxString BackgroundDownloadTargetPath(const wxFileName& output_fn) {
 #endif
 }
 
-void ReportPathFailure(wxWindow* parent, const ChartDldrBulkModeProfile& profile,
+void ReportPathFailure(wxWindow* parent,
+                       const ChartDldrBulkModeProfile& profile,
                        const wxURI& url, const wxFileName& output_fn) {
   if (url.IsReference()) {
     const wxString msg =

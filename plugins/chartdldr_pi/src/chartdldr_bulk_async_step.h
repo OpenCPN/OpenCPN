@@ -16,7 +16,8 @@ enum class ChartDldrScheduledBulkPhase {
 };
 
 struct ChartDldrScheduledBulkStepInput {
-  ChartDldrScheduledBulkPhase phase = ChartDldrScheduledBulkPhase::SelectCatalog;
+  ChartDldrScheduledBulkPhase phase =
+      ChartDldrScheduledBulkPhase::SelectCatalog;
   size_t next_catalog = 0;
   size_t catalog_count = 0;
   bool catalog_refresh_started = false;
@@ -46,7 +47,8 @@ struct ChartDldrScheduledBulkRunState {
 ChartDldrScheduledBulkStepDecision ChartDldrDecideScheduledBulkStep(
     const ChartDldrScheduledBulkStepInput& input);
 
-/** Applies decision to run state; returns the same decision for panel actions. */
+/** Applies decision to run state; returns the same decision for panel actions.
+ */
 ChartDldrScheduledBulkStepDecision ChartDldrAdvanceScheduledBulkRun(
     ChartDldrScheduledBulkRunState& state,
     const ChartDldrScheduledBulkStepInput& input,

@@ -54,7 +54,8 @@ enum class ChartDldrErrorReporting {
 
 /**
  * Bulk orchestration lives in ChartDldrBulkOrchestrate (panel friend).
- * ChartDldrPanelImpl is only the wx transfer parent for OCPN_download* callbacks.
+ * ChartDldrPanelImpl is only the wx transfer parent for OCPN_download*
+ * callbacks.
  */
 struct ChartDldrBulkRunUiPolicy {
   ChartDldrDownloadUiMode mode = ChartDldrDownloadUiMode::SelectedCharts;
@@ -63,7 +64,8 @@ struct ChartDldrBulkRunUiPolicy {
 
 /** Resolved UI behavior for a bulk run policy. */
 struct ChartDldrBulkModeProfile {
-  ChartDldrCatalogRefreshMode catalog_refresh = ChartDldrCatalogRefreshMode::SyncBlocking;
+  ChartDldrCatalogRefreshMode catalog_refresh =
+      ChartDldrCatalogRefreshMode::SyncBlocking;
   ChartDldrErrorReporting error_reporting = ChartDldrErrorReporting::Dialog;
   bool restore_notebook_page = false;
   bool select_download_tab = false;

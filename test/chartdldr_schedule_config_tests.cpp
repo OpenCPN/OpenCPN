@@ -29,7 +29,7 @@ wxDateTime LocalTime(int day, int hour, int minute) {
 // Windows CI hangs when wxFileConfig creates/flushes under the system temp dir
 // or without wxWidgets initialized (see Actions at LoadSaveRoundTrip).
 class ScopedConfigFile {
- public:
+public:
   explicit ScopedConfigFile(const char* stem) {
     static unsigned serial = 0;
     const wxString name =
@@ -48,7 +48,7 @@ class ScopedConfigFile {
     }
   }
 
- private:
+private:
   wxString path_;
 };
 

@@ -12,7 +12,8 @@ class ChartDldrPanelImpl;
 class chartdldr_pi;
 class wxCommandEvent;
 
-/** Sole bulk friend of ChartDldrPanelImpl; interactive + scheduled orchestration. */
+/** Sole bulk friend of ChartDldrPanelImpl; interactive + scheduled
+ * orchestration. */
 class ChartDldrBulkOrchestrate {
 public:
   explicit ChartDldrBulkOrchestrate(ChartDldrPanelImpl* panel = nullptr);
@@ -25,7 +26,8 @@ public:
   void CancelScheduledRun();
   bool IsScheduledRunActive() const { return scheduled_active_; }
 
-  /** Manual "Update selected catalog" from the panel UI (sync catalog refresh). */
+  /** Manual "Update selected catalog" from the panel UI (sync catalog refresh).
+   */
   void RefreshCatalogManual(int catalog_index, wxCommandEvent& event);
 
 private:
@@ -40,7 +42,8 @@ private:
   bool StepScheduledRunCore(ChartDldrScheduledBulkRunState& state,
                             const ChartDldrBulkModeProfile& profile,
                             size_t catalog_count);
-  void FinalizeBulkRun(chartdldr_pi* pi, const ChartDldrBulkModeProfile& profile,
+  void FinalizeBulkRun(chartdldr_pi* pi,
+                       const ChartDldrBulkModeProfile& profile,
                        const ChartDldrBulkRunUiSnapshot& ui_before,
                        const ChartDldrBulkRunStats& stats);
   void ApplyScheduledStepDecision(

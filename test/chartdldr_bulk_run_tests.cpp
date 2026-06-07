@@ -13,8 +13,7 @@
 
 TEST(ChartDldrBulkRunKind, ScheduledVsInteractive) {
   EXPECT_TRUE(ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind::Scheduled));
-  EXPECT_FALSE(
-      ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind::Interactive));
+  EXPECT_FALSE(ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind::Interactive));
 }
 
 TEST(ChartDldrBulkModeProfile, ScheduledUsesQuietHiddenPanelFlow) {
@@ -23,21 +22,24 @@ TEST(ChartDldrBulkModeProfile, ScheduledUsesQuietHiddenPanelFlow) {
   const ChartDldrBulkModeProfile visible_profile =
       ChartDldrBulkModeProfileFor(visible);
   EXPECT_EQ(visible.mode, ChartDldrDownloadUiMode::ScheduledBulk);
-  EXPECT_EQ(visible_profile.error_reporting, ChartDldrErrorReporting::SummaryLog);
+  EXPECT_EQ(visible_profile.error_reporting,
+            ChartDldrErrorReporting::SummaryLog);
   EXPECT_FALSE(visible_profile.confirm_before_start);
   EXPECT_FALSE(visible_profile.show_failure_summary);
   EXPECT_TRUE(visible_profile.restore_notebook_page);
   EXPECT_TRUE(visible_profile.select_download_tab);
   EXPECT_FALSE(visible_profile.sync_list_selection);
   EXPECT_TRUE(visible_profile.skip_manual_charts);
-  EXPECT_EQ(visible_profile.catalog_refresh, ChartDldrCatalogRefreshMode::AsyncIdle);
+  EXPECT_EQ(visible_profile.catalog_refresh,
+            ChartDldrCatalogRefreshMode::AsyncIdle);
 
   const ChartDldrBulkRunUiPolicy hidden =
       ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind::Scheduled, false);
   const ChartDldrBulkModeProfile hidden_profile =
       ChartDldrBulkModeProfileFor(hidden);
   EXPECT_EQ(hidden.mode, ChartDldrDownloadUiMode::ScheduledBulk);
-  EXPECT_EQ(hidden_profile.error_reporting, ChartDldrErrorReporting::SummaryLog);
+  EXPECT_EQ(hidden_profile.error_reporting,
+            ChartDldrErrorReporting::SummaryLog);
   EXPECT_FALSE(hidden_profile.restore_notebook_page);
   EXPECT_FALSE(hidden_profile.select_download_tab);
   EXPECT_FALSE(hidden_profile.sync_list_selection);

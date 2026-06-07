@@ -148,8 +148,9 @@ void ChartDldrPanelImpl::FinalizeActiveBulkChartTransfer(ChartSource& source) {
   }
 
   if (m_transfer.success) {
-    FinalizePendingChartDownload(m_bulkChartPendingIndex, m_bulkChartPendingKind,
-                                 source, m_bulkChartPendingPath);
+    FinalizePendingChartDownload(m_bulkChartPendingIndex,
+                                 m_bulkChartPendingKind, source,
+                                 m_bulkChartPendingPath);
   } else {
     if (wxFileExists(m_bulkChartPendingPath)) {
       wxRemoveFile(m_bulkChartPendingPath);
@@ -315,7 +316,8 @@ void ChartDldrPanelImpl::EndBulkChartDownload(
                           _("Chart Downloader"), wxOK | wxICON_INFORMATION);
   }
 
-  if ((m_downloading - m_failed_downloads > 0) && !profile.defer_chart_db_apply) {
+  if ((m_downloading - m_failed_downloads > 0) &&
+      !profile.defer_chart_db_apply) {
     pPlugIn->ApplyChartDatabaseUpdate();
   }
 }

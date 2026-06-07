@@ -56,8 +56,7 @@ ChartDldrScheduledBulkStepDecision ChartDldrDecideScheduledBulkStep(
           decision.accumulate_stats = true;
           decision.next_phase = ChartDldrScheduledBulkPhase::SelectCatalog;
           decision.next_catalog = input.next_catalog + 1;
-          decision.continue_run =
-              decision.next_catalog < input.catalog_count;
+          decision.continue_run = decision.next_catalog < input.catalog_count;
           return decision;
       }
       break;

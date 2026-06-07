@@ -65,13 +65,13 @@ TEST(ChartDldrScheduleState, SkippedStoresDetailAndAttemptIso) {
   schedule.last_run_iso = wxEmptyString;
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(schedule,
-                                   ChartDldrScheduledRunOutcome::Skipped,
-                                   "no chart sources configured", &run_time);
+                                    ChartDldrScheduledRunOutcome::Skipped,
+                                    "no chart sources configured", &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
   EXPECT_EQ(schedule.last_status, "no chart sources configured");
-  EXPECT_EQ(ChartDldrFormatScheduledLastRunDisplay(schedule),
-            ScheduledDisplay("2026-06-02 15:30",
-                             "no chart sources configured"));
+  EXPECT_EQ(
+      ChartDldrFormatScheduledLastRunDisplay(schedule),
+      ScheduledDisplay("2026-06-02 15:30", "no chart sources configured"));
 }
 
 TEST(ChartDldrScheduleState, BulkAllFailedStoresOutcomeAndAllowsRetry) {
@@ -79,12 +79,11 @@ TEST(ChartDldrScheduleState, BulkAllFailedStoresOutcomeAndAllowsRetry) {
   schedule.last_run_iso = wxEmptyString;
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(schedule,
-                                   ChartDldrScheduledRunOutcome::BulkAllFailed,
-                                   "failed: 4 of 4 charts", &run_time);
+                                    ChartDldrScheduledRunOutcome::BulkAllFailed,
+                                    "failed: 4 of 4 charts", &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
   EXPECT_FALSE(schedule.last_attempt_iso.empty());
-  EXPECT_EQ(schedule.last_outcome,
-            ChartDldrScheduledRunOutcome::BulkAllFailed);
+  EXPECT_EQ(schedule.last_outcome, ChartDldrScheduledRunOutcome::BulkAllFailed);
   EXPECT_EQ(schedule.last_status, "failed: 4 of 4 charts");
   EXPECT_EQ(ChartDldrFormatScheduledLastRunDisplay(schedule),
             ScheduledDisplay("2026-06-02 15:30", "failed: 4 of 4 charts"));
@@ -94,9 +93,9 @@ TEST(ChartDldrScheduleState, BulkNoAttemptsRecordsOutcome) {
   ChartDldrScheduleConfig schedule;
   schedule.last_run_iso = wxEmptyString;
   const wxDateTime run_time = FixedRunTime();
-  ChartDldrApplyScheduledRunOutcome(schedule,
-                                   ChartDldrScheduledRunOutcome::BulkNoAttempts,
-                                   "No charts to update", &run_time);
+  ChartDldrApplyScheduledRunOutcome(
+      schedule, ChartDldrScheduledRunOutcome::BulkNoAttempts,
+      "No charts to update", &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
   EXPECT_EQ(schedule.last_status, "No charts to update");
   EXPECT_EQ(ChartDldrFormatScheduledLastRunDisplay(schedule),
@@ -108,8 +107,8 @@ TEST(ChartDldrScheduleState, BulkSuccessRecordsOutcome) {
   schedule.last_run_iso = wxEmptyString;
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(schedule,
-                                   ChartDldrScheduledRunOutcome::BulkSuccess,
-                                   "2 update 3 new", &run_time);
+                                    ChartDldrScheduledRunOutcome::BulkSuccess,
+                                    "2 update 3 new", &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
   EXPECT_EQ(schedule.last_status, "2 update 3 new");
   EXPECT_EQ(ChartDldrFormatScheduledLastRunDisplay(schedule),
@@ -138,8 +137,7 @@ TEST(ChartDldrScheduleState, MigrateLegacyCombinedStatus) {
 }
 
 TEST(ChartDldrScheduleState, ParseScheduledRunOutcome) {
-  ChartDldrScheduledRunOutcome outcome =
-      ChartDldrScheduledRunOutcome::Pending;
+  ChartDldrScheduledRunOutcome outcome = ChartDldrScheduledRunOutcome::Pending;
   EXPECT_TRUE(ChartDldrParseScheduledRunOutcome(
       static_cast<long>(ChartDldrScheduledRunOutcome::BulkSuccess), outcome));
   EXPECT_EQ(outcome, ChartDldrScheduledRunOutcome::BulkSuccess);

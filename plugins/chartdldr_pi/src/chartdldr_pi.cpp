@@ -59,7 +59,6 @@
 #include <wx/timer.h>
 #include <wx/utils.h>
 
-
 #ifdef __ANDROID__
 #define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS
 #endif
@@ -110,7 +109,6 @@
 bool getDisplayMetrics();
 
 #define CHART_DIR "Charts"
-
 
 int g_Android_SDK_Version;
 
@@ -485,7 +483,7 @@ bool chartdldr_pi::RequestBulkUpdate(ChartDldrBulkRunKind kind) {
   return ChartDldrRequestBulkUpdate(this, kind);
 }
 
-bool chartdldr_pi::ConfirmInteractiveBulkUpdate(wxWindow* parent) const {
+bool chartdldr_pi::ConfirmInteractiveBulkUpdate(wxWindow *parent) const {
   wxString message;
   if (m_preselect_new && m_preselect_updated) {
     message =
@@ -505,8 +503,7 @@ bool chartdldr_pi::ConfirmInteractiveBulkUpdate(wxWindow* parent) const {
     return true;
   }
 
-  wxMessageDialog mess(parent, message, _("Chart Downloader"),
-                       wxOK | wxCANCEL);
+  wxMessageDialog mess(parent, message, _("Chart Downloader"), wxOK | wxCANCEL);
   return mess.ShowModal() != wxID_CANCEL;
 }
 
@@ -752,4 +749,3 @@ void ChartSource::ChartUpdated(wxString chart_number, time_t timestamp) {
   m_update_data[std::string(chart_number.Lower().mb_str())] = timestamp;
   SaveUpdateData();
 }
-

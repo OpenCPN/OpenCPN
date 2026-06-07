@@ -21,7 +21,8 @@ bool PrepareDownloadPaths(int catalog_index, chartdldr_pi* pi, wxURI& url,
 
 wxString BackgroundDownloadTargetPath(const wxFileName& output_fn);
 
-void ReportPathFailure(wxWindow* parent, const ChartDldrBulkModeProfile& profile,
+void ReportPathFailure(wxWindow* parent,
+                       const ChartDldrBulkModeProfile& profile,
                        const wxURI& url, const wxFileName& output_fn);
 
 }  // namespace ChartDldrBulkCatalogInternal

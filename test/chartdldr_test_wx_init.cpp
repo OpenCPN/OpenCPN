@@ -16,10 +16,10 @@
 namespace {
 
 class ChartDldrWxEnvironment : public ::testing::Environment {
- public:
+public:
   void SetUp() override { init_ = std::make_unique<wxInitializer>(); }
 
- private:
+private:
   std::unique_ptr<wxInitializer> init_;
 };
 

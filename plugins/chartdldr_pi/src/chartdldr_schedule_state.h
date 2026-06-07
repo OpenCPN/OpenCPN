@@ -44,7 +44,7 @@ bool ChartDldrScheduledOutcomeAllowsSameDayRetry(
     ChartDldrScheduledRunOutcome outcome);
 
 bool ChartDldrParseScheduledRunOutcome(long value,
-                                     ChartDldrScheduledRunOutcome& out);
+                                       ChartDldrScheduledRunOutcome& out);
 
 void ChartDldrInferScheduleOutcomeFromLegacy(ChartDldrScheduleConfig& schedule);
 
@@ -66,7 +66,8 @@ wxString ChartDldrScheduledStatusFromBulkResult(int downloaded_ok,
                                                 int new_downloads,
                                                 int updated_downloads);
 
-/** Persist attempt time before a scheduled bulk run starts (blocks retry storm). */
+/** Persist attempt time before a scheduled bulk run starts (blocks retry
+ * storm). */
 void ChartDldrRecordScheduledAttemptStart(ChartDldrScheduleConfig& schedule,
                                           const wxDateTime& run_time);
 

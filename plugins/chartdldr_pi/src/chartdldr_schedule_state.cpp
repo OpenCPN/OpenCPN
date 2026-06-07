@@ -77,7 +77,7 @@ bool ChartDldrParseScheduleRunIso(const wxString& iso, wxDateTime& out) {
 }
 
 bool ChartDldrParseScheduledRunOutcome(long value,
-                                     ChartDldrScheduledRunOutcome& out) {
+                                       ChartDldrScheduledRunOutcome& out) {
   if (value < static_cast<long>(ChartDldrScheduledRunOutcome::Pending) ||
       value > static_cast<long>(ChartDldrScheduledRunOutcome::BulkSuccess)) {
     return false;
@@ -143,7 +143,8 @@ bool ChartDldrScheduledOutcomeAllowsSameDayRetry(
   return false;
 }
 
-void ChartDldrInferScheduleOutcomeFromLegacy(ChartDldrScheduleConfig& schedule) {
+void ChartDldrInferScheduleOutcomeFromLegacy(
+    ChartDldrScheduleConfig& schedule) {
   if (schedule.last_attempt_iso.IsEmpty()) {
     schedule.last_outcome = ChartDldrScheduledRunOutcome::Pending;
     return;

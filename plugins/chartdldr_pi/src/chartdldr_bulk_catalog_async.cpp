@@ -22,8 +22,8 @@ bool ChartDldrPanelImpl::BeginAsyncCatalogRefresh(
 
   wxURI url;
   wxFileName output_fn;
-  if (!ChartDldrBulkCatalogInternal::PrepareDownloadPaths(catalog_index, pPlugIn,
-                                                          url, output_fn)) {
+  if (!ChartDldrBulkCatalogInternal::PrepareDownloadPaths(
+          catalog_index, pPlugIn, url, output_fn)) {
     ChartDldrBulkCatalogInternal::ReportPathFailure(this, profile, url,
                                                     output_fn);
     return false;

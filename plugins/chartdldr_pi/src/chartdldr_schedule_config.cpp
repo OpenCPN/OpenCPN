@@ -96,9 +96,8 @@ void ChartDldrScheduleConfig::Load(wxFileConfig* conf) {
   long outcome_value = static_cast<long>(ChartDldrScheduledRunOutcome::Pending);
   const bool has_outcome =
       conf->Read(_T("ScheduledUpdateLastOutcome"), &outcome_value);
-  const bool parsed_outcome =
-      has_outcome &&
-      ChartDldrParseScheduledRunOutcome(outcome_value, last_outcome);
+  const bool parsed_outcome = has_outcome && ChartDldrParseScheduledRunOutcome(
+                                                 outcome_value, last_outcome);
   SetTime(hour, minute);
   SanitizeTimestamps();
   ChartDldrMigrateLegacyScheduleStatus(*this);

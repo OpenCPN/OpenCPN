@@ -36,9 +36,9 @@ TEST(ChartDldrScheduleIntegration, SkipThenGateBlocksUntilTomorrow) {
   schedule.SetTime(3, 0);
 
   const wxDateTime run_time = FixedRunTime();
-  ChartDldrApplyScheduledRunOutcome(
-      schedule, ChartDldrScheduledRunOutcome::Skipped,
-      "no chart sources configured", &run_time);
+  ChartDldrApplyScheduledRunOutcome(schedule,
+                                    ChartDldrScheduledRunOutcome::Skipped,
+                                    "no chart sources configured", &run_time);
   EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
 
   wxDateTime next_day;
@@ -53,10 +53,9 @@ TEST(ChartDldrScheduleIntegration, FailedBulkBlocksImmediateRetry) {
 
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(
-      schedule,
-      ChartDldrScheduledBulkResultFromStats(0, 4, 4, 0, 0), &run_time);
-  EXPECT_EQ(schedule.last_outcome,
-            ChartDldrScheduledRunOutcome::BulkAllFailed);
+      schedule, ChartDldrScheduledBulkResultFromStats(0, 4, 4, 0, 0),
+      &run_time);
+  EXPECT_EQ(schedule.last_outcome, ChartDldrScheduledRunOutcome::BulkAllFailed);
   EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
   EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 7, 0)));
 }
@@ -68,8 +67,8 @@ TEST(ChartDldrScheduleIntegration, FailedBulkAllowsSameDayRetryAfterInterval) {
 
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(
-      schedule,
-      ChartDldrScheduledBulkResultFromStats(0, 4, 4, 0, 0), &run_time);
+      schedule, ChartDldrScheduledBulkResultFromStats(0, 4, 4, 0, 0),
+      &run_time);
   EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 8, 0)));
 }
 
@@ -80,8 +79,8 @@ TEST(ChartDldrScheduleIntegration, SuccessfulBulkBlocksSameDay) {
 
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(
-      schedule,
-      ChartDldrScheduledBulkResultFromStats(2, 3, 0, 1, 1), &run_time);
+      schedule, ChartDldrScheduledBulkResultFromStats(2, 3, 0, 1, 1),
+      &run_time);
   EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
 }
 
@@ -103,8 +102,7 @@ TEST(ChartDldrScheduleIntegration, NoAttemptsBlocksSameDayRetry) {
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(
       schedule, ChartDldrScheduledRunOutcome::BulkNoAttempts,
-      "No charts to update",
-      &run_time);
+      "No charts to update", &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
   EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 5, 0)));
 }

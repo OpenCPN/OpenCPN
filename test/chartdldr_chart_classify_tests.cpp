@@ -14,8 +14,7 @@
 TEST(ChartDldrChartClassify, NewWhenNotLocal) {
   EXPECT_EQ(ChartDldrClassifyChart(false, false),
             ChartDldrChartUpdateKind::New);
-  EXPECT_EQ(ChartDldrClassifyChart(false, true),
-            ChartDldrChartUpdateKind::New);
+  EXPECT_EQ(ChartDldrClassifyChart(false, true), ChartDldrChartUpdateKind::New);
 }
 
 TEST(ChartDldrChartClassify, UpdatedWhenLocalAndCatalogNewer) {

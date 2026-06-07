@@ -65,9 +65,8 @@ void ChartDldrBulkOrchestrate::StartScheduledRun(chartdldr_pi* pi) {
     return;
   }
 
-  scheduled_profile_ = ChartDldrBulkModeProfileFor(
-      ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind::Scheduled,
-                                  panel_->IsShownOnScreen()));
+  scheduled_profile_ = ChartDldrBulkModeProfileFor(ChartDldrBulkRunUiPolicyFor(
+      ChartDldrBulkRunKind::Scheduled, panel_->IsShownOnScreen()));
   scheduled_ui_before_ = panel_->CaptureBulkUiSnapshot();
 
   pi->m_bulk_run_active = true;
@@ -95,9 +94,8 @@ bool ChartDldrBulkOrchestrate::StepScheduledRun() {
     return false;
   }
 
-  const bool continue_run = StepScheduledRunCore(scheduled_state_,
-                                                 scheduled_profile_,
-                                                 catalog_count);
+  const bool continue_run =
+      StepScheduledRunCore(scheduled_state_, scheduled_profile_, catalog_count);
 
   if (!continue_run) {
     FinishScheduledRun();
@@ -254,9 +252,9 @@ void ChartDldrBulkOrchestrate::FinalizeBulkRun(
     chartdldr_pi* pi, const ChartDldrBulkModeProfile& profile,
     const ChartDldrBulkRunUiSnapshot& ui_before,
     const ChartDldrBulkRunStats& stats) {
-  wxLogMessage(wxString::Format(
-      _T("ChartDldrBulk: downloaded %d out of %d charts."),
-      stats.downloaded_ok(), stats.attempted));
+  wxLogMessage(
+      wxString::Format(_T("ChartDldrBulk: downloaded %d out of %d charts."),
+                       stats.downloaded_ok(), stats.attempted));
 
   if (profile.show_failure_summary && stats.failed > 0 && panel_) {
     OCPNMessageBox_PlugIn(

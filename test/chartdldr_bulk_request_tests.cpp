@@ -25,9 +25,10 @@ TEST(ChartDldrBulkRequest, CanStartUsesInputSnapshot) {
   ChartDldrBulkRequestInput ready;
   ready.allow_bulk_update = true;
   ready.has_chart_sources = true;
-  ChartDldrScheduledSkipReason skip = ChartDldrScheduledSkipReason::BulkDisabled;
-  EXPECT_TRUE(ChartDldrCanStartBulkRequest(ready, ChartDldrBulkRunKind::Scheduled,
-                                           &skip));
+  ChartDldrScheduledSkipReason skip =
+      ChartDldrScheduledSkipReason::BulkDisabled;
+  EXPECT_TRUE(ChartDldrCanStartBulkRequest(
+      ready, ChartDldrBulkRunKind::Scheduled, &skip));
   EXPECT_EQ(skip, ChartDldrScheduledSkipReason::None);
 
   ChartDldrBulkRequestInput interactive_blocked;
@@ -54,19 +55,17 @@ TEST(ChartDldrBulkRequest, SkipStatusAdvancesLastRun) {
   run_time.Set(2, wxDateTime::Jun, 2026, 12, 0, 0);
   const wxString reason =
       ChartDldrScheduledSkipStatus(ChartDldrScheduledSkipReason::NoSources);
-  ChartDldrApplyScheduledRunOutcome(schedule,
-                                   ChartDldrScheduledRunOutcome::Skipped,
-                                   reason, &run_time);
+  ChartDldrApplyScheduledRunOutcome(
+      schedule, ChartDldrScheduledRunOutcome::Skipped, reason, &run_time);
   EXPECT_FALSE(schedule.last_run_iso.empty());
   EXPECT_TRUE(schedule.last_status.EndsWith(reason));
   EXPECT_FALSE(reason.empty());
 }
 
 TEST(ChartDldrBulkRequest, EachSkipReasonHasStatusText) {
-  for (auto reason :
-       {ChartDldrScheduledSkipReason::BulkDisabled,
-        ChartDldrScheduledSkipReason::NoSources,
-        ChartDldrScheduledSkipReason::PanelUnavailable}) {
+  for (auto reason : {ChartDldrScheduledSkipReason::BulkDisabled,
+                      ChartDldrScheduledSkipReason::NoSources,
+                      ChartDldrScheduledSkipReason::PanelUnavailable}) {
     EXPECT_FALSE(ChartDldrScheduledSkipStatus(reason).empty());
   }
   EXPECT_TRUE(
