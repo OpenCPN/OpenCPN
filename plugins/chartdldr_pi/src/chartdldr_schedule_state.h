@@ -17,6 +17,7 @@ class ChartDldrScheduleConfig;
 
 /** Result of a scheduled bulk attempt (timer or prefs "Run update now"). */
 enum class ChartDldrScheduledRunOutcome {
+  Pending,
   Skipped,
   BulkNoAttempts,
   BulkAllFailed,
@@ -39,8 +40,13 @@ bool ChartDldrParseScheduleRunIso(const wxString& iso, wxDateTime& out);
 wxString ChartDldrFormatScheduledLastRunDisplay(
     const ChartDldrScheduleConfig& schedule);
 
-bool ChartDldrScheduledOutcomeAdvancesLastRun(
+bool ChartDldrScheduledOutcomeAllowsSameDayRetry(
     ChartDldrScheduledRunOutcome outcome);
+
+bool ChartDldrParseScheduledRunOutcome(long value,
+                                     ChartDldrScheduledRunOutcome& out);
+
+void ChartDldrInferScheduleOutcomeFromLegacy(ChartDldrScheduleConfig& schedule);
 
 struct ChartDldrScheduledBulkResult {
   ChartDldrScheduledRunOutcome outcome =
@@ -59,6 +65,10 @@ wxString ChartDldrScheduledStatusFromBulkResult(int downloaded_ok,
                                                 int attempted, int failed,
                                                 int new_downloads,
                                                 int updated_downloads);
+
+/** Persist attempt time before a scheduled bulk run starts (blocks retry storm). */
+void ChartDldrRecordScheduledAttemptStart(ChartDldrScheduleConfig& schedule,
+                                          const wxDateTime& run_time);
 
 void ChartDldrApplyScheduledRunOutcome(
     ChartDldrScheduleConfig& schedule,

@@ -16,6 +16,13 @@
 
 namespace {
 
+const wxString kLegacyStatusNoChartsMsgid = wxT("No charts to update");
+
+bool LegacyStatusIsNoCharts(const wxString& status) {
+  return status == kLegacyStatusNoChartsMsgid ||
+         status == wxGetTranslation(kLegacyStatusNoChartsMsgid);
+}
+
 bool TrySplitLegacyCombinedStatus(wxString& status, wxString& attempt_iso) {
   if (status.length() < 18) {
     return false;
@@ -69,6 +76,16 @@ bool ChartDldrParseScheduleRunIso(const wxString& iso, wxDateTime& out) {
   return out.ParseFormat(iso, "%Y-%m-%d %H:%M");
 }
 
+bool ChartDldrParseScheduledRunOutcome(long value,
+                                     ChartDldrScheduledRunOutcome& out) {
+  if (value < static_cast<long>(ChartDldrScheduledRunOutcome::Pending) ||
+      value > static_cast<long>(ChartDldrScheduledRunOutcome::BulkSuccess)) {
+    return false;
+  }
+  out = static_cast<ChartDldrScheduledRunOutcome>(value);
+  return true;
+}
+
 void ChartDldrMigrateLegacyScheduleStatus(ChartDldrScheduleConfig& schedule) {
   if (!schedule.last_attempt_iso.IsEmpty()) {
     return;
@@ -111,18 +128,35 @@ wxString ChartDldrFormatScheduledLastRunDisplay(
   return ChartDldrScheduledNeverRunDisplayText();
 }
 
-bool ChartDldrScheduledOutcomeAdvancesLastRun(
+bool ChartDldrScheduledOutcomeAllowsSameDayRetry(
     ChartDldrScheduledRunOutcome outcome) {
   switch (outcome) {
+    case ChartDldrScheduledRunOutcome::Pending:
+    case ChartDldrScheduledRunOutcome::BulkAllFailed:
+      return true;
     case ChartDldrScheduledRunOutcome::Skipped:
     case ChartDldrScheduledRunOutcome::BulkNoAttempts:
     case ChartDldrScheduledRunOutcome::BulkPartialSuccess:
     case ChartDldrScheduledRunOutcome::BulkSuccess:
-      return true;
-    case ChartDldrScheduledRunOutcome::BulkAllFailed:
       break;
   }
   return false;
+}
+
+void ChartDldrInferScheduleOutcomeFromLegacy(ChartDldrScheduleConfig& schedule) {
+  if (schedule.last_attempt_iso.IsEmpty()) {
+    schedule.last_outcome = ChartDldrScheduledRunOutcome::Pending;
+    return;
+  }
+  if (schedule.last_status.IsEmpty()) {
+    schedule.last_outcome = ChartDldrScheduledRunOutcome::Pending;
+    return;
+  }
+  if (LegacyStatusIsNoCharts(schedule.last_status)) {
+    schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkNoAttempts;
+    return;
+  }
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
 }
 
 ChartDldrScheduledBulkResult ChartDldrScheduledBulkResultFromStats(
@@ -168,6 +202,13 @@ wxString ChartDldrScheduledStatusFromBulkResult(int downloaded_ok,
   return wxString::Format(_("failed: %d of %d charts"), failed, attempted);
 }
 
+void ChartDldrRecordScheduledAttemptStart(ChartDldrScheduleConfig& schedule,
+                                          const wxDateTime& run_time) {
+  schedule.last_attempt_iso = ChartDldrFormatScheduleRunIso(run_time);
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::Pending;
+  schedule.SyncLegacyLastRunMirror();
+}
+
 void ChartDldrApplyScheduledRunOutcome(
     ChartDldrScheduleConfig& schedule,
     const ChartDldrScheduledBulkResult& result, const wxDateTime* run_time) {
@@ -178,7 +219,6 @@ void ChartDldrApplyScheduledRunOutcome(
 
   schedule.last_status = result.status_detail;
   schedule.last_attempt_iso = ChartDldrFormatScheduleRunIso(when);
-  if (ChartDldrScheduledOutcomeAdvancesLastRun(result.outcome)) {
-    schedule.last_run_iso = schedule.last_attempt_iso;
-  }
+  schedule.last_outcome = result.outcome;
+  schedule.SyncLegacyLastRunMirror();
 }

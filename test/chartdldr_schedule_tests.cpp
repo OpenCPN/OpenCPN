@@ -11,7 +11,8 @@
 
 #include <gtest/gtest.h>
 
-#include "chartdldr_schedule.h"
+#include "chartdldr_schedule_config.h"
+#include "chartdldr_schedule_state.h"
 
 namespace {
 
@@ -21,62 +22,113 @@ wxDateTime LocalTime(int day, int hour, int minute) {
   return dt;
 }
 
+ChartDldrScheduleConfig MakeSchedule(bool enabled, int hour, int minute) {
+  ChartDldrScheduleConfig schedule;
+  schedule.enabled = enabled;
+  schedule.SetTime(hour, minute);
+  return schedule;
+}
+
 }  // namespace
 
 TEST(ChartDldrSchedule, DisabledNeverRuns) {
-  EXPECT_FALSE(
-      ChartDldrScheduleShouldRun(LocalTime(2, 12, 0), false, 3, 0, ""));
+  ChartDldrScheduleConfig schedule = MakeSchedule(false, 3, 0);
+  EXPECT_EQ(schedule.EligibilityAt(LocalTime(2, 12, 0)),
+            ChartDldrScheduleEligibility::Disabled);
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 12, 0)));
 }
 
 TEST(ChartDldrSchedule, BeforeScheduledTime) {
-  EXPECT_FALSE(ChartDldrScheduleShouldRun(LocalTime(2, 2, 30), true, 3, 0, ""));
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 2, 30)));
 }
 
 TEST(ChartDldrSchedule, AtScheduledMinuteWhenNeverRun) {
-  EXPECT_TRUE(ChartDldrScheduleShouldRun(LocalTime(2, 3, 0), true, 3, 0, ""));
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 3, 0)));
 }
 
 TEST(ChartDldrSchedule, AfterScheduledTimeWhenNeverRun) {
-  EXPECT_TRUE(ChartDldrScheduleShouldRun(LocalTime(2, 4, 15), true, 3, 0, ""));
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 4, 15)));
 }
 
 TEST(ChartDldrSchedule, SkipsWhenLastRunAtOrAfterTodaysSlot) {
-  EXPECT_FALSE(ChartDldrScheduleShouldRun(LocalTime(2, 4, 0), true, 3, 0,
-                                          "2026-06-02 03:30:00"));
-  EXPECT_FALSE(ChartDldrScheduleShouldRun(LocalTime(2, 3, 30), true, 3, 0,
-                                          "2026-06-02 03:00:00"));
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  schedule.last_attempt_iso = "2026-06-02 03:30:00";
+  schedule.last_run_iso = schedule.last_attempt_iso;
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
+  schedule.last_attempt_iso = "2026-06-02 03:00:00";
+  schedule.last_run_iso = schedule.last_attempt_iso;
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 3, 30)));
 }
 
 TEST(ChartDldrSchedule, RunsNextDayAfterPriorRun) {
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  schedule.last_attempt_iso = "2026-06-02 03:30:00";
+  schedule.last_run_iso = schedule.last_attempt_iso;
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
   wxDateTime next_day;
   next_day.Set(3, wxDateTime::Jun, 2026, 3, 5, 0);
-  EXPECT_TRUE(ChartDldrScheduleShouldRun(next_day, true, 3, 0,
-                                         "2026-06-02 03:30:00"));
+  EXPECT_TRUE(schedule.ShouldRunNow(next_day));
 }
 
 TEST(ChartDldrSchedule, LegacyDateOnlyLastRun) {
-  EXPECT_FALSE(
-      ChartDldrScheduleShouldRun(LocalTime(2, 4, 0), true, 3, 0, "2026-06-02"));
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  schedule.last_attempt_iso = "2026-06-02";
+  schedule.last_run_iso = schedule.last_attempt_iso;
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
   wxDateTime next_day;
   next_day.Set(3, wxDateTime::Jun, 2026, 3, 5, 0);
-  EXPECT_TRUE(ChartDldrScheduleShouldRun(next_day, true, 3, 0, "2026-06-02"));
+  EXPECT_TRUE(schedule.ShouldRunNow(next_day));
 }
 
 TEST(ChartDldrSchedule, OneMinuteBeforeScheduledMinute) {
-  EXPECT_FALSE(ChartDldrScheduleShouldRun(LocalTime(2, 2, 59), true, 3, 0, ""));
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 2, 59)));
 }
 
 TEST(ChartDldrSchedule, ClampsHourAndMinute) {
-  EXPECT_TRUE(ChartDldrScheduleShouldRun(LocalTime(2, 23, 59), true, 99, 99, ""));
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 99, 99);
+  EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 23, 59)));
 }
 
 TEST(ChartDldrSchedule, InvalidLastRunIsoTreatedAsNeverRun) {
-  EXPECT_TRUE(ChartDldrScheduleShouldRun(LocalTime(2, 4, 0), true, 3, 0,
-                                          "not-a-valid-timestamp"));
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  schedule.last_run_iso = "not-a-valid-timestamp";
+  schedule.last_attempt_iso = schedule.last_run_iso;
+  schedule.SanitizeTimestamps();
+  EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
 }
 
 TEST(ChartDldrSchedule, DoesNotRunAgainAfterLastRunMarkedNow) {
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
   const wxString now_iso = wxDateTime::Now().FormatISOCombined(' ');
-  EXPECT_FALSE(ChartDldrScheduleShouldRun(LocalTime(2, 4, 0), true, 3, 0,
-                                          now_iso));
+  schedule.last_attempt_iso = now_iso;
+  schedule.last_run_iso = now_iso;
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
+}
+
+TEST(ChartDldrSchedule, BlocksImmediateRetryAfterFailedAttemptToday) {
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  schedule.last_attempt_iso = "2026-06-02 04:00:00";
+  schedule.last_run_iso = schedule.last_attempt_iso;
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkAllFailed;
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 30)));
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 7, 59)));
+}
+
+TEST(ChartDldrSchedule, AllowsRetryAfterMinIntervalWhenAllFailed) {
+  ChartDldrScheduleConfig schedule = MakeSchedule(true, 3, 0);
+  schedule.last_attempt_iso = "2026-06-02 04:00:00";
+  schedule.last_run_iso = schedule.last_attempt_iso;
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkAllFailed;
+  EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 8, 0)));
+}
+
+TEST(ChartDldrSchedule, MinRetryIntervalIsFourHours) {
+  EXPECT_EQ(ChartDldrScheduleConfig::MinRetryMinutes(), 240);
 }

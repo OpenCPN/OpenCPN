@@ -4,146 +4,176 @@
 
 #include "chartdldr_bulk.h"
 
+#include "ocpn_plugin.h"
+
 #include <wx/intl.h>
 
-bool ChartDldrPolicyUsesLogForErrors(const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::ScheduledBulk;
-}
+namespace {
 
-bool ChartDldrPolicyConfirmBeforeStart(const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::InteractiveBulk;
-}
+enum class ChartDldrPolicyTriState { Off, On, WhenPanelVisible };
 
-bool ChartDldrPolicyRestoreNotebookPage(
-    const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::InteractiveBulk ||
-         (policy.mode == ChartDldrDownloadUiMode::ScheduledBulk &&
-          policy.bulk_panel_visible);
-}
+struct ChartDldrBulkModeProfileRow {
+  ChartDldrCatalogRefreshMode catalog_refresh;
+  ChartDldrErrorReporting error_reporting;
+  ChartDldrPolicyTriState restore_notebook_page;
+  ChartDldrPolicyTriState select_download_tab;
+  bool confirm_before_start;
+  bool show_failure_summary;
+  bool sync_list_selection;
+  bool skip_manual_charts;
+  bool defer_chart_db_apply;
+  bool allow_empty_selection;
+  bool show_download_progress_ui;
+  bool show_download_result_dialogs;
+  bool show_catalog_progress_dialog;
+  bool focus_charts_tab_after_catalog;
+};
 
-bool ChartDldrPolicyShowFailureSummary(const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::InteractiveBulk;
-}
-
-bool ChartDldrPolicySelectDownloadTab(const ChartDldrBulkRunUiPolicy& policy) {
-  if (policy.mode == ChartDldrDownloadUiMode::InteractiveBulk) {
-    return true;
+bool TriStateValue(ChartDldrPolicyTriState value, bool panel_visible) {
+  switch (value) {
+    case ChartDldrPolicyTriState::Off:
+      return false;
+    case ChartDldrPolicyTriState::On:
+      return true;
+    case ChartDldrPolicyTriState::WhenPanelVisible:
+      return panel_visible;
   }
-  return policy.mode == ChartDldrDownloadUiMode::ScheduledBulk &&
-         policy.bulk_panel_visible;
+  return false;
 }
 
-bool ChartDldrPolicySyncListSelection(const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::InteractiveBulk;
-}
-
-bool ChartDldrPolicySkipManualCharts(const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::ScheduledBulk;
-}
-
-bool ChartDldrPolicyDeferChartDbApply(const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::InteractiveBulk ||
-         policy.mode == ChartDldrDownloadUiMode::ScheduledBulk;
-}
-
-bool ChartDldrPolicyAllowEmptySelection(
+const ChartDldrBulkModeProfileRow& ModeProfileRow(
     const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::InteractiveBulk ||
-         policy.mode == ChartDldrDownloadUiMode::ScheduledBulk;
+  static const ChartDldrBulkModeProfileRow profiles[] = {
+      {// InteractiveBulk
+       ChartDldrCatalogRefreshMode::SyncBlocking,
+       ChartDldrErrorReporting::Dialog,
+       ChartDldrPolicyTriState::On,
+       ChartDldrPolicyTriState::On,
+       true,
+       true,
+       true,
+       false,
+       true,
+       true,
+       true,
+       false,
+       false,
+       true},
+      {// ScheduledBulk
+       ChartDldrCatalogRefreshMode::AsyncIdle,
+       ChartDldrErrorReporting::SummaryLog,
+       ChartDldrPolicyTriState::WhenPanelVisible,
+       ChartDldrPolicyTriState::WhenPanelVisible,
+       false,
+       false,
+       false,
+       true,
+       true,
+       true,
+       false,
+       false,
+       false,
+       false},
+      {// SelectedCharts
+       ChartDldrCatalogRefreshMode::SyncBlocking,
+       ChartDldrErrorReporting::Dialog,
+       ChartDldrPolicyTriState::Off,
+       ChartDldrPolicyTriState::Off,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       true,
+       true,
+       false,
+       false},
+      {// CatalogRefresh
+       ChartDldrCatalogRefreshMode::SyncBlocking,
+       ChartDldrErrorReporting::Dialog,
+       ChartDldrPolicyTriState::Off,
+       ChartDldrPolicyTriState::Off,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       false,
+       true,
+       true},
+  };
+  return profiles[static_cast<size_t>(policy.mode)];
 }
 
-bool ChartDldrPolicyShowDownloadProgressUi(
-    const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::InteractiveBulk ||
-         policy.mode == ChartDldrDownloadUiMode::SelectedCharts;
+ChartDldrBulkRunUiPolicy MakePolicy(ChartDldrDownloadUiMode mode,
+                                    bool panel_visible) {
+  ChartDldrBulkRunUiPolicy policy;
+  policy.mode = mode;
+  policy.bulk_panel_visible = panel_visible;
+  return policy;
 }
 
-bool ChartDldrPolicyShowDownloadResultDialogs(
+}  // namespace
+
+ChartDldrBulkModeProfile ChartDldrBulkModeProfileFor(
     const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::SelectedCharts;
+  const ChartDldrBulkModeProfileRow& row = ModeProfileRow(policy);
+  ChartDldrBulkModeProfile profile;
+  profile.catalog_refresh = row.catalog_refresh;
+  profile.error_reporting = row.error_reporting;
+  profile.restore_notebook_page =
+      TriStateValue(row.restore_notebook_page, policy.bulk_panel_visible);
+  profile.select_download_tab =
+      TriStateValue(row.select_download_tab, policy.bulk_panel_visible);
+  profile.confirm_before_start = row.confirm_before_start;
+  profile.show_failure_summary = row.show_failure_summary;
+  profile.sync_list_selection = row.sync_list_selection;
+  profile.skip_manual_charts = row.skip_manual_charts;
+  profile.defer_chart_db_apply = row.defer_chart_db_apply;
+  profile.allow_empty_selection = row.allow_empty_selection;
+  profile.show_download_progress_ui = row.show_download_progress_ui;
+  profile.show_download_result_dialogs = row.show_download_result_dialogs;
+  profile.show_catalog_progress_dialog = row.show_catalog_progress_dialog;
+  profile.focus_charts_tab_after_catalog = row.focus_charts_tab_after_catalog;
+  return profile;
 }
 
-bool ChartDldrPolicyShowCatalogProgressDialog(
-    const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::CatalogRefresh;
-}
-
-bool ChartDldrPolicyFocusChartsTabAfterCatalog(
-    const ChartDldrBulkRunUiPolicy& policy) {
-  return policy.mode == ChartDldrDownloadUiMode::InteractiveBulk;
+void ChartDldrReportBulkError(wxWindow* parent,
+                              const ChartDldrBulkModeProfile& profile,
+                              const wxString& msg, const wxString& title) {
+  switch (profile.error_reporting) {
+    case ChartDldrErrorReporting::SummaryLog:
+      break;
+    case ChartDldrErrorReporting::Dialog:
+      if (parent) {
+        OCPNMessageBox_PlugIn(parent, msg, title);
+      }
+      break;
+  }
 }
 
 ChartDldrBulkRunUiPolicy ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind kind,
                                                      bool panel_visible) {
-  ChartDldrBulkRunUiPolicy policy;
-  policy.bulk_panel_visible = panel_visible;
-  policy.mode = ChartDldrBulkRunIsScheduled(kind)
-                    ? ChartDldrDownloadUiMode::ScheduledBulk
-                    : ChartDldrDownloadUiMode::InteractiveBulk;
-  return policy;
-}
-
-ChartDldrBulkRunUiPolicy ChartDldrSelectedChartsDownloadPolicy() {
-  ChartDldrBulkRunUiPolicy policy;
-  policy.mode = ChartDldrDownloadUiMode::SelectedCharts;
-  return policy;
-}
-
-ChartDldrBulkRunUiPolicy ChartDldrInteractiveCatalogUpdatePolicy() {
-  ChartDldrBulkRunUiPolicy policy;
-  policy.mode = ChartDldrDownloadUiMode::CatalogRefresh;
-  return policy;
-}
-
-bool ChartDldrBulkRunShouldRestoreUi(const ChartDldrBulkRunUiPolicy& policy,
-                                     const ChartDldrBulkRunUiSnapshot& before) {
-  return ChartDldrPolicyRestoreNotebookPage(policy) && before.panel_visible;
-}
-
-bool ChartDldrCanStartBulkRequest(
-    const ChartDldrBulkRequestInput& input, ChartDldrBulkRunKind kind,
-    ChartDldrScheduledSkipReason* scheduled_skip) {
-  if (input.bulk_run_active) {
-    return false;
-  }
-
   if (ChartDldrBulkRunIsScheduled(kind)) {
-    const ChartDldrScheduledSkipReason reason =
-        ChartDldrEvaluateScheduledBulkSkip(input.allow_bulk_update,
-                                           input.has_chart_sources);
-    if (scheduled_skip) {
-      *scheduled_skip = reason;
-    }
-    return reason == ChartDldrScheduledSkipReason::None;
+    return MakePolicy(ChartDldrDownloadUiMode::ScheduledBulk, panel_visible);
   }
-
-  if (scheduled_skip) {
-    *scheduled_skip = ChartDldrScheduledSkipReason::None;
-  }
-  return input.allow_bulk_update && input.has_chart_sources;
+  return MakePolicy(ChartDldrDownloadUiMode::InteractiveBulk, panel_visible);
 }
 
-ChartDldrScheduledSkipReason ChartDldrEvaluateScheduledBulkSkip(
-    bool allow_bulk_update, bool has_chart_sources) {
-  if (!allow_bulk_update) {
-    return ChartDldrScheduledSkipReason::BulkDisabled;
-  }
-  if (!has_chart_sources) {
-    return ChartDldrScheduledSkipReason::NoSources;
-  }
-  return ChartDldrScheduledSkipReason::None;
+ChartDldrBulkModeProfile ChartDldrSelectedChartsDownloadProfile() {
+  return ChartDldrBulkModeProfileFor(
+      MakePolicy(ChartDldrDownloadUiMode::SelectedCharts, false));
 }
 
-wxString ChartDldrScheduledSkipStatus(ChartDldrScheduledSkipReason reason) {
-  switch (reason) {
-    case ChartDldrScheduledSkipReason::BulkDisabled:
-      return _("bulk update disabled in preferences");
-    case ChartDldrScheduledSkipReason::NoSources:
-      return _("no chart sources configured");
-    case ChartDldrScheduledSkipReason::PanelUnavailable:
-      return _("downloader panel unavailable");
-    case ChartDldrScheduledSkipReason::None:
-      break;
-  }
-  return wxEmptyString;
+ChartDldrBulkModeProfile ChartDldrInteractiveCatalogUpdateProfile() {
+  return ChartDldrBulkModeProfileFor(
+      MakePolicy(ChartDldrDownloadUiMode::CatalogRefresh, false));
+}
+
+bool ChartDldrBulkRunShouldRestoreUi(const ChartDldrBulkModeProfile& profile,
+                                     const ChartDldrBulkRunUiSnapshot& before) {
+  return profile.restore_notebook_page && before.panel_visible;
 }

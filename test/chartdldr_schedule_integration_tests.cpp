@@ -46,18 +46,31 @@ TEST(ChartDldrScheduleIntegration, SkipThenGateBlocksUntilTomorrow) {
   EXPECT_TRUE(schedule.ShouldRunNow(next_day));
 }
 
-TEST(ChartDldrScheduleIntegration, FailedBulkAllowsSameDayRetry) {
+TEST(ChartDldrScheduleIntegration, FailedBulkBlocksImmediateRetry) {
   ChartDldrScheduleConfig schedule;
   schedule.enabled = true;
   schedule.SetTime(3, 0);
-  schedule.last_run_iso = wxEmptyString;
 
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(
       schedule,
       ChartDldrScheduledBulkResultFromStats(0, 4, 4, 0, 0), &run_time);
-  EXPECT_TRUE(schedule.last_run_iso.empty());
-  EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
+  EXPECT_EQ(schedule.last_outcome,
+            ChartDldrScheduledRunOutcome::BulkAllFailed);
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 7, 0)));
+}
+
+TEST(ChartDldrScheduleIntegration, FailedBulkAllowsSameDayRetryAfterInterval) {
+  ChartDldrScheduleConfig schedule;
+  schedule.enabled = true;
+  schedule.SetTime(3, 0);
+
+  const wxDateTime run_time = FixedRunTime();
+  ChartDldrApplyScheduledRunOutcome(
+      schedule,
+      ChartDldrScheduledBulkResultFromStats(0, 4, 4, 0, 0), &run_time);
+  EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 8, 0)));
 }
 
 TEST(ChartDldrScheduleIntegration, SuccessfulBulkBlocksSameDay) {
@@ -70,6 +83,16 @@ TEST(ChartDldrScheduleIntegration, SuccessfulBulkBlocksSameDay) {
       schedule,
       ChartDldrScheduledBulkResultFromStats(2, 3, 0, 1, 1), &run_time);
   EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
+}
+
+TEST(ChartDldrScheduleIntegration, AttemptStartBlocksImmediateRetry) {
+  ChartDldrScheduleConfig schedule;
+  schedule.enabled = true;
+  schedule.SetTime(3, 0);
+  ChartDldrRecordScheduledAttemptStart(schedule, FixedRunTime());
+  EXPECT_EQ(schedule.last_outcome, ChartDldrScheduledRunOutcome::Pending);
+  EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 30)));
+  EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 8, 0)));
 }
 
 TEST(ChartDldrScheduleIntegration, NoAttemptsBlocksSameDayRetry) {

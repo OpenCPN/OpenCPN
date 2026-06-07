@@ -45,17 +45,19 @@ TEST(ChartDldrScheduleState, OutcomeFromBulkResult) {
             ChartDldrScheduledRunOutcome::BulkSuccess);
 }
 
-TEST(ChartDldrScheduleState, AdvanceLastRunPolicy) {
-  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
+TEST(ChartDldrScheduleState, SameDayRetryPolicy) {
+  EXPECT_FALSE(ChartDldrScheduledOutcomeAllowsSameDayRetry(
       ChartDldrScheduledRunOutcome::Skipped));
-  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
+  EXPECT_FALSE(ChartDldrScheduledOutcomeAllowsSameDayRetry(
       ChartDldrScheduledRunOutcome::BulkSuccess));
-  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
+  EXPECT_FALSE(ChartDldrScheduledOutcomeAllowsSameDayRetry(
       ChartDldrScheduledRunOutcome::BulkNoAttempts));
-  EXPECT_TRUE(ChartDldrScheduledOutcomeAdvancesLastRun(
+  EXPECT_FALSE(ChartDldrScheduledOutcomeAllowsSameDayRetry(
       ChartDldrScheduledRunOutcome::BulkPartialSuccess));
-  EXPECT_FALSE(ChartDldrScheduledOutcomeAdvancesLastRun(
+  EXPECT_TRUE(ChartDldrScheduledOutcomeAllowsSameDayRetry(
       ChartDldrScheduledRunOutcome::BulkAllFailed));
+  EXPECT_TRUE(ChartDldrScheduledOutcomeAllowsSameDayRetry(
+      ChartDldrScheduledRunOutcome::Pending));
 }
 
 TEST(ChartDldrScheduleState, SkippedStoresDetailAndAttemptIso) {
@@ -72,21 +74,23 @@ TEST(ChartDldrScheduleState, SkippedStoresDetailAndAttemptIso) {
                              "no chart sources configured"));
 }
 
-TEST(ChartDldrScheduleState, BulkAllFailedDoesNotAdvanceLastRunIso) {
+TEST(ChartDldrScheduleState, BulkAllFailedStoresOutcomeAndAllowsRetry) {
   ChartDldrScheduleConfig schedule;
   schedule.last_run_iso = wxEmptyString;
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(schedule,
                                    ChartDldrScheduledRunOutcome::BulkAllFailed,
                                    "failed: 4 of 4 charts", &run_time);
-  EXPECT_TRUE(schedule.last_run_iso.empty());
+  EXPECT_FALSE(schedule.last_run_iso.empty());
   EXPECT_FALSE(schedule.last_attempt_iso.empty());
+  EXPECT_EQ(schedule.last_outcome,
+            ChartDldrScheduledRunOutcome::BulkAllFailed);
   EXPECT_EQ(schedule.last_status, "failed: 4 of 4 charts");
   EXPECT_EQ(ChartDldrFormatScheduledLastRunDisplay(schedule),
             ScheduledDisplay("2026-06-02 15:30", "failed: 4 of 4 charts"));
 }
 
-TEST(ChartDldrScheduleState, BulkNoAttemptsAdvancesLastRunIso) {
+TEST(ChartDldrScheduleState, BulkNoAttemptsRecordsOutcome) {
   ChartDldrScheduleConfig schedule;
   schedule.last_run_iso = wxEmptyString;
   const wxDateTime run_time = FixedRunTime();
@@ -99,7 +103,7 @@ TEST(ChartDldrScheduleState, BulkNoAttemptsAdvancesLastRunIso) {
             ScheduledDisplay("2026-06-02 15:30", "No charts to update"));
 }
 
-TEST(ChartDldrScheduleState, BulkSuccessAdvancesLastRunIso) {
+TEST(ChartDldrScheduleState, BulkSuccessRecordsOutcome) {
   ChartDldrScheduleConfig schedule;
   schedule.last_run_iso = wxEmptyString;
   const wxDateTime run_time = FixedRunTime();
@@ -131,6 +135,25 @@ TEST(ChartDldrScheduleState, MigrateLegacyCombinedStatus) {
   EXPECT_EQ(schedule.last_status, "2 update 3 new");
   EXPECT_FALSE(schedule.last_attempt_iso.empty());
   EXPECT_FALSE(schedule.last_run_iso.empty());
+}
+
+TEST(ChartDldrScheduleState, ParseScheduledRunOutcome) {
+  ChartDldrScheduledRunOutcome outcome =
+      ChartDldrScheduledRunOutcome::Pending;
+  EXPECT_TRUE(ChartDldrParseScheduledRunOutcome(
+      static_cast<long>(ChartDldrScheduledRunOutcome::BulkSuccess), outcome));
+  EXPECT_EQ(outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+  EXPECT_FALSE(ChartDldrParseScheduledRunOutcome(999, outcome));
+}
+
+TEST(ChartDldrScheduleState, InferLegacyNoChartsFromMsgid) {
+  ChartDldrScheduleConfig schedule;
+  schedule.last_attempt_iso = "2026-06-02 04:00:00";
+  schedule.last_run_iso = schedule.last_attempt_iso;
+  schedule.last_status = "No charts to update";
+  ChartDldrInferScheduleOutcomeFromLegacy(schedule);
+  EXPECT_EQ(schedule.last_outcome,
+            ChartDldrScheduledRunOutcome::BulkNoAttempts);
 }
 
 TEST(ChartDldrScheduleState, ScheduledBulkResultFromStats) {

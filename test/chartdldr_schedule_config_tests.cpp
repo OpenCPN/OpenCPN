@@ -78,6 +78,37 @@ TEST(ChartDldrScheduleConfig, ShouldRunDelegatesToScheduleGate) {
   EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
 }
 
+TEST(ChartDldrScheduleConfig, EligibilityStates) {
+  ChartDldrScheduleConfig schedule;
+  schedule.enabled = false;
+  EXPECT_EQ(schedule.EligibilityAt(LocalTime(2, 4, 0)),
+            ChartDldrScheduleEligibility::Disabled);
+  schedule.enabled = true;
+  schedule.SetTime(3, 0);
+  EXPECT_EQ(schedule.EligibilityAt(LocalTime(2, 2, 0)),
+            ChartDldrScheduleEligibility::NotYet);
+  EXPECT_EQ(schedule.EligibilityAt(LocalTime(2, 4, 0)),
+            ChartDldrScheduleEligibility::Ready);
+  schedule.last_attempt_iso = "2026-06-02 04:00:00";
+  schedule.last_run_iso = schedule.last_attempt_iso;
+  schedule.last_outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
+  EXPECT_EQ(schedule.EligibilityAt(LocalTime(2, 4, 0)),
+            ChartDldrScheduleEligibility::BlockedToday);
+}
+
+TEST(ChartDldrScheduleConfig, SanitizeDropsInvalidTimestamps) {
+  ChartDldrScheduleConfig schedule;
+  schedule.last_run_iso = "not-a-valid-timestamp";
+  schedule.last_attempt_iso = "also-invalid";
+  schedule.SanitizeTimestamps();
+  EXPECT_TRUE(schedule.last_run_iso.empty());
+  EXPECT_TRUE(schedule.last_attempt_iso.empty());
+}
+
+TEST(ChartDldrScheduleConfig, MinRetryMinutesIsFourHours) {
+  EXPECT_EQ(ChartDldrScheduleConfig::MinRetryMinutes(), 240);
+}
+
 TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
   ScopedConfigFile config_file("chartdldr_sched_test");
   const wxString& path = config_file.path();
@@ -95,6 +126,7 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     written.last_run_iso = "2026-06-02 14:45:00";
     written.last_attempt_iso = "2026-06-02 14:45:00";
     written.last_status = "2 update 1 new";
+    written.last_outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
     written.Save(&conf);
     ASSERT_TRUE(conf.Flush());
   }
@@ -109,6 +141,31 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     EXPECT_EQ(loaded.last_run_iso, "2026-06-02 14:45:00");
     EXPECT_EQ(loaded.last_attempt_iso, "2026-06-02 14:45:00");
     EXPECT_EQ(loaded.last_status, "2 update 1 new");
+    EXPECT_EQ(loaded.last_outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+  }
+}
+
+TEST(ChartDldrScheduleConfig, LoadRejectsInvalidOutcomeValue) {
+  ScopedConfigFile config_file("chartdldr_sched_invalid_outcome");
+  const wxString& path = config_file.path();
+
+  {
+    wxFFile touch(path, "wb");
+    ASSERT_TRUE(touch.IsOpened());
+  }
+
+  {
+    wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
+    conf.Write(_T("ScheduledUpdateLastOutcome"), 999L);
+    conf.Write(_T("ScheduledUpdateLastAttempt"), _T("2026-06-02 04:00:00"));
+    ASSERT_TRUE(conf.Flush());
+  }
+
+  {
+    wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
+    ChartDldrScheduleConfig loaded;
+    loaded.Load(&conf);
+    EXPECT_EQ(loaded.last_outcome, ChartDldrScheduledRunOutcome::Pending);
   }
 }
 

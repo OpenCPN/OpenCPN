@@ -47,8 +47,6 @@ set(CMAKE_MACOSX_RPATH "ON")
 include("cmake/PluginConfigure.cmake")
 
 set(SRC_CHARTDLDR
-    src/chartdldr_schedule.h
-    src/chartdldr_schedule.cpp
     src/chartdldr_schedule_config.h
     src/chartdldr_schedule_config.cpp
     src/chartdldr_schedule_state.h
@@ -58,17 +56,32 @@ set(SRC_CHARTDLDR
     src/chartdldr_prefs.h
     src/chartdldr_prefs.cpp
     src/chartdldr_panel.h
+    src/chartdldr_panel_impl.h
     src/chartdldr_panel.cpp
+    src/chartdldr_panel_impl.cpp
     src/chartdldr_bulk.h
     src/chartdldr_bulk_policy.cpp
-    src/chartdldr_bulk_runner.h
-    src/chartdldr_bulk_runner.cpp
-    src/chartdldr_bulk_catalog.cpp
+    src/chartdldr_bulk_orchestrate.h
+    src/chartdldr_bulk_orchestrate.cpp
+    src/chartdldr_bulk_request.cpp
+    src/chartdldr_bulk_transfer.h
+    src/chartdldr_bulk_transfer.cpp
+    src/chartdldr_bulk_async_step.h
+    src/chartdldr_bulk_async_step.cpp
+    src/chartdldr_bulk_catalog_internal.h
+    src/chartdldr_bulk_catalog_internal.cpp
+    src/chartdldr_bulk_catalog_common.cpp
+    src/chartdldr_bulk_catalog_sync.cpp
+    src/chartdldr_bulk_catalog_async.cpp
     src/chartdldr_bulk_charts.cpp
     src/chartdldr_bulk_schedule.h
     src/chartdldr_bulk_schedule.cpp
     src/chartdldr_chart_classify.h
     src/chartdldr_chart_classify.cpp
+    src/chartdldr_archive.cpp
+    src/chartdldr_format.h
+    src/chartdldr_format.cpp
+    src/chartdldr_add_source_dlg.cpp
     src/chartdldr_pi.h
     src/chartdldr_pi.cpp
     src/icons.h

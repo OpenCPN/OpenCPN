@@ -11,8 +11,28 @@
 #define CHARTDLDR_BULK_H_
 
 #include <wx/string.h>
+#include <wx/window.h>
 
 enum class ChartDldrBulkRunKind { Interactive, Scheduled };
+
+enum class ChartDldrCatalogRefreshMode {
+  SyncBlocking,
+  AsyncIdle,
+};
+
+enum class ChartDldrAsyncCatalogStepResult {
+  NotActive,
+  InProgress,
+  Complete,
+  Failed,
+};
+
+enum class ChartDldrBulkChartStepResult {
+  NotActive,
+  TransferInProgress,
+  MoreCharts,
+  Finished,
+};
 
 inline bool ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind kind) {
   return kind == ChartDldrBulkRunKind::Scheduled;
@@ -20,25 +40,43 @@ inline bool ChartDldrBulkRunIsScheduled(ChartDldrBulkRunKind kind) {
 
 /** How download/catalog code reports errors and drives wx UI. */
 enum class ChartDldrDownloadUiMode {
-  /** User "Update all" from the panel. */
   InteractiveBulk,
-  /** Timer-driven bulk while OpenCPN runs. */
   ScheduledBulk,
-  /** User "Download selected charts". */
   SelectedCharts,
-  /** User refreshes one catalog XML. */
   CatalogRefresh,
 };
 
+enum class ChartDldrErrorReporting {
+  Dialog,
+  /** Scheduled bulk: one summary line per run, no per-item log noise. */
+  SummaryLog,
+};
+
 /**
- * Bulk orchestration lives in ChartDldrBulkRunner / ChartDldrRunBulkUpdate.
- * ChartDldrPanelImpl is only the wx transfer parent for OCPN_download*
- * callbacks.
+ * Bulk orchestration lives in ChartDldrBulkOrchestrate (panel friend).
+ * ChartDldrPanelImpl is only the wx transfer parent for OCPN_download* callbacks.
  */
 struct ChartDldrBulkRunUiPolicy {
   ChartDldrDownloadUiMode mode = ChartDldrDownloadUiMode::SelectedCharts;
-  /** Set for bulk modes: panel was on screen when the run started. */
   bool bulk_panel_visible = false;
+};
+
+/** Resolved UI behavior for a bulk run policy. */
+struct ChartDldrBulkModeProfile {
+  ChartDldrCatalogRefreshMode catalog_refresh = ChartDldrCatalogRefreshMode::SyncBlocking;
+  ChartDldrErrorReporting error_reporting = ChartDldrErrorReporting::Dialog;
+  bool restore_notebook_page = false;
+  bool select_download_tab = false;
+  bool confirm_before_start = false;
+  bool show_failure_summary = false;
+  bool sync_list_selection = false;
+  bool skip_manual_charts = false;
+  bool defer_chart_db_apply = false;
+  bool allow_empty_selection = false;
+  bool show_download_progress_ui = false;
+  bool show_download_result_dialogs = false;
+  bool show_catalog_progress_dialog = false;
+  bool focus_charts_tab_after_catalog = false;
 };
 
 struct ChartDldrBulkRunUiSnapshot {
@@ -53,55 +91,29 @@ struct ChartDldrBulkRunStats {
   int updated_downloads = 0;
 
   int downloaded_ok() const { return attempted - failed; }
+
+  void Accumulate(const ChartDldrBulkRunStats& delta) {
+    attempted += delta.attempted;
+    failed += delta.failed;
+    new_downloads += delta.new_downloads;
+    updated_downloads += delta.updated_downloads;
+  }
 };
 
-enum class ChartDldrScheduledSkipReason {
-  None,
-  BulkDisabled,
-  NoSources,
-  PanelUnavailable,
-};
+ChartDldrBulkModeProfile ChartDldrBulkModeProfileFor(
+    const ChartDldrBulkRunUiPolicy& policy);
 
-struct ChartDldrBulkRequestInput {
-  bool allow_bulk_update = false;
-  bool has_chart_sources = false;
-  bool bulk_run_active = false;
-};
-
-bool ChartDldrPolicyUsesLogForErrors(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyConfirmBeforeStart(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyRestoreNotebookPage(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyShowFailureSummary(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicySelectDownloadTab(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicySyncListSelection(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicySkipManualCharts(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyDeferChartDbApply(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyAllowEmptySelection(const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyShowDownloadProgressUi(
-    const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyShowDownloadResultDialogs(
-    const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyShowCatalogProgressDialog(
-    const ChartDldrBulkRunUiPolicy& policy);
-bool ChartDldrPolicyFocusChartsTabAfterCatalog(
-    const ChartDldrBulkRunUiPolicy& policy);
+void ChartDldrReportBulkError(wxWindow* parent,
+                              const ChartDldrBulkModeProfile& profile,
+                              const wxString& msg, const wxString& title);
 
 ChartDldrBulkRunUiPolicy ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind kind,
                                                      bool panel_visible);
 
-ChartDldrBulkRunUiPolicy ChartDldrSelectedChartsDownloadPolicy();
-ChartDldrBulkRunUiPolicy ChartDldrInteractiveCatalogUpdatePolicy();
+ChartDldrBulkModeProfile ChartDldrSelectedChartsDownloadProfile();
+ChartDldrBulkModeProfile ChartDldrInteractiveCatalogUpdateProfile();
 
-bool ChartDldrBulkRunShouldRestoreUi(const ChartDldrBulkRunUiPolicy& policy,
+bool ChartDldrBulkRunShouldRestoreUi(const ChartDldrBulkModeProfile& profile,
                                      const ChartDldrBulkRunUiSnapshot& before);
-
-bool ChartDldrCanStartBulkRequest(const ChartDldrBulkRequestInput& input,
-                                  ChartDldrBulkRunKind kind,
-                                  ChartDldrScheduledSkipReason* scheduled_skip);
-
-ChartDldrScheduledSkipReason ChartDldrEvaluateScheduledBulkSkip(
-    bool allow_bulk_update, bool has_chart_sources);
-
-wxString ChartDldrScheduledSkipStatus(ChartDldrScheduledSkipReason reason);
 
 #endif  // CHARTDLDR_BULK_H_

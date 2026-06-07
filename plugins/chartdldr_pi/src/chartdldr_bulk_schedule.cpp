@@ -8,12 +8,11 @@
  ***************************************************************************/
 
 #include "chartdldr_bulk_schedule.h"
-
-#include "chartdldr_bulk.h"
-#include "chartdldr_bulk_runner.h"
 #include "chartdldr_pi.h"
+#include "chartdldr_panel_impl.h"
 #include "chartdldr_schedule_state.h"
 
+#include <wx/app.h>
 #include <wx/log.h>
 #include <wx/timer.h>
 #include <wx/window.h>
@@ -55,7 +54,9 @@ void ChartDldrOnScheduleTimer(chartdldr_pi* pi, wxTimerEvent& event) {
     return;
   }
 
-  ChartDldrRequestBulkUpdate(pi, ChartDldrBulkRunKind::Scheduled);
+  wxTheApp->CallAfter([pi]() {
+    ChartDldrRequestBulkUpdate(pi, ChartDldrBulkRunKind::Scheduled);
+  });
 }
 
 bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
@@ -77,8 +78,21 @@ bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunKind kind) {
     return false;
   }
 
+  if (ChartDldrBulkRunIsScheduled(kind)) {
+    ChartDldrRecordScheduledAttemptStart(pi->ScheduleConfig(),
+                                         wxDateTime::Now());
+    pi->SaveConfig();
+    pi->StartAsyncBulkUpdate();
+    return true;
+  }
+
   wxCommandEvent evt;
-  return ChartDldrRunBulkUpdate(pi, kind, evt);
+  ChartDldrPanelImpl* const panel = pi->GetDownloaderPanel();
+  if (!panel) {
+    return false;
+  }
+  ChartDldrBulkRunStats stats;
+  return panel->Bulk().RunInteractive(kind, evt, stats);
 }
 
 void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi,
@@ -93,29 +107,8 @@ void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi,
           stats.new_downloads, stats.updated_downloads);
 
   ChartDldrApplyScheduledRunOutcome(pi->ScheduleConfig(), result);
-
-  switch (result.outcome) {
-    case ChartDldrScheduledRunOutcome::BulkSuccess:
-      wxLogMessage("chartdldr_pi: scheduled bulk update finished: %s",
-                   result.status_detail.c_str());
-      break;
-    case ChartDldrScheduledRunOutcome::BulkPartialSuccess:
-      wxLogMessage(
-          "chartdldr_pi: scheduled bulk update finished with failures: %s",
-          result.status_detail.c_str());
-      break;
-    case ChartDldrScheduledRunOutcome::BulkNoAttempts:
-      wxLogMessage("chartdldr_pi: scheduled bulk update: %s",
-                   result.status_detail.c_str());
-      break;
-    case ChartDldrScheduledRunOutcome::BulkAllFailed:
-      wxLogMessage(
-          "chartdldr_pi: scheduled bulk update: %s; will retry later today",
-          result.status_detail.c_str());
-      break;
-    case ChartDldrScheduledRunOutcome::Skipped:
-      break;
-  }
+  wxLogMessage("chartdldr_pi: scheduled bulk update: %s",
+               result.status_detail.c_str());
   pi->SaveConfig();
 }
 
@@ -136,6 +129,7 @@ void ChartDldrScheduler::Attach(wxWindow* parent) {
 }
 
 void ChartDldrScheduler::Detach() {
+  EnsureIdleWatch(false);
   if (timer_) {
     timer_->Stop();
     if (parent_) {
@@ -152,6 +146,34 @@ void ChartDldrScheduler::Restart() {
   ChartDldrRestartScheduleTimer(pi_, timer_);
 }
 
+void ChartDldrScheduler::EnsureIdleWatch(bool enable) {
+  if (!parent_) {
+    return;
+  }
+  if (enable && !idle_bound_) {
+    parent_->Bind(wxEVT_IDLE, &ChartDldrScheduler::OnIdle, this);
+    idle_bound_ = true;
+  } else if (!enable && idle_bound_) {
+    parent_->Unbind(wxEVT_IDLE, &ChartDldrScheduler::OnIdle, this);
+    idle_bound_ = false;
+  }
+}
+
 void ChartDldrScheduler::OnTimer(wxTimerEvent& event) {
   ChartDldrOnScheduleTimer(pi_, event);
+}
+
+void ChartDldrScheduler::OnIdle(wxIdleEvent& event) {
+  ChartDldrPanelImpl* const panel =
+      pi_ ? pi_->GetDownloaderPanel() : nullptr;
+  if (!panel || !panel->Bulk().IsScheduledRunActive()) {
+    EnsureIdleWatch(false);
+    return;
+  }
+
+  if (panel->Bulk().StepScheduledRun()) {
+    event.RequestMore();
+  } else {
+    EnsureIdleWatch(false);
+  }
 }

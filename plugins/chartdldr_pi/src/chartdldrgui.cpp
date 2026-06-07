@@ -1100,6 +1100,15 @@ void ChartDldrPrefsDlg::OnDirSelClick(wxCommandEvent& event) {
   }
 }
 
+void ChartDldrPrefsDlg::OnCancelClick(wxCommandEvent &event) {
+  event.Skip();
+  EndModal(wxID_CANCEL);
+}
+
+void ChartDldrPrefsDlg::OnOkClick(wxCommandEvent &event) {
+  event.Skip();
+}
+
 ChartDldrPrefsDlg::~ChartDldrPrefsDlg() {
   // Disconnect Events
   m_sdbSizerBtnsCancel->Disconnect(

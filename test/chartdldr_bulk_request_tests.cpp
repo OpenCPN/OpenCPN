@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 
 #include "chartdldr_bulk.h"
+#include "chartdldr_bulk_schedule.h"
 #include "chartdldr_schedule_config.h"
 #include "chartdldr_schedule_state.h"
 

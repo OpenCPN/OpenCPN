@@ -7,9 +7,9 @@
  *   (at your option) any later version.                                   *
  ***************************************************************************/
 
-#include "chartdldr_panel.h"
-
 #include "chartdldr_pi.h"
+#include "chartdldr_panel.h"
+#include "chartdldr_panel_impl.h"
 
 #include <wx/panel.h>
 #include <wx/sizer.h>

@@ -143,12 +143,17 @@ and updated charts), then rescans the OpenCPN chart database.
 * Enabling it also turns on *Allow bulk update* in the same preferences dialog.
 * Configure chart sources on the Chart Downloader tab (you are warned if none are set).
 * OpenCPN must be running after the scheduled local time (checked about once per minute).
+* *Interactive Update All* refreshes each catalog synchronously (with a progress dialog)
+  and downloads charts back-to-back on the UI thread.
+* *Scheduled* runs use background catalog fetches and chart transfers, stepping one
+  catalog refresh or one chart download per idle cycle so the UI stays responsive.
 * Charts that require manual download in a browser are skipped during
   scheduled runs (logged only).
 * *Skipped* runs (bulk update disabled, no chart sources, or panel unavailable)
   are recorded for that day and not retried until the next day.
 * *All downloads failed* does not count as completed; later checks the same day
-  will retry. *No charts to update* is recorded for that day and not retried.
+  may retry after about four hours. *No charts to update* is recorded for that
+  day and not retried.
 
 Use *Run update now* in preferences to trigger the same operation immediately.
 

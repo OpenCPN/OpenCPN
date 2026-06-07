@@ -51,18 +51,20 @@ set(SRC
   chartdldr_bulk_schedule_tests.cpp
   chartdldr_bulk_request_tests.cpp
   chartdldr_bulk_run_tests.cpp
+  chartdldr_bulk_async_step_tests.cpp
   chartdldr_schedule_integration_tests.cpp
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
   navutil_base_tests.cpp
   route_point_tests.cpp
   ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
-  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_config.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_state.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_chart_classify.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_prefs_time.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_policy.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_request.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_async_step.cpp
 )
 
 if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)

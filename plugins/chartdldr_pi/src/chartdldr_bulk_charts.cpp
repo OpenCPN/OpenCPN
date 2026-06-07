@@ -8,6 +8,8 @@
 #include "wx/wx.h"
 #endif
 
+#include "chartdldr_format.h"
+#include "chartdldr_panel_impl.h"
 #include "chartdldr_pi.h"
 #include "chartdldr_bulk.h"
 #include "chartdldr_chart_classify.h"
@@ -17,15 +19,23 @@
 
 namespace {
 
-wxString FormatBytes(double bytes) {
-  if (bytes <= 0) {
-    return "?";
+void UpdateBulkDownloadProgressUi(ChartDldrPanelImpl* panel, int downloading,
+                                  int to_download, int failed_downloads,
+                                  const ChartDldrBulkTransferSlot& transfer) {
+  if (failed_downloads) {
+    panel->SetChartInfo(wxString::Format(
+        _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+        downloading, to_download, failed_downloads,
+        ChartDldrFormatBytes(transfer.transferred_size),
+        ChartDldrFormatBytes(transfer.total_size)));
+  } else {
+    panel->SetChartInfo(wxString::Format(
+        _("Downloading chart %u of %u (%s / %s)"), downloading, to_download,
+        ChartDldrFormatBytes(transfer.transferred_size),
+        ChartDldrFormatBytes(transfer.total_size)));
   }
-  return wxString::Format(_T("%.1fMB"), bytes / 1024 / 1024);
-}
-
-wxString FormatBytes(long bytes) {
-  return FormatBytes(static_cast<double>(bytes));
+  panel->Update();
+  panel->Refresh();
 }
 
 }  // namespace
@@ -74,13 +84,37 @@ void ChartDldrPanelImpl::FinalizePendingChartDownload(
   }
 }
 
-void ChartDldrPanelImpl::DownloadCharts(
-    const ChartDldrBulkRunUiPolicy& policy) {
-  EnsureDownloadHandlerConnected();
-  const bool allow_download_ui_updates =
-      ChartDldrPolicyShowDownloadProgressUi(policy) && IsShownOnScreen();
+ChartDldrBulkRunUiSnapshot ChartDldrPanelImpl::CaptureBulkUiSnapshot() const {
+  ChartDldrBulkRunUiSnapshot snapshot;
+  snapshot.panel_visible = IsShownOnScreen();
+  snapshot.notebook_page = m_DLoadNB->GetSelection();
+  return snapshot;
+}
 
-  if (!GetCheckedChartCount() && !ChartDldrPolicyAllowEmptySelection(policy)) {
+void ChartDldrPanelImpl::BeginBulkRunSession(
+    const ChartDldrBulkModeProfile& profile) {
+  cancelled = false;
+  m_bulkDownloadedNew = 0;
+  m_bulkDownloadedUpdated = 0;
+  if (profile.select_download_tab) {
+    m_DLoadNB->SetSelection(1);
+  }
+}
+
+void ChartDldrPanelImpl::ResetBulkCatalogCounters() {
+  m_bulkDownloadedNew = 0;
+  m_bulkDownloadedUpdated = 0;
+}
+
+void ChartDldrPanelImpl::RestoreBulkNotebookPage(int page) {
+  m_DLoadNB->SetSelection(page);
+}
+
+void ChartDldrPanelImpl::BeginBulkChartDownload(
+    const ChartDldrBulkModeProfile& profile) {
+  EnsureDownloadHandlerConnected();
+
+  if (!GetCheckedChartCount() && !profile.allow_empty_selection) {
     OCPNMessageBox_PlugIn(this, _("No charts selected for download."));
     return;
   }
@@ -89,7 +123,6 @@ void ChartDldrPanelImpl::DownloadCharts(
       catalog_index >= static_cast<int>(pPlugIn->m_ChartSources.size())) {
     return;
   }
-  std::unique_ptr<ChartSource>& cs = pPlugIn->m_ChartSources.at(catalog_index);
 
   cancelled = false;
   to_download = GetCheckedChartCount();
@@ -98,36 +131,89 @@ void ChartDldrPanelImpl::DownloadCharts(
   DisableForDownload(false);
   m_bDnldCharts->SetLabel(_("Abort download"));
   DownloadIsCancel = true;
+  m_bulkChartLoopIndex = 0;
+  m_bulkChartDownloadActive = true;
+  m_transfer.Reset();
+  m_bulkChartPendingIndex = -1;
+  m_bulkChartPendingPath.clear();
+}
 
-  wxFileName downloaded_p;
-  int idx = -1;
-  ChartDldrChartUpdateKind pending_kind = ChartDldrChartUpdateKind::None;
+void ChartDldrPanelImpl::FinalizeActiveBulkChartTransfer(ChartSource& source) {
+  if (cancelled) {
+    if (m_transfer.handle) {
+      OCPN_cancelDownloadFileBackground(m_transfer.handle);
+    }
+    m_transfer.Reset();
+    return;
+  }
 
-  for (int i = 0; i < GetChartCount() && to_download; i++) {
-    int index = i;
+  if (m_transfer.success) {
+    FinalizePendingChartDownload(m_bulkChartPendingIndex, m_bulkChartPendingKind,
+                                 source, m_bulkChartPendingPath);
+  } else {
+    if (wxFileExists(m_bulkChartPendingPath)) {
+      wxRemoveFile(m_bulkChartPendingPath);
+    }
+    m_failed_downloads++;
+  }
+
+  m_transfer.Reset();
+}
+
+ChartDldrBulkChartStepResult ChartDldrPanelImpl::StepNextBulkChart(
+    const ChartDldrBulkModeProfile& profile) {
+  if (!m_bulkChartDownloadActive) {
+    return ChartDldrBulkChartStepResult::NotActive;
+  }
+
+  if (cancelled) {
+    return ChartDldrBulkChartStepResult::Finished;
+  }
+
+  const bool allow_download_ui_updates =
+      profile.show_download_progress_ui && IsShownOnScreen();
+  const int catalog_index = pPlugIn->GetSourceId();
+  if (catalog_index < 0 ||
+      catalog_index >= static_cast<int>(pPlugIn->m_ChartSources.size())) {
+    return ChartDldrBulkChartStepResult::Finished;
+  }
+  std::unique_ptr<ChartSource>& cs = pPlugIn->m_ChartSources.at(catalog_index);
+
+  if (m_transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
+    wxTheApp->ProcessPendingEvents();
+    wxYield();
+
+    if (m_transfer.IsInProgress() && !cancelled) {
+      if (allow_download_ui_updates) {
+        UpdateBulkDownloadProgressUi(this, m_downloading, to_download,
+                                     m_failed_downloads, m_transfer);
+      }
+      return ChartDldrBulkChartStepResult::TransferInProgress;
+    }
+
+    FinalizeActiveBulkChartTransfer(*cs);
     if (cancelled) {
-      break;
+      return ChartDldrBulkChartStepResult::Finished;
     }
 
-    if (idx >= 0) {
-      FinalizePendingChartDownload(idx, pending_kind, *cs,
-                                   downloaded_p.GetFullPath());
-      idx = -1;
-      pending_kind = ChartDldrChartUpdateKind::None;
+    if (m_bulkChartLoopIndex < GetChartCount() && to_download) {
+      return ChartDldrBulkChartStepResult::MoreCharts;
     }
+    return ChartDldrBulkChartStepResult::Finished;
+  }
 
+  for (int i = m_bulkChartLoopIndex; i < GetChartCount() && to_download; ++i) {
+    m_bulkChartLoopIndex = i + 1;
+    if (cancelled) {
+      return ChartDldrBulkChartStepResult::Finished;
+    }
     if (!isChartChecked(i)) {
       continue;
     }
-    m_bTransferComplete = false;
-    m_bTransferSuccess = true;
-    m_totalsize = -1;
-    m_transferredsize = 0;
-    m_downloading++;
+
+    const int index = i;
     if (pPlugIn->m_pChartCatalog.charts.at(index)->NeedsManualDownload()) {
-      if (ChartDldrPolicySkipManualCharts(policy)) {
-        wxLogMessage("chartdldr_pi: skipping manual-download chart '%s'",
-                     pPlugIn->m_pChartCatalog.charts.at(index)->title.c_str());
+      if (profile.skip_manual_charts) {
         continue;
       }
       if (wxID_YES ==
@@ -154,7 +240,8 @@ After downloading the charts, please extract them to %s"),
               url.BuildURI().c_str()),
           _("Error"));
       this->Enable();
-      return;
+      m_bulkChartDownloadActive = false;
+      return ChartDldrBulkChartStepResult::Finished;
     }
     wxString file =
         pPlugIn->m_pChartCatalog.charts.at(index)->GetChartFilename();
@@ -162,8 +249,9 @@ After downloading the charts, please extract them to %s"),
     fn.SetFullName(file);
     fn.SetPath(cs->GetDir());
     wxString path = fn.GetFullPath();
-    if (wxFileExists(path)) wxRemoveFile(path);
-    wxString title = pPlugIn->m_pChartCatalog.charts.at(index)->GetChartTitle();
+    if (wxFileExists(path)) {
+      wxRemoveFile(path);
+    }
 
 #ifdef __ANDROID__
     wxString file_path = _T("file://") + fn.GetFullPath();
@@ -171,61 +259,48 @@ After downloading the charts, please extract them to %s"),
     wxString file_path = fn.GetFullPath();
 #endif
 
-    pending_kind = ClassifyChartForDownload(index);
+    m_downloading++;
+    m_bulkChartPendingIndex = index;
+    m_bulkChartPendingKind = ClassifyChartForDownload(index);
+    m_bulkChartPendingPath = path;
 
-    long handle;
-    OCPN_downloadFileBackground(url.BuildURI(), file_path, this, &handle);
-
-    while (!m_bTransferComplete && m_bTransferSuccess && !cancelled) {
-      if (allow_download_ui_updates) {
-        if (m_failed_downloads) {
-          SetChartInfo(wxString::Format(
-              _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
-              m_downloading, to_download, m_failed_downloads,
-              FormatBytes(m_transferredsize), FormatBytes(m_totalsize)));
-        } else {
-          SetChartInfo(wxString::Format(
-              _("Downloading chart %u of %u (%s / %s)"), m_downloading,
-              to_download, FormatBytes(m_transferredsize),
-              FormatBytes(m_totalsize)));
-        }
-        Update();
-        Refresh();
-      }
-      wxTheApp->ProcessPendingEvents();
-      wxYield();
-      wxMilliSleep(20);
-    }
-
-    if (cancelled) {
-      idx = -1;
-      OCPN_cancelDownloadFileBackground(handle);
-    }
-
-    if (m_bTransferSuccess && !cancelled) {
-      idx = index;
-      downloaded_p = path;
-    } else {
-      idx = -1;
-      if (wxFileExists(path)) wxRemoveFile(path);
-      m_failed_downloads++;
-    }
+    m_transfer.Begin(ChartDldrBulkTransferOwner::ChartBulk);
+    OCPN_downloadFileBackground(url.BuildURI(), file_path, this,
+                                &m_transfer.handle);
+    wxTheApp->ProcessPendingEvents();
+    wxYield();
+    return ChartDldrBulkChartStepResult::TransferInProgress;
   }
-  if (idx >= 0) {
-    FinalizePendingChartDownload(idx, pending_kind, *cs,
-                                 downloaded_p.GetFullPath());
+
+  return ChartDldrBulkChartStepResult::Finished;
+}
+
+void ChartDldrPanelImpl::EndBulkChartDownload(
+    const ChartDldrBulkModeProfile& profile) {
+  if (!m_bulkChartDownloadActive) {
+    return;
   }
+
+  if (m_transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk) &&
+      m_transfer.handle) {
+    OCPN_cancelDownloadFileBackground(m_transfer.handle);
+    m_transfer.Reset();
+  }
+
   DisableForDownload(true);
   m_bDnldCharts->SetLabel(_("Download selected charts"));
   DownloadIsCancel = false;
+  m_bulkChartDownloadActive = false;
+
   const int restore_catalog = pPlugIn->GetSourceId();
   if (restore_catalog >= 0) {
     SetSource(restore_catalog);
   } else {
     SetSource(GetSelectedCatalog());
   }
-  if (m_failed_downloads > 0 &&
-      ChartDldrPolicyShowDownloadResultDialogs(policy) && !cancelled) {
+
+  if (m_failed_downloads > 0 && profile.show_download_result_dialogs &&
+      !cancelled) {
     OCPNMessageBox_PlugIn(
         this,
         wxString::Format(_("%d out of %d charts failed to download.\nCheck the "
@@ -235,13 +310,26 @@ After downloading the charts, please extract them to %s"),
         _("Chart Downloader"), wxOK | wxICON_ERROR);
   }
 
-  if (cancelled && ChartDldrPolicyShowDownloadResultDialogs(policy)) {
+  if (cancelled && profile.show_download_result_dialogs) {
     OCPNMessageBox_PlugIn(this, _("Chart download cancelled."),
                           _("Chart Downloader"), wxOK | wxICON_INFORMATION);
   }
 
-  if ((m_downloading - m_failed_downloads > 0) &&
-      !ChartDldrPolicyDeferChartDbApply(policy)) {
+  if ((m_downloading - m_failed_downloads > 0) && !profile.defer_chart_db_apply) {
     pPlugIn->ApplyChartDatabaseUpdate();
   }
+}
+
+void ChartDldrPanelImpl::DownloadCharts(
+    const ChartDldrBulkModeProfile& profile) {
+  BeginBulkChartDownload(profile);
+  while (true) {
+    const ChartDldrBulkChartStepResult step = StepNextBulkChart(profile);
+    if (step == ChartDldrBulkChartStepResult::TransferInProgress ||
+        step == ChartDldrBulkChartStepResult::MoreCharts) {
+      continue;
+    }
+    break;
+  }
+  EndBulkChartDownload(profile);
 }
