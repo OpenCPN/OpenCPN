@@ -109,6 +109,7 @@
 
 #ifdef ocpnUSE_GL
 #include "gl_chart_canvas.h"
+#include "dialog_alert.h"
 #endif
 
 #ifdef __ANDROID__
@@ -126,6 +127,8 @@ extern ocpnGLOptions g_GLOptions;
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
+
+extern Routeman *g_pRouteMan; /**< Global instance */
 
 namespace navutil {
 
@@ -2758,44 +2761,147 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
   }
 }
 
+bool ProcessRouteDuplicates(Route *pRoute) {
+  // Check to see if GUID is a duplicate
+  bool need_new_GUID = false;
+  if (RouteExists(pRoute->m_GUID)) need_new_GUID = true;
+
+  // Check to see if the route name is duplicated
+  bool need_new_name = false;
+  Route *route_name_duplicate =
+      g_pRouteMan->FindRouteByName(pRoute->m_RouteNameString);
+  if (route_name_duplicate) need_new_name = true;
+
+  // Decision tree starts here.
+
+  // On reaching this point, new route is to be imported,
+  // With or without a new GUID
+  // With or without UI option to overwrite/rename
+
+  if (need_new_GUID) pRoute->m_GUID = pWayPointMan->CreateGUID(NULL);
+
+  if (need_new_name) {
+    wxString prompt;
+    int buttons, type;
+    prompt = _("Replace existing route?");
+    prompt += "\n";
+    prompt += _("If YES, the existing route will be over-written");
+    prompt += "\n";
+    prompt += _("If NO, the new route will be imported with a modifed name");
+
+    buttons = wxYES_NO;
+    type = 1;
+    int answer =
+        OCPNMessageBox(nullptr, prompt, wxString(_("Route Import")), buttons);
+    if (answer == wxID_YES) {
+      // Replace existing route with imported one (no merge)
+      g_pRouteMan->DeleteRoute(route_name_duplicate);
+    } else {
+      pRoute->m_RouteNameString += "-(1)";
+    }
+  }
+
+  return true;
+}
+
+Layer *PrepareNewLayer(const wxArrayString &file_array,
+                       const wxString dirpath) {
+  Layer *l = new Layer();
+  l->m_LayerID = ++g_LayerIdx;
+  l->m_LayerFileName = file_array[0];
+  if (file_array.GetCount() <= 1)
+    wxFileName::SplitPath(file_array[0], NULL, NULL, &(l->m_LayerName), NULL,
+                          NULL);
+  else {
+    if (dirpath.IsSameAs(""))
+      wxFileName::SplitPath(g_gpx_path, NULL, NULL, &(l->m_LayerName), NULL,
+                            NULL);
+    else
+      wxFileName::SplitPath(dirpath, NULL, NULL, &(l->m_LayerName), NULL, NULL);
+  }
+
+  bool bLayerViz = g_bShowLayers;
+  if (g_VisibleLayers.Contains(l->m_LayerName)) bLayerViz = true;
+  if (g_InvisibleLayers.Contains(l->m_LayerName)) bLayerViz = false;
+  l->m_bIsVisibleOnChart = bLayerViz;
+
+  // Default for new layers is "Names visible"
+  l->m_bHasVisibleNames = wxCHK_CHECKED;
+
+  wxString laymsg;
+  laymsg.Printf("New layer %d: %s", l->m_LayerID, l->m_LayerName.c_str());
+  wxLogMessage(laymsg);
+
+  pLayerList->insert(pLayerList->begin(), l);
+  return l;
+}
+
+void ImportGPX(NavObjectCollection1 *pSet) {
+  pugi::xml_node objects = pSet->child("gpx");
+  // Points
+
+  // Tracks
+
+  // Routes
+
+  bool b_full_viz = !pSet->IsOpenCPN();
+  for (pugi::xml_node object = objects.first_child(); object;
+       object = object.next_sibling()) {
+    if (!strcmp(object.name(), "rte")) {
+      // Parse and create candidate route without detecting/changing GUID
+      // or other parms
+      Route *pRoute = GPXLoadRoute1(object, b_full_viz, false, false, 0, true);
+
+      // Perform route GUID/Name de-duplication logic here
+      if (ProcessRouteDuplicates(pRoute)) {
+        if (InsertRouteA(pRoute, pSet)) {
+          NavObj_dB::GetInstance().InsertRoute(pRoute);
+          // if (pRoute->IsVisible()) BBox.Expand(pRoute->GetBBox());
+        }
+      }
+    }
+  }
+}
+
+void ImportGPXAsLayer(NavObjectCollection1 *pSet, Layer *l, bool isPersistent) {
+  l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(
+      l->m_LayerID, l->m_bIsVisibleOnChart, l->m_bHasVisibleNames);
+  l->m_LayerType = isPersistent ? _("Persistent") : _("Temporary");
+
+  if (isPersistent) {
+    // If this is a persistent layer also copy the file to config file
+    // dir /layers
+    wxString destf, f, name, ext;
+    f = l->m_LayerFileName;
+    wxFileName::SplitPath(f, NULL, NULL, &name, &ext);
+    destf = g_Platform->GetPrivateDataDir();
+    appendOSDirSlash(&destf);
+    destf.Append("layers");
+    appendOSDirSlash(&destf);
+    if (!wxDirExists(destf)) {
+      if (!wxMkdir(destf, wxS_DIR_DEFAULT))
+        wxLogMessage("Error creating layer directory");
+    }
+
+    destf << name << "." << ext;
+    wxString msg;
+    if (wxCopyFile(f, destf, true))
+      msg.Printf("File: %s.%s also added to persistent layers", name, ext);
+    else
+      msg.Printf("Failed adding %s.%s to persistent layers", name, ext);
+    wxLogMessage(msg);
+  }
+}
+
 void ImportFileArray(const wxArrayString &file_array, bool islayer,
                      bool isPersistent, wxString dirpath) {
   Layer *l = NULL;
-
-  if (islayer) {
-    l = new Layer();
-    l->m_LayerID = ++g_LayerIdx;
-    l->m_LayerFileName = file_array[0];
-    if (file_array.GetCount() <= 1)
-      wxFileName::SplitPath(file_array[0], NULL, NULL, &(l->m_LayerName), NULL,
-                            NULL);
-    else {
-      if (dirpath.IsSameAs(""))
-        wxFileName::SplitPath(g_gpx_path, NULL, NULL, &(l->m_LayerName), NULL,
-                              NULL);
-      else
-        wxFileName::SplitPath(dirpath, NULL, NULL, &(l->m_LayerName), NULL,
-                              NULL);
-    }
-
-    bool bLayerViz = g_bShowLayers;
-    if (g_VisibleLayers.Contains(l->m_LayerName)) bLayerViz = true;
-    if (g_InvisibleLayers.Contains(l->m_LayerName)) bLayerViz = false;
-    l->m_bIsVisibleOnChart = bLayerViz;
-
-    // Default for new layers is "Names visible"
-    l->m_bHasVisibleNames = wxCHK_CHECKED;
-
-    wxString laymsg;
-    laymsg.Printf("New layer %d: %s", l->m_LayerID, l->m_LayerName.c_str());
-    wxLogMessage(laymsg);
-
-    pLayerList->insert(pLayerList->begin(), l);
-  }
+  if (islayer) l = PrepareNewLayer(file_array, dirpath);
 
   for (unsigned int i = 0; i < file_array.GetCount(); i++) {
     wxString path = file_array[i];
 
+    // Validate GPX file parsing
     if (::wxFileExists(path)) {
       NavObjectCollection1 *pSet = new NavObjectCollection1;
       pugi::xml_parse_result result = pSet->load_file(path.fn_str());
@@ -2811,49 +2917,22 @@ void ImportFileArray(const wxArrayString &file_array, bool islayer,
       }
 
       if (islayer) {
-        l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(
-            l->m_LayerID, l->m_bIsVisibleOnChart, l->m_bHasVisibleNames);
-        l->m_LayerType = isPersistent ? _("Persistent") : _("Temporary");
-
-        if (isPersistent) {
-          // If this is a persistent layer also copy the file to config file
-          // dir /layers
-          wxString destf, f, name, ext;
-          f = l->m_LayerFileName;
-          wxFileName::SplitPath(f, NULL, NULL, &name, &ext);
-          destf = g_Platform->GetPrivateDataDir();
-          appendOSDirSlash(&destf);
-          destf.Append("layers");
-          appendOSDirSlash(&destf);
-          if (!wxDirExists(destf)) {
-            if (!wxMkdir(destf, wxS_DIR_DEFAULT))
-              wxLogMessage("Error creating layer directory");
-          }
-
-          destf << name << "." << ext;
-          wxString msg;
-          if (wxCopyFile(f, destf, true))
-            msg.Printf("File: %s.%s also added to persistent layers", name,
-                       ext);
-          else
-            msg.Printf("Failed adding %s.%s to persistent layers", name, ext);
-          wxLogMessage(msg);
-        }
+        ImportGPXAsLayer(pSet, l, isPersistent);
       } else {
-        int wpt_dups;
-        pSet->LoadAllGPXObjects(
-            !pSet->IsOpenCPN(),
-            wpt_dups);  // Import with full visibility of names and objects
-#ifndef __ANDROID__
-        if (wpt_dups > 0) {
-          OCPNMessageBox(
-              NULL,
-              wxString::Format("%d " + _("duplicate waypoints detected "
-                                         "during import and ignored."),
-                               wpt_dups),
-              _("OpenCPN Info"), wxICON_INFORMATION | wxOK, 10);
-        }
-#endif
+        ImportGPX(pSet);
+        /*
+                int wpt_dups;
+                pSet->LoadAllGPXObjects(
+                    !pSet->IsOpenCPN(),
+                    wpt_dups);  // Import with full visibility of names and
+        objects #ifndef __ANDROID__ if (wpt_dups > 0) { OCPNMessageBox( NULL,
+                      wxString::Format("%d " + _("duplicate waypoints detected "
+                                                 "during import and ignored."),
+                                       wpt_dups),
+                      _("OpenCPN Info"), wxICON_INFORMATION | wxOK, 10);
+                }
+        #endif
+         */
       }
       delete pSet;
     }

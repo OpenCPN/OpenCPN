@@ -938,6 +938,13 @@ Track *Routeman::FindTrackByGUID(const wxString &guid) {
   return NULL;
 }
 
+Route *Routeman::FindRouteByName(const wxString &name) {
+  for (Route *pRoute : *pRouteList) {
+    if (pRoute->m_RouteNameString == name) return pRoute;
+  }
+  return NULL;
+}
+
 void Routeman::ZeroCurrentXTEToActivePoint() {
   // When zeroing XTE create a "virtual" waypoint at present position
   if (pRouteActivatePoint) delete pRouteActivatePoint;
