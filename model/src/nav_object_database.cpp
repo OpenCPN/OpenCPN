@@ -517,9 +517,6 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
           if (RouteExists(pTentRoute->m_GUID)) {  // we are loading a different
                                                   // route with the same guid so
                                                   // let's generate a new guid
-            // HACK FOR TESTING NAVOBJ_DB
-            return nullptr;
-
             pTentRoute->m_GUID = pWayPointMan->CreateGUID(NULL);
             route_existing = true;
           }
