@@ -124,7 +124,6 @@ set(
   ${MODEL_HDR_DIR}/position_parser.h
   ${MODEL_HDR_DIR}/rest_server.h
   ${MODEL_HDR_DIR}/route.h
-  ${MODEL_HDR_DIR}/route_ident.h
   ${MODEL_HDR_DIR}/routeman.h
   ${MODEL_HDR_DIR}/route_point.h
   ${MODEL_HDR_DIR}/safe_mode.h
@@ -231,7 +230,6 @@ set(SRC
   ${MODEL_SRC_DIR}/position_parser.cpp
   ${MODEL_SRC_DIR}/rest_server.cpp
   ${MODEL_SRC_DIR}/route.cpp
-  ${MODEL_SRC_DIR}/route_ident.cpp
   ${MODEL_SRC_DIR}/routeman.cpp
   ${MODEL_SRC_DIR}/route_point.cpp
   ${MODEL_SRC_DIR}/safe_mode.cpp
@@ -245,7 +243,7 @@ set(SRC
   ${MODEL_SRC_DIR}/thread_ctrl.cpp
   ${MODEL_SRC_DIR}/track.cpp
   ${MODEL_SRC_DIR}/usb_watch_factory.cpp
-        include/model/route_ident.h src/route_ident.cpp)
+)
 
 if (QT_ANDROID)
   list(APPEND HDRS ${MODEL_SRC_DIR}/android_serial_io.cpp)
@@ -494,7 +492,6 @@ target_link_libraries(
     ocpn::filesystem
     ocpn::wxservdisc
     pico_sha2
-    ssl::sha1
 )
 if (TARGET ocpn::wxsvg)
   target_link_libraries(_OCPN_MODEL INTERFACE ocpn::wxsvg)

@@ -158,10 +158,6 @@ public:
   wxString GetNewMarkSequenced(void);
   void AssembleRoute();
   bool IsEqualTo(Route *ptargetroute);
-  std::vector<uint8_t> BuildContentBlob() const;
-  std::string ComputeContentHash() const;
-  bool IsContentIdenticalTo(const Route &other) const;
-
   void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint,
                   const wxString &suffix,
                   const bool duplicate_first_point = false);

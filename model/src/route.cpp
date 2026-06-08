@@ -40,12 +40,9 @@
 #include "model/config_vars.h"
 #include "model/nav_object_database.h"
 #include "model/route.h"
-#include "model/route_ident.h"
 #include "model/routeman.h"
 #include "model/select.h"
 #include "model/navobj_db.h"
-
-#include "ssl/sha1.h"
 
 WayPointman *pWayPointMan;
 
@@ -659,64 +656,4 @@ bool Route::IsEqualTo(Route *ptargetroute) {
   }
 
   return true;  // success, they are the same
-}
-
-static std::string ToUtf8(const wxString &s) { return std::string(s.ToUTF8()); }
-
-static void SerializeRoutePoint(RouteBlobBuilder &blob, RoutePoint *rp) {
-  blob.AddLatLon(rp->m_lat);
-  blob.AddLatLon(rp->m_lon);
-
-  blob.AddString(ToUtf8(rp->GetName()));
-  blob.AddString(ToUtf8(rp->GetDescription()));
-  blob.AddString(ToUtf8(rp->GetIconName()));
-  blob.AddBool(rp->m_bIsInLayer);
-}
-
-std::vector<uint8_t> Route::BuildContentBlob() const {
-  RouteBlobBuilder blob;
-
-  blob.AddString("ROUTE_CONTENT_HASH_V1");
-
-  blob.AddString(ToUtf8(m_RouteDescription));
-
-  blob.AddSpeed(m_PlannedSpeed);
-
-  blob.AddInt64(m_PlannedDeparture.IsValid() ? m_PlannedDeparture.GetTicks()
-                                             : 0);
-
-  blob.AddSpeed(m_ArrivalRadius);
-
-  blob.AddUint32(static_cast<uint32_t>(pRoutePointList->size()));
-
-  for (size_t i = 0; i < pRoutePointList->size(); i++)
-    SerializeRoutePoint(blob, this->pRoutePointList->at(i));
-
-  return blob.GetBlob();
-}
-
-std::string DigestToHex(const uint8_t *digest, size_t len) {
-  static const char hex[] = "0123456789abcdef";
-
-  std::string result;
-  result.reserve(len * 2);
-
-  for (size_t i = 0; i < len; i++) {
-    result.push_back(hex[digest[i] >> 4]);
-    result.push_back(hex[digest[i] & 0x0f]);
-  }
-  return result;
-}
-
-std::string Route::ComputeContentHash() const {
-  auto blob = BuildContentBlob();
-  unsigned char digest[20];
-
-  sha1(blob.data(), blob.size(), digest);
-
-  return DigestToHex(digest, 20);
-}
-
-bool Route::IsContentIdenticalTo(const Route &other) const {
-  return ComputeContentHash() == other.ComputeContentHash();
 }

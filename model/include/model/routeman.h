@@ -127,8 +127,6 @@ public:
   Route *FindRouteContainingWaypoint(RoutePoint *pWP);
   Route *FindRouteContainingWaypoint(const std::string &guid);
   Route *FindVisibleRouteContainingWaypoint(RoutePoint *pWP);
-  Route *FindRouteByName(const wxString &name);
-
   /**
    * Find all routes that contain the given waypoint.
    *
