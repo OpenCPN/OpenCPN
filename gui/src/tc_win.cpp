@@ -96,7 +96,7 @@ private:
     int chart_height = panelSize.GetHeight() - (2 * other_margins);
 
     // Reserve space at bottom for date/time text
-    int bottom_text_space = 4 * m_refTCWTextHeight;
+    int bottom_text_space = 6 * m_refTCWTextHeight;
     chart_height -= bottom_text_space;
     chart_width = wxMax(chart_width, 300);
     chart_height = wxMax(chart_height, 150);
@@ -955,7 +955,7 @@ void TCWin::SetTimeFactors() {
 void TCWin::TimezoneOnChoice(wxCommandEvent &event) {
   m_tzoneDisplay = m_choiceTimezone->GetSelection();
   SetTimeFactors();
-
+  m_chartPanel->Refresh();
   Refresh();
 }
 
