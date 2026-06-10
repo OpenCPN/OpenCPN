@@ -53,7 +53,6 @@ ChartDldrScheduledBulkStepDecision ChartDldrDecideScheduledBulkStep(
         case ChartDldrBulkChartStepResult::NotActive:
         case ChartDldrBulkChartStepResult::Finished:
           decision.end_chart_download = true;
-          decision.accumulate_stats = true;
           decision.next_phase = ChartDldrScheduledBulkPhase::SelectCatalog;
           decision.next_catalog = input.next_catalog + 1;
           decision.continue_run = decision.next_catalog < input.catalog_count;
@@ -72,7 +71,7 @@ ChartDldrScheduledBulkStepDecision ChartDldrAdvanceScheduledBulkRun(
   const ChartDldrScheduledBulkStepDecision decision =
       ChartDldrDecideScheduledBulkStep(input);
 
-  if (decision.accumulate_stats) {
+  if (decision.end_chart_download) {
     state.stats.Accumulate(catalog_stats);
   }
 

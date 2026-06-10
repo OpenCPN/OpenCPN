@@ -27,6 +27,7 @@ struct ChartDldrBulkModeProfileRow {
   bool show_download_result_dialogs;
   bool show_catalog_progress_dialog;
   bool focus_charts_tab_after_catalog;
+  ChartDldrTransferPoll transfer_poll;
 };
 
 bool TriStateValue(ChartDldrPolicyTriState value, bool panel_visible) {
@@ -48,23 +49,27 @@ const ChartDldrBulkModeProfileRow& ModeProfileRow(
        ChartDldrCatalogRefreshMode::SyncBlocking,
        ChartDldrErrorReporting::Dialog, ChartDldrPolicyTriState::On,
        ChartDldrPolicyTriState::On, true, true, true, false, true, true, true,
-       false, false, true},
+       false, false, true,
+       ChartDldrTransferPoll::BlockUntilComplete},
       {// ScheduledBulk
        ChartDldrCatalogRefreshMode::AsyncIdle,
        ChartDldrErrorReporting::SummaryLog,
        ChartDldrPolicyTriState::WhenPanelVisible,
        ChartDldrPolicyTriState::WhenPanelVisible, false, false, false, true,
-       true, true, false, false, false, false},
+       true, true, false, false, false, false,
+       ChartDldrTransferPoll::PollOnly},
       {// SelectedCharts
        ChartDldrCatalogRefreshMode::SyncBlocking,
        ChartDldrErrorReporting::Dialog, ChartDldrPolicyTriState::Off,
        ChartDldrPolicyTriState::Off, false, false, false, false, false, false,
-       true, true, false, false},
+       true, true, false, false,
+       ChartDldrTransferPoll::BlockUntilComplete},
       {// CatalogRefresh
        ChartDldrCatalogRefreshMode::SyncBlocking,
        ChartDldrErrorReporting::Dialog, ChartDldrPolicyTriState::Off,
        ChartDldrPolicyTriState::Off, false, false, false, false, false, false,
-       false, false, true, true},
+       false, false, true, true,
+       ChartDldrTransferPoll::BlockUntilComplete},
   };
   return profiles[static_cast<size_t>(policy.mode)];
 }
@@ -83,22 +88,23 @@ ChartDldrBulkModeProfile ChartDldrBulkModeProfileFor(
     const ChartDldrBulkRunUiPolicy& policy) {
   const ChartDldrBulkModeProfileRow& row = ModeProfileRow(policy);
   ChartDldrBulkModeProfile profile;
-  profile.catalog_refresh = row.catalog_refresh;
+  profile.catalog.refresh = row.catalog_refresh;
+  profile.catalog.show_progress_dialog = row.show_catalog_progress_dialog;
   profile.error_reporting = row.error_reporting;
-  profile.restore_notebook_page =
+  profile.ui.restore_notebook_page =
       TriStateValue(row.restore_notebook_page, policy.bulk_panel_visible);
-  profile.select_download_tab =
+  profile.ui.select_download_tab =
       TriStateValue(row.select_download_tab, policy.bulk_panel_visible);
-  profile.confirm_before_start = row.confirm_before_start;
-  profile.show_failure_summary = row.show_failure_summary;
-  profile.sync_list_selection = row.sync_list_selection;
-  profile.skip_manual_charts = row.skip_manual_charts;
-  profile.defer_chart_db_apply = row.defer_chart_db_apply;
-  profile.allow_empty_selection = row.allow_empty_selection;
-  profile.show_download_progress_ui = row.show_download_progress_ui;
-  profile.show_download_result_dialogs = row.show_download_result_dialogs;
-  profile.show_catalog_progress_dialog = row.show_catalog_progress_dialog;
-  profile.focus_charts_tab_after_catalog = row.focus_charts_tab_after_catalog;
+  profile.ui.confirm_before_start = row.confirm_before_start;
+  profile.ui.show_failure_summary = row.show_failure_summary;
+  profile.ui.sync_list_selection = row.sync_list_selection;
+  profile.ui.show_download_progress_ui = row.show_download_progress_ui;
+  profile.ui.show_download_result_dialogs = row.show_download_result_dialogs;
+  profile.ui.focus_charts_tab_after_catalog = row.focus_charts_tab_after_catalog;
+  profile.charts.skip_manual_charts = row.skip_manual_charts;
+  profile.charts.defer_chart_db_apply = row.defer_chart_db_apply;
+  profile.charts.allow_empty_selection = row.allow_empty_selection;
+  profile.charts.transfer_poll = row.transfer_poll;
   return profile;
 }
 
@@ -136,5 +142,25 @@ ChartDldrBulkModeProfile ChartDldrInteractiveCatalogUpdateProfile() {
 
 bool ChartDldrBulkRunShouldRestoreUi(const ChartDldrBulkModeProfile& profile,
                                      const ChartDldrBulkRunUiSnapshot& before) {
-  return profile.restore_notebook_page && before.panel_visible;
+  return profile.ui.restore_notebook_page && before.panel_visible;
+}
+
+bool ChartDldrShouldYieldOnDownloadEvent(bool bulk_run_active,
+                                         ChartDldrTransferPoll transfer_poll) {
+  if (!bulk_run_active) {
+    return true;
+  }
+  return transfer_poll == ChartDldrTransferPoll::BlockUntilComplete;
+}
+
+ChartDldrCatalogRefreshPath ChartDldrResolveCatalogRefreshPath(
+    const ChartDldrBulkModeProfile& profile,
+    const ChartDldrCatalogRefreshContext& ctx) {
+  if (profile.catalog.refresh == ChartDldrCatalogRefreshMode::AsyncIdle) {
+    return ChartDldrCatalogRefreshPath::AsyncIdle;
+  }
+  if (ctx.sync_event == nullptr) {
+    return ChartDldrCatalogRefreshPath::Invalid;
+  }
+  return ChartDldrCatalogRefreshPath::SyncBlocking;
 }

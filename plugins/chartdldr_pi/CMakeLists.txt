@@ -55,6 +55,8 @@ set(SRC_CHARTDLDR
     src/chartdldr_prefs_time.cpp
     src/chartdldr_prefs.h
     src/chartdldr_prefs.cpp
+    src/chartdldr_prefs_gui.h
+    src/chartdldr_prefs_gui.cpp
     src/chartdldr_panel.h
     src/chartdldr_panel_impl.h
     src/chartdldr_panel.cpp
@@ -63,16 +65,17 @@ set(SRC_CHARTDLDR
     src/chartdldr_bulk_policy.cpp
     src/chartdldr_bulk_orchestrate.h
     src/chartdldr_bulk_orchestrate.cpp
+    src/chartdldr_bulk_state.h
+    src/chartdldr_download_cancel.h
+    src/chartdldr_panel_bulk.h
+    src/chartdldr_panel_bulk.cpp
     src/chartdldr_bulk_request.cpp
     src/chartdldr_bulk_transfer.h
     src/chartdldr_bulk_transfer.cpp
     src/chartdldr_bulk_async_step.h
     src/chartdldr_bulk_async_step.cpp
-    src/chartdldr_bulk_catalog_internal.h
-    src/chartdldr_bulk_catalog_internal.cpp
-    src/chartdldr_bulk_catalog_common.cpp
-    src/chartdldr_bulk_catalog_sync.cpp
-    src/chartdldr_bulk_catalog_async.cpp
+    src/chartdldr_bulk_catalog.h
+    src/chartdldr_bulk_catalog.cpp
     src/chartdldr_bulk_charts.cpp
     src/chartdldr_bulk_schedule.h
     src/chartdldr_bulk_schedule.cpp
@@ -88,6 +91,11 @@ set(SRC_CHARTDLDR
     src/icons.cpp
     src/chartdldrgui.h
     src/chartdldrgui.cpp
+    src/chartdldr_gui_android.cpp
+    src/chartdldr_gui_chart_dir_panel.cpp
+    src/chartdldr_gui_main_panel.cpp
+    src/chartdldr_gui_chart_panel.cpp
+    src/chartdldr_gui_prefs_dlg.cpp
     # src/checkedlistctrl.cpp src/checkedlistctrl.h
     src/base64.h
     src/chartcatalog.cpp

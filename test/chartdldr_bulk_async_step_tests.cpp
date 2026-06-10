@@ -84,7 +84,6 @@ TEST(ChartDldrScheduledBulkStep, ChartFinishedAccumulatesAndAdvances) {
   EXPECT_EQ(decision.next_phase, ChartDldrScheduledBulkPhase::SelectCatalog);
   EXPECT_EQ(decision.next_catalog, 1u);
   EXPECT_TRUE(decision.end_chart_download);
-  EXPECT_TRUE(decision.accumulate_stats);
   EXPECT_TRUE(decision.continue_run);
 }
 
@@ -121,7 +120,6 @@ TEST(ChartDldrScheduledBulkRun, AdvanceAccumulatesStatsAtCatalogBoundary) {
   const ChartDldrScheduledBulkStepDecision decision =
       ChartDldrAdvanceScheduledBulkRun(state, input, counters);
   EXPECT_TRUE(decision.end_chart_download);
-  EXPECT_TRUE(decision.accumulate_stats);
   EXPECT_EQ(state.stats.attempted, 5);
   EXPECT_EQ(state.stats.failed, 1);
   EXPECT_EQ(state.stats.new_downloads, 3);
@@ -179,5 +177,64 @@ TEST(ChartDldrScheduledBulkRun, SimulatedTwoCatalogRun) {
 
   EXPECT_EQ(state.next_catalog, catalog_count);
   EXPECT_EQ(state.stats.attempted, 4);
+  EXPECT_FALSE(chart_download_active);
+}
+
+TEST(ChartDldrScheduledBulkRun, PollOnlyChartTransferSteps) {
+  ChartDldrScheduledBulkRunState state;
+  const size_t catalog_count = 1;
+  bool chart_download_active = false;
+  bool transfer_in_progress = false;
+  int steps = 0;
+  const int max_steps = 50;
+
+  while (state.next_catalog < catalog_count && steps++ < max_steps) {
+    ChartDldrScheduledBulkStepInput input;
+    input.phase = state.phase;
+    input.next_catalog = state.next_catalog;
+    input.catalog_count = catalog_count;
+
+    if (state.phase == ChartDldrScheduledBulkPhase::SelectCatalog) {
+      input.catalog_refresh_started = true;
+    } else if (state.phase == ChartDldrScheduledBulkPhase::RefreshCatalog) {
+      input.catalog_step = ChartDldrAsyncCatalogStepResult::Complete;
+    } else if (transfer_in_progress) {
+      input.chart_step = ChartDldrBulkChartStepResult::TransferInProgress;
+    } else if (chart_download_active) {
+      input.chart_step = ChartDldrBulkChartStepResult::Finished;
+    } else {
+      input.chart_step = ChartDldrBulkChartStepResult::NotActive;
+    }
+
+    ChartDldrBulkRunStats counters;
+    if (state.phase == ChartDldrScheduledBulkPhase::DownloadChart &&
+        chart_download_active && !transfer_in_progress) {
+      counters.attempted = 1;
+    }
+
+    const ChartDldrScheduledBulkStepDecision decision =
+        ChartDldrAdvanceScheduledBulkRun(state, input, counters);
+
+    if (decision.begin_chart_download) {
+      chart_download_active = true;
+      transfer_in_progress = true;
+    }
+    if (input.chart_step == ChartDldrBulkChartStepResult::TransferInProgress) {
+      transfer_in_progress = false;
+    }
+    if (decision.end_chart_download) {
+      chart_download_active = false;
+    }
+    if (decision.end_chart_download) {
+      EXPECT_EQ(state.stats.attempted, 1);
+    }
+
+    if (!decision.continue_run) {
+      break;
+    }
+  }
+
+  EXPECT_EQ(state.next_catalog, catalog_count);
+  EXPECT_EQ(state.stats.attempted, 1);
   EXPECT_FALSE(chart_download_active);
 }

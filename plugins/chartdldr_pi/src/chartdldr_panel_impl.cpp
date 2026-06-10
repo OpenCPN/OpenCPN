@@ -9,10 +9,13 @@
 #endif
 
 #include "chartdldr_panel_impl.h"
+#include "chartdldr_bulk_orchestrate.h"
 #include "chartdldr_pi.h"
 #include "chartdldr_bulk.h"
 
 #include "ocpn_plugin.h"
+
+#include <memory>
 
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -146,7 +149,7 @@ void ChartDldrPanelImpl::SetSource(int id) {
   CleanForm();
   if (id >= 0 && id < (int)pPlugIn->m_ChartSources.size()) {
     const bool show_wait_cursor =
-        IsShownOnScreen() && !pPlugIn->m_bulk_run_active;
+        wxPanel::IsShownOnScreen() && !bulk_->IsRunActive();
     if (show_wait_cursor) {
       ::wxBeginBusyCursor();
     }
@@ -358,11 +361,11 @@ void ChartDldrPanelImpl::DisableForDownload(bool enabled) {
 }
 
 void ChartDldrPanelImpl::OnDownloadCharts(wxCommandEvent &event) {
-  if (DownloadIsCancel) {
-    cancelled = true;
+  if (m_download_cancel.HandleAbortButtonClick()) {
     return;
   }
-  DownloadCharts(ChartDldrSelectedChartsDownloadProfile());
+  (void)event;
+  bulk_->RunSelectedChartsDownload();
 }
 #if defined(CHART_LIST)
 void ChartDldrPanelImpl::OnSelectChartItem(wxCommandEvent &event) {
@@ -427,7 +430,7 @@ int ChartDldrPanelImpl::GetCheckedChartCount() {
 bool ChartDldrPanelImpl::isChartChecked(int i) {
   wxASSERT_MSG(i >= 0,
                wxT("This function should be called with non-negative index."));
-  if (i <= GetChartCount())
+  if (ChartDldrChartIndexInRange(i, GetChartCount()))
 #if defined(CHART_LIST)
     return getChartList()->GetToggleValue(i, 0);
 #else
@@ -529,7 +532,8 @@ ChartDldrPanelImpl::~ChartDldrPanelImpl() {
 ChartDldrPanelImpl::ChartDldrPanelImpl(chartdldr_pi *plugin, wxWindow *parent,
                                        wxWindowID id, const wxPoint &pos,
                                        const wxSize &size, long style)
-    : ChartDldrPanel(parent, id, pos, size, style), bulk_(this) {
+    : ChartDldrPanel(parent, id, pos, size, style),
+      bulk_(std::make_unique<ChartDldrBulkOrchestrate>(*this)) {
   m_bDeleteSource->Disable();
   m_bUpdateChartList->Disable();
   m_bEditSource->Disable();
@@ -541,15 +545,9 @@ ChartDldrPanelImpl::ChartDldrPanelImpl(chartdldr_pi *plugin, wxWindow *parent,
                                  CATALOGS_PATH_WIDTH);
   m_lbChartSources->Enable();
   m_bInfoHold = false;
-  cancelled = true;
-  to_download = -1;
-  m_downloading = -1;
+  m_download_cancel = ChartDldrDownloadCancelState();
   pPlugIn = plugin;
   m_populated = false;
-  DownloadIsCancel = false;
-  m_failed_downloads = 0;
-  m_bulkDownloadedNew = 0;
-  m_bulkDownloadedUpdated = 0;
   SetChartInfo(wxEmptyString);
   m_transfer.Reset();
 
@@ -734,7 +732,9 @@ void ChartDldrPanelImpl::onDLEvent(OCPN_downloadEvent &ev) {
     default:
       break;
   }
-  wxYieldIfNeeded();
+  if (bulk_->ShouldYieldOnDownloadEvent()) {
+    wxYieldIfNeeded();
+  }
 }
 
 void ChartDldrPanelImpl::EnsureDownloadHandlerConnected() {
@@ -747,11 +747,10 @@ void ChartDldrPanelImpl::EnsureDownloadHandlerConnected() {
   m_bconnected = true;
 }
 
-ChartDldrBulkRunStats ChartDldrPanelImpl::TakeBulkCatalogStats() const {
-  ChartDldrBulkRunStats stats;
-  stats.attempted = m_downloading;
-  stats.failed = m_failed_downloads;
-  stats.new_downloads = m_bulkDownloadedNew;
-  stats.updated_downloads = m_bulkDownloadedUpdated;
-  return stats;
+void ChartDldrPanelImpl::CancelDownload() {
+  Disconnect(
+      wxEVT_DOWNLOAD_EVENT,
+      (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
+  m_download_cancel.ForceCancel();
+  m_bconnected = false;
 }

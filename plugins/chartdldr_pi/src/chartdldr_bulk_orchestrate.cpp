@@ -4,7 +4,9 @@
 
 #include "chartdldr_bulk_orchestrate.h"
 
+#include "chartdldr_bulk_catalog.h"
 #include "chartdldr_bulk_schedule.h"
+#include "chartdldr_panel_bulk.h"
 #include "chartdldr_panel_impl.h"
 #include "chartdldr_pi.h"
 
@@ -13,90 +15,94 @@
 #include <wx/intl.h>
 #include <wx/log.h>
 
-ChartDldrBulkOrchestrate::ChartDldrBulkOrchestrate(ChartDldrPanelImpl* panel)
+ChartDldrBulkOrchestrate::ChartDldrBulkOrchestrate(ChartDldrPanelImpl& panel)
     : panel_(panel) {}
-
-chartdldr_pi* ChartDldrBulkOrchestrate::Plugin() const {
-  return panel_ ? panel_->GetPlugin() : nullptr;
-}
 
 bool ChartDldrBulkOrchestrate::RunInteractive(ChartDldrBulkRunKind kind,
                                               wxCommandEvent& event,
                                               ChartDldrBulkRunStats& stats) {
-  if (!panel_) {
+  if (IsRunActive()) {
     return false;
   }
 
-  chartdldr_pi* const pi = Plugin();
-  if (!pi || pi->m_bulk_run_active) {
+  chartdldr_pi* const pi = panel_.GetPlugin();
+  if (!pi) {
     return false;
   }
 
   const ChartDldrBulkModeProfile profile = ChartDldrBulkModeProfileFor(
-      ChartDldrBulkRunUiPolicyFor(kind, panel_->IsShownOnScreen()));
-  const ChartDldrBulkRunUiSnapshot ui_before = panel_->CaptureBulkUiSnapshot();
+      ChartDldrBulkRunUiPolicyFor(kind, panel_.IsShownOnScreen()));
+  const ChartDldrBulkRunUiSnapshot ui_before = panel_.CaptureBulkUiSnapshot();
 
-  if (profile.confirm_before_start &&
-      !pi->ConfirmInteractiveBulkUpdate(panel_)) {
+  if (profile.ui.confirm_before_start &&
+      !pi->ConfirmInteractiveBulkUpdate(&panel_)) {
     return false;
   }
 
-  pi->m_bulk_run_active = true;
-  panel_->BeginBulkRunSession(profile);
+  session_.Begin(pi, kind, profile, ui_before);
+  panel_.ApplyRunUiPolicy(profile);
   stats = ChartDldrBulkRunStats();
 
   for (size_t catalog_index = 0; catalog_index < pi->m_ChartSources.size();
        ++catalog_index) {
-    if (panel_->IsBulkRunCancelled()) {
+    if (panel_.IsBulkRunCancelled()) {
       break;
     }
-    RunCatalogPassInteractive(static_cast<int>(catalog_index), profile, event,
-                              stats);
+    ChartDldrPanelBulk::RunInteractiveCatalogPass(
+        panel_, static_cast<int>(catalog_index), profile, event, stats);
   }
 
   FinalizeBulkRun(pi, profile, ui_before, stats);
-  pi->m_bulk_run_active = false;
+  session_.End();
+  return true;
+}
+
+bool ChartDldrBulkOrchestrate::RunSelectedChartsDownload() {
+  if (IsRunActive()) {
+    return false;
+  }
+  ChartDldrChartBulkState chart_bulk;
+  ChartDldrPanelBulk::DownloadCharts(panel_,
+                                     ChartDldrSelectedChartsDownloadProfile(),
+                                     chart_bulk);
   return true;
 }
 
 void ChartDldrBulkOrchestrate::StartScheduledRun(chartdldr_pi* pi) {
   CancelScheduledRun();
-  if (!pi || !panel_) {
+  if (!pi) {
     return;
   }
 
-  scheduled_profile_ = ChartDldrBulkModeProfileFor(ChartDldrBulkRunUiPolicyFor(
-      ChartDldrBulkRunKind::Scheduled, panel_->IsShownOnScreen()));
-  scheduled_ui_before_ = panel_->CaptureBulkUiSnapshot();
+  const ChartDldrBulkModeProfile profile = ChartDldrBulkModeProfileFor(
+      ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind::Scheduled,
+                                  panel_.IsShownOnScreen()));
+  const ChartDldrBulkRunUiSnapshot ui_before = panel_.CaptureBulkUiSnapshot();
 
-  pi->m_bulk_run_active = true;
-  panel_->BeginBulkRunSession(scheduled_profile_);
-  scheduled_state_ = ChartDldrScheduledBulkRunState();
-  scheduled_pi_ = pi;
-  scheduled_active_ = true;
+  session_.Begin(pi, ChartDldrBulkRunKind::Scheduled, profile, ui_before);
+  panel_.ApplyRunUiPolicy(profile);
 
   wxLogMessage("chartdldr_pi: scheduled bulk update starting");
 }
 
 bool ChartDldrBulkOrchestrate::StepScheduledRun() {
-  if (!scheduled_active_ || !scheduled_pi_ || !panel_) {
+  if (!session_.IsActive() || !session_.IsScheduled()) {
     return false;
   }
 
-  if (panel_->IsBulkRunCancelled()) {
+  if (panel_.IsBulkRunCancelled()) {
     FinishScheduledRun();
     return false;
   }
 
-  const size_t catalog_count = scheduled_pi_->m_ChartSources.size();
-  if (scheduled_state_.next_catalog >= catalog_count) {
+  chartdldr_pi* const pi = session_.Plugin();
+  const size_t catalog_count = pi ? pi->m_ChartSources.size() : 0;
+  if (session_.ScheduledState().next_catalog >= catalog_count) {
     FinishScheduledRun();
     return false;
   }
 
-  const bool continue_run =
-      StepScheduledRunCore(scheduled_state_, scheduled_profile_, catalog_count);
-
+  const bool continue_run = StepScheduledRunCore();
   if (!continue_run) {
     FinishScheduledRun();
   }
@@ -104,120 +110,63 @@ bool ChartDldrBulkOrchestrate::StepScheduledRun() {
 }
 
 void ChartDldrBulkOrchestrate::FinishScheduledRun() {
-  if (!scheduled_active_ || !scheduled_pi_) {
+  if (!session_.IsActive() || !session_.IsScheduled()) {
     return;
   }
 
-  CleanupScheduledRun(scheduled_profile_);
+  chartdldr_pi* const pi = session_.Plugin();
+  const ChartDldrBulkModeProfile profile = session_.Profile();
+  const ChartDldrBulkRunUiSnapshot ui_before = session_.UiBefore();
 
-  FinalizeBulkRun(scheduled_pi_, scheduled_profile_, scheduled_ui_before_,
-                  scheduled_state_.stats);
+  CleanupScheduledRun();
 
-  ChartDldrFinishScheduledBulkRun(scheduled_pi_, scheduled_state_.stats);
+  FinalizeBulkRun(pi, profile, ui_before, session_.ScheduledState().stats);
+  ChartDldrFinishScheduledBulkRun(pi, session_.ScheduledState().stats);
 
-  scheduled_pi_->m_bulk_run_active = false;
-  scheduled_pi_->OnScheduledBulkRunFinished();
-  scheduled_active_ = false;
-  scheduled_pi_ = nullptr;
+  if (pi) {
+    pi->OnScheduledBulkRunFinished();
+  }
+  session_.End();
 }
 
 void ChartDldrBulkOrchestrate::CancelScheduledRun() {
-  if (!scheduled_active_) {
+  if (!session_.IsActive() || !session_.IsScheduled()) {
     return;
   }
-  panel_->CancelDownload();
+  panel_.CancelDownload();
   FinishScheduledRun();
 }
 
 void ChartDldrBulkOrchestrate::RefreshCatalogManual(int catalog_index,
                                                     wxCommandEvent& event) {
-  if (!panel_) {
-    return;
-  }
-  const ChartDldrBulkModeProfile profile =
-      ChartDldrInteractiveCatalogUpdateProfile();
-  panel_->UpdateChartListForCatalog(catalog_index, event, profile);
+  panel_.UpdateChartListForCatalog(
+      catalog_index, event, ChartDldrInteractiveCatalogUpdateProfile());
 }
 
-void ChartDldrBulkOrchestrate::CleanupScheduledRun(
-    const ChartDldrBulkModeProfile& profile) {
-  if (!panel_) {
-    return;
+void ChartDldrBulkOrchestrate::CleanupScheduledRun() {
+  panel_.CancelAsyncCatalogRefresh();
+  if (session_.ChartBulk().active) {
+    panel_.EndBulkChartDownload(session_.Profile(), session_.ChartBulk());
   }
-  panel_->CancelAsyncCatalogRefresh();
-  if (panel_->IsBulkChartDownloadActive()) {
-    panel_->EndBulkChartDownload(profile);
-  }
-}
-
-void ChartDldrBulkOrchestrate::AccumulateCatalogStats(
-    ChartDldrBulkRunStats& stats) {
-  if (!panel_) {
-    return;
-  }
-  stats.Accumulate(panel_->TakeBulkCatalogStats());
-  panel_->ResetBulkCatalogCounters();
 }
 
 void ChartDldrBulkOrchestrate::ApplyScheduledStepDecision(
-    const ChartDldrBulkModeProfile& profile,
     const ChartDldrScheduledBulkStepDecision& decision) {
-  if (!panel_) {
-    return;
-  }
+  const ChartDldrBulkModeProfile& profile = session_.Profile();
+  ChartDldrChartBulkState& chart_bulk = session_.ChartBulk();
   if (decision.begin_chart_download) {
-    panel_->BeginBulkChartDownload(profile);
+    panel_.BeginBulkChartDownload(profile, chart_bulk);
   }
   if (decision.end_chart_download) {
-    panel_->EndBulkChartDownload(profile);
-  }
-  if (decision.accumulate_stats) {
-    panel_->ResetBulkCatalogCounters();
+    panel_.EndBulkChartDownload(profile, chart_bulk);
   }
 }
 
-bool ChartDldrBulkOrchestrate::TryStartCatalogRefresh(
-    int catalog_index, const ChartDldrBulkModeProfile& profile,
-    wxCommandEvent* event) {
-  if (!panel_) {
-    return false;
-  }
-  if (profile.catalog_refresh == ChartDldrCatalogRefreshMode::AsyncIdle) {
-    return panel_->BeginAsyncCatalogRefresh(catalog_index, profile);
-  }
-  if (event) {
-    panel_->UpdateChartListForCatalog(catalog_index, *event, profile);
-  }
-  return true;
-}
-
-ChartDldrAsyncCatalogStepResult ChartDldrBulkOrchestrate::StepCatalogRefresh(
-    const ChartDldrBulkModeProfile& profile) {
-  if (!panel_) {
-    return ChartDldrAsyncCatalogStepResult::NotActive;
-  }
-  if (profile.catalog_refresh == ChartDldrCatalogRefreshMode::AsyncIdle) {
-    return panel_->StepAsyncCatalogRefresh();
-  }
-  return ChartDldrAsyncCatalogStepResult::Complete;
-}
-
-void ChartDldrBulkOrchestrate::RunCatalogPassInteractive(
-    int catalog_index, const ChartDldrBulkModeProfile& profile,
-    wxCommandEvent& event, ChartDldrBulkRunStats& stats) {
-  if (!panel_) {
-    return;
-  }
-  panel_->PrepareBulkCatalog(catalog_index, profile.sync_list_selection);
-  TryStartCatalogRefresh(catalog_index, profile, &event);
-  panel_->DownloadCharts(profile);
-  AccumulateCatalogStats(stats);
-}
-
-bool ChartDldrBulkOrchestrate::StepScheduledRunCore(
-    ChartDldrScheduledBulkRunState& state,
-    const ChartDldrBulkModeProfile& profile, size_t catalog_count) {
-  if (!panel_ || state.next_catalog >= catalog_count) {
+bool ChartDldrBulkOrchestrate::StepScheduledRunCore() {
+  ChartDldrScheduledBulkRunState& state = session_.ScheduledState();
+  const ChartDldrBulkModeProfile& profile = session_.Profile();
+  chartdldr_pi* const pi = session_.Plugin();
+  if (!pi || state.next_catalog >= pi->m_ChartSources.size()) {
     return false;
   }
 
@@ -225,26 +174,28 @@ bool ChartDldrBulkOrchestrate::StepScheduledRunCore(
   ChartDldrScheduledBulkStepInput input;
   input.phase = state.phase;
   input.next_catalog = state.next_catalog;
-  input.catalog_count = catalog_count;
+  input.catalog_count = pi->m_ChartSources.size();
 
   if (state.phase == ChartDldrScheduledBulkPhase::SelectCatalog) {
-    panel_->PrepareBulkCatalog(catalog_index, profile.sync_list_selection);
-    input.catalog_refresh_started =
-        TryStartCatalogRefresh(catalog_index, profile, nullptr);
+    panel_.PrepareBulkCatalog(catalog_index, profile);
+    input.catalog_refresh_started = ChartDldrBeginCatalogRefresh(
+        panel_, catalog_index, profile,
+        ChartDldrCatalogRefreshContext::None());
   } else if (state.phase == ChartDldrScheduledBulkPhase::RefreshCatalog) {
-    input.catalog_step = StepCatalogRefresh(profile);
+    input.catalog_step = ChartDldrStepCatalogRefresh(panel_, profile);
   } else {
-    input.chart_step = panel_->StepNextBulkChart(profile);
+    input.chart_step =
+        panel_.StepNextBulkChart(profile, session_.ChartBulk());
   }
 
   ChartDldrBulkRunStats catalog_counters;
   if (state.phase == ChartDldrScheduledBulkPhase::DownloadChart) {
-    catalog_counters = panel_->TakeBulkCatalogStats();
+    catalog_counters = session_.ChartBulk().ToStats();
   }
 
   const ChartDldrScheduledBulkStepDecision decision =
       ChartDldrAdvanceScheduledBulkRun(state, input, catalog_counters);
-  ApplyScheduledStepDecision(profile, decision);
+  ApplyScheduledStepDecision(decision);
   return decision.continue_run;
 }
 
@@ -256,9 +207,9 @@ void ChartDldrBulkOrchestrate::FinalizeBulkRun(
       wxString::Format(_T("ChartDldrBulk: downloaded %d out of %d charts."),
                        stats.downloaded_ok(), stats.attempted));
 
-  if (profile.show_failure_summary && stats.failed > 0 && panel_) {
+  if (profile.ui.show_failure_summary && stats.failed > 0) {
     OCPNMessageBox_PlugIn(
-        panel_,
+        &panel_,
         wxString::Format(_("%d out of %d charts failed to download.\nCheck the "
                            "list, verify there is a working Internet "
                            "connection and repeat the operation if needed."),
@@ -270,7 +221,7 @@ void ChartDldrBulkOrchestrate::FinalizeBulkRun(
     pi->ApplyChartDatabaseUpdate();
   }
 
-  if (panel_ && ChartDldrBulkRunShouldRestoreUi(profile, ui_before)) {
-    panel_->RestoreBulkNotebookPage(ui_before.notebook_page);
+  if (ChartDldrBulkRunShouldRestoreUi(profile, ui_before)) {
+    panel_.RestoreBulkNotebookPage(ui_before.notebook_page);
   }
 }

@@ -39,6 +39,7 @@
 #endif  // precompiled headers
 
 #include "chartdldr_pi.h"
+#include "chartdldr_bulk_orchestrate.h"
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_panel.h"
 #include "chartdldr_panel_impl.h"
@@ -161,7 +162,6 @@ chartdldr_pi::chartdldr_pi(void *ppimgr)
   m_preselect_new = false;
   m_preselect_updated = false;
   m_allow_bulk_update = false;
-  m_bulk_run_active = false;
   m_pOptionsPage = NULL;
   m_selected_source = -1;
   m_dldrpanel = NULL;
@@ -522,7 +522,8 @@ ChartDldrBulkRequestInput chartdldr_pi::MakeBulkRequestInput() const {
   ChartDldrBulkRequestInput input;
   input.allow_bulk_update = m_allow_bulk_update;
   input.has_chart_sources = HasChartSources();
-  input.bulk_run_active = m_bulk_run_active;
+  input.bulk_run_active =
+      m_dldrpanel && m_dldrpanel->Bulk().IsRunActive();
   return input;
 }
 

@@ -47,10 +47,13 @@ set(SRC
   chartdldr_schedule_config_tests.cpp
   chartdldr_schedule_state_tests.cpp
   chartdldr_chart_classify_tests.cpp
+  chartdldr_chart_utils_tests.cpp
+  chartdldr_bulk_yield_integration_tests.cpp
   chartdldr_prefs_time_tests.cpp
   chartdldr_bulk_schedule_tests.cpp
   chartdldr_bulk_request_tests.cpp
   chartdldr_bulk_run_tests.cpp
+  chartdldr_bulk_catalog_refresh_tests.cpp
   chartdldr_bulk_async_step_tests.cpp
   chartdldr_schedule_integration_tests.cpp
   datetime_tests.cpp

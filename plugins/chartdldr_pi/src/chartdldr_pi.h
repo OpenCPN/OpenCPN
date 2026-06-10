@@ -143,7 +143,6 @@ public:
   bool m_preselect_new;
   bool m_preselect_updated;
   bool m_allow_bulk_update;
-  bool m_bulk_run_active;
 
   wxFileConfig* m_pconfig;
   wxScrolledWindow* m_pOptionsPage;

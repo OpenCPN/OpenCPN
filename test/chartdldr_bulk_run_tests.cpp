@@ -24,14 +24,16 @@ TEST(ChartDldrBulkModeProfile, ScheduledUsesQuietHiddenPanelFlow) {
   EXPECT_EQ(visible.mode, ChartDldrDownloadUiMode::ScheduledBulk);
   EXPECT_EQ(visible_profile.error_reporting,
             ChartDldrErrorReporting::SummaryLog);
-  EXPECT_FALSE(visible_profile.confirm_before_start);
-  EXPECT_FALSE(visible_profile.show_failure_summary);
-  EXPECT_TRUE(visible_profile.restore_notebook_page);
-  EXPECT_TRUE(visible_profile.select_download_tab);
-  EXPECT_FALSE(visible_profile.sync_list_selection);
-  EXPECT_TRUE(visible_profile.skip_manual_charts);
-  EXPECT_EQ(visible_profile.catalog_refresh,
+  EXPECT_FALSE(visible_profile.ui.confirm_before_start);
+  EXPECT_FALSE(visible_profile.ui.show_failure_summary);
+  EXPECT_TRUE(visible_profile.ui.restore_notebook_page);
+  EXPECT_TRUE(visible_profile.ui.select_download_tab);
+  EXPECT_FALSE(visible_profile.ui.sync_list_selection);
+  EXPECT_TRUE(visible_profile.charts.skip_manual_charts);
+  EXPECT_EQ(visible_profile.catalog.refresh,
             ChartDldrCatalogRefreshMode::AsyncIdle);
+  EXPECT_EQ(visible_profile.charts.transfer_poll,
+            ChartDldrTransferPoll::PollOnly);
 
   const ChartDldrBulkRunUiPolicy hidden =
       ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind::Scheduled, false);
@@ -40,9 +42,9 @@ TEST(ChartDldrBulkModeProfile, ScheduledUsesQuietHiddenPanelFlow) {
   EXPECT_EQ(hidden.mode, ChartDldrDownloadUiMode::ScheduledBulk);
   EXPECT_EQ(hidden_profile.error_reporting,
             ChartDldrErrorReporting::SummaryLog);
-  EXPECT_FALSE(hidden_profile.restore_notebook_page);
-  EXPECT_FALSE(hidden_profile.select_download_tab);
-  EXPECT_FALSE(hidden_profile.sync_list_selection);
+  EXPECT_FALSE(hidden_profile.ui.restore_notebook_page);
+  EXPECT_FALSE(hidden_profile.ui.select_download_tab);
+  EXPECT_FALSE(hidden_profile.ui.sync_list_selection);
 }
 
 TEST(ChartDldrBulkModeProfile, InteractiveShowsConfirmAndErrors) {
@@ -51,26 +53,30 @@ TEST(ChartDldrBulkModeProfile, InteractiveShowsConfirmAndErrors) {
   const ChartDldrBulkModeProfile profile = ChartDldrBulkModeProfileFor(policy);
   EXPECT_EQ(policy.mode, ChartDldrDownloadUiMode::InteractiveBulk);
   EXPECT_EQ(profile.error_reporting, ChartDldrErrorReporting::Dialog);
-  EXPECT_TRUE(profile.confirm_before_start);
-  EXPECT_TRUE(profile.show_failure_summary);
-  EXPECT_TRUE(profile.restore_notebook_page);
-  EXPECT_TRUE(profile.select_download_tab);
-  EXPECT_TRUE(profile.sync_list_selection);
-  EXPECT_FALSE(profile.skip_manual_charts);
-  EXPECT_EQ(profile.catalog_refresh, ChartDldrCatalogRefreshMode::SyncBlocking);
+  EXPECT_TRUE(profile.ui.confirm_before_start);
+  EXPECT_TRUE(profile.ui.show_failure_summary);
+  EXPECT_TRUE(profile.ui.restore_notebook_page);
+  EXPECT_TRUE(profile.ui.select_download_tab);
+  EXPECT_TRUE(profile.ui.sync_list_selection);
+  EXPECT_FALSE(profile.charts.skip_manual_charts);
+  EXPECT_EQ(profile.catalog.refresh, ChartDldrCatalogRefreshMode::SyncBlocking);
+  EXPECT_EQ(profile.charts.transfer_poll,
+            ChartDldrTransferPoll::BlockUntilComplete);
 }
 
 TEST(ChartDldrBulkModeProfile, SelectedChartsAndCatalogPresets) {
   const ChartDldrBulkModeProfile selected =
       ChartDldrSelectedChartsDownloadProfile();
-  EXPECT_FALSE(selected.defer_chart_db_apply);
-  EXPECT_FALSE(selected.allow_empty_selection);
-  EXPECT_TRUE(selected.show_download_result_dialogs);
+  EXPECT_FALSE(selected.charts.defer_chart_db_apply);
+  EXPECT_FALSE(selected.charts.allow_empty_selection);
+  EXPECT_TRUE(selected.ui.show_download_result_dialogs);
+  EXPECT_EQ(selected.charts.transfer_poll,
+            ChartDldrTransferPoll::BlockUntilComplete);
 
   const ChartDldrBulkModeProfile catalog =
       ChartDldrInteractiveCatalogUpdateProfile();
-  EXPECT_TRUE(catalog.show_catalog_progress_dialog);
-  EXPECT_FALSE(catalog.defer_chart_db_apply);
+  EXPECT_TRUE(catalog.catalog.show_progress_dialog);
+  EXPECT_FALSE(catalog.charts.defer_chart_db_apply);
 }
 
 TEST(ChartDldrBulkModeProfile, RestoreOnlyWhenPanelWasVisible) {

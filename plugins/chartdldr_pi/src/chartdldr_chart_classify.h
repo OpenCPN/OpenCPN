@@ -16,4 +16,8 @@ enum class ChartDldrChartUpdateKind { None, New, Updated };
 ChartDldrChartUpdateKind ChartDldrClassifyChart(bool exists_locally,
                                                 bool catalog_newer_than_local);
 
+inline bool ChartDldrChartIndexInRange(int index, int chart_count) {
+  return index >= 0 && index < chart_count;
+}
+
 #endif  // CHARTDLDR_CHART_CLASSIFY_H_

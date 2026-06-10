@@ -2,17 +2,27 @@
  *   Copyright (C) 2026 OpenCPN Contributors                               *
  ***************************************************************************/
 
-#ifndef CHARTDLDR_BULK_CATALOG_INTERNAL_H_
-#define CHARTDLDR_BULK_CATALOG_INTERNAL_H_
+#ifndef CHARTDLDR_BULK_CATALOG_H_
+#define CHARTDLDR_BULK_CATALOG_H_
+
+#include "chartdldr_bulk.h"
 
 #include <wx/string.h>
 
 class chartdldr_pi;
+class ChartDldrPanelImpl;
 class wxFileName;
 class wxURI;
 class wxWindow;
 
 struct ChartDldrBulkModeProfile;
+
+bool ChartDldrBeginCatalogRefresh(ChartDldrPanelImpl& panel, int catalog_index,
+                                  const ChartDldrBulkModeProfile& profile,
+                                  const ChartDldrCatalogRefreshContext& ctx);
+
+ChartDldrAsyncCatalogStepResult ChartDldrStepCatalogRefresh(
+    ChartDldrPanelImpl& panel, const ChartDldrBulkModeProfile& profile);
 
 namespace ChartDldrBulkCatalogInternal {
 
@@ -27,4 +37,4 @@ void ReportPathFailure(wxWindow* parent,
 
 }  // namespace ChartDldrBulkCatalogInternal
 
-#endif  // CHARTDLDR_BULK_CATALOG_INTERNAL_H_
+#endif  // CHARTDLDR_BULK_CATALOG_H_

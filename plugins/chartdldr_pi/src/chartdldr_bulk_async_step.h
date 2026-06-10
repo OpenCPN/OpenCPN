@@ -34,7 +34,6 @@ struct ChartDldrScheduledBulkStepDecision {
   bool continue_run = false;
   bool begin_chart_download = false;
   bool end_chart_download = false;
-  bool accumulate_stats = false;
 };
 
 struct ChartDldrScheduledBulkRunState {

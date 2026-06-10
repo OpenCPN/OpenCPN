@@ -8,6 +8,7 @@
  ***************************************************************************/
 
 #include "chartdldr_bulk_schedule.h"
+#include "chartdldr_bulk_orchestrate.h"
 #include "chartdldr_pi.h"
 #include "chartdldr_panel_impl.h"
 #include "chartdldr_schedule_state.h"
@@ -170,7 +171,8 @@ void ChartDldrScheduler::OnIdle(wxIdleEvent& event) {
     return;
   }
 
-  if (panel->Bulk().StepScheduledRun()) {
+  const bool continue_run = panel->Bulk().StepScheduledRun();
+  if (continue_run) {
     event.RequestMore();
   } else {
     EnsureIdleWatch(false);
