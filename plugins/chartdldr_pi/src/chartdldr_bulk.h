@@ -22,7 +22,8 @@ enum class ChartDldrCatalogRefreshMode {
   AsyncIdle,
 };
 
-/** Optional wx event for SyncBlocking catalog refresh (profile selects the path). */
+/** Optional wx event for SyncBlocking catalog refresh (profile selects the
+ * path). */
 struct ChartDldrCatalogRefreshContext {
   wxCommandEvent* sync_event = nullptr;
 
@@ -82,8 +83,9 @@ enum class ChartDldrErrorReporting {
 /**
  * Bulk orchestration: ChartDldrBulkOrchestrate (session + scheduled steps),
  * ChartDldrPanelBulk (multi-step chart download loops), and
- * ChartDldrBeginCatalogRefresh / ChartDldrStepCatalogRefresh for catalog refresh.
- * ChartDldrPanelImpl owns wx widgets and OCPN_download* transfer callbacks.
+ * ChartDldrBeginCatalogRefresh / ChartDldrStepCatalogRefresh for catalog
+ * refresh. ChartDldrPanelImpl owns wx widgets and OCPN_download* transfer
+ * callbacks.
  */
 struct ChartDldrBulkRunUiPolicy {
   ChartDldrDownloadUiMode mode = ChartDldrDownloadUiMode::SelectedCharts;
@@ -91,7 +93,8 @@ struct ChartDldrBulkRunUiPolicy {
 };
 
 struct ChartDldrBulkCatalogPolicy {
-  ChartDldrCatalogRefreshMode refresh = ChartDldrCatalogRefreshMode::SyncBlocking;
+  ChartDldrCatalogRefreshMode refresh =
+      ChartDldrCatalogRefreshMode::SyncBlocking;
   bool show_progress_dialog = false;
 };
 

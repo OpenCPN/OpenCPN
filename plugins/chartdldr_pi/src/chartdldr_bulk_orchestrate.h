@@ -39,7 +39,8 @@ private:
   void FinishScheduledRun();
   void CleanupScheduledRun();
   bool StepScheduledRunCore();
-  void FinalizeBulkRun(chartdldr_pi* pi, const ChartDldrBulkModeProfile& profile,
+  void FinalizeBulkRun(chartdldr_pi* pi,
+                       const ChartDldrBulkModeProfile& profile,
                        const ChartDldrBulkRunUiSnapshot& ui_before,
                        const ChartDldrBulkRunStats& stats);
   void ApplyScheduledStepDecision(

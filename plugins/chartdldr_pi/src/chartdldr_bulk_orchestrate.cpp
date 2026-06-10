@@ -62,9 +62,8 @@ bool ChartDldrBulkOrchestrate::RunSelectedChartsDownload() {
     return false;
   }
   ChartDldrChartBulkState chart_bulk;
-  ChartDldrPanelBulk::DownloadCharts(panel_,
-                                     ChartDldrSelectedChartsDownloadProfile(),
-                                     chart_bulk);
+  ChartDldrPanelBulk::DownloadCharts(
+      panel_, ChartDldrSelectedChartsDownloadProfile(), chart_bulk);
   return true;
 }
 
@@ -74,9 +73,9 @@ void ChartDldrBulkOrchestrate::StartScheduledRun(chartdldr_pi* pi) {
     return;
   }
 
-  const ChartDldrBulkModeProfile profile = ChartDldrBulkModeProfileFor(
-      ChartDldrBulkRunUiPolicyFor(ChartDldrBulkRunKind::Scheduled,
-                                  panel_.IsShownOnScreen()));
+  const ChartDldrBulkModeProfile profile =
+      ChartDldrBulkModeProfileFor(ChartDldrBulkRunUiPolicyFor(
+          ChartDldrBulkRunKind::Scheduled, panel_.IsShownOnScreen()));
   const ChartDldrBulkRunUiSnapshot ui_before = panel_.CaptureBulkUiSnapshot();
 
   session_.Begin(pi, ChartDldrBulkRunKind::Scheduled, profile, ui_before);
@@ -139,8 +138,8 @@ void ChartDldrBulkOrchestrate::CancelScheduledRun() {
 
 void ChartDldrBulkOrchestrate::RefreshCatalogManual(int catalog_index,
                                                     wxCommandEvent& event) {
-  panel_.UpdateChartListForCatalog(
-      catalog_index, event, ChartDldrInteractiveCatalogUpdateProfile());
+  panel_.UpdateChartListForCatalog(catalog_index, event,
+                                   ChartDldrInteractiveCatalogUpdateProfile());
 }
 
 void ChartDldrBulkOrchestrate::CleanupScheduledRun() {
@@ -179,13 +178,11 @@ bool ChartDldrBulkOrchestrate::StepScheduledRunCore() {
   if (state.phase == ChartDldrScheduledBulkPhase::SelectCatalog) {
     panel_.PrepareBulkCatalog(catalog_index, profile);
     input.catalog_refresh_started = ChartDldrBeginCatalogRefresh(
-        panel_, catalog_index, profile,
-        ChartDldrCatalogRefreshContext::None());
+        panel_, catalog_index, profile, ChartDldrCatalogRefreshContext::None());
   } else if (state.phase == ChartDldrScheduledBulkPhase::RefreshCatalog) {
     input.catalog_step = ChartDldrStepCatalogRefresh(panel_, profile);
   } else {
-    input.chart_step =
-        panel_.StepNextBulkChart(profile, session_.ChartBulk());
+    input.chart_step = panel_.StepNextBulkChart(profile, session_.ChartBulk());
   }
 
   ChartDldrBulkRunStats catalog_counters;

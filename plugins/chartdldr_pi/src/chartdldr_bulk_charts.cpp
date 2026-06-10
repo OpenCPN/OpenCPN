@@ -332,8 +332,9 @@ bool ChartDldrPanelImpl::WaitForTransfer(
     const ChartDldrBulkModeProfile& profile, bool allow_ui_updates,
     const ChartDldrChartBulkState* chart_bulk) {
   // Blocking interactive waits call wxYield() here. Scheduled PollOnly runs
-  // must not enter this loop; onDLEvent uses session.WouldYieldOnDownloadEvent()
-  // (wxYieldIfNeeded) so PollOnly bulk steps never re-enter via download events.
+  // must not enter this loop; onDLEvent uses
+  // session.WouldYieldOnDownloadEvent() (wxYieldIfNeeded) so PollOnly bulk
+  // steps never re-enter via download events.
   const bool use_yield =
       profile.charts.transfer_poll == ChartDldrTransferPoll::BlockUntilComplete;
   while (m_transfer.IsInProgress() && m_transfer.success &&
@@ -354,4 +355,3 @@ bool ChartDldrPanelImpl::WaitForTransfer(
   }
   return m_transfer.success && !m_download_cancel.IsCancelled();
 }
-

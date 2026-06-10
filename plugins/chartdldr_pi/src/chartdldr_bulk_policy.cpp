@@ -49,27 +49,23 @@ const ChartDldrBulkModeProfileRow& ModeProfileRow(
        ChartDldrCatalogRefreshMode::SyncBlocking,
        ChartDldrErrorReporting::Dialog, ChartDldrPolicyTriState::On,
        ChartDldrPolicyTriState::On, true, true, true, false, true, true, true,
-       false, false, true,
-       ChartDldrTransferPoll::BlockUntilComplete},
+       false, false, true, ChartDldrTransferPoll::BlockUntilComplete},
       {// ScheduledBulk
        ChartDldrCatalogRefreshMode::AsyncIdle,
        ChartDldrErrorReporting::SummaryLog,
        ChartDldrPolicyTriState::WhenPanelVisible,
        ChartDldrPolicyTriState::WhenPanelVisible, false, false, false, true,
-       true, true, false, false, false, false,
-       ChartDldrTransferPoll::PollOnly},
+       true, true, false, false, false, false, ChartDldrTransferPoll::PollOnly},
       {// SelectedCharts
        ChartDldrCatalogRefreshMode::SyncBlocking,
        ChartDldrErrorReporting::Dialog, ChartDldrPolicyTriState::Off,
        ChartDldrPolicyTriState::Off, false, false, false, false, false, false,
-       true, true, false, false,
-       ChartDldrTransferPoll::BlockUntilComplete},
+       true, true, false, false, ChartDldrTransferPoll::BlockUntilComplete},
       {// CatalogRefresh
        ChartDldrCatalogRefreshMode::SyncBlocking,
        ChartDldrErrorReporting::Dialog, ChartDldrPolicyTriState::Off,
        ChartDldrPolicyTriState::Off, false, false, false, false, false, false,
-       false, false, true, true,
-       ChartDldrTransferPoll::BlockUntilComplete},
+       false, false, true, true, ChartDldrTransferPoll::BlockUntilComplete},
   };
   return profiles[static_cast<size_t>(policy.mode)];
 }
@@ -100,7 +96,8 @@ ChartDldrBulkModeProfile ChartDldrBulkModeProfileFor(
   profile.ui.sync_list_selection = row.sync_list_selection;
   profile.ui.show_download_progress_ui = row.show_download_progress_ui;
   profile.ui.show_download_result_dialogs = row.show_download_result_dialogs;
-  profile.ui.focus_charts_tab_after_catalog = row.focus_charts_tab_after_catalog;
+  profile.ui.focus_charts_tab_after_catalog =
+      row.focus_charts_tab_after_catalog;
   profile.charts.skip_manual_charts = row.skip_manual_charts;
   profile.charts.defer_chart_db_apply = row.defer_chart_db_apply;
   profile.charts.allow_empty_selection = row.allow_empty_selection;

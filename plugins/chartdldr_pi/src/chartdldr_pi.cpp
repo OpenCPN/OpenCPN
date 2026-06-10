@@ -522,8 +522,7 @@ ChartDldrBulkRequestInput chartdldr_pi::MakeBulkRequestInput() const {
   ChartDldrBulkRequestInput input;
   input.allow_bulk_update = m_allow_bulk_update;
   input.has_chart_sources = HasChartSources();
-  input.bulk_run_active =
-      m_dldrpanel && m_dldrpanel->Bulk().IsRunActive();
+  input.bulk_run_active = m_dldrpanel && m_dldrpanel->Bulk().IsRunActive();
   return input;
 }
 
