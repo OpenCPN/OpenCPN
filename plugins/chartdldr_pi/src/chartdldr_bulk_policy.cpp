@@ -112,27 +112,26 @@ ChartDldrBulkModeProfileRow CatalogRefreshProfileRow() {
 
 const ChartDldrBulkModeProfileRow& ModeProfileRow(
     const ChartDldrBulkRunUiPolicy& policy) {
+  static const ChartDldrBulkModeProfileRow kInteractive =
+      InteractiveBulkProfileRow();
+  static const ChartDldrBulkModeProfileRow kScheduled =
+      ScheduledBulkProfileRow();
+  static const ChartDldrBulkModeProfileRow kSelected =
+      SelectedChartsProfileRow();
+  static const ChartDldrBulkModeProfileRow kCatalog =
+      CatalogRefreshProfileRow();
+
   switch (policy.mode) {
     case ChartDldrDownloadUiMode::InteractiveBulk:
-      static const ChartDldrBulkModeProfileRow kInteractive =
-          InteractiveBulkProfileRow();
       return kInteractive;
     case ChartDldrDownloadUiMode::ScheduledBulk:
-      static const ChartDldrBulkModeProfileRow kScheduled =
-          ScheduledBulkProfileRow();
       return kScheduled;
     case ChartDldrDownloadUiMode::SelectedCharts:
-      static const ChartDldrBulkModeProfileRow kSelected =
-          SelectedChartsProfileRow();
       return kSelected;
     case ChartDldrDownloadUiMode::CatalogRefresh:
-      static const ChartDldrBulkModeProfileRow kCatalog =
-          CatalogRefreshProfileRow();
       return kCatalog;
   }
-  static const ChartDldrBulkModeProfileRow kFallback =
-      SelectedChartsProfileRow();
-  return kFallback;
+  return kSelected;
 }
 
 ChartDldrBulkRunUiPolicy MakePolicy(ChartDldrDownloadUiMode mode,
