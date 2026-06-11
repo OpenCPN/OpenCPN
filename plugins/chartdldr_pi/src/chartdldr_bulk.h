@@ -107,7 +107,8 @@ struct ChartDldrBulkUiFlags {
   bool show_download_progress_ui = false;
   bool show_download_result_dialogs = false;
   bool focus_charts_tab_after_catalog = false;
-  /** Skip SetSource / disk rescan after chart download (scheduled hidden panel). */
+  /** Skip SetSource / disk rescan after chart download (scheduled hidden
+   * panel). */
   bool defer_catalog_rescan = false;
 };
 
@@ -172,7 +173,8 @@ bool ChartDldrBulkRunShouldRestoreUi(const ChartDldrBulkModeProfile& profile,
 bool ChartDldrShouldYieldOnDownloadEvent(bool bulk_run_active,
                                          ChartDldrTransferPoll transfer_poll);
 
-inline bool ChartDldrVerboseExtractLog(const ChartDldrBulkModeProfile& profile) {
+inline bool ChartDldrVerboseExtractLog(
+    const ChartDldrBulkModeProfile& profile) {
   return profile.error_reporting != ChartDldrErrorReporting::SummaryLog;
 }
 

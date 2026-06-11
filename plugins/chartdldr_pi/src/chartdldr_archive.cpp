@@ -310,7 +310,8 @@ ar_archive *ar_open_any_archive(ar_stream *stream, const char *fileext) {
 bool chartdldr_pi::ExtractUnarrFiles(const wxString &aRarFile,
                                      const wxString &aTargetDir,
                                      bool aStripPath, wxDateTime aMTime,
-                                     bool aRemoveRar, bool verbose_extract_log) {
+                                     bool aRemoveRar,
+                                     bool verbose_extract_log) {
   ChartDldrLogExtractStart(aRarFile, verbose_extract_log);
   ar_stream *stream = NULL;
   ar_archive *ar = NULL;

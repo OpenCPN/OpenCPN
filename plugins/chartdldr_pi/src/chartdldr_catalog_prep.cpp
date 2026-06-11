@@ -36,8 +36,7 @@ ChartDldrChartUpdateKind ChartDldrCatalogChartStatus(
 }
 
 bool ChartDldrShouldPreselectChart(ChartDldrChartUpdateKind kind,
-                                   bool preselect_new,
-                                   bool preselect_updated) {
+                                   bool preselect_new, bool preselect_updated) {
   switch (kind) {
     case ChartDldrChartUpdateKind::New:
       return preselect_new;

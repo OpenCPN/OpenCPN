@@ -153,8 +153,8 @@ void ChartDldrPanelImpl::ActivateCatalogSourceContext(int catalog_index) {
   }
 }
 
-void ChartDldrPanelImpl::PopulateChartListFromDisk(ChartSource& cs,
-                                                   bool selnew, bool selupd) {
+void ChartDldrPanelImpl::PopulateChartListFromDisk(ChartSource &cs, bool selnew,
+                                                   bool selupd) {
   CleanForm();
   ChartDldrPrepareChartSourceLocals(cs);
   pPlugIn->m_pChartSource = &cs;
@@ -166,7 +166,7 @@ void ChartDldrPanelImpl::RefreshChartListForSource(int catalog_index) {
       catalog_index >= static_cast<int>(pPlugIn->m_ChartSources.size())) {
     return;
   }
-  ChartSource& cs = *pPlugIn->m_ChartSources.at(catalog_index);
+  ChartSource &cs = *pPlugIn->m_ChartSources.at(catalog_index);
   PopulateChartListFromDisk(cs, pPlugIn->m_preselect_new,
                             pPlugIn->m_preselect_updated);
   if (wxPanel::IsShownOnScreen()) {
@@ -174,12 +174,12 @@ void ChartDldrPanelImpl::RefreshChartListForSource(int catalog_index) {
   }
 }
 
-void ChartDldrPanelImpl::UpdateChartsLabelForSource(const ChartSource& cs) {
+void ChartDldrPanelImpl::UpdateChartsLabelForSource(const ChartSource &cs) {
   wxURI url(cs.GetUrl());
   m_chartsLabel->SetLabel(wxString::Format(
-      _("Charts: %s"), (cs.GetName() + _(" from ") + url.BuildURI() +
-                        _T(" -> ") + cs.GetDir())
-                           .c_str()));
+      _("Charts: %s"),
+      (cs.GetName() + _(" from ") + url.BuildURI() + _T(" -> ") + cs.GetDir())
+          .c_str()));
 }
 
 ChartDldrChartUpdateKind ChartDldrPanelImpl::ChartKindAt(int index) const {
@@ -248,7 +248,8 @@ void ChartDldrPanelImpl::CleanForm() {
 
 void ChartDldrPanelImpl::FillFromFile(wxString url, wxString dir, bool selnew,
                                       bool selupd) {
-  // Caller must reset chart list UI via CleanForm() (PopulateChartListFromDisk).
+  // Caller must reset chart list UI via CleanForm()
+  // (PopulateChartListFromDisk).
   wxFileName fn;
   fn.SetFullName(ChartDldrCatalogFilenameFromUrl(url));
   fn.SetPath(dir);
@@ -267,8 +268,9 @@ void ChartDldrPanelImpl::FillFromFile(wxString url, wxString dir, bool selnew,
       const wxString file_ =
           pPlugIn->m_pChartCatalog.charts.at(i)->GetChartFilename(true);
       const ChartDldrChartUpdateKind kind = ChartDldrCatalogChartStatus(
-          *pPlugIn->m_pChartSource, pPlugIn->m_pChartCatalog.charts.at(i)->number,
-          file_, pPlugIn->m_pChartCatalog.charts.at(i)->GetUpdateDatetime());
+          *pPlugIn->m_pChartSource,
+          pPlugIn->m_pChartCatalog.charts.at(i)->number, file_,
+          pPlugIn->m_pChartCatalog.charts.at(i)->GetUpdateDatetime());
       m_chartKinds.push_back(kind);
 
       if (kind == ChartDldrChartUpdateKind::New) {
@@ -278,8 +280,7 @@ void ChartDldrPanelImpl::FillFromFile(wxString url, wxString dir, bool selnew,
       }
 
       const wxString status = ChartDldrChartStatusLabel(kind);
-      const bool bcheck =
-          ChartDldrShouldPreselectChart(kind, selnew, selupd);
+      const bool bcheck = ChartDldrShouldPreselectChart(kind, selnew, selupd);
       latest =
           pPlugIn->m_pChartCatalog.charts.at(i)->GetUpdateDatetime().Format(
               _T("%Y-%m-%d"));

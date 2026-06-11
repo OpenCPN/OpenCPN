@@ -611,4 +611,3 @@ bool getDisplayMetrics() {
   return true;
 #endif
 }
-

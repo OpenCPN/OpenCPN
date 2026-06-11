@@ -23,8 +23,7 @@ ChartSource::ChartSource(wxString name, wxString url, wxString localdir) {
 
 ChartSource::~ChartSource() { m_update_data.clear(); }
 
-bool ChartSource::ExistsLocaly(wxString chart_number,
-                               wxString filename) const {
+bool ChartSource::ExistsLocaly(wxString chart_number, wxString filename) const {
   wxASSERT(this);
 
   wxStringTokenizer tk(filename, _T("."));
@@ -54,7 +53,8 @@ bool ChartSource::IsNewerThanLocal(wxString chart_number, wxString filename,
         chart_it != m_update_data.end() ? chart_it->second : 0;
     const time_t file_ticks =
         file_it != m_update_data.end() ? file_it->second : 0;
-    if (chart_ticks < validDate.GetTicks() && file_ticks < validDate.GetTicks()) {
+    if (chart_ticks < validDate.GetTicks() &&
+        file_ticks < validDate.GetTicks()) {
       return true;
     }
     return false;

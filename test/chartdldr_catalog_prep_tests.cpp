@@ -31,10 +31,11 @@ void TouchChartFile(const wxString& dir, const wxString& name) {
 }  // namespace
 
 TEST(ChartDldrCatalogPrep, CatalogFilenameFromUrl) {
-  EXPECT_EQ(ChartDldrCatalogFilenameFromUrl(wxT("http://example.test/US_CA.xml")),
-            wxT("US_CA.xml"));
+  EXPECT_EQ(
+      ChartDldrCatalogFilenameFromUrl(wxT("http://example.test/US_CA.xml")),
+      wxT("US_CA.xml"));
   EXPECT_EQ(ChartDldrCatalogFilenameFromUrl(
-                  wxT("https://charts.noaa.gov/ENC/US_CA/US_CA.xml")),
+                wxT("https://charts.noaa.gov/ENC/US_CA/US_CA.xml")),
             wxT("US_CA.xml"));
 }
 
@@ -44,7 +45,7 @@ TEST(ChartDldrCatalogPrep, ShouldPreselectOnlyNewAndUpdated) {
   EXPECT_TRUE(ChartDldrShouldPreselectChart(ChartDldrChartUpdateKind::Updated,
                                             false, true));
   EXPECT_FALSE(ChartDldrShouldPreselectChart(ChartDldrChartUpdateKind::None,
-                                               true, true));
+                                             true, true));
 }
 
 TEST(ChartDldrCatalogPrep, PrepareLocalsBeforeExistsLocaly) {
@@ -73,7 +74,8 @@ TEST(ChartDldrCatalogPrep, PrepareLocalsBeforeExistsLocaly) {
 
 TEST(ChartDldrCatalogPrep, CatalogChartStatusDetectsUpdatedChart) {
   const wxString dir = MakeTempChartDir();
-  const wxString chart_path = dir + wxFileName::GetPathSeparator() + wxT("US5CA11M.zip");
+  const wxString chart_path =
+      dir + wxFileName::GetPathSeparator() + wxT("US5CA11M.zip");
   TouchChartFile(dir, wxT("US5CA11M.zip"));
 
   const wxDateTime old_local = wxDateTime::Now() - wxTimeSpan::Days(30);

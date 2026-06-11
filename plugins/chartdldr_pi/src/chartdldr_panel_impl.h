@@ -76,9 +76,10 @@ protected:
   void EditSource(wxCommandEvent& event) override;
   void UpdateChartList(wxCommandEvent& event) override;
   void EnsureDownloadHandlerConnected();
-  _OCPN_DLStatus DownloadCatalogFile(
-      const wxString& url, const wxString& output_path,
-      bool show_progress_dialog, const ChartDldrBulkModeProfile& profile);
+  _OCPN_DLStatus DownloadCatalogFile(const wxString& url,
+                                     const wxString& output_path,
+                                     bool show_progress_dialog,
+                                     const ChartDldrBulkModeProfile& profile);
   void OnDownloadCharts(wxCommandEvent& event) override;
 
   void OnSelectChartItem(wxCommandEvent& event);
@@ -146,9 +147,9 @@ private:
                                     const wxString& full_path,
                                     ChartDldrChartBulkState& chart_bulk,
                                     const ChartDldrBulkModeProfile& profile);
-  void FinalizeActiveBulkChartTransfer(
-      ChartSource& source, ChartDldrChartBulkState& chart_bulk,
-      const ChartDldrBulkModeProfile& profile);
+  void FinalizeActiveBulkChartTransfer(ChartSource& source,
+                                       ChartDldrChartBulkState& chart_bulk,
+                                       const ChartDldrBulkModeProfile& profile);
   void HandleCatalogDownloadResult(int catalog_index, _OCPN_DLStatus ret,
                                    const wxString& url,
                                    const ChartDldrBulkModeProfile& profile);

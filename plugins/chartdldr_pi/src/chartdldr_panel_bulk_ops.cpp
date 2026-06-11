@@ -113,8 +113,8 @@ void ChartDldrPanelImpl::HandleCatalogDownloadResult(
 }
 
 _OCPN_DLStatus ChartDldrPanelImpl::DownloadCatalogFile(
-    const wxString& url, const wxString& output_path,
-    bool show_progress_dialog, const ChartDldrBulkModeProfile& profile) {
+    const wxString& url, const wxString& output_path, bool show_progress_dialog,
+    const ChartDldrBulkModeProfile& profile) {
   wxURI uri(url);
   const wxString message = _("Reading Headers: ") + uri.BuildURI();
 
@@ -203,9 +203,9 @@ void ChartDldrPanelImpl::UpdateChartListForCatalog(
     return;
   }
 
-  const _OCPN_DLStatus ret = DownloadCatalogFile(
-      url.BuildURI(), output_fn.GetFullPath(),
-      profile.catalog.show_progress_dialog, profile);
+  const _OCPN_DLStatus ret =
+      DownloadCatalogFile(url.BuildURI(), output_fn.GetFullPath(),
+                          profile.catalog.show_progress_dialog, profile);
   HandleCatalogDownloadResult(catalog_index, ret, url.BuildURI(), profile);
 }
 

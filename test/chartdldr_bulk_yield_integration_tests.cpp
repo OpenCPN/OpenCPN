@@ -24,15 +24,18 @@ TEST(ChartDldrBulkYieldIntegration, OnDownloadEventYieldsWhenNoBulkSession) {
   EXPECT_TRUE(session.WouldYieldOnDownloadEvent());
 }
 
-TEST(ChartDldrBulkYieldIntegration, OnDownloadEventBlocksYieldDuringScheduledPollOnly) {
+TEST(ChartDldrBulkYieldIntegration,
+     OnDownloadEventBlocksYieldDuringScheduledPollOnly) {
   ChartDldrBulkRunSession session;
   BeginSession(session, ChartDldrBulkRunKind::Scheduled);
   EXPECT_TRUE(session.IsActive());
-  EXPECT_EQ(session.Profile().charts.transfer_poll, ChartDldrTransferPoll::PollOnly);
+  EXPECT_EQ(session.Profile().charts.transfer_poll,
+            ChartDldrTransferPoll::PollOnly);
   EXPECT_FALSE(session.WouldYieldOnDownloadEvent());
 }
 
-TEST(ChartDldrBulkYieldIntegration, OnDownloadEventYieldsDuringInteractiveBlockingRun) {
+TEST(ChartDldrBulkYieldIntegration,
+     OnDownloadEventYieldsDuringInteractiveBlockingRun) {
   ChartDldrBulkRunSession session;
   BeginSession(session, ChartDldrBulkRunKind::Interactive);
   EXPECT_TRUE(session.IsActive());
