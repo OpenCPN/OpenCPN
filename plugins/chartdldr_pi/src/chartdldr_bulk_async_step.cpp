@@ -39,6 +39,12 @@ ChartDldrScheduledBulkStepDecision ChartDldrDecideScheduledBulkStep(
         decision.continue_run = decision.next_catalog < input.catalog_count;
         return decision;
       }
+      if (input.charts_selected_for_download <= 0) {
+        decision.next_phase = ChartDldrScheduledBulkPhase::SelectCatalog;
+        decision.next_catalog = input.next_catalog + 1;
+        decision.continue_run = decision.next_catalog < input.catalog_count;
+        return decision;
+      }
       decision.next_phase = ChartDldrScheduledBulkPhase::DownloadChart;
       decision.begin_chart_download = true;
       decision.continue_run = true;

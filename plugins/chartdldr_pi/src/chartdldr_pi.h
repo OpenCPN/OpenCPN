@@ -57,11 +57,9 @@
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_schedule_config.h"
-
-#define UPDATE_DATA_FILENAME "chartdldr_pi.dat"
+#include "chartdldr_chart_source.h"
 
 // forward declarations
-class ChartSource;
 class ChartDldrPanelImpl;
 class ChartDldrGuiAddSourceDlg;
 class ChartDldrPrefsDlgImpl;
@@ -97,23 +95,27 @@ public:
   bool SaveConfig(void);
   bool ProcessFile(const wxString& aFile, const wxString& aTargetDir,
                    bool aStripPath = true,
-                   wxDateTime aMTime = wxDateTime::Now());
+                   wxDateTime aMTime = wxDateTime::Now(),
+                   bool verbose_extract_log = true);
   bool ExtractZipFiles(const wxString& aZipFile, const wxString& aTargetDir,
                        bool aStripPath = true,
                        wxDateTime aMTime = wxDateTime::Now(),
-                       bool aRemoveZip = false);
+                       bool aRemoveZip = false,
+                       bool verbose_extract_log = true);
 #ifdef DLDR_USE_LIBARCHIVE
   bool ExtractLibArchiveFiles(const wxString& aArchiveFile,
                               const wxString& aTargetDir,
                               bool aStripPath = true,
                               wxDateTime aMTime = wxDateTime::Now(),
-                              bool aRemoveArchive = false);
+                              bool aRemoveArchive = false,
+                              bool verbose_extract_log = true);
 #endif
 #if defined(CHARTDLDR_RAR_UNARR) || !defined(DLDR_USE_LIBARCHIVE)
   bool ExtractUnarrFiles(const wxString& aRarFile, const wxString& aTargetDir,
                          bool aStripPath = true,
                          wxDateTime aMTime = wxDateTime::Now(),
-                         bool aRemoveRar = false);
+                         bool aRemoveRar = false,
+                         bool verbose_extract_log = true);
 #endif
 
   void UpdatePrefs(ChartDldrPrefsDlgImpl* dialog);
@@ -157,37 +159,6 @@ public:
 
   ChartDldrScheduleConfig m_schedule;
   ChartDldrScheduler m_scheduler;
-};
-
-class ChartSource : public wxTreeItemData {
-public:
-  ChartSource(wxString name, wxString url, wxString localdir);
-  ~ChartSource();
-
-  wxString GetName() { return m_name; }
-  wxString GetUrl() { return m_url; }
-  wxString GetDir() { return m_dir; }
-  void SetDir(wxString dir) { m_dir = dir; }
-  void SetName(wxString name) { m_name = name; }
-  void SetUrl(wxString url) { m_url = url; }
-  bool ExistsLocaly(wxString chart_number, wxString filename);
-  bool IsNewerThanLocal(wxString chart_number, wxString filename,
-                        wxDateTime validDate);
-  void UpdateLocalFiles() { GetLocalFiles(); }
-
-  bool UpdateDataExists();
-  void LoadUpdateData();
-  void SaveUpdateData();
-  void ChartUpdated(wxString chart_number, time_t timestamp);
-
-private:
-  wxArrayString m_localfiles;
-  std::vector<wxDateTime> m_localdt;
-  void GetLocalFiles();
-  wxString m_name;
-  wxString m_url;
-  wxString m_dir;
-  std::map<std::string, time_t> m_update_data;
 };
 
 class ChartDldrGuiAddSourceDlg : public AddSourceDlg {

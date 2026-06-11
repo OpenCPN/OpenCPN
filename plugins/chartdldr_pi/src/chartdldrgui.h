@@ -11,6 +11,9 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
+
+#include "chartdldr_chart_classify.h"
+
 #include <wx/treectrl.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
@@ -171,10 +174,12 @@ public:
   wxDataViewListCtrl* m_scrollWinChartList;
   virtual wxDataViewListCtrl* getChartList() { return m_scrollWinChartList; }
   virtual bool isNew(int item) {
-    return (m_scrollWinChartList->GetTextValue(item, 1) == _("New"));
+    (void)item;
+    return false;
   }
   virtual bool isUpdated(int item) {
-    return (m_scrollWinChartList->GetTextValue(item, 1) == _("Out of date"));
+    (void)item;
+    return false;
   }
   virtual void clearChartList() { m_scrollWinChartList->DeleteAllItems(); }
 #else
@@ -249,8 +254,6 @@ public:
 
   void OnContextMenu(wxMouseEvent& event);
   wxCheckBox* GetCB() { return m_cb; }
-  bool isNew() { return (m_stat == _("New")); }
-  bool isUpdated() { return (m_stat == _("Out of date")); }
   void OnLeftUp(wxMouseEvent& event);
 #ifdef HAVE_WX_GESTURE_EVENTS
   void OnLongPress(wxLongPressEvent& event);

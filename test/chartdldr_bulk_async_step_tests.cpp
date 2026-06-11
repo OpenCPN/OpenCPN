@@ -48,6 +48,7 @@ TEST(ChartDldrScheduledBulkStep, RefreshCompleteBeginsChartDownload) {
   ChartDldrScheduledBulkStepInput input;
   input.phase = ChartDldrScheduledBulkPhase::RefreshCatalog;
   input.catalog_step = ChartDldrAsyncCatalogStepResult::Complete;
+  input.charts_selected_for_download = 2;
   input.next_catalog = 0;
   input.catalog_count = 1;
 
@@ -55,6 +56,22 @@ TEST(ChartDldrScheduledBulkStep, RefreshCompleteBeginsChartDownload) {
       ChartDldrDecideScheduledBulkStep(input);
   EXPECT_EQ(decision.next_phase, ChartDldrScheduledBulkPhase::DownloadChart);
   EXPECT_TRUE(decision.begin_chart_download);
+  EXPECT_TRUE(decision.continue_run);
+}
+
+TEST(ChartDldrScheduledBulkStep, RefreshCompleteSkipsDownloadWhenNoneSelected) {
+  ChartDldrScheduledBulkStepInput input;
+  input.phase = ChartDldrScheduledBulkPhase::RefreshCatalog;
+  input.catalog_step = ChartDldrAsyncCatalogStepResult::Complete;
+  input.charts_selected_for_download = 0;
+  input.next_catalog = 0;
+  input.catalog_count = 2;
+
+  const ChartDldrScheduledBulkStepDecision decision =
+      ChartDldrDecideScheduledBulkStep(input);
+  EXPECT_EQ(decision.next_phase, ChartDldrScheduledBulkPhase::SelectCatalog);
+  EXPECT_EQ(decision.next_catalog, 1u);
+  EXPECT_FALSE(decision.begin_chart_download);
   EXPECT_TRUE(decision.continue_run);
 }
 
@@ -145,6 +162,7 @@ TEST(ChartDldrScheduledBulkRun, SimulatedTwoCatalogRun) {
       input.catalog_refresh_started = true;
     } else if (state.phase == ChartDldrScheduledBulkPhase::RefreshCatalog) {
       input.catalog_step = ChartDldrAsyncCatalogStepResult::Complete;
+      input.charts_selected_for_download = 2;
     } else {
       input.chart_step = chart_download_active
                              ? ChartDldrBulkChartStepResult::Finished
@@ -198,6 +216,7 @@ TEST(ChartDldrScheduledBulkRun, PollOnlyChartTransferSteps) {
       input.catalog_refresh_started = true;
     } else if (state.phase == ChartDldrScheduledBulkPhase::RefreshCatalog) {
       input.catalog_step = ChartDldrAsyncCatalogStepResult::Complete;
+      input.charts_selected_for_download = 1;
     } else if (transfer_in_progress) {
       input.chart_step = ChartDldrBulkChartStepResult::TransferInProgress;
     } else if (chart_download_active) {

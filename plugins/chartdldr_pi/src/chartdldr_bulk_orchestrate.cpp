@@ -181,6 +181,9 @@ bool ChartDldrBulkOrchestrate::StepScheduledRunCore() {
         panel_, catalog_index, profile, ChartDldrCatalogRefreshContext::None());
   } else if (state.phase == ChartDldrScheduledBulkPhase::RefreshCatalog) {
     input.catalog_step = ChartDldrStepCatalogRefresh(panel_, profile);
+    if (input.catalog_step == ChartDldrAsyncCatalogStepResult::Complete) {
+      input.charts_selected_for_download = panel_.GetCheckedChartCount();
+    }
   } else {
     input.chart_step = panel_.StepNextBulkChart(profile, session_.ChartBulk());
   }

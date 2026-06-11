@@ -25,6 +25,7 @@ struct ChartDldrScheduledBulkStepInput {
       ChartDldrAsyncCatalogStepResult::NotActive;
   ChartDldrBulkChartStepResult chart_step =
       ChartDldrBulkChartStepResult::NotActive;
+  int charts_selected_for_download = 0;
 };
 
 struct ChartDldrScheduledBulkStepDecision {

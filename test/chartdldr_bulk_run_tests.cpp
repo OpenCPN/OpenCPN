@@ -45,6 +45,8 @@ TEST(ChartDldrBulkModeProfile, ScheduledUsesQuietHiddenPanelFlow) {
   EXPECT_FALSE(hidden_profile.ui.restore_notebook_page);
   EXPECT_FALSE(hidden_profile.ui.select_download_tab);
   EXPECT_FALSE(hidden_profile.ui.sync_list_selection);
+  EXPECT_TRUE(hidden_profile.ui.defer_catalog_rescan);
+  EXPECT_FALSE(visible_profile.ui.defer_catalog_rescan);
 }
 
 TEST(ChartDldrBulkModeProfile, InteractiveShowsConfirmAndErrors) {
@@ -59,6 +61,7 @@ TEST(ChartDldrBulkModeProfile, InteractiveShowsConfirmAndErrors) {
   EXPECT_TRUE(profile.ui.select_download_tab);
   EXPECT_TRUE(profile.ui.sync_list_selection);
   EXPECT_FALSE(profile.charts.skip_manual_charts);
+  EXPECT_FALSE(profile.ui.defer_catalog_rescan);
   EXPECT_EQ(profile.catalog.refresh, ChartDldrCatalogRefreshMode::SyncBlocking);
   EXPECT_EQ(profile.charts.transfer_poll,
             ChartDldrTransferPoll::BlockUntilComplete);

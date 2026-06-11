@@ -47,6 +47,7 @@ set(SRC
   chartdldr_schedule_config_tests.cpp
   chartdldr_schedule_state_tests.cpp
   chartdldr_chart_classify_tests.cpp
+  chartdldr_catalog_prep_tests.cpp
   chartdldr_chart_utils_tests.cpp
   chartdldr_bulk_yield_integration_tests.cpp
   chartdldr_prefs_time_tests.cpp
@@ -64,6 +65,8 @@ set(SRC
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_config.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_state.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_chart_classify.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_chart_source.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_catalog_prep.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_prefs_time.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_policy.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_request.cpp

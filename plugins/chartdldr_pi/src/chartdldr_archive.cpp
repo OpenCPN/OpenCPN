@@ -101,11 +101,21 @@ static int copy_data(struct archive *ar, struct archive *aw) {
 
 }  // namespace
 
+static void ChartDldrLogExtractStart(const wxString &archive_file,
+                                     bool verbose_extract_log) {
+  if (verbose_extract_log) {
+    wxLogMessage(_T("chartdldr_pi: Going to extract '") + archive_file +
+                 _T("'."));
+  }
+}
+
 bool chartdldr_pi::ExtractLibArchiveFiles(const wxString &aArchiveFile,
                                           const wxString &aTargetDir,
                                           bool aStripPath, wxDateTime aMTime,
-                                          bool aRemoveArchive) {
+                                          bool aRemoveArchive,
+                                          bool verbose_extract_log) {
 #ifndef __ANDROID__
+  ChartDldrLogExtractStart(aArchiveFile, verbose_extract_log);
   struct archive *a = NULL;
   struct archive *ext = NULL;
   bool ok = false;
@@ -273,6 +283,7 @@ cleanup:
   wxUnusedVar(aStripPath);
   wxUnusedVar(aMTime);
   wxUnusedVar(aRemoveArchive);
+  wxUnusedVar(verbose_extract_log);
   return false;
 #endif
 }
@@ -299,7 +310,8 @@ ar_archive *ar_open_any_archive(ar_stream *stream, const char *fileext) {
 bool chartdldr_pi::ExtractUnarrFiles(const wxString &aRarFile,
                                      const wxString &aTargetDir,
                                      bool aStripPath, wxDateTime aMTime,
-                                     bool aRemoveRar) {
+                                     bool aRemoveRar, bool verbose_extract_log) {
+  ChartDldrLogExtractStart(aRarFile, verbose_extract_log);
   ar_stream *stream = NULL;
   ar_archive *ar = NULL;
   int entry_count = 1;
@@ -396,7 +408,8 @@ bool chartdldr_pi::ExtractUnarrFiles(const wxString &aRarFile,
 
 bool chartdldr_pi::ExtractZipFiles(const wxString &aZipFile,
                                    const wxString &aTargetDir, bool aStripPath,
-                                   wxDateTime aMTime, bool aRemoveZip) {
+                                   wxDateTime aMTime, bool aRemoveZip,
+                                   bool verbose_extract_log) {
   bool ret = true;
 
 #ifdef __ANDROID__
@@ -408,7 +421,7 @@ bool chartdldr_pi::ExtractZipFiles(const wxString &aZipFile,
   std::unique_ptr<wxZipEntry> entry(new wxZipEntry());
 
   do {
-    wxLogMessage(_T("chartdldr_pi: Going to extract '") + aZipFile + _T("'."));
+    ChartDldrLogExtractStart(aZipFile, verbose_extract_log);
     wxFileInputStream in(aZipFile);
 
     if (!in) {
@@ -496,10 +509,11 @@ bool chartdldr_pi::ExtractZipFiles(const wxString &aZipFile,
 
 bool chartdldr_pi::ProcessFile(const wxString &aFile,
                                const wxString &aTargetDir, bool aStripPath,
-                               wxDateTime aMTime) {
+                               wxDateTime aMTime, bool verbose_extract_log) {
   if (aFile.Lower().EndsWith(_T("zip")))  // Zip compressed
   {
-    bool ret = ExtractZipFiles(aFile, aTargetDir, aStripPath, aMTime, false);
+    bool ret = ExtractZipFiles(aFile, aTargetDir, aStripPath, aMTime, false,
+                               verbose_extract_log);
     if (ret)
       wxRemoveFile(aFile);
     else
@@ -509,10 +523,11 @@ bool chartdldr_pi::ProcessFile(const wxString &aFile,
 #ifdef DLDR_USE_LIBARCHIVE
   else if (aFile.Lower().EndsWith(_T("rar"))) {
 #ifdef CHARTDLDR_RAR_UNARR
-    bool ret = ExtractUnarrFiles(aFile, aTargetDir, aStripPath, aMTime, false);
+    bool ret = ExtractUnarrFiles(aFile, aTargetDir, aStripPath, aMTime, false,
+                                 verbose_extract_log);
 #else
-    bool ret =
-        ExtractLibArchiveFiles(aFile, aTargetDir, aStripPath, aMTime, false);
+    bool ret = ExtractLibArchiveFiles(aFile, aTargetDir, aStripPath, aMTime,
+                                      false, verbose_extract_log);
 #endif
     if (ret)
       wxRemoveFile(aFile);
@@ -525,8 +540,8 @@ bool chartdldr_pi::ProcessFile(const wxString &aFile,
              aFile.Lower().EndsWith(_T("lzma")) ||
              aFile.Lower().EndsWith(_T("7z")) ||
              aFile.Lower().EndsWith(_T("xz"))) {
-    bool ret =
-        ExtractLibArchiveFiles(aFile, aTargetDir, aStripPath, aMTime, false);
+    bool ret = ExtractLibArchiveFiles(aFile, aTargetDir, aStripPath, aMTime,
+                                      false, verbose_extract_log);
     if (ret)
       wxRemoveFile(aFile);
     else
@@ -548,7 +563,8 @@ bool chartdldr_pi::ProcessFile(const wxString &aFile,
                              // LZMA SDK supports?
 #endif
   ) {
-    bool ret = ExtractUnarrFiles(aFile, aTargetDir, aStripPath, aMTime, false);
+    bool ret = ExtractUnarrFiles(aFile, aTargetDir, aStripPath, aMTime, false,
+                                 verbose_extract_log);
     if (ret)
       wxRemoveFile(aFile);
     else

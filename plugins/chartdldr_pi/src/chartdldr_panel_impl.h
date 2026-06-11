@@ -13,23 +13,14 @@
 #include "chartdldr_download_cancel.h"
 
 #include <memory>
+#include <vector>
 
 class chartdldr_pi;
-struct ChartDldrPanelBulk;
 class ChartDldrBulkOrchestrate;
 class ChartSource;
 
 /** wx panel implementation for the chart downloader options page. */
 class ChartDldrPanelImpl : public ChartDldrPanel {
-  friend class ChartDldrBulkOrchestrate;
-  friend struct ChartDldrPanelBulk;
-  friend bool ChartDldrBeginCatalogRefresh(
-      ChartDldrPanelImpl& panel, int catalog_index,
-      const ChartDldrBulkModeProfile& profile,
-      const ChartDldrCatalogRefreshContext& ctx);
-  friend ChartDldrAsyncCatalogStepResult ChartDldrStepCatalogRefresh(
-      ChartDldrPanelImpl& panel, const ChartDldrBulkModeProfile& profile);
-
 public:
   ~ChartDldrPanelImpl();
   ChartDldrPanelImpl(chartdldr_pi* plugin = NULL, wxWindow* parent = NULL,
@@ -47,6 +38,36 @@ public:
   ChartDldrBulkOrchestrate& Bulk() { return *bulk_; }
   bool IsBulkRunCancelled() const { return m_download_cancel.IsCancelled(); }
 
+  // Bulk subsystem API (orchestration + catalog refresh modules).
+  ChartDldrBulkRunUiSnapshot CaptureBulkUiSnapshot() const;
+  void ApplyRunUiPolicy(const ChartDldrBulkModeProfile& profile);
+  void RestoreBulkNotebookPage(int page);
+  void PrepareBulkCatalog(int catalog_index,
+                          const ChartDldrBulkModeProfile& profile);
+  void ReloadCatalogFromDisk(int catalog_index);
+  void UpdateChartListForCatalog(int catalog_index, wxCommandEvent& event,
+                                 const ChartDldrBulkModeProfile& profile);
+  bool BeginAsyncCatalogRefresh(int catalog_index,
+                                const ChartDldrBulkModeProfile& profile);
+  ChartDldrAsyncCatalogStepResult StepAsyncCatalogRefresh();
+  void CancelAsyncCatalogRefresh();
+  void BeginBulkChartDownload(const ChartDldrBulkModeProfile& profile,
+                              ChartDldrChartBulkState& chart_bulk);
+  ChartDldrBulkChartStepResult StepNextBulkChart(
+      const ChartDldrBulkModeProfile& profile,
+      ChartDldrChartBulkState& chart_bulk);
+  void EndBulkChartDownload(const ChartDldrBulkModeProfile& profile,
+                            ChartDldrChartBulkState& chart_bulk);
+  bool WaitForTransfer(const ChartDldrBulkModeProfile& profile,
+                       bool allow_ui_updates,
+                       const ChartDldrChartBulkState* chart_bulk);
+  int GetCheckedChartCount();
+
+#if defined(CHART_LIST)
+  bool isNew(int item) override;
+  bool isUpdated(int item) override;
+#endif /* CHART_LIST */
+
 protected:
   void SetSource(int id);
   void SelectSource(wxListEvent& event) override;
@@ -55,9 +76,9 @@ protected:
   void EditSource(wxCommandEvent& event) override;
   void UpdateChartList(wxCommandEvent& event) override;
   void EnsureDownloadHandlerConnected();
-  _OCPN_DLStatus DownloadCatalogFile(const wxString& url,
-                                     const wxString& output_path,
-                                     bool show_progress_dialog);
+  _OCPN_DLStatus DownloadCatalogFile(
+      const wxString& url, const wxString& output_path,
+      bool show_progress_dialog, const ChartDldrBulkModeProfile& profile);
   void OnDownloadCharts(wxCommandEvent& event) override;
 
   void OnSelectChartItem(wxCommandEvent& event);
@@ -86,7 +107,6 @@ protected:
   void OnContextMenu(wxMouseEvent& event) override;
 
   int GetChartCount();
-  int GetCheckedChartCount();
   bool isChartChecked(int i);
   void CheckAllCharts(bool value);
   void InvertCheckAllCharts();
@@ -97,29 +117,11 @@ protected:
   DECLARE_EVENT_TABLE()
 
 private:
-  ChartDldrBulkRunUiSnapshot CaptureBulkUiSnapshot() const;
-  void ApplyRunUiPolicy(const ChartDldrBulkModeProfile& profile);
-  void RestoreBulkNotebookPage(int page);
-  void PrepareBulkCatalog(int catalog_index,
-                          const ChartDldrBulkModeProfile& profile);
-  void ReloadCatalogFromDisk(int catalog_index);
-  void SetSourceCatalogContext(int id);
-  void UpdateChartListForCatalog(int catalog_index, wxCommandEvent& event,
-                                 const ChartDldrBulkModeProfile& profile);
-  bool BeginAsyncCatalogRefresh(int catalog_index,
-                                const ChartDldrBulkModeProfile& profile);
-  ChartDldrAsyncCatalogStepResult StepAsyncCatalogRefresh();
-  void CancelAsyncCatalogRefresh();
-  void BeginBulkChartDownload(const ChartDldrBulkModeProfile& profile,
-                              ChartDldrChartBulkState& chart_bulk);
-  ChartDldrBulkChartStepResult StepNextBulkChart(
-      const ChartDldrBulkModeProfile& profile,
-      ChartDldrChartBulkState& chart_bulk);
-  void EndBulkChartDownload(const ChartDldrBulkModeProfile& profile,
-                            ChartDldrChartBulkState& chart_bulk);
-  bool WaitForTransfer(const ChartDldrBulkModeProfile& profile,
-                       bool allow_ui_updates,
-                       const ChartDldrChartBulkState* chart_bulk);
+  void ActivateCatalogSourceContext(int catalog_index);
+  void PopulateChartListFromDisk(ChartSource& cs, bool selnew, bool selupd);
+  void RefreshChartListForSource(int catalog_index);
+  void UpdateChartsLabelForSource(const ChartSource& cs);
+  ChartDldrChartUpdateKind ChartKindAt(int index) const;
 
   bool DownloadChart(wxString url, wxString file, wxString title);
 
@@ -138,14 +140,15 @@ private:
   wxString m_asyncCatalogOutputPath;
   ChartDldrBulkModeProfile m_asyncCatalogProfile;
 
-  ChartDldrChartUpdateKind ClassifyChartForDownload(int chart_index);
   void FinalizePendingChartDownload(int chart_index,
                                     ChartDldrChartUpdateKind kind,
                                     ChartSource& source,
                                     const wxString& full_path,
-                                    ChartDldrChartBulkState& chart_bulk);
-  void FinalizeActiveBulkChartTransfer(ChartSource& source,
-                                       ChartDldrChartBulkState& chart_bulk);
+                                    ChartDldrChartBulkState& chart_bulk,
+                                    const ChartDldrBulkModeProfile& profile);
+  void FinalizeActiveBulkChartTransfer(
+      ChartSource& source, ChartDldrChartBulkState& chart_bulk,
+      const ChartDldrBulkModeProfile& profile);
   void HandleCatalogDownloadResult(int catalog_index, _OCPN_DLStatus ret,
                                    const wxString& url,
                                    const ChartDldrBulkModeProfile& profile);
@@ -155,6 +158,7 @@ private:
   bool m_bInfoHold;
   size_t m_newCharts;
   size_t m_updatedCharts;
+  std::vector<ChartDldrChartUpdateKind> m_chartKinds;
 
   std::unique_ptr<ChartDldrBulkOrchestrate> bulk_;
 };

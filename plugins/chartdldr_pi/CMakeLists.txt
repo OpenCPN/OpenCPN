@@ -76,11 +76,15 @@ set(SRC_CHARTDLDR
     src/chartdldr_bulk_async_step.cpp
     src/chartdldr_bulk_catalog.h
     src/chartdldr_bulk_catalog.cpp
-    src/chartdldr_bulk_charts.cpp
+    src/chartdldr_panel_bulk_ops.cpp
     src/chartdldr_bulk_schedule.h
     src/chartdldr_bulk_schedule.cpp
     src/chartdldr_chart_classify.h
     src/chartdldr_chart_classify.cpp
+    src/chartdldr_chart_source.h
+    src/chartdldr_chart_source.cpp
+    src/chartdldr_catalog_prep.h
+    src/chartdldr_catalog_prep.cpp
     src/chartdldr_archive.cpp
     src/chartdldr_format.h
     src/chartdldr_format.cpp
