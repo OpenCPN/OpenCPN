@@ -100,6 +100,10 @@ public:
   wxDateTime zipfile_datetime;
   wxDateTime zipfile_datetime_iso8601;
   int zipfile_size;
+  int edtn;
+  int updn;
+  wxDateTime uadt;
+  wxDateTime isdt;
   wxString reference_file;
   wxString manual_download_url;
 
