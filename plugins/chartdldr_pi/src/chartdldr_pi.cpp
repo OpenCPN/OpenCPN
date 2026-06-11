@@ -830,14 +830,28 @@ bool ChartSource::IsNewerThanLocal(wxString chart_number, wxString filename,
                                    wxDateTime validDate) {
   wxStringTokenizer tk(filename, _T("."));
   wxString file = tk.GetNextToken().MakeLower();
+  time_t validTime = validDate.GetTicks();
   if (!m_update_data.empty()) {
-    if (m_update_data[std::string(chart_number.Lower().mbc_str())] <
-            validDate.GetTicks() &&
-        m_update_data[std::string(file.mbc_str())] < validDate.GetTicks())
-      return true;
-    else
-      return false;
+    time_t chartNumberTime =
+        m_update_data[std::string(chart_number.Lower().mbc_str())];
+    time_t updateFileTime = m_update_data[std::string(file.mbc_str())];
+    bool needsUpdate =
+        chartNumberTime < validTime && updateFileTime < validTime;
+    if (wxLOG_Debug <= wxLog::GetLogLevel()) {
+      // Show these only if user has selected loglevel debug, otherwise save a
+      // few cpu cycles
+      wxLogInfo("Latest Zip File Date: %sZ",
+                validDate.ToUTC().FormatISOCombined());
+      wxLogInfo("Local File: %s, Date: %sZ", filename,
+                wxDateTime(updateFileTime).ToUTC().FormatISOCombined());
+      wxLogInfo("Chart Number %s DOB: Date: %sZ", chart_number,
+                wxDateTime(chartNumberTime).ToUTC().FormatISOCombined());
+      wxLogInfo("Chart Number %s Needs update: %s", chart_number,
+                needsUpdate ? wxString("true") : wxString("false"));
+    }
+    return needsUpdate;
   }
+
   bool update_candidate = false;
 
   for (size_t i = 0; i < m_localfiles.Count(); i++) {
@@ -1133,7 +1147,7 @@ void ChartSource::LoadUpdateData() {
   std::ifstream infile(fn.mb_str());
 
   std::string key;
-  long value;
+  time_t value(0);
 
   while (infile >> key >> value) m_update_data[key] = value;
 

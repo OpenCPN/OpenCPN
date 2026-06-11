@@ -181,6 +181,10 @@ Chart::Chart(pugi::xml_node &xmldata) {
   zipfile_size = -1;
   zipfile_datetime = wxInvalidDateTime;
   zipfile_datetime_iso8601 = wxInvalidDateTime;
+  uadt = wxInvalidDateTime;
+  isdt = wxInvalidDateTime;
+  edtn = -1;
+  updn = -1;
   nm = NULL;
   lnm = NULL;
 
@@ -221,6 +225,16 @@ Chart::Chart(pugi::xml_node &xmldata) {
       zipfile_datetime_iso8601.MakeFromTimezone(wxDateTime::UTC);
     } else if (!strcmp(element.name(), "zipfile_size")) {
       zipfile_size = wxAtoi(wxString::FromUTF8(element.first_child().value()));
+    } else if (!strcmp(element.name(), "edtn")) {
+      edtn = wxAtoi(wxString::FromUTF8(element.first_child().value()));
+    } else if (!strcmp(element.name(), "updn")) {
+      updn = wxAtoi(wxString::FromUTF8(element.first_child().value()));
+    } else if (!strcmp(element.name(), "uadt")) {
+      uadt.ParseFormat(wxString::FromUTF8(element.first_child().value()),
+                       "%Y-%m-%d");
+    } else if (!strcmp(element.name(), "isdt")) {
+      isdt.ParseFormat(wxString::FromUTF8(element.first_child().value()),
+                       "%Y-%m-%d");
     } else if (!strcmp(element.name(), "cov")) {
       for (pugi::xml_node subElement = element.first_child(); subElement;
            subElement = subElement.next_sibling()) {
