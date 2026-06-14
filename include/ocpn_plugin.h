@@ -2304,6 +2304,11 @@ public:
   virtual void OnTideCurrentClick(TCClickInfo info);
 };
 
+class DECL_EXP opencpn_plugin_122 : public opencpn_plugin_121 {
+public:
+  opencpn_plugin_122(void *pmgr) : opencpn_plugin_121(pmgr) {}
+};
+
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support
 //
