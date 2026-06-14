@@ -1706,10 +1706,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
     g_pAISTargetList->Destroy();
   }
 
-#ifndef __WXQT__
-  SetStatusBar(NULL);
-#endif
-
   if (RouteManagerDialog::getInstanceFlag()) {
     if (pRouteManagerDialog) {
       pRouteManagerDialog->Destroy();
