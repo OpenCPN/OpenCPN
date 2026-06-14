@@ -42,11 +42,35 @@ endif ()
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
+  chartdldr_test_wx_init.cpp
+  chartdldr_schedule_tests.cpp
+  chartdldr_schedule_config_tests.cpp
+  chartdldr_schedule_state_tests.cpp
+  chartdldr_chart_classify_tests.cpp
+  chartdldr_catalog_prep_tests.cpp
+  chartdldr_chart_utils_tests.cpp
+  chartdldr_bulk_yield_integration_tests.cpp
+  chartdldr_prefs_time_tests.cpp
+  chartdldr_bulk_schedule_tests.cpp
+  chartdldr_bulk_request_tests.cpp
+  chartdldr_bulk_run_tests.cpp
+  chartdldr_bulk_catalog_refresh_tests.cpp
+  chartdldr_bulk_async_step_tests.cpp
+  chartdldr_schedule_integration_tests.cpp
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
   navutil_base_tests.cpp
   route_point_tests.cpp
   ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_config.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_state.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_chart_classify.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_chart_source.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_catalog_prep.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_prefs_time.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_policy.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_request.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_async_step.cpp
 )
 
 if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)
@@ -87,6 +111,9 @@ target_compile_definitions(tests
 )
 add_dependencies(tests config_tests)
 
+target_include_directories(tests
+  PRIVATE ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src
+)
 target_link_libraries(tests PRIVATE ocpn::model-src ocpn::gtest win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
   target_link_libraries(tests PRIVATE -fsanitize=${ENABLE_SANITIZER})

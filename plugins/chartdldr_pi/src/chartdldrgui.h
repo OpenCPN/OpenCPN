@@ -11,6 +11,9 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
+
+#include "chartdldr_chart_classify.h"
+
 #include <wx/treectrl.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
@@ -33,6 +36,7 @@
 #include <wx/combobox.h>
 #include <wx/checkbox.h>
 #include <wx/statline.h>
+#include <wx/spinctrl.h>
 #include <wx/dcmemory.h>
 #include "ocpn_plugin.h"
 
@@ -170,10 +174,12 @@ public:
   wxDataViewListCtrl* m_scrollWinChartList;
   virtual wxDataViewListCtrl* getChartList() { return m_scrollWinChartList; }
   virtual bool isNew(int item) {
-    return (m_scrollWinChartList->GetTextValue(item, 1) == _("New"));
+    (void)item;
+    return false;
   }
   virtual bool isUpdated(int item) {
-    return (m_scrollWinChartList->GetTextValue(item, 1) == _("Out of date"));
+    (void)item;
+    return false;
   }
   virtual void clearChartList() { m_scrollWinChartList->DeleteAllItems(); }
 #else
@@ -206,6 +212,12 @@ protected:
   wxCheckBox* m_cbSelectNew;
   wxStaticLine* m_staticline1;
   wxCheckBox* m_cbBulkUpdate;
+  wxStaticBoxSizer* m_sbScheduledUpdate;
+  wxCheckBox* m_cbScheduledEnable;
+  wxTextCtrl* m_tcScheduledTime;
+  wxStaticText* m_stScheduledTimePreview;
+  wxStaticText* m_stScheduledLastRun;
+  wxButton* m_btnRunScheduledNow;
   wxStdDialogButtonSizer* m_sdbSizerBtns;
   wxButton* m_bHelp;
   wxButton* m_sdbSizerBtnsOK;
@@ -226,7 +238,7 @@ public:
   ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id = wxID_ANY,
                     const wxString& title = _("Chart Downloader Preferences"),
                     const wxPoint& pos = wxDefaultPosition,
-                    const wxSize& size = wxSize(462, 331),
+                    const wxSize& size = wxSize(480, -1),
                     long style = wxDEFAULT_DIALOG_STYLE);
   ~ChartDldrPrefsDlg();
 };
@@ -242,8 +254,6 @@ public:
 
   void OnContextMenu(wxMouseEvent& event);
   wxCheckBox* GetCB() { return m_cb; }
-  bool isNew() { return (m_stat == _("New")); }
-  bool isUpdated() { return (m_stat == _("Out of date")); }
   void OnLeftUp(wxMouseEvent& event);
 #ifdef HAVE_WX_GESTURE_EVENTS
   void OnLongPress(wxLongPressEvent& event);
