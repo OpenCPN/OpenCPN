@@ -5683,20 +5683,17 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   //    If any PlugIn requested dynamic overlay callbacks, force a full canvas
   //    refresh thus, ensuring at least 1 Hz. callback.
-  bool brq_dynamic = false;
   if (g_pi_manager) {
     auto *pplugin_array = PluginLoader::GetInstance()->GetPlugInArray();
     for (unsigned int i = 0; i < pplugin_array->GetCount(); i++) {
       PlugInContainer *pic = pplugin_array->Item(i);
       if (pic->m_enabled && pic->m_init_state) {
         if (pic->m_cap_flag & WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK) {
-          brq_dynamic = true;
+          bnew_view = true;
           break;
         }
       }
     }
-
-    if (brq_dynamic) bnew_view = true;
   }
 
   //  Make sure we get a redraw and alert sound on AnchorWatch excursions.
