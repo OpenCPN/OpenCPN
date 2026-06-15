@@ -4197,12 +4197,6 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
       // special rules apply for europe inland ecdis timeout settings. overrule
       // option settings Won't apply for ARPA targets where the radar has all
       // control
-      if (xtd->Class == AIS_CLASS_B) {
-        if ((xtd->NavStatus == MOORED) || (xtd->NavStatus == AT_ANCHOR))
-          iECD_LostTimeOut = 18 * 60;
-        else
-          iECD_LostTimeOut = 180;
-      }
       if (xtd->Class == AIS_CLASS_A) {
         if ((xtd->NavStatus == MOORED) || (xtd->NavStatus == AT_ANCHOR)) {
           if (xtd->SOG < 3.)
@@ -4211,13 +4205,20 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
             iECD_LostTimeOut = 60;
         } else
           iECD_LostTimeOut = 60;
-      }
+      } else if (xtd->Class == AIS_CLASS_B) {
+        if (xtd->SOG < 2.)
+          iECD_LostTimeOut = 18 * 60;
+        else
+          iECD_LostTimeOut = 180;
+      } else if (xtd->Class == AIS_ATON || xtd->Class == AIS_BASE)
+        iECD_LostTimeOut = 18 * 60;  // Like a not moving Class A target
 
       if ((target_posn_age > iECD_LostTimeOut) &&
           (xtd->Class != AIS_GPSG_BUDDY))
         xtd->b_active = false;
 
       removelost_Mins = (2 * iECD_LostTimeOut) / 60.;
+
     } else if (g_bMarkLost) {
       if ((target_posn_age > g_MarkLost_Mins * 60) &&
           (xtd->Class != AIS_GPSG_BUDDY) && (xtd->Class != AIS_SART))
