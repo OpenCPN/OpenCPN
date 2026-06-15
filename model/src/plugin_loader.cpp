@@ -878,6 +878,8 @@ bool PluginLoader::DeactivatePlugIn(PlugInContainer* pic) {
     m_on_deactivate_cb(pic);
     pic->m_init_state = false;
     pic->m_pplugin->DeInit();
+    auto name = pic->m_pplugin->GetCommonName().ToStdString();
+    evt_deactivate_plugin.Notify(name);
   }
   return true;
 }
