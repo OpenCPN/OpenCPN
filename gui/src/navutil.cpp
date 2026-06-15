@@ -2893,7 +2893,7 @@ void SwitchInlandEcdisMode(bool Switch) {
       pConfig->Read("ToolbarY", &g_maintoolbar_y);
       // Check if iENC has changed the default toolbar position to
       // equal iENCToolbarY. If so reset it to default value.
-      if (g_maintoolbar_y == g_iENCToolbarPosY) g_maintoolbar_y = 0;
+      if (g_maintoolbar_y == g_iENCToolbarPosY) g_maintoolbar_y = 4;
       pConfig->SetPath("/Settings/AIS");
       pConfig->Read("bDrawAISSize", &g_bDrawAISSize);
       pConfig->Read("bDrawAISRealtime", &g_bDrawAISRealtime);
