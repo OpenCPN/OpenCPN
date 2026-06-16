@@ -7422,15 +7422,14 @@ public:
   const std::set<std::string> &GetActiveMessages();
 
 private:
-  Api122Impl *m_api_impl;
+  Api122Impl *m_api_impl;  // Raw ptr to app object managed by wxWidgets
 };
 
 /** @interface providing backend api support.  */
 class Api122Impl {
 public:
-  virtual std::unordered_map<std::string,
-                             std::function<void(HostApi122::EventType)>> &
-  GetApiEventsCallbacks() = 0;
+  virtual void RegisterApiEventCallback(
+      const std::string &, std::function<void(HostApi122::EventType what)>) = 0;
 };
 
 #endif  //_PLUGIN_H_

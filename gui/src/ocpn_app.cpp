@@ -341,6 +341,15 @@ void MyApp::OnNewMsgTypes() {
     it.second(HostApi122::EventType::kNewMessageType);
 }
 
+void MyApp::RegisterApiEventCallback(
+    const std::string &plugin_name,
+    std::function<void(HostApi122::EventType what)> callback) {
+  if (callback)
+    m_api_events_callbacks[plugin_name] = std::move(callback);
+  else
+    m_api_events_callbacks.erase(plugin_name);
+}
+
 class WallpaperFrame : public wxFrame {
 public:
   WallpaperFrame()
@@ -1210,7 +1219,7 @@ bool MyApp::OnInit() {
   new_msg_type_listener.Init(NavMsgBus::GetInstance().new_msg_event,
                              [&](ObservedEvt &) { OnNewMsgTypes(); });
 
-  //      Establish the GSHHS Dataset location
+  //  Establish the GSHHS Dataset location
   gDefaultWorldMapLocation = "gshhs";
   gDefaultWorldMapLocation.Prepend(g_Platform->GetSharedDataDir());
   gDefaultWorldMapLocation.Append(wxFileName::GetPathSeparator());
