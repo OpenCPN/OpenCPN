@@ -1152,6 +1152,11 @@ void PlugInManager::OnPluginActivate(const PlugInContainer* pic) {
 }
 
 void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
+  // Remove possible event callbacks
+  auto name = pic->m_pplugin->GetCommonName().ToStdString();
+  auto api_impl = dynamic_cast<Api122Impl*>(wxTheApp);
+  assert(api_impl && "wxTheApp does not implement Api122Impl");
+  api_impl->RegisterApiEventCallback(name, nullptr);
   // Unload chart cache if this plugin is responsible for any charts
   if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
       (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
