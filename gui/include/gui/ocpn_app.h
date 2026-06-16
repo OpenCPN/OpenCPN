@@ -69,9 +69,9 @@ public:
   bool OpenFile(const std::string& path);
   void OnUnhandledException() override;
 
-  CallbacksByPlugin& GetApiEventsCallbacks() override {
-    return m_api_events_callbacks;
-  }
+  void RegisterApiEventCallback(
+      const std::string& plugin_name,
+      std::function<void(HostApi122::EventType what)> callback) override;
 
 #ifdef LINUX_CRASHRPT
   //! fatal exeption handling
