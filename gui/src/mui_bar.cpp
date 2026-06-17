@@ -942,6 +942,10 @@ bool MUIBar::MouseEvent(wxMouseEvent& event) {
 void MUIBar::OnScaleSelected(wxMouseEvent& event) {
   auto pcc = dynamic_cast<ChartCanvas*>(m_parentCanvas);
   if (!pcc) return;
+  // before opening scale dialog kill our tooltip if it is showing,
+  // or about to, otherwise it will steal focus from the dialog and
+  // cause confusion
+  TooltipManager::Get().HideTooltip();
 
   SetScaleDialog dlg(pcc);
   dlg.Centre();
