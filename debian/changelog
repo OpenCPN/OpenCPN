@@ -2,6 +2,7 @@ opencpn (1:5.14.1+dfsg-3~bpo26.04~1) resolute; urgency=medium
 
   [ Alec Leamas ]
   * New upstream release
+  * Add patch for Ubuntu 26.04 plugin support
 
  -- al <al@resolute.kolmodin.net>  Mon, 27 Apr 2026 08:06:15 +0000
 
