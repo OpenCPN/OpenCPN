@@ -1,0 +1,40 @@
+From: Alec Leamas <leamas.alec@gmail.com>
+Date: Wed, 17 Jun 2026 10:28:36 +0000
+Subject: plugin_handler: Add support for ubuntu 26.04
+
+---
+ model/src/plugin_handler.cpp | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/model/src/plugin_handler.cpp b/model/src/plugin_handler.cpp
+index 2180973..b90dc77 100644
+--- a/model/src/plugin_handler.cpp
++++ b/model/src/plugin_handler.cpp
+@@ -271,14 +271,16 @@ public:
+         "debian-x86_64;12;ubuntu-x86_64;23.04",
+         "debian-x86_64;12;ubuntu-x86_64;23.10",
+         "debian-x86_64;12;ubuntu-x86_64;24.04",
+-        "debian-x86_64;sid;ubuntu-x86_64;24.04",
++        "debian-x86_64;13;ubuntu-x86_64;26.04",
++        "debian-x86_64;sid;ubuntu-x86_64;26.04",
+ 
+         "debian-arm64;11;ubuntu-gtk3-arm64;20.04",
+         "debian-wx32-arm64;11;ubuntu-wx32-arm64;22.04",
+         "debian-arm64;12;ubuntu-arm64;23.04",
+         "debian-arm64;12;ubuntu-arm64;23.10",
+         "debian-arm64;12;ubuntu-arm64;24.04",
+-        "debian-arm64;sid;ubuntu-arm64;24.04",
++        "debian-arm64;13;ubuntu-arm64;26.04",
++        "debian-arm64;sid;ubuntu-arm64;26.04",
+ 
+         "debian-armhf;10;ubuntu-armhf;18.04",
+         "debian-gtk3-armhf;10;ubuntu-gtk3-armhf;18.04",
+@@ -287,7 +289,7 @@ public:
+         "debian-armhf;12;ubuntu-armhf;23.04",
+         "debian-armhf;12;ubuntu-armhf;23.10",
+         "debian-armhf;12;ubuntu-armhf;24.04",
+-        "debian-armhf;sid;ubuntu-armhf;24.04"};  // clang-format: on
++        "debian-armhf;sid;ubuntu-armhf;24.04" };  // clang-format: on
+ 
+     if (ocpn::startswith(plugin.abi(), "debian")) {
+       DEBUG_LOG << "Checking for debian plugin on a ubuntu host";

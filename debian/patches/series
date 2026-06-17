@@ -10,3 +10,4 @@
 0011-chartdb_thread.cpp-Mute-gcc-16-false-positive-5189.patch
 0012-tcds_binary_harmonic.cpp-Fix-gcc-16-build-problem-51.patch
 0013-comm_drv_n2k_net-Avoid-unnecessary-allocations.patch
+0013-plugin_handler-Add-support-for-ubuntu-26.04.patch
