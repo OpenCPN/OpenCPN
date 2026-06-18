@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( DPT, RESPONSE )
 
 DPT::DPT() {
-  Mnemonic = _T("DPT");
+  Mnemonic = "DPT";
   Empty();
 }
 
@@ -86,13 +86,13 @@ bool DPT::Parse(const SENTENCE& sentence) {
      */
     wxString checksum_in_sentence = sentence.Field(3);
     if (checksum_in_sentence.StartsWith(
-            _T("*")))  // Field is a valid erroneous checksum
+            "*"))  // Field is a valid erroneous checksum
     {
-      SetErrorMessage(_T("Invalid Checksum"));
+      SetErrorMessage("Invalid Checksum");
       return (FALSE);
     } else {
       if (sentence.IsChecksumBad(4) == TRUE) {
-        SetErrorMessage(_T("Invalid Checksum"));
+        SetErrorMessage("Invalid Checksum");
         return (FALSE);
       }
     }

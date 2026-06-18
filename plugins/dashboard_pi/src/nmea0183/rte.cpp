@@ -40,7 +40,7 @@
 */
 
 RTE::RTE() {
-  Mnemonic = _T("RTE");
+  Mnemonic = "RTE";
   Empty();
 }
 
@@ -99,9 +99,9 @@ bool RTE::Parse(const SENTENCE& sentence) {
     delete_all_entries();
   }
 
-  if (sentence.Field(3).StartsWith(_T("c"))) {
+  if (sentence.Field(3).StartsWith("c")) {
     TypeOfRoute = CompleteRoute;
-  } else if (sentence.Field(3).StartsWith(_T("w"))) {
+  } else if (sentence.Field(3).StartsWith("w")) {
     TypeOfRoute = WorkingRoute;
   } else {
     TypeOfRoute = RouteUnknown;
@@ -135,12 +135,12 @@ bool RTE::Write(SENTENCE& sentence) {
 
       //            sentence += _T("C");             // uppercase required for
       //            GPS MLR FFX312
-      sentence += _T("c");  // trying lowercase for generic NMEA device
+      sentence += "c";  // trying lowercase for generic NMEA device
       break;
 
     case WorkingRoute:
 
-      sentence += _T("w");
+      sentence += "w";
       break;
 
     default:

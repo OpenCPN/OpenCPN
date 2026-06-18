@@ -201,13 +201,13 @@ void GribRequestSetting::InitRequestConfig() {
     int m;
     pConf->Read(_T( "MailRequestConfig" ), &m_RequestConfigBase,
                 _T( "000220XX........0" ));
-    pConf->Read(_T( "MailSenderAddress" ), &l, _T(""));
+    pConf->Read(_T( "MailSenderAddress" ), &l, "");
     m_pSenderAddress->ChangeValue(l);
     pConf->Read(_T( "MailRequestAddresses" ), &m_MailToAddresses,
-                _T("query@saildocs.com;gribauto@zygrib.org"));
-    pConf->Read(_T( "ZyGribLogin" ), &l, _T(""));
+                "query@saildocs.com;gribauto@zygrib.org");
+    pConf->Read(_T( "ZyGribLogin" ), &l, "");
     m_pLogin->ChangeValue(l);
-    pConf->Read(_T( "ZyGribCode" ), &l, _T(""));
+    pConf->Read(_T( "ZyGribCode" ), &l, "");
     m_pCode->ChangeValue(l);
     pConf->Read(_T( "SendMailMethod" ), &m_SendMethod, 0);
     pConf->Read(_T( "MovingGribSpeed" ), &m, 0);
@@ -241,24 +241,23 @@ void GribRequestSetting::InitRequestConfig() {
       m_RequestConfigBase = _T( "000220XX.............." );
   }
   // populate model, mail to, waves model choices
-  wxString s1[] = {_T("GFS"),  _T("COAMPS"), _T("RTOFS"),
-                   _T("HRRR"), _T("ICON"),   _T("ECMWF")};
+  wxString s1[] = {"GFS", "COAMPS", "RTOFS", "HRRR", "ICON", "ECMWF"};
   for (unsigned int i = 0; i < (sizeof(s1) / sizeof(wxString)); i++)
     m_pModel->Append(s1[i]);
-  wxString s2[] = {_T("Saildocs"), _T("zyGrib")};
+  wxString s2[] = {"Saildocs", "zyGrib"};
   for (unsigned int i = 0; i < (sizeof(s2) / sizeof(wxString)); i++)
     m_pMailTo->Append(s2[i]);
-  wxString s3[] = {_T("WW3-GLOBAL"), _T("WW3-MEDIT")};
+  wxString s3[] = {"WW3-GLOBAL", "WW3-MEDIT"};
   for (unsigned int i = 0; i < (sizeof(s3) / sizeof(wxString)); i++)
     m_pWModel->Append(s3[i]);
   m_rButtonYes->SetLabel(_("Send"));
   m_rButtonApply->SetLabel(_("OK"));
-  m_tResUnit->SetLabel(wxString::Format(_T("\u00B0")));
-  m_sCourseUnit->SetLabel(wxString::Format(_T("\u00B0")));
+  m_tResUnit->SetLabel(wxString::Format("\u00B0"));
+  m_sCourseUnit->SetLabel(wxString::Format("\u00B0"));
 
   // Set wxSpinCtrl sizing
   int w, h;
-  GetTextExtent(_T("-360"), &w, &h, 0, 0,
+  GetTextExtent("-360", &w, &h, 0, 0,
                 OCPNGetFont(_("Dialog")));  // optimal text control size
   w += 30;
   h += 4;
@@ -349,7 +348,7 @@ void GribRequestSetting::OnClose(wxCloseEvent &event) {
 void GribRequestSetting::SetRequestDialogSize() {
   int y;
   /*first let's size the mail display space*/
-  GetTextExtent(_T("abc"), nullptr, &y, 0, 0, OCPNGetFont(_("Dialog")));
+  GetTextExtent("abc", nullptr, &y, 0, 0, OCPNGetFont(_("Dialog")));
   m_MailImage->SetMinSize(
       wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
 
@@ -722,8 +721,8 @@ void GribRequestSetting::FillTreeCtrl(wxJSONValue &data) {
       wxTreeItemId src_id = m_SourcesTreeCtrl1->AppendItem(
           root, source["source"].AsString(), -1, -1, info);
       if (source.HasMember("areas") && source["areas"].IsArray()) {
-        for (int j = 0; j < source[_T("areas")].Size(); j++) {
-          wxJSONValue area = source[_T("areas")][j];
+        for (int j = 0; j < source["areas"].Size(); j++) {
+          wxJSONValue area = source["areas"][j];
           auto info = new GribCatalogInfo(
               LocalSourceItem::AREA, area["name"].AsString(),
               source["description"].AsString(), source["url"].AsString(),
@@ -751,7 +750,7 @@ void GribRequestSetting::FillTreeCtrl(wxJSONValue &data) {
                   area["boundary"]["lon_max"].AsDouble());
               m_SourcesTreeCtrl1->AppendItem(
                   m_SourcesTreeCtrl1->GetLastChild(src_id),
-                  grib[_T("name")].AsString(), -1, -1, info);
+                  grib["name"].AsString(), -1, -1, info);
             }
           }
         }
@@ -1060,12 +1059,12 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
                                             unsigned tr) {
   // some useful  strings
   const wxString res[][RESOLUTIONS] = {
-      {_T("0.25"), _T("0.5"), _T("1.0"), _T("2.0")},
-      {_T("0.2"), _T("0.8"), _T("1.6"), wxEmptyString},
-      {_T("0.08"), _T("0.24"), _T("1.0"), wxEmptyString},         // RTOFS
-      {_T("0.03"), _T("0.24"), _T("1.0"), wxEmptyString},         // HRRR
-      {_T("0.0625"), _T("0.125"), wxEmptyString, wxEmptyString},  // ICON
-      {_T("0.4"), _T("1.0"), _T("2.0"), wxEmptyString}            // ECMWF
+      {"0.25", "0.5", "1.0", "2.0"},
+      {"0.2", "0.8", "1.6", wxEmptyString},
+      {"0.08", "0.24", "1.0", wxEmptyString},             // RTOFS
+      {"0.03", "0.24", "1.0", wxEmptyString},             // HRRR
+      {"0.0625", "0.125", wxEmptyString, wxEmptyString},  // ICON
+      {"0.4", "1.0", "2.0", wxEmptyString}                // ECMWF
   };
 
   IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB;
@@ -1098,7 +1097,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
 
   m_pInterval->Clear();
   for (unsigned i = l; i < m; i *= 2)
-    m_pInterval->Append(wxString::Format(_T("%d"), i));
+    m_pInterval->Append(wxString::Format("%d", i));
   m_pInterval->SetSelection(wxMin(it, m_pInterval->GetCount() - 1));
 
   // populate time range choice
@@ -1111,7 +1110,7 @@ void GribRequestSetting::ApplyRequestConfig(unsigned rs, unsigned it,
                 : 3;
   m_pTimeRange->Clear();
   for (unsigned i = 2; i < l + 1; i++)
-    m_pTimeRange->Append(wxString::Format(_T("%d"), i));
+    m_pTimeRange->Append(wxString::Format("%d", i));
   m_pTimeRange->SetSelection(wxMin(l - 2, tr));
 
   m_pModel->Enable(!IsZYGRIB);
@@ -1264,11 +1263,11 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   EstimateFileSize(&size);
 
   wxString label(_("Coord. "));
-  label.Append(toMailFormat(1, m_spMaxLat->GetValue()) + _T(" "));
-  label.Append(toMailFormat(0, m_spMinLon->GetValue()) + _T(" "));
-  label.Append(toMailFormat(1, m_spMinLat->GetValue()) + _T(" "));
-  label.Append(toMailFormat(0, m_spMaxLon->GetValue()) + _T("\n"));
-  label.Append(_T("Estim. Size "))
+  label.Append(toMailFormat(1, m_spMaxLat->GetValue()) + " ");
+  label.Append(toMailFormat(0, m_spMinLon->GetValue()) + " ");
+  label.Append(toMailFormat(1, m_spMinLat->GetValue()) + " ");
+  label.Append(toMailFormat(0, m_spMaxLon->GetValue()) + "\n");
+  label.Append("Estim. Size ")
       .Append((wxString::Format(_T("%1.2f " ), size) + _("MB")));
 
   if (m_pdc) {
@@ -1456,8 +1455,8 @@ void GribRequestSetting::OnOK(wxCommandEvent &event) {
                               (char)(m_pInterval->GetCurrentSelection() + '0'));
 
   wxString range;
-  range.Printf(_T("%x"), m_pTimeRange->GetCurrentSelection() +
-                             1);  // range max = 2 to 16 stored in hexa 1 to f
+  range.Printf("%x", m_pTimeRange->GetCurrentSelection() +
+                         1);  // range max = 2 to 16 stored in hexa 1 to f
   m_RequestConfigBase.SetChar(4, range.GetChar(0));
 
   if (IsZYGRIB && m_pWModel->IsShown())
@@ -1515,45 +1514,43 @@ wxString GribRequestSetting::WriteMail() {
 
   m_MailError_Nb = 0;
   // some useful strings
-  const wxString s[] = {_T(","), _T(" ")};  // separators
+  const wxString s[] = {",", " "};  // separators
   const wxString p[][11] = {
       // parameters GFS from Saildocs
-      {_T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("HTSGW,WVPER,WVDIR"),
-       _T("SEATMP"), _T("GUST"), _T("CAPE"), wxEmptyString, wxEmptyString,
-       _T("WIND500,HGT500"), wxEmptyString},
+      {"APCP", "TCDC", "AIRTMP", "HTSGW,WVPER,WVDIR", "SEATMP", "GUST", "CAPE",
+       wxEmptyString, wxEmptyString, "WIND500,HGT500", wxEmptyString},
       {},  // COAMPS
       {},  // RTOFS
       {},  // HRRR = same parameters as GFS
       // parametres ICON
-      {_T(""), _T(""), _T("AIRTMP"), _T(""), _T("SFCTMP"), _T("GUST"), _T(""),
-       _T(""), _T(""), _T("WIND500,HGT500"), _T("")},
+      {"", "", "AIRTMP", "", "SFCTMP", "GUST", "", "", "", "WIND500,HGT500",
+       ""},
       // parametres ECMWF
-      {_T(""), _T(""), _T("TEMP"), _T("WAVES"), _T(""), _T(""), _T(""), _T(""),
-       _T(""), _T("WIND500,HGT500"), _T("")},
+      {"", "", "TEMP", "WAVES", "", "", "", "", "", "WIND500,HGT500", ""},
       // parameters GFS from zygrib
-      {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString,
-       _T("GUST"), _T("CAPE"), _T("A850"), _T("A700"), _T("A500"), _T("A300")}};
+      {"PRECIP", "CLOUD", "TEMP", "WVSIG WVWIND", wxEmptyString, "GUST", "CAPE",
+       "A850", "A700", "A500", "A300"}};
 
   wxString r_topmess, r_parameters, r_zone;
   // write the top part of the mail
   switch (m_pMailTo->GetCurrentSelection()) {
     case SAILDOCS:  // Saildocs
-      r_zone = toMailFormat(1, m_spMaxLat->GetValue()) + _T(",") +
-               toMailFormat(1, m_spMinLat->GetValue()) + _T(",") +
-               toMailFormat(2, m_spMinLon->GetValue()) + _T(",") +
+      r_zone = toMailFormat(1, m_spMaxLat->GetValue()) + "," +
+               toMailFormat(1, m_spMinLat->GetValue()) + "," +
+               toMailFormat(2, m_spMinLon->GetValue()) + "," +
                toMailFormat(2, m_spMaxLon->GetValue());
-      r_topmess = wxT("send ");
-      r_topmess.Append(m_pModel->GetStringSelection() + _T(":"));
-      r_topmess.Append(r_zone + _T("|"));
+      r_topmess = "send ";
+      r_topmess.Append(m_pModel->GetStringSelection() + ":");
+      r_topmess.Append(r_zone + "|");
       r_topmess.Append(m_pResolution->GetStringSelection())
-          .Append(_T(","))
+          .Append(",")
           .Append(m_pResolution->GetStringSelection())
-          .Append(_T("|"));
+          .Append("|");
       double v;
       m_pInterval->GetStringSelection().ToDouble(&v);
-      r_topmess.Append(wxString::Format(_T("0,%d,%d"), (int)v, (int)v * 2));
+      r_topmess.Append(wxString::Format("0,%d,%d", (int)v, (int)v * 2));
       m_pTimeRange->GetStringSelection().ToDouble(&v);
-      r_topmess.Append(wxString::Format(_T("..%d"), (int)v * 24) + _T("|=\n"));
+      r_topmess.Append(wxString::Format("..%d", (int)v * 24) + "|=\n");
       break;
     case ZYGRIB:  // Zygrib
       double maxlon = (m_spMinLon->GetValue() > m_spMaxLon->GetValue() &&
@@ -1561,27 +1558,27 @@ wxString GribRequestSetting::WriteMail() {
                           ? m_spMaxLon->GetValue() + 360
                           : m_spMaxLon->GetValue();
       r_zone = toMailFormat(1, m_spMinLat->GetValue()) +
-               toMailFormat(2, m_spMinLon->GetValue()) + _T(" ") +
+               toMailFormat(2, m_spMinLon->GetValue()) + " " +
                toMailFormat(1, m_spMaxLat->GetValue()) +
                toMailFormat(2, maxlon);
-      r_topmess = wxT("login : ");
-      r_topmess.Append(m_pLogin->GetValue() + _T("\n"));
-      r_topmess.Append(wxT("code :"));
-      r_topmess.Append(m_pCode->GetValue() + _T("\n"));
-      r_topmess.Append(wxT("area : "));
-      r_topmess.append(r_zone + _T("\n"));
-      r_topmess.Append(wxT("resol : "));
-      r_topmess.append(m_pResolution->GetStringSelection() + _T("\n"));
-      r_topmess.Append(wxT("days : "));
-      r_topmess.append(m_pTimeRange->GetStringSelection() + _T("\n"));
-      r_topmess.Append(wxT("hours : "));
-      r_topmess.append(m_pInterval->GetStringSelection() + _T("\n"));
+      r_topmess = "login : ";
+      r_topmess.Append(m_pLogin->GetValue() + "\n");
+      r_topmess.Append("code :");
+      r_topmess.Append(m_pCode->GetValue() + "\n");
+      r_topmess.Append("area : ");
+      r_topmess.append(r_zone + "\n");
+      r_topmess.Append("resol : ");
+      r_topmess.append(m_pResolution->GetStringSelection() + "\n");
+      r_topmess.Append("days : ");
+      r_topmess.append(m_pTimeRange->GetStringSelection() + "\n");
+      r_topmess.Append("hours : ");
+      r_topmess.append(m_pInterval->GetStringSelection() + "\n");
       if (m_pWaves->IsChecked()) {
-        r_topmess.Append(wxT("waves : "));
-        r_topmess.append(m_pWModel->GetStringSelection() + _T("\n"));
+        r_topmess.Append("waves : ");
+        r_topmess.append(m_pWModel->GetStringSelection() + "\n");
       }
-      r_topmess.Append(wxT("meteo : "));
-      r_topmess.append(m_pModel->GetStringSelection() + _T("\n"));
+      r_topmess.Append("meteo : ");
+      r_topmess.append(m_pModel->GetStringSelection() + "\n");
       if (m_pLogin->GetValue().IsEmpty() || m_pCode->GetValue().IsEmpty())
         m_MailError_Nb = 6;
       break;
@@ -1590,8 +1587,8 @@ wxString GribRequestSetting::WriteMail() {
   int GFSZ = IsZYGRIB ? 6 : 0;
   switch (m_pModel->GetCurrentSelection()) {
     case GFS:  // GFS
-      r_parameters = wxT("WIND") + s[m_pMailTo->GetCurrentSelection()] +
-                     wxT("PRESS");  // the default minimum request parameters
+      r_parameters = "WIND" + s[m_pMailTo->GetCurrentSelection()] +
+                     "PRESS";  // the default minimum request parameters
       if (m_pRainfall->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] +
                             p[GFS + GFSZ][0]);
@@ -1628,16 +1625,16 @@ wxString GribRequestSetting::WriteMail() {
                               p[GFS + GFSZ][10]);
       }
       break;
-    case COAMPS:                         // COAMPS
-      r_parameters = wxT("WIND,PRMSL");  // the default parameters for this
-                                         // model
+    case COAMPS:                    // COAMPS
+      r_parameters = "WIND,PRMSL";  // the default parameters for this
+                                    // model
       break;
-    case RTOFS:                        // RTOFS
-      r_parameters = wxT("CUR,WTMP");  // the default parameters for this model
+    case RTOFS:                   // RTOFS
+      r_parameters = "CUR,WTMP";  // the default parameters for this model
       break;
-    case HRRR:                           // HRRR
-      r_parameters = wxT("WIND,PRMSL");  // the default parameters for this
-                                         // model
+    case HRRR:                      // HRRR
+      r_parameters = "WIND,PRMSL";  // the default parameters for this
+                                    // model
       if (m_pRainfall->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[GFS][0]);
       if (m_pAirTemp->IsChecked())
@@ -1650,8 +1647,8 @@ wxString GribRequestSetting::WriteMail() {
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[GFS][6]);
       break;
     case ICON:
-      r_parameters = wxT("WIND,PRMSL");  // the default parameters for this
-                                         // model
+      r_parameters = "WIND,PRMSL";  // the default parameters for this
+                                    // model
       if (m_pAirTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ICON][2]);
       if (m_pSeaTemp->IsChecked())
@@ -1664,7 +1661,7 @@ wxString GribRequestSetting::WriteMail() {
       }
       break;
     case ECMWF:
-      r_parameters = wxT("WIND,MSLP");  // the default parameters for this
+      r_parameters = "WIND,MSLP";  // the default parameters for this
       // model
       if (m_pAirTemp->IsChecked())
         r_parameters.Append(s[m_pMailTo->GetCurrentSelection()] + p[ECMWF][2]);
@@ -1678,8 +1675,8 @@ wxString GribRequestSetting::WriteMail() {
       break;
   }
   if (!IsZYGRIB && m_cMovingGribEnabled->IsChecked())  // moving grib
-    r_parameters.Append(wxString::Format(
-        _T("|%d,%d"), m_sMovingSpeed->GetValue(), m_sMovingCourse->GetValue()));
+    r_parameters.Append(wxString::Format("|%d,%d", m_sMovingSpeed->GetValue(),
+                                         m_sMovingCourse->GetValue()));
 
   // line lenth limitation
   int j = 0;
@@ -1689,9 +1686,8 @@ wxString GribRequestSetting::WriteMail() {
       j--;  // do not split Saildocs "moving" values
     if (r_parameters.GetChar(i) == c) j++;
     if (j > 6) {  // no more than 6 parameters on the same line
-      r_parameters.insert(i + 1, m_pMailTo->GetCurrentSelection() == SAILDOCS
-                                     ? _T("=\n")
-                                     : _T("\n"));
+      r_parameters.insert(
+          i + 1, m_pMailTo->GetCurrentSelection() == SAILDOCS ? "=\n" : "\n");
       break;
     }
   }
@@ -1702,9 +1698,8 @@ wxString GribRequestSetting::WriteMail() {
   m_tFileSize->SetLabel(wxString::Format(_T("%1.2f " ), size) + _("MB"));
 
   if (IsZYGRIB) {
-    m_tLimit->SetLabel(wxString(_T("( ")) + _("Max") +
-                       wxString::Format(_T(" %d "), limit) + _("MB") +
-                       _T(" )"));
+    m_tLimit->SetLabel(wxString("( ") + _("Max") +
+                       wxString::Format(" %d ", limit) + _("MB") + " )");
     if (size > limit) m_MailError_Nb += 2;
   } else
     m_tLimit->SetLabel(wxEmptyString);
@@ -1841,7 +1836,7 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
   }
 
   const wxString error[] = {
-      _T("\n\n"),
+      "\n\n",
       _("Before sending an email to Zygrib you have to enter your Login and "
         "Code.\nPlease visit www.zygrib.org/ and follow instructions..."),
       _("Too big file! zyGrib limit is 2Mb!"),
@@ -1896,16 +1891,16 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
   // weird, but real)
   wxMailMessage *message =
       new wxMailMessage((m_pMailTo->GetCurrentSelection() == SAILDOCS)
-                            ? _T("grib-request")
-                            : wxT("gribauto"),  // requested subject
+                            ? "grib-request"
+                            : "gribauto",  // requested subject
                         mailto,
                         EncodeURL(WriteMail()),  // message image
                         mailfrom);
 #else
   wxMailMessage *message =
       new wxMailMessage((m_pMailTo->GetCurrentSelection() == SAILDOCS)
-                            ? _T("grib-request")
-                            : wxT("gribauto"),  // requested subject
+                            ? "grib-request"
+                            : "gribauto",  // requested subject
                         mailto,
                         WriteMail(),  // message image
                         mailfrom);

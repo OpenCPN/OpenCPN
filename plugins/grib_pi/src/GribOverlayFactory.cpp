@@ -93,14 +93,14 @@ static bool PointInLLBox(PlugIn_ViewPort *vp, double x, double y) {
 static wxString MToString( int DataCenterModel )
 {
     switch( DataCenterModel ) {
-    case NOAA_GFS: return  _T("NOAA_GFS");
-    case NOAA_NCEP_WW3: return  _T("NOAA_NCEP_WW3");
-    case NOAA_NCEP_SST: return  _T("NOAA_NCEP_SST");
-    case NOAA_RTOFS: return  _T("NOAA_RTOFS");
-    case FNMOC_WW3_GLB: return  _T("FNMOC_WW3");
-    case FNMOC_WW3_MED: return  _T("FNMOC_WW3");
-    case NORWAY_METNO: return  _T("NORWAY_METNO");
-    default : return  _T("OTHER_DATA_CENTER");
+    case NOAA_GFS: return  "NOAA_GFS";
+    case NOAA_NCEP_WW3: return  "NOAA_NCEP_WW3";
+    case NOAA_NCEP_SST: return  "NOAA_NCEP_SST";
+    case NOAA_RTOFS: return  "NOAA_RTOFS";
+    case FNMOC_WW3_GLB: return  "FNMOC_WW3";
+    case FNMOC_WW3_MED: return  "FNMOC_WW3";
+    case NORWAY_METNO: return  "NORWAY_METNO";
+    default : return  "OTHER_DATA_CENTER";
     }
 }
 #endif
@@ -594,22 +594,22 @@ bool GRIBOverlayFactory::DoRenderGribOverlay(PlugIn_ViewPort *vp) {
     }
   }
   if (m_Altitude) {
-    if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append(_T("\n"));
+    if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append("\n");
     m_Message_Hiden.Append(_("Warning : Data at Geopotential Height"))
-        .Append(_T(" "))
+        .Append(" ")
         .Append(m_Settings.GetAltitudeFromIndex(
             m_Altitude,
             m_Settings.Settings[GribOverlaySettings::PRESSURE].m_Units))
-        .Append(_T(" "))
+        .Append(" ")
         .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
-        .Append(_T(" ! "));
+        .Append(" ! ");
   }
   if (m_dlg.ProjectionEnabled()) {
     int x, y;
     m_dlg.GetProjectedLatLon(x, y, vp);
     DrawProjectedPosition(x, y);
   }
-  if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append(_T("\n"));
+  if (!m_Message_Hiden.IsEmpty()) m_Message_Hiden.Append("\n");
   m_Message_Hiden.Append(m_Message);
   DrawMessageWindow(m_Message_Hiden, vp->pix_width, vp->pix_height,
                     m_Font_Message);
@@ -955,103 +955,85 @@ struct ColorMap {
 };
 
 static ColorMap CurrentMap[] = {
-    {0, _T("#d90000")},  {1, _T("#d92a00")},  {2, _T("#d96e00")},
-    {3, _T("#d9b200")},  {4, _T("#d4d404")},  {5, _T("#a6d906")},
-    {7, _T("#06d9a0")},  {9, _T("#00d9b0")},  {12, _T("#00d9c0")},
-    {15, _T("#00aed0")}, {18, _T("#0083e0")}, {21, _T("#0057e0")},
-    {24, _T("#0000f0")}, {27, _T("#0400f0")}, {30, _T("#1c00f0")},
-    {36, _T("#4800f0")}, {42, _T("#6900f0")}, {48, _T("#a000f0")},
-    {56, _T("#f000f0")}};
+    {0, "#d90000"},  {1, "#d92a00"},  {2, "#d96e00"},  {3, "#d9b200"},
+    {4, "#d4d404"},  {5, "#a6d906"},  {7, "#06d9a0"},  {9, "#00d9b0"},
+    {12, "#00d9c0"}, {15, "#00aed0"}, {18, "#0083e0"}, {21, "#0057e0"},
+    {24, "#0000f0"}, {27, "#0400f0"}, {30, "#1c00f0"}, {36, "#4800f0"},
+    {42, "#6900f0"}, {48, "#a000f0"}, {56, "#f000f0"}};
 
 static ColorMap GenericMap[] = {
-    {0, _T("#00d900")},  {1, _T("#2ad900")},  {2, _T("#6ed900")},
-    {3, _T("#b2d900")},  {4, _T("#d4d400")},  {5, _T("#d9a600")},
-    {7, _T("#d90000")},  {9, _T("#d90040")},  {12, _T("#d90060")},
-    {15, _T("#ae0080")}, {18, _T("#8300a0")}, {21, _T("#5700c0")},
-    {24, _T("#0000d0")}, {27, _T("#0400e0")}, {30, _T("#0800e0")},
-    {36, _T("#a000e0")}, {42, _T("#c004c0")}, {48, _T("#c008a0")},
-    {56, _T("#c0a008")}};
+    {0, "#00d900"},  {1, "#2ad900"},  {2, "#6ed900"},  {3, "#b2d900"},
+    {4, "#d4d400"},  {5, "#d9a600"},  {7, "#d90000"},  {9, "#d90040"},
+    {12, "#d90060"}, {15, "#ae0080"}, {18, "#8300a0"}, {21, "#5700c0"},
+    {24, "#0000d0"}, {27, "#0400e0"}, {30, "#0800e0"}, {36, "#a000e0"},
+    {42, "#c004c0"}, {48, "#c008a0"}, {56, "#c0a008"}};
 
 //    HTML colors taken from zygrib representation
 static ColorMap WindMap[] = {
-    {0, _T("#288CFF")},  {3, _T("#00AFFF")},  {6, _T("#00DCE1")},
-    {9, _T("#00F7B0")},  {12, _T("#00EA9C")}, {15, _T("#82F059")},
-    {18, _T("#F0F503")}, {21, _T("#FFED00")}, {24, _T("#FFDB00")},
-    {27, _T("#FFC700")}, {30, _T("#FFB400")}, {33, _T("#FF9800")},
-    {36, _T("#FF7E00")}, {39, _T("#F77800")}, {42, _T("#EC7814")},
-    {45, _T("#E4711E")}, {48, _T("#E06128")}, {51, _T("#DC5132")},
-    {54, _T("#D5453C")}, {57, _T("#CD3A46")}, {60, _T("#BE2C50")},
-    {63, _T("#B41A5A")}, {66, _T("#AA1464")}, {70, _T("#962878")},
-    {75, _T("#8C328C")}};
+    {0, "#288CFF"},  {3, "#00AFFF"},  {6, "#00DCE1"},  {9, "#00F7B0"},
+    {12, "#00EA9C"}, {15, "#82F059"}, {18, "#F0F503"}, {21, "#FFED00"},
+    {24, "#FFDB00"}, {27, "#FFC700"}, {30, "#FFB400"}, {33, "#FF9800"},
+    {36, "#FF7E00"}, {39, "#F77800"}, {42, "#EC7814"}, {45, "#E4711E"},
+    {48, "#E06128"}, {51, "#DC5132"}, {54, "#D5453C"}, {57, "#CD3A46"},
+    {60, "#BE2C50"}, {63, "#B41A5A"}, {66, "#AA1464"}, {70, "#962878"},
+    {75, "#8C328C"}};
 
 //    HTML colors taken from zygrib representation
 static ColorMap AirTempMap[] = {
-    {0, _T("#283282")},  {5, _T("#273c8c")},  {10, _T("#264696")},
-    {14, _T("#2350a0")}, {18, _T("#1f5aaa")}, {22, _T("#1a64b4")},
-    {26, _T("#136ec8")}, {29, _T("#0c78e1")}, {32, _T("#0382e6")},
-    {35, _T("#0091e6")}, {38, _T("#009ee1")}, {41, _T("#00a6dc")},
-    {44, _T("#00b2d7")}, {47, _T("#00bed2")}, {50, _T("#28c8c8")},
-    {53, _T("#78d2aa")}, {56, _T("#8cdc78")}, {59, _T("#a0eb5f")},
-    {62, _T("#c8f550")}, {65, _T("#f3fb02")}, {68, _T("#ffed00")},
-    {71, _T("#ffdd00")}, {74, _T("#ffc900")}, {78, _T("#ffab00")},
-    {82, _T("#ff8100")}, {86, _T("#f1780c")}, {90, _T("#e26a23")},
-    {95, _T("#d5453c")}, {100, _T("#b53c59")}};
+    {0, "#283282"},  {5, "#273c8c"},  {10, "#264696"}, {14, "#2350a0"},
+    {18, "#1f5aaa"}, {22, "#1a64b4"}, {26, "#136ec8"}, {29, "#0c78e1"},
+    {32, "#0382e6"}, {35, "#0091e6"}, {38, "#009ee1"}, {41, "#00a6dc"},
+    {44, "#00b2d7"}, {47, "#00bed2"}, {50, "#28c8c8"}, {53, "#78d2aa"},
+    {56, "#8cdc78"}, {59, "#a0eb5f"}, {62, "#c8f550"}, {65, "#f3fb02"},
+    {68, "#ffed00"}, {71, "#ffdd00"}, {74, "#ffc900"}, {78, "#ffab00"},
+    {82, "#ff8100"}, {86, "#f1780c"}, {90, "#e26a23"}, {95, "#d5453c"},
+    {100, "#b53c59"}};
 
 //  Color map similar to:
 //  https://www.ospo.noaa.gov/data/sst/contour/global.cf.gif
 static ColorMap SeaTempMap[] = {
-    {-2, _T("#cc04ae")}, {2, _T("#8f06e4")},  {6, _T("#486afa")},
-    {10, _T("#00ffff")}, {15, _T("#00d54b")}, {19, _T("#59d800")},
-    {23, _T("#f2fc00")}, {27, _T("#ff1500")}, {32, _T("#ff0000")},
-    {36, _T("#d80000")}, {40, _T("#a90000")}, {44, _T("#870000")},
-    {48, _T("#690000")}, {52, _T("#550000")}, {56, _T("#330000")}};
+    {-2, "#cc04ae"}, {2, "#8f06e4"},  {6, "#486afa"},  {10, "#00ffff"},
+    {15, "#00d54b"}, {19, "#59d800"}, {23, "#f2fc00"}, {27, "#ff1500"},
+    {32, "#ff0000"}, {36, "#d80000"}, {40, "#a90000"}, {44, "#870000"},
+    {48, "#690000"}, {52, "#550000"}, {56, "#330000"}};
 
 //    HTML colors taken from ZyGrib representation
 static ColorMap PrecipitationMap[] = {
-    {0, _T("#ffffff")},   {.01, _T("#c8f0ff")}, {.02, _T("#b4e6ff")},
-    {.05, _T("#8cd3ff")}, {.07, _T("#78caff")}, {.1, _T("#6ec1ff")},
-    {.2, _T("#64b8ff")},  {.5, _T("#50a6ff")},  {.7, _T("#469eff")},
-    {1.0, _T("#3c96ff")}, {2.0, _T("#328eff")}, {5.0, _T("#1e7eff")},
-    {7.0, _T("#1476f0")}, {10, _T("#0a6edc")},  {20, _T("#0064c8")},
-    {50, _T("#0052aa")}};
+    {0, "#ffffff"},   {.01, "#c8f0ff"}, {.02, "#b4e6ff"}, {.05, "#8cd3ff"},
+    {.07, "#78caff"}, {.1, "#6ec1ff"},  {.2, "#64b8ff"},  {.5, "#50a6ff"},
+    {.7, "#469eff"},  {1.0, "#3c96ff"}, {2.0, "#328eff"}, {5.0, "#1e7eff"},
+    {7.0, "#1476f0"}, {10, "#0a6edc"},  {20, "#0064c8"},  {50, "#0052aa"}};
 
 //    HTML colors taken from ZyGrib representation
-static ColorMap CloudMap[] = {
-    {0, _T("#ffffff")},  {1, _T("#f0f0e6")},  {10, _T("#e6e6dc")},
-    {20, _T("#dcdcd2")}, {30, _T("#c8c8b4")}, {40, _T("#aaaa8c")},
-    {50, _T("#969678")}, {60, _T("#787864")}, {70, _T("#646450")},
-    {80, _T("#5a5a46")}, {90, _T("#505036")}};
+static ColorMap CloudMap[] = {{0, "#ffffff"},  {1, "#f0f0e6"},  {10, "#e6e6dc"},
+                              {20, "#dcdcd2"}, {30, "#c8c8b4"}, {40, "#aaaa8c"},
+                              {50, "#969678"}, {60, "#787864"}, {70, "#646450"},
+                              {80, "#5a5a46"}, {90, "#505036"}};
 
-static ColorMap REFCMap[] = {
-    {0, _T("#ffffff")},  {5, _T("#06E8E4")},  {10, _T("#009BE9")},
-    {15, _T("#0400F3")}, {20, _T("#00F924")}, {25, _T("#06C200")},
-    {30, _T("#009100")}, {35, _T("#FAFB00")}, {40, _T("#EBB608")},
-    {45, _T("#FF9400")}, {50, _T("#FD0002")}, {55, _T("#D70000")},
-    {60, _T("#C20300")}, {65, _T("#F900FE")}, {70, _T("#945AC8")}};
+static ColorMap REFCMap[] = {{0, "#ffffff"},  {5, "#06E8E4"},  {10, "#009BE9"},
+                             {15, "#0400F3"}, {20, "#00F924"}, {25, "#06C200"},
+                             {30, "#009100"}, {35, "#FAFB00"}, {40, "#EBB608"},
+                             {45, "#FF9400"}, {50, "#FD0002"}, {55, "#D70000"},
+                             {60, "#C20300"}, {65, "#F900FE"}, {70, "#945AC8"}};
 
 static ColorMap CAPEMap[] = {
-    {0, _T("#0046c8")},    {5, _T("#0050f0")},    {10, _T("#005aff")},
-    {15, _T("#0069ff")},   {20, _T("#0078ff")},   {30, _T("#000cff")},
-    {45, _T("#00a1ff")},   {60, _T("#00b6fa")},   {100, _T("#00c9ee")},
-    {150, _T("#00e0da")},  {200, _T("#00e6b4")},  {300, _T("#82e678")},
-    {500, _T("#9bff3b")},  {700, _T("#ffdc00")},  {1000, _T("#ffb700")},
-    {1500, _T("#f37800")}, {2000, _T("#d4440c")}, {2500, _T("#c8201c")},
-    {3000, _T("#ad0430")},
+    {0, "#0046c8"},    {5, "#0050f0"},    {10, "#005aff"},   {15, "#0069ff"},
+    {20, "#0078ff"},   {30, "#000cff"},   {45, "#00a1ff"},   {60, "#00b6fa"},
+    {100, "#00c9ee"},  {150, "#00e0da"},  {200, "#00e6b4"},  {300, "#82e678"},
+    {500, "#9bff3b"},  {700, "#ffdc00"},  {1000, "#ffb700"}, {1500, "#f37800"},
+    {2000, "#d4440c"}, {2500, "#c8201c"}, {3000, "#ad0430"},
 };
 
 static ColorMap WindyMap[] = {
-    {0, _T("#6271B7")},  {3, _T("#3961A9")},  {6, _T("#4A94A9")},
-    {9, _T("#4D8D7B")},  {12, _T("#53A553")}, {15, _T("#53A553")},
-    {18, _T("#359F35")}, {21, _T("#A79D51")}, {24, _T("#9F7F3A")},
-    {27, _T("#A16C5C")}, {30, _T("#A16C5C")}, {33, _T("#813A4E")},
-    {36, _T("#AF5088")}, {39, _T("#AF5088")}, {42, _T("#754A93")},
-    {45, _T("#754A93")}, {48, _T("#6D61A3")}, {51, _T("#44698D")},
-    {54, _T("#44698D")}, {57, _T("#5C9098")}, {60, _T("#7D44A5")},
-    {63, _T("#7D44A5")}, {66, _T("#7D44A5")}, {69, _T("#E7D7D7")},
-    {72, _T("#E7D7D7")}, {75, _T("#E7D7D7")}, {78, _T("#DBD483")},
-    {81, _T("#DBD483")}, {84, _T("#DBD483")}, {87, _T("#CDC470")},
-    {90, _T("#CDC470")}, {93, _T("#CDC470")}, {96, _T("#CDC470")},
-    {99, _T("#808080")}};
+    {0, "#6271B7"},  {3, "#3961A9"},  {6, "#4A94A9"},  {9, "#4D8D7B"},
+    {12, "#53A553"}, {15, "#53A553"}, {18, "#359F35"}, {21, "#A79D51"},
+    {24, "#9F7F3A"}, {27, "#A16C5C"}, {30, "#A16C5C"}, {33, "#813A4E"},
+    {36, "#AF5088"}, {39, "#AF5088"}, {42, "#754A93"}, {45, "#754A93"},
+    {48, "#6D61A3"}, {51, "#44698D"}, {54, "#44698D"}, {57, "#5C9098"},
+    {60, "#7D44A5"}, {63, "#7D44A5"}, {66, "#7D44A5"}, {69, "#E7D7D7"},
+    {72, "#E7D7D7"}, {75, "#E7D7D7"}, {78, "#DBD483"}, {81, "#DBD483"},
+    {84, "#DBD483"}, {87, "#CDC470"}, {90, "#CDC470"}, {93, "#CDC470"},
+    {96, "#CDC470"}, {99, "#808080"}};
 
 #if 0
 static ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
@@ -1183,7 +1165,7 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in) {
 
 wxString GRIBOverlayFactory::getLabelString(double value, int settings) {
   int p;
-  wxString f = _T("%.*f");
+  wxString f = "%.*f";
 
   switch (settings) {
     case GribOverlaySettings::PRESSURE: /* 2 */
@@ -1193,7 +1175,7 @@ wxString GRIBOverlayFactory::getLabelString(double value, int settings) {
       else if (m_Settings.Settings[settings].m_Units == 0 &&
                m_Settings.Settings[settings].m_bAbbrIsoBarsNumbers) {
         value -= floor(value / 100.) * 100.;
-        f = _T("%02.*f");
+        f = "%02.*f";
       }
       break;
     case GribOverlaySettings::WAVE:            /* 3 */
@@ -1822,9 +1804,9 @@ void GRIBOverlayFactory::RenderGribOverlayMap(int settings, GribRecord **pGR,
           m_Message_Hiden.IsEmpty()
               ? m_Message_Hiden
                     .Append(_("Overlays too wide and can't be displayed:"))
-                    .Append(_T(" "))
+                    .Append(" ")
                     .Append(GribOverlaySettings::NameFromIndex(settings))
-              : m_Message_Hiden.Append(_T(",")).Append(
+              : m_Message_Hiden.Append(",").Append(
                     GribOverlaySettings::NameFromIndex(settings));
       }
 #endif
@@ -1853,9 +1835,9 @@ void GRIBOverlayFactory::RenderGribOverlayMap(int settings, GribRecord **pGR,
               ? m_Message_Hiden
                     .Append(_(
                         "Please Zoom or Scale Out to view invisible overlays:"))
-                    .Append(_T(" "))
+                    .Append(" ")
                     .Append(GribOverlaySettings::NameFromIndex(settings))
-              : m_Message_Hiden.Append(_T(",")).Append(
+              : m_Message_Hiden.Append(",").Append(
                     GribOverlaySettings::NameFromIndex(settings));
       }
     }
@@ -1892,7 +1874,7 @@ void GRIBOverlayFactory::RenderGribNumbers(int settings, GribRecord **pGR,
 
   // set an arbitrary width for numbers
   int wstring;
-  m_TexFontNumbers.GetTextExtent(_T("1234"), &wstring, nullptr);
+  m_TexFontNumbers.GetTextExtent(wxString("1234"), &wstring, nullptr);
 
   if (m_Settings.Settings[settings].m_bNumFixSpac) {  // fixed spacing
 

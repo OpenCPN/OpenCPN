@@ -68,9 +68,9 @@ void LATITUDE::Set(double position, const wxString& north_or_south) {
   Latitude = position;
   wxString ts = north_or_south;
 
-  if (!ts.IsEmpty() && ts.Trim(false)[0] == _T('N')) {
+  if (!ts.IsEmpty() && ts.Trim(false)[0] == 'N') {
     Northing = North;
-  } else if (!ts.IsEmpty() && ts.Trim(false)[0] == _T('S')) {
+  } else if (!ts.IsEmpty() && ts.Trim(false)[0] == 'S') {
     Northing = South;
   } else {
     Northing = NS_Unknown;
@@ -92,14 +92,14 @@ void LATITUDE::Write(SENTENCE& sentence) {
 
   if (neg) d = -d;
 
-  temp_string.Printf(_T("%d%02d.%03d"), d, m / 1000, m % 1000);
+  temp_string.Printf("%d%02d.%03d", d, m / 1000, m % 1000);
 
   sentence += temp_string;
 
   if (Northing == North) {
-    sentence += _T("N");
+    sentence += "N";
   } else if (Northing == South) {
-    sentence += _T("S");
+    sentence += "S";
   } else {
     /*
     ** Add Nothing

@@ -132,7 +132,7 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
         }
       }
     }
-    if (talkerID == _T("GP")) {
+    if (talkerID == "GP") {
       m_Gtime[1] = now;
       if (m_iMaster != 1) return;
       // If two groups of messages in this sequence
@@ -141,8 +141,8 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
         return;
       else
         m_MaxSatCount = m_SatCount;
-      s_gTalker = wxString::Format(_T("GPS\n%d"), m_SatCount);
-    } else if (talkerID == _T("GL")) {
+      s_gTalker = wxString::Format("GPS\n%d", m_SatCount);
+    } else if (talkerID == "GL") {
       m_Gtime[2] = now;
       if (m_iMaster != 2) return;
       // See "GP" above
@@ -150,8 +150,8 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
         return;
       else
         m_MaxSatCount = m_SatCount;
-      s_gTalker = wxString::Format(_T("GLONASS\n%d"), m_SatCount);
-    } else if (talkerID == _T("GA")) {
+      s_gTalker = wxString::Format("GLONASS\n%d", m_SatCount);
+    } else if (talkerID == "GA") {
       m_Gtime[3] = now;
       if (m_iMaster != 3) return;
       // See "GP" above
@@ -159,8 +159,8 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
         return;
       else
         m_MaxSatCount = m_SatCount;
-      s_gTalker = wxString::Format(_T("Galileo\n%d"), m_SatCount);
-    } else if (talkerID == _T("GB") || talkerID == _T("BD")) {  // BeiDou  BDS
+      s_gTalker = wxString::Format("Galileo\n%d", m_SatCount);
+    } else if (talkerID == "GB" || talkerID == "BD") {  // BeiDou  BDS
       m_Gtime[4] = now;
       if (m_iMaster != 4) return;
       // See "GP" above
@@ -168,8 +168,8 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
         return;
       else
         m_MaxSatCount = m_SatCount;
-      s_gTalker = wxString::Format(_T("BeiDou\n%d"), m_SatCount);
-    } else if (talkerID == _T("GI")) {
+      s_gTalker = wxString::Format("BeiDou\n%d", m_SatCount);
+    } else if (talkerID == "GI") {
       m_Gtime[5] = now;
       if (m_iMaster != 5) return;
       // See "GP" above
@@ -177,8 +177,8 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
         return;
       else
         m_MaxSatCount = m_SatCount;
-      s_gTalker = wxString::Format(_T("NavIC\n%d"), m_SatCount);
-    } else if (talkerID == _T("GQ")) {
+      s_gTalker = wxString::Format("NavIC\n%d", m_SatCount);
+    } else if (talkerID == "GQ") {
       m_Gtime[0] = now;
       if (m_iMaster != 0) return;
       // See "GP" above
@@ -186,10 +186,10 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, wxString talk,
         return;
       else
         m_MaxSatCount = m_SatCount;
-      s_gTalker = wxString::Format(_T("QZSS\n%d"), m_SatCount);
+      s_gTalker = wxString::Format("QZSS\n%d", m_SatCount);
     } else {
       // Would be a not known N2k PGP type like "Combined GPS/GLONASS"
-      s_gTalker = wxString::Format(_T("%s\n%d"), talkerID, m_SatCount);
+      s_gTalker = wxString::Format("%s\n%d", talkerID, m_SatCount);
     }
   }
 
@@ -219,7 +219,7 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
   if (m_Properties)
     cb = GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour);
   else
-    GetGlobalColor(_T("DASHB"), &cb);
+    GetGlobalColor("DASHB", &cb);
   dc->SetTextBackground(cb);
   dc->SetBackgroundMode(wxSOLID);
 
@@ -227,14 +227,14 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
   if (m_Properties)
     cl = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
   else
-    GetGlobalColor(_T("DASHL"), &cl);
+    GetGlobalColor("DASHL", &cl);
   dc->SetTextForeground(cl);
   dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
   wxPen pen;
   pen.SetStyle(wxPENSTYLE_SOLID);
   wxColour cf;
-  GetGlobalColor(_T("DASHF"), &cf);
+  GetGlobalColor("DASHF", &cf);
   pen.SetColour(cf);
   pen.SetWidth(1);
   dc->SetPen(pen);
@@ -252,7 +252,7 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc) {
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &f);
+  sdc.GetTextExtent("W", &width, &height, NULL, NULL, &f);
 
   wxBitmap tbm(width, height, -1);
   wxMemoryDC tdc(tbm);
@@ -319,7 +319,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, &f);
+  sdc.GetTextExtent("W", &width, &height, NULL, NULL, &f);
 
   wxColour cl;
   wxBitmap tbm(dc->GetSize().x, height, -1);
@@ -328,7 +328,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   if (m_Properties)
     c2 = GetColourSchemeBackgroundColour(m_Properties->m_DataBackgroundColour);
   else
-    GetGlobalColor(_T("DASHB"), &c2);
+    GetGlobalColor("DASHB", &c2);
   tdc.SetBackground(c2);
   tdc.Clear();
 
@@ -337,7 +337,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
     cl = GetColourSchemeFont(m_Properties->m_SmallFont.GetColour());
   } else {
     tdc.SetFont(g_pFontSmall->GetChosenFont());
-    GetGlobalColor(_T("DASHF"), &cl);
+    GetGlobalColor("DASHF", &cl);
   }
   tdc.SetTextForeground(cl);
   tdc.SetTextBackground(c2);
@@ -346,7 +346,7 @@ void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc) {
   int offset = m_refDim * 15 / 100;
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SatNumber) {
-      wxString satno = wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber);
+      wxString satno = wxString::Format("%02d", m_SatInfo[idx].SatNumber);
       // Avoid three digit sat-number here. Especially for BeiDou(GB/BD)
       satno = satno.Right(2);
       tdc.DrawText(satno, idx * pitch + offset, 0);
@@ -375,7 +375,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   dc->SetTextBackground(cl);
 
   wxColor cf;
-  GetGlobalColor(_T("DASHF"), &cf);
+  GetGlobalColor("DASHF", &cf);
   dc->SetTextForeground(cf);
   dc->SetBackgroundMode(wxSOLID);
 
@@ -383,7 +383,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
   if (m_Properties)
     cb = GetColourSchemeBackgroundColour(m_Properties->m_TitleBackgroundColour);
   else
-    GetGlobalColor(_T("DASHL"), &cb);
+    GetGlobalColor("DASHL", &cb);
 
   dc->SetTextBackground(cb);
 
@@ -416,7 +416,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
 
   for (int idx = 0; idx < 12; idx++) {
     if (m_SatInfo[idx].SignalToNoiseRatio) {
-      label.Printf(_T("%02d"), m_SatInfo[idx].SatNumber);
+      label.Printf("%02d", m_SatInfo[idx].SatNumber);
       int posx =
           m_cx +
           m_radius *

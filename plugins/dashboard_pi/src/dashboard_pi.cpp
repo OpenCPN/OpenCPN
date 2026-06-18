@@ -370,7 +370,7 @@ wxString getInstrumentCaption(unsigned int id) {
     case ID_DBP_I_WCC:
       return _("Windlass");
   }
-  return _T("");
+  return "";
 }
 
 void getListItemForInstrument(wxListItem &item, unsigned int id) {
@@ -476,14 +476,14 @@ wxString GetUUID(void) {
    * time_hi_and_version field to 4 */
   uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0fff) | 0x4000;
 
-  str.Printf(_T("%08x-%04x-%04x-%02x%02x-%04x%08x"), uuid.time_low,
-             uuid.time_mid, uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
+  str.Printf("%08x-%04x-%04x-%02x%02x-%04x%08x", uuid.time_low, uuid.time_mid,
+             uuid.time_hi_and_version, uuid.clock_seq_hi_and_rsv,
              uuid.clock_seq_low, uuid.node_hi, uuid.node_low);
 
   return str;
 }
 
-wxString MakeName() { return _T("DASH_") + GetUUID(); }
+wxString MakeName() { return "DASH_" + GetUUID(); }
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -511,7 +511,7 @@ dashboard_pi::~dashboard_pi(void) {
 }
 
 int dashboard_pi::Init(void) {
-  AddLocaleCatalog(_T("opencpn-dashboard_pi"));
+  AddLocaleCatalog("opencpn-dashboard_pi");
 
   mVar = NAN;
   mPriPosition = 99;
@@ -595,31 +595,31 @@ int dashboard_pi::Init(void) {
   LoadConfig();
 
   //    This PlugIn needs a toolbar icon
-  //    m_toolbar_item_id = InsertPlugInTool( _T(""), _img_dashboard,
+  //    m_toolbar_item_id = InsertPlugInTool( "", _img_dashboard,
   //    _img_dashboard, wxITEM_CHECK,
-  //            _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this
+  //            _("Dashboard"), "", NULL, DASHBOARD_TOOL_POSITION, 0, this
   //            );
 
-  wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
-                       wxFileName::GetPathSeparator() + _T("dashboard_pi") +
-                       wxFileName::GetPathSeparator() + _T("data") +
+  wxString shareLocn = *GetpSharedDataLocation() + "plugins" +
+                       wxFileName::GetPathSeparator() + "dashboard_pi" +
+                       wxFileName::GetPathSeparator() + "data" +
                        wxFileName::GetPathSeparator();
 
-  wxString normalIcon = shareLocn + _T("Dashboard.svg");
-  wxString toggledIcon = shareLocn + _T("Dashboard_toggled.svg");
-  wxString rolloverIcon = shareLocn + _T("Dashboard_rollover.svg");
+  wxString normalIcon = shareLocn + "Dashboard.svg";
+  wxString toggledIcon = shareLocn + "Dashboard_toggled.svg";
+  wxString rolloverIcon = shareLocn + "Dashboard_rollover.svg";
 
   //  For journeyman styles, we prefer the built-in raster icons which match the
   //  rest of the toolbar.
-  if (GetActiveStyleName().Lower() != _T("traditional")) {
-    normalIcon = _T("");
-    toggledIcon = _T("");
-    rolloverIcon = _T("");
+  if (GetActiveStyleName().Lower() != "traditional") {
+    normalIcon = "";
+    toggledIcon = "";
+    rolloverIcon = "";
   }
 
   m_toolbar_item_id = InsertPlugInToolSVG(
-      _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK,
-      _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this);
+      "", normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, _("Dashboard"),
+      "", NULL, DASHBOARD_TOOL_POSITION, 0, this);
 
   ApplyConfig();
 
@@ -776,14 +776,14 @@ void dashboard_pi::Notify() {
   if (mHDx_Watchdog <= 0) {
     mHdm = NAN;
     mPriHeadingM = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm, _T("\u00B0"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm, "\u00B0");
     mHDx_Watchdog = gps_watchdog_timeout_ticks;
   }
 
   mHDT_Watchdog--;
   if (mHDT_Watchdog <= 0) {
     mPriHeadingT = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, NAN, _T("\u00B0T"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, NAN, "\u00B0T");
     mHDT_Watchdog = gps_watchdog_timeout_ticks;
   }
 
@@ -791,7 +791,7 @@ void dashboard_pi::Notify() {
   if (mVar_Watchdog <= 0) {
     mVar = NAN;
     mPriVar = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, NAN, _T("\u00B0T"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, NAN, "\u00B0T");
     mVar_Watchdog = gps_watchdog_timeout_ticks;
   }
 
@@ -799,7 +799,7 @@ void dashboard_pi::Notify() {
   if (mSatsUsed_Wdog <= 0) {
     mPriSatUsed = 99;
     mSatsInUse = 0;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, NAN, _T(""));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, NAN, "");
     mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
   }
   m_PriN2kTalker--;
@@ -835,17 +835,17 @@ void dashboard_pi::Notify() {
 
   mMWVA_Watchdog--;
   if (mMWVA_Watchdog <= 0) {
-    SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, NAN, _T("-"));
-    SendSentenceToAllInstruments(OCPN_DBP_STC_AWS, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_AWA, NAN, "-");
+    SendSentenceToAllInstruments(OCPN_DBP_STC_AWS, NAN, "-");
     mPriAWA = 99;
     mMWVA_Watchdog = gps_watchdog_timeout_ticks;
   }
 
   mMWVT_Watchdog--;
   if (mMWVT_Watchdog <= 0) {
-    SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, NAN, _T("-"));
-    SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, NAN, _T("-"));
-    SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, NAN, "-");
+    SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, NAN, "-");
+    SendSentenceToAllInstruments(OCPN_DBP_STC_TWS2, NAN, "-");
     mPriTWA = 99;
     mMWVT_Watchdog = gps_watchdog_timeout_ticks;
   }
@@ -853,14 +853,14 @@ void dashboard_pi::Notify() {
   mDPT_DBT_Watchdog--;
   if (mDPT_DBT_Watchdog <= 0) {
     mPriDepth = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_DPT, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_DPT, NAN, "-");
     mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
   }
 
   mSTW_Watchdog--;
   if (mSTW_Watchdog <= 0) {
     mPriSTW = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_STW, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_STW, NAN, "-");
     mSTW_Watchdog = gps_watchdog_timeout_ticks;
   }
 
@@ -899,32 +899,32 @@ void dashboard_pi::Notify() {
   }
   mWDN_Watchdog--;
   if (mWDN_Watchdog <= 0) {
-    SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, NAN, "-");
     mPriWDN = 99;
     mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
   }
   mMDA_Watchdog--;
   if (mMDA_Watchdog <= 0) {
-    SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, NAN, "-");
     mPriMDA = 99;
     mMDA_Watchdog = gps_watchdog_timeout_ticks;
   }
   mPITCH_Watchdog--;
   if (mPITCH_Watchdog <= 0) {
     mPriPitchRoll = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, NAN, "-");
     mPITCH_Watchdog = gps_watchdog_timeout_ticks;
   }
   mHEEL_Watchdog--;
   if (mHEEL_Watchdog <= 0) {
     mPriPitchRoll = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, NAN, "-");
     mHEEL_Watchdog = gps_watchdog_timeout_ticks;
   }
   mALT_Watchdog--;
   if (mALT_Watchdog <= 0) {
     mPriAlt = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, NAN, "-");
     mALT_Watchdog = gps_watchdog_timeout_ticks;
   }
 
@@ -933,24 +933,24 @@ void dashboard_pi::Notify() {
     if (g_bUseInternSumLog) {
       UpdateSumLog(false);
     } else {
-      SendSentenceToAllInstruments(OCPN_DBP_STC_VLW2, NAN, _T("-"));
+      SendSentenceToAllInstruments(OCPN_DBP_STC_VLW2, NAN, "-");
       mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
     }
   }
   mTrLOG_Watchdog--;
   if (mTrLOG_Watchdog <= 0) {
-    SendSentenceToAllInstruments(OCPN_DBP_STC_VLW1, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_VLW1, NAN, "-");
     mTrLOG_Watchdog = no_nav_watchdog_timeout_ticks;
   }
   mHUM_Watchdog--;
   if (mHUM_Watchdog <= 0) {
     mPriHUM = 99;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HUM, NAN, "-");
     mHUM_Watchdog = no_nav_watchdog_timeout_ticks;
   }
   mWCC_Watchdog--;
   if (mWCC_Watchdog <= 0) {
-    SendSentenceToAllInstruments(OCPN_DBP_STC_WCC, NAN, _T("-"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_WCC, NAN, "-");
     mWCC_Watchdog = no_nav_watchdog_timeout_ticks;
   }
 }
@@ -1019,7 +1019,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
   m_NMEA0183 << sentence;
 
   if (m_NMEA0183.PreParse()) {
-    if (m_NMEA0183.LastSentenceIDReceived == _T("DBT")) {
+    if (m_NMEA0183.LastSentenceIDReceived == "DBT") {
       if (mPriDepth >= 5) {
         if (m_NMEA0183.Parse()) {
           /*
@@ -1047,7 +1047,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("DPT")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "DPT") {
       if (mPriDepth >= 4) {
         if (m_NMEA0183.Parse()) {
           /*
@@ -1071,7 +1071,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
     // TODO: GBS - GPS Satellite fault detection
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("GGA")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "GGA") {
       if (0)  // debug output
         printf("GGA mPriPosition=%d mPriSatUsed=%d \tnSat=%d alt=%3.2f\n",
                mPriPosition, mPriSatUsed,
@@ -1084,7 +1084,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             // Altimeter, takes altitude from gps GGA message, which is
             // typically less accurate than lon and lat.
             double alt = m_NMEA0183.Gga.AntennaAltitudeMeters;
-            SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, alt, _T("m"));
+            SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, alt, "m");
             mPriAlt = 3;
             mALT_Watchdog = gps_watchdog_timeout_ticks;
           }
@@ -1103,7 +1103,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               lat = lat_deg + (lat_min / 60.);
               if (m_NMEA0183.Gga.Position.Latitude.Northing == South)
                 lat = -lat;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, _T("SDMM"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, "SDMM");
 
               float lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
               int lon_deg_int = (int)(lln / 100);
@@ -1111,7 +1111,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               float lon_min = lln - (lon_deg * 100);
               lon = lon_deg + (lon_min / 60.);
               if (m_NMEA0183.Gga.Position.Longitude.Easting == West) lon = -lon;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, "SDMM");
             }
             if (mPriSatUsed >= 3) {
               mSatsInUse = m_NMEA0183.Gga.NumberOfSatellitesInUse;
@@ -1125,14 +1125,14 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             //    // Not in use, we need the date too.
             //    //mPriDateTime = 4;
             //    //mUTCDateTime.ParseFormat( m_NMEA0183.Gga.UTCTime.c_str(),
-            //    _T("%H%M%S") );
+            //    "%H%M%S" );
             //}
           }
         }
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("GLL")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "GLL") {
       if (mPriPosition >= 3) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gll.IsDataValid == NTrue) {
@@ -1143,7 +1143,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             float lat_min = llt - (lat_deg * 100);
             lat = lat_deg + (lat_min / 60.);
             if (m_NMEA0183.Gll.Position.Latitude.Northing == South) lat = -lat;
-            SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, _T("SDMM"));
+            SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, "SDMM");
 
             float lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
             int lon_deg_int = (int)(lln / 100);
@@ -1151,7 +1151,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             float lon_min = lln - (lon_deg * 100);
             lon = lon_deg + (lon_min / 60.);
             if (m_NMEA0183.Gll.Position.Longitude.Easting == West) lon = -lon;
-            SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
+            SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, "SDMM");
 
             mPriPosition = 3;
           }
@@ -1160,13 +1160,13 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           //    // Not in use, we need the date too.
           //    //mPriDateTime = 5;
           //    //mUTCDateTime.ParseFormat( m_NMEA0183.Gll.UTCTime.c_str(),
-          //    _T("%H%M%S") );
+          //    "%H%M%S" );
           //}
         }
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("GSV")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "GSV") {
       if (mPriSatStatus >= 3 || mPriSatUsed >= 5) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Gsv.MessageNumber == 1) {
@@ -1193,7 +1193,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("HDG")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "HDG") {
       if (mPriVar >= 3 || mPriHeadingM >= 3 || mPriHeadingT >= 7) {
         if (m_NMEA0183.Parse()) {
           if (mPriVar >= 3) {
@@ -1207,16 +1207,14 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 mVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
               else if (m_NMEA0183.Hdg.MagneticVariationDirection == West)
                 mVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar,
-                                           _T("\u00B0"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar, "\u00B0");
             }
           }
           if (mPriHeadingM >= 3) {
             if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees)) {
               mPriHeadingM = 3;
               mHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm,
-                                           _T("\u00B0"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm, "\u00B0");
             }
           }
           if (!std::isnan(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees))
@@ -1232,8 +1230,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 heading += 360;
               else if (heading >= 360.0)
                 heading -= 360;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading,
-                                           _T("\u00B0"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, "\u00B0");
               mHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
@@ -1241,15 +1238,14 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("HDM")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "HDM") {
       if (mPriHeadingM >= 4 || mPriHeadingT >= 5) {
         if (m_NMEA0183.Parse()) {
           if (mPriHeadingM >= 4) {
             if (!std::isnan(m_NMEA0183.Hdm.DegreesMagnetic)) {
               mPriHeadingM = 4;
               mHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm,
-                                           _T("\u00B0M"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, mHdm, "\u00B0M");
               mHDx_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
@@ -1264,8 +1260,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 heading += 360;
               else if (heading >= 360.0)
                 heading -= 360;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading,
-                                           _T("\u00B0"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, "\u00B0");
               mHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
@@ -1273,19 +1268,18 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("HDT")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "HDT") {
       if (mPriHeadingT >= 3) {
         if (m_NMEA0183.Parse()) {
           if (!std::isnan(m_NMEA0183.Hdt.DegreesTrue)) {
-            SendSentenceToAllInstruments(
-                OCPN_DBP_STC_HDT, m_NMEA0183.Hdt.DegreesTrue, _T("\u00B0T"));
+            SendSentenceToAllInstruments(OCPN_DBP_STC_HDT,
+                                         m_NMEA0183.Hdt.DegreesTrue, "\u00B0T");
             mPriHeadingT = 3;
             mHDT_Watchdog = gps_watchdog_timeout_ticks;
           }
         }
       }
-    } else if (m_NMEA0183.LastSentenceIDReceived ==
-               _T("MTA")) {  // Air temperature
+    } else if (m_NMEA0183.LastSentenceIDReceived == "MTA") {  // Air temperature
       if (mPriATMP >= 3) {
         if (m_NMEA0183.Parse()) {
           mPriATMP = 3;
@@ -1296,7 +1290,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           mATMP_Watchdog = gps_watchdog_timeout_ticks;
         }
       }
-    } else if (m_NMEA0183.LastSentenceIDReceived == _T("MDA") &&
+    } else if (m_NMEA0183.LastSentenceIDReceived == "MDA" &&
                (mPriMDA >= 5 || mPriATMP >= 5 || mPriHUM >= 4)) {
       //    Barometric pressure  || HUmidity || Air temp
       if (m_NMEA0183.Parse()) {
@@ -1307,8 +1301,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
          */
         if (mPriMDA >= 5 && m_NMEA0183.Mda.Pressure > .8 &&
             m_NMEA0183.Mda.Pressure < 1.1) {
-          SendSentenceToAllInstruments(
-              OCPN_DBP_STC_MDA, m_NMEA0183.Mda.Pressure * 1000, _T("hPa"));
+          SendSentenceToAllInstruments(OCPN_DBP_STC_MDA,
+                                       m_NMEA0183.Mda.Pressure * 1000, "hPa");
           mPriMDA = 5;
           mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
         }
@@ -1332,7 +1326,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
         }
       }
 
-    } else if (m_NMEA0183.LastSentenceIDReceived == _T("MTW")) {
+    } else if (m_NMEA0183.LastSentenceIDReceived == "MTW") {
       if (mPriWTP >= 4) {
         if (m_NMEA0183.Parse()) {
           mPriWTP = 4;
@@ -1344,7 +1338,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
         }
       }
 
-    } else if (m_NMEA0183.LastSentenceIDReceived == _T("VLW")) {
+    } else if (m_NMEA0183.LastSentenceIDReceived == "VLW") {
       if (m_NMEA0183.Parse()) {
         /*
          double   m_NMEA0183.Vlw.TotalMileage;
@@ -1357,17 +1351,19 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
         mTrLOG_Watchdog = no_nav_watchdog_timeout_ticks;
 
-        SendSentenceToAllInstruments(
-            OCPN_DBP_STC_VLW2,
-            toUsrDistance_Plugin(m_NMEA0183.Vlw.TotalMileage,
-                                 g_iDashDistanceUnit),
-            getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
-        mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
+        if (!g_bUseInternSumLog) {
+          SendSentenceToAllInstruments(
+              OCPN_DBP_STC_VLW2,
+              toUsrDistance_Plugin(m_NMEA0183.Vlw.TotalMileage,
+                                   g_iDashDistanceUnit),
+              getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
+          mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
+        }
       }
 
     }
     // NMEA 0183 standard Wind Direction and Speed, with respect to north.
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("MWD")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "MWD") {
       if (mPriWDN >= 6) {
         if (m_NMEA0183.Parse()) {
           // Option for True vs Magnetic
@@ -1375,7 +1371,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           if (!std::isnan(m_NMEA0183.Mwd.WindAngleTrue)) {
             // if WindAngleTrue is available, use it ...
             SendSentenceToAllInstruments(
-                OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleTrue, _T("\u00B0"));
+                OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleTrue, "\u00B0");
             mPriWDN = 6;
             // MWD can be seldom updated by the sensor. Set prolonged watchdog
             mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
@@ -1389,7 +1385,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               } else if (twd < 0.) {
                 twd += 360;
               }
-              SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twd, _T("\u00B0"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twd, "\u00B0");
               mPriWDN = 6;
               mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
             }
@@ -1411,30 +1407,29 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
     // NMEA 0183 standard Wind Speed and Angle, in relation to the vessel's
     // bow/centerline.
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("MWV")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "MWV") {
       if (mPriAWA >= 4 || mPriTWA >= 5 || mPriWDN >= 5) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Mwv.IsDataValid == NTrue) {
             // MWV windspeed has different units. Form it to knots to fit
             // "toUsrSpeed_Plugin()"
             double m_wSpeedFactor = 1.0;  // knots ("N")
-            if (m_NMEA0183.Mwv.WindSpeedUnits == _T("K"))
+            if (m_NMEA0183.Mwv.WindSpeedUnits == "K")
               m_wSpeedFactor = 0.53995;  // km/h > knots
-            if (m_NMEA0183.Mwv.WindSpeedUnits == _T("M"))
+            if (m_NMEA0183.Mwv.WindSpeedUnits == "M")
               m_wSpeedFactor = 1.94384;  // m/s > knots
 
-            if (m_NMEA0183.Mwv.Reference ==
-                _T("R"))  // Relative (apparent wind)
+            if (m_NMEA0183.Mwv.Reference == "R")  // Relative (apparent wind)
             {
               if (mPriAWA >= 4) {
                 mPriAWA = 4;
                 wxString m_awaunit;
                 double m_awaangle;
                 if (m_NMEA0183.Mwv.WindAngle > 180) {
-                  m_awaunit = _T("\u00B0L");
+                  m_awaunit = "\u00B0L";
                   m_awaangle = 180.0 - (m_NMEA0183.Mwv.WindAngle - 180.0);
                 } else {
-                  m_awaunit = _T("\u00B0R");
+                  m_awaunit = "\u00B0R";
                   m_awaangle = m_NMEA0183.Mwv.WindAngle;
                 }
                 SendSentenceToAllInstruments(
@@ -1462,7 +1457,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 mMWVT_Watchdog = gps_watchdog_timeout_ticks;
               }
             } else if (m_NMEA0183.Mwv.Reference ==
-                       _T("T"))  // Theoretical (aka True)
+                       "T")  // Theoretical (aka True)
             {
               if (mPriTWA >= 5) {
                 mPriTWA = 5;
@@ -1470,10 +1465,10 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 double m_twaangle;
                 bool b_R = false;
                 if (m_NMEA0183.Mwv.WindAngle > 180) {
-                  m_twaunit = _T("\u00B0L");
+                  m_twaunit = "\u00B0L";
                   m_twaangle = 180.0 - (m_NMEA0183.Mwv.WindAngle - 180.0);
                 } else {
-                  m_twaunit = _T("\u00B0R");
+                  m_twaunit = "\u00B0R";
                   m_twaangle = m_NMEA0183.Mwv.WindAngle;
                   b_R = true;
                 }
@@ -1493,7 +1488,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                       g_dCalWdir += 360;
                     }
                     SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir,
-                                                 _T("\u00B0"));
+                                                 "\u00B0");
                     mPriWDN = 7;
                     mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
                   }
@@ -1517,7 +1512,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("RMC")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "RMC") {
       if (mPriPosition >= 5 || mPriCOGSOG >= 3 || mPriVar >= 4 ||
           mPriDateTime >= 3) {
         if (m_NMEA0183.Parse()) {
@@ -1532,7 +1527,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               lat = lat_deg + (lat_min / 60.);
               if (m_NMEA0183.Rmc.Position.Latitude.Northing == South)
                 lat = -lat;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, _T("SDMM"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, "SDMM");
 
               float lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
               int lon_deg_int = (int)(lln / 100);
@@ -1540,7 +1535,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               float lon_min = lln - (lon_deg * 100);
               lon = lon_deg + (lon_min / 60.);
               if (m_NMEA0183.Rmc.Position.Longitude.Easting == West) lon = -lon;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
+              SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, "SDMM");
             }
 
             if (mPriCOGSOG >= 3) {
@@ -1558,7 +1553,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                 SendSentenceToAllInstruments(
                     OCPN_DBP_STC_COG,
                     mCOGFilter.filter(m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue),
-                    _T("\u00B0"));
+                    "\u00B0");
               }
               if (!std::isnan(m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue) &&
                   !std::isnan(m_NMEA0183.Rmc.MagneticVariation)) {
@@ -1573,7 +1568,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                   if (dMagneticCOG > 360.0) dMagneticCOG = dMagneticCOG - 360.0;
                 }
                 SendSentenceToAllInstruments(OCPN_DBP_STC_MCOG, dMagneticCOG,
-                                             _T("\u00B0M"));
+                                             "\u00B0M");
               }
             }
 
@@ -1590,15 +1585,14 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
                   mVar = -m_NMEA0183.Rmc.MagneticVariation;
                 mVar_Watchdog = gps_watchdog_timeout_ticks;
 
-                SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar,
-                                             _T("\u00B0"));
+                SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar, "\u00B0");
               }
             }
 
             if (mPriDateTime >= 3) {
               mPriDateTime = 3;
               wxString dt = m_NMEA0183.Rmc.Date + m_NMEA0183.Rmc.UTCTime;
-              mUTCDateTime.ParseFormat(dt.c_str(), _T("%d%m%y%H%M%S"));
+              mUTCDateTime.ParseFormat(dt.c_str(), "%d%m%y%H%M%S");
               mUTC_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
@@ -1606,15 +1600,15 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("RSA")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "RSA") {
       if (mPriRSA >= 3) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Rsa.IsStarboardDataValid == NTrue) {
-            SendSentenceToAllInstruments(
-                OCPN_DBP_STC_RSA, m_NMEA0183.Rsa.Starboard, _T("\u00B0"));
+            SendSentenceToAllInstruments(OCPN_DBP_STC_RSA,
+                                         m_NMEA0183.Rsa.Starboard, "\u00B0");
           } else if (m_NMEA0183.Rsa.IsPortDataValid == NTrue) {
             SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, -m_NMEA0183.Rsa.Port,
-                                         _T("\u00B0"));
+                                         "\u00B0");
           }
           mRSA_Watchdog = gps_watchdog_timeout_ticks;
           mPriRSA = 3;
@@ -1622,23 +1616,22 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("VHW")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "VHW") {
       if (mPriHeadingT >= 4 || mPriHeadingM >= 5 || mPriSTW >= 3) {
         if (m_NMEA0183.Parse()) {
           if (mPriHeadingT >= 4) {
             if (!std::isnan(m_NMEA0183.Vhw.DegreesTrue)) {
               mPriHeadingT = 4;
               SendSentenceToAllInstruments(
-                  OCPN_DBP_STC_HDT, m_NMEA0183.Vhw.DegreesTrue, _T("\u00B0T"));
+                  OCPN_DBP_STC_HDT, m_NMEA0183.Vhw.DegreesTrue, "\u00B0T");
               mHDT_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
           if (mPriHeadingM >= 5) {
             if (!std::isnan(m_NMEA0183.Vhw.DegreesMagnetic)) {
               mPriHeadingM = 5;
-              SendSentenceToAllInstruments(OCPN_DBP_STC_HDM,
-                                           m_NMEA0183.Vhw.DegreesMagnetic,
-                                           _T("\u00B0M"));
+              SendSentenceToAllInstruments(
+                  OCPN_DBP_STC_HDM, m_NMEA0183.Vhw.DegreesMagnetic, "\u00B0M");
               mHDx_Watchdog = gps_watchdog_timeout_ticks;
             }
           }
@@ -1661,7 +1654,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
       }
     }
 
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("VTG")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "VTG") {
       if (mPriCOGSOG >= 2) {
         if (m_NMEA0183.Parse()) {
           mPriCOGSOG = 2;
@@ -1677,8 +1670,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           if (!std::isnan(m_NMEA0183.Vtg.TrackDegreesTrue)) {
             SendSentenceToAllInstruments(
                 OCPN_DBP_STC_COG,
-                mCOGFilter.filter(m_NMEA0183.Vtg.TrackDegreesTrue),
-                _T("\u00B0"));
+                mCOGFilter.filter(m_NMEA0183.Vtg.TrackDegreesTrue), "\u00B0");
           }
         }
 
@@ -1691,15 +1683,15 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
      * relation
      * to the vessel's heading, and wind speed measured relative to the moving
      * vessel. */
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("VWR")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "VWR") {
       if (mPriAWA >= 3) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Vwr.WindDirectionMagnitude < 200) {
             mPriAWA = 3;
 
             wxString awaunit;
-            awaunit = m_NMEA0183.Vwr.DirectionOfWind == Left ? _T("\u00B0L")
-                                                             : _T("\u00B0R");
+            awaunit =
+                m_NMEA0183.Vwr.DirectionOfWind == Left ? "\u00B0L" : "\u00B0R";
             SendSentenceToAllInstruments(OCPN_DBP_STC_AWA,
                                          m_NMEA0183.Vwr.WindDirectionMagnitude,
                                          awaunit);
@@ -1737,14 +1729,14 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
      * to the water along the heading line of the vessel. It represents the wind
      * at the vessel if it were
      * stationary relative to the water and heading in the same direction. */
-    else if (m_NMEA0183.LastSentenceIDReceived == _T("VWT")) {
+    else if (m_NMEA0183.LastSentenceIDReceived == "VWT") {
       if (mPriTWA >= 4) {
         if (m_NMEA0183.Parse()) {
           if (m_NMEA0183.Vwt.WindDirectionMagnitude < 200) {
             mPriTWA = 4;
             wxString vwtunit;
-            vwtunit = m_NMEA0183.Vwt.DirectionOfWind == Left ? _T("\u00B0L")
-                                                             : _T("\u00B0R");
+            vwtunit =
+                m_NMEA0183.Vwt.DirectionOfWind == Left ? "\u00B0L" : "\u00B0R";
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWA,
                                          m_NMEA0183.Vwt.WindDirectionMagnitude,
                                          vwtunit);
@@ -1764,7 +1756,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
     }
 
     else if (m_NMEA0183.LastSentenceIDReceived ==
-             _T("XDR")) {  // Transducer measurement
+             "XDR") {  // Transducer measurement
       /* XDR Transducer types
        * AngularDisplacementTransducer = 'A',
        * TemperatureTransducer = 'C',
@@ -1784,15 +1776,15 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
         for (int i = 0; i < m_NMEA0183.Xdr.TransducerCnt; i++) {
           xdrdata = m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData;
           // XDR Airtemp
-          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("C")) {
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "C") {
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
-                    .Contains(_T("AIR")) ||
-                m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == _T("Te") ||
+                    .TransducerName.Upper()
+                    .Contains("AIR") ||
+                m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == "Te" ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                    _T("ENV_OUTAIR_T") ||
+                    "ENV_OUTAIR_T" ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                    _T("ENV_OUTSIDE_T")) {
+                    "ENV_OUTSIDE_T") {
               if (mPriATMP >= 4) {
                 mPriATMP = 4;
                 SendSentenceToAllInstruments(
@@ -1804,7 +1796,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               }
             }  // Water temp
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
+                    .TransducerName.Upper()
                     .Contains("WATER") ||
                 m_NMEA0183.Xdr.TransducerInfo[i].TransducerName == "WTHI") {
               if (mPriWTP >= 3) {
@@ -1823,13 +1815,12 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           // XDR Pressure
           if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "P") {
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
-                    .Contains(_T("BARO")) &&
+                    .TransducerName.Upper()
+                    .Contains("BARO") &&
                 mPriMDA >= 4) {
               if (m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement == "B") {
                 xdrdata *= 1000;
-                SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, xdrdata,
-                                             _T("hPa"));
+                SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, xdrdata, "hPa");
                 mPriMDA = 4;
                 mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
                 continue;
@@ -1837,20 +1828,21 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             }
           }
           // XDR Pitch (=Nose up/down) or Heel (stb/port)
-          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == _T("A")) {
+          if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerType == "A") {
             if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.Contains(
-                    _T("PTCH")) ||
-                m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.Contains(
-                    _T("PITCH"))) {
+                    "PTCH") ||
+                m_NMEA0183.Xdr.TransducerInfo[i]
+                    .TransducerName.Upper()
+                    .Contains("PITCH")) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                  xdrunit = _T("\u00B0\u2191") + _("Up");
+                  xdrunit = L"\u00B0\u2191" + _("Up");
                 } else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData <
                            0) {
-                  xdrunit = _T("\u00B0\u2193") + _("Down");
+                  xdrunit = L"\u00B0\u2193" + _("Down");
                   xdrdata *= -1;
                 } else {
-                  xdrunit = _T("\u00B0");
+                  xdrunit = "\u00B0";
                 }
                 SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, xdrdata,
                                              xdrunit);
@@ -1860,17 +1852,18 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
               }
             }
             // XDR Heel
-            if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName.Contains(
-                    "ROLL")) {
+            if (m_NMEA0183.Xdr.TransducerInfo[i]
+                    .TransducerName.Upper()
+                    .Contains("ROLL")) {
               if (mPriPitchRoll >= 3) {
                 if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData > 0) {
-                  xdrunit = _T("\u00B0\u003E") + _("Stbd");
+                  xdrunit = L"\u00B0\u003E" + _("Stbd");
                 } else if (m_NMEA0183.Xdr.TransducerInfo[i].MeasurementData <
                            0) {
-                  xdrunit = _T("\u00B0\u003C") + _("Port");
+                  xdrunit = L"\u00B0\u003C" + _("Port");
                   xdrdata *= -1;
                 } else {
-                  xdrunit = _T("\u00B0");
+                  xdrunit = "\u00B0";
                 }
                 SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, xdrdata,
                                              xdrunit);
@@ -1881,11 +1874,11 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             }
             // XDR Rudder Angle
             if (m_NMEA0183.Xdr.TransducerInfo[i]
-                    .TransducerName.MakeUpper()
+                    .TransducerName.Upper()
                     .Contains("RUDDER")) {
               if (mPriRSA > 4) {
                 SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, xdrdata,
-                                             _T("\u00B0"));
+                                             "\u00B0");
                 mRSA_Watchdog = gps_watchdog_timeout_ticks;
                 mPriRSA = 4;
                 continue;
@@ -1907,9 +1900,9 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
             }
             // XDR Windlass chain counter
             else if (m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                         _T("WINDLASS") ||
+                         "WINDLASS" ||
                      m_NMEA0183.Xdr.TransducerInfo[i].TransducerName ==
-                         _T("WINDLASS#0")) {
+                         "WINDLASS#0") {
               wxString unit =
                   m_NMEA0183.Xdr.TransducerInfo[i].UnitOfMeasurement;
               if (unit == wxEmptyString) unit = "m";
@@ -1947,7 +1940,7 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
           }
         }
       }
-    } else if (m_NMEA0183.LastSentenceIDReceived == _T("ZDA")) {
+    } else if (m_NMEA0183.LastSentenceIDReceived == "ZDA") {
       if (mPriDateTime >= 2) {
         if (m_NMEA0183.Parse()) {
           mPriDateTime = 2;
@@ -1960,33 +1953,33 @@ void dashboard_pi::SetNMEASentence(wxString &sentence) {
            int      m_NMEA0183.Zda.LocalMinutesDeviation;
            */
           wxString dt;
-          dt.Printf(_T("%4d%02d%02d"), m_NMEA0183.Zda.Year,
-                    m_NMEA0183.Zda.Month, m_NMEA0183.Zda.Day);
+          dt.Printf("%4d%02d%02d", m_NMEA0183.Zda.Year, m_NMEA0183.Zda.Month,
+                    m_NMEA0183.Zda.Day);
           dt.Append(m_NMEA0183.Zda.UTCTime);
-          mUTCDateTime.ParseFormat(dt.c_str(), _T("%Y%m%d%H%M%S"));
+          mUTCDateTime.ParseFormat(dt.c_str(), "%Y%m%d%H%M%S");
           mUTC_Watchdog = gps_watchdog_timeout_ticks;
         }
       }
     }
   }
   //      Process an AIVDO message
-  else if (sentence.Mid(1, 5).IsSameAs(_T("AIVDO"))) {
+  else if (sentence.Mid(1, 5).IsSameAs("AIVDO")) {
     PlugIn_Position_Fix_Ex gpd;
     if (DecodeSingleVDOMessage(sentence, &gpd, &m_VDO_accumulator)) {
       if (!std::isnan(gpd.Lat))
-        SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, gpd.Lat, _T("SDMM"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, gpd.Lat, "SDMM");
 
       if (!std::isnan(gpd.Lon))
-        SendSentenceToAllInstruments(OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_LON, gpd.Lon, "SDMM");
 
       SendSentenceToAllInstruments(
           OCPN_DBP_STC_SOG,
           toUsrSpeed_Plugin(mSOGFilter.filter(gpd.Sog), g_iDashSpeedUnit),
           getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
       SendSentenceToAllInstruments(OCPN_DBP_STC_COG, mCOGFilter.filter(gpd.Cog),
-                                   _T("\u00B0"));
+                                   "\u00B0");
       if (!std::isnan(gpd.Hdt)) {
-        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, gpd.Hdt, "\u00B0T");
         mHDT_Watchdog = gps_watchdog_timeout_ticks;
       }
     }
@@ -2023,9 +2016,9 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
     // calculate the True Wind Angle
     double twd = atan2(twdy, twdx) * 180. / PI;
     if (twd < 0)
-      SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, -twd, _T("\u00B0L"));
+      SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, -twd, "\u00B0L");
     else
-      SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, twd, _T("\u00B0R"));
+      SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, twd, "\u00B0R");
 
     // Calculate the True Wind Direction, by re-orienting to the ownship HDT
     double twdc = twd + g_dHDT;
@@ -2036,7 +2029,7 @@ void dashboard_pi::CalculateAndUpdateTWDS(double awsKnots, double awaDegrees) {
 
     // Update the instruments
     // printf("CALC: %4.0f %4.0f\n", tws, twdc);
-    SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twdc, _T("\u00B0"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, twdc, "\u00B0");
 
     SendSentenceToAllInstruments(OCPN_DBP_STC_TWS,
                                  toUsrSpeed_Plugin(tws, g_iDashWindSpeedUnit),
@@ -2081,8 +2074,7 @@ void dashboard_pi::HandleN2K_127245(ObservedEvt ev) {
                           AngleOrder)) {
       if (!N2kIsNA(RudderPosition)) {
         double m_rudangle = GEODESIC_RAD2DEG(RudderPosition);
-        SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle,
-                                     _T("\u00B0"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, "\u00B0");
         mRSA_Watchdog = gps_watchdog_timeout_ticks;
         mPriRSA = 1;
       }
@@ -2119,9 +2111,9 @@ void dashboard_pi::HandleN2K_127257(ObservedEvt ev) {
     if (ParseN2kPGN127257(v, SID, Yaw, Pitch, Roll)) {
       if (!N2kIsNA(Pitch)) {
         double m_pitch = GEODESIC_RAD2DEG(Pitch);
-        wxString p_unit = _T("\u00B0\u2191") + _("Up");
+        wxString p_unit = L"\u00B0\u2191" + _("Up");
         if (m_pitch < 0) {
-          p_unit = _T("\u00B0\u2193") + _("Down");
+          p_unit = L"\u00B0\u2193" + _("Down");
           m_pitch *= -1;
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
@@ -2130,9 +2122,9 @@ void dashboard_pi::HandleN2K_127257(ObservedEvt ev) {
       }
       if (!N2kIsNA(Roll)) {
         double m_heel = GEODESIC_RAD2DEG(Roll);
-        wxString h_unit = _T("\u00B0\u003E") + _("Stbd");
+        wxString h_unit = L"\u00B0\u003E" + _("Stbd");
         if (m_heel < 0) {
-          h_unit = _T("\u00B0\u003C") + _("Port");
+          h_unit = L"\u00B0\u003C" + _("Port");
           m_heel *= -1;
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
@@ -2195,7 +2187,7 @@ void dashboard_pi::HandleN2K_128275(ObservedEvt ev) {
 
   // Get log & Trip log
   if (ParseN2kPGN128275(v, DaysSince1970, SecondsSinceMidnight, Log, TripLog)) {
-    if (!N2kIsNA(Log)) {
+    if (!N2kIsNA(Log) && !g_bUseInternSumLog) {
       double m_slog = METERS2NM((double)Log);
       SendSentenceToAllInstruments(
           OCPN_DBP_STC_VLW2, toUsrDistance_Plugin(m_slog, g_iDashDistanceUnit),
@@ -2331,7 +2323,7 @@ void dashboard_pi::HandleN2K_129029(ObservedEvt ev) {
     }
     if (!N2kIsNA(Altitude)) {
       if (mPriAlt >= 1) {
-        SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, Altitude, _T("m"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, Altitude, "m");
         mPriAlt = 1;
         mALT_Watchdog = gps_watchdog_timeout_ticks;
       }
@@ -2420,7 +2412,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
         case 0:  // N2kWind direction True North
           if (mPriWDN >= 1) {
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, wind_angle_degr,
-                                         _T("\u00B0"));
+                                         "\u00B0");
             mPriWDN = 1;
             sendTWS = true;
             mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
@@ -2438,7 +2430,7 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
               }
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, wind_angle_degr,
-                                         _T("\u00B0"));
+                                         "\u00B0");
             mPriWDN = 1;
             sendTWS = true;
             mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
@@ -2448,11 +2440,11 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
           if (mPriAWA >= 1) {
             double calc_angle = wind_angle_degr;
             // Angle equals 0-360 degr
-            wxString m_awaunit = _T("\u00B0R");
+            wxString m_awaunit = "\u00B0R";
             // Should be unit "L" and 0-180 to port
             if (wind_angle_degr > 180.0) {
               wind_angle_degr = 360.0 - wind_angle_degr;
-              m_awaunit = _T("\u00B0L");
+              m_awaunit = "\u00B0L";
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_AWA,
                                          mAWAFilter.filter(wind_angle_degr),
@@ -2503,11 +2495,11 @@ void dashboard_pi::HandleN2K_130306(ObservedEvt ev) {
 
       if (sendTWA) {
         // Wind angle is 0-360 degr
-        wxString m_twaunit = _T("\u00B0R");
+        wxString m_twaunit = "\u00B0R";
         // Should be unit "L" and 0-180 to port
         if (wind_angle_degr > 180.0) {
           wind_angle_degr = 360.0 - wind_angle_degr;
-          m_twaunit = _T("\u00B0L");
+          m_twaunit = "\u00B0L";
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, wind_angle_degr,
                                      m_twaunit);
@@ -2564,7 +2556,7 @@ void dashboard_pi::HandleN2K_130310(ObservedEvt ev) {
 
     if (!N2kIsNA(AtmosphericPressure) && mPriMDA >= 1) {
       double m_press = PA2HPA(AtmosphericPressure);
-      SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
+      SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, "hPa");
       mPriMDA = 1;
       mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
     }
@@ -2597,18 +2589,17 @@ void dashboard_pi::ParseSignalK(wxString &msg) {
 
   int errors = jsonReader.Parse(msg, &root);
 
-  // wxString dmsg( _T("Dashboard:SignalK Event received: ") );
+  // wxString dmsg( "Dashboard:SignalK Event received: " );
   // dmsg.append(msg);
   // wxLogMessage(dmsg);
   // printf("%s\n", dmsg.ToUTF8().data());
 
   if (root.HasMember("self")) {
-    if (root["self"].AsString().StartsWith(_T("vessels.")))
+    if (root["self"].AsString().StartsWith("vessels."))
       m_self = (root["self"].AsString());  // for java server, and OpenPlotter
                                            // node.js server 1.20
     else if (root["self"].AsString().Length())
-      m_self =
-          _T("vessels.") + (root["self"].AsString());  // for Node.js server
+      m_self = "vessels." + (root["self"].AsString());  // for Node.js server
   }
 
   if (root.HasMember("context") && root["context"].IsString()) {
@@ -2659,17 +2650,17 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
     // Container for last received AWA that may be needed for TWS calculation
     static double skAWA;
 
-    if (update_path == _T("navigation.position")) {
+    if (update_path == "navigation.position") {
       if (mPriPosition >= 2) {
         if (value["latitude"].IsDouble() && value["longitude"].IsDouble()) {
           double lat = value["latitude"].AsDouble();
           double lon = value["longitude"].AsDouble();
-          SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, _T("SDMM"));
-          SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, _T("SDMM"));
+          SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, lat, "SDMM");
+          SendSentenceToAllInstruments(OCPN_DBP_STC_LON, lon, "SDMM");
           mPriPosition = 2;
         }
       }
-    } else if (update_path == _T("navigation.speedOverGround") &&
+    } else if (update_path == "navigation.speedOverGround" &&
                2 == mPriPosition) {
       double sog_knot = GetJsonDouble(value);
       if (std::isnan(sog_knot)) return;
@@ -2678,31 +2669,31 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           OCPN_DBP_STC_SOG,
           toUsrSpeed_Plugin(mSOGFilter.filter(sog_knot), g_iDashSpeedUnit),
           getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
-    } else if (update_path == _T("navigation.courseOverGroundTrue") &&
+    } else if (update_path == "navigation.courseOverGroundTrue" &&
                2 == mPriPosition) {
       double cog_rad = GetJsonDouble(value);
       if (std::isnan(cog_rad)) return;
 
       double cog_deg = GEODESIC_RAD2DEG(cog_rad);
       SendSentenceToAllInstruments(OCPN_DBP_STC_COG, mCOGFilter.filter(cog_deg),
-                                   _T("\u00B0"));
-    } else if (update_path == _T("navigation.headingTrue")) {
+                                   "\u00B0");
+    } else if (update_path == "navigation.headingTrue") {
       if (mPriHeadingT >= 2) {
         double hdt = GetJsonDouble(value);
         if (std::isnan(hdt)) return;
 
         hdt = GEODESIC_RAD2DEG(hdt);
-        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, _T("\u00B0T"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, "\u00B0T");
         mPriHeadingT = 2;
         mHDT_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("navigation.headingMagnetic")) {
+    } else if (update_path == "navigation.headingMagnetic") {
       if (mPriHeadingM >= 2) {
         double hdm = GetJsonDouble(value);
         if (std::isnan(hdm)) return;
 
         hdm = GEODESIC_RAD2DEG(hdm);
-        SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, "\u00B0M");
         mPriHeadingM = 2;
         mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
@@ -2713,12 +2704,12 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
             heading += 360;
           else if (heading >= 360.0)
             heading -= 360;
-          SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, _T("\u00B0"));
+          SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, heading, "\u00B0");
           mPriHeadingT = 6;
           mHDT_Watchdog = gps_watchdog_timeout_ticks;
         }
       }
-    } else if (update_path == _T("navigation.speedThroughWater")) {
+    } else if (update_path == "navigation.speedThroughWater") {
       if (mPriSTW >= 2) {
         double stw_knots = GetJsonDouble(value);
         if (std::isnan(stw_knots)) return;
@@ -2730,28 +2721,28 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         mPriSTW = 2;
         mSTW_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("navigation.magneticVariation")) {
+    } else if (update_path == "navigation.magneticVariation") {
       if (mPriVar >= 2) {
         double dvar = GetJsonDouble(value);
         if (std::isnan(dvar)) return;
 
         dvar = GEODESIC_RAD2DEG(dvar);
         if (0.0 != dvar) {  // Let WMM do the job instead
-          SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, dvar, _T("\u00B0"));
+          SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, dvar, "\u00B0");
           mPriVar = 2;
           mVar_Watchdog = gps_watchdog_timeout_ticks;
         }
       }
-    } else if (update_path == _T("environment.wind.angleApparent")) {
+    } else if (update_path == "environment.wind.angleApparent") {
       if (mPriAWA >= 2) {
         double m_awaangle = GetJsonDouble(value);
         if (std::isnan(m_awaangle)) return;
 
         m_awaangle = GEODESIC_RAD2DEG(m_awaangle);  // negative to port
         skAWA = m_awaangle;
-        wxString m_awaunit = _T("\u00B0R");
+        wxString m_awaunit = "\u00B0R";
         if (m_awaangle < 0) {
-          m_awaunit = _T("\u00B0L");
+          m_awaunit = "\u00B0L";
           m_awaangle *= -1;
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_AWA,
@@ -2759,7 +2750,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         mPriAWA = 2;  // Set prio only here. No need to catch speed if no angle.
         mMWVA_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("environment.wind.speedApparent")) {
+    } else if (update_path == "environment.wind.speedApparent") {
       if (mPriAWA >= 2) {
         double m_awaspeed_kn = GetJsonDouble(value);
         if (std::isnan(m_awaspeed_kn)) return;
@@ -2779,9 +2770,9 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
         }
       }
-    } else if ((update_path == _T("environment.wind.angleTrueWater") &&
+    } else if ((update_path == "environment.wind.angleTrueWater" &&
                 !g_bDBtrueWindGround) ||
-               (update_path == _T("environment.wind.angleTrueGround") &&
+               (update_path == "environment.wind.angleTrueGround" &&
                 g_bDBtrueWindGround)) {
       if (mPriTWA >= 3) {
         double m_twaangle = GetJsonDouble(value);
@@ -2789,9 +2780,9 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
 
         m_twaangle = GEODESIC_RAD2DEG(m_twaangle);
         double m_twaangle_raw = m_twaangle;  // for wind history
-        wxString m_twaunit = _T("\u00B0R");
+        wxString m_twaunit = "\u00B0R";
         if (m_twaangle < 0) {
-          m_twaunit = _T("\u00B0L");
+          m_twaunit = "\u00B0L";
           m_twaangle *= -1;
         }
         SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_twaangle, m_twaunit);
@@ -2811,15 +2802,15 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
               g_dCalWdir += 360;
             }
             SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, g_dCalWdir,
-                                         _T("\u00B0"));
+                                         "\u00B0");
             mPriWDN = 5;
             mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
           }
         }
       }
-    } else if ((update_path == _T("environment.wind.speedTrue") &&
+    } else if ((update_path == "environment.wind.speedTrue" &&
                 !g_bDBtrueWindGround) ||
-               (update_path == _T("environment.wind.speedOverGround") &&
+               (update_path == "environment.wind.speedOverGround" &&
                 g_bDBtrueWindGround)) {
       if (mPriTWA >= 3) {
         double m_twaspeed_kn = GetJsonDouble(value);
@@ -2835,7 +2826,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
             toUsrSpeed_Plugin(m_twaspeed_kn, g_iDashWindSpeedUnit),
             getUsrSpeedUnit_Plugin(g_iDashWindSpeedUnit));
       }
-    } else if (update_path == _T("environment.depth.belowSurface")) {
+    } else if (update_path == "environment.depth.belowSurface") {
       if (mPriDepth >= 3) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
@@ -2848,7 +2839,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
             getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
         mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("environment.depth.belowTransducer")) {
+    } else if (update_path == "environment.depth.belowTransducer") {
       if (mPriDepth >= 3) {
         double depth = GetJsonDouble(value);
         if (std::isnan(depth)) return;
@@ -2861,7 +2852,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
             getUsrDistanceUnit_Plugin(g_iDashDepthUnit));
         mDPT_DBT_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("environment.water.temperature")) {
+    } else if (update_path == "environment.water.temperature") {
       if (mPriWTP >= 2) {
         double m_wtemp = GetJsonDouble(value);
         if (std::isnan(m_wtemp)) return;
@@ -2876,7 +2867,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         }
       }
     } else if (update_path ==
-               _T("navigation.courseRhumbline.nextPoint.velocityMadeGood")) {
+               "navigation.courseRhumbline.nextPoint.velocityMadeGood") {
       double m_vmg_kn = GetJsonDouble(value);
       if (std::isnan(m_vmg_kn)) return;
 
@@ -2887,7 +2878,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
       mVMG_Watchdog = gps_watchdog_timeout_ticks;
     }
 
-    else if (update_path == _T("performance.velocityMadeGood")) {
+    else if (update_path == "performance.velocityMadeGood") {
       double m_vmgw_kn = GetJsonDouble(value);
       if (std::isnan(m_vmgw_kn)) return;
 
@@ -2898,19 +2889,18 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
       mVMGW_Watchdog = gps_watchdog_timeout_ticks;
     }
 
-    else if (update_path == _T("steering.rudderAngle")) {  // ->port
+    else if (update_path == "steering.rudderAngle") {  // ->port
       if (mPriRSA >= 2) {
         double m_rudangle = GetJsonDouble(value);
         if (std::isnan(m_rudangle)) return;
 
         m_rudangle = GEODESIC_RAD2DEG(m_rudangle);
-        SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle,
-                                     _T("\u00B0"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_RSA, m_rudangle, "\u00B0");
         mRSA_Watchdog = gps_watchdog_timeout_ticks;
         mPriRSA = 2;
       }
     } else if (update_path ==
-               _T("navigation.gnss.satellites")) {  // GNSS satellites in use
+               "navigation.gnss.satellites") {  // GNSS satellites in use
       if (mPriSatUsed >= 2) {
         int usedSats = (value).AsInt();
         if (usedSats < 1) return;
@@ -2918,26 +2908,25 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         mPriSatUsed = 2;
         mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("navigation.gnss.type")) {
+    } else if (update_path == "navigation.gnss.type") {
       if (value.IsString() && value.AsString() != wxEmptyString) {
         talkerID = (value.AsString());  // Like "Combined GPS/GLONASS"
         talkerID.MakeUpper();
         m_PriN2kTalker = gps_watchdog_timeout_ticks;
-        if ((talkerID.Contains(_T("GPS"))) &&
-            (talkerID.Contains(_T("GLONASS"))))
-          talkerID = _T("GPSGLONAS");
-        else if (talkerID.Contains(_T("GPS")))
-          talkerID = _T("GP");
-        else if (talkerID.Contains(_T("GLONASS")))
-          talkerID = _T("GL");
-        else if (talkerID.Contains(_T("GALILEO")))
-          talkerID = _T("GA");
-        else if (talkerID.Contains(_T("BEIDOU")))
-          talkerID = _T("GI");
+        if ((talkerID.Contains("GPS")) && (talkerID.Contains("GLONASS")))
+          talkerID = "GPSGLONAS";
+        else if (talkerID.Contains("GPS"))
+          talkerID = "GP";
+        else if (talkerID.Contains("GLONASS"))
+          talkerID = "GL";
+        else if (talkerID.Contains("GALILEO"))
+          talkerID = "GA";
+        else if (talkerID.Contains("BEIDOU"))
+          talkerID = "GI";
       }
     } else if (update_path ==
-               _T("navigation.gnss.satellitesInView")) {  // GNSS satellites in
-                                                          // view
+               "navigation.gnss.satellitesInView") {  // GNSS satellites in
+                                                      // view
       if (mPriSatUsed >= 4) {
         if (value.HasMember("count") && value["count"].IsInt()) {
           double m_SK_SatsInView = (value["count"].AsInt());
@@ -2992,8 +2981,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
               }
               if (idx > 0) {
                 if (m_PriN2kTalker <= 0 && talker != wxEmptyString &&
-                    (talker.StartsWith(_T("G")) ||
-                     talker.StartsWith(_T("BD")))) {
+                    (talker.StartsWith("G") || talker.StartsWith("BD"))) {
                   talkerID = talker;  // Origin NMEA0183
                 }
                 SendSatInfoToAllInstruments(iNumSats, iMesNum + 1, talkerID,
@@ -3007,17 +2995,17 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           }
         }
       }
-    } else if (update_path == _T("navigation.gnss.antennaAltitude")) {
+    } else if (update_path == "navigation.gnss.antennaAltitude") {
       if (mPriAlt >= 2) {
         double m_alt = GetJsonDouble(value);
         if (std::isnan(m_alt)) return;
 
-        SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, m_alt, _T("m"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_ALTI, m_alt, "m");
         mPriAlt = 2;
         mALT_Watchdog = gps_watchdog_timeout_ticks;
       }
 
-    } else if (update_path == _T("navigation.datetime")) {
+    } else if (update_path == "navigation.datetime") {
       if (mPriDateTime >= 1) {
         mPriDateTime = 1;
         wxString s_dt = (value.AsString());  //"2019-12-28T09:26:58.000Z"
@@ -3025,10 +3013,10 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         s_dt.Replace(':', wxEmptyString);
         wxString utc_dt = s_dt.BeforeFirst('T');      // Date
         utc_dt.Append(s_dt.AfterFirst('T').Left(6));  // time
-        mUTCDateTime.ParseFormat(utc_dt.c_str(), _T("%Y%m%d%H%M%S"));
+        mUTCDateTime.ParseFormat(utc_dt.c_str(), "%Y%m%d%H%M%S");
         mUTC_Watchdog = gps_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("environment.outside.temperature")) {
+    } else if (update_path == "environment.outside.temperature") {
       if (mPriATMP >= 2) {
         double m_airtemp = GetJsonDouble(value);
         if (std::isnan(m_airtemp)) return;
@@ -3042,8 +3030,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           mATMP_Watchdog = no_nav_watchdog_timeout_ticks;
         }
       }
-    } else if (update_path == _T("environment.outside.humidity") ||
-               update_path == _T("environment.outside.relativeHumidity")) {
+    } else if (update_path == "environment.outside.humidity" ||
+               update_path == "environment.outside.relativeHumidity") {
       if (mPriHUM >= 2) {
         double m_hum = GetJsonDouble(value) * 100;  // ratio2%
         if (std::isnan(m_hum)) return;
@@ -3052,17 +3040,17 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         mHUM_Watchdog = no_nav_watchdog_timeout_ticks;
       }
     } else if (update_path ==
-               _T("environment.wind.directionTrue")) {  // relative true north
+               "environment.wind.directionTrue") {  // relative true north
       if (mPriWDN >= 3) {
         double m_twdT = GetJsonDouble(value);
         if (std::isnan(m_twdT)) return;
 
         m_twdT = GEODESIC_RAD2DEG(m_twdT);
-        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, _T("\u00B0"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdT, "\u00B0");
         mPriWDN = 3;
         mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("environment.wind.directionMagnetic")) {
+    } else if (update_path == "environment.wind.directionMagnetic") {
       // relative magn north
       if (mPriWDN >= 4) {
         double m_twdM = GetJsonDouble(value);
@@ -3077,11 +3065,11 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
             m_twdM += 360;
           }
         }
-        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdM, _T("\u00B0"));
+        SendSentenceToAllInstruments(OCPN_DBP_STC_TWD, m_twdM, "\u00B0");
         mPriWDN = 4;
         mWDN_Watchdog = no_nav_watchdog_timeout_ticks;
       }
-    } else if (update_path == _T("navigation.trip.log")) {  // m
+    } else if (update_path == "navigation.trip.log") {  // m
       double m_tlog = GetJsonDouble(value);
       if (std::isnan(m_tlog)) return;
 
@@ -3090,7 +3078,7 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           OCPN_DBP_STC_VLW1, toUsrDistance_Plugin(m_tlog, g_iDashDistanceUnit),
           getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
       mTrLOG_Watchdog = no_nav_watchdog_timeout_ticks;
-    } else if (update_path == _T("navigation.log")) {  // m
+    } else if (update_path == "navigation.log" && !g_bUseInternSumLog) {
       double m_slog = GetJsonDouble(value);
       if (std::isnan(m_slog)) return;
 
@@ -3099,22 +3087,22 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
           OCPN_DBP_STC_VLW2, toUsrDistance_Plugin(m_slog, g_iDashDistanceUnit),
           getUsrDistanceUnit_Plugin(g_iDashDistanceUnit));
       mLOG_Watchdog = no_nav_watchdog_timeout_ticks;
-    } else if (update_path == _T("environment.outside.pressure") &&
+    } else if (update_path == "environment.outside.pressure" &&
                mPriMDA >= 2) {  // Pa
       double m_press = GetJsonDouble(value);
       if (std::isnan(m_press)) return;
 
       m_press = PA2HPA(m_press);
-      SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, _T("hPa"));
+      SendSentenceToAllInstruments(OCPN_DBP_STC_MDA, m_press, "hPa");
       mPriMDA = 2;
       mMDA_Watchdog = no_nav_watchdog_timeout_ticks;
-    } else if (update_path == _T("navigation.attitude")) {  // rad
+    } else if (update_path == "navigation.attitude") {  // rad
       if (mPriPitchRoll >= 2) {
         if (value["roll"].AsString() != "0") {
           double m_heel = GEODESIC_RAD2DEG(value["roll"].AsDouble());
-          wxString h_unit = _T("\u00B0\u003E") + _("Stbd");
+          wxString h_unit = L"\u00B0\u003E" + _("Stbd");
           if (m_heel < 0) {
-            h_unit = _T("\u00B0\u003C") + _("Port");
+            h_unit = L"\u00B0\u003C" + _("Port");
             m_heel *= -1;
           }
           SendSentenceToAllInstruments(OCPN_DBP_STC_HEEL, m_heel, h_unit);
@@ -3123,9 +3111,9 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
         }
         if (value["pitch"].AsString() != "0") {
           double m_pitch = GEODESIC_RAD2DEG(value["pitch"].AsDouble());
-          wxString p_unit = _T("\u00B0\u2191") + _("Up");
+          wxString p_unit = L"\u00B0\u2191" + _("Up");
           if (m_pitch < 0) {
-            p_unit = _T("\u00B0\u2193") + _("Down");
+            p_unit = L"\u00B0\u2193" + _("Down");
             m_pitch *= -1;
           }
           SendSentenceToAllInstruments(OCPN_DBP_STC_PITCH, m_pitch, p_unit);
@@ -3141,8 +3129,8 @@ void dashboard_pi::updateSKItem(wxJSONValue &item, wxString &talker,
 void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   if (mPriPosition >= 1) {
     mPriPosition = 1;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, pfix.Lat, _T("SDMM"));
-    SendSentenceToAllInstruments(OCPN_DBP_STC_LON, pfix.Lon, _T("SDMM"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_LAT, pfix.Lat, "SDMM");
+    SendSentenceToAllInstruments(OCPN_DBP_STC_LON, pfix.Lon, "SDMM");
   }
   if (mPriCOGSOG >= 1) {
     double dMagneticCOG;
@@ -3152,7 +3140,7 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
         toUsrSpeed_Plugin(mSOGFilter.filter(pfix.Sog), g_iDashSpeedUnit),
         getUsrSpeedUnit_Plugin(g_iDashSpeedUnit));
     SendSentenceToAllInstruments(OCPN_DBP_STC_COG, mCOGFilter.filter(pfix.Cog),
-                                 _T("\u00B0"));
+                                 "\u00B0");
 
     //  Collect distance to update SumLog every second.
     double logSOG = mSOGFilter.filter(pfix.Sog);
@@ -3169,8 +3157,7 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
     dMagneticCOG = mCOGFilter.get() - pfix.Var;
     if (dMagneticCOG < 0.0) dMagneticCOG = 360.0 + dMagneticCOG;
     if (dMagneticCOG > 360.0) dMagneticCOG = dMagneticCOG - 360.0;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_MCOG, dMagneticCOG,
-                                 _T("\u00B0M"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_MCOG, dMagneticCOG, "\u00B0M");
   }
   if (mPriVar >= 1) {
     if (!std::isnan(pfix.Var)) {
@@ -3178,7 +3165,7 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
       mVar = pfix.Var;
       mVar_Watchdog = gps_watchdog_timeout_ticks;
 
-      SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, pfix.Var, _T("\u00B0"));
+      SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, pfix.Var, "\u00B0");
     }
   }
   if (mPriDateTime >= 6) {  // We prefer the GPS datetime
@@ -3198,7 +3185,7 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   if (mPriSatUsed >= 1) {
     mSatsInUse = pfix.nSats;
     if (mSatsInUse > 0) {
-      SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, mSatsInUse, _T(""));
+      SendSentenceToAllInstruments(OCPN_DBP_STC_SAT, mSatsInUse, "");
       mPriSatUsed = 1;
       mSatsUsed_Wdog = gps_watchdog_timeout_ticks;
     }
@@ -3206,7 +3193,7 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   if (mPriHeadingT >= 1) {
     double hdt = pfix.Hdt;
     if (std::isnan(hdt)) return;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, _T("\u00B0T"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, hdt, "\u00B0T");
     mPriHeadingT = 1;
     mHDT_Watchdog = gps_watchdog_timeout_ticks;
   }
@@ -3220,20 +3207,20 @@ void dashboard_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
         hdm -= 360;
     }
     if (std::isnan(hdm)) return;
-    SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, _T("\u00B0M"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_HDM, hdm, "\u00B0M");
     mPriHeadingM = 1;
     mHDx_Watchdog = gps_watchdog_timeout_ticks;
   }
 }
 
 void dashboard_pi::SetCursorLatLon(double lat, double lon) {
-  SendSentenceToAllInstruments(OCPN_DBP_STC_PLA, lat, _T("SDMM"));
-  SendSentenceToAllInstruments(OCPN_DBP_STC_PLO, lon, _T("SDMM"));
+  SendSentenceToAllInstruments(OCPN_DBP_STC_PLA, lat, "SDMM");
+  SendSentenceToAllInstruments(OCPN_DBP_STC_PLO, lon, "SDMM");
 }
 
 void dashboard_pi::SetPluginMessage(wxString &message_id,
                                     wxString &message_body) {
-  if (message_id == _T("WMM_VARIATION_BOAT")) {
+  if (message_id == "WMM_VARIATION_BOAT") {
     // construct the JSON root object
     wxJSONValue root;
     // construct a JSON parser
@@ -3248,7 +3235,7 @@ void dashboard_pi::SetPluginMessage(wxString &message_id,
     }
 
     // get the DECL value from the JSON message
-    wxString decl = root[_T("Decl")].AsString();
+    wxString decl = root["Decl"].AsString();
     double decl_val;
     decl.ToDouble(&decl_val);
 
@@ -3256,9 +3243,9 @@ void dashboard_pi::SetPluginMessage(wxString &message_id,
       mPriVar = 5;
       mVar = decl_val;
       mVar_Watchdog = gps_watchdog_timeout_ticks;
-      SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar, _T("\u00B0"));
+      SendSentenceToAllInstruments(OCPN_DBP_STC_HMV, mVar, "\u00B0");
     }
-  } else if (message_id == _T("OCPN_CORE_SIGNALK")) {
+  } else if (message_id == "OCPN_CORE_SIGNALK") {
     ParseSignalK(message_body);
   }
 }
@@ -3510,10 +3497,10 @@ bool dashboard_pi::LoadConfig(void) {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 
   if (pConf) {
-    pConf->SetPath(_T("/PlugIns/Dashboard"));
+    pConf->SetPath("/PlugIns/Dashboard");
 
     wxString version;
-    pConf->Read(_T("Version"), &version, wxEmptyString);
+    pConf->Read("Version", &version, wxEmptyString);
     wxString config;
 
     // Set some sensible defaults
@@ -3523,10 +3510,10 @@ bool dashboard_pi::LoadConfig(void) {
     wxString SmallFont;
 
 #ifdef __OCPN__ANDROID__
-    TitleFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
-    DataFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
-    LabelFont = _T("Roboto,16,-1,5,50,0,0,0,0,0");
-    SmallFont = _T("Roboto,14,-1,5,50,0,0,0,0,0");
+    TitleFont = "Roboto,16,-1,5,50,0,0,0,0,0";
+    DataFont = "Roboto,16,-1,5,50,0,0,0,0,0";
+    LabelFont = "Roboto,16,-1,5,50,0,0,0,0,0";
+    SmallFont = "Roboto,14,-1,5,50,0,0,0,0,0";
 #else
     TitleFont = g_pFontTitle->GetChosenFont().GetNativeFontInfoDesc();
     DataFont = g_pFontData->GetChosenFont().GetNativeFontInfoDesc();
@@ -3543,10 +3530,10 @@ bool dashboard_pi::LoadConfig(void) {
     scaler = wxMax(1.0, scaler);
 
     g_pFontTitle = &g_FontTitle;
-    pConf->Read(_T("FontTitle"), &config, TitleFont);
+    pConf->Read("FontTitle", &config, TitleFont);
     LoadFont(&pDF, config);
     wxFont DummyFontTitle = *pDF;
-    pConf->Read(_T("ColorTitle"), &config, "#000000");
+    pConf->Read("ColorTitle", &config, "#000000");
     wxColour DummyColor(config);
     g_pUSFontTitle->SetChosenFont(DummyFontTitle);
     g_pUSFontTitle->SetColour(DummyColor);
@@ -3556,10 +3543,10 @@ bool dashboard_pi::LoadConfig(void) {
     g_USFontTitle = *g_pUSFontTitle;
 
     g_pFontData = &g_FontData;
-    pConf->Read(_T("FontData"), &config, DataFont);
+    pConf->Read("FontData", &config, DataFont);
     LoadFont(&pDF, config);
     wxFont DummyFontData = *pDF;
-    pConf->Read(_T("ColorData"), &config, "#000000");
+    pConf->Read("ColorData", &config, "#000000");
     DummyColor.Set(config);
     g_pUSFontData->SetChosenFont(DummyFontData);
     g_pUSFontData->SetColour(DummyColor);
@@ -3567,28 +3554,28 @@ bool dashboard_pi::LoadConfig(void) {
     g_FontData.SetChosenFont(g_pUSFontData->GetChosenFont().Scaled(scaler));
     g_USFontData = *g_pUSFontData;
 
-    pConf->Read(_T("ForceBackgroundColor"), &g_ForceBackgroundColor, 0);
-    pConf->Read(_T("BackgroundColor"), &config, "DASHL");
+    pConf->Read("ForceBackgroundColor", &g_ForceBackgroundColor, 0);
+    pConf->Read("BackgroundColor", &config, "DASHL");
     g_BackgroundColor.Set(config);
 
     int alignment;
-    pConf->Read(_T("TitleAlignment"), &alignment, (int)wxALIGN_LEFT);
+    pConf->Read("TitleAlignment", &alignment, (int)wxALIGN_LEFT);
     g_TitleAlignment = (wxAlignment)alignment;
     if (g_TitleAlignment == wxALIGN_INVALID) g_TitleAlignment = wxALIGN_LEFT;
-    pConf->Read(_T("TitleMargin"), &g_iTitleMargin, 5);
-    pConf->Read(_T("DataShowUnit"), &g_bShowUnit, true);
-    pConf->Read(_T("DataAlignment"), &alignment, (int)wxALIGN_LEFT);
+    pConf->Read("TitleMargin", &g_iTitleMargin, 5);
+    pConf->Read("DataShowUnit", &g_bShowUnit, true);
+    pConf->Read("DataAlignment", &alignment, (int)wxALIGN_LEFT);
     g_DataAlignment = (wxAlignment)alignment;
     if (g_DataAlignment == wxALIGN_INVALID) g_DataAlignment = wxALIGN_LEFT;
-    pConf->Read(_T("DataMargin"), &g_iDataMargin, 10);
-    pConf->Read(_T("InstrumentSpacing"), &g_iInstrumentSpacing, 0);
-    pConf->Read(_T("TitleVerticalOffset"), &g_TitleVerticalOffset, 0.0);
+    pConf->Read("DataMargin", &g_iDataMargin, 10);
+    pConf->Read("InstrumentSpacing", &g_iInstrumentSpacing, 0);
+    pConf->Read("TitleVerticalOffset", &g_TitleVerticalOffset, 0.0);
 
     g_pFontLabel = &g_FontLabel;
-    pConf->Read(_T("FontLabel"), &config, LabelFont);
+    pConf->Read("FontLabel", &config, LabelFont);
     LoadFont(&pDF, config);
     wxFont DummyFontLabel = *pDF;
-    pConf->Read(_T("ColorLabel"), &config, "#000000");
+    pConf->Read("ColorLabel", &config, "#000000");
     DummyColor.Set(config);
     g_pUSFontLabel->SetChosenFont(DummyFontLabel);
     g_pUSFontLabel->SetColour(DummyColor);
@@ -3597,10 +3584,10 @@ bool dashboard_pi::LoadConfig(void) {
     g_USFontLabel = *g_pUSFontLabel;
 
     g_pFontSmall = &g_FontSmall;
-    pConf->Read(_T("FontSmall"), &config, SmallFont);
+    pConf->Read("FontSmall", &config, SmallFont);
     LoadFont(&pDF, config);
     wxFont DummyFontSmall = *pDF;
-    pConf->Read(_T("ColorSmall"), &config, "#000000");
+    pConf->Read("ColorSmall", &config, "#000000");
     DummyColor.Set(config);
     g_pUSFontSmall->SetChosenFont(DummyFontSmall);
     g_pUSFontSmall->SetColour(DummyColor);
@@ -3608,44 +3595,44 @@ bool dashboard_pi::LoadConfig(void) {
     g_FontSmall.SetChosenFont(g_pUSFontSmall->GetChosenFont().Scaled(scaler));
     g_USFontSmall = *g_pUSFontSmall;
 
-    pConf->Read(_T("SpeedometerMax"), &g_iDashSpeedMax, 12);
-    pConf->Read(_T("COGDamp"), &g_iDashCOGDamp, 0);
-    pConf->Read(_T("SpeedUnit"), &g_iDashSpeedUnit, 0);
-    pConf->Read(_T("SOGDamp"), &g_iDashSOGDamp, 0);
-    pConf->Read(_T("DepthUnit"), &g_iDashDepthUnit, 3);
+    pConf->Read("SpeedometerMax", &g_iDashSpeedMax, 12);
+    pConf->Read("COGDamp", &g_iDashCOGDamp, 0);
+    pConf->Read("SpeedUnit", &g_iDashSpeedUnit, 0);
+    pConf->Read("SOGDamp", &g_iDashSOGDamp, 0);
+    pConf->Read("DepthUnit", &g_iDashDepthUnit, 3);
     g_iDashDepthUnit = wxMax(g_iDashDepthUnit, 3);
-    pConf->Read(_T("AWADamp"), &g_iDashAWADamp, 0);
-    pConf->Read(_T("AWSDamp"), &g_iDashAWSDamp, 0);
+    pConf->Read("AWADamp", &g_iDashAWADamp, 0);
+    pConf->Read("AWSDamp", &g_iDashAWSDamp, 0);
 
-    pConf->Read(_T("DepthOffset"), &g_dDashDBTOffset, 0);
+    pConf->Read("DepthOffset", &g_dDashDBTOffset, 0);
 
-    pConf->Read(_T("DistanceUnit"), &g_iDashDistanceUnit, 0);
-    pConf->Read(_T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0);
-    pConf->Read(_T("UseSignKtruewind"), &g_bDBtrueWindGround, 0);
+    pConf->Read("DistanceUnit", &g_iDashDistanceUnit, 0);
+    pConf->Read("WindSpeedUnit", &g_iDashWindSpeedUnit, 0);
+    pConf->Read("UseSignKtruewind", &g_bDBtrueWindGround, 0);
     pConf->Read("UseInternSumlog", &g_bUseInternSumLog, 0);
     pConf->Read("SumLogNM", &g_dSumLogNM, 0.0);
-    pConf->Read(_T("TemperatureUnit"), &g_iDashTempUnit, 0);
+    pConf->Read("TemperatureUnit", &g_iDashTempUnit, 0);
 
-    pConf->Read(_T("UTCOffset"), &g_iUTCOffset, 0);
+    pConf->Read("UTCOffset", &g_iUTCOffset, 0);
 
-    pConf->Read(_T("PrefWidth"), &g_dashPrefWidth, 0);
-    pConf->Read(_T("PrefHeight"), &g_dashPrefHeight, 0);
+    pConf->Read("PrefWidth", &g_dashPrefWidth, 0);
+    pConf->Read("PrefHeight", &g_dashPrefHeight, 0);
 
     int d_cnt;
-    pConf->Read(_T("DashboardCount"), &d_cnt, -1);
+    pConf->Read("DashboardCount", &d_cnt, -1);
     // TODO: Memory leak? We should destroy everything first
     m_ArrayOfDashboardWindow.Clear();
     if (version.IsEmpty() && d_cnt == -1) {
       m_config_version = 1;
       // Let's load version 1 or default settings.
       int i_cnt;
-      pConf->Read(_T("InstrumentCount"), &i_cnt, -1);
+      pConf->Read("InstrumentCount", &i_cnt, -1);
       wxArrayInt ar;
       wxArrayOfInstrumentProperties Property;
       if (i_cnt != -1) {
         for (int i = 0; i < i_cnt; i++) {
           int id;
-          pConf->Read(wxString::Format(_T("Instrument%d"), i + 1), &id, -1);
+          pConf->Read(wxString::Format("Instrument%d", i + 1), &id, -1);
           if (id != -1) ar.Add(id);
         }
       } else {
@@ -3663,7 +3650,7 @@ bool dashboard_pi::LoadConfig(void) {
       }
 
       DashboardWindowContainer *cont = new DashboardWindowContainer(
-          NULL, MakeName(), _("Dashboard"), _T("V"), ar, Property);
+          NULL, MakeName(), _("Dashboard"), "V", ar, Property);
       cont->m_bPersVisible = true;
       m_ArrayOfDashboardWindow.Add(cont);
 
@@ -3675,44 +3662,44 @@ bool dashboard_pi::LoadConfig(void) {
       wxSize persist_size;
       for (int k = 0; k < d_cnt; k++) {
         pConf->SetPath(
-            wxString::Format(_T("/PlugIns/Dashboard/Dashboard%d"), k + 1));
+            wxString::Format("/PlugIns/Dashboard/Dashboard%d", k + 1));
         wxString name;
-        pConf->Read(_T("Name"), &name, MakeName());
+        pConf->Read("Name", &name, MakeName());
         wxString caption;
-        pConf->Read(_T("Caption"), &caption, _("Dashboard"));
+        pConf->Read("Caption", &caption, _("Dashboard"));
         wxString orient;
-        pConf->Read(_T("Orientation"), &orient, _T("V"));
+        pConf->Read("Orientation", &orient, "V");
         int i_cnt;
-        pConf->Read(_T("InstrumentCount"), &i_cnt, -1);
+        pConf->Read("InstrumentCount", &i_cnt, -1);
         bool b_persist;
-        pConf->Read(_T("Persistence"), &b_persist, 1);
+        pConf->Read("Persistence", &b_persist, 1);
         int val;
-        pConf->Read(_T("BestSizeX"), &val, DefaultWidth);
+        pConf->Read("BestSizeX", &val, DefaultWidth);
         best_size.x = val;
-        pConf->Read(_T("BestSizeY"), &val, DefaultWidth);
+        pConf->Read("BestSizeY", &val, DefaultWidth);
         best_size.y = val;
-        pConf->Read(_T("PersistSizeX"), &val, DefaultWidth);
+        pConf->Read("PersistSizeX", &val, DefaultWidth);
         persist_size.x = val;
-        pConf->Read(_T("PersistSizeY"), &val, DefaultWidth);
+        pConf->Read("PersistSizeY", &val, DefaultWidth);
         persist_size.y = val;
 
         wxArrayInt ar;
         wxArrayOfInstrumentProperties Property;
         for (int i = 0; i < i_cnt; i++) {
           int id;
-          pConf->Read(wxString::Format(_T("Instrument%d"), i + 1), &id, -1);
+          pConf->Read(wxString::Format("Instrument%d", i + 1), &id, -1);
           if (id != -1) {
             ar.Add(id);
             InstrumentProperties *instp;
-            if (pConf->Exists(wxString::Format(_T("InstTitleFont%d"), i + 1))) {
+            if (pConf->Exists(wxString::Format("InstTitleFont%d", i + 1))) {
               instp = new InstrumentProperties(id, i);
 
-              pConf->Read(wxString::Format(_T("InstTitleFont%d"), i + 1),
-                          &config, TitleFont);
+              pConf->Read(wxString::Format("InstTitleFont%d", i + 1), &config,
+                          TitleFont);
               LoadFont(&pDF, config);
               wxFont DummyFontTitleA = *pDF;
-              pConf->Read(wxString::Format(_T("InstTitleColor%d"), i + 1),
-                          &config, "#000000");
+              pConf->Read(wxString::Format("InstTitleColor%d", i + 1), &config,
+                          "#000000");
               DummyColor.Set(config);
               instp->m_USTitleFont.SetChosenFont(DummyFontTitleA);
               instp->m_USTitleFont.SetColour(DummyColor);
@@ -3720,27 +3707,26 @@ bool dashboard_pi::LoadConfig(void) {
               instp->m_TitleFont.SetChosenFont(
                   instp->m_USTitleFont.GetChosenFont().Scaled(scaler));
 
-              pConf->Read(wxString::Format(_T("InstDataShowUnit%d"), i + 1),
+              pConf->Read(wxString::Format("InstDataShowUnit%d", i + 1),
                           &instp->m_ShowUnit, -1);
-              pConf->Read(wxString::Format(_T("InstDataMargin%d"), i + 1),
+              pConf->Read(wxString::Format("InstDataMargin%d", i + 1),
                           &instp->m_DataMargin, -1);
-              pConf->Read(wxString::Format(_T("InstDataAlignment%d"), i + 1),
+              pConf->Read(wxString::Format("InstDataAlignment%d", i + 1),
                           &alignment, (int)wxALIGN_INVALID);
               instp->m_DataAlignment = (wxAlignment)alignment;
-              pConf->Read(
-                  wxString::Format(_T("InstInstrumentSpacing%d"), i + 1),
-                  &instp->m_InstrumentSpacing, -1);
-              pConf->Read(wxString::Format(_T("InstDataFormat%d"), i + 1),
+              pConf->Read(wxString::Format("InstInstrumentSpacing%d", i + 1),
+                          &instp->m_InstrumentSpacing, -1);
+              pConf->Read(wxString::Format("InstDataFormat%d", i + 1),
                           &instp->m_Format, "");
-              pConf->Read(wxString::Format(_T("InstTitle%d"), i + 1),
+              pConf->Read(wxString::Format("InstTitle%d", i + 1),
                           &instp->m_Title, "");
 
-              pConf->Read(wxString::Format(_T("InstDataFont%d"), i + 1),
-                          &config, DataFont);
+              pConf->Read(wxString::Format("InstDataFont%d", i + 1), &config,
+                          DataFont);
               LoadFont(&pDF, config);
               wxFont DummyFontDataA = *pDF;
-              pConf->Read(wxString::Format(_T("InstDataColor%d"), i + 1),
-                          &config, "#000000");
+              pConf->Read(wxString::Format("InstDataColor%d", i + 1), &config,
+                          "#000000");
               DummyColor.Set(config);
               instp->m_USDataFont.SetChosenFont(DummyFontDataA);
               instp->m_USDataFont.SetColour(DummyColor);
@@ -3748,12 +3734,12 @@ bool dashboard_pi::LoadConfig(void) {
               instp->m_DataFont.SetChosenFont(
                   instp->m_USDataFont.GetChosenFont().Scaled(scaler));
 
-              pConf->Read(wxString::Format(_T("InstLabelFont%d"), i + 1),
-                          &config, LabelFont);
+              pConf->Read(wxString::Format("InstLabelFont%d", i + 1), &config,
+                          LabelFont);
               LoadFont(&pDF, config);
               wxFont DummyFontLabelA = *pDF;
-              pConf->Read(wxString::Format(_T("InstLabelColor%d"), i + 1),
-                          &config, "#000000");
+              pConf->Read(wxString::Format("InstLabelColor%d", i + 1), &config,
+                          "#000000");
               DummyColor.Set(config);
               instp->m_USLabelFont.SetChosenFont(DummyFontLabelA);
               instp->m_USLabelFont.SetColour(DummyColor);
@@ -3761,12 +3747,12 @@ bool dashboard_pi::LoadConfig(void) {
               instp->m_LabelFont.SetChosenFont(
                   instp->m_USLabelFont.GetChosenFont().Scaled(scaler));
 
-              pConf->Read(wxString::Format(_T("InstSmallFont%d"), i + 1),
-                          &config, SmallFont);
+              pConf->Read(wxString::Format("InstSmallFont%d", i + 1), &config,
+                          SmallFont);
               LoadFont(&pDF, config);
               wxFont DummyFontSmallA = *pDF;
-              pConf->Read(wxString::Format(_T("InstSmallColor%d"), i + 1),
-                          &config, "#000000");
+              pConf->Read(wxString::Format("InstSmallColor%d", i + 1), &config,
+                          "#000000");
               DummyColor.Set(config);
               instp->m_USSmallFont.SetChosenFont(DummyFontSmallA);
               instp->m_USSmallFont.SetColour(DummyColor);
@@ -3774,19 +3760,19 @@ bool dashboard_pi::LoadConfig(void) {
               instp->m_SmallFont.SetChosenFont(
                   instp->m_USSmallFont.GetChosenFont().Scaled(scaler));
 
-              pConf->Read(wxString::Format(_T("TitleBackColor%d"), i + 1),
-                          &config, "DASHL");
+              pConf->Read(wxString::Format("TitleBackColor%d", i + 1), &config,
+                          "DASHL");
               instp->m_TitleBackgroundColour.Set(config);
 
-              pConf->Read(wxString::Format(_T("DataBackColor%d"), i + 1),
-                          &config, "DASHB");
+              pConf->Read(wxString::Format("DataBackColor%d", i + 1), &config,
+                          "DASHB");
               instp->m_DataBackgroundColour.Set(config);
 
-              pConf->Read(wxString::Format(_T("ArrowFirst%d"), i + 1), &config,
+              pConf->Read(wxString::Format("ArrowFirst%d", i + 1), &config,
                           "DASHN");
               instp->m_Arrow_First_Colour.Set(config);
 
-              pConf->Read(wxString::Format(_T("ArrowSecond%d"), i + 1), &config,
+              pConf->Read(wxString::Format("ArrowSecond%d", i + 1), &config,
                           "BLUE3");
               instp->m_Arrow_Second_Colour.Set(config);
 
@@ -3834,106 +3820,96 @@ bool dashboard_pi::SaveConfig(void) {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 
   if (pConf) {
-    pConf->SetPath(_T("/PlugIns/Dashboard"));
-    pConf->Write(_T("Version"), _T("2"));
-    pConf->Write(_T("FontTitle"),
+    pConf->SetPath("/PlugIns/Dashboard");
+    pConf->Write("Version", "2");
+    pConf->Write("FontTitle",
                  g_pUSFontTitle->GetChosenFont().GetNativeFontInfoDesc());
-    pConf->Write(_T("ColorTitle"),
+    pConf->Write("ColorTitle",
                  g_pUSFontTitle->GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-    pConf->Write(_T("FontData"),
+    pConf->Write("FontData",
                  g_pUSFontData->GetChosenFont().GetNativeFontInfoDesc());
-    pConf->Write(_T("ColorData"),
+    pConf->Write("ColorData",
                  g_pUSFontData->GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-    pConf->Write(_T("FontLabel"),
+    pConf->Write("FontLabel",
                  g_pUSFontLabel->GetChosenFont().GetNativeFontInfoDesc());
-    pConf->Write(_T("ColorLabel"),
+    pConf->Write("ColorLabel",
                  g_pUSFontLabel->GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-    pConf->Write(_T("FontSmall"),
+    pConf->Write("FontSmall",
                  g_pUSFontSmall->GetChosenFont().GetNativeFontInfoDesc());
-    pConf->Write(_T("ColorSmall"),
+    pConf->Write("ColorSmall",
                  g_pUSFontSmall->GetColour().GetAsString(wxC2S_HTML_SYNTAX));
-    pConf->Write(_T("SpeedometerMax"), g_iDashSpeedMax);
-    pConf->Write(_T("COGDamp"), g_iDashCOGDamp);
-    pConf->Write(_T("SpeedUnit"), g_iDashSpeedUnit);
-    pConf->Write(_T("SOGDamp"), g_iDashSOGDamp);
-    pConf->Write(_T("AWSDamp"), g_iDashAWSDamp);
-    pConf->Write(_T("AWADamp"), g_iDashAWADamp);
-    pConf->Write(_T("DepthUnit"), g_iDashDepthUnit);
-    pConf->Write(_T("DepthOffset"), g_dDashDBTOffset);
-    pConf->Write(_T("DistanceUnit"), g_iDashDistanceUnit);
-    pConf->Write(_T("WindSpeedUnit"), g_iDashWindSpeedUnit);
+    pConf->Write("SpeedometerMax", g_iDashSpeedMax);
+    pConf->Write("COGDamp", g_iDashCOGDamp);
+    pConf->Write("SpeedUnit", g_iDashSpeedUnit);
+    pConf->Write("SOGDamp", g_iDashSOGDamp);
+    pConf->Write("AWSDamp", g_iDashAWSDamp);
+    pConf->Write("AWADamp", g_iDashAWADamp);
+    pConf->Write("DepthUnit", g_iDashDepthUnit);
+    pConf->Write("DepthOffset", g_dDashDBTOffset);
+    pConf->Write("DistanceUnit", g_iDashDistanceUnit);
+    pConf->Write("WindSpeedUnit", g_iDashWindSpeedUnit);
     pConf->Write("UseInternSumlog", g_bUseInternSumLog);
     pConf->Write("SumLogNM", g_dSumLogNM);
-    pConf->Write(_T("UTCOffset"), g_iUTCOffset);
-    pConf->Write(_T("UseSignKtruewind"), g_bDBtrueWindGround);
-    pConf->Write(_T("TemperatureUnit"), g_iDashTempUnit);
-    pConf->Write(_T("PrefWidth"), g_dashPrefWidth);
-    pConf->Write(_T("PrefHeight"), g_dashPrefHeight);
+    pConf->Write("UTCOffset", g_iUTCOffset);
+    pConf->Write("UseSignKtruewind", g_bDBtrueWindGround);
+    pConf->Write("TemperatureUnit", g_iDashTempUnit);
+    pConf->Write("PrefWidth", g_dashPrefWidth);
+    pConf->Write("PrefHeight", g_dashPrefHeight);
 
-    pConf->Write(_T("DashboardCount" ),
-                 (int)m_ArrayOfDashboardWindow.GetCount());
+    pConf->Write("DashboardCount", (int)m_ArrayOfDashboardWindow.GetCount());
     // Delete old Dashborads
     for (size_t i = m_ArrayOfDashboardWindow.GetCount(); i < 20; i++) {
       if (pConf->Exists(
-              wxString::Format(_T("/PlugIns/Dashboard/Dashboard%zu"), i + 1))) {
+              wxString::Format("/PlugIns/Dashboard/Dashboard%zu", i + 1))) {
         pConf->DeleteGroup(
-            wxString::Format(_T("/PlugIns/Dashboard/Dashboard%zu"), i + 1));
+            wxString::Format("/PlugIns/Dashboard/Dashboard%zu", i + 1));
       }
     }
     for (size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++) {
       DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i);
       pConf->SetPath(
-          wxString::Format(_T("/PlugIns/Dashboard/Dashboard%zu"), i + 1));
-      pConf->Write(_T("Name"), cont->m_sName);
-      pConf->Write(_T("Caption"), cont->m_sCaption);
-      pConf->Write(_T("Orientation"), cont->m_sOrientation);
-      pConf->Write(_T("Persistence"), cont->m_bPersVisible);
-      pConf->Write(_T("InstrumentCount"),
-                   (int)cont->m_aInstrumentList.GetCount());
-      pConf->Write(_T("BestSizeX"), cont->m_best_size.x);
-      pConf->Write(_T("BestSizeY"), cont->m_best_size.y);
-      pConf->Write(_T("PersistSizeX"), cont->m_pDashboardWindow->GetSize().x);
-      pConf->Write(_T("PersistSizeY"), cont->m_pDashboardWindow->GetSize().y);
+          wxString::Format("/PlugIns/Dashboard/Dashboard%zu", i + 1));
+      pConf->Write("Name", cont->m_sName);
+      pConf->Write("Caption", cont->m_sCaption);
+      pConf->Write("Orientation", cont->m_sOrientation);
+      pConf->Write("Persistence", cont->m_bPersVisible);
+      pConf->Write("InstrumentCount", (int)cont->m_aInstrumentList.GetCount());
+      pConf->Write("BestSizeX", cont->m_best_size.x);
+      pConf->Write("BestSizeY", cont->m_best_size.y);
+      pConf->Write("PersistSizeX", cont->m_pDashboardWindow->GetSize().x);
+      pConf->Write("PersistSizeY", cont->m_pDashboardWindow->GetSize().y);
 
       // Delete old Instruments
       for (size_t i = cont->m_aInstrumentList.GetCount(); i < 40; i++) {
-        if (pConf->Exists(wxString::Format(_T("Instrument%zu"), i + 1))) {
-          pConf->DeleteEntry(wxString::Format(_T("Instrument%zu"), i + 1));
-          if (pConf->Exists(wxString::Format(_T("InstTitleFont%zu"), i + 1))) {
-            pConf->DeleteEntry(wxString::Format(_T("InstTitleFont%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstTitleColor%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstTitle%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstDataShowUnit%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstDataMargin%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstDataAlignment%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstDataFormat%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstDataFont%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstDataColor%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstLabelFont%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstLabelColor%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstSmallFont%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstSmallColor%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("TitleBackColor%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("DataBackColor%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("ArrowFirst%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("ArrowSecond%zu"), i + 1));
+        if (pConf->Exists(wxString::Format("Instrument%zu", i + 1))) {
+          pConf->DeleteEntry(wxString::Format("Instrument%zu", i + 1));
+          if (pConf->Exists(wxString::Format("InstTitleFont%zu", i + 1))) {
+            pConf->DeleteEntry(wxString::Format("InstTitleFont%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstTitleColor%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstTitle%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataShowUnit%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataMargin%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataAlignment%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataFormat%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataFont%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataColor%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstLabelFont%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstLabelColor%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstSmallFont%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstSmallColor%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("TitleBackColor%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("DataBackColor%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("ArrowFirst%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("ArrowSecond%zu", i + 1));
           }
         }
       }
       for (size_t j = 0; j < cont->m_aInstrumentList.GetCount(); j++) {
-        pConf->Write(wxString::Format(_T("Instrument%zu"), j + 1),
+        pConf->Write(wxString::Format("Instrument%zu", j + 1),
                      cont->m_aInstrumentList.Item(j));
         InstrumentProperties *Inst = NULL;
         // First delete
-        if (pConf->Exists(wxString::Format(_T("InstTitleFont%zu"), j + 1))) {
+        if (pConf->Exists(wxString::Format("InstTitleFont%zu", j + 1))) {
           bool Delete = true;
           for (size_t i = 0; i < cont->m_aInstrumentPropertyList.GetCount();
                i++) {
@@ -3944,31 +3920,23 @@ bool dashboard_pi::SaveConfig(void) {
             }
           }
           if (Delete) {
-            pConf->DeleteEntry(wxString::Format(_T("InstTitleFont%zu"), j + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstTitleColor%zu"), j + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstTitle%zu"), j + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstDataShowUnit%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstDataMargin%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstDataAlignment%zu"), i + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstDataFormat%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstDataFont%zu"), j + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstDataColor%zu"), j + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstLabelFont%zu"), j + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstLabelColor%zu"), j + 1));
-            pConf->DeleteEntry(wxString::Format(_T("InstSmallFont%zu"), j + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("InstSmallColor%zu"), j + 1));
-            pConf->DeleteEntry(
-                wxString::Format(_T("TitleBackColor%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("DataBackColor%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("ArrowFirst%zu"), i + 1));
-            pConf->DeleteEntry(wxString::Format(_T("ArrowSecond%zu"), i + 1));
+            pConf->DeleteEntry(wxString::Format("InstTitleFont%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("InstTitleColor%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("InstTitle%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataShowUnit%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataMargin%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataAlignment%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataFormat%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataFont%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("InstDataColor%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("InstLabelFont%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("InstLabelColor%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("InstSmallFont%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("InstSmallColor%zu", j + 1));
+            pConf->DeleteEntry(wxString::Format("TitleBackColor%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("DataBackColor%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("ArrowFirst%zu", i + 1));
+            pConf->DeleteEntry(wxString::Format("ArrowSecond%zu", i + 1));
           }
         }
         Inst = NULL;
@@ -3977,40 +3945,40 @@ bool dashboard_pi::SaveConfig(void) {
           Inst = cont->m_aInstrumentPropertyList.Item(i);
           if (Inst->m_Listplace == (int)j) {
             pConf->Write(
-                wxString::Format(_T("InstTitleFont%zu"), j + 1),
+                wxString::Format("InstTitleFont%zu", j + 1),
                 Inst->m_USTitleFont.GetChosenFont().GetNativeFontInfoDesc());
             pConf->Write(
-                wxString::Format(_T("InstTitleColor%zu"), j + 1),
+                wxString::Format("InstTitleColor%zu", j + 1),
                 Inst->m_USTitleFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
             pConf->Write(
-                wxString::Format(_T("InstDataFont%zu"), j + 1),
+                wxString::Format("InstDataFont%zu", j + 1),
                 Inst->m_USDataFont.GetChosenFont().GetNativeFontInfoDesc());
             pConf->Write(
-                wxString::Format(_T("InstDataColor%zu"), j + 1),
+                wxString::Format("InstDataColor%zu", j + 1),
                 Inst->m_USDataFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
             pConf->Write(
-                wxString::Format(_T("InstLabelFont%zu"), j + 1),
+                wxString::Format("InstLabelFont%zu", j + 1),
                 Inst->m_USLabelFont.GetChosenFont().GetNativeFontInfoDesc());
             pConf->Write(
-                wxString::Format(_T("InstLabelColor%zu"), j + 1),
+                wxString::Format("InstLabelColor%zu", j + 1),
                 Inst->m_USLabelFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
             pConf->Write(
-                wxString::Format(_T("InstSmallFont%zu"), j + 1),
+                wxString::Format("InstSmallFont%zu", j + 1),
                 Inst->m_USSmallFont.GetChosenFont().GetNativeFontInfoDesc());
             pConf->Write(
-                wxString::Format(_T("InstSmallColor%zu"), j + 1),
+                wxString::Format("InstSmallColor%zu", j + 1),
                 Inst->m_USSmallFont.GetColour().GetAsString(wxC2S_HTML_SYNTAX));
             pConf->Write(
-                wxString::Format(_T("TitleBackColor%zu"), j + 1),
+                wxString::Format("TitleBackColor%zu", j + 1),
                 Inst->m_TitleBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
             pConf->Write(
-                wxString::Format(_T("DataBackColor%zu"), j + 1),
+                wxString::Format("DataBackColor%zu", j + 1),
                 Inst->m_DataBackgroundColour.GetAsString(wxC2S_HTML_SYNTAX));
             pConf->Write(
-                wxString::Format(_T("ArrowFirst%zu"), j + 1),
+                wxString::Format("ArrowFirst%zu", j + 1),
                 Inst->m_Arrow_First_Colour.GetAsString(wxC2S_HTML_SYNTAX));
             pConf->Write(
-                wxString::Format(_T("ArrowSecond%zu"), j + 1),
+                wxString::Format("ArrowSecond%zu", j + 1),
                 Inst->m_Arrow_Second_Colour.GetAsString(wxC2S_HTML_SYNTAX));
             break;
           }
@@ -4027,7 +3995,7 @@ void dashboard_pi::ApplyConfig(void) {
   // Reverse order to handle deletes
   for (size_t i = m_ArrayOfDashboardWindow.GetCount(); i > 0; i--) {
     DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item(i - 1);
-    int orient = (cont->m_sOrientation == _T("V") ? wxVERTICAL : wxHORIZONTAL);
+    int orient = (cont->m_sOrientation == "V" ? wxVERTICAL : wxHORIZONTAL);
     if (cont->m_bIsDeleted) {
       if (cont->m_pDashboardWindow) {
         m_pauimgr->DetachPane(cont->m_pDashboardWindow);
@@ -4160,9 +4128,9 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   int display_width, display_height;
   wxDisplaySize(&display_width, &display_height);
 
-  wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
-                       wxFileName::GetPathSeparator() + _T("dashboard_pi") +
-                       wxFileName::GetPathSeparator() + _T("data") +
+  wxString shareLocn = *GetpSharedDataLocation() + "plugins" +
+                       wxFileName::GetPathSeparator() + "dashboard_pi" +
+                       wxFileName::GetPathSeparator() + "data" +
                        wxFileName::GetPathSeparator();
 
   Connect(wxEVT_CLOSE_WINDOW,
@@ -4225,7 +4193,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
 
   wxBitmap bmDashBoard;
 #ifdef ocpnUSE_SVG
-  wxString filename = shareLocn + _T("Dashboard.svg");
+  wxString filename = shareLocn + "Dashboard.svg";
   bmDashBoard = GetBitmapFromSVGFile(filename, imageRefSize, imageRefSize);
 #else
   wxImage dash1 = wxBitmap(*_img_dashboard_pi).ConvertToImage();
@@ -4242,7 +4210,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
                      wxLC_REPORT | wxLC_NO_HEADER | wxLC_SINGLE_SEL);
 
   m_pListCtrlDashboards->AssignImageList(imglist1, wxIMAGE_LIST_SMALL);
-  m_pListCtrlDashboards->InsertColumn(0, _T(""));
+  m_pListCtrlDashboards->InsertColumn(0, "");
   m_pListCtrlDashboards->Connect(
       wxEVT_COMMAND_LIST_ITEM_SELECTED,
       wxListEventHandler(DashboardPreferencesDialog::OnDashboardSelected), NULL,
@@ -4264,8 +4232,8 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
 #endif
 
 #ifdef ocpnUSE_SVG
-  bmPlus = GetBitmapFromSVGFile(shareLocn + _T("plus.svg"), bmSize, bmSize);
-  bmMinus = GetBitmapFromSVGFile(shareLocn + _T("minus.svg"), bmSize, bmSize);
+  bmPlus = GetBitmapFromSVGFile(shareLocn + "plus.svg", bmSize, bmSize);
+  bmMinus = GetBitmapFromSVGFile(shareLocn + "minus.svg", bmSize, bmSize);
 #else
   wxImage plus1 = wxBitmap(*_img_plus).ConvertToImage();
   wxImage plus1s = plus1.Scale(bmSize, bmSize, wxIMAGE_QUALITY_HIGH);
@@ -4317,15 +4285,14 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
 
   itemFlexGridSizer->Add(m_pCheckBoxIsVisible, 0, wxEXPAND | wxALL,
                          border_size);
-  wxStaticText *itemDummy01 =
-      new wxStaticText(m_pPanelDashboard, wxID_ANY, _T(""));
+  wxStaticText *itemDummy01 = new wxStaticText(m_pPanelDashboard, wxID_ANY, "");
   itemFlexGridSizer->Add(itemDummy01, 0, wxEXPAND | wxALL, border_size);
 
   wxStaticText *itemStaticText01 =
       new wxStaticText(m_pPanelDashboard, wxID_ANY, _("Caption:"),
                        wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer->Add(itemStaticText01, 0, wxEXPAND | wxALL, border_size);
-  m_pTextCtrlCaption = new wxTextCtrl(m_pPanelDashboard, wxID_ANY, _T(""),
+  m_pTextCtrlCaption = new wxTextCtrl(m_pPanelDashboard, wxID_ANY, "",
                                       wxDefaultPosition, wxDefaultSize);
   m_pCheckBoxIsVisible->SetMinSize(wxSize(30 * GetCharWidth(), -1));
   itemFlexGridSizer->Add(m_pTextCtrlCaption, 0, wxALIGN_RIGHT | wxALL,
@@ -4350,10 +4317,10 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
 
   wxBitmap bmDial, bmInst;
 #ifdef ocpnUSE_SVG
-  bmDial = GetBitmapFromSVGFile(shareLocn + _T("dial.svg"), instImageRefSize,
+  bmDial = GetBitmapFromSVGFile(shareLocn + "dial.svg", instImageRefSize,
                                 instImageRefSize);
-  bmInst = GetBitmapFromSVGFile(shareLocn + _T("instrument.svg"),
-                                instImageRefSize, instImageRefSize);
+  bmInst = GetBitmapFromSVGFile(shareLocn + "instrument.svg", instImageRefSize,
+                                instImageRefSize);
 #else
   wxImage dial1 = wxBitmap(*_img_dial).ConvertToImage();
   wxImage dial1s =
@@ -4577,19 +4544,13 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
       wxDefaultPosition, wxDefaultSize, 0);
   itemFlexGridSizer04->Add(itemStaticText12, 0, wxEXPAND | wxALL, border_size);
   wxString m_UTCOffsetChoices[] = {
-      _T( "-12:00" ), _T( "-11:30" ), _T( "-11:00" ), _T( "-10:30" ),
-      _T( "-10:00" ), _T( "-09:30" ), _T( "-09:00" ), _T( "-08:30" ),
-      _T( "-08:00" ), _T( "-07:30" ), _T( "-07:00" ), _T( "-06:30" ),
-      _T( "-06:00" ), _T( "-05:30" ), _T( "-05:00" ), _T( "-04:30" ),
-      _T( "-04:00" ), _T( "-03:30" ), _T( "-03:00" ), _T( "-02:30" ),
-      _T( "-02:00" ), _T( "-01:30" ), _T( "-01:00" ), _T( "-00:30" ),
-      _T( " 00:00" ), _T( " 00:30" ), _T( " 01:00" ), _T( " 01:30" ),
-      _T( " 02:00" ), _T( " 02:30" ), _T( " 03:00" ), _T( " 03:30" ),
-      _T( " 04:00" ), _T( " 04:30" ), _T( " 05:00" ), _T( " 05:30" ),
-      _T( " 06:00" ), _T( " 06:30" ), _T( " 07:00" ), _T( " 07:30" ),
-      _T( " 08:00" ), _T( " 08:30" ), _T( " 09:00" ), _T( " 09:30" ),
-      _T( " 10:00" ), _T( " 10:30" ), _T( " 11:00" ), _T( " 11:30" ),
-      _T( " 12:00" )};
+      "-12:00", "-11:30", "-11:00", "-10:30", "-10:00", "-09:30", "-09:00",
+      "-08:30", "-08:00", "-07:30", "-07:00", "-06:30", "-06:00", "-05:30",
+      "-05:00", "-04:30", "-04:00", "-03:30", "-03:00", "-02:30", "-02:00",
+      "-01:30", "-01:00", "-00:30", " 00:00", " 00:30", " 01:00", " 01:30",
+      " 02:00", " 02:30", " 03:00", " 03:30", " 04:00", " 04:30", " 05:00",
+      " 05:30", " 06:00", " 06:30", " 07:00", " 07:30", " 08:00", " 08:30",
+      " 09:00", " 09:30", " 10:00", " 10:30", " 11:00", " 11:30", " 12:00"};
   int m_UTCOffsetNChoices = sizeof(m_UTCOffsetChoices) / sizeof(wxString);
   m_pChoiceUTCOffset =
       new wxChoice(itemPanelNotebook02, wxID_ANY, wxDefaultPosition,
@@ -4910,7 +4871,7 @@ void DashboardPreferencesDialog::SaveDashboardConfig() {
     cont->m_bIsVisible = m_pCheckBoxIsVisible->IsChecked();
     cont->m_sCaption = m_pTextCtrlCaption->GetValue();
     cont->m_sOrientation =
-        m_pChoiceOrientation->GetSelection() == 0 ? _T("V") : _T("H");
+        m_pChoiceOrientation->GetSelection() == 0 ? "V" : "H";
     cont->m_aInstrumentList.Clear();
     for (int i = 0; i < m_pListCtrlInstruments->GetItemCount(); i++)
       cont->m_aInstrumentList.Add((int)m_pListCtrlInstruments->GetItemData(i));
@@ -4947,7 +4908,7 @@ void DashboardPreferencesDialog::UpdateDashboardButtonsState() {
     DashboardWindowContainer *cont = m_Config.Item(curSel);
     m_pCheckBoxIsVisible->SetValue(cont->m_bIsVisible);
     m_pTextCtrlCaption->SetValue(cont->m_sCaption);
-    m_pChoiceOrientation->SetSelection(cont->m_sOrientation == _T("V") ? 0 : 1);
+    m_pChoiceOrientation->SetSelection(cont->m_sOrientation == "V" ? 0 : 1);
     m_pListCtrlInstruments->DeleteAllItems();
     for (size_t i = 0; i < cont->m_aInstrumentList.GetCount(); i++) {
       wxListItem item;
@@ -4960,7 +4921,7 @@ void DashboardPreferencesDialog::UpdateDashboardButtonsState() {
   } else {
     curSel = -1;
     m_pCheckBoxIsVisible->SetValue(false);
-    m_pTextCtrlCaption->SetValue(_T(""));
+    m_pTextCtrlCaption->SetValue("");
     m_pChoiceOrientation->SetSelection(0);
     m_pListCtrlInstruments->DeleteAllItems();
   }
@@ -5018,7 +4979,7 @@ void DashboardPreferencesDialog::OnDashboardAdd(wxCommandEvent &event) {
   wxArrayInt ar;
   wxArrayOfInstrumentProperties Property;
   DashboardWindowContainer *dwc = new DashboardWindowContainer(
-      NULL, MakeName(), _("Dashboard"), _T("V"), ar, Property);
+      NULL, MakeName(), _("Dashboard"), "V", ar, Property);
   dwc->m_bIsVisible = true;
   m_Config.Add(dwc);
 }
@@ -5181,13 +5142,13 @@ void DashboardPreferencesDialog::OnInstrumentEdit(wxCommandEvent &event) {
         Edit->m_fontPicker6->GetSelectedColour() != g_FontSmall.GetColour())
       DefaultFont = false;
     wxColour dummy;
-    GetGlobalColor(_T("DASHL"), &dummy);
+    GetGlobalColor("DASHL", &dummy);
     if (Edit->m_colourPicker1->GetColour() != dummy) DefaultFont = false;
-    GetGlobalColor(_T("DASHB"), &dummy);
+    GetGlobalColor("DASHB", &dummy);
     if (Edit->m_colourPicker2->GetColour() != dummy) DefaultFont = false;
-    GetGlobalColor(_T("DASHN"), &dummy);
+    GetGlobalColor("DASHN", &dummy);
     if (Edit->m_colourPicker3->GetColour() != dummy) DefaultFont = false;
-    GetGlobalColor(_T("BLUE3"), &dummy);
+    GetGlobalColor("BLUE3", &dummy);
     if (Edit->m_colourPicker4->GetColour() != dummy) DefaultFont = false;
     if (DefaultFont)
       cont->m_aInstrumentPropertyList.Remove(Inst);
@@ -5404,7 +5365,7 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id,
                                  int orient, DashboardWindowContainer *mycont)
     : wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, 0) {
   // wxDialog::Create(pparent, id, _("tileMine"), wxDefaultPosition,
-  // wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("Dashboard"));
+  // wxDefaultSize, wxDEFAULT_DIALOG_STYLE, "Dashboard");
 
   m_pauimgr = auimgr;
   m_plugin = plugin;
@@ -5804,12 +5765,12 @@ void DashboardWindow::OnContextMenuSelect(wxCommandEvent &event) {
     }
     case ID_DASH_VERTICAL: {
       ChangePaneOrientation(wxVERTICAL, true);
-      m_Container->m_sOrientation = _T("V");
+      m_Container->m_sOrientation = "V";
       break;
     }
     case ID_DASH_HORIZONTAL: {
       ChangePaneOrientation(wxHORIZONTAL, true);
-      m_Container->m_sOrientation = _T("H");
+      m_Container->m_sOrientation = "H";
       break;
     }
     case ID_DASH_UNDOCK: {
@@ -5826,7 +5787,7 @@ void DashboardWindow::SetColorScheme(PI_ColorScheme cs) {
   //  Improve appearance, especially in DUSK or NIGHT palette
   wxColour col = g_BackgroundColor;
 
-  if (!g_ForceBackgroundColor) GetGlobalColor(_T("DASHL"), &col);
+  if (!g_ForceBackgroundColor) GetGlobalColor("DASHL", &col);
   SetBackgroundColour(col);
 
   Refresh(false);
@@ -5930,7 +5891,7 @@ void DashboardWindow::SetInstrumentList(
       case ID_DBP_I_SOG:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_SOG, _T("%5.1f"));
+            OCPN_DBP_STC_SOG, "%5.1f");
         break;
       case ID_DBP_D_SOG:
         instrument = new DashboardInstrument_Speedometer(
@@ -5963,12 +5924,12 @@ void DashboardWindow::SetInstrumentList(
       case ID_DBP_I_COG:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_COG, _T("%03.0f"));
+            OCPN_DBP_STC_COG, "%03.0f");
         break;
       case ID_DBP_M_COG:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_MCOG, _T("%03.0f"));
+            OCPN_DBP_STC_MCOG, "%03.0f");
         break;
       case ID_DBP_D_COG:
         instrument = new DashboardInstrument_Compass(
@@ -5979,7 +5940,7 @@ void DashboardWindow::SetInstrumentList(
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionLabel(30, DIAL_LABEL_ROTATED);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.2f"),
+            ->SetOptionExtraValue(OCPN_DBP_STC_SOG, "SOG\n%.2f",
                                   DIAL_POSITION_BOTTOMLEFT);
         break;
       case ID_DBP_D_HDT:
@@ -5991,24 +5952,24 @@ void DashboardWindow::SetInstrumentList(
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionLabel(30, DIAL_LABEL_ROTATED);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_STW, _T("STW\n%.1f"),
+            ->SetOptionExtraValue(OCPN_DBP_STC_STW, "STW\n%.1f",
                                   DIAL_POSITION_BOTTOMLEFT);
         break;
       case ID_DBP_I_STW:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_STW, _T("%.1f"));
+            OCPN_DBP_STC_STW, "%.1f");
         break;
       case ID_DBP_I_HDT:  // true heading
         // TODO: Option True or Magnetic
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_HDT, _T("%03.0f"));
+            OCPN_DBP_STC_HDT, "%03.0f");
         break;
       case ID_DBP_I_HDM:  // magnetic heading
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_HDM, _T("%03.0f"));
+            OCPN_DBP_STC_HDM, "%03.0f");
         break;
       case ID_DBP_D_AW:
       case ID_DBP_D_AWA:
@@ -6016,15 +5977,15 @@ void DashboardWindow::SetInstrumentList(
                                                   getInstrumentCaption(id),
                                                   Properties, OCPN_DBP_STC_AWA);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionMainValue(_T("%.0f"), DIAL_POSITION_BOTTOMLEFT);
+            ->SetOptionMainValue("%.0f", DIAL_POSITION_BOTTOMLEFT);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_AWS, _T("%.1f"),
+            ->SetOptionExtraValue(OCPN_DBP_STC_AWS, "%.1f",
                                   DIAL_POSITION_INSIDE);
         break;
       case ID_DBP_I_AWS:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_AWS, _T("%.1f"));
+            OCPN_DBP_STC_AWS, "%.1f");
         break;
       case ID_DBP_D_AWS:
         instrument = new DashboardInstrument_Speedometer(
@@ -6035,9 +5996,9 @@ void DashboardWindow::SetInstrumentList(
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionMarker(1, DIAL_MARKER_SIMPLE, 5);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionMainValue(_T("A %.1f"), DIAL_POSITION_BOTTOMLEFT);
+            ->SetOptionMainValue("A %.1f", DIAL_POSITION_BOTTOMLEFT);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("T %.1f"),
+            ->SetOptionExtraValue(OCPN_DBP_STC_TWS, "T %.1f",
                                   DIAL_POSITION_BOTTOMRIGHT);
         break;
       case ID_DBP_D_TW:  // True Wind angle +-180 degr on boat axis
@@ -6045,9 +6006,9 @@ void DashboardWindow::SetInstrumentList(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
             OCPN_DBP_STC_TWA);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionMainValue(_T("%.0f"), DIAL_POSITION_BOTTOMLEFT);
+            ->SetOptionMainValue("%.0f", DIAL_POSITION_BOTTOMLEFT);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f"),
+            ->SetOptionExtraValue(OCPN_DBP_STC_TWS, "%.1f",
                                   DIAL_POSITION_INSIDE);
         break;
       case ID_DBP_D_AWA_TWA:  // App/True Wind angle +-180 degr on boat axis
@@ -6056,28 +6017,26 @@ void DashboardWindow::SetInstrumentList(
             OCPN_DBP_STC_AWA);
         ((DashboardInstrument_Dial *)instrument)->SetCapFlag(OCPN_DBP_STC_TWA);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionMainValue(_T("%.0f"), DIAL_POSITION_NONE);
+            ->SetOptionMainValue("%.0f", DIAL_POSITION_NONE);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%.1f"),
-                                  DIAL_POSITION_NONE);
+            ->SetOptionExtraValue(OCPN_DBP_STC_TWS, "%.1f", DIAL_POSITION_NONE);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_AWS, _T("%.1f"),
-                                  DIAL_POSITION_NONE);
+            ->SetOptionExtraValue(OCPN_DBP_STC_AWS, "%.1f", DIAL_POSITION_NONE);
         break;
       case ID_DBP_D_TWD:  // True Wind direction
         instrument = new DashboardInstrument_WindCompass(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
             OCPN_DBP_STC_TWD);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionMainValue(_T("%.0f"), DIAL_POSITION_BOTTOMLEFT);
+            ->SetOptionMainValue("%.0f", DIAL_POSITION_BOTTOMLEFT);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_TWS2, _T("%.1f"),
+            ->SetOptionExtraValue(OCPN_DBP_STC_TWS2, "%.1f",
                                   DIAL_POSITION_INSIDE);
         break;
       case ID_DBP_I_ALTI:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_ALTI, _T("%6.1f"));
+            OCPN_DBP_STC_ALTI, "%6.1f");
         break;
       case ID_DBP_D_ALTI:
         instrument = new DashboardInstrument_Altitude(
@@ -6086,7 +6045,7 @@ void DashboardWindow::SetInstrumentList(
       case ID_DBP_I_DPT:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_DPT, _T("%5.2f"));
+            OCPN_DBP_STC_DPT, "%5.2f");
         break;
       case ID_DBP_D_DPT:
         instrument = new DashboardInstrument_Depth(
@@ -6095,12 +6054,12 @@ void DashboardWindow::SetInstrumentList(
       case ID_DBP_I_TMP:  // water temperature
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_TMP, _T("%2.1f"));
+            OCPN_DBP_STC_TMP, "%2.1f");
         break;
       case ID_DBP_I_MDA:  // barometric pressure
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_MDA, _T("%5.1f"));
+            OCPN_DBP_STC_MDA, "%5.1f");
         break;
       case ID_DBP_D_MDA:  // barometric pressure
         instrument = new DashboardInstrument_Speedometer(
@@ -6111,54 +6070,54 @@ void DashboardWindow::SetInstrumentList(
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionMarker(7.5, DIAL_MARKER_SIMPLE, 1);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionMainValue(_T("%5.1f"), DIAL_POSITION_INSIDE);
+            ->SetOptionMainValue("%5.1f", DIAL_POSITION_INSIDE);
         break;
       case ID_DBP_I_ATMP:  // air temperature
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_ATMP, _T("%2.1f"));
+            OCPN_DBP_STC_ATMP, "%2.1f");
         break;
       case ID_DBP_I_VLW1:  // Trip Log
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_VLW1, _T("%2.1f"));
+            OCPN_DBP_STC_VLW1, "%2.1f");
         break;
 
       case ID_DBP_I_VLW2:  // Sum Log
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_VLW2, _T("%2.1f"));
+            OCPN_DBP_STC_VLW2, "%2.1f");
         break;
 
       case ID_DBP_I_TWA:  // true wind angle
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_TWA, _T("%5.0f"));
+            OCPN_DBP_STC_TWA, "%5.0f");
         break;
       case ID_DBP_I_TWD:  // true wind direction
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_TWD, _T("%3.0f"));
+            OCPN_DBP_STC_TWD, "%3.0f");
         break;
       case ID_DBP_I_TWS:  // true wind speed
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_TWS, _T("%2.1f"));
+            OCPN_DBP_STC_TWS, "%2.1f");
         break;
       case ID_DBP_I_AWA:  // apparent wind angle
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_AWA, _T("%3.0f"));
+            OCPN_DBP_STC_AWA, "%3.0f");
         break;
       case ID_DBP_I_VMGW:  // VMG based on wind and STW
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_VMGW, _T("%2.1f"));
+            OCPN_DBP_STC_VMGW, "%2.1f");
         break;
       case ID_DBP_I_VMG:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_VMG, _T("%5.1f"));
+            OCPN_DBP_STC_VMG, "%5.1f");
         break;
       case ID_DBP_D_VMG:
         instrument = new DashboardInstrument_Speedometer(
@@ -6169,13 +6128,13 @@ void DashboardWindow::SetInstrumentList(
         ((DashboardInstrument_Dial *)instrument)
             ->SetOptionMarker(0.5, DIAL_MARKER_SIMPLE, 2);
         ((DashboardInstrument_Dial *)instrument)
-            ->SetOptionExtraValue(OCPN_DBP_STC_SOG, _T("SOG\n%.1f"),
+            ->SetOptionExtraValue(OCPN_DBP_STC_SOG, "SOG\n%.1f",
                                   DIAL_POSITION_BOTTOMLEFT);
         break;
       case ID_DBP_I_RSA:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_RSA, _T("%5.0f"));
+            OCPN_DBP_STC_RSA, "%5.0f");
         break;
       case ID_DBP_D_RSA:
         instrument = new DashboardInstrument_RudderAngle(
@@ -6184,7 +6143,7 @@ void DashboardWindow::SetInstrumentList(
       case ID_DBP_I_SAT:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_SAT, _T("%5.0f"));
+            OCPN_DBP_STC_SAT, "%5.0f");
         break;
       case ID_DBP_D_GPS:
         instrument = new DashboardInstrument_GPS(
@@ -6222,29 +6181,29 @@ void DashboardWindow::SetInstrumentList(
       case ID_DBP_I_PITCH:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_PITCH, _T("%2.1f"));
+            OCPN_DBP_STC_PITCH, "%2.1f");
         break;
       case ID_DBP_I_HEEL:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_HEEL, _T("%2.1f"));
+            OCPN_DBP_STC_HEEL, "%2.1f");
         break;
         // any clock display with "LCL" in the format string is converted from
         // UTC to local TZ
       case ID_DBP_I_SUNLCL:
         instrument = new DashboardInstrument_Sun(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            _T( "%02i:%02i:%02i LCL" ));
+            "%02i:%02i:%02i LCL");
         break;
       case ID_DBP_I_GPSLCL:
         instrument = new DashboardInstrument_Clock(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_CLK, _T( "%02i:%02i:%02i LCL" ));
+            OCPN_DBP_STC_CLK, "%02i:%02i:%02i LCL");
         break;
       case ID_DBP_I_CPULCL:
         instrument = new DashboardInstrument_CPUClock(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            _T( "%02i:%02i:%02i LCL" ));
+            "%02i:%02i:%02i LCL");
         break;
       case ID_DBP_I_HUM:
         instrument = new DashboardInstrument_Single(
@@ -6254,7 +6213,7 @@ void DashboardWindow::SetInstrumentList(
       case ID_DBP_I_WCC:
         instrument = new DashboardInstrument_Single(
             this, wxID_ANY, getInstrumentCaption(id), Properties,
-            OCPN_DBP_STC_WCC, _T("%5.1f"));
+            OCPN_DBP_STC_WCC, "%5.1f");
         break;
     }
     if (instrument) {
@@ -6347,7 +6306,7 @@ bool OCPNFontButton::Create(wxWindow *parent, wxWindowID id,
   label = name;
   // create this button
   if (!wxButton::Create(parent, id, label, pos, size, style, validator, name)) {
-    wxFAIL_MSG(wxT("OCPNFontButton creation failed"));
+    wxFAIL_MSG("OCPNFontButton creation failed");
     return false;
   }
 
@@ -6446,7 +6405,7 @@ void OCPNFontButton::UpdateFont() {
   }
 
   wxString label =
-      wxString::Format(wxT("%s, %d"), m_selectedFont.GetFaceName().c_str(),
+      wxString::Format("%s, %d", m_selectedFont.GetFaceName().c_str(),
                        m_selectedFont.GetPointSize());
 
   if (HasFlag(wxFNTP_FONTDESC_AS_LABEL)) {
@@ -6619,13 +6578,13 @@ void EditDialog::OnSetdefault(wxCommandEvent &event) {
   m_fontPicker6->SetSelectedFont(g_USFontSmall.GetChosenFont());
   m_fontPicker6->SetSelectedColour(g_USFontSmall.GetColour());
   wxColour dummy;
-  GetGlobalColor(_T("DASHL"), &dummy);
+  GetGlobalColor("DASHL", &dummy);
   m_colourPicker1->SetColour(dummy);
-  GetGlobalColor(_T("DASHB"), &dummy);
+  GetGlobalColor("DASHB", &dummy);
   m_colourPicker2->SetColour(dummy);
-  GetGlobalColor(_T("DASHN"), &dummy);
+  GetGlobalColor("DASHN", &dummy);
   m_colourPicker3->SetColour(dummy);
-  GetGlobalColor(_T("BLUE3"), &dummy);
+  GetGlobalColor("BLUE3", &dummy);
   m_colourPicker4->SetColour(dummy);
   Update();
 }

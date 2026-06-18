@@ -43,7 +43,7 @@
 // IMPLEMENT_DYNAMIC( GGA, RESPONSE )
 
 GGA::GGA() {
-  Mnemonic = _T("GGA");
+  Mnemonic = "GGA";
   Empty();
 }
 
@@ -107,7 +107,7 @@ bool GGA::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(15) == NTrue) {
-    SetErrorMessage(_T("Invalid Checksum" ));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -139,9 +139,9 @@ bool GGA::Write(SENTENCE& sentence) {
   sentence += NumberOfSatellitesInUse;
   sentence += HorizontalDilutionOfPrecision;
   sentence += AntennaAltitudeMeters;
-  sentence += _T("M");
+  sentence += "M";
   sentence += GeoidalSeparationMeters;
-  sentence += _T("M");
+  sentence += "M";
   sentence += AgeOfDifferentialGPSDataSeconds;
   sentence += DifferentialReferenceStationID;
 

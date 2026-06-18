@@ -46,7 +46,7 @@ DashboardInstrument_Clock::DashboardInstrument_Clock(
     : DashboardInstrument_Single(parent, id, title, Properties, cap_flag,
                                  format) {
   // if format contains the string "LCL" then display time in local TZ
-  if (format.Contains(_T( "LCL" )))
+  if (format.Contains("LCL"))
     setUTC(false);
   else
     setUTC(true);
@@ -63,10 +63,10 @@ void DashboardInstrument_Clock::SetUtcTime(wxDateTime data) {
 }
 
 wxString DashboardInstrument_Clock::GetDisplayTime(wxDateTime UTCtime) {
-  wxString result(_T( "---" ));
+  wxString result("---");
   if (UTCtime.IsValid()) {
     if (getUTC()) {
-      result = UTCtime.FormatISOTime().Append(_T( " UTC" ));
+      result = UTCtime.FormatISOTime().Append(" UTC");
       return result;
     }
     wxDateTime displayTime;
@@ -76,7 +76,7 @@ wxString DashboardInstrument_Clock::GetDisplayTime(wxDateTime UTCtime) {
     } else {
       displayTime = UTCtime.FromTimezone(wxDateTime::UTC);
     }
-    result = displayTime.FormatISOTime().Append(_T( " LCL" ));
+    result = displayTime.FormatISOTime().Append(" LCL");
   }
   return result;
 }
@@ -95,7 +95,7 @@ void DashboardInstrument_CPUClock::SetData(DASH_CAP, double, wxString) {
 }
 
 void DashboardInstrument_CPUClock::SetUtcTime(wxDateTime data) {
-  m_data = wxDateTime::Now().FormatISOTime().Append(_T( " CPU" ));
+  m_data = wxDateTime::Now().FormatISOTime().Append(" CPU");
   Refresh();
 }
 
@@ -103,11 +103,11 @@ DashboardInstrument_Moon::DashboardInstrument_Moon(
     wxWindow *parent, wxWindowID id, wxString title,
     InstrumentProperties *Properties)
     : DashboardInstrument_Clock(parent, id, title, Properties, OCPN_DBP_STC_CLK,
-                                _T("%i/4 %c")) {
+                                "%i/4 %c") {
   m_cap_flag.set(OCPN_DBP_STC_LAT);
   m_phase = -1;
   m_radius = 14;
-  m_hemisphere = _T("");
+  m_hemisphere = "";
 }
 
 wxSize DashboardInstrument_Moon::GetSize(int orient, wxSize hint) {
@@ -127,18 +127,18 @@ wxSize DashboardInstrument_Moon::GetSize(int orient, wxSize hint) {
 void DashboardInstrument_Moon::SetData(DASH_CAP st, double value,
                                        wxString format) {
   if (st == OCPN_DBP_STC_LAT && !std::isnan(value)) {
-    m_hemisphere = (value < 0 ? _T("S") : _T("N"));
+    m_hemisphere = (value < 0 ? "S" : "N");
   }
 }
 
 void DashboardInstrument_Moon::Draw(wxGCDC *dc) {
-  if (m_phase == -1 || m_hemisphere == _T("")) return;
+  if (m_phase == -1 || m_hemisphere == "") return;
 
   wxSize sz = GetClientSize();
   wxColour cl0, cl1, cl2;
 
   dc->SetPen(*wxTRANSPARENT_PEN);
-  GetGlobalColor(_T("DASHL"), &cl0);
+  GetGlobalColor("DASHL", &cl0);
   dc->SetBrush(cl0);
   wxPoint points[3];
   points[0].x = 5;
@@ -155,9 +155,9 @@ void DashboardInstrument_Moon::Draw(wxGCDC *dc) {
   /* Moon phases are seen upside-down on the southern hemisphere */
   int startangle = (m_hemisphere == _("N") ? -90 : 90);
 
-  GetGlobalColor(_T("DASH2"), &cl0);
-  GetGlobalColor(_T("DASH1"), &cl1);
-  GetGlobalColor(_T("DASHF"), &cl2);
+  GetGlobalColor("DASH2", &cl0);
+  GetGlobalColor("DASH1", &cl1);
+  GetGlobalColor("DASHF", &cl2);
 
   dc->SetBrush(cl0);
   dc->DrawCircle(x, y, m_radius);
@@ -281,14 +281,14 @@ DashboardInstrument_Sun::DashboardInstrument_Sun(
   m_cap_flag.set(OCPN_DBP_STC_CLK);
   m_lat = m_lon = 999.9;
   m_dt = wxDateTime::Now().ToUTC();
-  m_sunrise = _T("---");
-  m_sunset = _T("---");
+  m_sunrise = "---";
+  m_sunset = "---";
 }
 
 wxSize DashboardInstrument_Sun::GetSize(int orient, wxSize hint) {
   InitTitleSize();
   int w;
-  InitDataTextHeight(_T("00:00:00 UTC"), w);
+  InitDataTextHeight("00:00:00 UTC", w);
 
   int drawHeight =
       m_DataTextHeight * 2 + m_DataTextHeight * g_TitleVerticalOffset;
@@ -329,14 +329,14 @@ void DashboardInstrument_Sun::SetUtcTime(wxDateTime data) {
     if (sunrise.GetYear() != 999)
       m_sunrise = GetDisplayTime(sunrise);
     else
-      m_sunrise = _T("---");
+      m_sunrise = "---";
     if (sunset.GetYear() != 999)
       m_sunset = GetDisplayTime(sunset);
     else
-      m_sunset = _T("---");
+      m_sunset = "---";
   } else {
-    m_sunrise = _T( "---" );
-    m_sunset = _T( "---" );
+    m_sunrise = "---";
+    m_sunset = "---";
   }
 }
 

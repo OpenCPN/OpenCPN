@@ -93,7 +93,10 @@ iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint pos, long orient,
                 NULL, this);
 }
 
-iENCToolbar::~iENCToolbar() {}
+iENCToolbar::~iENCToolbar() {
+  m_state_timer.Stop();
+  delete m_pbmScratch;
+}
 
 void iENCToolbar::SetColorScheme(ColorScheme cs) {
   m_nDensity = -1;
@@ -286,7 +289,6 @@ void iENCToolbar::StateTimerEvent(wxTimerEvent &event) {
   if (ps52plib) {
     int nset = 1;
 
-    auto acc = top_frame::Get()->GetAbstractPrimaryCanvas();
     switch (acc->GetENCDisplayCategory()) {
       case (DISPLAYBASE):
         nset = 0;

@@ -57,7 +57,7 @@ DashboardInstrument_Altitude::DashboardInstrument_Altitude(
   m_MaxAltitude = 0;
   m_Altitude = 0;
   m_AltitudeUnit = getUsrDistanceUnit_Plugin(g_iDashDepthUnit);
-  m_Temp = _T("--");
+  m_Temp = "--";
   for (int idx = 0; idx < ALTITUDE_RECORD_COUNT; idx++) {
     m_ArrayAltitude[idx] = 0.0;
   }
@@ -119,7 +119,7 @@ void DashboardInstrument_Altitude::SetData(DASH_CAP st, double data,
     m_AltitudeUnit = unit;
   } else if (st == OCPN_DBP_STC_ATMP) {  // Air Temperature
     if (!std::isnan(data)) {
-      m_Temp = wxString::Format(_T("%.1f"), data) + DEGREE_SIGN + unit;
+      m_Temp = wxString::Format("%.1f", data) + DEGREE_SIGN + unit;
     } else {
       m_Temp = "---";
     }
@@ -183,7 +183,7 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   } else {
     if (GetColourSchemeFont(g_pFontSmall->GetColour()) ==
         GetColourSchemeFont(g_pFontLabel->GetColour())) {
-      GetGlobalColor(_T("DASHL"), &cl);
+      GetGlobalColor("DASHL", &cl);
       dc->SetTextForeground(cl);
     } else
       dc->SetTextForeground(GetColourSchemeFont(g_pFontLabel->GetColour()));
@@ -195,7 +195,7 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
     cl = GetColourSchemeFont(m_Properties->m_SmallFont.GetColour());
   else
     cl = GetColourSchemeFont(g_pFontSmall->GetColour());
-  // GetGlobalColor(_T("DASHF"), &cl);
+  // GetGlobalColor("DASHF", &cl);
   pen.SetColour(cl);
   pen.SetWidth(1);
   dc->SetPen(pen);
@@ -278,7 +278,7 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   //        range, getAttenuation(), m_meanAltitude, sqrt(varAltitude));
 
   wxString label;
-  label.Printf(_T("+/-%.1f %8.0f ") + m_AltitudeUnit, sqrt(varAltitude),
+  label.Printf("+/-%.1f %8.0f " + m_AltitudeUnit, sqrt(varAltitude),
                m_MaxAltitude);
   int width, height;
   wxFont f;
@@ -289,7 +289,7 @@ void DashboardInstrument_Altitude::DrawBackground(wxGCDC* dc) {
   dc->GetTextExtent(label, &width, &height, 0, 0, &f);
   dc->DrawText(label, size.x - width - 1, a_plotup - height);
 
-  label.Printf(_T("%.1f/ %8.0f ") + m_AltitudeUnit, m_Range / c_GridLines,
+  label.Printf("%.1f/ %8.0f " + m_AltitudeUnit, m_Range / c_GridLines,
                m_MinAltitude);
   if (m_Properties)
     f = m_Properties->m_SmallFont.GetChosenFont();
@@ -307,11 +307,11 @@ void DashboardInstrument_Altitude::DrawForeground(wxGCDC* dc) {
   } else {
     if (GetColourSchemeFont(g_pFontSmall->GetColour()) ==
         GetColourSchemeFont(g_pFontLabel->GetColour()))
-      GetGlobalColor(_T("DASH1"), &cl);
+      GetGlobalColor("DASH1", &cl);
     else
       cl = GetColourSchemeFont(g_pFontLabel->GetColour());
   }
-  // GetGlobalColor(_T("DASH1"), &cl);
+  // GetGlobalColor("DASH1", &cl);
   wxBrush brush;
   brush.SetStyle(wxBRUSHSTYLE_SOLID);
   brush.SetColour(cl);
@@ -366,15 +366,15 @@ void DashboardInstrument_Altitude::DrawForeground(wxGCDC* dc) {
     dc->SetTextForeground(
         GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
   } else {
-    // GetGlobalColor(_T("DASHF"), &cl);
+    // GetGlobalColor("DASHF", &cl);
     dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
     dc->SetFont(g_pFontData->GetChosenFont());
   }
-  if (m_AltitudeUnit != _T("-")) {  // Watchdog
-    wxString s_alti = wxString::Format(_T("%.1f"), m_meanAltitude);
-    dc->DrawText(s_alti + _T(" ") + m_AltitudeUnit, 10, m_TitleHeight);
+  if (m_AltitudeUnit != "-") {  // Watchdog
+    wxString s_alti = wxString::Format("%.1f", m_meanAltitude);
+    dc->DrawText(s_alti + " " + m_AltitudeUnit, 10, m_TitleHeight);
   } else
-    dc->DrawText(_T("---"), 10, m_TitleHeight);
+    dc->DrawText("---", 10, m_TitleHeight);
 
   // TODO: test display air temperature ID_DBP_I_ATMP
   if (m_Properties)

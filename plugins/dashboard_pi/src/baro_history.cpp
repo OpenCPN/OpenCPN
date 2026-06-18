@@ -188,33 +188,33 @@ void DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc) {
   m_MaxPressScale = (int)((m_MaxPress + 15) - (m_TotalMinPress - 15));
 
   if (!m_IsRunning) {
-    label1 = _T("-- hPa");
-    label2 = _T("-- hPa");
-    label3 = _T("-- hPa");
-    label4 = _T("-- hPa");
-    label5 = _T("-- hPa");
+    label1 = "-- hPa";
+    label2 = "-- hPa";
+    label3 = "-- hPa";
+    label4 = "-- hPa";
+    label5 = "-- hPa";
   } else {
     /*
      The goal is to draw the legend with decimals only, if we really have them !
     */
     // top legend for max press
-    label1.Printf(_T("%.0f hPa"), m_MaxPressScale + (m_TotalMinPress - 18));
+    label1.Printf("%.0f hPa", m_MaxPressScale + (m_TotalMinPress - 18));
 
     // 3/4 legend
 
-    label2.Printf(_T("%.0f hPa"),
+    label2.Printf("%.0f hPa",
                   m_MaxPressScale * 3. / 4 + (m_TotalMinPress - 18));
 
     // center legend
 
-    label3.Printf(_T("%.0f hPa"), m_MaxPressScale / 2 + (m_TotalMinPress - 18));
+    label3.Printf("%.0f hPa", m_MaxPressScale / 2 + (m_TotalMinPress - 18));
 
     // 1/4 legend
 
-    label4.Printf(_T("%.0f hPa"), m_MaxPressScale / 4 + (m_TotalMinPress - 18));
+    label4.Printf("%.0f hPa", m_MaxPressScale / 4 + (m_TotalMinPress - 18));
 
     // bottom legend for min wind
-    label5.Printf(_T("%.0f hPa"), (m_TotalMinPress - 18));
+    label5.Printf("%.0f hPa", (m_TotalMinPress - 18));
   }
   wxFont f;
   if (m_Properties)
@@ -275,7 +275,7 @@ void DashboardInstrument_BaroHistory::DrawBackground(wxGCDC* dc) {
   //---------------------------------------------------------------------------------
   // horizontal lines
   //---------------------------------------------------------------------------------
-  GetGlobalColor(_T("UBLCK"), &cl);
+  GetGlobalColor("UBLCK", &cl);
   pen.SetColour(cl);
   dc->SetPen(pen);
   dc->DrawLine(m_LeftLegend + 3, m_TopLineHeight,
@@ -330,9 +330,9 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
     dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
   }
   if (!std::isnan(m_Press))
-    WindSpeed = wxString::Format(_T("hPa %3.1f  "), m_Press);
+    WindSpeed = wxString::Format("hPa %3.1f  ", m_Press);
   else
-    WindSpeed = wxString::Format(_T("hPa ---  "));
+    WindSpeed = wxString::Format("hPa ---  ");
   if (m_Properties)
     f = m_Properties->m_DataFont.GetChosenFont();
   else
@@ -451,7 +451,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc) {
         pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
                      (m_TopLineHeight + m_DrawAreaRect.height + 1));
-        label.Printf(_T("%02d:%02d"), hour, min);
+        label.Printf("%02d:%02d", hour, min);
         f = g_pFontSmall->GetChosenFont();
         dc->GetTextExtent(label, &width, &height, 0, 0, &f);
         dc->DrawText(label, pointTime.x - width / 2,

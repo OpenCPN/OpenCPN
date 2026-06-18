@@ -40,7 +40,7 @@
 */
 
 HDG::HDG() {
-  Mnemonic = _T("HDG");
+  Mnemonic = "HDG";
   Empty();
 }
 
@@ -79,7 +79,7 @@ bool HDG::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(6) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

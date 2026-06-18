@@ -186,8 +186,7 @@ public:
   EventVar evt_pluglist_change;
 
   /**
-   * Carries a malloc'ed read-only copy of a PlugInContainer owned: by
-   * listener.
+   * Notified with plugin name when it's deactivated.
    */
   EventVar evt_deactivate_plugin;
 

@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
@@ -319,8 +317,8 @@ static bool LoadAllPlugIns(bool load_enabled) {
 #include "bitmaps/opencpn.xpm"
 #endif
 
-wxString newPrivateFileName(wxString, const char *name,
-                            [[maybe_unused]] const char *windowsName) {
+static wxString newPrivateFileName(wxString, const char *name,
+                                   [[maybe_unused]] const char *windowsName) {
   wxString fname = wxString::FromUTF8(name);
   wxString filePathAndName;
 
@@ -336,6 +334,20 @@ wxString newPrivateFileName(wxString, const char *name,
 #endif
 
   return filePathAndName;
+}
+
+void MyApp::OnNewMsgTypes() {
+  for (auto it : m_api_events_callbacks)
+    it.second(HostApi122::EventType::kNewMessageType);
+}
+
+void MyApp::RegisterApiEventCallback(
+    const std::string &plugin_name,
+    std::function<void(HostApi122::EventType what)> callback) {
+  if (callback)
+    m_api_events_callbacks[plugin_name] = std::move(callback);
+  else
+    m_api_events_callbacks.erase(plugin_name);
 }
 
 class WallpaperFrame : public wxFrame {
@@ -1204,8 +1216,10 @@ bool MyApp::OnInit() {
   }
 
   InitRestListeners();
+  new_msg_type_listener.Init(NavMsgBus::GetInstance().new_msg_event,
+                             [&](ObservedEvt &) { OnNewMsgTypes(); });
 
-  //      Establish the GSHHS Dataset location
+  //  Establish the GSHHS Dataset location
   gDefaultWorldMapLocation = "gshhs";
   gDefaultWorldMapLocation.Prepend(g_Platform->GetSharedDataDir());
   gDefaultWorldMapLocation.Append(wxFileName::GetPathSeparator());
@@ -1556,6 +1570,7 @@ void MyApp::BuildMainFrame() {
     }
   }
   MakeLoopbackDriver();
+  MakeInternalDriver();
 
   // Load and initialize plugins
   auto style = g_StyleManager->GetCurrentStyle();

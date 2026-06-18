@@ -40,7 +40,7 @@
 */
 
 HDT::HDT() {
-  Mnemonic = _T("HDT");
+  Mnemonic = "HDT";
   Empty();
 }
 
@@ -70,7 +70,7 @@ bool HDT::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(3) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -87,7 +87,7 @@ bool HDT::Write(SENTENCE& sentence) {
   RESPONSE::Write(sentence);
 
   sentence += DegreesTrue;
-  sentence += _T("T");
+  sentence += "T";
 
   sentence.Finish();
 

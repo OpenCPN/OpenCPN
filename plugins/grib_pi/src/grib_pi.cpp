@@ -74,15 +74,15 @@ grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 
-  wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
-                       wxFileName::GetPathSeparator() + _T("grib_pi") +
-                       wxFileName::GetPathSeparator() + _T("data") +
+  wxString shareLocn = *GetpSharedDataLocation() + "plugins" +
+                       wxFileName::GetPathSeparator() + "grib_pi" +
+                       wxFileName::GetPathSeparator() + "data" +
                        wxFileName::GetPathSeparator();
-  wxImage panelIcon(shareLocn + _T("grib_panel_icon.png"));
+  wxImage panelIcon(shareLocn + "grib_panel_icon.png");
   if (panelIcon.IsOk())
     m_panelBitmap = wxBitmap(panelIcon);
   else
-    wxLogMessage(_T("    GRIB panel icon NOT loaded"));
+    wxLogMessage("    GRIB panel icon NOT loaded");
 
   m_pLastTimelineSet = nullptr;
   m_bShowGrib = false;
@@ -97,7 +97,7 @@ grib_pi::~grib_pi(void) {
 }
 
 int grib_pi::Init(void) {
-  AddLocaleCatalog(_T("opencpn-grib_pi"));
+  AddLocaleCatalog("opencpn-grib_pi");
 
   // Set some default private member parameters
   m_CtrlBarxy = wxPoint(0, 0);
@@ -125,9 +125,9 @@ int grib_pi::Init(void) {
   //      int m_height = GetChartbarHeight();
   //    This PlugIn needs a CtrlBar icon, so request its insertion if enabled
   //    locally
-  wxString shareLocn = *GetpSharedDataLocation() + _T("plugins") +
-                       wxFileName::GetPathSeparator() + _T("grib_pi") +
-                       wxFileName::GetPathSeparator() + _T("data") +
+  wxString shareLocn = *GetpSharedDataLocation() + "plugins" +
+                       wxFileName::GetPathSeparator() + "grib_pi" +
+                       wxFileName::GetPathSeparator() + "data" +
                        wxFileName::GetPathSeparator();
   // Initialize catalog file
   wxString local_grib_catalog = "sources.json";
@@ -142,22 +142,22 @@ int grib_pi::Init(void) {
     wxCopyFile(shareLocn + local_grib_catalog, m_local_sources_catalog);
   }
   if (m_bGRIBShowIcon) {
-    wxString normalIcon = shareLocn + _T("grib.svg");
-    wxString toggledIcon = shareLocn + _T("grib_toggled.svg");
-    wxString rolloverIcon = shareLocn + _T("grib_rollover.svg");
+    wxString normalIcon = shareLocn + "grib.svg";
+    wxString toggledIcon = shareLocn + "grib_toggled.svg";
+    wxString rolloverIcon = shareLocn + "grib_rollover.svg";
 
     //  For journeyman styles, we prefer the built-in raster icons which match
     //  the rest of the toolbar.
-    if (GetActiveStyleName().Lower() != _T("traditional")) {
-      normalIcon = _T("");
-      toggledIcon = _T("");
-      rolloverIcon = _T("");
+    if (GetActiveStyleName().Lower() != "traditional") {
+      normalIcon = "";
+      toggledIcon = "";
+      rolloverIcon = "";
     }
 
     wxLogMessage(normalIcon);
     m_leftclick_tool_id = InsertPlugInToolSVG(
-        _T(""), normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, _("Grib"),
-        _T(""), nullptr, GRIB_TOOL_POSITION, 0, this);
+        "", normalIcon, rolloverIcon, toggledIcon, wxITEM_CHECK, _("Grib"), "",
+        nullptr, GRIB_TOOL_POSITION, 0, this);
   }
 
   if (!QualifyCtrlBarPosition(m_CtrlBarxy, m_CtrlBar_Sizexy)) {
@@ -197,7 +197,7 @@ int grib_pi::GetPlugInVersionMinor() { return PLUGIN_VERSION_MINOR; }
 
 wxBitmap *grib_pi::GetPlugInBitmap() { return &m_panelBitmap; }
 
-wxString grib_pi::GetCommonName() { return _T("GRIB"); }
+wxString grib_pi::GetCommonName() { return "GRIB"; }
 
 wxString grib_pi::GetShortDescription() { return _("GRIB PlugIn for OpenCPN"); }
 
@@ -445,7 +445,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
                                        this, scale_factor);
     m_pGribCtrlBar->SetScaledBitmap(scale_factor);
 
-    wxMenu *dummy = new wxMenu(_T("Plugin"));
+    wxMenu *dummy = new wxMenu("Plugin");
     wxMenuItem *table =
         new wxMenuItem(dummy, wxID_ANY, wxString(_("Weather table")),
                        wxEmptyString, wxITEM_NORMAL);
@@ -640,98 +640,96 @@ void grib_pi::SetDialogFont(wxWindow *dialog, wxFont *font) {
 }
 
 void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
-  if (message_id == _T("GRIB_VALUES_REQUEST")) {
+  if (message_id == "GRIB_VALUES_REQUEST") {
     if (!m_pGribCtrlBar) OnToolbarToolCallback(-1);
 
     // lat, lon, time, what
     wxJSONReader r;
     wxJSONValue v;
     r.Parse(message_body, &v);
-    if (!v.HasMember(_T("Day"))) {
+    if (!v.HasMember("Day")) {
       // bogus or loading grib
-      SendPluginMessage(wxString(_T("GRIB_VALUES")), _T(""));
+      SendPluginMessage(wxString("GRIB_VALUES"), "");
       return;
     }
-    wxDateTime time(v[_T("Day")].AsInt(),
-                    (wxDateTime::Month)v[_T("Month")].AsInt(),
-                    v[_T("Year")].AsInt(), v[_T("Hour")].AsInt(),
-                    v[_T("Minute")].AsInt(), v[_T("Second")].AsInt());
-    double lat = v[_T("lat")].AsDouble();
-    double lon = v[_T("lon")].AsDouble();
+    wxDateTime time(v["Day"].AsInt(), (wxDateTime::Month)v["Month"].AsInt(),
+                    v["Year"].AsInt(), v["Hour"].AsInt(), v["Minute"].AsInt(),
+                    v["Second"].AsInt());
+    double lat = v["lat"].AsDouble();
+    double lon = v["lon"].AsDouble();
 
     if (m_pGribCtrlBar) {
-      if (v.HasMember(_T("WIND SPEED"))) {
+      if (v.HasMember("WIND SPEED")) {
         double vkn, ang;
         if (m_pGribCtrlBar->getTimeInterpolatedValues(
                 vkn, ang, Idx_WIND_VX, Idx_WIND_VY, lon, lat, time) &&
             vkn != GRIB_NOTDEF) {
-          v[_T("Type")] = wxT("Reply");
-          v[_T("WIND SPEED")] = vkn;
-          v[_T("WIND DIR")] = ang;
+          v["Type"] = "Reply";
+          v["WIND SPEED"] = vkn;
+          v["WIND DIR"] = ang;
         } else {
-          v.Remove(_T("WIND SPEED"));
-          v.Remove(_T("WIND DIR"));
+          v.Remove("WIND SPEED");
+          v.Remove("WIND DIR");
         }
       }
-      if (v.HasMember(_T("CURRENT SPEED"))) {
+      if (v.HasMember("CURRENT SPEED")) {
         double vkn, ang;
         if (m_pGribCtrlBar->getTimeInterpolatedValues(
                 vkn, ang, Idx_SEACURRENT_VX, Idx_SEACURRENT_VY, lon, lat,
                 time) &&
             vkn != GRIB_NOTDEF) {
-          v[_T("Type")] = wxT("Reply");
-          v[_T("CURRENT SPEED")] = vkn;
-          v[_T("CURRENT DIR")] = ang;
+          v["Type"] = "Reply";
+          v["CURRENT SPEED"] = vkn;
+          v["CURRENT DIR"] = ang;
         } else {
-          v.Remove(_T("CURRENT SPEED"));
-          v.Remove(_T("CURRENT DIR"));
+          v.Remove("CURRENT SPEED");
+          v.Remove("CURRENT DIR");
         }
       }
-      if (v.HasMember(_T("GUST"))) {
+      if (v.HasMember("GUST")) {
         double vkn = m_pGribCtrlBar->getTimeInterpolatedValue(Idx_WIND_GUST,
                                                               lon, lat, time);
         if (vkn != GRIB_NOTDEF) {
-          v[_T("Type")] = wxT("Reply");
-          v[_T("GUST")] = vkn;
+          v["Type"] = "Reply";
+          v["GUST"] = vkn;
         } else
-          v.Remove(_T("GUST"));
+          v.Remove("GUST");
       }
-      if (v.HasMember(_T("SWELL"))) {
+      if (v.HasMember("SWELL")) {
         double vkn = m_pGribCtrlBar->getTimeInterpolatedValue(Idx_HTSIGW, lon,
                                                               lat, time);
         if (vkn != GRIB_NOTDEF) {
-          v[_T("Type")] = wxT("Reply");
-          v[_T("SWELL")] = vkn;
+          v["Type"] = "Reply";
+          v["SWELL"] = vkn;
         } else
-          v.Remove(_T("SWELL"));
+          v.Remove("SWELL");
       }
 
       wxJSONWriter w;
       wxString out;
       w.Write(v, out);
-      SendPluginMessage(wxString(_T("GRIB_VALUES")), out);
+      SendPluginMessage(wxString("GRIB_VALUES"), out);
     }
-  } else if (message_id == _T("GRIB_VERSION_REQUEST")) {
+  } else if (message_id == "GRIB_VERSION_REQUEST") {
     wxJSONValue v;
-    v[_T("GribVersionMinor")] = GetAPIVersionMinor();
-    v[_T("GribVersionMajor")] = GetAPIVersionMajor();
+    v["GribVersionMinor"] = GetAPIVersionMinor();
+    v["GribVersionMajor"] = GetAPIVersionMajor();
 
     wxJSONWriter w;
     wxString out;
     w.Write(v, out);
-    SendPluginMessage(wxString(_T("GRIB_VERSION")), out);
-  } else if (message_id == _T("GRIB_TIMELINE_REQUEST")) {
+    SendPluginMessage(wxString("GRIB_VERSION"), out);
+  } else if (message_id == "GRIB_TIMELINE_REQUEST") {
     // local time
     SendTimelineMessage(m_pGribCtrlBar ? m_pGribCtrlBar->TimelineTime()
                                        : wxDateTime::Now());
-  } else if (message_id == _T("GRIB_TIMELINE_RECORD_REQUEST")) {
+  } else if (message_id == "GRIB_TIMELINE_RECORD_REQUEST") {
     wxJSONReader r;
     wxJSONValue v;
     r.Parse(message_body, &v);
-    wxDateTime time(v[_T("Day")].AsInt(),
-                    (wxDateTime::Month)v[_T("Month")].AsInt(),
-                    v[_T("Year")].AsInt(), v[_T("Hour")].AsInt(),
-                    v[_T("Minute")].AsInt(), v[_T("Second")].AsInt());
+    wxDateTime time(v["Day"].AsInt(), (wxDateTime::Month)v["Month"].AsInt(),
+                    v["Year"].AsInt(), v["Hour"].AsInt(), v["Minute"].AsInt(),
+                    v["Second"].AsInt());
 
     if (!m_pGribCtrlBar) OnToolbarToolCallback(-1);
 
@@ -741,20 +739,20 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
     char ptr[64];
     snprintf(ptr, sizeof ptr, "%p", set);
 
-    v[_T("GribVersionMajor")] = PLUGIN_VERSION_MAJOR;
-    v[_T("GribVersionMinor")] = PLUGIN_VERSION_MINOR;
-    v[_T("TimelineSetPtr")] = wxString::From8BitData(ptr);
+    v["GribVersionMajor"] = PLUGIN_VERSION_MAJOR;
+    v["GribVersionMinor"] = PLUGIN_VERSION_MINOR;
+    v["TimelineSetPtr"] = wxString::From8BitData(ptr);
 
     wxJSONWriter w;
     wxString out;
     w.Write(v, out);
-    SendPluginMessage(wxString(_T("GRIB_TIMELINE_RECORD")), out);
+    SendPluginMessage(wxString("GRIB_TIMELINE_RECORD"), out);
     delete m_pLastTimelineSet;
     m_pLastTimelineSet = set;
   }
 
-  else if (message_id == _T("GRIB_APPLY_JSON_CONFIG")) {
-    wxLogMessage(_T("Got GRIB_APPLY_JSON_CONFIG"));
+  else if (message_id == "GRIB_APPLY_JSON_CONFIG") {
+    wxLogMessage("Got GRIB_APPLY_JSON_CONFIG");
 
     if (m_pGribCtrlBar) {
       m_pGribCtrlBar->OpenFileFromJSON(message_body);
@@ -782,7 +780,7 @@ bool grib_pi::LoadConfig(void) {
   pConf->Read(_T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1);
   pConf->Read(_T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1);
 #ifdef __WXMSW__
-  pConf->Read(_T("GribIconsScaleFactor"), &m_GribIconsScaleFactor, 1);
+  pConf->Read("GribIconsScaleFactor", &m_GribIconsScaleFactor, 1);
 #endif
 
   m_CtrlBar_Sizexy.x = pConf->Read(_T ( "GRIBCtrlBarSizeX" ), 1400L);
@@ -816,7 +814,7 @@ bool grib_pi::SaveConfig(void) {
   pConf->Write(_T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead);
   pConf->Write(_T ( "ZoomToCenterAtInit"), m_bZoomToCenterAtInit);
 #ifdef __WXMSW__
-  pConf->Write(_T("GribIconsScaleFactor"), m_GribIconsScaleFactor);
+  pConf->Write("GribIconsScaleFactor", m_GribIconsScaleFactor);
 #endif
 
   pConf->Write(_T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x);
@@ -844,24 +842,24 @@ void grib_pi::SendTimelineMessage(wxDateTime time) {
 
   wxJSONValue v;
   if (time.IsValid()) {
-    v[_T("Day")] = time.GetDay();
-    v[_T("Month")] = time.GetMonth();
-    v[_T("Year")] = time.GetYear();
-    v[_T("Hour")] = time.GetHour();
-    v[_T("Minute")] = time.GetMinute();
-    v[_T("Second")] = time.GetSecond();
+    v["Day"] = time.GetDay();
+    v["Month"] = time.GetMonth();
+    v["Year"] = time.GetYear();
+    v["Hour"] = time.GetHour();
+    v["Minute"] = time.GetMinute();
+    v["Second"] = time.GetSecond();
   } else {
-    v[_T("Day")] = -1;
-    v[_T("Month")] = -1;
-    v[_T("Year")] = -1;
-    v[_T("Hour")] = -1;
-    v[_T("Minute")] = -1;
-    v[_T("Second")] = -1;
+    v["Day"] = -1;
+    v["Month"] = -1;
+    v["Year"] = -1;
+    v["Hour"] = -1;
+    v["Minute"] = -1;
+    v["Second"] = -1;
   }
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
+  SendPluginMessage(wxString("GRIB_TIMELINE"), out);
 }
 
 void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {

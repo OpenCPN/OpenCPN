@@ -5,20 +5,11 @@
 #include <string>
 #include <thread>
 
-#if (defined(OCPN_GHC_FILESYSTEM) || \
-     (defined(__clang_major__) && (__clang_major__ < 15)))
-#include <ghc/filesystem.hpp>
-namespace fs = ghc::filesystem;
-#else
-#include <filesystem>
-#include <utility>
-namespace fs = std::filesystem;
-#endif
-
 #include <wx/app.h>
 
 #include <gtest/gtest.h>
 
+#include "std_filesystem.h"
 #include "model/base_platform.h"
 #include "model/comm_buffers.h"
 #include "model/comm_drv_registry.h"
@@ -165,4 +156,37 @@ TEST(N0183Nuffer, Basic) {
   for (char c : input1) n0183_buffer.Put(c);
   EXPECT_TRUE(n0183_buffer.HasSentence());
   EXPECT_EQ(n0183_buffer.GetSentence(), ocpn::rtrim(input2));
+}
+
+TEST(CircularBuffer, Basic) {
+  CircularBuffer<char> buff(10);
+  for (int i = 0; i < 10; i++) buff.Put(static_cast<char>('a' + i));
+  EXPECT_TRUE(buff.IsFull());
+  EXPECT_FALSE(buff.IsEmpty());
+  EXPECT_EQ(buff.Size(), 10);
+  EXPECT_THROW(buff.Put('z'), BufferError);
+
+  for (int i = 0; i < 5; i++) buff.Get();
+  EXPECT_EQ(buff.Size(), 5);
+  EXPECT_FALSE(buff.IsFull());
+  EXPECT_FALSE(buff.IsEmpty());
+  for (int i = 5; i < 9; i++) EXPECT_EQ(buff.Get(), static_cast<char>('a' + i));
+  char c = buff.Peek();
+  EXPECT_EQ(c, 'a' + 9);
+  EXPECT_TRUE(buff.Peek(c));
+  EXPECT_EQ(c, 'a' + 9);
+  EXPECT_TRUE(buff.Get(c));
+  EXPECT_EQ(c, 'a' + 9);
+  EXPECT_EQ(buff.Size(), 0);
+  EXPECT_THROW(buff.Get(), BufferError);
+  EXPECT_THROW(buff.Peek(), BufferError);
+  EXPECT_FALSE(buff.Peek(c));
+  EXPECT_FALSE(buff.Get(c));
+
+  for (int i = 0; i < 10; i++)
+    EXPECT_TRUE(buff.SafePut(static_cast<char>('a' + i)));
+  EXPECT_TRUE(buff.IsFull());
+  EXPECT_FALSE(buff.IsEmpty());
+  EXPECT_EQ(buff.Size(), 10);
+  EXPECT_THROW(buff.Put('z'), BufferError);
 }

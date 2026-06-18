@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( DBT, RESPONSE )
 
 DBT::DBT() {
-  Mnemonic = _T("DBT");
+  Mnemonic = "DBT";
   Empty();
 }
 
@@ -84,7 +84,7 @@ bool DBT::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(7) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -105,11 +105,11 @@ bool DBT::Write(SENTENCE& sentence) {
   RESPONSE::Write(sentence);
 
   sentence += DepthFeet;
-  sentence += _T("f");
+  sentence += "f";
   sentence += DepthMeters;
-  sentence += _T("M");
+  sentence += "M";
   sentence += DepthFathoms;
-  sentence += _T("F");
+  sentence += "F";
 
   sentence.Finish();
 

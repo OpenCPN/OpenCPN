@@ -33,15 +33,4 @@ file(GLOB PLUGINS *_pi)
 foreach (PLUGIN ${PLUGINS})
   add_subdirectory(${PLUGIN})
   message(STATUS "*** Added plugin: ${PLUGIN}")
-endforeach (PLUGIN)
-
-option(OCPN_BUILD_SAMPLE "Build sample plugin" OFF)
-
-if (OCPN_BUILD_SAMPLE)
-  file(GLOB PLUGINS_SAMPLE *_pi_sample)
-
-  foreach (PLUGIN ${PLUGINS_SAMPLE})
-    add_subdirectory(${PLUGIN})
-    message(STATUS "*** Added sample plugin: ${PLUGIN}")
-  endforeach (PLUGIN)
-endif (OCPN_BUILD_SAMPLE)
+endforeach ()

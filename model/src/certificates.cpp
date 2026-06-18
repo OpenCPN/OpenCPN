@@ -117,7 +117,12 @@ X509 *generate_x509(EVP_PKEY *pkey, string ip_v4) {
   X509_set_pubkey(x509, pkey);
 
   /* We want to copy the subject name to the issuer name. */
+#if OPENSSL_VERSION_MAJOR >= 4
+  const X509_NAME *const_name = X509_get_subject_name(x509);
+  X509_NAME *name = X509_NAME_dup(const_name);
+#else
   X509_NAME *name = X509_get_subject_name(x509);
+#endif
 
   /* Set the country code and common name. */
   X509_NAME_add_entry_by_txt(name, "C", MBSTRING_ASC, (unsigned char *)"CA", -1,
@@ -132,6 +137,11 @@ X509 *generate_x509(EVP_PKEY *pkey, string ip_v4) {
 
   /* Now set the issuer name. */
   X509_set_issuer_name(x509, name);
+
+#if OPENSSL_VERSION_MAJOR >= 4
+  /* We are done with name */
+  X509_NAME_free(name);
+#endif
 
   /* Actually sign the certificate with our key. */
 #if OPENSSL_VERSION_MAJOR * 10 + OPENSSL_VERSION_MINOR >= 32

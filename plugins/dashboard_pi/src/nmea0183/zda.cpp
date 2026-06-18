@@ -42,7 +42,7 @@
 // IMPLEMENT_DYNAMIC( ZDA, RESPONSE )
 
 ZDA::ZDA() {
-  Mnemonic = _T("ZDA");
+  Mnemonic = "ZDA";
   Empty();
 }
 
@@ -85,7 +85,7 @@ bool ZDA::Parse(const SENTENCE& sentence) {
   */
 
   if (sentence.IsChecksumBad(7) == TRUE) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 

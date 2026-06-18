@@ -46,6 +46,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -2302,6 +2303,11 @@ public:
   opencpn_plugin_121(void *pmgr);
   virtual void UpdateFollowState(int canvas_index, bool state);
   virtual void OnTideCurrentClick(TCClickInfo info);
+};
+
+class DECL_EXP opencpn_plugin_122 : public opencpn_plugin_121 {
+public:
+  opencpn_plugin_122(void *pmgr) : opencpn_plugin_121(pmgr) {}
 };
 
 //------------------------------------------------------------------
@@ -6463,9 +6469,9 @@ GetAttributes(DriverHandle handle);
  * Send a non-NMEA2000 message. The call is not blocking.
  * @param handle Obtained from GetActiveDrivers()
  * @param payload Message data, for example a complete Nmea0183 message.<br/>
- *        From 1.19: if the handle "protocol" attribute is "internal" it is
+ *        From 5.16.1: if the handle "protocol" attribute is "internal" it is
  *        parsed as <id><space><message> where the id is used when listening/
- *        subscribing to message.<br/>
+ *        subscribing, message the json payload .<br/>
  *        From 5.12.4: if handle "protocol" attribute is "loopback" it is
  *        parsed as one of
  *          - "signalk" <source> <context_self> <json payload>
@@ -7236,10 +7242,15 @@ public:
  */
 extern DECL_EXP std::unique_ptr<HostApi> GetHostApi();
 
-// To gain access to api121, do something like this:
-// auto host_api = std::move(GetHostApi());
-// auto api_121 = std::dynamic_pointer_cast<HostApi121>(host_api);
-
+/**
+ *  Locked down interface published in 5.14.1.
+ *  Usage something like:
+ *
+ *       std::shared_ptr<HostApi> host_api = std::move(GetHostApi());
+ *       std::shared_ptr<HostApi121> api_121 =
+ *               std::dynamic_pointer_cast<HostApi121>(m_host_api);
+ *
+ */
 class HostApi121 : public HostApi {
 public:
   HostApi121()
@@ -7248,6 +7259,7 @@ public:
         kContextMenuDisableRoute(2),
         kContextMenuDisableTrack(4),
         kContextMenuDisableAistarget(8) {}
+
   ~HostApi121() override = default;
 
   const int kContextMenuDisableWaypoint;
@@ -7375,6 +7387,49 @@ public:
   virtual bool GetNearestTideStation(double lat, double lon,
                                      PlugIn_TideStation *station);
   virtual bool GetTideHeight(int stationIndex, time_t time, float *height);
+};
+
+class Api122Impl;  // forward
+
+/** Unstable development API */
+class HostApi122 : public HostApi121 {
+public:
+  HostApi122(Api122Impl *support) : m_api_impl(support) {}
+
+  /** Reported events bitmask. */
+  enum class EventType {
+    kNewMessageType = 1  // A new message type is detected
+  };
+
+  /**
+   * Register a new callback invoked when an EventType event occurs.
+   *
+   * @param plugin_name Invoking plugin name as of GetCommonName().
+   * @param callback Invoked with an EventType argument defining the
+   *     actual event which occurred. Use nullptr to deregister
+   *     possibly existing callback
+   */
+  void RegisterApiEventCallback(const std::string &plugin_name,
+                                std::function<void(EventType what)> callback);
+
+  /**
+   * Return currently known messages types flowing through system.
+   *
+   * General item format: <bus>::<key>
+   * bus  ::= "nmea0183" | "nmea2000" | "SignalK" | "Plugin"
+   * <key> depends on bus -- TBD
+   */
+  const std::set<std::string> &GetActiveMessages();
+
+private:
+  Api122Impl *m_api_impl;  // Raw ptr to app object managed by wxWidgets
+};
+
+/** @interface providing backend api support.  */
+class Api122Impl {
+public:
+  virtual void RegisterApiEventCallback(
+      const std::string &, std::function<void(HostApi122::EventType what)>) = 0;
 };
 
 #endif  //_PLUGIN_H_

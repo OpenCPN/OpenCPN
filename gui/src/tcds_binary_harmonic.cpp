@@ -23,6 +23,7 @@
  */
 
 /* Declarations for zoneinfo compatibility */
+#include <climits>
 #include <string>
 
 #include "tcds_binary_harmonic.h"
@@ -367,8 +368,11 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path) {
   }
 
   //  Node factors
-
-  m_cst_nodes = (double **)malloc(num_csts * sizeof(double *));
+  unsigned nodes_size = num_csts * sizeof(double *);
+#ifndef __APPLE__
+  assert(nodes_size < PTRDIFF_MAX);  // AppleClang barfs, probably a bug.
+#endif
+  m_cst_nodes = (double **)malloc(nodes_size);
   for (int a = 0; a < num_csts; a++)
     m_cst_nodes[a] = (double *)malloc(num_nodes * sizeof(double));
 

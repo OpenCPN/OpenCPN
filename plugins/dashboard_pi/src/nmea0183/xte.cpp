@@ -42,7 +42,7 @@
 extern int g_NMEAXTEPrecision;
 
 XTE::XTE() {
-  Mnemonic = _T("XTE");
+  Mnemonic = "XTE";
   Empty();
 }
 
@@ -90,7 +90,7 @@ bool XTE::Parse(const SENTENCE& sentence) {
   NMEA0183_BOOLEAN check = sentence.IsChecksumBad(15);
 
   if (check == NTrue) {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -121,9 +121,9 @@ bool XTE::Write(SENTENCE& sentence) {
   sentence += CrossTrackErrorDistance;
 
   if (DirectionToSteer == Left)
-    sentence += _T("L");
+    sentence += "L";
   else
-    sentence += _T("R");
+    sentence += "R";
 
   sentence += CrossTrackUnits;
 

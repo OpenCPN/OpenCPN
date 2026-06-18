@@ -42,7 +42,7 @@
 //  TODO: Read rest of MDA sentece.
 
 MDA::MDA() {
-  Mnemonic = _T("MDA");
+  Mnemonic = "MDA";
   Empty();
 }
 
@@ -87,7 +87,7 @@ bool MDA::Parse(const SENTENCE& sentence) {
       FALSE)  // diferent vendors have different length of data message and not
               // 24 field as in standard.
   {
-    SetErrorMessage(_T("Invalid Checksum"));
+    SetErrorMessage("Invalid Checksum");
     return (FALSE);
   }
 
@@ -96,7 +96,7 @@ bool MDA::Parse(const SENTENCE& sentence) {
   AirTemp = sentence.Double(5);
   Humidity = sentence.Double(9);
 
-  if (UnitOfMeasurement == wxT("B")) {
+  if (UnitOfMeasurement == "B") {
     Pressure = sentence.Double(3);  // from bar to Hecto pascal
   }
 

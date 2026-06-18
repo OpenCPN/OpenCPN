@@ -34,6 +34,7 @@
 
 #include <wx/log.h>
 
+#include "model/comm_buffers.h"
 #include "model/comm_drv_n2k_serial.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/comm_drv_registry.h"
@@ -56,91 +57,6 @@ static unsigned char NGT_STARTUP_SEQ[] = {
 };
 
 static std::vector<unsigned char> BufferToActisenseFormat(tN2kMsg& msg);
-
-template <typename T>
-class n2k_atomic_queue {
-public:
-  size_t size() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.size();
-  }
-
-  bool empty() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.empty();
-  }
-
-  const T& front() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_queque.front();
-  }
-
-  void push(const T& value) {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.push(value);
-  }
-
-  void pop() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_queque.pop();
-  }
-
-private:
-  std::queue<T> m_queque;
-  mutable std::mutex m_mutex;
-};
-
-template <class T>
-class circular_buffer {
-public:
-  explicit circular_buffer(size_t size)
-      : buf_(std::unique_ptr<T[]>(new T[size])), max_size_(size) {}
-
-  void reset();
-  size_t capacity() const;
-  size_t size() const;
-
-  bool empty() const {
-    // if head and tail are equal, we are empty
-    return (!full_ && (head_ == tail_));
-  }
-
-  bool full() const {
-    // If tail is ahead the head by 1, we are full
-    return full_;
-  }
-
-  void put(T item) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    buf_[head_] = item;
-    if (full_) tail_ = (tail_ + 1) % max_size_;
-
-    head_ = (head_ + 1) % max_size_;
-
-    full_ = head_ == tail_;
-  }
-
-  T get() {
-    std::lock_guard<std::mutex> lock(mutex_);
-
-    if (empty()) return T();
-
-    // Read data and advance the tail (we now have a free space)
-    auto val = buf_[tail_];
-    full_ = false;
-    tail_ = (tail_ + 1) % max_size_;
-
-    return val;
-  }
-
-private:
-  std::mutex mutex_;
-  std::unique_ptr<T[]> buf_;
-  size_t head_ = 0;
-  size_t tail_ = 0;
-  const size_t max_size_;
-  bool full_ = 0;
-};
 
 class CommDriverN2KSerialEvent;  // fwd
 
@@ -179,7 +95,7 @@ private:
   int m_baud;
   int m_n_timeout;
 
-  n2k_atomic_queue<std::vector<unsigned char>> out_que;
+  CircularBuffer<std::vector<unsigned char>> m_out_que;
   DriverStats m_driver_stats;
   mutable std::mutex m_stats_mutex;
 #ifdef __WXMSW__
@@ -606,7 +522,8 @@ void CommDriverN2KSerial::AddTxPGN(int pgn) {
 
 CommDriverN2KSerialThread::CommDriverN2KSerialThread(
     CommDriverN2KSerial* Launcher, const wxString& PortName,
-    const wxString& strBaudRate) {
+    const wxString& strBaudRate)
+    : m_out_que(OUT_QUEUE_LENGTH) {
   m_pParentDriver = Launcher;  // This thread's immediate "parent"
 
   m_PortName = PortName;
@@ -704,8 +621,8 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
 
 bool CommDriverN2KSerialThread::SetOutMsg(
     const std::vector<unsigned char>& msg) {
-  if (out_que.size() < OUT_QUEUE_LENGTH) {
-    out_que.push(msg);
+  if (!m_out_que.IsFull()) {
+    m_out_que.Put(msg);
     return true;
   }
   return false;
@@ -717,7 +634,7 @@ void* CommDriverN2KSerialThread::Entry() {
   bool nl_found = false;
   wxString msg;
   uint8_t rdata[2000];
-  circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
+  CircularBuffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
   int ib = 0;
 
   //    Request the com port from the comm manager
@@ -793,13 +710,13 @@ void* CommDriverN2KSerialThread::Entry() {
       m_driver_stats.rx_count += newdata;
 
       for (int i = 0; i < newdata; i++) {
-        circle.put(rdata[i]);
+        circle.Put(rdata[i]);
       }
     }
 
-    while (!circle.empty()) {
+    while (!circle.IsEmpty()) {
       if (ib >= DS_RX_BUFFER_SIZE) ib = 0;
-      uint8_t next_byte = circle.get();
+      uint8_t next_byte = circle.Get();
 
       if (bInMsg) {
         if (bGotESC) {
@@ -863,12 +780,11 @@ void* CommDriverN2KSerialThread::Entry() {
 
     //      Check for any pending output message
 #if 1
-    bool b_qdata = !out_que.empty();
+    bool b_qdata = !m_out_que.IsEmpty();
 
     while (b_qdata) {
       //  Take a copy of message
-      std::vector<unsigned char> qmsg = out_que.front();
-      out_que.pop();
+      std::vector<unsigned char> qmsg = m_out_que.Get();
 
       if (static_cast<size_t>(-1) == WriteComPortPhysical(qmsg) &&
           10 < retries++) {
@@ -878,7 +794,7 @@ void* CommDriverN2KSerialThread::Entry() {
         CloseComPortPhysical();
       }
 
-      b_qdata = !out_que.empty();
+      b_qdata = !m_out_que.IsEmpty();
     }  // while b_qdata
 
 #endif
@@ -900,7 +816,7 @@ void* CommDriverN2KSerialThread::Entry() {
   bool not_done = true;
   bool nl_found = false;
   wxString msg;
-  circular_buffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
+  CircularBuffer<uint8_t> circle(DS_RX_BUFFER_SIZE);
 
   //    Request the com port from the comm manager
   if (!OpenComPortPhysical(m_PortName, m_baud)) {
@@ -967,12 +883,12 @@ void* CommDriverN2KSerialThread::Entry() {
 
     if (newdata > 0) {
       for (int i = 0; i < newdata; i++) {
-        circle.put(rdata[i]);
+        circle.Put(rdata[i]);
       }
     }
 
-    while (!circle.empty()) {
-      uint8_t next_byte = circle.get();
+    while (!circle.IsEmpty()) {
+      uint8_t next_byte = circle.Get();
 
       if (1) {
         if (bInMsg) {
@@ -1052,12 +968,11 @@ void* CommDriverN2KSerialThread::Entry() {
     }  // while
 
     //      Check for any pending output message
-    bool b_qdata = !out_que.empty();
+    bool b_qdata = !m_out_que.IsEmpty();
 
-    while (b_qdata) {
+    while (!m_out_que.IsEmpty()) {
       //  Take a copy of message
-      std::vector<unsigned char> qmsg = out_que.front();
-      out_que.pop();
+      std::vector<unsigned char> qmsg = m_out_que.Get();
 
       if (static_cast<size_t>(-1) == WriteComPortPhysical(qmsg) &&
           10 < retries++) {
@@ -1068,9 +983,7 @@ void* CommDriverN2KSerialThread::Entry() {
       }
       std::lock_guard lock(m_stats_mutex);
       m_driver_stats.tx_count += qmsg.size();
-
-      b_qdata = !out_que.empty();
-    }  // while b_qdata
+    }
   }  // while ((not_done)
 
   // thread_exit:

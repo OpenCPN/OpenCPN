@@ -47,9 +47,8 @@
 bool wxEmail::Send(wxMailMessage& message, int sendMethod,
                    const wxString& profileName, const wxString& sendMail2,
                    const wxString& sendMail1, const wxString& sendMail0) {
-  wxString mailURL = _T("mailto:");
-  mailURL +=
-      message.m_to[0] + _T("?&subject=") + message.m_subject + _T("&body=");
+  wxString mailURL = "mailto:";
+  mailURL += message.m_to[0] + "?&subject=" + message.m_subject + "&body=";
   wxString msgBody = message.m_body;
   msgBody.Replace(" ", "%20");
   msgBody.Replace("\n", "%0A");
@@ -78,7 +77,7 @@ bool wxEmail::Send(wxMailMessage& message, int sendMethod,
 bool wxEmail::Send(wxMailMessage& message, int sendMethod,
                    const wxString& profileName, const wxString& sendMail2,
                    const wxString& sendMail1, const wxString& sendMail0) {
-  wxASSERT_MSG(!message.m_to.IsEmpty(), _T("no recipients to send mail to"));
+  wxASSERT_MSG(!message.m_to.IsEmpty(), "no recipients to send mail to");
 
   wxString from = message.m_from;
   if (from.empty()) {
@@ -105,8 +104,7 @@ bool wxEmail::Send(wxMailMessage& message, int sendMethod,
     else if (wxFileExists(sendMail1))
       sendmail << sendMail1;
     else {
-      wxLogMessage(
-          _T("MAIL Error: xdg-email is not installed on this computer!"));
+      wxLogMessage("MAIL Error: xdg-email is not installed on this computer!");
       return false;
     }
 
@@ -121,16 +119,16 @@ bool wxEmail::Send(wxMailMessage& message, int sendMethod,
     return true;
 
   } else {  // directly with sendmail
-    msg << wxT("To: ");
+    msg << "To: ";
     for (size_t rcpt = 0; rcpt < message.m_to.GetCount(); rcpt++) {
-      if (rcpt) msg << wxT(", ");
+      if (rcpt) msg << ", ";
       msg << message.m_to[rcpt];
     }
-    msg << wxT("\nFrom: ") << from << wxT("\nSubject: ") << message.m_subject;
-    msg << wxT("\n\n") << message.m_body;
+    msg << "\nFrom: " << from << "\nSubject: " << message.m_subject;
+    msg << "\n\n" << message.m_body;
 
     wxString filename;
-    filename.Printf(wxT("/tmp/msg-%ld-%ld-%ld.txt"), (long)getpid(),
+    filename.Printf("/tmp/msg-%ld-%ld-%ld.txt", (long)getpid(),
                     wxGetLocalTime(), (long)rand());
 
     wxFileOutputStream stream(filename);
@@ -143,7 +141,7 @@ bool wxEmail::Send(wxMailMessage& message, int sendMethod,
     sendmail << sendMail2;
 
     wxString cmd;
-    cmd << sendmail << wxT(" < ") << filename;
+    cmd << sendmail << " < " << filename;
 
     // TODO: check return code
     wxSystem(cmd.c_str());
@@ -156,7 +154,7 @@ bool wxEmail::Send(wxMailMessage& message, int sendMethod,
   return FALSE;
 }
 #else
-wxLogMessage(_T("Send eMail not yet implemented for this platform"));
+wxLogMessage("Send eMail not yet implemented for this platform");
 return false;
 // #error Send not yet implemented for this platform.
 #endif
