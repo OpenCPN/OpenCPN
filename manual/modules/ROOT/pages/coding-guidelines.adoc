@@ -138,7 +138,7 @@ which will pick up the configuration from _.pre-commit-config.yaml_ which is
 part of the project.
 
 === Using pre-commit on windows
-Using https://pre-commit.com/  on windows requires sopme extra handling, most
+Using https://pre-commit.com/  on windows requires some extra handling, most
 of which related to the underlying python installation. One route known to 
 occasionally work:
 
