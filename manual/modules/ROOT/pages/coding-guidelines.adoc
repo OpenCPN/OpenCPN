@@ -144,13 +144,14 @@ occasionally work:
 
 . Install python as administrator on the command line using chocolatey: 
    `choco install python`
-. Start Windows Settings | Apps.
-. Scroll to the Python App, click Modify
-. In app settings, click Modify 
-. Check the _Py Launcher checkbox_, click Next
-. Click Install.
-. On the command line in the plugin directory install pre-commit using
-   `py -m pre_commit install`
+. Start _Windows Settings_ | _Apps_.
+. Scroll to the _Python_ app, click _Modify_
+. In python app settings, click _Modify_. 
+. Check the _Py Launcher checkbox_, click _Next_
+. Click _Install_.
+. Install pre-commit on the command line using `py -m pip install pre-commit`.
+. On the command line in the plugin directory activate pre-commit  in the
+  project using `py -m pre_commit install`
 
 === CMake
 
