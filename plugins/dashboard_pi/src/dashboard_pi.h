@@ -1,13 +1,7 @@
-/******************************************************************************
- * $Id: dashboard_pi.h, v1.0 2010/08/05 SethDart Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- * expanded: Bernd Cirotzki 2023 (special colour design)
- *
- ***************************************************************************
+/**************************************************************************
+ *   Copyright (C) 2010 by Jean-Eudes Onfray                               *
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2023 by Bernd Cirotzki   --  special color design       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,10 +14,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard plugin
  */
 
 #ifndef _DASHBOARDPI_H_

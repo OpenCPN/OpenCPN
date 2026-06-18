@@ -1,48 +1,43 @@
-/******************************************************************************
- * iirfilter.h
+/*************************************************************************
+ *  Copyright (C) 2016   Transmitterdan                                   *
+ *                                                                        *
+ *  This program is free software; you can redistribute it and/or modify  *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation; either version 2 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  This program is distributed in the hope that it will be useful,       *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *************************************************************************/
+
+/**
+ * \file
  *
- * Project:  Many
- * Purpose:  Class that implements single order inifinite-impulse-response
- *filter Author:   Transmitterdan
- ***************************************************************************
- *   Copyright (C) 2016                                                    *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ * Single order inifinite-impulse-response filter
+ *
+ * How to use:
+ *
+ * To create a filter object declare on instance of iirfilter. There are
+ * 2 optional parameters to the constructor. The first (Fc) determines
+ * the filter cutoff frequency. A value of 0.5 is basically no filtering
+ * and smaller values decrease the cutoff frequency. If you think of the
+ * filter as being "fast" or "slow" then 0.5 is fastest and smaller values
+ * are "slower". The second parameter (tp) selects whether the underlying
+ * filtered values represent a linear value (such as speed) or a circular
+ * angle such as direction. The angle can be either in radians or degrees.
+ * These values can be changed on the "fly" with the setFC() and setType()
+ * methods.
+ * The main method is filter() which accepts a new unfiltered value and
+ * returns a fitered value. To obtain the most recent filter output use
+ * the get() method. Lesser used methods are getType (returns tp) and
+ * getFC() (returns FC). The reset() method resets the filter to zero.
  */
 
-/**************************************************************************
- * How to use:                                                            *
- *                                                                        *
- * To create a filter object declare on instance of iirfilter. There are  *
- * 2 optional parameters to the constructor. The first (Fc) determines    *
- * the filter cutoff frequency. A value of 0.5 is basically no filtering  *
- * and smaller values decrease the cutoff frequency. If you think of the  *
- * filter as being "fast" or "slow" then 0.5 is fastest and smaller values*
- * are "slower". The second parameter (tp) selects whether the underlying *
- * filtered values represent a linear value (such as speed) or a circular *
- * angle such as direction. The angle can be either in radians or degrees.*
- * These values can be changed on the "fly" with the setFC() and setType()*
- * methods.                                                               *
- * The main method is filter() which accepts a new unfiltered value and   *
- * returns a fitered value. To obtain the most recent filter output use   *
- * the get() method. Lesser used methods are getType (returns tp) and     *
- * getFC() (returns FC). The reset() method resets the filter to zero.    *
- **************************************************************************
- */
 #if !defined(IIRFILTER_CLASS_HEADER)
 #define IIRFILTER_CLASS_HEADER
 

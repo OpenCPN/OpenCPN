@@ -1,20 +1,5 @@
-/******************************************************************************
- * $Id: altitude.cpp, v0.3 $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin, display altitude trace
- * Author:   derived from Jean-Eudes Onfray's depth.cpp by Andreas Merz
- *
- * Comment:  since not every vessel is always on sea level, I found it
- *           sometimes interesting to observe the GPS altitude information.
- *           It can be extracted from the GGA nmea message.
- *
- *           Besides showing a rolling plot, the grid will auto-rescale to
- *           keep the plot within the visible range.
- *           The top line shows mean altitude and its standard deviation.
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -27,10 +12,23 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard Plugin, display altitude trace.
+ *
+ * Derived from Jean-Eudes Onfray's depth.cpp by Andreas Merz.
+ *
+ * Since not every vessel is always on sea level, I found it
+ * sometimes interesting to observe the GPS altitude information.
+ * It can be extracted from the GGA nmea message.
+ *
+ * Besides showing a rolling plot, the grid will auto-rescale to
+ * keep the plot within the visible range.
+ * The top line shows mean altitude and its standard deviation.
  */
 
 #include <wx/wxprec.h>
