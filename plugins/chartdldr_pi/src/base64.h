@@ -1,13 +1,18 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        base64.h
-// Purpose:     Base64 encoding function for HTTP Authentication
-//                  Code originated from PHP.net source
 // Author:      Angelo Mandato
 // Created:     2005/08/10
 // RCS-ID:      $Id: base64.h,v 1.2 2005/08/12 03:58:08 amandato Exp $
 // Copyright:   (c) 2005 Angelo Mandato (http://www.spaceblue.com)
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
+
+/**
+ * \file
+ *
+ * Base64 encoding function for HTTP Authentication
+ *                Code originated from PHP.net source
+ */
 
 #ifndef _WX_BASE64_H_
 #define _WX_BASE64_H_

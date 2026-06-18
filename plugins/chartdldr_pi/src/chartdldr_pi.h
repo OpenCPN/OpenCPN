@@ -1,13 +1,5 @@
-/******************************************************************************
- * $Id: chartdldr_pi.h,v 1.0 2011/02/26 01:54:37 nohal Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Chart Downloader Plugin
- * Author:   Pavel Kalian
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2011 by Pavel Kalian                                    *
- *   $EMAIL$                                                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,10 +12,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Chart Downloader Plugin -- plugin implementation header
  */
 
 #ifndef _CHARTDLDRPI_H_
