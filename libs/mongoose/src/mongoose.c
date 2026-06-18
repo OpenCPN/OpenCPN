@@ -230,12 +230,12 @@ bool mg_dns_parse(const uint8_t *buf, size_t len, struct mg_dns_message *dm) {
     mg_dns_parse_name(buf, len, ofs, dm->name, sizeof(dm->name));
     ofs += n;
 
-    if (rr.alen == 4 && rr.atype == 1 && rr.aclass == 1) {
+    if (rr.alen == 4 && rr.atype == 1 && rr.aclass == 1 && ofs >= 4) {
       dm->addr.is_ip6 = false;
       memcpy(&dm->addr.ip, &buf[ofs - 4], 4);
       dm->resolved = true;
       break;  // Return success
-    } else if (rr.alen == 16 && rr.atype == 28 && rr.aclass == 1) {
+    } else if (rr.alen == 16 && rr.atype == 28 && rr.aclass == 1 && ofs >= 16) {
       dm->addr.is_ip6 = true;
       memcpy(&dm->addr.ip6, &buf[ofs - 16], 16);
       dm->resolved = true;
