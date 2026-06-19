@@ -7724,7 +7724,13 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
 }
 
 void ChartCanvas::MouseTimedEvent(wxTimerEvent &event) {
-  if (singleClickEventIsValid) MouseEvent(singleClickEvent);
+  if (singleClickEventIsValid) {
+    const bool wasReplaying = m_isReplayingClickEvent;
+    m_isReplayingClickEvent = true;
+    MouseEvent(singleClickEvent);
+    m_isReplayingClickEvent = wasReplaying;
+  }
+
   singleClickEventIsValid = false;
   m_DoubleClickTimer->Stop();
 }
@@ -7913,8 +7919,11 @@ bool ChartCanvas::MouseEventSetup(wxMouseEvent &event, bool b_handle_dclick) {
 
 #ifdef __WXMSW__
   // TODO Test carefully in other platforms, remove ifdef....
-  if (event.ButtonDown() && !HasCapture()) CaptureMouse();
-  if (event.ButtonUp() && HasCapture()) ReleaseMouse();
+  // Avoid capture release on delayed/replayed timer events.
+  if (!m_isReplayingClickEvent) {
+    if (event.ButtonDown() && !HasCapture()) CaptureMouse();
+    if (event.ButtonUp() && HasCapture()) ReleaseMouse();
+  }
 #endif
 
   event.SetEventObject(this);

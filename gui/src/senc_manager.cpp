@@ -153,8 +153,10 @@ void SENCThreadManager::StartTopJob() {
 
   if (nRunning) {
     wxString count;
-    count.Printf("  %ld", ticket_list.size());
-    top_frame::Get()->SetAlertString(_("Preparing vector chart ") + count);
+    count.Printf("  %ld", static_cast<long>(ticket_list.size()));
+    if (auto tfPtr = top_frame::Get()) {
+      tfPtr->SetAlertString(_("Preparing vector chart ") + count);
+    }
   }
 }
 
@@ -183,10 +185,14 @@ void SENCThreadManager::FinishJob(SENCJobTicket *ticket) {
 
   if (nRunning) {
     wxString count;
-    count.Printf("  %ld", ticket_list.size());
-    top_frame::Get()->SetAlertString(_("Preparing vector chart ") + count);
+    count.Printf("  %ld", static_cast<long>(ticket_list.size()));
+    if (auto tfPtr = top_frame::Get()) {
+      tfPtr->SetAlertString(_("Preparing vector chart ") + count);
+    }
   } else {
-    top_frame::Get()->SetAlertString("");
+    if (auto tfPtr = top_frame::Get()) {
+      tfPtr->SetAlertString("");
+    }
   }
 #endif
 }
