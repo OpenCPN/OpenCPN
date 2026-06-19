@@ -964,6 +964,9 @@ private:
   bool m_bIsInRadius;
   bool m_bMayToggleMenuBar;
 
+  // True only while replaying delayed single-click timer event.
+  bool m_isReplayingClickEvent = false;
+
   RoutePoint *m_pRoutePointEditTarget;
   RoutePoint *m_lastRoutePointEditTarget;
   SelectItem *m_pFoundPoint;
