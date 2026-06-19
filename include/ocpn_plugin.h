@@ -2389,7 +2389,7 @@ WX_DECLARE_LIST(PlugIn_Waypoint, Plugin_WaypointList);
  * This class represents a route consisting of an ordered list of waypoints.
  * Routes can be used for navigation planning and guidance.
  */
-class DECL_EXP PlugIn_Route {
+class DECL_EXP [[deprecated("Use HostApi121::Route instead.")]] PlugIn_Route {
 public:
   PlugIn_Route(void);
   ~PlugIn_Route(void);
@@ -3550,6 +3550,7 @@ extern DECL_EXP bool UpdateSingleWaypoint(PlugIn_Waypoint *pwaypoint);
  * @param b_permanent True to save persistently, false for temporary
  * @return True if successfully added
  */
+[[deprecated("Use HostApi121::AddRoute() instead.")]]
 extern DECL_EXP bool AddPlugInRoute(PlugIn_Route *proute,
                                     bool b_permanent = true);
 
@@ -3572,6 +3573,7 @@ extern DECL_EXP bool DeletePlugInRoute(wxString &GUID);
  * @param proute Route with updated properties (GUID must match existing route)
  * @return True if route was successfully updated
  */
+[[deprecated("Use HostApi121::UpdateRoute() instead.")]]
 extern DECL_EXP bool UpdatePlugInRoute(PlugIn_Route *proute);
 
 /**
@@ -5430,6 +5432,7 @@ extern DECL_EXP std::unique_ptr<PlugIn_Waypoint> GetWaypoint_Plugin(
  * @param guid GUID of route to get
  * @return Unique pointer to route data, NULL if not found
  */
+[[deprecated("Use HostApi121::GetRoute() instead.")]]
 extern DECL_EXP std::unique_ptr<PlugIn_Route> GetRoute_Plugin(const wxString &);
 
 /**
@@ -5787,7 +5790,7 @@ WX_DECLARE_LIST(PlugIn_Waypoint_ExV2, Plugin_WaypointExV2List);
  * @note Works with PlugIn_Waypoint_Ex for extended waypoint features
  * @note Used by navigation and routing plugins
  */
-class DECL_EXP PlugIn_Route_Ex {
+class DECL_EXP [[deprecated("Use HostApi121::Route instead.")]] PlugIn_Route_Ex {
 public:
   PlugIn_Route_Ex(void);
   ~PlugIn_Route_Ex(void);
@@ -5822,7 +5825,7 @@ public:
  * - Extended waypoint list management
  * - Global unique identification
  */
-class DECL_EXP PlugIn_Route_ExV2 {
+class DECL_EXP [[deprecated("Use HostApi121::Route instead.")]] PlugIn_Route_ExV2 {
 public:
   PlugIn_Route_ExV2();
   virtual ~PlugIn_Route_ExV2();
@@ -5924,6 +5927,7 @@ extern DECL_EXP bool UpdateSingleWaypointExV2(PlugIn_Waypoint_ExV2 *pwaypoint);
  * @param b_permanent True to save persistently, false for temporary
  * @return True if successfully added
  */
+[[deprecated("Use HostApi121::AddRoute() instead.")]]
 extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute,
                                       bool b_permanent = true);
 
@@ -5933,6 +5937,7 @@ extern DECL_EXP bool AddPlugInRouteEx(PlugIn_Route_Ex *proute,
  * @param proute Route to add
  * @return True if route added successfully
  */
+[[deprecated("Use HostApi121::AddRoute() instead.")]]
 extern DECL_EXP bool AddPlugInRouteExV2(PlugIn_Route_ExV2 *proute,
                                         bool b_permanent = true);
 
@@ -5942,6 +5947,7 @@ extern DECL_EXP bool AddPlugInRouteExV2(PlugIn_Route_ExV2 *proute,
  * @param proute Updated route data (GUID must match existing)
  * @return True if successfully updated
  */
+[[deprecated("Use HostApi121::UpdateRoute() instead.")]]
 extern DECL_EXP bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute);
 
 /**
@@ -5952,6 +5958,7 @@ extern DECL_EXP bool UpdatePlugInRouteEx(PlugIn_Route_Ex *proute);
  * @param proute Updated route data (GUID must match existing)
  * @return True if route updated successfully
  */
+[[deprecated("Use HostApi121::UpdateRoute() instead.")]]
 extern DECL_EXP bool UpdatePlugInRouteExV2(PlugIn_Route_ExV2 *proute);
 
 /**
@@ -5984,6 +5991,7 @@ extern DECL_EXP std::unique_ptr<PlugIn_Waypoint_ExV2> GetWaypointExV2_Plugin(
  * @param guid GUID of route to get
  * @return Unique pointer to route data, NULL if not found
  */
+[[deprecated("Use HostApi121::GetRoute() instead.")]]
 extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(
     const wxString &GUID);
 
@@ -5995,6 +6003,7 @@ extern DECL_EXP std::unique_ptr<PlugIn_Route_Ex> GetRouteEx_Plugin(
  * @param GUID Unique identifier of route to retrieve
  * @return Unique pointer to route data, NULL if not found
  */
+[[deprecated("Use HostApi121::GetRoute() instead.")]]
 extern DECL_EXP std::unique_ptr<PlugIn_Route_ExV2> GetRouteExV2_Plugin(
     const wxString &GUID);
 
@@ -7281,7 +7290,6 @@ public:
     std::string object_ident;
   };
 
-  // Extended plugin route
   class Route : public PlugIn_Route_ExV2 {
   public:
     Route()
