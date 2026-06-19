@@ -12,12 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
 /**
  * \file
+ *
  * OpenGL Texture Font System.
  *
  * Provides bitmap font rendering using OpenGL textures for weather data
@@ -38,6 +38,7 @@
  * The system is optimized for OpenGL-based text rendering in the GRIB
  * plugin's overlay displays and data visualization components.
  */
+
 #ifndef __TEXFONT_H__
 #define __TEXFONT_H__
 

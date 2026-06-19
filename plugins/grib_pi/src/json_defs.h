@@ -3,12 +3,13 @@
 // Purpose:     shared build defines
 // Author:      Luciano Cattani
 // Created:     2007/10/20
-// RCS-ID:      $Id: json_defs.h,v 1.6 2008/03/12 10:48:19 luccat Exp $
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * JSON Configuration System Definitions.
  *
  * Provides core definitions and configuration options for JSON handling in
@@ -32,6 +33,7 @@
  * and build configurations while providing flexibility for different use
  * cases.
  */
+
 #ifndef _WX_JSON_DEFS_H_
 #define _WX_JSON_DEFS_H_
 

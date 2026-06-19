@@ -3,7 +3,6 @@
 // Purpose:     the wxJSONValue class: it holds a JSON value
 // Author:      Luciano Cattani
 // Created:     2007/09/15
-// RCS-ID:      $Id: jsonval.h,v 1.4 2008/01/10 21:27:15 luccat Exp $
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////

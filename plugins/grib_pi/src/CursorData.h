@@ -1,8 +1,7 @@
 /***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
-
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
  *   (at your option) any later version.                                   *
@@ -13,18 +12,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
+
 /**
  * \file
+ *
  * GRIB Cursor Data Tracking and Display.
  *
- * Defines classes for tracking and displaying GRIB weather data at the cursor
+ * Classes for tracking and displaying GRIB weather data at the cursor
  * position on the chart. Provides real-time updates of meteorological
  * parameters as the cursor moves.
  */
+
 #ifndef __GRIBUICData_H__
 #define __GRIBUICData_H__
 

@@ -12,12 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
+
 /**
  * \file
+ *
  * GRIB Weather Data Plugin for OpenCPN.
  *
  * Primary plugin interface for the GRIB weather data visualization system.
@@ -33,6 +33,7 @@
  * interpolation between forecast times, and provides various visualization
  * options including wind barbs, particle animations, and color-coded overlays.
  */
+
 #ifndef _GRIBPI_H_
 #define _GRIBPI_H_
 

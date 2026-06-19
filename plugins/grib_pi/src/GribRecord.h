@@ -15,8 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
+
 /**
  * \file
+ *
  * GRIB Record Base Class Implementation.
  *
  * Defines the base class for GRIB weather data records. A GRIB record
@@ -24,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * forecast time. This class provides common functionality shared between GRIB1
  * and GRIB2 formats.
  */
+
 #ifndef GRIBRECORD_H
 #define GRIBRECORD_H
 

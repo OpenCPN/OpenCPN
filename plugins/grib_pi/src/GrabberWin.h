@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,12 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
+
 /**
  * \file
+ *
  * GRIB Dialog Grabber Control Interface.
  *
  * Implements a custom window control for manipulating GRIB dialog positioning
@@ -36,6 +36,7 @@
  * This component enables flexible positioning of GRIB data display windows
  * within the OpenCPN interface while maintaining a consistent user experience.
  */
+
 #ifndef __GRIBGRABBERWIN_H__
 #define __GRIBGRABBERWIN_H__
 

@@ -4,8 +4,10 @@
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * Base User Interface Components for GRIB Plugin.
  *
  * Defines the foundational UI elements and structure for the GRIB plugin
@@ -29,6 +31,7 @@
  * GRIB weather data, supporting both basic and advanced usage scenarios while
  * maintaining consistency across the interface.
  */
+
 #ifndef __GRIBUIDIALOGBASE_H__
 #define __GRIBUIDIALOGBASE_H__
 

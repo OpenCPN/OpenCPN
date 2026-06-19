@@ -15,8 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
+
 /**
  * \file
+ *
  * GRIB Version 2 Record Implementation
  *
  * Implements record handling for the GRIB2 format, which is the modern standard
@@ -25,6 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * sections, data compression, ensemble forecast data and more coordinate system
  * options.
  */
+
 #ifndef GRIBV2RECORD_H
 #define GRIBV2RECORD_H
 

@@ -15,8 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
+
 /**
  * \file
+ *
  * Unified Compressed File Access System.
  *
  * Provides a consistent interface for reading both compressed and uncompressed
@@ -36,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * weather data files while handling the complexities of different compression
  * formats internally.
  */
+
 #ifndef ZU_FILE_H
 #define ZU_FILE_H
 

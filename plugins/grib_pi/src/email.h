@@ -4,12 +4,13 @@
 // Author:      Julian Smart
 // Modified by:
 // Created:     2001-08-21
-// RCS-ID:      $Id: email.h 35650 2005-09-23 12:56:45Z MR $
-// Copyright:   (c) Julian Smart
+// Copyright:   (c) Julian Smart 2001
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * Email Request System for GRIB Data.
  *
  * Provides portable email functionality for requesting GRIB weather data from
@@ -25,6 +26,7 @@
  * The system allows mariners to request GRIB files through email services
  * when direct downloads are not available or preferred.
  */
+
 #ifndef _WX_EMAIL_H_
 #define _WX_EMAIL_H_
 

@@ -15,8 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
+
 /**
  * \file
+ *
  * GRIB (GRIdded Binary) file reader and parser.
  *
  * This header defines the low-level GRIB file parsing infrastructure. GRIB is a

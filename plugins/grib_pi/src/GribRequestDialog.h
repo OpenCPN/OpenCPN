@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -12,13 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
 /**
  * \file
+ *
  * GRIB Weather Data Request and Download Management.
  *
  * Provides comprehensive functionality for requesting and downloading GRIB
@@ -44,6 +43,7 @@
  * different download methods including direct HTTP(S) downloads and email-based
  * requests with size and coverage validation.
  */
+
 #ifndef __GRIBREQUESTDIALOG_H__
 #define __GRIBREQUESTDIALOG_H__
 
