@@ -2624,7 +2624,12 @@ void ChartCanvas::CancelMeasureRoute() {
   m_nMeasureState = 0;
   m_bDrawingRoute = false;
 
-  g_pRouteMan->DeleteRoute(m_pMeasureRoute);
+  if (m_pMeasureRoute && g_pRouteMan->IsRouteInList(m_pMeasureRoute)) {
+    g_pRouteMan->DeleteRoute(m_pMeasureRoute);
+  } else if (m_pMeasureRoute) {
+    wxLogMessage("CancelMeasureRoute: stale route %p", m_pMeasureRoute);
+  }
+
   m_pMeasureRoute = NULL;
 
   SetCursor(*pCursorArrow);
@@ -8945,22 +8950,30 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           r_rband.y = y;
         }
 
-        RoutePoint *pMousePoint =
-            new RoutePoint(m_cursor_lat, m_cursor_lon, wxString("circle"),
-                           wxEmptyString, wxEmptyString);
-        pMousePoint->m_bShowName = false;
-        pMousePoint->SetShowWaypointRangeRings(false);
+        if (!g_pRouteMan->IsRouteInList(m_pMeasureRoute)) {
+          wxLogMessage("Stale measure route");
+          CancelMeasureRoute();
+          top_frame::Get()->RefreshAllCanvas();
+          ret = true;
+        } else {
+          RoutePoint *pMousePoint =
+              new RoutePoint(m_cursor_lat, m_cursor_lon, wxString("circle"),
+                             wxEmptyString, wxEmptyString);
+          pMousePoint->m_bShowName = false;
+          pMousePoint->SetShowWaypointRangeRings(false);
 
-        m_pMeasureRoute->AddPoint(pMousePoint);
+          m_pMeasureRoute->AddPoint(pMousePoint);
 
-        m_prev_rlat = m_cursor_lat;
-        m_prev_rlon = m_cursor_lon;
-        m_prev_pMousePoint = pMousePoint;
-        m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+          m_prev_rlat = m_cursor_lat;
+          m_prev_rlon = m_cursor_lon;
+          m_prev_pMousePoint = pMousePoint;
+          m_pMeasureRoute->m_lastMousePointIndex =
+              m_pMeasureRoute->GetnPoints();
 
-        m_nMeasureState++;
-        top_frame::Get()->RefreshAllCanvas();
-        ret = true;
+          m_nMeasureState++;
+          top_frame::Get()->RefreshAllCanvas();
+          ret = true;
+        }
       }
 
       else {

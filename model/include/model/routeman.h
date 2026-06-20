@@ -121,6 +121,7 @@ public:
   void DeleteAllRoutes();
 
   bool IsRouteValid(Route *pRoute);
+  bool IsRouteInList(Route *pRoute);
 
   Route *FindRouteByGUID(const wxString &guid);
   Track *FindTrackByGUID(const wxString &guid);
