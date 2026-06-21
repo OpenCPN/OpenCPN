@@ -22,11 +22,11 @@
  * Chart downloader Plugin
  */
 
+#include "chartcatalog.h"
+
 #include <memory>
 
 #include <wx/tokenzr.h>
-
-#include "chartcatalog.h"
 
 // Chart Catalog implementation
 bool ChartCatalog::LoadFromFile(wxString path, bool headerOnly) {

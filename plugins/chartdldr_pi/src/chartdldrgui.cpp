@@ -5,14 +5,13 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
+#include "chartdldrgui.h"
+
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
 #include <wx/textwrapper.h>
 
-#include "../../../libs/manual/include/manual.h"  // FIXME (leamas)
-
 #include "chartdldr_pi.h"
-#include "chartdldrgui.h"
 #include "manual.h"
 
 ///////////////////////////////////////////////////////////////////////////

@@ -5,48 +5,45 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __CHARTDLDRGUI_H__
-#define __CHARTDLDRGUI_H__
+#ifndef CHARTDLDRGUI_H__
+#define CHARTDLDRGUI_H__
 
 #include <wx/artprov.h>
-#include <wx/xrc/xmlres.h>
-#include <wx/intl.h>
-#include <wx/treectrl.h>
-#include <wx/gdicmn.h>
-#include <wx/font.h>
-#include <wx/colour.h>
-#include <wx/settings.h>
-#include <wx/string.h>
-#include <wx/sizer.h>
-#include <wx/panel.h>
 #include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
-#include <wx/notebook.h>
-#include <wx/statbox.h>
-#include <wx/filepicker.h>
 #include <wx/button.h>
-#include <wx/dialog.h>
-#include <wx/listctrl.h>
-#include <wx/combobox.h>
 #include <wx/checkbox.h>
-#include <wx/statline.h>
+#include <wx/colour.h>
+#include <wx/combobox.h>
 #include <wx/dcmemory.h>
+#include <wx/dialog.h>
+#include <wx/filepicker.h>
+#include <wx/font.h>
+#include <wx/gdicmn.h>
+#include <wx/icon.h>
+#include <wx/image.h>
+#include <wx/intl.h>
+#include <wx/listctrl.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/settings.h>
+#include <wx/sizer.h>
+#include <wx/statbox.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
+#include <wx/treectrl.h>
+#include <wx/xrc/xmlres.h>
+
 #include "ocpn_plugin.h"
 
-#if defined(CHART_LIST)
-#include <wx/dataview.h>
-#endif /* CHART_LIST */
-///////////////////////////////////////////////////////////////////////////
-
 #if defined(CHART_LIST)  // Are we building using wxDataViewListCtrl?
+#include <wx/dataview.h>
 // We don't use ArrayOfChartPanels when using wxDataViewListCtrl
 #else
-class ChartPanel;
-class ChartDldrPanelImpl;
-#endif /* CHART_LIST */
+class ChartPanel;          // forward
+class ChartDldrPanelImpl;  // Extern in chartdlgr_pi.h
+#endif
 
 class DLDR_OCPNChartDirPanel : public wxPanel {
 public:
@@ -260,4 +257,4 @@ private:
 };
 #endif /* CHART_PANEL */
 
-#endif  //__CHARTDLDRGUI_H__
+#endif  //  CHARTDLDRGUI_H__

@@ -24,44 +24,38 @@
 #ifndef _CHARTDLDRPI_H_
 #define _CHARTDLDRPI_H_
 
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include <wx/fileconf.h>
-#include <wx/tokenzr.h>
-#include <wx/event.h>
-
-#include <wx/imaglist.h>
-
 #include <map>
 
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif  // precompiled headers
+
+#include <wx/event.h>
+#include <wx/fileconf.h>
+#include <wx/imaglist.h>
+#include <wx/tokenzr.h>
+
+#include "chartcatalog.h"
+#include "chartdldrgui.h"
+#include "ocpn_plugin.h"
 #include "version.h"
 
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 13
-
 #define USERDATA "{USERDATA}"
-
-#include "ocpn_plugin.h"
-
-#include "chartdldrgui.h"
-#include "chartcatalog.h"
-
 #define UPDATE_DATA_FILENAME "chartdldr_pi.dat"
 
 // forward declarations
-class ChartSource;
-class ChartDldrPanelImpl;
-class ChartDldrGuiAddSourceDlg;
-class ChartDldrPrefsDlgImpl;
+class ChartSource;               // forward
+class ChartDldrPanelImpl;        // in chartdldr.h
+class ChartDldrGuiAddSourceDlg;  // in chartdldr.h
+class ChartDldrPrefsDlgImpl;     // in chartdldr.h
 
-//----------------------------------------------------------------------------------------------------------
-//    The PlugIn Class Definition
-//----------------------------------------------------------------------------------------------------------
-
+/**
+ *    The PlugIn Class Definition
+ */
 class chartdldr_pi : public opencpn_plugin_113 {
 public:
   chartdldr_pi(void* ppimgr);

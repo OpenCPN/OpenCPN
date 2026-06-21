@@ -19,31 +19,16 @@
  * \class
  *
  * Chart Downloader Plugin -- plugin implementation
- *
  */
 
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#ifdef __ANDROID__
+#define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS
+#endif
 
 #include "chartdldr_pi.h"
-#include "wxWTranslateCatalog.h"
-#include <wx/stdpaths.h>
-#include <wx/url.h>
-#include <wx/progdlg.h>
-#include <wx/sstream.h>
-#include <wx/wfstream.h>
-#include <wx/filename.h>
-#include <wx/listctrl.h>
-#include <wx/dir.h>
-#include <wx/filesys.h>
-#include <wx/zipstrm.h>
-#include <wx/wfstream.h>
+
+#include <fstream>
 #include <memory>
-#include <wx/regex.h>
-#include <wx/debug.h>
 
 #ifdef DLDR_USE_LIBARCHIVE
 #include <archive.h>
@@ -55,13 +40,30 @@
 #include "unarr.h"
 #endif
 
-#ifdef __ANDROID__
-#define _LIBCPP_HAS_NO_OFF_T_FUNCTIONS
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
 #endif
 
-#include <fstream>
+#include <wx/debug.h>
+#include <wx/dir.h>
+#include <wx/filename.h>
+#include <wx/filesys.h>
+#include <wx/listctrl.h>
+#include <wx/progdlg.h>
+#include <wx/regex.h>
+#include <wx/sstream.h>
+#include <wx/stdpaths.h>
+#include <wx/url.h>
+#include <wx/wfstream.h>
+#include <wx/wfstream.h>
+#include <wxWTranslateCatalog.h>
+#include <wx/zipstrm.h>
 
 #ifdef __ANDROID__
+#include <QtAndroidExtras/QAndroidJniObject>
+#include "qdebug.h"
 #include "android_support.h"
 #include "android_jvm.h"
 #include <jni.h>
@@ -96,15 +98,9 @@
 #endif
 #endif  // __WXMAC__
 
-#ifdef __ANDROID__
-#include <QtAndroidExtras/QAndroidJniObject>
-#include "qdebug.h"
-
-#endif
-
-bool getDisplayMetrics();
-
 #define CHART_DIR "Charts"
+
+bool getDisplayMetrics();  // External in chartdldr_pi.h
 
 // Helper function to check if a path is safely inside the target directory
 // Returns true if normalizedPath is inside targetDir, false otherwise (path

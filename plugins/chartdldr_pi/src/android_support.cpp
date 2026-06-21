@@ -1,11 +1,4 @@
-
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Android support utilities
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -28,18 +21,18 @@
  * OpenCPN Android support utilities
  */
 
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
 #include "android_support.h"
-#include "android_jvm.h"
-#include <wx/tokenzr.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
-#include "qdebug.h"
+#include <qdebug.h>
+
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+#include <wx/tokenzr.h>
+
+#include "android_jvm.h"
 
 extern int g_Android_SDK_Version;
 

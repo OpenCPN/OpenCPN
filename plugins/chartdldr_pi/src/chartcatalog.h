@@ -22,28 +22,28 @@
  *
  */
 
-#ifndef _CHARTCATALOG_H_
-#define _CHARTCATALOG_H_
+#ifndef CHARTCATALOG_H__
+#define CHARTCATALOG_H__
 
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include "pugixml.hpp"
 #include <memory>
 #include <vector>
 
-// Forward declarations
-class NoticeToMariners;
-class Vertex;
-class Panel;
-class Chart;
-class Location;
-class RiverMiles;
-class Area;
-class ChartFile;
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include "pugixml.hpp"
+
+class NoticeToMariners;  // forward
+class Vertex;            // forward
+class Panel;             // forward
+class Chart;             // forward
+class Location;          // forward
+class RiverMiles;        // forward
+class Area;              // Forward
+class ChartFile;         // Forward
 
 // Declarations
 class ChartCatalog {
@@ -262,4 +262,4 @@ public:
   wxString type;
 };
 
-#endif  //_CHARTCATALOG_H_
+#endif  // CHARTCATALOG_H__

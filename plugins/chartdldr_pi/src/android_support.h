@@ -1,5 +1,3 @@
-
-
 /**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
@@ -26,15 +24,15 @@
 #ifndef ANDROIDSUPPORT_H
 #define ANDROIDSUPPORT_H
 
+#include <QString>
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif  // precompiled headers
+#endif
 
 class ArrayOfCDI;
-
-#include <QString>
 
 bool AndroidUnzip(wxString zipFile, wxString destDir, int nStrip,
                   bool bRemoveZip);

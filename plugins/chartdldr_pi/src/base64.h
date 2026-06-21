@@ -2,7 +2,6 @@
 // Name:        base64.h
 // Author:      Angelo Mandato
 // Created:     2005/08/10
-// RCS-ID:      $Id: base64.h,v 1.2 2005/08/12 03:58:08 amandato Exp $
 // Copyright:   (c) 2005 Angelo Mandato (http://www.spaceblue.com)
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
@@ -14,8 +13,8 @@
  *                Code originated from PHP.net source
  */
 
-#ifndef _WX_BASE64_H_
-#define _WX_BASE64_H_
+#ifndef WX_BASE64_H__
+#define WX_BASE64_H__
 
 // optimization for GCC
 #if defined(__GNUG__) && !defined(__APPLE__)
@@ -56,8 +55,8 @@ WXDLLIMPEXP_HTTPENGINE wxString wxBase64Encode(const wxString &str) {
   int length = str.Length();
   int current = 0;
 
-  while (length >
-         2)  // keep going until we have less than 24 bits (each item is 8 bits)
+  while (length > 2)
+  // keep going until we have less than 24 bits (each item is 8 bits)
   {
     szToReturn.Append(base64_table[str.GetChar(current) >> 2]);
     szToReturn.Append(base64_table[((str.GetChar(current) & 0x03) << 4) +
@@ -152,4 +151,4 @@ WXDLLIMPEXP_HTTPENGINE wxString wxBase64Decode(const wxString &str) {
   return szToReturn;
 }
 
-#endif
+#endif  // WX_BASE64_H__
