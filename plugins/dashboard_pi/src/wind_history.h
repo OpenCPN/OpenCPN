@@ -22,15 +22,11 @@
  * Dashboard wind history instrument
  */
 
-#ifndef __WIND_HISTORY_H__
-#define __WIND_HISTORY_H__
+#ifndef WIND_HISTORY_H__
+#define WIND_HISTORY_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -38,11 +34,11 @@
 #include <wx/wx.h>
 #endif
 
+#include "dial.h"
+#include "instrument.h"
+
 // Warn: div by 0 if count == 1
 #define WIND_RECORD_COUNT 2000
-
-#include "instrument.h"
-#include "dial.h"
 
 class DashboardInstrument_WindDirHistory : public DashboardInstrument {
 public:
@@ -101,4 +97,4 @@ protected:
   wxString GetWindDirStr(wxString WindDir);
 };
 
-#endif  // __WIND_HISTORY_H__
+#endif  // WIND_HISTORY_H__

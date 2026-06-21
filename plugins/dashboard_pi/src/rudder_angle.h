@@ -22,15 +22,11 @@
  * Dashboard rudder angle instrument
  */
 
-#ifndef __RudderAngle_H__
-#define __RudderAngle_H__
+#ifndef RudderAngle_H__
+#define RudderAngle_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -56,4 +52,4 @@ protected:
   void DrawBackground(wxGCDC* dc);
 };
 
-#endif  // __RudderAngle_H__
+#endif  // RudderAngle_H__

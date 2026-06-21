@@ -22,15 +22,11 @@
  * Dashboard wind instrument implementation.
  */
 
-#ifndef __Wind_H__
-#define __Wind_H__
+#ifndef Wind_H__
+#define Wind_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -40,15 +36,7 @@
 
 #include "dial.h"
 
-//+------------------------------------------------------------------------------
-//|
-//| CLASS:
-//|    DashboardInstrument_Wind
-//|
-//| DESCRIPTION:
-//|    This class creates a wind style control
-//|
-//+------------------------------------------------------------------------------
+/** A wind style control. */
 class DashboardInstrument_Wind : public DashboardInstrument_Dial {
 public:
   DashboardInstrument_Wind(wxWindow* parent, wxWindowID id, wxString title,
@@ -118,4 +106,4 @@ protected:
                         wxString format, DialPositionOption position);
 };
 
-#endif  // __Wind_H__
+#endif  // Wind_H__

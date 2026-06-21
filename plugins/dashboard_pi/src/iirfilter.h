@@ -41,7 +41,7 @@
 #if !defined(IIRFILTER_CLASS_HEADER)
 #define IIRFILTER_CLASS_HEADER
 
-// Define filter types
+// Filter types
 enum {
   IIRFILTER_TYPE_LINEAR = 1 << 0,
   IIRFILTER_TYPE_DEG = 1 << 1,
@@ -76,4 +76,4 @@ private:
   int type;
 };
 
-#endif
+#endif  // IIRFILTER_CLASS_HEADER

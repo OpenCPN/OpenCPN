@@ -22,31 +22,32 @@
  * Dashboard instrument base class
  */
 
-#ifndef _INSTRUMENT_H_
-#define _INSTRUMENT_H_
+#ifndef InSTRUMENT_H_
+#define InSTRUMENT_H_
 
-#include "wx/wxprec.h"
+#include <bitset>
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
 
 #if !wxUSE_GRAPHICS_CONTEXT
 #define wxGCDC wxDC
 #endif
 
 // Required GetGlobalColor
-#include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>
 #include <wx/dcgraph.h>  // supplemental, for Mac
-
-#include <bitset>
 #include <wx/fontdata.h>
 
-const wxString DEGREE_SIGN = wxString::Format(
-    "%c", 0x00B0);  // This is the degree sign in UTF8. It should be
-                    // correctly handled on both Win & Unix
+#include "ocpn_plugin.h"
+
 #define DefaultWidth 150
+
+// The degree sign in UTF8, should be correctly handled on both Win & Unix.
+const wxString DEGREE_SIGN = wxString::Format("%c", 0x00B0);
 
 extern wxFontData *g_pFontTitle;
 extern wxFontData *g_pFontData;
@@ -118,6 +119,7 @@ enum DASH_CAP {
 
 #define N_INSTRUMENTS \
   ((int)OCPN_DBP_STC_LAST)  // Number of instrument capability flags
+
 using CapType = std::bitset<N_INSTRUMENTS>;
 
 wxColour GetColourSchemeBackgroundColour(wxColour co);
@@ -281,4 +283,4 @@ protected:
   void Draw(wxGCDC *dc);
 };
 
-#endif
+#endif  // InSTRUMENT_H_

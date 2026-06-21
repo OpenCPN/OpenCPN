@@ -23,15 +23,11 @@
  * Dashboard barometer history instrument.
  */
 
-#ifndef __BARO_HISTORY_H__
-#define __BARO_HISTORY_H__
+#ifndef BARO_HISTORY_H__
+#define BARO_HISTORY_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -39,11 +35,11 @@
 #include <wx/wx.h>
 #endif
 
-// Warn: div by 0 if count == 1
-#define BARO_RECORD_COUNT 2000
-
 #include "instrument.h"
 #include "dial.h"
+
+// Warn: div by 0 if count == 1
+#define BARO_RECORD_COUNT 2000
 
 class DashboardInstrument_BaroHistory : public DashboardInstrument {
 public:
@@ -98,4 +94,4 @@ protected:
   // wxString GetWindDirStr(wxString WindDir);
 };
 
-#endif  // __BARO_HISTORY_H__
+#endif  // BARO_HISTORY_H__

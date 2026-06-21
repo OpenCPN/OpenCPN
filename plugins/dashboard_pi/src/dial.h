@@ -24,15 +24,11 @@
  * Inspired by original work from Andreas Heiming
  */
 
-#ifndef __Dial_H__
-#define __Dial_H__
+#ifndef Dial_H__
+#define Dial_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -149,4 +145,4 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
                      bool showlabels, InstrumentProperties* Properties);
 void DrawBoat(wxGCDC* dc, int cx, int cy, int radius);
 
-#endif  // __Dial_H__
+#endif  // Dial_H__

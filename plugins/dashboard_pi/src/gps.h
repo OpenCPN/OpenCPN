@@ -22,15 +22,11 @@
  * Dashboard GPS instrument
  */
 
-#ifndef __GPS_H__
-#define __GPS_H__
+#ifndef GpS_H__
+#define GpS_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -73,4 +69,4 @@ protected:
   void DrawForeground(wxGCDC* dc);
 };
 
-#endif  // __GPS_H__
+#endif  // GpS_H__

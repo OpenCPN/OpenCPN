@@ -24,15 +24,11 @@
  * Inspired by original work from Andreas Heiming
  */
 
-#ifndef __Compass_H__
-#define __Compass_H__
+#ifndef Compass_H__
+#define Compass_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -42,15 +38,7 @@
 
 #include "dial.h"
 
-//+------------------------------------------------------------------------------
-//|
-//| CLASS:
-//|    DashboardInstrument_Compass
-//|
-//| DESCRIPTION:
-//|    This class creates a compass style control
-//|
-//+------------------------------------------------------------------------------
+/** A compass style control */
 class DashboardInstrument_Compass : public DashboardInstrument_Dial {
 public:
   DashboardInstrument_Compass(wxWindow* parent, wxWindowID id, wxString title,
@@ -67,4 +55,4 @@ protected:
   void DrawForeground(wxGCDC* dc);
 };
 
-#endif  // __Compass_H__
+#endif  // Compass_H__

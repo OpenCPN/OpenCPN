@@ -23,14 +23,49 @@
  * Dashboard plugin
  */
 
-#ifndef _DASHBOARDPI_H_
-#define _DASHBOARDPI_H_
+#ifndef DASHBOARDPI_H_
+#define DASHBOARDPI_H_
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
+
+#include <wx/aui/aui.h>
+#include <wx/clrpicker.h>
+#include <wx/fileconf.h>
+#include <wx/fontpicker.h>
+#include <wx/imaglist.h>
+#include <wx/jsonval.h>
+#include <wx/listctrl.h>
+#include <wx/notebook.h>
+#include <wx/spinctrl.h>
+#include <wx/statline.h>
+
+#ifdef __ANDROID__
+#include <wx/qt/private/wxQtGesture.h>
+#endif
+
+#include "altitude.h"
+#include "baro_history.h"
+#include "clock.h"
+#include "compass.h"
+#include "depth.h"
+#include "from_ownship.h"
+#include "gps.h"
+#include "iirfilter.h"
+#include "instrument.h"
+#include "nmea0183/nmea0183.h"
+#include "ocpn_plugin.h"
+#include "rudder_angle.h"
+#include "speedometer.h"
+#include "wind.h"
+#include "wind_history.h"
+
+#ifndef PI
+#define PI 3.1415926535897931160E0 /* pi */
+#endif
 
 #define PLUGIN_VERSION_MAJOR 1
 #define PLUGIN_VERSION_MINOR 2
@@ -38,51 +73,12 @@
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 8
 
-#include <wx/notebook.h>
-#include <wx/fileconf.h>
-#include <wx/listctrl.h>
-#include <wx/imaglist.h>
-#include <wx/spinctrl.h>
-#include <wx/aui/aui.h>
-#include <wx/fontpicker.h>
-#include <wx/jsonval.h>
-
-// wx2.9 #include <wx/wrapsizer.h>
-#include "../../../include/ocpn_plugin.h"
-
-#ifdef __OCPN__ANDROID__
-#include <wx/qt/private/wxQtGesture.h>
-#endif
-
-#include "nmea0183/nmea0183.h"
-#include "instrument.h"
-#include "speedometer.h"
-#include "compass.h"
-#include "wind.h"
-#include "rudder_angle.h"
-#include "gps.h"
-#include "depth.h"
-#include "altitude.h"
-#include "clock.h"
-#include "wind_history.h"
-#include "baro_history.h"
-#include "from_ownship.h"
-#include "iirfilter.h"
-#include <wx/clrpicker.h>
-#include <wx/statline.h>
-
-#ifndef PI
-#define PI 3.1415926535897931160E0 /* pi */
-#endif
-
-class DashboardWindow;
-class DashboardWindowContainer;
-class DashboardInstrumentContainer;
-
 // Request default positioning of toolbar tool
 #define DASHBOARD_TOOL_POSITION -1
+
 // Set watchdog to comply with OCPN WD.
 #define gps_watchdog_timeout_ticks GetGlobalWatchdogTimoutSeconds()
+
 // SignalK motor & environ instr defaults 30 sec update frequency
 #define no_nav_watchdog_timeout_ticks 40
 #define GEODESIC_RAD2DEG(r) ((r) * (180.0 / M_PI))
@@ -92,6 +88,10 @@ class DashboardInstrumentContainer;
 #define METERS2NM(r) ((r) / (1852))
 
 #define wxFontPickerCtrl OCPNFontButton
+
+class DashboardWindow;
+class DashboardWindowContainer;
+class DashboardInstrumentContainer;
 class OCPNFontButton;
 
 WX_DEFINE_ARRAY(InstrumentProperties *, wxArrayOfInstrumentProperties);
@@ -563,4 +563,4 @@ protected:
   wxFont m_selectedFont;
 };
 
-#endif
+#endif  // DASHBOARDPI_H_

@@ -22,15 +22,11 @@
  * Dashboard depth instrument
  */
 
-#ifndef __DEPTH_H__
-#define __DEPTH_H__
+#ifndef DEPTH_H__
+#define DEPTH_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -38,10 +34,10 @@
 #include <wx/wx.h>
 #endif
 
+#include "instrument.h"
+
 // Warn: div by 0 if count == 1
 #define DEPTH_RECORD_COUNT 30
-
-#include "instrument.h"
 
 class DashboardInstrument_Depth : public DashboardInstrument {
 public:
@@ -68,4 +64,4 @@ protected:
   void DrawForeground(wxGCDC* dc);
 };
 
-#endif  // __DEPTH_H__
+#endif  // DEPTH_H__

@@ -22,15 +22,11 @@
  * Dashboard speed instrument
  */
 
-#ifndef __Speedometer_H__
-#define __Speedometer_H__
+#ifndef Speedometer_H__
+#define Speedometer_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -40,15 +36,7 @@
 
 #include "dial.h"
 
-//+------------------------------------------------------------------------------
-//|
-//| CLASS:
-//|    DashboardInstrument_Speedometer
-//|
-//| DESCRIPTION:
-//|    This class creates a speedometer style control
-//|
-//+------------------------------------------------------------------------------
+/** A speedometer style control. */
 class DashboardInstrument_Speedometer : public DashboardInstrument_Dial {
 public:
   DashboardInstrument_Speedometer(wxWindow* parent, wxWindowID id,
@@ -61,4 +49,4 @@ public:
 private:
 };
 
-#endif  // __Speedometer_H__
+#endif  // Speedometer_H__

@@ -23,15 +23,11 @@
  * Dashboard altitude instrument.
  */
 
-#ifndef __ALTITUDE_H__
-#define __ALTITUDE_H__
+#ifndef ALTITUDE_H__
+#define ALTITUDE_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -39,10 +35,10 @@
 #include <wx/wx.h>
 #endif
 
+#include "instrument.h"
+
 // Warn: div by 0 if count == 1
 #define ALTITUDE_RECORD_COUNT 30
-
-#include "instrument.h"
 
 class DashboardInstrument_Altitude : public DashboardInstrument {
 public:
@@ -79,4 +75,4 @@ protected:
   int getAttenuation();
 };
 
-#endif  // __ALTITUDE_H__
+#endif  // ALTITUDE_H__
