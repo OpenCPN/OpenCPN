@@ -52,10 +52,10 @@
 
 #include <wx/grid.h>
 
-#include "GribUIDialogBase.h"
+#include "grib_ui_dlg_base.h"
 #include "grib_pi.h"
 #include "ocpn_plugin.h"
-#include "CustomGrid.h"
+#include "custom_grid.h"
 
 class GRIBUICtrlBar;
 

@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * \file
  *
- * \implements \ref GribRecord.h
+ * \implements \ref grib_record.h
  */
 
 #include "wx/wxprec.h"
@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // #include <QDateTime>
 
-#include "GribRecord.h"
+#include "grib_record.h"
 
 // interpolate two angles in range +- 180 or +-PI, with resulting angle in the
 // same range

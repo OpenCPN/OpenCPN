@@ -48,8 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <set>
 #include <map>
 
-#include "GribRecord.h"
-#include "zuFile.h"
+#include "grib_record.h"
+#include "zu_file.h"
 
 //===============================================================
 class GribReader {

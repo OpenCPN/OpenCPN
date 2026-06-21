@@ -18,7 +18,7 @@
 /**
  * \file
  *
- * \implements \ref  CursorData.h
+ * \implements \ref  cursor_data.h
  */
 
 #include "pi_gl.h"

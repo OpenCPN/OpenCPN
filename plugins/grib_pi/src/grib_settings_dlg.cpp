@@ -18,7 +18,7 @@
 /**
  * \file
  *
- * \implements \ref GribSettingsDialog.h
+ * \implements \ref grib_settings_dlg.h
  */
 
 #include "pi_gl.h"

@@ -50,7 +50,7 @@
 
 #include "ocpn_plugin.h"
 
-#include "GribReader.h"
+#include "grib_reader.h"
 
 class ViewPort;
 class wxDC;

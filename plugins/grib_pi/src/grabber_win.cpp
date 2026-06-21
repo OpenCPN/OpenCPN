@@ -18,14 +18,14 @@
 /**
  * \file
  *
- * \implements \ref GrabberWin.h
+ * \implements \ref grabber_win.h
  */
 
 #include "wx/wx.h"
 
 #include "folder.xpm"
 
-#include "GrabberWin.h"
+#include "grabber_win.h"
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation

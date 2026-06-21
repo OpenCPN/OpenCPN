@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * \file
  *
- * \implements \ref zuFile.h
+ * \implements \ref zu_file.h
  */
 
-#include "zuFile.h"
+#include "zu_file.h"
 
 //----------------------------------------------------
 int zu_can_read_file(const char *fname) {

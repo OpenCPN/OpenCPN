@@ -23,10 +23,10 @@
 
 #include "pi_gl.h"  // Must included before anything using GL stuff
 
-#include "CustomGrid.h"
+#include "custom_grid.h"
 
 #include <wx/graphics.h>
-#include "GribTable.h"
+#include "grib_table.h"
 #include "folder.xpm"
 
 #define SCROLL_SENSIBILITY 20

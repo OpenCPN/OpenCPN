@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * \file
  *
- * \implements \ref GribV1Record.h
+ * \implements \ref grib_v1_record.h
  */
 
 #include "wx/wxprec.h"
@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
-#include "GribV1Record.h"
+#include "grib_v1_record.h"
 
 //-------------------------------------------------------------------------------
 // Adjust data type from different mete center

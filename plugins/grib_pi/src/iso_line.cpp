@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * \file
  *
- * \implements \ref IsoLine.h
+ * \implements \ref iso_line.h
  */
 
 #include "pi_gl.h"  // Must included before anything using GL stuff
@@ -34,9 +34,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #include "model/georef.h"
 #include <wx/graphics.h>
 
-#include "IsoLine.h"
-#include "GribSettingsDialog.h"
-#include "GribOverlayFactory.h"
+#include "iso_line.h"
+#include "grib_settings_dlg.h"
+#include "grib_overlay_factory.h"
 
 #ifdef __OCPN__ANDROID__
 #include "qdebug.h"

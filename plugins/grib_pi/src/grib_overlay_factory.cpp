@@ -39,8 +39,8 @@
 #include "qdebug.h"
 #endif
 
-#include "GribUIDialog.h"
-#include "GribOverlayFactory.h"
+#include "grib_ui_dlg.h"
+#include "grib_overlay_factory.h"
 
 extern int m_Altitude;
 extern bool g_bpause;

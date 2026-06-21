@@ -73,7 +73,7 @@ msgstr "Magbukas ng bagong talaksan"
 
 #: src/GribUIDialog.cpp:1012 src/GribUIDialogBase.cpp:118
 #: src/GribUIDialogBase.cpp:244 src/GribUIDialogBase.cpp:1835
-#: src/GribUIDialogBase.h:412
+#: src/grib_ui_dlg_base.h:412
 msgid "Settings"
 msgstr "Mga Pagkakatalaga"
 
@@ -102,7 +102,7 @@ msgid " can't be read!"
 msgstr " hindi mabasa!"
 
 #: src/GribUIDialog.cpp:2388 src/GribUIDialog.cpp:2392
-#: src/GribUIDialogBase.h:241
+#: src/grib_ui_dlg_base.h:241
 msgid "GRIB Display Control"
 msgstr "Kontrol sa Displey ng GRIB"
 
@@ -307,7 +307,7 @@ msgstr "Ang pagpipiliang ito ay nagpapahiwatig na ikaw nagpapahintulot sa pag-aa
 "Huwag kalimutan na ang datos na nadispley ay hindi magiging tunay ngunit kukwentahing muli\n"
 "Ito ay maaaring makabawas sa katumpakan!"
 
-#: src/GribUIDialog.h:289 src/GribUIDialogBase.cpp:2374
+#: src/grib_ui_dlg.h:289 src/GribUIDialogBase.cpp:2374
 msgid "Choose GRIB File Directory"
 msgstr ""
 
@@ -947,15 +947,15 @@ msgstr ""
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr "Pagkakamali sa Meil: Ang MAPI32.DLL ay hindi na-install o hindi balido sa kompyuter na ito!"
 
-#: src/GribUIDialogBase.h:447
+#: src/grib_ui_dlg_base.h:447
 msgid "Preferences"
 msgstr "Mga Preperensya"
 
-#: src/GribUIDialogBase.h:603
+#: src/grib_ui_dlg_base.h:603
 msgid "Get forecast..."
 msgstr ""
 
-#: src/GribUIDialogBase.h:631
+#: src/grib_ui_dlg_base.h:631
 msgid "Grib Data Table"
 msgstr "Talaan sa Datos ng Grib"
 

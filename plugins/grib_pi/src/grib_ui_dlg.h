@@ -48,14 +48,14 @@
 #include <wx/fileconf.h>
 #include <wx/glcanvas.h>
 
-#include "GribUIDialogBase.h"
-#include "CursorData.h"
-#include "GribSettingsDialog.h"
-#include "GribRequestDialog.h"
-#include "GribReader.h"
-#include "GribRecordSet.h"
-#include "IsoLine.h"
-#include "GrabberWin.h"
+#include "grib_ui_dlg_base.h"
+#include "cursor_data.h"
+#include "grib_settings_dlg.h"
+#include "grib_request_dlg.h"
+#include "grib_reader.h"
+#include "grib_record_set.h"
+#include "iso_line.h"
+#include "grabber_win.h"
 
 #ifndef PI
 #define PI 3.1415926535897931160E0 /* pi */

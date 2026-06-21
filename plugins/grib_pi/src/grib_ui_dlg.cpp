@@ -42,10 +42,10 @@
 
 #include "ocpn_plugin.h"
 #include "grib_pi.h"
-#include "GribTable.h"
+#include "grib_table.h"
 #include "email.h"
 #include "folder.xpm"
-#include "GribUIDialog.h"
+#include "grib_ui_dlg.h"
 #include <wx/arrimpl.cpp>
 
 #ifdef __ANDROID__

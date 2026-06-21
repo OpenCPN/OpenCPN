@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * \file
  *
- * \implements \ref GribV2Record.h
+ * \implements \ref grib_v2_record.h
  */
 
 /*
@@ -46,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 
-#include "GribV2Record.h"
+#include "grib_v2_record.h"
 
 #ifdef JASPER
 #include <jasper/jasper.h>

@@ -19,36 +19,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * \file
  *
- * GRIB Version 1 Record Implementation.
+ * GRIB Version 2 Record Implementation
  *
- * Implements record handling for the GRIB1 format, which is the original GRIB
- * specification widely used for weather data distribution. GRIB1 has a simpler
- * structure than GRIB2 but supports fewer parameters and options.
+ * Implements record handling for the GRIB2 format, which is the modern standard
+ * for meteorological data distribution. GRIB2 provides enhanced capabilities
+ * and flexibility compared to GRIB1, such as support for variable-length
+ * sections, data compression, ensemble forecast data and more coordinate system
+ * options.
  */
 
-#ifndef GRIBV1RECORD_H
-#define GRIBV1RECORD_H
+#ifndef GRIBV2RECORD_H
+#define GRIBV2RECORD_H
 
 #include <iostream>
 #include <cmath>
 
-#include "zuFile.h"
-#include "GribRecord.h"
+#include "zu_file.h"
+#include "grib_record.h"
+
+class GRIBMessage;
 
 //----------------------------------------------
-class GribV1Record : public GribRecord {
+class GribV2Record : public GribRecord {
 public:
-  GribV1Record(ZUFILE* file, int id_);
-  GribV1Record(const GribRecord& rec);
-  GribV1Record() {}
+  GribV2Record(ZUFILE* file, int id_);
+  GribV2Record(const GribRecord& rec);
+  GribV2Record() { grib_msg = 0; }
 
-  ~GribV1Record();
+  ~GribV2Record();
 
-protected:
+  // return a new record for next data set
+  GribV2Record* GribV2NextDataSet(ZUFILE* file, int id_);
+  bool hasMoreDataSet() const;
+
 private:
-  zuint periodSeconds(zuchar unit, zuchar P1, zuchar P2, zuchar range);
+  zuint periodSeconds(zuchar unit, zuint P1, zuint P2, zuchar range);
+  void readDataSet(ZUFILE* file);
+  class GRIBMessage* grib_msg;
+
   //-----------------------------------------
   void translateDataType();  // adapte les codes des différents centres météo
+
   //---------------------------------------------
   // SECTION 0: THE INDICATOR SECTION (IS)
   //---------------------------------------------
@@ -73,6 +84,12 @@ private:
   zuint sectionSize3;
   // zuchar *BMSbits;
   // SECTION 4: BINARY DATA SECTION (BDS)
+  int productTemplate;
+  int productDiscipline;
+  int gridTemplateNum;
+  int dataCat;
+  int dataNum;
+
   zuint fileOffset4;
   zuint sectionSize4;
   zuchar unusedBitsEndBDS;
@@ -88,27 +105,7 @@ private:
   //---------------------------------------------
   // Data Access
   //---------------------------------------------
-  bool readGribSection0_IS(ZUFILE* file, unsigned int b_skip_initial_GRIB);
-  bool readGribSection1_PDS(ZUFILE* file);
-  bool readGribSection2_GDS(ZUFILE* file);
-  bool readGribSection3_BMS(ZUFILE* file);
-  bool readGribSection4_BDS(ZUFILE* file);
-  bool readGribSection5_ES(ZUFILE* file);
-
-  //---------------------------------------------
-  // Utility functions
-  //---------------------------------------------
-  zuchar readChar(ZUFILE* file);
-  int readSignedInt3(ZUFILE* file);
-  int readSignedInt2(ZUFILE* file);
-  zuint readInt2(ZUFILE* file);
-  zuint readInt3(ZUFILE* file);
-  double readFloat4(ZUFILE* file);
-
-  zuint makeInt3(zuchar a, zuchar b, zuchar c);
-  zuint makeInt2(zuchar b, zuchar c);
-
-  //        void   print();
+  bool readGribSection0_IS(ZUFILE* file, bool b_skip_initial_GRIB);
 };
 
 #endif

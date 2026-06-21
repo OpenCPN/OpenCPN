@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * \file
  *
- * \implements \ref GribReader.h
+ * \implements \ref grib_reader.h
  */
 
 #include "wx/wxprec.h"
@@ -28,9 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "GribReader.h"
-#include "GribV1Record.h"
-#include "GribV2Record.h"
+#include "grib_reader.h"
+#include "grib_v1_record.h"
+#include "grib_v2_record.h"
 #include <cassert>
 
 //-------------------------------------------------------------------------------

@@ -27,7 +27,7 @@
 #include "qdebug.h"
 #endif
 
-#include "pi_TexFont.h"
+#include "pi_tex_font.h"
 #include "pi_ocpndc.h"
 
 #ifdef USE_ANDROID_GLES2

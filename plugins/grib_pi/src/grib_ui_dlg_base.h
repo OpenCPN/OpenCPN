@@ -68,8 +68,8 @@
 #include <wx/treectrl.h>
 #include <wx/html/htmlwin.h>
 #include <wx/tglbtn.h>
-#include "CustomGrid.h"
-#include "XyGribPanel.h"
+#include "custom_grid.h"
+#include "xy_grib_panel.h"
 
 ///////////////////////////////////////////////////////////////////////////
 

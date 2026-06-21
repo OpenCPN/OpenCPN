@@ -8,8 +8,8 @@
  * \file
  * \implements \ref GribUIDialogBase.h
  */
-#include "GribUIDialogBase.h"
-#include "XyGribPanel.h"
+#include "grib_ui_dlg_base.h"
+#include "xy_grib_panel.h"
 #include "manual.h"
 #include "ocpn_plugin.h"
 #include "folder.xpm"

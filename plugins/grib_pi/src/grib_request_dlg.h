@@ -51,8 +51,8 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "GribUIDialogBase.h"
-#include "GribUIDialog.h"
+#include "grib_ui_dlg_base.h"
+#include "grib_ui_dlg.h"
 #include "pi_ocpndc.h"
 #include "wx/jsonreader.h"
 

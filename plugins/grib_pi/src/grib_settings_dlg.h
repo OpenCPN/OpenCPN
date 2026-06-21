@@ -45,7 +45,7 @@
 #ifndef __GRIBSETTINGSDIALOG_H__
 #define __GRIBSETTINGSDIALOG_H__
 
-#include "GribUIDialogBase.h"
+#include "grib_ui_dlg_base.h"
 
 #include "jsonval.h"
 

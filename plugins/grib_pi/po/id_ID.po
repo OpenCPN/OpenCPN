@@ -73,7 +73,7 @@ msgstr "Membuka sebuah berkas baru"
 
 #: src/GribUIDialog.cpp:1012 src/GribUIDialogBase.cpp:118
 #: src/GribUIDialogBase.cpp:244 src/GribUIDialogBase.cpp:1835
-#: src/GribUIDialogBase.h:412
+#: src/grib_ui_dlg_base.h:412
 msgid "Settings"
 msgstr "Pengaturan"
 
@@ -102,7 +102,7 @@ msgid " can't be read!"
 msgstr " tidak bisa dibaca!"
 
 #: src/GribUIDialog.cpp:2388 src/GribUIDialog.cpp:2392
-#: src/GribUIDialogBase.h:241
+#: src/grib_ui_dlg_base.h:241
 msgid "GRIB Display Control"
 msgstr "Kontrol Tampilan GRIB"
 
@@ -307,7 +307,7 @@ msgstr "Pilihan ini menyiratkan Anda mengizinkan interpolasi\n"
 "Jangan lupa data yang ditampilkan tidak akan nyata tapi dihitung ulang\n"
 "Hal ini bisa menurunkan akurasi!"
 
-#: src/GribUIDialog.h:289 src/GribUIDialogBase.cpp:2374
+#: src/grib_ui_dlg.h:289 src/GribUIDialogBase.cpp:2374
 msgid "Choose GRIB File Directory"
 msgstr ""
 
@@ -947,15 +947,15 @@ msgstr ""
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr "Kesalahan MAIL: MAPI32.DLL tidak dipasang atau tidak valid di komputer ini!"
 
-#: src/GribUIDialogBase.h:447
+#: src/grib_ui_dlg_base.h:447
 msgid "Preferences"
 msgstr "Preferensi"
 
-#: src/GribUIDialogBase.h:603
+#: src/grib_ui_dlg_base.h:603
 msgid "Get forecast..."
 msgstr ""
 
-#: src/GribUIDialogBase.h:631
+#: src/grib_ui_dlg_base.h:631
 msgid "Grib Data Table"
 msgstr "Tabel Data Grib"
 

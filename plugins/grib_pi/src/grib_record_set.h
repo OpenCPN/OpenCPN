@@ -25,7 +25,7 @@
  * (wind, pressure, waves, etc.) valid at a single forecast time.
  */
 
-#include "GribRecord.h"
+#include "grib_record.h"
 
 /**
  * Indices for different meteorological parameters in GribRecordSet's record

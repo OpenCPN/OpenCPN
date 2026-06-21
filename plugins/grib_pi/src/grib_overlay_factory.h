@@ -43,7 +43,7 @@
 #include "pi_gl.h"
 
 #include "pi_ocpndc.h"
-#include "pi_TexFont.h"
+#include "pi_tex_font.h"
 
 /**
  * Container for rendered GRIB data visualizations in texture or bitmap form.

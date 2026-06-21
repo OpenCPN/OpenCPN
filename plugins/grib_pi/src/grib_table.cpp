@@ -18,7 +18,7 @@
 /**
  * \file
  *
- * \implements \ref GribTable.h
+ * \implements \ref grib_table.h
  */
 
 #include "wx/wxprec.h"
@@ -33,8 +33,8 @@
 #include <wx/graphics.h>
 #include <wx/progdlg.h>
 #include <wx/grid.h>
-#include "GribTable.h"
-#include "CustomGrid.h"
+#include "grib_table.h"
+#include "custom_grid.h"
 #include <wx/tokenzr.h>
 
 extern double m_cursor_lat, m_cursor_lon;

@@ -29,12 +29,12 @@
 #include <wx/utils.h>
 #include <sstream>
 #include "email.h"
-#include "XyGribModelDef.h"
+#include "xy_grib_model_def.h"
 
 #include "pi_gl.h"
 
-#include "GribRequestDialog.h"
-#include "GribOverlayFactory.h"
+#include "grib_request_dlg.h"
+#include "grib_overlay_factory.h"
 #include <wx/wfstream.h>
 #include "grib_pi.h"
 

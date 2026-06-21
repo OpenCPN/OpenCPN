@@ -18,11 +18,11 @@
 /**
  * \file
  *
- * \implements \ref XyGribModelDef.h
+ * \implements \ref xy_grib_model_def.h
  */
 
 #include <wx/wx.h>
-#include "XyGribModelDef.h"
+#include "xy_grib_model_def.h"
 
 // ******** Atmospheric model definitions **********************************
 

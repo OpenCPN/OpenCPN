@@ -34,9 +34,9 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "GribUIDialogBase.h"
-#include "GribSettingsDialog.h"
-#include "GrabberWin.h"
+#include "grib_ui_dlg_base.h"
+#include "grib_settings_dlg.h"
+#include "grabber_win.h"
 
 class GRIBUICtrlBar;
 class GribGrabberWin;
