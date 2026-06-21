@@ -1,7 +1,12 @@
 #ifndef LINMATH_H
 #define LINMATH_H
 
-#include <math.h>
+/**
+ * Copyright:  This is free and unencumbered software released into the public
+ * domain.
+ *
+ * See: https://github.com/datenwolf
+ */
 
 #ifdef _MSC_VER
 #define inline __inline

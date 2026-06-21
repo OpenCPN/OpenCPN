@@ -1,15 +1,20 @@
-/*	WMM Subroutine library was tested in the following environments
+/**
+ * \file
+ *
+ * Geomagnetism Library subroutines
+ *
+ * Copyright:  This is free and unencumbered software released into the public
+ *domain.
+ *
+ *
+ *	WMM Subroutine library was tested in the following environments
  *
  *	1. Red Hat Linux  with GCC Compiler
  *	2. MS Windows XP with CodeGear C++ compiler
  *	3. Sun Solaris with GCC Compiler
  *
- *
- *      Revision Number: $Revision: 1437 $
  *      Last changed by: $Author: Li-Yin Young $
  *      Last changed on: $Date: 2024-11-08 10:49:40 -0700 $
- *
- *
  */
 
 #ifndef _POSIX_C_SOURCE
