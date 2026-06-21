@@ -27,8 +27,8 @@
  * when direct downloads are not available or preferred.
  */
 
-#ifndef _WX_EMAIL_H_
-#define _WX_EMAIL_H_
+#ifndef WX_EMAIL_H_
+#define WX_EMAIL_H_
 
 #include "msg.h"
 
@@ -58,4 +58,4 @@ public:
 protected:
 };
 
-#endif  //_WX_EMAIL_H_
+#endif  //  WX_EMAIL_H_

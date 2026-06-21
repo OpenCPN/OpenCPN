@@ -39,8 +39,8 @@
  * plugin's overlay displays and data visualization components.
  */
 
-#ifndef __TEXFONT_H__
-#define __TEXFONT_H__
+#ifndef TEXFONT_H__
+#define TEXFONT_H__
 
 /* support ascii plus degree symbol for now pack font in a single texture 16x8
  */
@@ -98,4 +98,4 @@ private:
   float m_dy;
 };
 
-#endif  // guard
+#endif  // TEXFONT_H__

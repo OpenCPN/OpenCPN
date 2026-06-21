@@ -8,8 +8,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WX_SMAPI_H_
-#define _WX_SMAPI_H_
+#ifndef WX_SMAPI_H_
+#define WX_SMAPI_H_
 
 #include "msg.h"
 
@@ -47,4 +47,4 @@ protected:
   wxMapiData* m_data;
 };
 
-#endif  //_WX_SMAPI_H_
+#endif  // WX_SMAPI_H_

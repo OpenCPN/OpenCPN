@@ -34,8 +34,8 @@
  * cases.
  */
 
-#ifndef _WX_JSON_DEFS_H_
-#define _WX_JSON_DEFS_H_
+#ifndef WX_JSON_DEFS_H_
+#define WX_JSON_DEFS_H_
 
 // Defines for component version.
 // The following symbols should be updated for each new component release
@@ -230,4 +230,4 @@
 #define MAX(a, b) a > b ? a : b
 #endif
 
-#endif  // _WX_JSON_DEFS_H_
+#endif  // WX_JSON_DEFS_H_

@@ -33,8 +33,8 @@
  * visual representations for mariners.
  */
 
-#ifndef _GRIBOVERLAYFACTORY_H_
-#define _GRIBOVERLAYFACTORY_H_
+#ifndef GRIBOVERLAYFACTORY_H_
+#define GRIBOVERLAYFACTORY_H_
 
 #include <map>
 
@@ -379,4 +379,4 @@ private:
   int windArrowSize;
 };
 
-#endif
+#endif  //      GRIBOVERLAYFACTORY_H_

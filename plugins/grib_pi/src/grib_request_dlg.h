@@ -44,17 +44,19 @@
  * requests with size and coverage validation.
  */
 
-#ifndef __GRIBREQUESTDIALOG_H__
-#define __GRIBREQUESTDIALOG_H__
+#ifndef GRIBREQUESTDIALOG_H__
+#define GRIBREQUESTDIALOG_H__
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
+#include <wx/jsonreader.h>
 
 #include "grib_ui_dlg_base.h"
 #include "grib_ui_dlg.h"
 #include "pi_ocpndc.h"
-#include "wx/jsonreader.h"
+
+#define XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB 10
 
 enum GribDownloadType {
   WORLD,          ///< Global forecast downloads (e.g., GFS)
@@ -67,8 +69,6 @@ enum GribDownloadType {
 const std::string CATALOG_URL =
     "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/"
     "sources.json";
-
-#define XYGRIB_MAX_DOWNLOADABLE_GRIB_SIZE_MB 10
 
 /**
  * Enumeration defining the states of the GRIB zone selection overlay rendering.
@@ -337,4 +337,4 @@ private:
   int m_boundingBoxCanvasIndex;
 };
 
-#endif
+#endif  //    GRIBREQUESTDIALOG_H__

@@ -28,8 +28,8 @@
  * email-based data delivery.
  */
 
-#ifndef _WX_MSG_H_
-#define _WX_MSG_H_
+#ifndef WX_MSG_H_
+#define WX_MSG_H_
 
 #define WXDLLIMPEXP_NETUTILS
 #define WXDLLIMPEXP_DATA_NETUTILS(type) type
@@ -85,4 +85,4 @@ public:
       m_attachmentTitles;  // Titles to use for the email file attachments
 };
 
-#endif  // _WX_MSG_H_
+#endif  // WX_MSG_H_

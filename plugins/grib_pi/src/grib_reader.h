@@ -36,17 +36,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef GRIBREADER_H
 #define GRIBREADER_H
 
-#include "wx/wxprec.h"
+#include <cmath>
+#include <iostream>
+#include <map>
+#include <set>
+#include <vector>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include <iostream>
-#include <cmath>
-#include <vector>
-#include <set>
-#include <map>
+#include <wx/wx.h>
+#endif
+#include <wx/wxprec.h>
 
 #include "grib_record.h"
 #include "zu_file.h"

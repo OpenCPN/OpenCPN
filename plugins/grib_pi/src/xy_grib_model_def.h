@@ -38,8 +38,8 @@
  * - Standard and high-definition model variants
  */
 
-#ifndef __XYGRIBMODELDEF_H__
-#define __XYGRIBMODELDEF_H__
+#ifndef XYGRIBMODELDEF_H__
+#define XYGRIBMODELDEF_H__
 
 #define XYGRIB_RUN_ALL 0x01
 #define XYGRIB_RUN_0_12 0x02
@@ -74,4 +74,4 @@ typedef struct {
 extern AtmModelDef_t *xygribAtmModelList[];
 extern WaveModelDef_t *xygribWaveModelList[];
 
-#endif
+#endif  //      XYGRIBMODELDEF_H__

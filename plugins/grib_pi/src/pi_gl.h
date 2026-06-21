@@ -31,8 +31,8 @@
 //----------------------------------------------------------------------------------
 //          OpenGL Build options for S52PLIB
 //----------------------------------------------------------------------------------
-#ifndef _PIGL_H_
-#define _PIGL_H_
+#ifndef PIGL_H_
+#define PIGL_H_
 
 #if defined(__OCPN__ANDROID__)
 #include <qopengl.h>
@@ -50,4 +50,4 @@ typedef void (*_GLUfuncptr)();
 #include <GL/glu.h>
 #endif
 
-#endif  // __FILE__
+#endif  // PIGL_H_

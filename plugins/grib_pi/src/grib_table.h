@@ -39,19 +39,17 @@
  * and times.
  */
 
-#ifndef __GRIBTABLE_H__
-#define __GRIBTABLE_H__
+#ifndef GRIBTABLE_H__
+#define GRIBTABLE_H__
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include "pi_gl.h"
-
+#include <wx/wx.h>
+#endif
 #include <wx/grid.h>
 
+#include "pi_gl.h"
 #include "grib_ui_dlg_base.h"
 #include "grib_pi.h"
 #include "ocpn_plugin.h"
@@ -122,4 +120,4 @@ private:
   wxTimer m_tScrollToNowTimer;
 };
 
-#endif  //__GRIBTABLE_H__
+#endif  //  GRIBTABLE_H__

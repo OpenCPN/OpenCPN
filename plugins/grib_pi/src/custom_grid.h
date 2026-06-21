@@ -39,19 +39,21 @@
  * providing intuitive visualization of both scalar and vector quantities.
  */
 
-#ifndef __CUSTOMGRID_H__
-#define __CUSTOMGRID_H__
+#ifndef CUSTOmGRID_H__
+#define CUSTOmGRID_H__
 
-#include "wx/wxprec.h"
+#include <vector>
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #include <wx/grid.h>
-#include "ocpn_plugin.h"
 #include <wx/graphics.h>
-#include <vector>
+
+#include "ocpn_plugin.h"
 
 class GRIBUICtrlBar;
 class CustomRenderer;
@@ -126,4 +128,4 @@ private:
   bool m_IsDigit;
 };
 
-#endif  //__CUSTOMGRID_H__
+#endif  //  CUSTOmGRID_H__

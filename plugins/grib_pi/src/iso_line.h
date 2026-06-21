@@ -42,11 +42,11 @@
 #ifndef ISOLINE_H
 #define ISOLINE_H
 
-#include <iostream>
 #include <cmath>
-#include <vector>
+#include <iostream>
 #include <list>
 #include <set>
+#include <vector>
 
 #include "ocpn_plugin.h"
 

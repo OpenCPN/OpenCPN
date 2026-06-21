@@ -129,6 +129,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LV_SIGMA 107
 #define LV_ATMOS_ENT 10
 #define LV_ATMOS_ALL 200
+
 //---------------------------------------------------------
 enum DataCenterModel {
   NOAA_GFS,
@@ -156,7 +157,7 @@ public:
 };
 
 /**
- * Represents a meteorological data grid from a GRIB (Gridded Binary) file.
+ * A meteorological data grid from a GRIB (Gridded Binary) file.
  *
  * A GribRecord contains a regular latitude/longitude grid of values
  * representing a single meteorological parameter (e.g., wind component,

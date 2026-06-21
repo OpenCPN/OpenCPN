@@ -37,25 +37,25 @@
  * - Animation controls
  */
 
-#ifndef __GRIBUICTRLBAR_H__
-#define __GRIBUICTRLBAR_H__
+#ifndef GRIBUICTRLBAR_H__
+#define GRIBUICTRLBAR_H__
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 #include <wx/fileconf.h>
 #include <wx/glcanvas.h>
 
-#include "grib_ui_dlg_base.h"
 #include "cursor_data.h"
-#include "grib_settings_dlg.h"
-#include "grib_request_dlg.h"
+#include "grabber_win.h"
 #include "grib_reader.h"
 #include "grib_record_set.h"
+#include "grib_request_dlg.h"
+#include "grib_settings_dlg.h"
+#include "grib_ui_dlg_base.h"
 #include "iso_line.h"
-#include "grabber_win.h"
 
 #ifndef PI
 #define PI 3.1415926535897931160E0 /* pi */
@@ -497,9 +497,9 @@ private:
   int m_nGribRecords;
 };
 
-//----------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------
 //    GRIB CursorData Dialog Specification
-//----------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------
 class GRIBUICData : public GRIBUICDataBase {
 public:
   GRIBUICData(GRIBUICtrlBar &parent);
@@ -513,4 +513,4 @@ private:
   void OnMove(wxMoveEvent &event);
 };
 
-#endif
+#endif  //      GRIBUICTRLBAR_H__

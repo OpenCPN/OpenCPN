@@ -34,23 +34,15 @@
  * options including wind barbs, particle animations, and color-coded overlays.
  */
 
-#ifndef _GRIBPI_H_
-#define _GRIBPI_H_
+#ifndef GRIBPI_H_
+#define GRIBPI_H_
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #include <wx/glcanvas.h>
-#endif  // precompiled headers
-
-#define PLUGIN_VERSION_MAJOR 5
-#define PLUGIN_VERSION_MINOR 0
-
-#define MY_API_VERSION_MAJOR 1
-#define MY_API_VERSION_MINOR 16
-
-#include "ocpn_plugin.h"
+#endif
 
 #include "wx/jsonreader.h"
 #include "wx/jsonwriter.h"
@@ -58,21 +50,28 @@
 #include "grib_settings_dlg.h"
 #include "grib_overlay_factory.h"
 #include "grib_ui_dlg.h"
+#include "ocpn_plugin.h"
 
-class GribPreferencesDialog;
+#define PLUGIN_VERSION_MAJOR 5
+#define PLUGIN_VERSION_MINOR 0
 
-//----------------------------------------------------------------------------------------------------------
+#define MY_API_VERSION_MAJOR 1
+#define MY_API_VERSION_MINOR 16
+
+//------------------------------------------------------------------------------
 //    The PlugIn Class Definition
-//----------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-#define GRIB_TOOL_POSITION -1  // Request default positioning of ToolBar tool
+#define GRIB_TOOL_POSITION -1      // Request Toolbar tool default positioning
 #define STARTING_STATE_STYLE 9999  // style option undifined
 #define ATTACHED 0                 // dialog are attached
 #define SEPARATED 1                // dialog are separated
 #define ATTACHED_HAS_CAPTION 0     // dialog attached  has a caption
 #define ATTACHED_NO_CAPTION 1      // dialog attached don't have caption
-#define SEPARATED_HORIZONTAL 2     // dialog separated shown honrizontaly
-#define SEPARATED_VERTICAL 3       // dialog separated shown vaerticaly
+#define SEPARATED_HORIZONTAL 2     // dialog separated shown horizontally
+#define SEPARATED_VERTICAL 3       // dialog separated shown vartically
+
+class GribPreferencesDialog;
 
 enum SettingsDisplay {
   B_ARROWS,
@@ -253,4 +252,4 @@ public:
 private:
   void OnStartOptionChange(wxCommandEvent &event);
 };
-#endif
+#endif  //      GRIBPI_H_

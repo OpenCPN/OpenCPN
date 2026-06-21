@@ -7,15 +7,11 @@
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(_WX_JSONVAL_H)
-#define _WX_JSONVAL_H
+#ifndef WX_JSONVAL_H
+#define WX_JSONVAL_H
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
+#include <wx/wxprec.h>
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -420,4 +416,4 @@ public:
 #endif
 };
 
-#endif  // not defined _WX_JSONVAL_H
+#endif  // WX_JSONVAL_H

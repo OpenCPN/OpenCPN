@@ -8,28 +8,26 @@
 #pragma once
 
 #include <wx/artprov.h>
-#include <wx/xrc/xmlres.h>
-#include <wx/intl.h>
-#include <wx/string.h>
-#include <wx/stattext.h>
-#include <wx/gdicmn.h>
-#include <wx/font.h>
-#include <wx/colour.h>
-#include <wx/settings.h>
-#include <wx/choice.h>
-#include <wx/checkbox.h>
-#include <wx/sizer.h>
-#include <wx/panel.h>
 #include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
-#include <wx/notebook.h>
-#include <wx/statline.h>
 #include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/colour.h>
+#include <wx/font.h>
 #include <wx/gauge.h>
 #include <wx/gbsizer.h>
-
-///////////////////////////////////////////////////////////////////////////
+#include <wx/gdicmn.h>
+#include <wx/icon.h>
+#include <wx/image.h>
+#include <wx/intl.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/settings.h>
+#include <wx/sizer.h>
+#include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/xrc/xmlres.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class XyGribPanel

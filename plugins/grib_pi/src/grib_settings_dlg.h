@@ -42,16 +42,16 @@
  * - Profile management for different use cases
  */
 
-#ifndef __GRIBSETTINGSDIALOG_H__
-#define __GRIBSETTINGSDIALOG_H__
+#ifndef GRIBSETTINGSDIALOG_H__
+#define GRIBSETTINGSDIALOG_H__
+
+#include <wx/jsonval.h>
 
 #include "grib_ui_dlg_base.h"
 
-#include "jsonval.h"
-
-//----------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------
 //    Grib OverlaySettings Specification
-//----------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------
 struct GribOverlaySettings {
   static wxString NameFromIndex(int index);
 
@@ -174,4 +174,4 @@ private:
   int m_SetBookpageIndex;
 };
 
-#endif
+#endif  //      GRIBSETTINGSDIALOG_H__

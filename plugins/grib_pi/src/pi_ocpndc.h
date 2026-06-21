@@ -38,8 +38,8 @@
  * different platforms and rendering systems.
  */
 
-#ifndef __PIOCPNDC_H__
-#define __PIOCPNDC_H__
+#ifndef PIOCPNDC_H__
+#define PIOCPNDC_H__
 
 #include <vector>
 #include "linmath.h"
@@ -180,4 +180,4 @@ protected:
   bool m_buseGL;
 };
 
-#endif
+#endif  //      PIOCPNDC_H__

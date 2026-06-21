@@ -38,13 +38,13 @@
  * - Uniform parameter management
  */
 
-#ifndef __PISHADERS_H__
-#define __PISHADERS_H__
+#ifndef PISHADERS_H__
+#define PISHADERS_H__
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
 
 #include "pi_gl.h"
 
@@ -154,4 +154,4 @@ private:
   GLuint programId_;
 };
 
-#endif
+#endif  //      PISHADERS_H__

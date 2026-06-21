@@ -32,8 +32,8 @@
  * maintaining consistency across the interface.
  */
 
-#ifndef __GRIBUIDIALOGBASE_H__
-#define __GRIBUIDIALOGBASE_H__
+#ifndef GRIBUIDIALOGBASE_H__
+#define GRIBUIDIALOGBASE_H__
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
@@ -639,4 +639,4 @@ public:
   ~GRIBTableBase();
 };
 
-#endif  //__GRIBUIDIALOGBASE_H__
+#endif  //  GRIBUIDIALOGBASE_H__
