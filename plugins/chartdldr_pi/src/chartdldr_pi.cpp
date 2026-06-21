@@ -62,7 +62,7 @@
 #include <fstream>
 
 #ifdef __ANDROID__
-#include "androidSupport.h"
+#include "android_support.h"
 #include "android_jvm.h"
 #include <jni.h>
 #endif

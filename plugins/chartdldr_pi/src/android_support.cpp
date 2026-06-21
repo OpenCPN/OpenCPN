@@ -34,7 +34,7 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "androidSupport.h"
+#include "android_support.h"
 #include "android_jvm.h"
 #include <wx/tokenzr.h>
 
