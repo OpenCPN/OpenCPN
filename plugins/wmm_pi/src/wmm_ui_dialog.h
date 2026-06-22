@@ -5,32 +5,30 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __WMMUIDIALOG_H__
-#define __WMMUIDIALOG_H__
+#ifndef WMMUIDIALOG_H__
+#define WMMUIDIALOG_H__
 
-#include <wx/frame.h>
 #include <wx/artprov.h>
-#include <wx/xrc/xmlres.h>
-#include <wx/intl.h>
-#include <wx/string.h>
-#include <wx/stattext.h>
-#include <wx/gdicmn.h>
-#include <wx/font.h>
-#include <wx/colour.h>
-#include <wx/settings.h>
-#include <wx/textctrl.h>
-#include <wx/sizer.h>
-#include <wx/statbox.h>
-#include <wx/checkbox.h>
 #include <wx/button.h>
-#include <wx/dialog.h>
-#include <wx/radiobox.h>
-#include <wx/slider.h>
-#include <wx/spinctrl.h>
+#include <wx/checkbox.h>
+#include <wx/colour.h>
 #include <wx/datectrl.h>
 #include <wx/dateevt.h>
-
-///////////////////////////////////////////////////////////////////////////
+#include <wx/dialog.h>
+#include <wx/font.h>
+#include <wx/frame.h>
+#include <wx/gdicmn.h>
+#include <wx/intl.h>
+#include <wx/radiobox.h>
+#include <wx/settings.h>
+#include <wx/sizer.h>
+#include <wx/slider.h>
+#include <wx/spinctrl.h>
+#include <wx/statbox.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
+#include <wx/xrc/xmlres.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class WmmUIDialogBase
@@ -162,4 +160,4 @@ public:
   ~WmmPlotSettingsDialogBase();
 };
 
-#endif  //__WMMUIDIALOG_H__
+#endif  //  WMMUIDIALOG_H__

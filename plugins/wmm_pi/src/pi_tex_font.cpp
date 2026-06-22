@@ -30,7 +30,7 @@
 #include <wx/wx.h>
 
 #ifdef __OCPN__ANDROID__
-#include "qdebug.h"
+#include <qdebug.h>
 #endif
 
 #include "pi_tex_font.h"

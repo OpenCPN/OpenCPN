@@ -21,17 +21,21 @@
  * Implement pi_ocpndc.h
  */
 
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
-
-#include "ocpn_plugin.h"
-#include "linmath.h"
+#include "pi_ocpndc.h"
 
 #ifdef __MSVC__
 #include <windows.h>
+#endif
+
+#ifdef __OCPN__ANDROID__
+#include "qdebug.h"
+#endif
+
+#include <vector>
+
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
 #endif
 
 #ifdef ocpnUSE_GL
@@ -40,10 +44,6 @@
 
 #include <wx/graphics.h>
 #include <wx/dcclient.h>
-
-#include <vector>
-
-#include "pi_ocpndc.h"
 
 #ifdef __OCPN__ANDROID__
 #include <qopengl.h>
@@ -58,9 +58,8 @@
 #include <GLES2/gl2.h>
 #endif
 
-#ifdef __OCPN__ANDROID__
-#include "qdebug.h"
-#endif
+#include "ocpn_plugin.h"
+#include "linmath.h"
 
 extern float g_piGLMinSymbolLineWidth;
 wxArrayPtrVoid pi_gTesselatorVertices;

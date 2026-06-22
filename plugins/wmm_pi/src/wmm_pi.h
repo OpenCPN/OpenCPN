@@ -21,39 +21,38 @@
  * WMM plugin
  */
 
-#ifndef _WMMPI_H_
-#define _WMMPI_H_
+#ifndef WMMPI_H_
+#define WMMPI_H_
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
 
 #include <wx/fileconf.h>
 
 #include "version.h"
+#include "ocpn_plugin.h"
+
+#include "EGM9615.h"
+#include "GeomagnetismHeader.h"
+#include "jsonreader.h"
+#include "jsonwriter.h"
+#include "magnetic_plot_map.h"
+#include "pi_ocpndc.h"
+#include "wmm_ui_dialog.h"
 #include "wxWTranslateCatalog.h"
 
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 9
 
-#include "ocpn_plugin.h"
-#include "pi_ocpndc.h"
-
-#include "GeomagnetismHeader.h"
-#include "EGM9615.h"
-#include "wmm_ui_dialog.h"
-#include "magnetic_plot_map.h"
-
-#include "jsonreader.h"
-#include "jsonwriter.h"
+#define WMM_TOOL_POSITION   -1  // Request default positioning of toolbar tool
 
 //-----------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //-----------------------------------------------------------------------------------
 
-#define WMM_TOOL_POSITION -1  // Request default positioning of toolbar tool
 class wmm_pi;
 class WmmPrefsDialog;
 
@@ -201,4 +200,4 @@ private:
 
 int WMM_setupMagneticModel(char *data, MAGtype_MagneticModel *MagneticModel);
 
-#endif
+#endif  //      WMMPI_H_

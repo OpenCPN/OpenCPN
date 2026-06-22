@@ -21,17 +21,13 @@
  * WMM plugin magnetic plotmap utility.
  */
 
+#ifndef MagNETiC_PlotMAP_H_
+#define MagNETiC_PlotMAP_H_
+
 #include <list>
 #include "pi_tex_font.h"
 #include "GeomagnetismHeader.h"
-
-enum MagneticPlotType {
-  DECLINATION_PLOT,
-  INCLINATION_PLOT,
-  FIELD_STRENGTH_PLOT
-};
-
-class pi_ocpnDC;
+#include "ocpn_plugin.h"
 
 /* must be a power of 2, and also divide 360 and 176;
    really only 8 works without more modifications */
@@ -42,6 +38,14 @@ class pi_ocpnDC;
 #define MAX_LAT 88
 #define LATITUDE_ZONES (2 * MAX_LAT / ZONE_SIZE) /* perfectly divisible */
 #define LONGITUDE_ZONES (360 / ZONE_SIZE)
+
+enum MagneticPlotType {
+  DECLINATION_PLOT,
+  INCLINATION_PLOT,
+  FIELD_STRENGTH_PLOT
+};
+
+class pi_ocpnDC;
 
 /* a single line segment in the plot */
 class PlotLineSeg {
@@ -126,3 +130,5 @@ public:
   TexFont m_TexFont;
   int lastx, lasty; /* when rendering to prevent overcluttering */
 };
+
+#endif  //  MagNETiC_PlotMAP_H_

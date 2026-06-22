@@ -21,8 +21,11 @@
  * OpenGL text rendering
  */
 
-#ifndef __TEXFONT_H__
-#define __TEXFONT_H__
+#ifndef TexFONT_H__
+#define TexFONT_H__
+
+#include <wx/font.h>
+#include <wx/string.h>
 
 /* support ascii plus degree symbol for now pack font in a single texture 16x8
  */
@@ -79,4 +82,4 @@ private:
   float m_dx;
   float m_dy;
 };
-#endif  // guard
+#endif  // TexFONT_H__

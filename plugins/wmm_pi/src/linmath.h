@@ -8,6 +8,8 @@
  * See: https://github.com/datenwolf
  */
 
+#include <cmath>
+
 #ifdef _MSC_VER
 #define inline __inline
 #endif

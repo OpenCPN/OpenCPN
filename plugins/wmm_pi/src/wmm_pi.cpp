@@ -21,10 +21,12 @@
  * Implement  wmm_pi.h  -- WMM plugin
  */
 
-#include "wx/wxprec.h"
+#include "wmm_pi.h"
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #endif  // precompiled headers
 
 #ifndef __OCPN__ANDROID__
@@ -44,8 +46,6 @@ void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
 extern "C" void WMMLogMessage(const char *s) {
   WMMLogMessage1(wxString::FromAscii(s));
 }
-
-#include "wmm_pi.h"
 
 // the class factories, used to create and destroy instances of the PlugIn
 

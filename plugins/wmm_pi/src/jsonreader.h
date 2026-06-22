@@ -7,19 +7,15 @@
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(_WX_JSONREADER_H)
-#define _WX_JSONREADER_H
+#ifndef WX_JSONREADER_H
+#define WX_JSONREADER_H
 
 #ifdef __GNUG__
 #pragma interface "jsonreader.h"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
+#include <wx/wxprec.h>
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -29,8 +25,8 @@
 #include <wx/arrstr.h>
 #endif
 
-#include "json_defs.h"
-#include "jsonval.h"
+#include "wx/json_defs.h"
+#include "wx/jsonval.h"
 
 // The flags of the parser
 enum {
@@ -141,4 +137,4 @@ protected:
   bool m_noUtf8;
 };
 
-#endif  // not defined _WX_JSONREADER_H
+#endif  // WX_JSONREADER_H
