@@ -187,7 +187,7 @@ On first using pre-commit:
 
 `>pre-commit autoupdate --repo https://github.com/pre-commit/pre-commit-hooks`
 
-This updated pre-commit from version 2.0 to version 6.0.
+This updated pre-commit from version 2.0 to version 4.6.0.
 
 Another commit to test pre-commit. 
 
