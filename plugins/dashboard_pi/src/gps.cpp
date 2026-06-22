@@ -365,7 +365,7 @@ void DashboardInstrument_GPS::DrawForeground(wxGCDC* dc) {
     cl = GetColourSchemeFont(m_Properties->m_DataFont.GetColour());
   else
     cl = GetColourSchemeFont(g_pFontData->GetColour());
-  // GetGlobalColor(_T("DASHL"), &cl);
+  // GetGlobalColor("DASHL", &cl);
   wxBrush brush(cl);
   dc->SetBrush(brush);
   dc->SetPen(*wxTRANSPARENT_PEN);

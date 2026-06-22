@@ -69,9 +69,9 @@ void TexFont::Build(wxFont &font, bool blur) {
     wxCoord gw, gh;
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
+      text = wxString::Format("%c", 0x00B0);  //"°";
     else
-      text = wxString::Format(_T("%c"), i);
+      text = wxString::Format("%c", i);
     wxCoord descent, exlead;
     sdc.GetTextExtent(text, &gw, &gh, &descent, &exlead,
                       &font);  // measure the text
@@ -128,9 +128,9 @@ void TexFont::Build(wxFont &font, bool blur) {
 
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
+      text = wxString::Format("%c", 0x00B0);  //"°";
     else
-      text = wxString::Format(_T("%c"), i);
+      text = wxString::Format("%c", i);
 
     dc.DrawText(text, tgi[i].x, tgi[i].y);
 

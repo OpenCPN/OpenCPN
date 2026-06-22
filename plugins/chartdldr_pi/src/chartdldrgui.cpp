@@ -154,7 +154,7 @@ DLDR_OCPNChartDirPanel::DLDR_OCPNChartDirPanel(wxWindow* parent, wxWindowID id,
   SetMinSize(wxSize(-1, m_unselectedHeight));
 
   wxColour colour;
-  GetGlobalColor(_T("UIBCK"), &colour);
+  GetGlobalColor("UIBCK", &colour);
   m_boxColour = colour;
 }
 
@@ -198,7 +198,7 @@ void DLDR_OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
   if (1) {
     dc.SetBrush(wxBrush(m_boxColour));
 
-    GetGlobalColor(_T ( "UITX1" ), &c);
+    GetGlobalColor("UITX1", &c);
     dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
 
     dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
@@ -311,7 +311,7 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
   wxBoxSizer* dirbox = new wxBoxSizer(wxVERTICAL);
   sbSizerChartDir->Add(dirbox, 0, wxEXPAND);
 
-  m_tcChartDirectory = new wxTextCtrl(this, wxID_ANY, _T(""), wxDefaultPosition,
+  m_tcChartDirectory = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
                                       wxSize(200, -1), wxTE_READONLY);
   dirbox->Add(m_tcChartDirectory, 1, wxALL | wxEXPAND, 5);
   m_tcChartDirectory->Hide();
@@ -513,7 +513,7 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
   m_scrollWinChartList->SetRowHeight(m_scrollWinChartList->GetCharHeight() + 6);
   // Add 4 columns (checkbox, chart status, update date, description)
   wxDataViewColumn* colFlag = m_scrollWinChartList->AppendToggleColumn(
-      _T(" "), wxDATAVIEW_CELL_ACTIVATABLE, wxDVC_TOGGLE_DEFAULT_WIDTH,
+      " ", wxDATAVIEW_CELL_ACTIVATABLE, wxDVC_TOGGLE_DEFAULT_WIDTH,
       wxALIGN_LEFT);
 
   wxDataViewColumn* colStat = m_scrollWinChartList->AppendTextColumn(
@@ -773,9 +773,9 @@ ChartPanel::ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                        const wxSize& size, wxString Name, wxString stat,
                        wxString latest, ChartDldrPanel* DldrPanel, bool bcheck)
     : wxPanel(parent, id, pos, size, wxBORDER_NONE) {
-  wxString Descriptor = Name + _T("\n    ") + stat + _T("   ") + latest;
+  wxString Descriptor = Name + "\n    " + stat + "   " + latest;
   wxColour bColor;
-  GetGlobalColor(_T("DILG0"), &bColor);
+  GetGlobalColor("DILG0", &bColor);
   bool bUseSysColors = false;
 #ifdef __WXOSX__
   if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) bUseSysColors = true;
@@ -819,7 +819,7 @@ ChartPanel::ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   //    m_chartInfo2->Connect( wxEVT_RIGHT_DOWN, wxMouseEventHandler(
   //    ChartPanel::OnContextMenu ), NULL, this );
 
-  //     wxString info = _T("           ") + stat + _T("   ") + latest;
+  //     wxString info = "           " + stat + "   " + latest;
   //     m_chartInfo = new wxStaticText( this, wxID_ANY, info );
   //     m_chartInfo->Wrap(-1);
   //     m_sizer->Add( m_chartInfo, 0, wxALL, 1 );
@@ -926,8 +926,8 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
   //      wxDefaultSize, wxDIRP_USE_TEXTCTRL ); sbSizerPaths->Add(
   //      m_dpDefaultDir, 0, wxALL|wxEXPAND, 5 );
 
-  m_tcDefaultDir = new wxTextCtrl(scrollWin, wxID_ANY, _T(""),
-                                  wxDefaultPosition, wxSize(-1, -1), wxHSCROLL);
+  m_tcDefaultDir = new wxTextCtrl(scrollWin, wxID_ANY, "", wxDefaultPosition,
+                                  wxSize(-1, -1), wxHSCROLL);
   sbSizerPaths->Add(m_tcDefaultDir, 3, wxALL | wxEXPAND, 5);
 
   m_buttonChartDirectory =
@@ -1014,7 +1014,7 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
 }
 
 void ChartDldrPrefsDlg::OnDownloadMasterCatalog(wxCommandEvent& event) {
-  wxFileName tfn = wxFileName::CreateTempFileName(_T("chartdldr"));
+  wxFileName tfn = wxFileName::CreateTempFileName("chartdldr");
   wxString url =
       "https://raw.githubusercontent.com/OpenCPN/OpenCPN/master/plugins/"
       "chartdldr_pi/data/chart_sources.xml";
@@ -1029,7 +1029,7 @@ void ChartDldrPrefsDlg::OnDownloadMasterCatalog(wxCommandEvent& event) {
       15);
   wxFileName fn;
   fn.SetPath(*GetpPrivateApplicationDataLocation());
-  fn.SetFullName(_T("chartdldr_pi-chart_sources.xml"));
+  fn.SetFullName("chartdldr_pi-chart_sources.xml");
 
   switch (ret) {
     case OCPN_DL_NO_ERROR: {

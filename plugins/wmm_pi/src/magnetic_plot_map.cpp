@@ -471,7 +471,7 @@ void MagneticPlotMap::DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP,
   lasty = r.y;
 
   wxString msg;
-  msg.Printf(_T("%.0f"), contour);
+  msg.Printf("%.0f", contour);
 
   int w, h;
   dc->GetTextExtent(msg, &w, &h);

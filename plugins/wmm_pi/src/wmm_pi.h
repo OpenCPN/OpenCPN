@@ -59,7 +59,7 @@ class WmmPrefsDialog;
 class WmmUIDialog : public WmmUIDialogBase {
 public:
   WmmUIDialog(wmm_pi &_wmm_pi, wxWindow *parent, wxWindowID id = wxID_ANY,
-              const wxString &title = _T("WMM"),
+              const wxString &title = "WMM",
               const wxPoint &pos = wxDefaultPosition,
               const wxSize &size = wxSize(250, 495),
               long style = wxCAPTION | wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL |

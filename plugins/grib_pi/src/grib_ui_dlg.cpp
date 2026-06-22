@@ -208,35 +208,31 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   m_tFormatRefresh.Start(5000);
 
   if (pConf) {
-    pConf->SetPath(_T ( "/Settings/GRIB" ));
-    pConf->Read(_T ( "WindPlot" ), &m_bDataPlot[GribOverlaySettings::WIND],
-                true);
-    pConf->Read(_T ( "WindGustPlot" ),
-                &m_bDataPlot[GribOverlaySettings::WIND_GUST], false);
-    pConf->Read(_T ( "PressurePlot" ),
-                &m_bDataPlot[GribOverlaySettings::PRESSURE], false);
-    pConf->Read(_T ( "WavePlot" ), &m_bDataPlot[GribOverlaySettings::WAVE],
+    pConf->SetPath("/Settings/GRIB");
+    pConf->Read("WindPlot", &m_bDataPlot[GribOverlaySettings::WIND], true);
+    pConf->Read("WindGustPlot", &m_bDataPlot[GribOverlaySettings::WIND_GUST],
                 false);
-    pConf->Read(_T ( "CurrentPlot" ),
-                &m_bDataPlot[GribOverlaySettings::CURRENT], false);
-    pConf->Read(_T ( "PrecipitationPlot" ),
+    pConf->Read("PressurePlot", &m_bDataPlot[GribOverlaySettings::PRESSURE],
+                false);
+    pConf->Read("WavePlot", &m_bDataPlot[GribOverlaySettings::WAVE], false);
+    pConf->Read("CurrentPlot", &m_bDataPlot[GribOverlaySettings::CURRENT],
+                false);
+    pConf->Read("PrecipitationPlot",
                 &m_bDataPlot[GribOverlaySettings::PRECIPITATION], false);
-    pConf->Read(_T ( "CloudPlot" ), &m_bDataPlot[GribOverlaySettings::CLOUD],
-                false);
-    pConf->Read(_T ( "AirTemperaturePlot" ),
+    pConf->Read("CloudPlot", &m_bDataPlot[GribOverlaySettings::CLOUD], false);
+    pConf->Read("AirTemperaturePlot",
                 &m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE], false);
-    pConf->Read(_T ( "SeaTemperaturePlot" ),
+    pConf->Read("SeaTemperaturePlot",
                 &m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE], false);
-    pConf->Read(_T ( "CAPEPlot" ), &m_bDataPlot[GribOverlaySettings::CAPE],
-                false);
-    pConf->Read(_T ( "CompReflectivityPlot" ),
+    pConf->Read("CAPEPlot", &m_bDataPlot[GribOverlaySettings::CAPE], false);
+    pConf->Read("CompReflectivityPlot",
                 &m_bDataPlot[GribOverlaySettings::COMP_REFL], false);
 
-    pConf->Read(_T ( "CursorDataShown" ), &m_CDataIsShown, true);
+    pConf->Read("CursorDataShown", &m_CDataIsShown, true);
 
-    pConf->Read(_T ( "lastdatatype" ), &m_lastdatatype, 0);
+    pConf->Read("lastdatatype", &m_lastdatatype, 0);
 
-    pConf->SetPath(_T ( "/Settings/GRIB/FileNames" ));
+    pConf->SetPath("/Settings/GRIB/FileNames");
     m_file_names.Clear();
     if (pConf->GetNumberOfEntries()) {
       wxString str, val;
@@ -251,30 +247,30 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
 
     wxStandardPathsBase &spath = wxStandardPaths::Get();
 
-    pConf->SetPath(_T ( "/Directories" ));
-    pConf->Read(_T ( "GRIBDirectory" ), &m_grib_dir);
+    pConf->SetPath("/Directories");
+    pConf->Read("GRIBDirectory", &m_grib_dir);
 
-    pConf->SetPath(_T( "/PlugIns/GRIB" ));
-    pConf->Read(_T( "ManualRequestZoneSizing" ), &m_SavedZoneSelMode, 0);
+    pConf->SetPath("/PlugIns/GRIB");
+    pConf->Read("ManualRequestZoneSizing", &m_SavedZoneSelMode, 0);
 
     // Read XyGrib related configuration
-    pConf->SetPath(_T ( "/Settings/GRIB/XyGrib" ));
-    pConf->Read(_T( "AtmModelIndex" ), &xyGribConfig.atmModelIndex, 0);
-    pConf->Read(_T( "WaveModelIndex" ), &xyGribConfig.waveModelIndex, 0);
-    pConf->Read(_T( "ResolutionIndex" ), &xyGribConfig.resolutionIndex, 0);
-    pConf->Read(_T( "DurationIndex" ), &xyGribConfig.durationIndex, 0);
-    pConf->Read(_T( "RunIndex" ), &xyGribConfig.runIndex, 0);
-    pConf->Read(_T( "IntervalIndex" ), &xyGribConfig.intervalIndex, 0);
-    pConf->Read(_T( "Wind" ), &xyGribConfig.wind, true);
-    pConf->Read(_T( "Gust" ), &xyGribConfig.gust, true);
-    pConf->Read(_T( "Pressure" ), &xyGribConfig.pressure, false);
-    pConf->Read(_T( "Temperature" ), &xyGribConfig.temperature, true);
-    pConf->Read(_T( "Cape" ), &xyGribConfig.cape, false);
-    pConf->Read(_T( "Reflectivity" ), &xyGribConfig.reflectivity, false);
-    pConf->Read(_T( "CloudCover" ), &xyGribConfig.cloudCover, true);
-    pConf->Read(_T( "Precipitation" ), &xyGribConfig.precipitation, true);
-    pConf->Read(_T( "WaveHeight" ), &xyGribConfig.waveHeight, true);
-    pConf->Read(_T( "WindWaves" ), &xyGribConfig.windWaves, true);
+    pConf->SetPath("/Settings/GRIB/XyGrib");
+    pConf->Read("AtmModelIndex", &xyGribConfig.atmModelIndex, 0);
+    pConf->Read("WaveModelIndex", &xyGribConfig.waveModelIndex, 0);
+    pConf->Read("ResolutionIndex", &xyGribConfig.resolutionIndex, 0);
+    pConf->Read("DurationIndex", &xyGribConfig.durationIndex, 0);
+    pConf->Read("RunIndex", &xyGribConfig.runIndex, 0);
+    pConf->Read("IntervalIndex", &xyGribConfig.intervalIndex, 0);
+    pConf->Read("Wind", &xyGribConfig.wind, true);
+    pConf->Read("Gust", &xyGribConfig.gust, true);
+    pConf->Read("Pressure", &xyGribConfig.pressure, false);
+    pConf->Read("Temperature", &xyGribConfig.temperature, true);
+    pConf->Read("Cape", &xyGribConfig.cape, false);
+    pConf->Read("Reflectivity", &xyGribConfig.reflectivity, false);
+    pConf->Read("CloudCover", &xyGribConfig.cloudCover, true);
+    pConf->Read("Precipitation", &xyGribConfig.precipitation, true);
+    pConf->Read("WaveHeight", &xyGribConfig.waveHeight, true);
+    pConf->Read("WindWaves", &xyGribConfig.windWaves, true);
   }
   // init zone selection parameters
   m_ZoneSelMode = m_SavedZoneSelMode;
@@ -316,31 +312,28 @@ GRIBUICtrlBar::~GRIBUICtrlBar() {
   ;
 
   if (pConf) {
-    pConf->SetPath(_T ( "/Settings/GRIB" ));
-    pConf->Write(_T ( "WindPlot" ), m_bDataPlot[GribOverlaySettings::WIND]);
-    pConf->Write(_T ( "WindGustPlot" ),
-                 m_bDataPlot[GribOverlaySettings::WIND_GUST]);
-    pConf->Write(_T ( "PressurePlot" ),
-                 m_bDataPlot[GribOverlaySettings::PRESSURE]);
-    pConf->Write(_T ( "WavePlot" ), m_bDataPlot[GribOverlaySettings::WAVE]);
-    pConf->Write(_T ( "CurrentPlot" ),
-                 m_bDataPlot[GribOverlaySettings::CURRENT]);
-    pConf->Write(_T ( "PrecipitationPlot" ),
+    pConf->SetPath("/Settings/GRIB");
+    pConf->Write("WindPlot", m_bDataPlot[GribOverlaySettings::WIND]);
+    pConf->Write("WindGustPlot", m_bDataPlot[GribOverlaySettings::WIND_GUST]);
+    pConf->Write("PressurePlot", m_bDataPlot[GribOverlaySettings::PRESSURE]);
+    pConf->Write("WavePlot", m_bDataPlot[GribOverlaySettings::WAVE]);
+    pConf->Write("CurrentPlot", m_bDataPlot[GribOverlaySettings::CURRENT]);
+    pConf->Write("PrecipitationPlot",
                  m_bDataPlot[GribOverlaySettings::PRECIPITATION]);
-    pConf->Write(_T ( "CloudPlot" ), m_bDataPlot[GribOverlaySettings::CLOUD]);
-    pConf->Write(_T ( "AirTemperaturePlot" ),
+    pConf->Write("CloudPlot", m_bDataPlot[GribOverlaySettings::CLOUD]);
+    pConf->Write("AirTemperaturePlot",
                  m_bDataPlot[GribOverlaySettings::AIR_TEMPERATURE]);
-    pConf->Write(_T ( "SeaTemperaturePlot" ),
+    pConf->Write("SeaTemperaturePlot",
                  m_bDataPlot[GribOverlaySettings::SEA_TEMPERATURE]);
-    pConf->Write(_T ( "CAPEPlot" ), m_bDataPlot[GribOverlaySettings::CAPE]);
-    pConf->Write(_T ( "CompReflectivityPlot" ),
+    pConf->Write("CAPEPlot", m_bDataPlot[GribOverlaySettings::CAPE]);
+    pConf->Write("CompReflectivityPlot",
                  m_bDataPlot[GribOverlaySettings::COMP_REFL]);
 
-    pConf->Write(_T ( "CursorDataShown" ), m_CDataIsShown);
+    pConf->Write("CursorDataShown", m_CDataIsShown);
 
-    pConf->Write(_T ( "lastdatatype" ), m_lastdatatype);
+    pConf->Write("lastdatatype", m_lastdatatype);
 
-    pConf->SetPath(_T ( "/Settings/GRIB/FileNames" ));
+    pConf->SetPath("/Settings/GRIB/FileNames");
     int iFileMax = pConf->GetNumberOfEntries();
     if (iFileMax) {
       wxString key;
@@ -356,27 +349,27 @@ GRIBUICtrlBar::~GRIBUICtrlBar() {
       pConf->Write(key, m_file_names[i]);
     }
 
-    pConf->SetPath(_T ( "/Directories" ));
-    pConf->Write(_T ( "GRIBDirectory" ), m_grib_dir);
+    pConf->SetPath("/Directories");
+    pConf->Write("GRIBDirectory", m_grib_dir);
 
     // Write current XyGrib panel configuration to configuration file
-    pConf->SetPath(_T ( "/Settings/GRIB/XyGrib" ));
-    pConf->Write(_T( "AtmModelIndex" ), xyGribConfig.atmModelIndex);
-    pConf->Write(_T( "WaveModelIndex" ), xyGribConfig.waveModelIndex);
-    pConf->Write(_T( "ResolutionIndex" ), xyGribConfig.resolutionIndex);
-    pConf->Write(_T( "DurationIndex" ), xyGribConfig.durationIndex);
-    pConf->Write(_T( "RunIndex" ), xyGribConfig.runIndex);
-    pConf->Write(_T( "IntervalIndex" ), xyGribConfig.intervalIndex);
-    pConf->Write(_T( "Wind" ), xyGribConfig.wind);
-    pConf->Write(_T( "Gust" ), xyGribConfig.gust);
-    pConf->Write(_T( "Pressure" ), xyGribConfig.pressure);
-    pConf->Write(_T( "Temperature" ), xyGribConfig.temperature);
-    pConf->Write(_T( "Cape" ), xyGribConfig.cape);
-    pConf->Write(_T( "Reflectivity" ), xyGribConfig.reflectivity);
-    pConf->Write(_T( "CloudCover" ), xyGribConfig.cloudCover);
-    pConf->Write(_T( "Precipitation" ), xyGribConfig.precipitation);
-    pConf->Write(_T( "WaveHeight" ), xyGribConfig.waveHeight);
-    pConf->Write(_T( "WindWaves" ), xyGribConfig.windWaves);
+    pConf->SetPath("/Settings/GRIB/XyGrib");
+    pConf->Write("AtmModelIndex", xyGribConfig.atmModelIndex);
+    pConf->Write("WaveModelIndex", xyGribConfig.waveModelIndex);
+    pConf->Write("ResolutionIndex", xyGribConfig.resolutionIndex);
+    pConf->Write("DurationIndex", xyGribConfig.durationIndex);
+    pConf->Write("RunIndex", xyGribConfig.runIndex);
+    pConf->Write("IntervalIndex", xyGribConfig.intervalIndex);
+    pConf->Write("Wind", xyGribConfig.wind);
+    pConf->Write("Gust", xyGribConfig.gust);
+    pConf->Write("Pressure", xyGribConfig.pressure);
+    pConf->Write("Temperature", xyGribConfig.temperature);
+    pConf->Write("Cape", xyGribConfig.cape);
+    pConf->Write("Reflectivity", xyGribConfig.reflectivity);
+    pConf->Write("CloudCover", xyGribConfig.cloudCover);
+    pConf->Write("Precipitation", xyGribConfig.precipitation);
+    pConf->Write("WaveHeight", xyGribConfig.waveHeight);
+    pConf->Write("WindWaves", xyGribConfig.windWaves);
   }
   delete m_vpMouse;
   delete m_pTimelineSet;
@@ -720,7 +713,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
     if (FindWindow(i + ID_CTRLALTITUDE))
       FindWindow(i + ID_CTRLALTITUDE)
           ->Show(m_OverlaySettings.m_iCtrlBarCtrlVisible[state].GetChar(i) ==
-                     _T('X') &&
+                     'X' &&
                  vis);
   }
   // initiate tooltips

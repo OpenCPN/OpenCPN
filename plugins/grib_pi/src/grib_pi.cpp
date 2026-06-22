@@ -250,8 +250,8 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
     wxFileConfig *pConf = GetOCPNConfigObject();
     if (pConf) {
       wxString l_grib_dir;
-      pConf->SetPath(_T ( "/Directories" ));
-      pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
+      pConf->SetPath("/Directories");
+      pConf->Read("GRIBDirectory", &l_grib_dir);
       Pref->m_grib_dir_sel = l_grib_dir;
       Pref->m_textDirectory->ChangeValue(l_grib_dir);
     }
@@ -357,9 +357,9 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
   if (Pref->m_grib_dir_sel.Length()) {
     wxFileConfig *pConf = GetOCPNConfigObject();
     if (pConf) {
-      pConf->SetPath(_T ( "/Directories" ));
-      pConf->Write(_T ( "GRIBDirectory" ), Pref->m_grib_dir_sel);
-      pConf->DeleteGroup(_T ( "/Settings/GRIB/FileNames" ));
+      pConf->SetPath("/Directories");
+      pConf->Write("GRIBDirectory", Pref->m_grib_dir_sel);
+      pConf->DeleteGroup("/Settings/GRIB/FileNames");
       pConf->Flush();
     }
   }
@@ -770,28 +770,28 @@ bool grib_pi::LoadConfig(void) {
 
   if (!pConf) return false;
 
-  pConf->SetPath(_T( "/PlugIns/GRIB" ));
-  pConf->Read(_T( "LoadLastOpenFile" ), &m_bLoadLastOpenFile, 0);
-  pConf->Read(_T("OpenFileOption" ), &m_bStartOptions, 1);
-  pConf->Read(_T( "GRIBUseHiDef" ), &m_bGRIBUseHiDef, 0);
-  pConf->Read(_T( "GRIBUseGradualColors" ), &m_bGRIBUseGradualColors, 0);
-  pConf->Read(_T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1);
-  pConf->Read(_T( "ZoomToCenterAtInit"), &m_bZoomToCenterAtInit, 1);
-  pConf->Read(_T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1);
-  pConf->Read(_T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1);
-  pConf->Read(_T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1);
+  pConf->SetPath("/PlugIns/GRIB");
+  pConf->Read("LoadLastOpenFile", &m_bLoadLastOpenFile, 0);
+  pConf->Read("OpenFileOption", &m_bStartOptions, 1);
+  pConf->Read("GRIBUseHiDef", &m_bGRIBUseHiDef, 0);
+  pConf->Read("GRIBUseGradualColors", &m_bGRIBUseGradualColors, 0);
+  pConf->Read("DrawBarbedArrowHead", &m_bDrawBarbedArrowHead, 1);
+  pConf->Read("ZoomToCenterAtInit", &m_bZoomToCenterAtInit, 1);
+  pConf->Read("ShowGRIBIcon", &m_bGRIBShowIcon, 1);
+  pConf->Read("CopyFirstCumulativeRecord", &m_bCopyFirstCumRec, 1);
+  pConf->Read("CopyMissingWaveRecord", &m_bCopyMissWaveRec, 1);
 #ifdef __WXMSW__
   pConf->Read("GribIconsScaleFactor", &m_GribIconsScaleFactor, 1);
 #endif
 
-  m_CtrlBar_Sizexy.x = pConf->Read(_T ( "GRIBCtrlBarSizeX" ), 1400L);
-  m_CtrlBar_Sizexy.y = pConf->Read(_T ( "GRIBCtrlBarSizeY" ), 800L);
-  m_CtrlBarxy.x = pConf->Read(_T ( "GRIBCtrlBarPosX" ), 20L);
-  m_CtrlBarxy.y = pConf->Read(_T ( "GRIBCtrlBarPosY" ), 60L);
-  m_CursorDataxy.x = pConf->Read(_T ( "GRIBCursorDataPosX" ), 20L);
-  m_CursorDataxy.y = pConf->Read(_T ( "GRIBCursorDataPosY" ), 170L);
+  m_CtrlBar_Sizexy.x = pConf->Read("GRIBCtrlBarSizeX", 1400L);
+  m_CtrlBar_Sizexy.y = pConf->Read("GRIBCtrlBarSizeY", 800L);
+  m_CtrlBarxy.x = pConf->Read("GRIBCtrlBarPosX", 20L);
+  m_CtrlBarxy.y = pConf->Read("GRIBCtrlBarPosY", 60L);
+  m_CursorDataxy.x = pConf->Read("GRIBCursorDataPosX", 20L);
+  m_CursorDataxy.y = pConf->Read("GRIBCursorDataPosY", 170L);
 
-  pConf->Read(_T ( "GribCursorDataDisplayStyle" ), &m_DialogStyle, 0);
+  pConf->Read("GribCursorDataDisplayStyle", &m_DialogStyle, 0);
   if (m_DialogStyle > 3)
     m_DialogStyle = 0;  // ensure validity of the .conf value
 
@@ -803,27 +803,27 @@ bool grib_pi::SaveConfig(void) {
 
   if (!pConf) return false;
 
-  pConf->SetPath(_T( "/PlugIns/GRIB" ));
+  pConf->SetPath("/PlugIns/GRIB");
 
-  pConf->Write(_T ( "LoadLastOpenFile" ), m_bLoadLastOpenFile);
-  pConf->Write(_T ( "OpenFileOption" ), m_bStartOptions);
-  pConf->Write(_T ( "ShowGRIBIcon" ), m_bGRIBShowIcon);
-  pConf->Write(_T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef);
-  pConf->Write(_T ( "GRIBUseGradualColors" ), m_bGRIBUseGradualColors);
-  pConf->Write(_T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec);
-  pConf->Write(_T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec);
-  pConf->Write(_T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead);
-  pConf->Write(_T ( "ZoomToCenterAtInit"), m_bZoomToCenterAtInit);
+  pConf->Write("LoadLastOpenFile", m_bLoadLastOpenFile);
+  pConf->Write("OpenFileOption", m_bStartOptions);
+  pConf->Write("ShowGRIBIcon", m_bGRIBShowIcon);
+  pConf->Write("GRIBUseHiDef", m_bGRIBUseHiDef);
+  pConf->Write("GRIBUseGradualColors", m_bGRIBUseGradualColors);
+  pConf->Write("CopyFirstCumulativeRecord", m_bCopyFirstCumRec);
+  pConf->Write("CopyMissingWaveRecord", m_bCopyMissWaveRec);
+  pConf->Write("DrawBarbedArrowHead", m_bDrawBarbedArrowHead);
+  pConf->Write("ZoomToCenterAtInit", m_bZoomToCenterAtInit);
 #ifdef __WXMSW__
   pConf->Write("GribIconsScaleFactor", m_GribIconsScaleFactor);
 #endif
 
-  pConf->Write(_T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x);
-  pConf->Write(_T ( "GRIBCtrlBarSizeY" ), m_CtrlBar_Sizexy.y);
-  pConf->Write(_T ( "GRIBCtrlBarPosX" ), m_CtrlBarxy.x);
-  pConf->Write(_T ( "GRIBCtrlBarPosY" ), m_CtrlBarxy.y);
-  pConf->Write(_T ( "GRIBCursorDataPosX" ), m_CursorDataxy.x);
-  pConf->Write(_T ( "GRIBCursorDataPosY" ), m_CursorDataxy.y);
+  pConf->Write("GRIBCtrlBarSizeX", m_CtrlBar_Sizexy.x);
+  pConf->Write("GRIBCtrlBarSizeY", m_CtrlBar_Sizexy.y);
+  pConf->Write("GRIBCtrlBarPosX", m_CtrlBarxy.x);
+  pConf->Write("GRIBCtrlBarPosY", m_CtrlBarxy.y);
+  pConf->Write("GRIBCursorDataPosX", m_CursorDataxy.x);
+  pConf->Write("GRIBCursorDataPosY", m_CursorDataxy.y);
 
   return true;
 }

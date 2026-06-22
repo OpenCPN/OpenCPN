@@ -324,12 +324,12 @@ void GRIBTable::CloseDialog() {
 
   wxFileConfig *pConf = GetOCPNConfigObject();
   if (pConf) {
-    pConf->SetPath(_T ( "/Settings/GRIB" ));
+    pConf->SetPath("/Settings/GRIB");
 
-    pConf->Write(_T ( "GribDataTablePosition_x" ), p.x);
-    pConf->Write(_T ( "GribDataTablePosition_y" ), p.y);
-    pConf->Write(_T ( "GribDataTableWidth" ), s.GetWidth());
-    pConf->Write(_T ( "GribDataTableHeight" ), s.GetHeight());
+    pConf->Write("GribDataTablePosition_x", p.x);
+    pConf->Write("GribDataTablePosition_y", p.y);
+    pConf->Write("GribDataTableWidth", s.GetWidth());
+    pConf->Write("GribDataTableHeight", s.GetHeight());
   }  //
 }
 
@@ -410,7 +410,7 @@ wxString GRIBTable::GetWindGust(GribRecord **recordarray, int datatype) {
                         "%2d " + m_pGDialog->m_OverlaySettings.GetUnitSymbol(
                                      GribOverlaySettings::WIND_GUST),
                         (int)wxRound(cvkn)) +
-                    _T(" - " ));
+                    " - ");
       }
     }
   }

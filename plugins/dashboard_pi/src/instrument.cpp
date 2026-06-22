@@ -358,7 +358,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
       GetGlobalColor("DASHL", &cl);
       dc.SetTextBackground(cl);
     }
-    // GetGlobalColor(_T("DASHF"), &cl);
+    // GetGlobalColor("DASHF", &cl);
     // dc.SetTextForeground(cl);
     if (m_TitleRightAlign) {
       dc.DrawText(m_title,
@@ -446,10 +446,10 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
       else if (unit == "N")  // Knots
         m_data = wxString::Format(format, data) + (showUnit ? " Kts" : "");
       /* maybe in the future ...
-                      else if (unit == _T("M")) // m/s
-                        m_data = wxString::Format(m_format, data)+_T(" m/s");
-                      else if (unit == _T("K")) // km/h
-                        m_data = wxString::Format(m_format, data)+_T(" km/h");
+                      else if (unit == "M") // m/s
+                        m_data = wxString::Format(m_format, data)+" m/s";
+                      else if (unit == "K") // km/h
+                        m_data = wxString::Format(m_format, data)+" km/h";
        ... to be completed
        */
       else
@@ -548,7 +548,7 @@ wxString toSDMM(int NEflag, double a) {
   wxString s;
 
   if (!NEflag)
-    s.Printf(_T ( "%d %02ld.%03ld'" ), d, m / 1000, m % 1000);
+    s.Printf("%d %02ld.%03ld'", d, m / 1000, m % 1000);
   else {
     if (NEflag == 1) {
       char c = 'N';
@@ -558,7 +558,7 @@ wxString toSDMM(int NEflag, double a) {
         c = 'S';
       }
 
-      s.Printf(_T ( "%03d %02ld.%03ld %c" ), d, m / 1000, (m % 1000), c);
+      s.Printf("%03d %02ld.%03ld %c", d, m / 1000, (m % 1000), c);
     } else if (NEflag == 2) {
       char c = 'E';
 
@@ -566,7 +566,7 @@ wxString toSDMM(int NEflag, double a) {
         d = -d;
         c = 'W';
       }
-      s.Printf(_T ( "%03d %02ld.%03ld %c" ), d, m / 1000, (m % 1000), c);
+      s.Printf("%03d %02ld.%03ld %c", d, m / 1000, (m % 1000), c);
     }
   }
   return s;

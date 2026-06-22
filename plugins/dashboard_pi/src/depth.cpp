@@ -124,7 +124,7 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
   if (m_Properties) {
     cl = GetColourSchemeFont(m_Properties->m_SmallFont.GetColour());
   } else {
-    // GetGlobalColor(_T("DASHF"), &cl);
+    // GetGlobalColor("DASHF", &cl);
     cl = GetColourSchemeFont(g_pFontSmall->GetColour());
   }
   pen.SetColour(cl);
@@ -257,7 +257,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
     dc->SetTextForeground(
         GetColourSchemeFont(m_Properties->m_DataFont.GetColour()));
   } else {
-    // GetGlobalColor(_T("DASHF"), &cl);
+    // GetGlobalColor("DASHF", &cl);
     dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
     dc->SetFont(g_pFontData->GetChosenFont());
   }

@@ -209,11 +209,11 @@ protected:
   void DownloadCharts();
   void DoHelp(wxCommandEvent& event) override {
 #ifdef __WXMSW__
-    wxLaunchDefaultBrowser(_T("file:///") + *GetpSharedDataLocation() +
-                           _T("plugins/chartdldr_pi/data/doc/index.html"));
+    wxLaunchDefaultBrowser("file:///" + *GetpSharedDataLocation() +
+                           "plugins/chartdldr_pi/data/doc/index.html");
 #else
-    wxLaunchDefaultBrowser(_T("file://") + *GetpSharedDataLocation() +
-                           _T("plugins/chartdldr_pi/data/doc/index.html"));
+    wxLaunchDefaultBrowser("file://" + *GetpSharedDataLocation() +
+                           "plugins/chartdldr_pi/data/doc/index.html");
 #endif
   }
   void UpdateAllCharts(wxCommandEvent& event) override;

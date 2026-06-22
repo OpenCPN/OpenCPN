@@ -332,7 +332,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     dc->SetTextForeground(GetColourSchemeFont(g_pFontLabel->GetColour()));
   }
   wxColour cl;
-  // GetGlobalColor(_T("DASHF"), &cl);
+  // GetGlobalColor("DASHF", &cl);
   wxSize size = GetClientSize();
 
   wxString text;
@@ -426,7 +426,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
   }
 
   // wxColour c2;
-  // GetGlobalColor(_T("DASHB"), &c2);
+  // GetGlobalColor("DASHB", &c2);
   wxColour c3;
   GetGlobalColor("DASHF", &c3);
 

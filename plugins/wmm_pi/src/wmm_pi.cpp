@@ -42,7 +42,7 @@
 
 float g_piGLMinSymbolLineWidth = 0.9;
 
-void WMMLogMessage1(wxString s) { wxLogMessage(_T("WMM: ") + s); }
+void WMMLogMessage1(wxString s) { wxLogMessage("WMM: " + s); }
 extern "C" void WMMLogMessage(const char *s) {
   WMMLogMessage1(wxString::FromAscii(s));
 }
@@ -161,9 +161,9 @@ int wmm_pi::Init(void) {
   // wxFONTWEIGHT_BOLD );
   pFontSmall = OCPNGetFont(_("WMM_Live_Overlay"));
 
-  m_shareLocn = *GetpSharedDataLocation() + _T("plugins") +
-                wxFileName::GetPathSeparator() + _T("wmm_pi") +
-                wxFileName::GetPathSeparator() + _T("data") +
+  m_shareLocn = *GetpSharedDataLocation() + "plugins" +
+                wxFileName::GetPathSeparator() + "wmm_pi" +
+                wxFileName::GetPathSeparator() + "data" +
                 wxFileName::GetPathSeparator();
 
   //    WMM initialization
@@ -175,10 +175,10 @@ int wmm_pi::Init(void) {
   if (!MAG_robustReadMagModels(
           const_cast<char *>((const char *)cof_filename.mb_str()),
           (MAGtype_MagneticModel * (*)[]) & MagneticModels[0], 1)) {
-    WMMLogMessage1(_T("initialization error"));
+    WMMLogMessage1("initialization error");
     m_buseable = false;
   } else {
-    WMMLogMessage1(wxString::Format(_T("WMM model data loaded from file %s."),
+    WMMLogMessage1(wxString::Format("WMM model data loaded from file %s.",
                                     cof_filename.c_str()));
     for (int i = 0; i < epochs; i++) {
       if (MagneticModels[i]->nMax > nMax) {
@@ -192,7 +192,7 @@ int wmm_pi::Init(void) {
 
     for (int i = 0; i < epochs; i++) {
       if (MagneticModels[i] == NULL || TimedMagneticModel == NULL) {
-        WMMLogMessage1(_T("initialization error MAG_Error(2)"));
+        WMMLogMessage1("initialization error MAG_Error(2)");
         m_buseable = false;
       }
     }
@@ -234,8 +234,8 @@ int wmm_pi::Init(void) {
   if (m_bShowIcon) {
     //    This PlugIn needs a toolbar icon, so request its insertion
     m_leftclick_tool_id =
-        InsertPlugInTool(_T(""), _img_wmm, _img_wmm, wxITEM_NORMAL, _("WMM"),
-                         _T(""), NULL, WMM_TOOL_POSITION, 0, this);
+        InsertPlugInTool("", _img_wmm, _img_wmm, wxITEM_NORMAL, _("WMM"), "",
+                         NULL, WMM_TOOL_POSITION, 0, this);
 
     SetIconType();  // SVGs allowed if not showing live icon
 
@@ -320,12 +320,12 @@ void wmm_pi::SetColorScheme(PI_ColorScheme cs) {
 void wmm_pi::SetIconType() {
   if (m_bShowLiveIcon) {
     SetToolbarToolBitmaps(m_leftclick_tool_id, _img_wmm, _img_wmm);
-    SetToolbarToolBitmapsSVG(m_leftclick_tool_id, _T(""), _T(""), _T(""));
+    SetToolbarToolBitmapsSVG(m_leftclick_tool_id, "", "", "");
     m_LastVal.Empty();
   } else {
-    wxString normalIcon = m_shareLocn + _T("wmm_pi.svg");
-    wxString toggledIcon = m_shareLocn + _T("wmm_pi.svg");
-    wxString rolloverIcon = m_shareLocn + _T("wmm_pi.svg");
+    wxString normalIcon = m_shareLocn + "wmm_pi.svg";
+    wxString toggledIcon = m_shareLocn + "wmm_pi.svg";
+    wxString rolloverIcon = m_shareLocn + "wmm_pi.svg";
 
     SetToolbarToolBitmapsSVG(m_leftclick_tool_id, normalIcon, rolloverIcon,
                              toggledIcon);
@@ -364,8 +364,8 @@ void wmm_pi::RearrangeWindow() {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
   bool gl = true;
   if (pConf) {
-    pConf->SetPath(_T("/Settings"));
-    pConf->Read(_T("OpenGL"), &gl, false);
+    pConf->SetPath("/Settings");
+    pConf->Read("OpenGL", &gl, false);
     pConf = NULL;
   }
   if (!(gl && wxPlatformInfo::Get().GetOSMajorVersion() == 5 &&
@@ -392,9 +392,9 @@ void wmm_pi::OnToolbarToolCallback(int id) {
   m_pWmmDialog->Layout();  // Some platforms need a re-Layout at this point
                            // (gtk, at least)
   if (m_pWmmDialog->IsShown())
-    SendPluginMessage(_T("WMM_WINDOW_SHOWN"), wxEmptyString);
+    SendPluginMessage("WMM_WINDOW_SHOWN", wxEmptyString);
   else
-    SendPluginMessage(_T("WMM_WINDOW_HIDDEN"), wxEmptyString);
+    SendPluginMessage("WMM_WINDOW_HIDDEN", wxEmptyString);
 
   wxPoint p = m_pWmmDialog->GetPosition();
   m_pWmmDialog->Move(0, 0);  // workaround for gtk autocentre dialog behavior
@@ -521,20 +521,20 @@ void wmm_pi::SetCursorLatLon(double lat, double lon) {
   // WMM_PrintUserData(GeoMagneticElements,CoordGeodetic, UserDate,
   // TimedMagneticModel, &Geoid);     /* Print the results */
   m_pWmmDialog->m_tcF->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.F));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.F));
   m_pWmmDialog->m_tcH->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.H));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.H));
   m_pWmmDialog->m_tcX->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.X));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.X));
   m_pWmmDialog->m_tcY->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.Y));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.Y));
   m_pWmmDialog->m_tcZ->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.Z));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.Z));
   m_pWmmDialog->m_tcD->SetValue(
-      wxString::Format(_T("%-5.1lf%c (%s)"), GeoMagneticElements.Decl, 0x00B0,
+      wxString::Format("%-5.1lf%c (%s)", GeoMagneticElements.Decl, 0x00B0,
                        AngleToText(GeoMagneticElements.Decl).c_str()));
   m_pWmmDialog->m_tcI->SetValue(
-      wxString::Format(_T("%-5.1lf%c"), GeoMagneticElements.Incl, 0x00B0));
+      wxString::Format("%-5.1lf%c", GeoMagneticElements.Incl, 0x00B0));
 
   m_cursorVariation = GeoMagneticElements;
   SendCursorVariation();
@@ -572,7 +572,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
   m_boatVariation = GeoMagneticElements;
   SendBoatVariation();
 
-  wxString NewVal = wxString::Format(_T("%.1f"), GeoMagneticElements.Decl);
+  wxString NewVal = wxString::Format("%.1f", GeoMagneticElements.Decl);
   double scale = GetOCPNGUIToolScaleFactor_PlugIn();
   scale = wxRound(scale * 4.0) / 4.0;
   scale *= OCPN_GetWinDIPScaleFactor();
@@ -590,8 +590,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
     wxBitmap icon;
 
     //  Is SVG available?
-    wxBitmap live =
-        GetBitmapFromSVGFile(m_shareLocn + _T("wmm_live.svg"), w, h);
+    wxBitmap live = GetBitmapFromSVGFile(m_shareLocn + "wmm_live.svg", w, h);
     if (!live.IsOk()) {
       icon = wxBitmap(_img_wmm_live->GetWidth(), _img_wmm_live->GetHeight());
       dc.SelectObject(icon);
@@ -607,7 +606,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
     }
 
     wxColour cf;
-    GetGlobalColor(_T("CHWHT"), &cf);
+    GetGlobalColor("CHWHT", &cf);
     dc.SetTextForeground(cf);
     if (pFontSmall->IsOk()) {
       if (live.IsOk()) {
@@ -664,37 +663,37 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
     return;
   }
   m_pWmmDialog->m_tbF->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.F));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.F));
   m_pWmmDialog->m_tbH->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.H));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.H));
   m_pWmmDialog->m_tbX->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.X));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.X));
   m_pWmmDialog->m_tbY->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.Y));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.Y));
   m_pWmmDialog->m_tbZ->SetValue(
-      wxString::Format(_T("%-9.1lf nT"), GeoMagneticElements.Z));
+      wxString::Format("%-9.1lf nT", GeoMagneticElements.Z));
   m_pWmmDialog->m_tbD->SetValue(
-      wxString::Format(_T("%-5.1lf%c (%s)"), GeoMagneticElements.Decl, 0x00B0,
+      wxString::Format("%-5.1lf%c (%s)", GeoMagneticElements.Decl, 0x00B0,
                        AngleToText(GeoMagneticElements.Decl).c_str()));
   m_pWmmDialog->m_tbI->SetValue(
-      wxString::Format(_T("%-5.1lf%c"), GeoMagneticElements.Incl, 0x00B0));
+      wxString::Format("%-5.1lf%c", GeoMagneticElements.Incl, 0x00B0));
 }
 
 // Demo implementation of response mechanism
 void wmm_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
-  if (message_id == _T("WMM_VARIATION_REQUEST")) {
+  if (message_id == "WMM_VARIATION_REQUEST") {
     wxJSONReader r;
     wxJSONValue v;
     r.Parse(message_body, &v);
-    double lat = v[_T("Lat")].AsDouble();
-    double lon = v[_T("Lon")].AsDouble();
-    int year = v[_T("Year")].AsInt();
-    int month = v[_T("Month")].AsInt();
-    int day = v[_T("Day")].AsInt();
+    double lat = v["Lat"].AsDouble();
+    double lon = v["Lon"].AsDouble();
+    int year = v["Year"].AsInt();
+    int month = v["Month"].AsInt();
+    int day = v["Day"].AsInt();
     SendVariationAt(lat, lon, year, month, day);
-  } else if (message_id == _T("WMM_VARIATION_BOAT_REQUEST")) {
+  } else if (message_id == "WMM_VARIATION_BOAT_REQUEST") {
     SendBoatVariation();
-  } else if (message_id == _T("WMM_VARIATION_CURSOR_REQUEST")) {
+  } else if (message_id == "WMM_VARIATION_CURSOR_REQUEST") {
     SendCursorVariation();
   }
 }
@@ -702,11 +701,11 @@ void wmm_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
 void wmm_pi::SendVariationAt(double lat, double lon, int year, int month,
                              int day) {
   wxJSONValue v;
-  v[_T("Lat")] = lat;
-  v[_T("Lon")] = lon;
-  v[_T("Year")] = year;
-  v[_T("Month")] = month;
-  v[_T("Day")] = day;
+  v["Lat"] = lat;
+  v["Lon"] = lon;
+  v["Year"] = year;
+  v["Month"] = month;
+  v["Day"] = day;
   CoordGeodetic.lambda = lon;
   CoordGeodetic.phi = lat;
   CoordGeodetic.HeightAboveEllipsoid = 0;
@@ -728,50 +727,50 @@ void wmm_pi::SendVariationAt(double lat, double lon, int year, int month,
              &GeoMagneticElements); /* Computes the geoMagnetic field elements
                                        and their time change*/
   MAG_CalculateGridVariation(CoordGeodetic, &GeoMagneticElements);
-  v[_T("Decl")] = GeoMagneticElements.Decl;
-  v[_T("Decldot")] = GeoMagneticElements.Decldot;
-  v[_T("F")] = GeoMagneticElements.F;
-  v[_T("Fdot")] = GeoMagneticElements.Fdot;
-  v[_T("GV")] = GeoMagneticElements.GV;
-  v[_T("GVdot")] = GeoMagneticElements.GVdot;
-  v[_T("H")] = GeoMagneticElements.H;
-  v[_T("Hdot")] = GeoMagneticElements.Hdot;
-  v[_T("Incl")] = GeoMagneticElements.Incl;
-  v[_T("Incldot")] = GeoMagneticElements.Incldot;
-  v[_T("X")] = GeoMagneticElements.X;
-  v[_T("Xdot")] = GeoMagneticElements.Xdot;
-  v[_T("Y")] = GeoMagneticElements.Y;
-  v[_T("Ydot")] = GeoMagneticElements.Ydot;
-  v[_T("Z")] = GeoMagneticElements.Z;
-  v[_T("Zdot")] = GeoMagneticElements.Zdot;
+  v["Decl"] = GeoMagneticElements.Decl;
+  v["Decldot"] = GeoMagneticElements.Decldot;
+  v["F"] = GeoMagneticElements.F;
+  v["Fdot"] = GeoMagneticElements.Fdot;
+  v["GV"] = GeoMagneticElements.GV;
+  v["GVdot"] = GeoMagneticElements.GVdot;
+  v["H"] = GeoMagneticElements.H;
+  v["Hdot"] = GeoMagneticElements.Hdot;
+  v["Incl"] = GeoMagneticElements.Incl;
+  v["Incldot"] = GeoMagneticElements.Incldot;
+  v["X"] = GeoMagneticElements.X;
+  v["Xdot"] = GeoMagneticElements.Xdot;
+  v["Y"] = GeoMagneticElements.Y;
+  v["Ydot"] = GeoMagneticElements.Ydot;
+  v["Z"] = GeoMagneticElements.Z;
+  v["Zdot"] = GeoMagneticElements.Zdot;
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendPluginMessage(wxString(_T("WMM_VARIATION")), out);
+  SendPluginMessage(wxString("WMM_VARIATION"), out);
 }
 
 void wmm_pi::SendBoatVariation() {
   wxJSONValue v;
-  v[_T("Decl")] = m_boatVariation.Decl;
-  v[_T("Decldot")] = m_boatVariation.Decldot;
-  v[_T("F")] = m_boatVariation.F;
-  v[_T("Fdot")] = m_boatVariation.Fdot;
-  v[_T("GV")] = m_boatVariation.GV;
-  v[_T("GVdot")] = m_boatVariation.GVdot;
-  v[_T("H")] = m_boatVariation.H;
-  v[_T("Hdot")] = m_boatVariation.Hdot;
-  v[_T("Incl")] = m_boatVariation.Incl;
-  v[_T("Incldot")] = m_boatVariation.Incldot;
-  v[_T("X")] = m_boatVariation.X;
-  v[_T("Xdot")] = m_boatVariation.Xdot;
-  v[_T("Y")] = m_boatVariation.Y;
-  v[_T("Ydot")] = m_boatVariation.Ydot;
-  v[_T("Z")] = m_boatVariation.Z;
-  v[_T("Zdot")] = m_boatVariation.Zdot;
+  v["Decl"] = m_boatVariation.Decl;
+  v["Decldot"] = m_boatVariation.Decldot;
+  v["F"] = m_boatVariation.F;
+  v["Fdot"] = m_boatVariation.Fdot;
+  v["GV"] = m_boatVariation.GV;
+  v["GVdot"] = m_boatVariation.GVdot;
+  v["H"] = m_boatVariation.H;
+  v["Hdot"] = m_boatVariation.Hdot;
+  v["Incl"] = m_boatVariation.Incl;
+  v["Incldot"] = m_boatVariation.Incldot;
+  v["X"] = m_boatVariation.X;
+  v["Xdot"] = m_boatVariation.Xdot;
+  v["Y"] = m_boatVariation.Y;
+  v["Ydot"] = m_boatVariation.Ydot;
+  v["Z"] = m_boatVariation.Z;
+  v["Zdot"] = m_boatVariation.Zdot;
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendPluginMessage(wxString(_T("WMM_VARIATION_BOAT")), out);
+  SendPluginMessage(wxString("WMM_VARIATION_BOAT"), out);
   // Send boat variation as NMEA HVD for the Priority List.
   SendBoatVarHVD(m_boatVariation.Decl);
   SendPGN127258(m_boatVariation.Decl);
@@ -779,68 +778,67 @@ void wmm_pi::SendBoatVariation() {
 
 void wmm_pi::SendCursorVariation() {
   wxJSONValue v;
-  v[_T("Decl")] = m_cursorVariation.Decl;
-  v[_T("Decldot")] = m_cursorVariation.Decldot;
-  v[_T("F")] = m_cursorVariation.F;
-  v[_T("Fdot")] = m_cursorVariation.Fdot;
-  v[_T("GV")] = m_cursorVariation.GV;
-  v[_T("GVdot")] = m_cursorVariation.GVdot;
-  v[_T("H")] = m_cursorVariation.H;
-  v[_T("Hdot")] = m_cursorVariation.Hdot;
-  v[_T("Incl")] = m_cursorVariation.Incl;
-  v[_T("Incldot")] = m_cursorVariation.Incldot;
-  v[_T("X")] = m_cursorVariation.X;
-  v[_T("Xdot")] = m_cursorVariation.Xdot;
-  v[_T("Y")] = m_cursorVariation.Y;
-  v[_T("Ydot")] = m_cursorVariation.Ydot;
-  v[_T("Z")] = m_cursorVariation.Z;
-  v[_T("Zdot")] = m_cursorVariation.Zdot;
+  v["Decl"] = m_cursorVariation.Decl;
+  v["Decldot"] = m_cursorVariation.Decldot;
+  v["F"] = m_cursorVariation.F;
+  v["Fdot"] = m_cursorVariation.Fdot;
+  v["GV"] = m_cursorVariation.GV;
+  v["GVdot"] = m_cursorVariation.GVdot;
+  v["H"] = m_cursorVariation.H;
+  v["Hdot"] = m_cursorVariation.Hdot;
+  v["Incl"] = m_cursorVariation.Incl;
+  v["Incldot"] = m_cursorVariation.Incldot;
+  v["X"] = m_cursorVariation.X;
+  v["Xdot"] = m_cursorVariation.Xdot;
+  v["Y"] = m_cursorVariation.Y;
+  v["Ydot"] = m_cursorVariation.Ydot;
+  v["Z"] = m_cursorVariation.Z;
+  v["Zdot"] = m_cursorVariation.Zdot;
   wxJSONWriter w;
   wxString out;
   w.Write(v, out);
-  SendPluginMessage(wxString(_T("WMM_VARIATION_CURSOR")), out);
+  SendPluginMessage(wxString("WMM_VARIATION_CURSOR"), out);
 }
 
 wxString wmm_pi::AngleToText(double angle) {
   int deg = (int)fabs(angle);
   int min = (fabs(angle) - deg) * 60;
   if (angle < 0)
-    return wxString::Format(_T("%u%c%u' W"), deg, 0x00B0, min);
+    return wxString::Format("%u%c%u' W", deg, 0x00B0, min);
   else
-    return wxString::Format(_T("%u%c%u' E"), deg, 0x00B0, min);
+    return wxString::Format("%u%c%u' E", deg, 0x00B0, min);
 }
 
 bool wmm_pi::LoadConfig(void) {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 
   if (pConf) {
-    pConf->SetPath(_T( "/Settings/WMM" ));
-    pConf->Read(_T( "ViewType" ), &m_iViewType, 1);
-    pConf->Read(_T( "ShowPlotOptions" ), &m_bShowPlotOptions, 1);
-    pConf->Read(_T( "ShowAtCursor" ), &m_bShowAtCursor, 1);
-    pConf->Read(_T( "ShowLiveIcon" ), &m_bShowLiveIcon, 1);
-    pConf->Read(_T( "ShowIcon" ), &m_bShowIcon, 1);
-    pConf->Read(_T( "Opacity" ), &m_iOpacity, 255);
+    pConf->SetPath("/Settings/WMM");
+    pConf->Read("ViewType", &m_iViewType, 1);
+    pConf->Read("ShowPlotOptions", &m_bShowPlotOptions, 1);
+    pConf->Read("ShowAtCursor", &m_bShowAtCursor, 1);
+    pConf->Read("ShowLiveIcon", &m_bShowLiveIcon, 1);
+    pConf->Read("ShowIcon", &m_bShowIcon, 1);
+    pConf->Read("Opacity", &m_iOpacity, 255);
 
-    m_wmm_dialog_x = pConf->Read(_T ( "DialogPosX" ), 20L);
-    m_wmm_dialog_y = pConf->Read(_T ( "DialogPosY" ), 20L);
+    m_wmm_dialog_x = pConf->Read("DialogPosX", 20L);
+    m_wmm_dialog_y = pConf->Read("DialogPosY", 20L);
 
     if ((m_wmm_dialog_x < 0) || (m_wmm_dialog_x > m_display_width))
       m_wmm_dialog_x = 5;
     if ((m_wmm_dialog_y < 0) || (m_wmm_dialog_y > m_display_height))
       m_wmm_dialog_y = 5;
 
-    pConf->SetPath(_T( "/Settings/WMM/Plot" ));
-    pConf->Read(_T( "Declination" ), &m_DeclinationMap.m_bEnabled, 1);
-    pConf->Read(_T( "DeclinationSpacing" ), &m_DeclinationMap.m_Spacing, 10);
-    pConf->Read(_T( "Inclination" ), &m_InclinationMap.m_bEnabled, 0);
-    pConf->Read(_T( "InclinationSpacing" ), &m_InclinationMap.m_Spacing, 10);
-    pConf->Read(_T( "FieldStrength" ), &m_FieldStrengthMap.m_bEnabled, 0);
-    pConf->Read(_T( "FieldStrengthSpacing" ), &m_FieldStrengthMap.m_Spacing,
-                10000);
+    pConf->SetPath("/Settings/WMM/Plot");
+    pConf->Read("Declination", &m_DeclinationMap.m_bEnabled, 1);
+    pConf->Read("DeclinationSpacing", &m_DeclinationMap.m_Spacing, 10);
+    pConf->Read("Inclination", &m_InclinationMap.m_bEnabled, 0);
+    pConf->Read("InclinationSpacing", &m_InclinationMap.m_Spacing, 10);
+    pConf->Read("FieldStrength", &m_FieldStrengthMap.m_bEnabled, 0);
+    pConf->Read("FieldStrengthSpacing", &m_FieldStrengthMap.m_Spacing, 10000);
 
-    pConf->Read(_T( "StepSize" ), &m_MapStep, 6);
-    pConf->Read(_T( "PoleAccuracy" ), &m_MapPoleAccuracy, 2);
+    pConf->Read("StepSize", &m_MapStep, 6);
+    pConf->Read("PoleAccuracy", &m_MapPoleAccuracy, 2);
     m_DeclinationMap.ConfigureAccuracy(m_MapStep, m_MapPoleAccuracy);
     m_InclinationMap.ConfigureAccuracy(m_MapStep, m_MapPoleAccuracy);
     m_FieldStrengthMap.ConfigureAccuracy(m_MapStep, m_MapPoleAccuracy);
@@ -849,11 +847,11 @@ bool wmm_pi::LoadConfig(void) {
 
     m_bCachedPlotOk = false;
 
-    pConf->SetPath(_T ( "/Directories" ));
+    pConf->SetPath("/Directories");
     wxString s = wxFileName::GetPathSeparator();
-    wxString def = *GetpSharedDataLocation() + _T("plugins") + s +
-                   _T("wmm_pi") + s + _T("data") + s;
-    // pConf->Read ( _T ( "WMMDataLocation" ), &m_wmm_dir, def);
+    wxString def =
+        *GetpSharedDataLocation() + "plugins" + s + "wmm_pi" + s + "data" + s;
+    // pConf->Read ( "WMMDataLocation", &m_wmm_dir, def);
     m_wmm_dir = def;
     return true;
   } else
@@ -864,29 +862,29 @@ bool wmm_pi::SaveConfig(void) {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 
   if (pConf) {
-    pConf->SetPath(_T ( "/Settings/WMM" ));
-    pConf->Write(_T ( "ViewType" ), m_iViewType);
-    pConf->Write(_T ( "ShowPlotOptions" ), m_bShowPlotOptions);
-    pConf->Write(_T ( "ShowAtCursor" ), m_bShowAtCursor);
-    pConf->Write(_T ( "ShowLiveIcon" ), m_bShowLiveIcon);
-    pConf->Write(_T ( "ShowIcon" ), m_bShowIcon);
-    pConf->Write(_T ( "Opacity" ), m_iOpacity);
+    pConf->SetPath("/Settings/WMM");
+    pConf->Write("ViewType", m_iViewType);
+    pConf->Write("ShowPlotOptions", m_bShowPlotOptions);
+    pConf->Write("ShowAtCursor", m_bShowAtCursor);
+    pConf->Write("ShowLiveIcon", m_bShowLiveIcon);
+    pConf->Write("ShowIcon", m_bShowIcon);
+    pConf->Write("Opacity", m_iOpacity);
 
-    pConf->Write(_T ( "DialogPosX" ), m_wmm_dialog_x);
-    pConf->Write(_T ( "DialogPosY" ), m_wmm_dialog_y);
+    pConf->Write("DialogPosX", m_wmm_dialog_x);
+    pConf->Write("DialogPosY", m_wmm_dialog_y);
 
-    pConf->SetPath(_T( "/Settings/WMM/Plot" ));
-    pConf->Write(_T( "Declination" ), m_DeclinationMap.m_bEnabled);
-    pConf->Write(_T( "DeclinationSpacing" ), m_DeclinationMap.m_Spacing);
-    pConf->Write(_T( "Inclination" ), m_InclinationMap.m_bEnabled);
-    pConf->Write(_T( "InclinationSpacing" ), m_InclinationMap.m_Spacing);
-    pConf->Write(_T( "FieldStrength" ), m_FieldStrengthMap.m_bEnabled);
-    pConf->Write(_T( "FieldStrengthSpacing" ), m_FieldStrengthMap.m_Spacing);
-    pConf->Write(_T( "StepSize" ), m_MapStep);
-    pConf->Write(_T( "PoleAccuracy" ), m_MapPoleAccuracy);
+    pConf->SetPath("/Settings/WMM/Plot");
+    pConf->Write("Declination", m_DeclinationMap.m_bEnabled);
+    pConf->Write("DeclinationSpacing", m_DeclinationMap.m_Spacing);
+    pConf->Write("Inclination", m_InclinationMap.m_bEnabled);
+    pConf->Write("InclinationSpacing", m_InclinationMap.m_Spacing);
+    pConf->Write("FieldStrength", m_FieldStrengthMap.m_bEnabled);
+    pConf->Write("FieldStrengthSpacing", m_FieldStrengthMap.m_Spacing);
+    pConf->Write("StepSize", m_MapStep);
+    pConf->Write("PoleAccuracy", m_MapPoleAccuracy);
 
-    pConf->SetPath(_T ( "/Directories" ));
-    pConf->Write(_T ( "WMMDataLocation" ), m_wmm_dir);
+    pConf->SetPath("/Directories");
+    pConf->Write("WMMDataLocation", m_wmm_dir);
 
     return true;
   } else

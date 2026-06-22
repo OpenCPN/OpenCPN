@@ -72,7 +72,7 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
 
   wxString rootName = wxString::FromUTF8(root.name());
   charts.clear();
-  if (rootName.StartsWith(_T("RncProductCatalog"))) {
+  if (rootName.StartsWith("RncProductCatalog")) {
     if (!ParseNoaaHeader(root.first_child())) {
       return false;
     }
@@ -84,7 +84,7 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
         charts.push_back(std::make_unique<RasterChart>(element));
       }
     }
-  } else if (rootName.StartsWith(_T("EncProductCatalog"))) {
+  } else if (rootName.StartsWith("EncProductCatalog")) {
     if (!ParseNoaaHeader(root.first_child())) {
       return false;
     }
@@ -99,9 +99,9 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
   }
   // "IENCBuoyProductCatalog" and "IENCSouthwestPassProductCatalog" added by
   // .Paul.
-  else if (rootName.StartsWith(_T("IENCU37ProductCatalog")) ||
-           rootName.StartsWith(_T("IENCBuoyProductCatalog")) ||
-           rootName.StartsWith(_T("IENCSouthwestPassProductCatalog"))) {
+  else if (rootName.StartsWith("IENCU37ProductCatalog") ||
+           rootName.StartsWith("IENCBuoyProductCatalog") ||
+           rootName.StartsWith("IENCSouthwestPassProductCatalog")) {
     if (!ParseNoaaHeader(root.first_child())) {
       return false;
     }
@@ -139,7 +139,7 @@ bool ChartCatalog::ParseNoaaHeader(const pugi::xml_node &xmldata) {
       wxASSERT(time_created.IsValid());
     } else if (!strcmp(element.name(), "dt_valid")) {
       wxStringTokenizer tk(wxString::FromUTF8(element.first_child().value()),
-                           _T("TZ"));
+                           "TZ");
       dt_valid.ParseDate(tk.GetNextToken());
       dt_valid.ParseTime(tk.GetNextToken());
       dt_valid.MakeFromTimezone(wxDateTime::UTC);
@@ -213,11 +213,11 @@ Chart::Chart(pugi::xml_node &xmldata) {
     } else if (!strcmp(element.name(), "zipfile_datetime")) {
       if (zipfile_datetime.ParseFormat(
               wxString::FromUTF8(element.first_child().value()),
-              _T("%Y%m%d_%H%M%S")))
+              "%Y%m%d_%H%M%S"))
         zipfile_datetime.MakeFromTimezone(wxDateTime::UTC);
     } else if (!strcmp(element.name(), "zipfile_datetime_iso8601")) {
       wxStringTokenizer tk(wxString::FromUTF8(element.first_child().value()),
-                           _T("TZ"));
+                           "TZ");
       zipfile_datetime_iso8601.ParseDate(tk.GetNextToken());
       zipfile_datetime_iso8601.ParseTime(tk.GetNextToken());
       zipfile_datetime_iso8601.MakeFromTimezone(wxDateTime::UTC);
@@ -258,7 +258,7 @@ wxString Chart::GetChartFilename(bool to_check) {
   if (to_check && reference_file != wxEmptyString) return reference_file;
   if (target_filename != wxEmptyString) return target_filename;
   wxString file;
-  wxStringTokenizer tk(zipfile_location, _T("/"));
+  wxStringTokenizer tk(zipfile_location, "/");
   do {
     file = tk.GetNextToken();
   } while (tk.HasMoreTokens());
@@ -355,7 +355,7 @@ IEncCell::IEncCell(pugi::xml_node &xmldata) : Chart(xmldata) {
     if (!strcmp(element.name(), "name")) {
       //  Use number (not name) for zip file name and cell name  .Paul.
       number = wxString::FromUTF8(element.first_child().value());
-      zipfile_location = wxString::Format(_T("%s.zip"), number.c_str());
+      zipfile_location = wxString::Format("%s.zip", number.c_str());
     } else if (!strcmp(element.name(), "location")) {
       location = new Location(element);
     } else if (!strcmp(element.name(), "river_name")) {
@@ -427,7 +427,7 @@ ChartFile::ChartFile(pugi::xml_node &xmldata) {
         time_posted.ParseTime(
             wxString::FromUTF8(element.first_child().value()));
       else
-        time_posted.ParseTime(_T("00:00:00"));
+        time_posted.ParseTime("00:00:00");
     } else if (!strcmp(element.name(), "file_size")) {
       if (strlen(element.first_child().value()))
         file_size = wxAtoi(wxString::FromUTF8(element.first_child().value()));

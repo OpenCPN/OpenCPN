@@ -52,7 +52,7 @@ wxString toMailFormat(int NEflag,
 {
   char c = NEflag == 1 ? a < 0 ? 'S' : 'N' : a < 0 ? 'W' : 'E';
   wxString s;
-  s.Printf(_T ( "%01d%c" ), abs(a), c);
+  s.Printf("%01d%c", abs(a), c);
   return s;
 }
 
@@ -169,27 +169,27 @@ GribRequestSetting::~GribRequestSetting() {
 void GribRequestSetting::SaveConfig() {
   wxFileConfig *pConf = GetOCPNConfigObject();
   if (pConf) {
-    pConf->SetPath(_T( "/PlugIns/GRIB" ));
+    pConf->SetPath("/PlugIns/GRIB");
 
-    pConf->Write(_T ( "MailRequestConfig" ), m_RequestConfigBase);
-    pConf->Write(_T( "MailSenderAddress" ), m_pSenderAddress->GetValue());
-    pConf->Write(_T( "MailRequestAddresses" ), m_MailToAddresses);
-    pConf->Write(_T( "ZyGribLogin" ), m_pLogin->GetValue());
-    pConf->Write(_T( "ZyGribCode" ), m_pCode->GetValue());
-    pConf->Write(_T( "SendMailMethod" ), m_SendMethod);
-    pConf->Write(_T( "MovingGribSpeed" ), m_sMovingSpeed->GetValue());
-    pConf->Write(_T( "MovingGribCourse" ), m_sMovingCourse->GetValue());
+    pConf->Write("MailRequestConfig", m_RequestConfigBase);
+    pConf->Write("MailSenderAddress", m_pSenderAddress->GetValue());
+    pConf->Write("MailRequestAddresses", m_MailToAddresses);
+    pConf->Write("ZyGribLogin", m_pLogin->GetValue());
+    pConf->Write("ZyGribCode", m_pCode->GetValue());
+    pConf->Write("SendMailMethod", m_SendMethod);
+    pConf->Write("MovingGribSpeed", m_sMovingSpeed->GetValue());
+    pConf->Write("MovingGribCourse", m_sMovingCourse->GetValue());
 
     m_SavedZoneSelMode = m_cUseSavedZone->GetValue()    ? SAVED_SELECTION
                          : m_rbManualSelect->GetValue() ? START_SELECTION
                                                         : AUTO_SELECTION;
-    pConf->Write(_T( "ManualRequestZoneSizingMode" ), m_ZoneSelMode);
-    pConf->Write(_T( "ManualRequestZoneSizing" ), m_SavedZoneSelMode);
+    pConf->Write("ManualRequestZoneSizingMode", m_ZoneSelMode);
+    pConf->Write("ManualRequestZoneSizing", m_SavedZoneSelMode);
 
-    pConf->Write(_T( "RequestZoneMaxLat" ), m_spMaxLat->GetValue());
-    pConf->Write(_T( "RequestZoneMinLat" ), m_spMinLat->GetValue());
-    pConf->Write(_T( "RequestZoneMaxLon" ), m_spMaxLon->GetValue());
-    pConf->Write(_T( "RequestZoneMinLon" ), m_spMinLon->GetValue());
+    pConf->Write("RequestZoneMaxLat", m_spMaxLat->GetValue());
+    pConf->Write("RequestZoneMinLat", m_spMinLat->GetValue());
+    pConf->Write("RequestZoneMaxLon", m_spMaxLon->GetValue());
+    pConf->Write("RequestZoneMinLon", m_spMinLon->GetValue());
   }
 }
 
@@ -197,27 +197,26 @@ void GribRequestSetting::InitRequestConfig() {
   wxFileConfig *pConf = GetOCPNConfigObject();
 
   if (pConf) {
-    pConf->SetPath(_T( "/PlugIns/GRIB" ));
+    pConf->SetPath("/PlugIns/GRIB");
     wxString l;
     int m;
-    pConf->Read(_T( "MailRequestConfig" ), &m_RequestConfigBase,
-                _T( "000220XX........0" ));
-    pConf->Read(_T( "MailSenderAddress" ), &l, "");
+    pConf->Read("MailRequestConfig", &m_RequestConfigBase, "000220XX........0");
+    pConf->Read("MailSenderAddress", &l, "");
     m_pSenderAddress->ChangeValue(l);
-    pConf->Read(_T( "MailRequestAddresses" ), &m_MailToAddresses,
+    pConf->Read("MailRequestAddresses", &m_MailToAddresses,
                 "query@saildocs.com;gribauto@zygrib.org");
-    pConf->Read(_T( "ZyGribLogin" ), &l, "");
+    pConf->Read("ZyGribLogin", &l, "");
     m_pLogin->ChangeValue(l);
-    pConf->Read(_T( "ZyGribCode" ), &l, "");
+    pConf->Read("ZyGribCode", &l, "");
     m_pCode->ChangeValue(l);
-    pConf->Read(_T( "SendMailMethod" ), &m_SendMethod, 0);
-    pConf->Read(_T( "MovingGribSpeed" ), &m, 0);
+    pConf->Read("SendMailMethod", &m_SendMethod, 0);
+    pConf->Read("MovingGribSpeed", &m, 0);
     m_sMovingSpeed->SetValue(m);
-    pConf->Read(_T( "MovingGribCourse" ), &m, 0);
+    pConf->Read("MovingGribCourse", &m, 0);
     m_sMovingCourse->SetValue(m);
-    pConf->Read(_T( "ManualRequestZoneSizingMode" ), &m, 0);
+    pConf->Read("ManualRequestZoneSizingMode", &m, 0);
     m_ZoneSelMode = m;
-    pConf->Read(_T( "ManualRequestZoneSizing" ), &m, 0);
+    pConf->Read("ManualRequestZoneSizing", &m, 0);
     m_SavedZoneSelMode = m;
     m_cUseSavedZone->SetValue(m_SavedZoneSelMode == SAVED_SELECTION);
     if (m_SavedZoneSelMode == SAVED_SELECTION) {
@@ -225,21 +224,20 @@ void GribRequestSetting::InitRequestConfig() {
     }
     m_rbManualSelect->SetValue(m_ZoneSelMode != AUTO_SELECTION);
     UpdateAreaSelectionState();
-    pConf->Read(_T( "RequestZoneMaxLat" ), &m, 0);
+    pConf->Read("RequestZoneMaxLat", &m, 0);
     m_spMaxLat->SetValue(m);
-    pConf->Read(_T( "RequestZoneMinLat" ), &m, 0);
+    pConf->Read("RequestZoneMinLat", &m, 0);
     m_spMinLat->SetValue(m);
-    pConf->Read(_T( "RequestZoneMaxLon" ), &m, 0);
+    pConf->Read("RequestZoneMaxLon", &m, 0);
     m_spMaxLon->SetValue(m);
-    pConf->Read(_T( "RequestZoneMinLon" ), &m, 0);
+    pConf->Read("RequestZoneMinLon", &m, 0);
     m_spMinLon->SetValue(m);
 
     SetCoordinatesText();
     // if GriDataConfig has been corrupted , take the standard one to fix a
     // crash
-    if (m_RequestConfigBase.Len() !=
-        wxString(_T( "000220XX.............." )).Len())
-      m_RequestConfigBase = _T( "000220XX.............." );
+    if (m_RequestConfigBase.Len() != wxString("000220XX..............").Len())
+      m_RequestConfigBase = "000220XX..............";
   }
   // populate model, mail to, waves model choices
   wxString s1[] = {"GFS", "COAMPS", "RTOFS", "HRRR", "ICON", "ECMWF"};
@@ -1255,8 +1253,8 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
       (fo.GetPointSize() * m_displayScale / OCPN_GetWinDIPScaleFactor()));
   wxFont *font = &fo;
   wxColour pen_color, back_color;
-  GetGlobalColor(_T ( "DASHR" ), &pen_color);
-  GetGlobalColor(_T ( "YELO1" ), &back_color);
+  GetGlobalColor("DASHR", &pen_color);
+  GetGlobalColor("YELO1", &back_color);
 
   int label_offsetx = 5, label_offsety = 1;
 
@@ -1269,7 +1267,7 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
   label.Append(toMailFormat(1, m_spMinLat->GetValue()) + " ");
   label.Append(toMailFormat(0, m_spMaxLon->GetValue()) + "\n");
   label.Append("Estim. Size ")
-      .Append((wxString::Format(_T("%1.2f " ), size) + _("MB")));
+      .Append((wxString::Format("%1.2f ", size) + _("MB")));
 
   if (m_pdc) {
     wxPen pen(pen_color);
@@ -1696,7 +1694,7 @@ wxString GribRequestSetting::WriteMail() {
   double size;
   m_MailError_Nb += EstimateFileSize(&size);
 
-  m_tFileSize->SetLabel(wxString::Format(_T("%1.2f " ), size) + _("MB"));
+  m_tFileSize->SetLabel(wxString::Format("%1.2f ", size) + _("MB"));
 
   if (IsZYGRIB) {
     m_tLimit->SetLabel(wxString("( ") + _("Max") +
@@ -1868,8 +1866,8 @@ void GribRequestSetting::OnSendMaiL(wxCommandEvent &event) {
 
   std::string mailto =
       (m_pMailTo->GetCurrentSelection() == SAILDOCS
-           ? m_MailToAddresses.BeforeFirst(_T(';'))  // to request address
-           : m_MailToAddresses.AfterFirst(_T(';')).BeforeFirst(_T(';')))
+           ? m_MailToAddresses.BeforeFirst(';')  // to request address
+           : m_MailToAddresses.AfterFirst(';').BeforeFirst(';'))
           .ToStdString();
   std::string mailfrom = m_pSenderAddress->GetValue().ToStdString();
 
