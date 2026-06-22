@@ -5,7 +5,7 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#include "WmmUIDialog.h"
+#include "wmm_ui_dialog.h"
 #include "manual.h"
 #include "ocpn_plugin.h"
 

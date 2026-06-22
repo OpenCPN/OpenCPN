@@ -47,7 +47,7 @@ msgstr "WMM Plugin"
 msgid "WMM_Live_Overlay"
 msgstr ""
 
-#: src/wmm_pi.cpp:242 src/wmm_pi.cpp:300 src/WmmUIDialog.h:85
+#: src/wmm_pi.cpp:242 src/wmm_pi.cpp:300 src/wmm_ui_dialog.h:85
 msgid "WMM"
 msgstr "WMM"
 
@@ -74,11 +74,11 @@ msgstr ""
 msgid "Error, see log."
 msgstr "Kesalahan, lihat log."
 
-#: src/wmm_pi.cpp:903 src/WmmUIDialog.h:118
+#: src/wmm_pi.cpp:903 src/wmm_ui_dialog.h:118
 msgid "WMM Preferences"
 msgstr "Preferensi WMM"
 
-#: src/wmm_pi.h:86 src/WmmUIDialog.h:158
+#: src/wmm_pi.h:86 src/wmm_ui_dialog.h:158
 msgid "Magnetic Plot Settings"
 msgstr "Pengaturan Plot Magnetik"
 

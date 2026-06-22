@@ -43,15 +43,15 @@
 
 #include "GeomagnetismHeader.h"
 #include "EGM9615.h"
-#include "WmmUIDialog.h"
-#include "MagneticPlotMap.h"
+#include "wmm_ui_dialog.h"
+#include "magnetic_plot_map.h"
 
 #include "jsonreader.h"
 #include "jsonwriter.h"
 
-//----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------
 //    The PlugIn Class Definition
-//----------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------
 
 #define WMM_TOOL_POSITION -1  // Request default positioning of toolbar tool
 class wmm_pi;

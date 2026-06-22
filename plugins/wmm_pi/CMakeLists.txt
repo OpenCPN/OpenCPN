@@ -47,17 +47,17 @@ include("cmake/PluginConfigure.cmake")
 set(SRC_WMM
     src/wmm_pi.h
     src/wmm_pi.cpp
-    src/MagneticPlotMap.h
-    src/MagneticPlotMap.cpp
+    src/magnetic_plot_map.h
+    src/magnetic_plot_map.cpp
     src/icons.h
     src/icons.cpp
     src/GeomagnetismHeader.h
     src/GeomagnetismLibrary.c
     src/EGM9615.h
-    src/WmmUIDialog.h
-    src/WmmUIDialog.cpp
-    src/pi_TexFont.cpp
-    src/pi_TexFont.h
+    src/wmm_ui_dialog.h
+    src/wmm_ui_dialog.cpp
+    src/pi_tex_font.cpp
+    src/pi_tex_font.h
     src/pi_ocpndc.cpp
     src/pi_ocpndc.h
 )

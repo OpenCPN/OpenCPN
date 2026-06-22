@@ -24,7 +24,7 @@
 /**
  * \file
  *
- * Implement pi_Texfont.h
+ * Implement pi_tex_font.h
  */
 
 #include <wx/wx.h>
@@ -33,7 +33,7 @@
 #include "qdebug.h"
 #endif
 
-#include "pi_TexFont.h"
+#include "pi_tex_font.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>

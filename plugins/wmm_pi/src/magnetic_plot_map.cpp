@@ -41,7 +41,7 @@
 #endif
 
 #include "GeomagnetismHeader.h"
-#include "MagneticPlotMap.h"
+#include "magnetic_plot_map.h"
 
 // static const long long lNaN = 0xfff8000000000000;
 // #define qNan (*(double *)&lNaN)

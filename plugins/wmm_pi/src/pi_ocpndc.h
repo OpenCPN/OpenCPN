@@ -28,7 +28,7 @@
 #include <vector>
 #include "linmath.h"
 
-#include "pi_TexFont.h"
+#include "pi_tex_font.h"
 #include "ocpn_plugin.h"
 
 #ifdef ocpnUSE_GL
