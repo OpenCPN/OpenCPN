@@ -165,6 +165,34 @@ S52_TextC::~S52_TextC() {
   }
 }
 
+wxRect2D::wxRect2D() : x(0), y(0), width(0), height(0) {}
+wxRect2D:: wxRect2D(double xx, double yy, double w, double h)
+      : x(xx), y(yy), width(w), height(h) {}
+
+bool wxRect2D::Intersects(const wxRect2D& other,
+                  double epsilon) const {
+  return !((x + width) <= (other.x + epsilon) ||
+           (other.x + other.width) <= (x + epsilon) ||
+           (y + height) <= (other.y + epsilon) ||
+           (other.y + other.height) <= (y + epsilon));
+}
+
+wxRect2D wxRect2D::Union(const wxRect2D& other) const
+{
+  if (IsEmpty())
+    return other;
+
+  if (other.IsEmpty())
+    return *this;
+
+  double left   = std::min(x, other.x);
+  double top    = std::min(y, other.y);
+  double right  = std::max(x + width,  other.x + other.width);
+  double bottom = std::max(y + height, other.y + other.height);
+
+  return wxRect2D(left, top, right - left, bottom - top);
+}
+
 // This is a verbatim copy of same struct found in ocpn_plugin.h
 // Used for some types of plugin charts
 class PI_line_segment_element {
@@ -1759,7 +1787,7 @@ static void rotate(wxRect *r, VPointCompat const *vp) {
 }
 
 bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y,
-                         wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap) {
+                         wxRect2D *pRectDrawn, S57Obj *pobj, bool bCheckOverlap) {
 #ifdef DrawText
 #undef DrawText
 #define FIXIT
@@ -1804,7 +1832,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y,
     //  atomically is much faster than rendering glyph-by-glyph.
     //  Accordingly, switch to this method for all cases.
     b_force_no_texfont = true;
-
+    int tex_w, tex_h;
     if (b_force_no_texfont) {
       if (!ptext->texobj) {  // is texture ready?
 
@@ -1831,7 +1859,6 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y,
         ptext->text_height = h_scaled * m_dipfactor;
 
         /* make power of 2 */
-        int tex_w, tex_h;
         for (tex_w = 1; tex_w < w_scaled; tex_w *= 2);
         for (tex_h = 1; tex_h < h_scaled; tex_h *= 2);
 
@@ -1952,7 +1979,6 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y,
           default:
             break;
         }
-
         double xp = x;
         double yp = y;
 
@@ -1968,6 +1994,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y,
           xp += xadjust;
           yp += yadjust;
         }
+
 
         pRectDrawn->SetX(xp);
         pRectDrawn->SetY(yp);
@@ -2074,8 +2101,6 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y,
 
         }  // bdraw
       }
-
-      bdraw = true;
     }
 
 #if 0  // no longer used, see note above re profile results.
@@ -2318,15 +2343,16 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y,
 
 //    Return true if test_rect overlaps any rect in the current text rectangle
 //    list, except itself
-bool s52plib::CheckTextRectList(const wxRect &test_rect, S52_TextC *ptext) {
+bool s52plib::CheckTextRectList(const wxRect2D &test_rect, S52_TextC *ptext) {
   //    Iterate over the current object list, looking at rText
 
   for (TextObjList::Node *node = m_textObjList.GetFirst(); node;
        node = node->GetNext()) {
-    wxRect *pcurrent_rect = &(node->GetData()->rText);
+    wxRect2D *pcurrent_rect = &(node->GetData()->rText);
+    if (node->GetData() == ptext) continue;
 
     if (pcurrent_rect->Intersects(test_rect)) {
-      if (node->GetData() != ptext) return true;
+        return true;
     }
   }
   return false;
@@ -2403,6 +2429,7 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX) {
   //    If it was created by this Rule earlier, then render it
   //    Otherwise, create a new text object, render it, and delete when done
   //    This will be slower, obviously, but happens infrequently enough?
+
   else {
     if (rules->n_sequence == rzRules->obj->FText->rul_seq_creator)
       text = rzRules->obj->FText;
@@ -2511,7 +2538,8 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX) {
     wxPoint2DDouble dr;
     GetDoublePointPixSingle(rzRules, rzRules->obj->y, rzRules->obj->x, &dr);
 
-    wxRect rect;
+
+    wxRect2D rect;
     bool bwas_drawn = RenderText(m_pdc, text, dr.m_x, dr.m_y, &rect, rzRules->obj,
                                  m_bDeClutterText);
 
@@ -2529,7 +2557,7 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX) {
       } else {  // object was drawn
         text = rzRules->obj->FText;
 
-        wxRect r0 = text->rText;
+        wxRect2D r0 = text->rText;
         r0 = r0.Union(rect);
         text->rText = r0;
 
@@ -2565,9 +2593,9 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX) {
     {
       double latmin, lonmin, latmax, lonmax;
 
-      GetPixPointSingleNoRotate(rect.GetX(), rect.GetY() + rect.GetHeight(),
+      GetPixPointSingleNoRotate(rect.x, rect.y + rect.height,
                                 &latmin, &lonmin);
-      GetPixPointSingleNoRotate(rect.GetX() + rect.GetWidth(), rect.GetY(),
+      GetPixPointSingleNoRotate(rect.x + rect.width, rect.y,
                                 &latmax, &lonmax);
       LLBBox bbtext;
       bbtext.Set(latmin, lonmin, latmax, lonmax);
@@ -11380,23 +11408,6 @@ bool s52plib::EnableGLLS(bool b_enable) {
 
 void s52plib::AdjustTextList(int dx, int dy, int screenw, int screenh) {
   return;
-  wxRect rScreen(0, 0, screenw, screenh);
-  //    Iterate over the text rectangle list
-  //        1.  Apply the specified offset to the list elements
-  //        2.. Remove any list elements that are off screen after applied
-  //        offset
-
-  TextObjList::Node *node = m_textObjList.GetFirst();
-  TextObjList::Node *next;
-  while (node) {
-    next = node->GetNext();
-    wxRect *pcurrent = &(node->GetData()->rText);
-    pcurrent->Offset(dx, dy);
-    if (!pcurrent->Intersects(rScreen)) {
-      m_textObjList.DeleteNode(node);
-    }
-    node = next;
-  }
 }
 
 bool s52plib::GetPointPixArray(ObjRazRules *rzRules, wxPoint2DDouble *pd,

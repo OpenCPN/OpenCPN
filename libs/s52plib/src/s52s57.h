@@ -46,6 +46,27 @@ class OGRGeometry;
 class VE_Element;
 class VC_Element;
 
+class wxRect2D {
+public:
+  double x;
+  double y;
+  double width;
+  double height;
+
+  wxRect2D();
+  wxRect2D(double xx, double yy, double w, double h);
+  void SetX(double _x){ x = _x;}
+  void SetY(double _y){ y = _y;}
+  void SetWidth(double _width){ width = _width;}
+  void SetHeight(double _height){ height = _height;}
+
+  bool Intersects(const wxRect2D& other,
+                  double epsilon = 1e-6) const;
+  wxRect2D Union(const wxRect2D& other) const;
+  bool IsEmpty() const  {return width <= 0.0 || height <= 0.0;}
+
+};
+
 // name of the addressed look up table set (fifth letter)
 typedef enum _LUPname {
   SIMPLIFIED = 'L',             // points
@@ -262,7 +283,7 @@ public:
   int RGBA_width;
   int RGBA_height;
   int rendered_char_height;
-  wxRect
+  wxRect2D
       rText;  // rectangle of the text as currently rendered, used for declutter
   bool bnat;  // frmtd is National text, UTF-8 encoded
   bool bspecial_char;  // frmtd has special ASCII characters, i.e. > 127
