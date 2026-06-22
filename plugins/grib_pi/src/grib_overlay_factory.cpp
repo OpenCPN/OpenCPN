@@ -185,7 +185,7 @@ void LineBuffer::Finalize() {
 };
 
 int adjustSpacing(int dialogSetSpacing) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   // Treat the slider control as a percentage value.
   // Maximum space (100%) is established as one-half of the smaller of screen
   // dismensions x and y.
@@ -400,7 +400,7 @@ void GRIBOverlayFactory::ClearCachedData(void) {
   }
 }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "pi_shaders.h"
 #endif
 
@@ -1267,7 +1267,7 @@ void GRIBOverlayFactory::RenderGribBarbedArrows(int settings, GribRecord **pGR,
 
 #ifdef ocpnUSE_GL
   if (!m_pdc) {
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
     //      Enable anti-aliased lines, at best quality
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
@@ -2675,7 +2675,7 @@ void GRIBOverlayFactory::drawLineBuffer(LineBuffer &buffer, int x, int y,
 void GRIBOverlayFactory::DrawSingleGLTexture(GribOverlay *pGO, GribRecord *pGR,
                                              double uv[], double x, double y,
                                              double width, double height) {
-#if 1  // def __OCPN__ANDROID__
+#if 1  // def __ANDROID__
 
   glEnable(texture_format);
 

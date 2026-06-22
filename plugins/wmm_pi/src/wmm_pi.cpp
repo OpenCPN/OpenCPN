@@ -29,7 +29,7 @@
 #include <wx/wx.h>
 #endif  // precompiled headers
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #include <GL/gl.h>
 #include <GL/glu.h>
 #else
@@ -147,7 +147,7 @@ int wmm_pi::Init(void) {
   //    And load the configuration items
   LoadConfig();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   g_compact = true;
   m_bShowPlotOptions = false;
   m_iViewType = 1;
@@ -400,7 +400,7 @@ void wmm_pi::OnToolbarToolCallback(int id) {
   m_pWmmDialog->Move(0, 0);  // workaround for gtk autocentre dialog behavior
   m_pWmmDialog->Move(p);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pWmmDialog->CentreOnScreen();
   m_pWmmDialog->Move(-1, 0);
 #endif

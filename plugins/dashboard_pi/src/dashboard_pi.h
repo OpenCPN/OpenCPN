@@ -464,7 +464,7 @@ public:
 
   void OnMouseEvent(wxMouseEvent &event);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   void OnEvtPinchGesture(wxQT_PinchGestureEvent &event);
   void OnEvtPanGesture(wxQT_PanGestureEvent &event);
 #endif

@@ -212,7 +212,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
   double ratioW = double(size.x - 6) / (DEPTH_RECORD_COUNT - 1);
   wxPoint points[DEPTH_RECORD_COUNT + 2];
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   int px = 3;
   points[0].x = px;
   points[0].y = m_plotdown;

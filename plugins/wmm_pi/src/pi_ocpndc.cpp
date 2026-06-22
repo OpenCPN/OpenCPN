@@ -27,7 +27,7 @@
 #include <windows.h>
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "qdebug.h"
 #endif
 
@@ -45,7 +45,7 @@
 #include <wx/graphics.h>
 #include <wx/dcclient.h>
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <qopengl.h>
 #include "GL/gl_private.h"
 #else

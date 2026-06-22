@@ -319,7 +319,7 @@ void DashboardInstrument_Altitude::DrawForeground(wxGCDC* dc) {
   double ratioH = double(a_plotheight) / m_Range;
   double ratioW = double(size.x - 6) / (ALTITUDE_RECORD_COUNT - 1);
   wxPoint points[ALTITUDE_RECORD_COUNT + 2];
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   int px = 3;
   points[0].x = px;
   points[0].y = a_plotdown;

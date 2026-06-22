@@ -29,7 +29,7 @@
 
 #include <wx/wx.h>
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <qdebug.h>
 #endif
 

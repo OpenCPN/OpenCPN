@@ -101,7 +101,7 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "qdebug.h"
 #endif
 
@@ -113,7 +113,7 @@ extern "C" DECL_EXP opencpn_plugin *create_pi(void *ppimgr) {
 
 extern "C" DECL_EXP void destroy_pi(opencpn_plugin *p) { delete p; }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
 QString qtStyleSheet =
     "QScrollBar:horizontal {\
@@ -177,7 +177,7 @@ height: 30px;\
 
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <QtWidgets/QScroller>
 #endif
 
@@ -755,7 +755,7 @@ void dashboard_pi::Notify() {
         m_ArrayOfDashboardWindow.Item(i)->m_pDashboardWindow;
     if (dashboard_window) {
       dashboard_window->Refresh();
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       wxWindowList list = dashboard_window->GetChildren();
       wxWindowListNode *node = list.GetFirst();
       for (size_t i = 0; i < list.GetCount(); i++) {
@@ -3255,11 +3255,11 @@ void dashboard_pi::ShowPreferencesDialog(wxWindow *parent) {
 
   dialog->RecalculateSize();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   dialog->GetHandle()->setStyleSheet(qtStyleSheet);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxWindow *ccwin = GetOCPNCanvasWindow();
 
   if (ccwin) {
@@ -3506,7 +3506,7 @@ bool dashboard_pi::LoadConfig(void) {
     wxString LabelFont;
     wxString SmallFont;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     TitleFont = "Roboto,16,-1,5,50,0,0,0,0,0";
     DataFont = "Roboto,16,-1,5,50,0,0,0,0,0";
     LabelFont = "Roboto,16,-1,5,50,0,0,0,0,0";
@@ -3634,7 +3634,7 @@ bool dashboard_pi::LoadConfig(void) {
         }
       } else {
         // This is the default instrument list
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
         ar.Add(ID_DBP_I_POS);
         ar.Add(ID_DBP_D_COG);
         ar.Add(ID_DBP_D_GPS);
@@ -3804,7 +3804,7 @@ bool dashboard_pi::LoadConfig(void) {
 
 void dashboard_pi::LoadFont(wxFont **target, wxString native_info) {
   if (!native_info.IsEmpty()) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
     wxFont *nf = new wxFont(native_info);
     *target = nf;
 #else
@@ -4041,7 +4041,7 @@ void dashboard_pi::ApplyConfig(void) {
       // ).RightDockable( vertical ).MinSize( sz ).BestSize( sz ).FloatingSize(
       // sz ).FloatingPosition( 100, 100 ).Float().Show( cont->m_bIsVisible ) );
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       wxAuiPaneInfo &pane = m_pauimgr->GetPane(cont->m_pDashboardWindow);
       pane.Dockable(false);
 
@@ -4224,7 +4224,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   wxBitmap bmPlus, bmMinus;
   int bmSize = imageRefSize * 100 / 275;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   bmSize = imageRefSize / 2;
 #endif
 
@@ -4806,7 +4806,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
 }
 
 void DashboardPreferencesDialog::RecalculateSize(void) {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxSize esize;
   esize.x = GetCharWidth() * 110;
   esize.y = GetCharHeight() * 40;
@@ -5012,7 +5012,7 @@ void DashboardPreferencesDialog::UpdateButtonsState() {
 void DashboardPreferencesDialog::OnInstrumentAdd(wxCommandEvent &event) {
   AddInstrumentDlg pdlg((wxWindow *)event.GetEventObject(), wxID_ANY);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxFont *pF = OCPNGetFont(_("Dialog"));
   pdlg.SetFont(*pF);
 
@@ -5299,7 +5299,7 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
   wxSize dsize = GetOCPNCanvasWindow()->GetClientSize();
   int vsize = dsize.y * 50 / 100;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   int dw, dh;
   wxDisplaySize(&dw, &dh);
   vsize = dh * 50 / 100;
@@ -5315,7 +5315,7 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
   wxFont *pF = OCPNGetFont(_("Dialog"));
   m_pListCtrlInstruments->SetFont(*pF);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pListCtrlInstruments->GetHandle()->setStyleSheet(qtStyleSheet);
 /// QScroller::ungrabGesture(m_pListCtrlInstruments->GetHandle());
 #endif
@@ -5379,7 +5379,7 @@ DashboardWindow::DashboardWindow(wxWindow *pparent, wxWindowID id,
           wxCommandEventHandler(DashboardWindow::OnContextMenuSelect), NULL,
           this);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(DashboardWindow::OnMouseEvent));
   Connect(wxEVT_LEFT_UP, wxMouseEventHandler(DashboardWindow::OnMouseEvent));
   Connect(wxEVT_MOTION, wxMouseEventHandler(DashboardWindow::OnMouseEvent));
@@ -5411,7 +5411,7 @@ DashboardWindow::~DashboardWindow() {
   }
 }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 void DashboardWindow::OnEvtPinchGesture(wxQT_PinchGestureEvent &event) {
   float zoom_gain = 0.3;
   float zoom_val;
@@ -5814,7 +5814,7 @@ void DashboardWindow::ChangePaneOrientation(int orient, bool updateAUImgr,
                                .Float()
                                .Show(m_Container->m_bIsVisible));
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxAuiPaneInfo &pane = m_pauimgr->GetPane(this);
   pane.Dockable(false);
 #endif

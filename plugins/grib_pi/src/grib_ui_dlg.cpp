@@ -301,7 +301,7 @@ GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
   m_highlight_latmin = 0;
   m_highlight_lonmin = 0;
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   // Create the dialog for downloading GRIB files.
   // This dialog is created here, but not shown until the user requests it.
   // This is done such that user can draw bounding box on the chart before
@@ -411,7 +411,7 @@ void GRIBUICtrlBar::SetScaledBitmap(double factor) {
 
   // Careful here, this MinSize() sets the final width of the control bar,
   // overriding the width of the wxChoice above it.
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_sTimeline->SetSize(wxSize(20 * m_ScaledFactor, -1));
   m_sTimeline->SetMinSize(wxSize(20 * m_ScaledFactor, -1));
 #else
@@ -527,7 +527,7 @@ void GRIBUICtrlBar::OpenFile(bool newestFile) {
   m_Altitude = 0;  // set altitude at std
 
   // enable buttons according with file contents to ovoid crashes
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_bpSettings->Enable(true);
 #else
   m_bpSettings->Enable(m_pTimelineSet != nullptr);
@@ -787,7 +787,7 @@ void GRIBUICtrlBar::SetDialogsStyleSizePosition(bool force_recompute) {
 #endif
   SetSize(wxSize(sd.x, sd.y));
   SetMinSize(wxSize(sd.x, sd.y));
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxRect tbRect = GetMasterToolbarRect();
   // qDebug() << "TBR" << tbRect.x << tbRect.y << tbRect.width << tbRect.height
   // << pPlugIn->GetCtrlBarXY().x << pPlugIn->GetCtrlBarXY().y;
@@ -1038,7 +1038,7 @@ void GRIBUICtrlBar::OnMouseEvent(wxMouseEvent &event) {
   wxMouseEvent evt(event);
   evt.SetId(1000);
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
   if (m_gCursorData && m_CDataIsShown) {
     m_gCursorData->OnMouseEvent(evt);
   }
@@ -1201,7 +1201,7 @@ void GRIBUICtrlBar::OnSettings(wxCommandEvent &event) {
   event.Skip();
 }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 wxString callActivityMethod_ss(const char *method, wxString parm);
 #endif
 
@@ -1247,7 +1247,7 @@ void GRIBUICtrlBar::OnCompositeDialog(wxCommandEvent &event) {
   w.Write(v, json_final);
   wxLogMessage(json_final);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   wxString ret = callActivityMethod_ss("doGRIBActivity", json_final);
   wxLogMessage(ret);
 #endif
@@ -1670,7 +1670,7 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
   if (m_tPlayStop.IsRunning())
     return;  // do nothing when play back is running !
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 
   wxStandardPathsBase &path = wxStandardPaths::Get();
   wxString l_grib_dir = path.GetDocumentsDir();
@@ -2427,7 +2427,7 @@ void GRIBUICData::OnMove(wxMoveEvent &event) {
 //---------------------------------------------------------------------------------------
 //               Android Utility Methods
 //---------------------------------------------------------------------------------------
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
 #include <QtAndroidExtras/QAndroidJniObject>
 

@@ -16,7 +16,7 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 
 QString qtStyleSheet =
     "QScrollBar:horizontal {\
@@ -80,7 +80,7 @@ height: 30px;\
 
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <QtWidgets/QScroller>
 #include "qdebug.h"
 #endif
@@ -223,7 +223,7 @@ void DLDR_OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
 }
 
 void AddSourceDlg::applyStyle() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_panelPredefined->GetHandle()->setStyleSheet(qtStyleSheet);
   QScroller::ungrabGesture(m_panelPredefined->GetHandle());
   ///    QScroller::ungrabGesture(m_treeCtrlPredefSrcs->GetHandle());
@@ -261,7 +261,7 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
       m_panelPredefined, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       wxTR_DEFAULT_STYLE | wxTR_HIDE_ROOT | wxTR_HAS_BUTTONS);
   bSizerPredefTree->Add(m_treeCtrlPredefSrcs, 1, wxALL | wxEXPAND, 5);
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_treeCtrlPredefSrcs->SetScrollRate(0, 1);
 #endif
   m_panelPredefined->SetSizer(bSizerPredefTree);
@@ -471,7 +471,7 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
                                wxDefaultPosition, wxDefaultSize, 0);
   bSizerCatalogBtns->Add(m_bEditSource, 0, wxALL | wxEXPAND, 5);
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_bEditSource->Hide();
 #endif
 

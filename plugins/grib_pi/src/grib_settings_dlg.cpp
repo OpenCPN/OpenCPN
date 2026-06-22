@@ -729,7 +729,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent,
 
   DimeWindow(this);  // apply global colours scheme
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   GetHandle()->setStyleSheet(qtStyleSheet);
 #endif
 
@@ -752,7 +752,7 @@ void GribSettingsDialog::OnPageChange(wxNotebookEvent &event) {
 }
 
 void GribSettingsDialog::SetSettingsDialogSize() {
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   /*Sizing do not work with wxScolledWindow so we need to compute it
   using fixed X/Y margin to try to center nicely the dialog in the screen*/
   int wt, ht, w, h;
@@ -818,7 +818,7 @@ void GribSettingsDialog::SetSettingsDialogSize() {
     }
   }  // end compute
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_nSettingsBook->SetSize(wt, -1);
 #endif
 

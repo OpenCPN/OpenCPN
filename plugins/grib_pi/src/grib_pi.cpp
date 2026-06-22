@@ -262,7 +262,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_sIconSizeFactor->SetValue(val);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (m_parent_window) {
     int xmax = m_parent_window->GetSize().GetWidth();
     int ymax = m_parent_window->GetParent()
@@ -494,7 +494,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
         MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
         m_pGribCtrlBar->GetCDataDialog()->Show(m_pGribCtrlBar->m_CDataIsShown);
       }
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       m_pGribCtrlBar->SetDialogsStyleSizePosition(true);
       m_pGribCtrlBar->Refresh();
 #endif
@@ -541,7 +541,7 @@ void grib_pi::OnGribCtrlBarClose() {
 
   if (::wxIsBusy()) ::wxEndBusyCursor();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_DialogStyleChanged = true;  //  Force a delete of the control bar dialog
 #endif
 
@@ -600,7 +600,7 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
 
   if (::wxIsBusy()) ::wxEndBusyCursor();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pGribCtrlBar->Raise();  // Control bar should always be visible
 #endif
 

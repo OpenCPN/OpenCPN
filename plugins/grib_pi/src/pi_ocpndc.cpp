@@ -31,7 +31,7 @@
 
 #include "pi_gl.h"
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 // #include <GL/glew.h>
 // #include <GL/gl.h>
 // #include <GL/glu.h>
@@ -60,7 +60,7 @@
 #include <GLES2/gl2.h>
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "qdebug.h"
 #endif
 
@@ -171,7 +171,7 @@ pi_ocpnDC::~pi_ocpnDC() {
 }
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp) {
-  // #ifdef __OCPN__ANDROID__
+  // #ifdef __ANDROID__
   if (m_buseGL) {
     configureShaders(vp->pix_width, vp->pix_height);
   }

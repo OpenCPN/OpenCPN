@@ -32,7 +32,7 @@
 #include "ocpn_plugin.h"
 #include "pi_ocpndc.h"
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #include <GL/gl.h>
 #include <GL/glu.h>
 #else

@@ -24,7 +24,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
   m_ProjectBoatPanel = nullptr;
   m_ScaledFactor = scale_factor;
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   const bool m_bcompact = true;
 #else
   const bool m_bcompact = false;
@@ -397,7 +397,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
                           nullptr, this);
   }
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_bpSettings->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GRIBUICtrlBarBase::OnCompositeDialog), nullptr,
@@ -2100,7 +2100,7 @@ GribSettingsDialogBase::~GribSettingsDialogBase() {
       wxCommandEventHandler(GribSettingsDialogBase::OnApply), nullptr, this);
 }
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 GribPreferencesDialogBase::GribPreferencesDialogBase(
     wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos,
     const wxSize& size, long style)
