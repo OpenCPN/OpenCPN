@@ -523,10 +523,10 @@ private:
                             wxColor symColor, float rot_angle = 0.);
   wxImage RuleXBMToImage(Rule *prule);
 
-  bool RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y, wxRect *pRectDrawn,
+  bool RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y, wxRect2D *pRectDrawn,
                   S57Obj *pobj, bool bCheckOverlap);
 
-  bool CheckTextRectList(const wxRect &test_rect, S52_TextC *ptext);
+  bool CheckTextRectList(const wxRect2D &test_rect, S52_TextC *ptext);
   int RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX);
 
   int PrioritizeLineFeature(ObjRazRules *rzRules, int npriority);
