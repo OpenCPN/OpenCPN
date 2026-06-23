@@ -17,6 +17,7 @@
 * xref:gui-model.adoc[Model - Gui code organization]
 * xref:comm-overview.adoc[Communication Overview]
 * xref:coding-guidelines.adoc[Coding Guidelines]
+** xref:pre-commit-win.adoc[pre-commit on Windows]
 * xref:user-interface-styling.adoc[User Interface Styling]
 * xref:troubleshooting.adoc[Troubleshooting]
 * xref:stacktrace.adoc[Creating a stack trace]
