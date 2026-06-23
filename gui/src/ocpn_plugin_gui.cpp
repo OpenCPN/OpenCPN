@@ -1105,6 +1105,8 @@ bool AddPlugInRoute(PlugIn_Route* proute, bool b_permanent) {
     RoutePoint* pWP = new RoutePoint(pwp->m_lat, pwp->m_lon, pwp->m_IconName,
                                      pwp->m_MarkName, pwp->m_GUID);
 
+    if (ip == 0) pWP_src = pWP;
+
     //  Transcribe (clone) the html HyperLink List, if present
     cloneHyperlinkList(pWP, pwp);
     pWP->m_MarkDescription = pwp->m_MarkDescription;
