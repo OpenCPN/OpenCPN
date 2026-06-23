@@ -459,9 +459,11 @@ int AddChartToDBInPlace(wxString& full_path, bool b_RefreshCanvas) {
       //  Completely reload the chart database, for a fresh start
       ArrayOfCDI XnewChartDirArray;
       pConfig->LoadChartDirArray(XnewChartDirArray);
-      delete ChartData;
-      ChartData = new ChartDB();
-      ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
+	  // Remove ChatData rebuild. this causes sometimes a crash .. see Github issue #5170
+	  // The rebuild is not necessary here and this fix the issue
+      // delete ChartData;
+      // ChartData = new ChartDB();
+      // ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
 
       // Update group contents
       if (g_pGroupArray) ChartData->ApplyGroupArray(g_pGroupArray);
@@ -489,9 +491,11 @@ int RemoveChartFromDBInPlace(wxString& full_path) {
     //  Completely reload the chart database, for a fresh start
     ArrayOfCDI XnewChartDirArray;
     pConfig->LoadChartDirArray(XnewChartDirArray);
-    delete ChartData;
-    ChartData = new ChartDB();
-    ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
+	// Remove ChatData rebuild. this causes sometimes a crash .. see Github issue #5170
+	// The rebuild is not necessary here and this fix the issue
+    // delete ChartData;
+    // ChartData = new ChartDB();
+    // ChartData->LoadBinary(ChartListFileName, XnewChartDirArray);
 
     // Update group contents
     if (g_pGroupArray) ChartData->ApplyGroupArray(g_pGroupArray);
