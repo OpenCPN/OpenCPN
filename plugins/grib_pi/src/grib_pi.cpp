@@ -664,7 +664,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
         if (m_pGribCtrlBar->getTimeInterpolatedValues(
                 vkn, ang, Idx_WIND_VX, Idx_WIND_VY, lon, lat, time) &&
             vkn != GRIB_NOTDEF) {
-          v["Type"] = "Reply";
+          v["Type"] = wxString("Reply");
           v["WIND SPEED"] = vkn;
           v["WIND DIR"] = ang;
         } else {
@@ -678,7 +678,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
                 vkn, ang, Idx_SEACURRENT_VX, Idx_SEACURRENT_VY, lon, lat,
                 time) &&
             vkn != GRIB_NOTDEF) {
-          v["Type"] = "Reply";
+          v["Type"] = wxString("Reply");
           v["CURRENT SPEED"] = vkn;
           v["CURRENT DIR"] = ang;
         } else {
@@ -690,7 +690,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
         double vkn = m_pGribCtrlBar->getTimeInterpolatedValue(Idx_WIND_GUST,
                                                               lon, lat, time);
         if (vkn != GRIB_NOTDEF) {
-          v["Type"] = "Reply";
+          v["Type"] = wxString("Reply");
           v["GUST"] = vkn;
         } else
           v.Remove("GUST");
@@ -699,7 +699,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
         double vkn = m_pGribCtrlBar->getTimeInterpolatedValue(Idx_HTSIGW, lon,
                                                               lat, time);
         if (vkn != GRIB_NOTDEF) {
-          v["Type"] = "Reply";
+          v["Type"] = wxString("Reply");
           v["SWELL"] = vkn;
         } else
           v.Remove("SWELL");

@@ -137,6 +137,22 @@ and then, in the project top directory
 which will pick up the configuration from _.pre-commit-config.yaml_ which is
 part of the project.
 
+=== Using pre-commit on windows
+Using https://pre-commit.com/  on windows requires some extra handling, most
+of which related to the underlying python installation. One route known to 
+occasionally work:
+
+. Install python as administrator on the command line using chocolatey: 
+   `choco install python`
+. Start _Windows Settings_ | _Apps_.
+. Scroll to the _Python_ app, click _Modify_
+. In python app settings, click _Modify_. 
+. Check the _Py Launcher checkbox_, click _Next_
+. Click _Install_.
+. Install pre-commit on the command line using `py -m pip install pre-commit`.
+. On the command line in the plugin directory activate pre-commit  in the
+  project using `py -m pre_commit install`
+
 === CMake
 
 Cmake file uses formatting defined by the _.cmake-format.yaml_ which when used
