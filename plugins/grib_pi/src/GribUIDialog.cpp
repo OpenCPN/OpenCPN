@@ -33,7 +33,7 @@
 #include <wx/debug.h>
 #include <wx/graphics.h>
 #include <wx/regex.h>
-
+#include <wx/sysopt.h>
 #include <wx/stdpaths.h>
 
 #include <stdlib.h>
@@ -1676,7 +1676,16 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
   wxString l_grib_dir = path.GetDocumentsDir();
 
   if (wxDir::Exists(m_grib_dir)) l_grib_dir = m_grib_dir;
-
+#ifdef __WXOSX__
+  /* See Wildcard Filters section at
+     https://docs.wxwidgets.org/3.2/classwx_file_dialog.html for why OSX needs
+     this setting */
+  // Save the current setting so that it can be restored when the dialog is
+  // closed.
+  auto saved_show_types_setting =
+      wxSystemOptions::GetOptionInt(wxOSX_FILEDIALOG_ALWAYS_SHOW_TYPES);
+  wxSystemOptions::SetOption(wxOSX_FILEDIALOG_ALWAYS_SHOW_TYPES, 1);
+#endif  // __WXOSX__
   wxFileDialog *dialog = new wxFileDialog(
       nullptr, _("Select a GRIB file"), l_grib_dir, "",
       _("Grib files") +
@@ -1696,6 +1705,13 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
     }
     SetDialogsStyleSizePosition(true);
   }
+#ifdef __WXOSX__
+  // Restore to former value.
+  // Should ideally be done using RAII, but that would require a larger
+  // refactor.
+  wxSystemOptions::SetOption(wxOSX_FILEDIALOG_ALWAYS_SHOW_TYPES,
+                             saved_show_types_setting);
+#endif  // __WXOSX__
   delete dialog;
 #else
   if (!wxDir::Exists(m_grib_dir)) {
