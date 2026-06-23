@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <defs>
+        <linearGradient id="a" gradientUnits="userSpaceOnUse" x1="900" y1="967.05" x2="900" y2="845.33">
+            <stop offset="0" stop-color="#633"/>
+            <stop offset=".149" stop-color="#963"/>
+            <stop offset=".29" stop-color="#C93"/>
+            <stop offset=".49" stop-color="#963"/>
+            <stop offset=".671" stop-color="#633"/>
+            <stop offset=".812" stop-color="#C63"/>
+            <stop offset=".949" stop-color="#963"/>
+            <stop offset="1" stop-color="#C93"/>
+        </linearGradient>
+        <clipPath id="b">
+            <path d="m1473 845-204 122H312V845h1161z"/>
+        </clipPath>
+    </defs>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#614A1C" d="M574 637h50.27v246.07H574z"/>
+    <path fill="#1A1A1A" d="M574 883h50.27v147.51H574z"/>
+    <path fill="#614A1C" d="M1031 637h50.27v246.07H1031z"/>
+    <path fill="#1A1A1A" d="M1031 883h50.27v147.51H1031z"/>
+    <path fill="#614A1C" d="M1438 637h50.27v246.07H1438z"/>
+    <path fill="#1A1A1A" d="M1438 883h50.27v147.51H1438z"/>
+    <path fill="url(#a)" d="m1473 845-204 122H312V845z"/>
+    <g clip-path="url(#b)">
+        <path fill="#C2A06B" d="M277 845h1232.96v25.4H277z"/>
+        <path fill="#E8D7BB" d="M277 871h1232.96v25.4H277z"/>
+        <path fill="#C2A06B" d="M277 896h1232.96v25.4H277z"/>
+        <path fill="#D9B986" d="M277 922h1232.96v25.4H277z"/>
+        <path fill="#554539" d="M277 947h1232.96v25.4H277z"/>
+    </g>
+    <path fill="none" stroke="#963" stroke-width="7.62" d="m1473 845-204 122H312V845z"/>
+    <path fill="#614A1C" d="M391 769h50.27v246.07H391zm427 0h50.27v246.07H818zm427 0h50.27v246.07H1245z"/>
+    <path fill="#1A1A1A" d="M391 1015h50.27v147.51H391zm427 0h50.27v147.51H818zm427 0h50.27v147.51H1245z"/>
+</svg>

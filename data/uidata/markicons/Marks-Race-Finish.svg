@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="#000" stroke-width="20" d="M707 650h430v290H707z"/>
+    <path stroke="#000" stroke-width="20" d="M663 650h43.466v499.999H663z"/>
+    <path fill="#fff" d="M707 650h71.694v72.385H707z"/>
+    <path d="M707 722h71.694v72.385H707zm0 145h71.694v72.385H707z"/>
+    <path fill="#fff" d="M707 795h71.694v72.385H707z"/>
+    <path d="M778 650h71.694v72.385H778z"/>
+    <path fill="#fff" d="M778 722h71.694v72.385H778zm0 145h71.694v72.385H778z"/>
+    <path d="M778 795h71.694v72.385H778zm144-145h71.694v72.385H922z"/>
+    <path fill="#fff" d="M922 722h71.694v72.385H922zm0 145h71.694v72.385H922z"/>
+    <path d="M922 795h71.694v72.385H922z"/>
+    <path fill="#fff" d="M850 650h71.694v72.385H850z"/>
+    <path d="M850 722h71.694v72.385H850zm0 145h71.694v72.385H850z"/>
+    <path fill="#fff" d="M850 795h71.694v72.385H850zm143-145h71.694v72.385H993z"/>
+    <path d="M993 722h71.694v72.385H993zm0 145h71.694v72.385H993z"/>
+    <path fill="#fff" d="M993 795h71.694v72.385H993z"/>
+    <path d="M1065 650h71.694v72.385H1065z"/>
+    <path fill="#fff" d="M1065 722h71.694v72.385H1065zm0 145h71.694v72.385H1065z"/>
+    <path d="M1065 795h71.694v72.385H1065z"/>
+</svg>

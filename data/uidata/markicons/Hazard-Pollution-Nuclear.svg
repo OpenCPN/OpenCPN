@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#FFC90E" d="M1181 1062c-89 156-288 209-443 119-156-89-209-288-119-443 89-156 288-209 443-119 156 89 209 288 119 443z"/>
+    <path stroke="#000" stroke-width="7.62" d="M901 902H612c0-102 54-197 143-249l146 249zm0 0 144 250c-88 51-197 52-286 1l142-251zm0 0 144-250c89 51 144 146 145 248l-289 2z"/>
+    <circle stroke="#FFC90E" stroke-width="75" cx="901" cy="902" r="68"/>
+</svg>

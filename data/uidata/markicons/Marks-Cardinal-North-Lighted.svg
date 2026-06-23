@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="m817 614 80-123 79 123zm0 156 80-123 79 123z"/>
+    <path fill="#FFF212" stroke="#000" stroke-width="20" d="M697 1309v-109l119-49 53-303h62l53 303 119 49v109z"/>
+    <path stroke="#000" stroke-width="20" d="m816 1151 53-303h62l53 303z"/>
+    <path fill="#fff" d="M883 881h34.972v37.466H883z"/>
+    <path fill="#ff0" d="M1600 536c105 220-380 312-669 312 186-221 568-534 669-312z"/>
+</svg>

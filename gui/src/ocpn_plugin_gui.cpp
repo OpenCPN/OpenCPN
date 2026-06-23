@@ -986,6 +986,15 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint* dst,
 }
 
 bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
+  // --- API Safety Check ---
+    // Prevent segfaults if a plugin queries a waypoint before 
+    // the Waypoint Manager is fully initialized during startup.
+    if (!pWayPointMan || !pwaypoint) {
+        return false;
+    }
+    // ------------------------
+  
+  
   //  Find the RoutePoint
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(GUID);
 

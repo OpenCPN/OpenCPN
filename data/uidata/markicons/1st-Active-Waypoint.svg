@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="red" d="M900 600c166 0 300 134 300 300s-134 300-300 300-300-134-300-300 134-300 300-300z"/>
+    <path fill="#FFDB12" d="M900 725c97 0 175 78 175 175s-78 175-175 175-175-78-175-175 78-175 175-175z"/>
+    <path d="M879 879c12-12 31-12 42 0 12 12 12 31 0 42-11 12-30 12-42 0-12-11-12-30 0-42z"/>
+</svg>

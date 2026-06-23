@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#FFD900" d="m720 1026 126-126-126-126 54-54 126 126 126-126 54 54-126 126 126 126-54 54-126-126-126 126z"/>
+    <ellipse cx="900" cy="900" rx="27" ry="25"/>
+</svg>

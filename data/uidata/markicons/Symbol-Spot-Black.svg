@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path style="fill:none;stroke-width:.94074076" d="M0 106.667h1693.333V1800H0z"/>
+    <path d="M900 1270c-55-147-175-336-206-479-4-16-6-33-6-49 0-117 95-212 212-212s212 95 212 212c0 16-2 33-6 49-31 143-151 332-206 479z" style="fill:#000" transform="matrix(.99843 0 0 1 -25.46 -343.125)"/>
+    <path d="M900 593c82 0 148 67 148 149s-66 148-148 148-148-66-148-148 66-149 148-149z" style="fill:#fff" transform="matrix(.99843 0 0 1 -25.46 -343.125)"/>
+</svg>
