@@ -1242,7 +1242,7 @@ bool NavObjectCollection1::CreateNavObjGPXPoints() {
 
   if (!pWayPointMan) return false;
 
-  for (RoutePoint *pr : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
     if ((pr->m_bIsolatedMark) && !(pr->m_bIsInLayer) && !(pr->m_btemp)) {
       pugi::xml_node doc = root();
       pugi::xml_node gpx = doc.first_child();
@@ -1520,7 +1520,7 @@ bool NavObjectCollection1::LoadAllGPXPointObjects() {
 RoutePoint *WaypointExists(const wxString &name, double lat, double lon) {
   RoutePoint *pret = NULL;
   //    if( g_bIsNewLayer ) return NULL;
-  for (RoutePoint *pr : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
     if (name == pr->GetName()) {
       if (fabs(lat - pr->m_lat) < 1.e-6 && fabs(lon - pr->m_lon) < 1.e-6) {
         pret = pr;
@@ -1533,7 +1533,7 @@ RoutePoint *WaypointExists(const wxString &name, double lat, double lon) {
 }
 
 RoutePoint *WaypointExists(const wxString &guid) {
-  for (RoutePoint *pr : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
     if (guid == pr->m_GUID) {
       return pr;
     }

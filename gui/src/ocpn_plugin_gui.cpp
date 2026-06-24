@@ -834,7 +834,7 @@ bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  for (RoutePoint* prp : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     if (prp->m_GUID == pwaypoint->m_GUID) {
       b_unique = false;
       break;
@@ -1004,7 +1004,7 @@ bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
 wxArrayString GetWaypointGUIDArray() {
   wxArrayString result;
   if (pWayPointMan) {
-    for (RoutePoint* prp : pWayPointMan->GetWaypointList()) {
+    for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
       result.Add(prp->m_GUID);
     }
   }
@@ -1030,7 +1030,7 @@ wxArrayString GetTrackGUIDArray() {
 
 wxArrayString GetWaypointGUIDArray(OBJECT_LAYER_REQ req) {
   wxArrayString result;
-  for (RoutePoint* prp : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     switch (req) {
       case OBJECTS_ALL:
         result.Add(prp->m_GUID);
@@ -2052,7 +2052,7 @@ bool AddSingleWaypointExV2(PlugIn_Waypoint_ExV2* pwaypointex,
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  for (RoutePoint* prp : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     if (prp->m_GUID == pwaypointex->m_GUID) {
       b_unique = false;
       break;
@@ -2389,7 +2389,7 @@ bool AddSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypointex, bool b_permanent) {
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
-  for (RoutePoint* prp : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint* prp : *pWayPointMan->GetWaypointList()) {
     if (prp->m_GUID == pwaypointex->m_GUID) {
       b_unique = false;
       break;

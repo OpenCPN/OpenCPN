@@ -363,12 +363,12 @@ public:
    */
   bool RemoveRoutePoint(RoutePoint *prp);
 
-  const RoutePointList GetWaypointList(void) { return m_WayPointList; }
+  const RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
 
 private:
   wxImage CreateDimImage(wxImage &image, double factor);
 
-  RoutePointList m_WayPointList;
+  RoutePointList *m_pWayPointList;
   wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
   wxImageList *pmarkicon_image_list;  // Current wxImageList, updated on

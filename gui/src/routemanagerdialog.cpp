@@ -2388,9 +2388,9 @@ void RouteManagerDialog::UpdateWptListCtrl(RoutePoint *rp_select,
   int index = 0;
   bool b_anyHidden = false;
 
-  auto node = pWayPointMan->GetWaypointList().begin();
+  auto node = pWayPointMan->GetWaypointList()->begin();
 
-  while (node != pWayPointMan->GetWaypointList().end()) {
+  while (node != pWayPointMan->GetWaypointList()->end()) {
     RoutePoint *rp = *node;
     if (rp && rp->IsListed()) {
       if (rp->m_bIsInRoute && !rp->IsShared()) {
@@ -3057,8 +3057,8 @@ void RouteManagerDialog::OnLayDeleteClick(wxCommandEvent &event) {
 
   // Process waypoints in this layer
   std::vector<RoutePoint *> to_be_destroyed;
-  auto node = pWayPointMan->GetWaypointList().begin();
-  while (node != pWayPointMan->GetWaypointList().end()) {
+  auto node = pWayPointMan->GetWaypointList()->begin();
+  while (node != pWayPointMan->GetWaypointList()->end()) {
     RoutePoint *rp = *node;
     if (rp && (rp->m_LayerID == layer->m_LayerID)) {
       rp->m_bIsInLayer = false;
@@ -3117,7 +3117,7 @@ void RouteManagerDialog::ToggleLayerContentsOnChart(Layer *layer) {
   }
 
   // Process waypoints in this layer
-  for (RoutePoint *rp : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
     if (rp && (rp->m_LayerID == layer->m_LayerID)) {
       rp->SetVisible(layer->IsVisibleOnChart());
     }
@@ -3160,7 +3160,7 @@ void RouteManagerDialog::ToggleLayerContentsNames(Layer *layer) {
   }
 
   // Process waypoints in this layer
-  for (RoutePoint *rp : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
     if (rp && (rp->m_LayerID == layer->m_LayerID)) {
       rp->SetNameShown(layer->HasVisibleNames() == wxCHK_CHECKED ||
                        (rp->m_bShowNameData &&
@@ -3207,7 +3207,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing(Layer *layer) {
   // Process waypoints in this layer
   //  n.b.  If the waypoint belongs to a track, and is not shared, then do not
   //  list it. This is a performance optimization, allowing large track support.
-  for (RoutePoint *rp : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
     if (rp && rp->m_bIsolatedMark && (rp->m_LayerID == layer->m_LayerID)) {
       rp->SetListed(layer->IsVisibleOnListing());
     }

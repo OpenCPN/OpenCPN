@@ -2622,7 +2622,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   ::wxBeginBusyCursor();
 
   wxGenericProgressDialog *pprog = nullptr;
-  int count = pWayPointMan->GetWaypointList().size();
+  int count = pWayPointMan->GetWaypointList()->size();
   int progStep = count / 32;
   if (count > 200) {
     pprog = new wxGenericProgressDialog(
@@ -2636,7 +2636,7 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   // WPTs
   int ic = 1;
 
-  for (RoutePoint *pr : pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
     if (pprog && !(ic % progStep)) {
       wxString msg;
       msg.Printf("%d/%d", ic, count);
