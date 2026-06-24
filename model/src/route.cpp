@@ -553,7 +553,7 @@ void Route::Reverse(bool bRenamePoints) {
   //  Iterate over the RoutePointGUIDs
   for (unsigned int ip = 0; ip < RoutePointGUIDList.GetCount(); ip++) {
     wxString GUID = RoutePointGUIDList[ip];
-    for (RoutePoint *prp : *pWayPointMan->GetWaypointList()) {
+    for (RoutePoint *prp : pWayPointMan->GetWaypointList()) {
       if (prp->m_GUID == GUID) {
         AddPoint(prp);
         break;
@@ -574,7 +574,7 @@ void Route::SetVisible(bool visible, bool includeWpts) {
 
   if (!includeWpts) return;
 
-  for (RoutePoint *rp : *pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *rp : pWayPointMan->GetWaypointList()) {
     // if this is a "shared" point, then do not turn off visibility.
     // This step keeps the point available for selection to other routes,
     // or may be manaully hidden in route-manager dialog.

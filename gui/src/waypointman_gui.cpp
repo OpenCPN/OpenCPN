@@ -675,7 +675,7 @@ wxRect WayPointmanGui::CropImageOnAlpha(wxImage &image) {
 
 void WayPointmanGui::ReloadRoutepointIcons() {
   //    Iterate on the RoutePoint list, requiring each to reload icon
-  for (RoutePoint *pr : *m_waypoint_man.m_pWayPointList) {
+  for (RoutePoint *pr : m_waypoint_man.m_WayPointList) {
     pr->ReLoadIcon();
   }
 }

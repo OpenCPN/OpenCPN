@@ -683,7 +683,7 @@ void NavObj_dB::CountImportNavObjects() {
           pugi::xml_parse_status::status_ok) {
     input_set->LoadAllGPXPointObjects();
     auto pointlist = pWayPointMan->GetWaypointList();
-    for (RoutePoint* point : *pointlist) {
+    for (RoutePoint* point : pointlist) {
       if (point->m_bIsolatedMark) {
         m_nImportObjects++;
         m_nimportPoints++;
@@ -767,7 +767,7 @@ bool NavObj_dB::ImportLegacyPoints() {
   if (m_nimportPoints > 1000) nmod = 10;
   if (m_nimportPoints > 10000) nmod = 100;
 
-  for (RoutePoint* point : *pWayPointMan->GetWaypointList()) {
+  for (RoutePoint* point : pWayPointMan->GetWaypointList()) {
     if (point->m_bIsolatedMark) {
       if (InsertRoutePointDB(m_db, point)) {
         points_added.push_back(point);

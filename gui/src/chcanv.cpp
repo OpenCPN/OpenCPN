@@ -13268,9 +13268,9 @@ void ChartCanvas::DrawActiveRouteInBBox(ocpnDC &dc, LLBBox &BltBBox) {
 void ChartCanvas::DrawAllWaypointsInBBox(ocpnDC &dc, LLBBox &BltBBox) {
   if (!pWayPointMan) return;
 
-  auto node = pWayPointMan->GetWaypointList()->begin();
+  auto node = pWayPointMan->GetWaypointList().begin();
 
-  while (node != pWayPointMan->GetWaypointList()->end()) {
+  while (node != pWayPointMan->GetWaypointList().end()) {
     RoutePoint *pWP = *node;
     if (pWP) {
       if (pWP->m_bIsInRoute) {
@@ -13314,7 +13314,7 @@ void ChartCanvas::DrawBlinkObjects() {
 
   if (!pWayPointMan) return;
 
-  for (RoutePoint *pWP : *pWayPointMan->GetWaypointList()) {
+  for (RoutePoint *pWP : pWayPointMan->GetWaypointList()) {
     if (pWP) {
       if (pWP->m_bBlink) {
         update_rect.Union(pWP->CurrentRect_in_DC);

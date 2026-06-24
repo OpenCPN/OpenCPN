@@ -1656,7 +1656,7 @@ void MarkInfoDlg::ValidateMark() {
   //    Look in the master list of Waypoints to see if the currently selected
   //    waypoint is still valid It may have been deleted as part of a route
   bool b_found = false;
-  for (RoutePoint* rp : *pWayPointMan->GetWaypointList()) {
+  for (RoutePoint* rp : pWayPointMan->GetWaypointList()) {
     if (m_pRoutePoint == rp) {
       b_found = true;
       break;

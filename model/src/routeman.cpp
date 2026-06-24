@@ -962,8 +962,6 @@ void Routeman::ZeroCurrentXTEToActivePoint() {
 
 WayPointman::WayPointman(GlobalColourFunc color_func)
     : m_get_global_colour(color_func) {
-  m_pWayPointList = new RoutePointList;
-
   pmarkicon_image_list = NULL;
 
   // ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
@@ -986,15 +984,14 @@ WayPointman::~WayPointman() {
 
   RoutePointList temp_list;
 
-  for (RoutePoint *pr : *m_pWayPointList) {
+  for (RoutePoint *pr : m_WayPointList) {
     temp_list.push_back(pr);
   }
 
   for (RoutePoint *rp : temp_list) delete rp;
   temp_list.clear();
 
-  m_pWayPointList->clear();
-  delete m_pWayPointList;
+  m_WayPointList.clear();
 
   for (unsigned int i = 0; i < m_pIconArray->GetCount(); i++) {
     MarkIcon *pmi = (MarkIcon *)m_pIconArray->Item(i);
@@ -1020,7 +1017,7 @@ WayPointman::~WayPointman() {
 bool WayPointman::AddRoutePoint(RoutePoint *prp) {
   if (!prp) return false;
 
-  m_pWayPointList->push_back(prp);
+  m_WayPointList.push_back(prp);
   prp->SetManagerListNode(prp);
 
   return true;
@@ -1032,12 +1029,11 @@ bool WayPointman::RemoveRoutePoint(RoutePoint *prp) {
   auto *prpnode = (RoutePoint *)(prp->GetManagerListNode());
 
   if (prpnode) {
-    auto pos =
-        std::find(m_pWayPointList->begin(), m_pWayPointList->end(), prpnode);
-    if (pos != m_pWayPointList->end()) m_pWayPointList->erase(pos);
+    auto pos = std::find(m_WayPointList.begin(), m_WayPointList.end(), prpnode);
+    if (pos != m_WayPointList.end()) m_WayPointList.erase(pos);
   } else {
-    auto pos = std::find(m_pWayPointList->begin(), m_pWayPointList->end(), prp);
-    if (pos != m_pWayPointList->end()) m_pWayPointList->erase(pos);
+    auto pos = std::find(m_WayPointList.begin(), m_WayPointList.end(), prp);
+    if (pos != m_WayPointList.end()) m_WayPointList.erase(pos);
   }
 
   prp->SetManagerListNode(NULL);
@@ -1380,7 +1376,7 @@ wxString WayPointman::CreateGUID(RoutePoint *pRP) {
 }
 
 RoutePoint *WayPointman::FindRoutePointByGUID(const wxString &guid) {
-  for (RoutePoint *prp : *m_pWayPointList) {
+  for (RoutePoint *prp : m_WayPointList) {
     if (prp->m_GUID == guid) return (prp);
   }
   return NULL;
@@ -1389,8 +1385,7 @@ RoutePoint *WayPointman::FindRoutePointByGUID(const wxString &guid) {
 RoutePoint *WayPointman::GetNearbyWaypoint(double lat, double lon,
                                            double radius_meters) {
   //    Iterate on the RoutePoint list, checking distance
-
-  for (RoutePoint *pr : *m_pWayPointList) {
+  for (RoutePoint *pr : m_WayPointList) {
     double a = lat - pr->m_lat;
     double b = lon - pr->m_lon;
     double l = sqrt((a * a) + (b * b));
@@ -1404,8 +1399,7 @@ RoutePoint *WayPointman::GetOtherNearbyWaypoint(double lat, double lon,
                                                 double radius_meters,
                                                 const wxString &guid) {
   //    Iterate on the RoutePoint list, checking distance
-
-  for (RoutePoint *pr : *m_pWayPointList) {
+  for (RoutePoint *pr : m_WayPointList) {
     double a = lat - pr->m_lat;
     double b = lon - pr->m_lon;
     double l = sqrt((a * a) + (b * b));
@@ -1437,13 +1431,13 @@ bool WayPointman::IsReallyVisible(RoutePoint *pWP) {
 void WayPointman::ClearRoutePointFonts() {
   //    Iterate on the RoutePoint list, clearing Font pointers
   //    This is typically done globally after a font switch
-  for (RoutePoint *pr : *m_pWayPointList) {
+  for (RoutePoint *pr : m_WayPointList) {
     pr->m_pMarkFont = NULL;
   }
 }
 
 bool WayPointman::SharedWptsExist() {
-  for (RoutePoint *prp : *m_pWayPointList) {
+  for (RoutePoint *prp : m_WayPointList) {
     if (prp->IsShared() && (prp->m_bIsInRoute || prp == pAnchorWatchPoint1 ||
                             prp == pAnchorWatchPoint2))
       return true;
@@ -1453,8 +1447,8 @@ bool WayPointman::SharedWptsExist() {
 
 void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
   //    Iterate on the RoutePoint list, deleting all
-  auto it = m_pWayPointList->begin();
-  while (it != m_pWayPointList->end()) {
+  auto it = m_WayPointList.begin();
+  while (it != m_WayPointList.end()) {
     RoutePoint *prp = *it;
     // if argument is false, then only delete non-route waypoints
     if (!prp->m_bIsInLayer && (prp->GetIconName() != "mob") &&
@@ -1463,7 +1457,7 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
           !(prp == pAnchorWatchPoint2)))) {
       DestroyWaypoint(prp);
       delete prp;
-      it = m_pWayPointList->begin();
+      it = m_WayPointList.begin();
     } else
       ++it;
   }
@@ -1471,7 +1465,7 @@ void WayPointman::DeleteAllWaypoints(bool b_delete_used) {
 }
 
 RoutePoint *WayPointman::FindWaypointByGuid(const std::string &guid) {
-  for (RoutePoint *rp : *m_pWayPointList) {
+  for (RoutePoint *rp : m_WayPointList) {
     if (guid == rp->m_GUID) return rp;
   }
   return 0;
