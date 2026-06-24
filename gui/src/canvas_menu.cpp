@@ -1645,16 +1645,16 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       if (m_pSelectedRoute->m_bIsInLayer) break;
 
       parent->m_pMouseRoute = m_pSelectedRoute;
-      parent->m_routeState = m_pSelectedRoute->GetnPoints() + 1;
+      parent->SetRouteState(m_pSelectedRoute->GetnPoints() + 1);
       parent->m_pMouseRoute->m_lastMousePointIndex =
           m_pSelectedRoute->GetnPoints();
       parent->m_pMouseRoute->SetHiLite(50);
 
       pLast = m_pSelectedRoute->GetLastPoint();
 
-      parent->m_prev_rlat = pLast->m_lat;
-      parent->m_prev_rlon = pLast->m_lon;
-      parent->m_prev_pMousePoint = pLast;
+      parent->SetPrevRlat(pLast->m_lat);
+      parent->SetPrevRlon(pLast->m_lon);
+      parent->SetPrevMousePoint(pLast);
 
       parent->m_bAppendingRoute = true;
 
@@ -1852,7 +1852,7 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
       if (m_pSelectedRoute) {
         if (m_pSelectedRoute->m_bIsInLayer) break;
         g_pRouteMan->RemovePointFromRoute(m_pFoundRoutePoint, m_pSelectedRoute,
-                                          parent->m_routeState);
+                                          parent->GetRouteState());
         top_frame::Get()->InvalidateAllGL();
         top_frame::Get()->RefreshAllCanvas();
       }

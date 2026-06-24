@@ -35,7 +35,7 @@
 
 class Undo {
 public:
-  Undo(ChartCanvas* parent);
+  Undo(AbstractChartCanvas* parent);
   ~Undo();
   bool AnythingToUndo();
   bool AnythingToRedo();
@@ -52,10 +52,10 @@ public:
                             UndoItemPointer selectable);
   bool AfterUndoableAction(UndoItemPointer after);
   bool CancelUndoableAction(bool noDataDelete = false);
-  ChartCanvas* GetParent() { return m_parent; }
+  AbstractChartCanvas* GetParent() { return m_parent; }
 
 private:
-  ChartCanvas* m_parent;
+  AbstractChartCanvas* m_parent;
   bool isInsideUndoableAction;
   UndoAction* candidate;
   unsigned int stackpointer;
