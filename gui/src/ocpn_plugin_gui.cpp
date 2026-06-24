@@ -828,8 +828,9 @@ static void cloneHyperlinkList(RoutePoint* dst, const PlugIn_Waypoint* src) {
 }
 
 bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
-  //  Validate the waypoint parameters a little bit
+  if (!pWayPointMan) return false;
 
+  //  Validate the waypoint parameters a little bit
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
@@ -873,6 +874,8 @@ bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
 }
 
 bool DeleteSingleWaypoint(wxString& GUID) {
+  if (!pWayPointMan) return false;
+
   //  Find the RoutePoint
   bool b_found = false;
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(GUID);
@@ -889,6 +892,8 @@ bool DeleteSingleWaypoint(wxString& GUID) {
 }
 
 bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
+  if (!pWayPointMan) return false;
+
   //  Find the RoutePoint
   bool b_found = false;
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(pwaypoint->m_GUID);
