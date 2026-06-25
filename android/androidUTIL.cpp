@@ -3043,13 +3043,13 @@ std::atomic<bool> AndroidFileDialog::g_done(false);
 std::string AndroidFileDialog::g_result;
 
 // Synchronous wxWidgets-style file dialog
-std::string AndroidFileDialog::Show(const std::string &startDir,
+std::string AndroidFileDialog::Show(const std::string &startDir, bool dir_mode,
                                     bool allowCreate = true) {
   g_done = false;
   g_result.clear();
 
   // Call Java dialog (Java handles runOnUiThread internally)
-  showDialogJNI(startDir, allowCreate);
+  showDialogJNI(startDir, dir_mode, allowCreate);
 
   // Spin loop to emulate synchronous dialog
   auto start = std::chrono::steady_clock::now();
@@ -3070,19 +3070,7 @@ void AndroidFileDialog::CallbackFromJava(const std::string &path) {
   g_done.store(true, std::memory_order_release);
 }
 
-void AndroidFileDialog::showDialogJNI(const std::string &startDir,
-                                      bool allowCreate) {
-  QAndroidJniEnvironment env;
-
-  // Obtain Qt Android Activity
-  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
-      "org/qtproject/qt5/android/QtNative", "activity",
-      "()Landroid/app/Activity;");
-
-  if (!activity.isValid()) return;
-
-  // --- Hide keyboard (prevents IME finishComposingText deadlock) ---
-
+void AndroidFileDialog::DismissImeBeforeFileDialog(QAndroidJniObject activity) {
   QAndroidJniObject serviceName = QAndroidJniObject::getStaticObjectField(
       "android/content/Context", "INPUT_METHOD_SERVICE", "Ljava/lang/String;");
 
@@ -3104,6 +3092,23 @@ void AndroidFileDialog::showDialogJNI(const std::string &startDir,
                              "(Landroid/os/IBinder;I)Z",
                              token.object<jobject>(), 0);
   }
+}
+
+void AndroidFileDialog::showDialogJNI(const std::string &startDir,
+                                      bool dir_mode, bool allowCreate) {
+  QAndroidJniEnvironment env;
+
+  // Obtain Qt Android Activity
+  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
+      "org/qtproject/qt5/android/QtNative", "activity",
+      "()Landroid/app/Activity;");
+
+  if (!activity.isValid()) return;
+
+  // Hide IME (soft keyboard) before any synchronous Android dialog.
+  // Prevents Android IME finishComposingText() callback
+  // from blocking on Qt thread while FileChooserDialog waits.
+  DismissImeBeforeFileDialog(activity);
 
   // --- Create callback proxy ---
   QAndroidJniObject callback("org/opencpn/FileDialogCallbackProxy", "()V");
@@ -3115,9 +3120,10 @@ void AndroidFileDialog::showDialogJNI(const std::string &startDir,
   QAndroidJniObject::callStaticMethod<void>(
       "org/opencpn/OCPNFileDialog", "showFileDialog",
       "(Landroid/app/Activity;Ljava/lang/String;Lorg/opencpn/"
-      "OCPNFileDialog$Callback;Z)V",
+      "OCPNFileDialog$Callback;ZZ)V",
       activity.object<jobject>(), jStartDir.object<jstring>(),
-      callback.object<jobject>(), allowCreate ? JNI_TRUE : JNI_FALSE);
+      callback.object<jobject>(), dir_mode ? JNI_TRUE : JNI_FALSE,
+      allowCreate ? JNI_TRUE : JNI_FALSE);
 
   if (env->ExceptionCheck()) {
     env->ExceptionDescribe();
@@ -3138,33 +3144,14 @@ Java_org_opencpn_FileDialogCallbackProxy_nativeFileDialogFinished(
 int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &title, const wxString &suggestion,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
-  if (dirOnly) {
-    std::string file = AndroidFileDialog::Show(initDir.ToStdString());
-    if (file == "cancel") {
-      return wxID_CANCEL;
-    } else {
-      wxString sfile(file.c_str());
-      *result = sfile.AfterFirst(':');
-      return wxID_OK;
-    }
+  std::string file = AndroidFileDialog::Show(initDir.ToStdString(), dirOnly);
+  if (file == "cancel") {
+    return wxID_CANCEL;
   } else {
-    if (g_androidUtilHandler) {
-      wxString activityResult;
-      activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
-                                              title, suggestion, wildcard);
-
-      if (activityResult == _T("OK")) {
-        return wxID_OK;
-      } else if (activityResult == "cancel:") {
-        return wxID_CANCEL;
-      } else {
-        *result = activityResult.AfterFirst(':');
-        return wxID_OK;
-      }
-    }
+    wxString sfile(file.c_str());
+    *result = sfile.AfterFirst(':');
+    return wxID_OK;
   }
-
-  return wxID_CANCEL;
 }
 
 bool InvokeJNIPreferences(wxString &initial_settings) {
