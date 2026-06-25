@@ -299,11 +299,14 @@ private:
 
 class AndroidFileDialog {
 public:
-  static std::string Show(const std::string &startDir, bool allowCreate);
+  static std::string Show(const std::string &startDir, bool dir_mode,
+                          bool allowCreate);
   static void CallbackFromJava(const std::string &path);
 
 private:
-  static void showDialogJNI(const std::string &startDir, bool allowCreate);
+  static void DismissImeBeforeFileDialog(QAndroidJniObject activity);
+  static void showDialogJNI(const std::string &startDir, bool dir_mode,
+                            bool allowCreate);
 
   static std::atomic<bool> g_done;
   static std::string g_result;
