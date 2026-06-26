@@ -9489,7 +9489,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (appending ||
             inserting) {  // Appending a route or making a new route
           int connect = tail->GetIndexOf(pMousePoint);
-          if (connect == 1) {
+          if (connect == 0) {
             inserting = false;  // there is nothing to insert
             appending = true;   // so append
           }
@@ -9498,17 +9498,17 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           int i;
           int start, stop;
           if (appending) {
-            start = connect + 1;
+            start = connect;
             stop = length;
           } else {  // inserting
-            start = 1;
-            stop = connect;
+            start = 0;
+            stop = connect + 1;
             m_pMouseRoute->RemovePoint(
                 m_pMouseRoute
                     ->GetLastPoint());  // Remove the first and only point
           }
-          for (i = start; i <= stop; i++) {
-            m_pMouseRoute->AddPointAndSegment(tail->GetPoint(i), false);
+          for (i = start; i < stop; i++) {
+            m_pMouseRoute->AddPointAndSegment(tail->GetPoint(i + 1), false);
             if (m_pMouseRoute)
               m_pMouseRoute->m_lastMousePointIndex =
                   m_pMouseRoute->GetnPoints();
@@ -9516,6 +9516,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             top_frame::Get()->RefreshAllCanvas();
             ret = true;
           }
+          g_pRouteMan->DeleteRoute(tail);
+
           m_prev_rlat =
               m_pMouseRoute->GetPoint(m_pMouseRoute->GetnPoints())->m_lat;
           m_prev_rlon =
@@ -9826,7 +9828,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         wxString dmsg(
                             _("Last part of route to be appended to dragged "
                               "route?"));
-                        if (connect == 1)
+                        if (connect == 0)
                           dmsg =
                               _("Full route to be appended to dragged route?");
 
@@ -9838,8 +9840,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         }
                       }
                     } else if (index_current_route ==
-                               1) {  // dragging the first point of the route
-                      if (connect != 1) {  // anything to do?
+                               0) {  // dragging the first point of the route
+                      if (connect != 0) {  // anything to do?
 
                         wxString dmsg(
                             _("First part of route to be inserted into dragged "
@@ -9991,11 +9993,12 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         current->m_bIsBeingEdited = false;
         FinishRoute();
         g_pRouteMan->DeleteRoute(tail);
+        NavObj_dB::GetInstance().UpdateRoute(current);
       }
       if (inserting) {
         pSelect->DeleteAllSelectableRoutePoints(current);
         pSelect->DeleteAllSelectableRouteSegments(current);
-        for (int i = 1; i < connect; i++) {  // numbering in the tail route
+        for (int i = 1; i < connect + 1; i++) {  // numbering in the tail route
           current->InsertPointAndSegment(tail->GetPoint(i), i - 1, false);
         }
         pSelect->AddAllSelectableRouteSegments(current);
@@ -10003,6 +10006,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         current->FinalizeForRendering();
         current->m_bIsBeingEdited = false;
         g_pRouteMan->DeleteRoute(tail);
+        NavObj_dB::GetInstance().UpdateRoute(current);
       }
 
       //    Update the RouteProperties Dialog, if currently shown
@@ -10097,7 +10101,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         wxString dmsg(
                             _("Last part of route to be appended to dragged "
                               "route?"));
-                        if (connect == 1)
+                        if (connect == 0)
                           dmsg =
                               _("Full route to be appended to dragged route?");
 
@@ -10109,8 +10113,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         }
                       }
                     } else if (index_current_route ==
-                               1) {  // dragging the first point of the route
-                      if (connect != 1) {  // anything to do?
+                               0) {  // dragging the first point of the route
+                      if (connect != 0) {  // anything to do?
 
                         wxString dmsg(
                             _("First part of route to be inserted into dragged "
@@ -10214,18 +10218,22 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             current->m_bIsBeingEdited = false;
             FinishRoute();
             g_pRouteMan->DeleteRoute(tail);
+            NavObj_dB::GetInstance().UpdateRoute(current);
           }
           if (inserting) {
             pSelect->DeleteAllSelectableRoutePoints(current);
             pSelect->DeleteAllSelectableRouteSegments(current);
-            for (int i = 1; i < connect; i++) {  // numbering in the tail route
+            for (int i = 1; i < connect + 1;
+                 i++) {  // numbering in the tail route
               current->InsertPointAndSegment(tail->GetPoint(i), i - 1, false);
             }
+
             pSelect->AddAllSelectableRouteSegments(current);
             pSelect->AddAllSelectableRoutePoints(current);
             current->FinalizeForRendering();
             current->m_bIsBeingEdited = false;
             g_pRouteMan->DeleteRoute(tail);
+            NavObj_dB::GetInstance().UpdateRoute(current);
           }
 
           //    Update the RouteProperties Dialog, if currently shown
@@ -11295,7 +11303,6 @@ wxString ChartCanvas::FinishRoute() {
 
   if (m_pMouseRoute) {
     if (m_bAppendingRoute) {
-      // pConfig->UpdateRoute(m_pMouseRoute);
       NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
     } else {
       if (m_pMouseRoute->GetnPoints() > 1) {
