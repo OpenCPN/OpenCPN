@@ -68,10 +68,9 @@ public:
   double ref_lat, ref_lon;
   double m_LOD_meters;
 
-  SENCBuildThread *m_thread;
-
   SENCThreadStatus m_status;
   EVENTSENCResult m_SENCResult;
+  bool m_completion_posted;
 };
 
 //----------------------------------------------------------------------------
@@ -97,6 +96,10 @@ private:
  * Manages the creation of SENC (Simplified Electronic Navigational Chart) files
  * from S57 charts using background threads. Handles scheduling and executing
  * SENC build jobs.
+ *
+ * Worker threads post exactly one completion event to this manager via
+ * QueueEvent(). OnEvtThread() performs queue bookkeeping and forwards a single
+ * copy to the main frame for UI work. The frame deletes the ticket.
  */
 class SENCThreadManager : public wxEvtHandler {
 public:
@@ -110,11 +113,24 @@ public:
   void StartTopJob();
   bool IsChartInTicketlist(s57chart *chart);
   bool SetChartPointer(s57chart *chart, void *new_ptr);
+  void InvalidateChartPointer(s57chart *chart);
+  void ReleaseCompletedTicket(SENCJobTicket *ticket);
+  void ClearJobList();
   int GetJobCount();
+  int GetRunningJobCount();
+  bool IsShuttingDown() const;
 
   int m_max_jobs;
 
   std::vector<SENCJobTicket *> ticket_list;
+
+private:
+  void UpdateAlertString();
+  void NotifyFrame(OCPN_BUILDSENC_ThreadEvent &event);
+
+  std::vector<SENCJobTicket *> completing_list;
+  wxCriticalSection m_list_mutex;
+  bool m_shutting_down;
 };
 
 //----------------------------------------------------------------------------
@@ -127,7 +143,6 @@ public:
 
   wxString m_FullPath000;
   wxString m_SENCFileName;
-  s57chart *m_chart;
   SENCThreadManager *m_manager;
   SENCJobTicket *m_ticket;
 };
