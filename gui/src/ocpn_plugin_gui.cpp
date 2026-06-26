@@ -802,7 +802,7 @@ wxString GetNewGUID() { return GpxDocument::GetUUID(); }
 bool AddCustomWaypointIcon(wxBitmap* pimage, wxString key,
                            wxString description) {
   // Avoid calling waypoint manager until after LateInit()
-  if (!pWayPointMan) return false;
+  if (pWayPointMan == NULL) return false;
 
   wxImage image = pimage->ConvertToImage();
   WayPointmanGui(*pWayPointMan).ProcessIcon(image, key, description);
