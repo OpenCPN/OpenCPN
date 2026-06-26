@@ -822,10 +822,15 @@ void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
       }
 
       ReloadAllVP();
+      if (g_SencThreadManager)
+        g_SencThreadManager->ReleaseCompletedTicket(event.m_ticket);
       delete event.m_ticket;
       break;
     case SENC_BUILD_DONE_ERROR:
-      // printf("Myframe SENC build done ERROR\n");
+      wxLogDebug("SENC build done: SENC_BUILD_DONE_ERROR");
+      if (g_SencThreadManager)
+        g_SencThreadManager->ReleaseCompletedTicket(event.m_ticket);
+      delete event.m_ticket;
       break;
     default:
       break;
