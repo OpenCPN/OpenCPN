@@ -309,12 +309,8 @@ s57chart::~s57chart() {
     if (::wxFileExists(m_TempFilePath)) wxRemoveFile(m_TempFilePath);
   }
 
-  //  Check the SENCThreadManager to see if this chart is queued or active
-  if (g_SencThreadManager) {
-    if (g_SencThreadManager->IsChartInTicketlist(this)) {
-      g_SencThreadManager->SetChartPointer(this, NULL);
-    }
-  }
+  //  Detach this chart from any queued or completing SENC jobs.
+  if (g_SencThreadManager) g_SencThreadManager->InvalidateChartPointer(this);
 }
 
 void s57chart::GetValidCanvasRegion(const ViewPort &VPoint,
