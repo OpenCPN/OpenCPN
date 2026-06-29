@@ -1086,10 +1086,6 @@ void glChartCanvas::SetupOpenGL() {
   // VBO??
   g_b_EnableVBO = true;
 
-#ifdef __ANDROID__
-  g_b_EnableVBO = false;
-#endif
-
   if (g_b_EnableVBO)
     wxLogMessage("OpenGL-> Using Vertexbuffer Objects");
   else
