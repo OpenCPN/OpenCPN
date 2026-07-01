@@ -44,9 +44,11 @@ set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 set(SRC
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
+  grib_merge_tests.cpp
   navutil_base_tests.cpp
   route_point_tests.cpp
   ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/grib_pi/src/GribMerge.cpp
 )
 
 if ("${OCPN_WX_VERSION}" GREATER_EQUAL 32)
@@ -86,6 +88,7 @@ target_compile_definitions(tests
     UNIT_TESTS
 )
 add_dependencies(tests config_tests)
+target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/plugins/grib_pi/src)
 
 target_link_libraries(tests PRIVATE ocpn::model-src ocpn::gtest win32_libs)
 if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")

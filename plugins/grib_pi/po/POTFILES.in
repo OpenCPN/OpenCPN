@@ -2,6 +2,8 @@ src/msg.h
 src/GribRecordSet.h
 src/zuFile.cpp
 src/GribUIDialog.cpp
+src/GribMerge.cpp
+src/GribMerge.h
 src/GribOverlayFactory.h
 src/GribReader.cpp
 src/email.h
