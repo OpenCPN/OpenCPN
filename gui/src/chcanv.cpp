@@ -11385,6 +11385,9 @@ void ChartCanvas::RenderAllChartOutlines(ocpnDC &dc, ViewPort &vp) {
     } else
       b_group_draw = true;
 
+    // Do not render chart outlines if chart identifies as a "basemap"
+    if (pt->IsBasemap()) continue;
+
     if (b_group_draw) RenderChartOutline(dc, i, vp);
   }
 
