@@ -103,6 +103,8 @@ set(SRC_GRIB
     src/GribSettingsDialog.h
     src/GribRequestDialog.cpp
     src/GribRequestDialog.h
+    src/GribMerge.cpp
+    src/GribMerge.h
     src/XyGribPanel.h
     src/XyGribPanel.cpp
     src/XyGribModelDef.h
