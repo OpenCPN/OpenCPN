@@ -276,20 +276,22 @@ bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val) {
 }
 
 bool GetStringAttr(S57Obj *obj, const char *AttrName, char *pval, int nc) {
+  if (!obj || !AttrName || !pval || nc <= 0) return false;
+
+  pval[0] = '\0';
+
   int idx = obj->GetAttributeIndex(AttrName);
+  if (idx < 0) return false;
 
-  if (idx >= 0) {
-    //      using idx to get the attribute value
-    S57attVal *v = obj->attVal->Item(idx);
+  S57attVal *v = obj->attVal->Item(idx);
+  assert(v->valType == OGR_STR);
 
-    assert(v->valType == OGR_STR);
-    char *val = (char *)(v->value);
+  const char *val = static_cast<const char *>(v->value);
+  if (!val) return true;
 
-    strncpy(pval, val, nc);
-
-    return true;
-  } else
-    return false;
+  strncpy(pval, val, nc - 1);
+  pval[nc - 1] = '\0';
+  return true;
 }
 
 wxString *GetStringAttrWXS(S57Obj *obj, const char *AttrName) {
@@ -3875,15 +3877,20 @@ static wxString _LITDSN01(S57Obj *obj)
 }
 
 static void *SYMINS01(void *param) {
-  ObjRazRules *rzRules = (ObjRazRules *)param;
-  S57Obj *obj = rzRules->obj;
-  char symins[80] = {'\0'};
-  GetStringAttr(obj, "SYMINS", symins, 79);
+  ObjRazRules *rzRules = static_cast<ObjRazRules *>(param);
+  if (!rzRules || !rzRules->obj) return NULL;
 
-  strcat(symins, "\037");
-  char *r = (char *)malloc(strlen(symins) + 1);
-  strcpy(r, symins);
+  char symins[258] = {'\0'};
+  GetStringAttr(rzRules->obj, "SYMINS", symins, sizeof(symins) - 2);
 
+  size_t len = strlen(symins);
+  symins[len] = '\037';
+  symins[len + 1] = '\0';
+
+  char *r = static_cast<char *>(malloc(len + 2));
+  if (!r) return NULL;
+
+  memcpy(r, symins, len + 2);
   return r;
 }
 
