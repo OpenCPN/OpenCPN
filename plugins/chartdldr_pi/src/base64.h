@@ -144,7 +144,7 @@ WXDLLIMPEXP_HTTPENGINE wxString wxBase64Decode(const wxString &str) {
     switch (i % 4) {
       case 0:
       case 1:
-        return wxEmptyString;
+        return "";
     }
   }
 

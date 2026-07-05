@@ -281,8 +281,8 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
   m_stName->Wrap(-1);
   fgSizerSourceSel->Add(m_stName, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_tSourceName = new wxTextCtrl(m_panelCustom, wxID_ANY, wxEmptyString,
-                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_tSourceName = new wxTextCtrl(m_panelCustom, wxID_ANY, "", wxDefaultPosition,
+                                 wxDefaultSize, 0);
   m_tSourceName->SetMaxLength(0);
   fgSizerSourceSel->Add(m_tSourceName, 0, wxALL | wxEXPAND, 5);
 
@@ -291,7 +291,7 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
   m_stUrl->Wrap(-1);
   fgSizerSourceSel->Add(m_stUrl, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_tChartSourceUrl = new wxTextCtrl(m_panelCustom, wxID_ANY, wxEmptyString,
+  m_tChartSourceUrl = new wxTextCtrl(m_panelCustom, wxID_ANY, "",
                                      wxDefaultPosition, wxSize(-1, -1), 0);
   m_tChartSourceUrl->SetMaxLength(0);
   fgSizerSourceSel->Add(m_tChartSourceUrl, 0, wxALL | wxEXPAND, 5);
@@ -921,7 +921,7 @@ ChartDldrPrefsDlg::ChartDldrPrefsDlg(wxWindow* parent, wxWindowID id,
       new wxStaticBox(scrollWin, wxID_ANY, _("Default Path to Charts")),
       wxVERTICAL);
 
-  //      m_dpDefaultDir = new wxDirPickerCtrl( this, wxID_ANY, wxEmptyString,
+  //      m_dpDefaultDir = new wxDirPickerCtrl( this, wxID_ANY, "",
   //      _("Select a root folder for your charts"), wxDefaultPosition,
   //      wxDefaultSize, wxDIRP_USE_TEXTCTRL ); sbSizerPaths->Add(
   //      m_dpDefaultDir, 0, wxALL|wxEXPAND, 5 );

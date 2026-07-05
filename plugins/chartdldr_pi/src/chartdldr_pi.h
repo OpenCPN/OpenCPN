@@ -21,8 +21,8 @@
  * Chart Downloader Plugin -- plugin implementation header
  */
 
-#ifndef _CHARTDLDRPI_H_
-#define _CHARTDLDRPI_H_
+#ifndef ChartDLdrpI_H_
+#define ChartDLdrpI_H_
 
 #include <map>
 
@@ -30,17 +30,17 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <wx/event.h>
 #include <wx/fileconf.h>
-#include <wx/imaglist.h>
+// #include <wx/imaglist.h>
 #include <wx/tokenzr.h>
 
 #include "chartcatalog.h"
 #include "chartdldrgui.h"
 #include "ocpn_plugin.h"
-#include "version.h"
+// #include "version.h"
 
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 13
@@ -58,29 +58,29 @@ class ChartDldrPrefsDlgImpl;     // in chartdldr.h
  */
 class chartdldr_pi : public opencpn_plugin_113 {
 public:
-  chartdldr_pi(void* ppimgr);
+  explicit chartdldr_pi(void* ppimgr);
 
   //    The required PlugIn Methods
-  int Init(void);
-  bool DeInit(void);
-
-  int GetAPIVersionMajor();
-  int GetAPIVersionMinor();
-  int GetPlugInVersionMajor();
-  int GetPlugInVersionMinor();
-  wxBitmap* GetPlugInBitmap();
-  wxString GetCommonName();
-  wxString GetShortDescription();
-  wxString GetLongDescription();
-
-  void OnSetupOptions(void);
-  void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel);
+  int Init() override;
+  bool DeInit() override;
 
   //    The required override PlugIn Methods
-  void ShowPreferencesDialog(wxWindow* parent);
+  int GetAPIVersionMajor() override;
+  int GetAPIVersionMinor() override;
+  int GetPlugInVersionMajor() override;
+  int GetPlugInVersionMinor() override;
+  wxBitmap* GetPlugInBitmap() override;
+  wxString GetCommonName() override;
+  wxString GetShortDescription() override;
+  wxString GetLongDescription() override;
 
   //    Other public methods
-  bool SaveConfig(void);
+  void OnSetupOptions() override;
+  void OnCloseToolboxPanel(int page_sel, int ok_apply_cancel) override;
+
+  void ShowPreferencesDialog(wxWindow* parent) override;
+
+  bool SaveConfig();
   bool ProcessFile(const wxString& aFile, const wxString& aTargetDir,
                    bool aStripPath = true,
                    wxDateTime aMTime = wxDateTime::Now());
@@ -107,56 +107,57 @@ public:
   //    Public properties
   std::vector<std::unique_ptr<ChartSource>> m_ChartSources;
   wxWindow* m_parent_window;
-  ChartCatalog m_pChartCatalog;
-  ChartSource* m_pChartSource;
+  ChartCatalog m_chart_catalog;
+  ChartSource* m_chart_source;
   void SetSourceId(int id) { m_selected_source = id; }
-  int GetSourceId() { return m_selected_source; }
+  [[nodiscard]] int GetSourceId() const { return m_selected_source; }
   wxString GetBaseChartDir() { return m_base_chart_dir; }
-  bool m_preselect_new;
-  bool m_preselect_updated;
+  bool m_reselect_new;
+  bool m_reselect_updated;
   bool m_allow_bulk_update;
 
 private:
-  wxFileConfig* m_pconfig;
-  wxScrolledWindow* m_pOptionsPage;
-  bool LoadConfig(void);
-
+  wxFileConfig* m_config;
+  wxScrolledWindow* m_options_page;
   wxString m_schartdldr_sources;
   int m_selected_source;
-
   ChartDldrPanelImpl* m_dldrpanel;
   wxString m_base_chart_dir;
+
+  bool LoadConfig();
 };
 
 class ChartSource : public wxTreeItemData {
 public:
-  ChartSource(wxString name, wxString url, wxString localdir);
-  ~ChartSource();
+  ChartSource(const wxString& name, const wxString& url,
+              const wxString& localdir);
+  ~ChartSource() override;
 
   wxString GetName() { return m_name; }
   wxString GetUrl() { return m_url; }
   wxString GetDir() { return m_dir; }
-  void SetDir(wxString dir) { m_dir = dir; }
-  void SetName(wxString name) { m_name = name; }
-  void SetUrl(wxString url) { m_url = url; }
-  bool ExistsLocaly(wxString chart_number, wxString filename);
-  bool IsNewerThanLocal(wxString chart_number, wxString filename,
-                        wxDateTime validDate);
+  void SetDir(const wxString& dir) { m_dir = dir; }
+  void SetName(const wxString& name) { m_name = name; }
+  void SetUrl(const wxString& url) { m_url = url; }
+  bool ExistsLocally(const wxString& chart_number, const wxString& filename);
+  bool IsNewerThanLocal(const wxString& chart_number, const wxString& filename,
+                        const wxDateTime& validDate);
   void UpdateLocalFiles() { GetLocalFiles(); }
 
   bool UpdateDataExists();
   void LoadUpdateData();
   void SaveUpdateData();
-  void ChartUpdated(wxString chart_number, time_t timestamp);
+  void ChartUpdated(const wxString& chart_number, time_t timestamp);
 
 private:
   wxArrayString m_localfiles;
   std::vector<wxDateTime> m_localdt;
-  void GetLocalFiles();
   wxString m_name;
   wxString m_url;
   wxString m_dir;
   std::map<std::string, time_t> m_update_data;
+
+  void GetLocalFiles();
 };
 
 /** Implementing ChartDldrPanel */
@@ -164,32 +165,31 @@ class ChartDldrPanelImpl : public ChartDldrPanel {
   friend class chartdldr_pi;
 
 private:
-  bool DownloadChart(wxString url, wxString file, wxString title);
-  int to_download;
+  int m_to_download;
+  int m_updating_all;
+  bool m_cancelled;
+  bool m_download_is_cancel;
+  chartdldr_pi* m_plugin;
+  bool m_is_populated;
+  bool m_is_transfer_complete;
+  bool m_is_transfer_ok;
+  long m_total_size;
+  long m_transferred_size;
+  int m_failed_downloads;
+  bool m_is_connected;
+  bool m_hold_info;  // Don't update chart selection stats right now
+  size_t m_new_charts;
+  size_t m_updated_charts;
+  int m_downloading;
 
-  int updatingAll;
-  bool cancelled;
-  bool DownloadIsCancel;
-  chartdldr_pi* pPlugIn;
-  bool m_populated;
-
+  bool DownloadChart(const wxString& url, const wxString& file,
+                     const wxString& title);
   void OnPopupClick(wxCommandEvent& evt);
   int GetSelectedCatalog();
   void AppendCatalog(std::unique_ptr<ChartSource>& cs);
   void DoEditSource();
 
-  bool m_bTransferComplete;
-  bool m_bTransferSuccess;
-  long m_totalsize;
-  long m_transferredsize;
-  int m_failed_downloads;
-  int m_downloading;
-
   void DisableForDownload(bool enabled);
-  bool m_bconnected;
-  bool m_bInfoHold;  // Don't update chart selection stats right now
-  size_t m_newCharts;
-  size_t m_updatedCharts;
 
 protected:
   // Handlers for ChartDldrPanel events.
@@ -201,10 +201,12 @@ protected:
   void UpdateChartList(wxCommandEvent& event) override;
   void OnDownloadCharts(wxCommandEvent& event) override;
 
+#if defined(CHART_LIST)
   void OnSelectChartItem(wxCommandEvent& event);
   void OnSelectNewCharts(wxCommandEvent& event);
   void OnSelectUpdatedCharts(wxCommandEvent& event);
   void OnSelectAllCharts(wxCommandEvent& event);
+#endif
 
   void DownloadCharts();
   void DoHelp(wxCommandEvent& event) override {
@@ -222,8 +224,8 @@ protected:
   void OnLeftDClick(wxMouseEvent& event) override;
 
   void CleanForm();
-  void FillFromFile(wxString url, wxString dir, bool selnew = false,
-                    bool selupd = false);
+  void FillFromFile(const wxString& url, const wxString& dir,
+                    bool selnew = false, bool selupd = false);
 
   void OnContextMenu(wxMouseEvent& event) override;
   void SetBulkUpdate(bool bulk_update);
@@ -238,21 +240,22 @@ protected:
   void CheckUpdatedCharts(bool value);
 
 public:
-  // ChartDldrPanelImpl() { m_bconnected = false; DownloadIsCancel = false; }
-  ~ChartDldrPanelImpl();
-  ChartDldrPanelImpl(chartdldr_pi* plugin = NULL, wxWindow* parent = NULL,
-                     wxWindowID id = wxID_ANY,
-                     const wxPoint& pos = wxDefaultPosition,
-                     const wxSize& size = wxDefaultSize,
-                     long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+  ~ChartDldrPanelImpl() override;
+  explicit ChartDldrPanelImpl(chartdldr_pi* plugin = nullptr,
+                              wxWindow* parent = nullptr,
+                              wxWindowID id = wxID_ANY,
+                              const wxPoint& pos = wxDefaultPosition,
+                              const wxSize& size = wxDefaultSize,
+                              long style = wxDEFAULT_DIALOG_STYLE |
+                                           wxRESIZE_BORDER);
   void SelectCatalog(int item);
   void onDLEvent(OCPN_downloadEvent& ev);
   void CancelDownload() {
     Disconnect(
         wxEVT_DOWNLOAD_EVENT,
         (wxObjectEventFunction)(wxEventFunction)&ChartDldrPanelImpl::onDLEvent);
-    cancelled = true;
-    m_bconnected = false;
+    m_cancelled = true;
+    m_is_connected = false;
   }
 
 private:
@@ -262,9 +265,9 @@ private:
 class ChartDldrGuiAddSourceDlg : public AddSourceDlg {
 protected:
   void OnChangeType(wxCommandEvent& event);
-  void OnSourceSelected(wxTreeEvent& event);
-  void OnOkClick(wxCommandEvent& event);
-  void OnCancelClick(wxCommandEvent& event);
+  void OnSourceSelected(wxTreeEvent& event) override;
+  void OnOkClick(wxCommandEvent& event) override;
+  void OnCancelClick(wxCommandEvent& event) override;
 
   bool LoadSources();
   bool LoadSections(const wxTreeItemId& root, pugi::xml_node& node);
@@ -273,35 +276,36 @@ protected:
   bool LoadCatalog(const wxTreeItemId& root, pugi::xml_node& node);
 
 public:
-  ChartDldrGuiAddSourceDlg(wxWindow* parent);
-  ~ChartDldrGuiAddSourceDlg();
-  void SetBasePath(const wxString path) { m_base_path = path; }
+  explicit ChartDldrGuiAddSourceDlg(wxWindow* parent);
+  ~ChartDldrGuiAddSourceDlg() override;
+  void SetBasePath(const wxString& path) { m_base_path = path; }
   void SetSourceEdit(std::unique_ptr<ChartSource>& cs);
 
 private:
-  bool ValidateUrl(const wxString Url, bool catalog_xml = true);
-  wxString FixPath(wxString path);
   wxString m_base_path;
   wxString m_last_path;
   wxImageList* p_iconList;
 #ifdef __ANDROID__
   wxImageList* p_buttonIconList;
 #endif /* __ANDROID__ */
+
+  bool ValidateUrl(const wxString& Url, bool catalog_xml = true);
+  wxString FixPath(const wxString& path);
 };
 
 class ChartDldrPrefsDlgImpl : public ChartDldrPrefsDlg {
 protected:
-  void OnOkClick(wxCommandEvent& event);
+  void OnOkClick(wxCommandEvent& event) override;
 
 public:
-  ChartDldrPrefsDlgImpl(wxWindow* parent);
-  ~ChartDldrPrefsDlgImpl();
-  wxString GetPath() { return m_tcDefaultDir->GetValue(); }
-  void SetPath(const wxString path);
+  explicit ChartDldrPrefsDlgImpl(wxWindow* parent);
+  ~ChartDldrPrefsDlgImpl() override;
+  [[nodiscard]] wxString GetPath() const { return m_tcDefaultDir->GetValue(); }
+  void SetPath(const wxString& path);
   void GetPreferences(bool& preselect_new, bool& preselect_updated,
                       bool& bulk_update);
   void SetPreferences(bool preselect_new, bool preselect_updated,
                       bool bulk_update);
 };
 
-#endif
+#endif  // ChartDLdrpI_H_

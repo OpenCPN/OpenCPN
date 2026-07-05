@@ -171,11 +171,11 @@ Chart::Chart(pugi::xml_node &xmldata) {
   coast_guard_districts = new wxArrayString();
   states = new wxArrayString();
   regions = new wxArrayString();
-  target_filename = wxEmptyString;
-  reference_file = wxEmptyString;
-  manual_download_url = wxEmptyString;
-  title = wxEmptyString;
-  zipfile_location = wxEmptyString;
+  target_filename = "";
+  reference_file = "";
+  manual_download_url = "";
+  title = "";
+  zipfile_location = "";
   zipfile_size = -1;
   zipfile_datetime = wxInvalidDateTime;
   zipfile_datetime_iso8601 = wxInvalidDateTime;
@@ -255,8 +255,8 @@ Chart::Chart(pugi::xml_node &xmldata) {
 }
 
 wxString Chart::GetChartFilename(bool to_check) {
-  if (to_check && reference_file != wxEmptyString) return reference_file;
-  if (target_filename != wxEmptyString) return target_filename;
+  if (to_check && reference_file != "") return reference_file;
+  if (target_filename != "") return target_filename;
   wxString file;
   wxStringTokenizer tk(zipfile_location, "/");
   do {
@@ -266,15 +266,15 @@ wxString Chart::GetChartFilename(bool to_check) {
 }
 
 RasterChart::RasterChart(pugi::xml_node &xmldata) : Chart(xmldata) {
-  number = wxEmptyString;
+  number = "";
   source_edition = -1;
   raster_edition = -1;
   ntm_edition = -1;
-  source_date = wxEmptyString;
-  ntm_date = wxEmptyString;
-  source_edition_last_correction = wxEmptyString;
-  raster_edition_last_correction = wxEmptyString;
-  ntm_edition_last_correction = wxEmptyString;
+  source_date = "";
+  ntm_date = "";
+  source_edition_last_correction = "";
+  raster_edition_last_correction = "";
+  ntm_edition_last_correction = "";
 
   for (pugi::xml_node element = xmldata.first_child(); element;
        element = element.next_sibling()) {
@@ -306,11 +306,11 @@ RasterChart::RasterChart(pugi::xml_node &xmldata) : Chart(xmldata) {
 }
 
 EncCell::EncCell(pugi::xml_node &xmldata) : Chart(xmldata) {
-  number = wxEmptyString;  //  Use number (not name) for zip file name and cell
-                           //  name  .Paul.
-  src_chart = wxEmptyString;
+  number = "";  //  Use number (not name) for zip file name and cell
+                //  name  .Paul.
+  src_chart = "";
   cscale = -1;
-  status = wxEmptyString;
+  status = "";
   edtn = -1;
   updn = -1;
   uadt = wxInvalidDateTime;
@@ -340,12 +340,12 @@ EncCell::EncCell(pugi::xml_node &xmldata) : Chart(xmldata) {
 
 IEncCell::IEncCell(pugi::xml_node &xmldata) : Chart(xmldata) {
   //  Use number (not name) for zip file name and cell name  .Paul.
-  number = wxEmptyString;
+  number = "";
   location = NULL;
-  river_name = wxEmptyString;
+  river_name = "";
   river_miles = NULL;
   area = NULL;
-  edition = wxEmptyString;
+  edition = "";
   shp_file = NULL;
   s57_file = NULL;
   kml_file = NULL;
@@ -391,7 +391,7 @@ wxString IEncCell::GetChartTitle()
 // Revised by .Paul. to support IENC catalogs that do not identify rivers or
 // river miles.
 {
-  if (river_name != wxEmptyString) {
+  if (river_name != "") {
     // This formatting of river_name.c_str() ... river_miles->end works for
     // "IENCU37ProductCatalog" where river_name is specified.
     return wxString::Format(_("%s (%s to %s), river miles %3.1f - %3.1f"),
@@ -412,7 +412,7 @@ wxDateTime IEncCell::GetUpdateDatetime() { return s57_file->date_posted; }
 
 ChartFile::ChartFile(pugi::xml_node &xmldata) {
   file_size = -1;
-  location = wxEmptyString;
+  location = "";
   date_posted = wxInvalidDateTime;
   time_posted = wxInvalidDateTime;
 
@@ -471,8 +471,8 @@ RiverMiles::RiverMiles(pugi::xml_node &xmldata) {
 }
 
 Location::Location(pugi::xml_node &xmldata) {
-  from = wxEmptyString;
-  to = wxEmptyString;
+  from = "";
+  to = "";
   for (pugi::xml_node element = xmldata.first_child(); element;
        element = element.next_sibling()) {
     if (!strcmp(element.name(), "from")) {
@@ -484,8 +484,8 @@ Location::Location(pugi::xml_node &xmldata) {
 }
 
 NoticeToMariners::NoticeToMariners(pugi::xml_node &xmldata) {
-  agency = wxEmptyString;
-  doc = wxEmptyString;
+  agency = "";
+  doc = "";
   date = wxInvalidDateTime;
 
   for (pugi::xml_node element = xmldata.first_child(); element;
@@ -519,8 +519,8 @@ Panel::Panel(pugi::xml_node &xmldata) {
 Panel::~Panel() {}
 
 RncPanel::RncPanel(pugi::xml_node &xmldata) : Panel(xmldata) {
-  panel_title = wxEmptyString;
-  file_name = wxEmptyString;
+  panel_title = "";
+  file_name = "";
   scale = 0;
 
   for (pugi::xml_node element = xmldata.first_child(); element;
@@ -536,7 +536,7 @@ RncPanel::RncPanel(pugi::xml_node &xmldata) : Panel(xmldata) {
 }
 
 EncPanel::EncPanel(pugi::xml_node &xmldata) : Panel(xmldata) {
-  type = wxEmptyString;
+  type = "";
   for (pugi::xml_node element = xmldata.first_child(); element;
        element = element.next_sibling()) {
     if (!strcmp(element.name(), "type")) {
