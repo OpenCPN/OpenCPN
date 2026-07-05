@@ -250,15 +250,15 @@ chartdldr_pi::chartdldr_pi(void *ppimgr) : opencpn_plugin_113(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 
-  m_parent_window = NULL;
-  m_chart_source = NULL;
-  m_config = NULL;
+  m_parent_window = nullptr;
+  m_chart_source = nullptr;
+  m_config = nullptr;
   m_reselect_new = false;
   m_reselect_updated = false;
   m_allow_bulk_update = false;
-  m_options_page = NULL;
+  m_options_page = nullptr;
   m_selected_source = -1;
-  m_dldrpanel = NULL;
+  m_dldrpanel = nullptr;
   m_schartdldr_sources = "";
 
   g_pi = this;
@@ -273,9 +273,9 @@ int chartdldr_pi::Init() {
 
   //    Get a pointer to the opencpn configuration object
   m_config = GetOCPNConfigObject();
-  m_options_page = NULL;
+  m_options_page = nullptr;
 
-  m_chart_source = NULL;
+  m_chart_source = nullptr;
 
 #ifdef __ANDROID__
   androidGetSDKVersion();
@@ -309,7 +309,7 @@ bool chartdldr_pi::DeInit() {
   /* We must delete remaining page if the plugin is disabled while in Options
    * dialog */
   if (m_options_page) {
-    if (DeleteOptionsPage(m_options_page)) m_options_page = NULL;
+    if (DeleteOptionsPage(m_options_page)) m_options_page = nullptr;
     // TODO: any other memory leak?
   }
   return true;
@@ -406,8 +406,7 @@ bool chartdldr_pi::SaveConfig() {
 
   m_schartdldr_sources.Clear();
 
-  for (size_t i = 0; i < m_ChartSources.size(); i++) {
-    std::unique_ptr<ChartSource> &cs = m_ChartSources.at(i);
+  for (const std::unique_ptr<ChartSource> &cs : m_ChartSources) {
     m_schartdldr_sources.Append(
         wxString::Format("%s|%s|%s|", cs->GetName().c_str(),
                          cs->GetUrl().c_str(), cs->GetDir().c_str()));
@@ -637,14 +636,14 @@ void ChartDldrPanelImpl::OnContextMenu(wxMouseEvent &event) {
 #endif
 
   menu.Connect(wxEVT_COMMAND_MENU_SELECTED,
-               (wxObjectEventFunction)&ChartDldrPanelImpl::OnPopupClick, NULL,
-               this);
+               (wxObjectEventFunction)&ChartDldrPanelImpl::OnPopupClick,
+               nullptr, this);
   // and then display
   PopupMenu(&menu, mouseClient.x, mouseClient.y);
 }
 
 void ChartDldrPanelImpl::OnShowLocalDir(wxCommandEvent &event) {
-  if (m_plugin->m_chart_source == NULL) return;
+  if (!m_plugin->m_chart_source) return;
 #ifdef __WXGTK__
   wxExecute(wxString::Format("xdg-open %s",
                              m_plugin->m_chart_source->GetDir().c_str()));
@@ -685,7 +684,7 @@ void ChartDldrPanelImpl::SetSource(int id) {
             .c_str()));
     if (::wxIsBusy()) ::wxEndBusyCursor();
   } else {
-    m_plugin->m_chart_source = NULL;
+    m_plugin->m_chart_source = nullptr;
     m_chartsLabel->SetLabel(_("Charts"));
   }
 }
@@ -778,7 +777,7 @@ void ChartDldrPanelImpl::FillFromFile(const wxString &url, const wxString &dir,
           m_plugin->m_chart_catalog.charts.at(i)->GetChartTitle(), status,
           latest, this, bcheck);
       pC->Connect(wxEVT_RIGHT_DOWN,
-                  wxMouseEventHandler(ChartDldrPanel::OnContextMenu), NULL,
+                  wxMouseEventHandler(ChartDldrPanel::OnContextMenu), nullptr,
                   this);
 
       m_boxSizerCharts->Add(pC.get(), 0, wxEXPAND | wxLEFT | wxRIGHT, 2);
@@ -1426,7 +1425,7 @@ After downloading the charts, please extract them to %s"),
     }
     // construct local file path
     wxString file =
-        m_plugin->m_chart_catalog.charts.at(index)->GetChartFilename();
+        m_plugin->m_chart_catalog.charts.at(index)->GetChartFilename(false);
     wxFileName fn;
     fn.SetFullName(file);
     fn.SetPath(cs->GetDir());
@@ -2298,7 +2297,7 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg(wxWindow *parent)
   m_nbChoice->SetSelection(0);
   // m_treeCtrlPredefSrcs->ExpandAll();
 
-  Fit();
+  wxWindow::Fit();
 
   applyStyle();
 }

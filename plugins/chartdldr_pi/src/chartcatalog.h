@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef CHARTCATALOG_H__
-#define CHARTCATALOG_H__
+#ifndef CHARTCATALOG_H_
+#define CHARTCATALOG_H_
 
 #include <memory>
 #include <vector>
@@ -48,12 +48,12 @@ class ChartFile;         // Forward
 // Declarations
 class ChartCatalog {
 public:
-  ChartCatalog();
-  ~ChartCatalog();
+  ChartCatalog() = default;
+  ~ChartCatalog() = default;
   // public methods
-  bool LoadFromFile(wxString path, bool headerOnly = false);
+  bool LoadFromFile(const wxString &path, bool headerOnly = false);
   bool LoadFromXml(pugi::xml_document *doc, bool headerOnly);
-  wxDateTime GetReleaseDate(void);
+  wxDateTime GetReleaseDate();
   // public properties
   wxString title;
   wxDateTime date_created;
@@ -79,7 +79,7 @@ public:
   virtual wxString GetDownloadLocation() { return zipfile_location; }
   virtual bool NeedsManualDownload() { return manual_download_url != ""; }
   virtual wxString GetManualDownloadUrl() { return manual_download_url; }
-  virtual wxString GetChartFilename(bool to_check = false);
+  virtual wxString GetChartFilename(bool to_check);
   virtual wxDateTime GetUpdateDatetime() { return zipfile_datetime_iso8601; }
 
   // public properties
@@ -144,11 +144,11 @@ class IEncCell : public Chart  //<Cell>
 {
 public:
   IEncCell(pugi::xml_node &xmldata);
-  ~IEncCell();
+  ~IEncCell() override;
   // public methods
-  wxString GetChartTitle();
-  wxString GetDownloadLocation();
-  wxDateTime GetUpdateDatetime();
+  wxString GetChartTitle() override;
+  wxString GetDownloadLocation() override;
+  wxDateTime GetUpdateDatetime() override;
 
   // public properties
   // wxString name;  use wxString number in class Chart .Paul.
@@ -221,7 +221,7 @@ public:
 class Vertex {
 public:
   Vertex(pugi::xml_node &xmldata);
-  virtual ~Vertex() {};
+  virtual ~Vertex() = default;
   // public methods
 
   // public properties
@@ -260,4 +260,4 @@ public:
   wxString type;
 };
 
-#endif  // CHARTCATALOG_H__
+#endif  // CHARTCATALOG_H_

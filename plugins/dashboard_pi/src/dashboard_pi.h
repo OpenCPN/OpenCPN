@@ -243,11 +243,12 @@ public:
 
 private:
   bool LoadConfig(void);
-  void LoadFont(wxFont **target, wxString native_info);
+  void LoadFont(wxFont **target, const wxString &native_info);
 
   void ApplyConfig(void);
-  void SendSentenceToAllInstruments(DASH_CAP st, double value, wxString unit);
-  void SendSatInfoToAllInstruments(int cnt, int seq, wxString talk,
+  void SendSentenceToAllInstruments(DASH_CAP st, double value,
+                                    const wxString &unit);
+  void SendSatInfoToAllInstruments(int cnt, int seq, const wxString &talk,
                                    SAT_INFO sats[4]);
   void SendUtcTimeToAllInstruments(wxDateTime value);
 
@@ -257,17 +258,17 @@ private:
   void handleSKUpdate(wxJSONValue &update);
   void updateSKItem(wxJSONValue &item, wxString &talker, wxString &sfixtime);
 
-  void HandleN2K_127245(ObservedEvt ev);
-  void HandleN2K_127257(ObservedEvt ev);
-  void HandleN2K_128259(ObservedEvt ev);
-  void HandleN2K_128267(ObservedEvt ev);
-  void HandleN2K_128275(ObservedEvt ev);
-  void HandleN2K_128777(ObservedEvt ev);
-  void HandleN2K_129029(ObservedEvt ev);
-  void HandleN2K_129540(ObservedEvt ev);
-  void HandleN2K_130306(ObservedEvt ev);
-  void HandleN2K_130310(ObservedEvt ev);
-  void HandleN2K_130313(ObservedEvt ev);
+  void HandleN2K_127245(ObservedEvt &ev);
+  void HandleN2K_127257(ObservedEvt &ev);
+  void HandleN2K_128259(ObservedEvt &ev);
+  void HandleN2K_128267(ObservedEvt &ev);
+  void HandleN2K_128275(ObservedEvt &ev);
+  void HandleN2K_128777(ObservedEvt &ev);
+  void HandleN2K_129029(ObservedEvt &ev);
+  void HandleN2K_129540(ObservedEvt &ev);
+  void HandleN2K_130306(ObservedEvt &ev);
+  void HandleN2K_130310(ObservedEvt &ev);
+  void HandleN2K_130313(ObservedEvt &ev);
   std::shared_ptr<ObservableListener> listener_127245;
   std::shared_ptr<ObservableListener> listener_127257;
   std::shared_ptr<ObservableListener> listener_128259;

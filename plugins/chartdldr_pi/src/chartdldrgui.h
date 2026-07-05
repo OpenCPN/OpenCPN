@@ -5,8 +5,8 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef CHARTDLDRGUI_H__
-#define CHARTDLDRGUI_H__
+#ifndef CHARTDLDRGUI_H_
+#define CHARTDLDRGUI_H_
 
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
@@ -14,20 +14,14 @@
 #include <wx/checkbox.h>
 #include <wx/colour.h>
 #include <wx/combobox.h>
-#include <wx/dcmemory.h>
 #include <wx/dialog.h>
-#include <wx/filepicker.h>
-#include <wx/font.h>
 #include <wx/gdicmn.h>
-#include <wx/icon.h>
-#include <wx/image.h>
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/notebook.h>
 #include <wx/panel.h>
-#include <wx/settings.h>
 #include <wx/sizer.h>
-#include <wx/statbox.h>
+// #include <wx/statbox.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/string.h>
@@ -49,11 +43,11 @@ class DLDR_OCPNChartDirPanel : public wxPanel {
 public:
   DLDR_OCPNChartDirPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                          const wxSize& size);
-  ~DLDR_OCPNChartDirPanel();
+  ~DLDR_OCPNChartDirPanel() override;
 
   void OnPaint(wxPaintEvent& event);
-  int GetUnselectedHeight() { return m_unselectedHeight; }
-  int GetRefHeight() { return m_refHeight; }
+  [[nodiscard]] int GetUnselectedHeight() const { return m_unselectedHeight; }
+  [[nodiscard]] int GetRefHeight() const { return m_refHeight; }
   void SetText(wxString text);
 
 private:
@@ -105,7 +99,7 @@ public:
                const wxPoint& pos = wxDefaultPosition,
                const wxSize& size = wxDefaultSize,
                long style = wxDEFAULT_DIALOG_STYLE);
-  ~AddSourceDlg();
+  ~AddSourceDlg() override;
   void OnNbPage(wxNotebookEvent& event);
 };
 
@@ -185,7 +179,7 @@ public:
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxSize(-1, -1),
                  long style = wxTAB_TRAVERSAL);
-  ~ChartDldrPanel();
+  ~ChartDldrPanel() override;
   // ChartDldrPanel() { }
 
   virtual void OnContextMenu(wxMouseEvent& event) { event.Skip(); }
@@ -225,7 +219,7 @@ public:
                     const wxPoint& pos = wxDefaultPosition,
                     const wxSize& size = wxSize(462, 331),
                     long style = wxDEFAULT_DIALOG_STYLE);
-  ~ChartDldrPrefsDlg();
+  ~ChartDldrPrefsDlg() override;
 };
 
 // We only use this object type in "old-style" chart listing
@@ -235,11 +229,11 @@ public:
   ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
              const wxSize& size, wxString Name, wxString stat, wxString latest,
              ChartDldrPanel* DldrPanel, bool bcheck);
-  ~ChartPanel();
+  ~ChartPanel() override;
 
   void OnContextMenu(wxMouseEvent& event);
-  wxCheckBox* GetCB() { return m_cb; }
-  bool isNew() { return (m_stat == _("New")); }
+  [[nodiscard]] wxCheckBox* GetCB() const { return m_cb; }
+  [[nodiscard]] bool isNew() const { return (m_stat == _("New")); }
   bool isUpdated() { return (m_stat == _("Out of date")); }
   void OnLeftUp(wxMouseEvent& event);
 #ifdef HAVE_WX_GESTURE_EVENTS
@@ -257,4 +251,4 @@ private:
 };
 #endif /* CHART_PANEL */
 
-#endif  //  CHARTDLDRGUI_H__
+#endif  //  CHARTDLDRGUI_H_

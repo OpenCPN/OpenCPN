@@ -29,7 +29,7 @@
 #include <wx/tokenzr.h>
 
 // Chart Catalog implementation
-bool ChartCatalog::LoadFromFile(wxString path, bool headerOnly) {
+bool ChartCatalog::LoadFromFile(const wxString &path, bool headerOnly) {
   dt_valid = wxInvalidDateTime;  // Invalidate all dates
   date_created = dt_valid;       // so dates of one catalog
   time_created = dt_valid;       // don't propagate into another
@@ -47,10 +47,6 @@ bool ChartCatalog::LoadFromFile(wxString path, bool headerOnly) {
 
   return ret;
 }
-
-ChartCatalog::ChartCatalog() {}
-
-ChartCatalog::~ChartCatalog() {}
 
 wxDateTime ChartCatalog::GetReleaseDate() {
   if (!dt_valid.IsValid()) {
@@ -183,8 +179,8 @@ Chart::Chart(pugi::xml_node &xmldata) {
   isdt = wxInvalidDateTime;
   edtn = -1;
   updn = -1;
-  nm = NULL;
-  lnm = NULL;
+  nm = nullptr;
+  lnm = nullptr;
 
   for (pugi::xml_node element = xmldata.first_child(); element;
        element = element.next_sibling()) {
