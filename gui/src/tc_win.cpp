@@ -575,7 +575,8 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
     for (i = 0; i < 26; i++) {
       int tt = tt_localtz + (i * FORWARD_ONE_HOUR_STEP);
       ptcmgr->GetTideOrCurrent(tt, pIDX->IDX_rec_num, tcv[i], dir);
-      tt_tcv[i] = tt;  // store the corresponding time_t value
+      tt_tcv[i] = tt;            // store the corresponding time_t value
+      float tcvalue_i = tcv[i];  // unconverted value
 
       // Convert tide values from station units to user's height units
       Station_Data *pmsd = pIDX->pref_sta_data;
@@ -600,7 +601,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
           float tcvalue;                           // look backward for HW or LW
           time_t tctime;
           ptcmgr->GetHightOrLowTide(tt, BACKWARD_TEN_MINUTES_STEP,
-                                    BACKWARD_ONE_MINUTES_STEP, tcv[i], wt,
+                                    BACKWARD_ONE_MINUTES_STEP, tcvalue_i, wt,
                                     pIDX->IDX_rec_num, tcvalue, tctime);
           if (tctime > tt_localtz) {  // Only show events visible in graphic
                                       // presently shown
