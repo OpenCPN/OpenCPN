@@ -2490,7 +2490,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case wxID_PREFERENCES:
     case ID_SETTINGS: {
-      g_MainToolbar->HideTooltip();
+      if (g_MainToolbar) g_MainToolbar->HideTooltip();
       DoSettings();
       break;
     }
@@ -2515,7 +2515,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
       androidDisableFullScreen();
-      g_MainToolbar->HideTooltip();
+      if (g_MainToolbar) g_MainToolbar->HideTooltip();
       DoAndroidPreferences();
 #else
       DoSettings();
@@ -2724,7 +2724,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       //        If found, make the callback.
       //        TODO Modify this to allow multiple tools per plugin
       if (g_pi_manager) {
-        g_MainToolbar->HideTooltip();
+        if (g_MainToolbar) g_MainToolbar->HideTooltip();
 
         ArrayOfPlugInToolbarTools tool_array =
             g_pi_manager->GetPluginToolbarToolArray();
@@ -2756,7 +2756,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 bool MyFrame::SetGlobalToolbarViz(bool viz) {
   bool viz_now = g_bmasterToolbarFull;
 
-  g_MainToolbar->HideTooltip();
+  if (g_MainToolbar) g_MainToolbar->HideTooltip();
   wxString tip = _("Show Toolbar");
   if (viz) {
     tip = _("Hide Toolbar");
@@ -2862,6 +2862,7 @@ ChartCanvas *MyFrame::GetFocusCanvas() {
 }
 
 void MyFrame::OnToolbarAnimateTimer(wxTimerEvent &event) {
+  if (!g_MainToolbar) return;
   if (g_bmasterToolbarFull) {
 #ifndef OCPN_TOOLBAR_ANIMATE
     m_nMasterToolCountShown = (int)g_MainToolbar->GetToolCount();
@@ -4245,7 +4246,8 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
 
   // Change of master toolbar scale?
   bool b_masterScaleChange = false;
-  if (fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f)
+  if (g_MainToolbar &&
+      (fabs(g_MainToolbar->GetScaleFactor() - g_toolbar_scalefactor) > 0.01f))
     b_masterScaleChange = true;
 
   if ((rr & TOOLBAR_CHANGED) || b_masterScaleChange)
@@ -6810,7 +6812,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
     }
   }
 
-  if (btbRebuild) {
+  if (btbRebuild && g_MainToolbar) {
     g_MainToolbar->SetAutoHide(g_bAutoHideToolbar);
     g_MainToolbar->SetAutoHideTimer(g_nAutoHideToolbar);
   }
