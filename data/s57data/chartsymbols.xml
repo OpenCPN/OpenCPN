@@ -31733,11 +31733,11 @@
             <name>CHCRDEL1</name>
             <vector width="799" height="804">
                 <distance min="0" max="0" />
-                <pivot x="4636" y="2650" />
-                <origin x="5179" y="2251" />
+                <pivot x="0" y="2650" />
+                <origin x="543" y="2251" />
             </vector>
             <description>this line has been deleted by a manual update</description>
-            <HPGL>SPA;SW1;PU5179,3055;PD5978,2251;</HPGL>
+            <HPGL>SPA;SW1;PU543,3055;PD1342,2251;</HPGL>
             <color-ref>ACHCOR</color-ref>
         </line-style>
         <line-style RCID="3359">
@@ -31749,6 +31749,28 @@
             </vector>
             <description>this line has been manually updated</description>
             <HPGL>SPA;SW1;PU5574,2648;CI150;</HPGL>
+            <color-ref>ACHCOR</color-ref>
+        </line-style>
+        <line-style RCID="33597">
+            <name>CHRVDEL2</name>
+            <vector width="300" height="300">
+                <distance min="0" max="0" />
+                <pivot x="0" y="2650" />
+                <origin x="490" y="2498" />
+            </vector>
+            <description>this line has been deleted</description>
+            <HPGL>SPA;SW4;PU490,2858;PD906,2442;</HPGL>
+            <color-ref>ACHCOR</color-ref>
+        </line-style>
+        <line-style RCID="33598">
+            <name>CHRVID02</name>
+            <vector width="300" height="300">
+                <distance min="0" max="0" />
+                <pivot x="0" y="2650" />
+                <origin x="511" y="2498" />
+            </vector>
+            <description>this line has been deleted</description>
+            <HPGL>SPA;SW4;PU761,2648;CI150;</HPGL>
             <color-ref>ACHCOR</color-ref>
         </line-style>
         <line-style RCID="3418">

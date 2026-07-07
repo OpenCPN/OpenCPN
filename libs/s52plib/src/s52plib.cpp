@@ -1077,7 +1077,12 @@ wxString key(strk, wxConvUTF8);
 
 r->razRule = (*_line_sym)[key];
 
-if (r->razRule == NULL) r->razRule = (*_symb_sym)[_T ( "QUESMRK1" )];
+//  Substitute generic question mark for undefined symbology
+if (r->razRule == NULL) {
+  r->razRule = (*_symb_sym)[_T ( "QUESMRK1" )];
+  r->razRule->pos.line.bnbox_w.SYHL = 600;  // manually set the
+                                            // rendered symbol length
+}
 SCANFWRD
 }
 
