@@ -3144,14 +3144,35 @@ Java_org_opencpn_FileDialogCallbackProxy_nativeFileDialogFinished(
 int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &title, const wxString &suggestion,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
-  std::string file = AndroidFileDialog::Show(initDir.ToStdString(), dirOnly);
-  if (file == "cancel") {
-    return wxID_CANCEL;
+  // Inspect the specified initial directory to determine if a local
+  // "sandbox" file chooser may be used.
+  //  If not "sandboxed", use Java side SAF chooser.
+  if (initDir.StartsWith("/storage/emulated") && initDir.Contains("opencpn")) {
+    std::string file = AndroidFileDialog::Show(initDir.ToStdString(), dirOnly);
+    if (file == "cancel") {
+      return wxID_CANCEL;
+    } else {
+      wxString sfile(file.c_str());
+      *result = sfile.AfterFirst(':');
+      return wxID_OK;
+    }
   } else {
-    wxString sfile(file.c_str());
-    *result = sfile.AfterFirst(':');
-    return wxID_OK;
+    if (g_androidUtilHandler) {
+      wxString activityResult;
+      activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
+                                              title, suggestion, wildcard);
+
+      if (activityResult == _T("OK")) {
+        return wxID_OK;
+      } else if (activityResult == "cancel:") {
+        return wxID_CANCEL;
+      } else {
+        *result = activityResult.AfterFirst(':');
+        return wxID_OK;
+      }
+    }
   }
+  return wxID_CANCEL;
 }
 
 bool InvokeJNIPreferences(wxString &initial_settings) {
