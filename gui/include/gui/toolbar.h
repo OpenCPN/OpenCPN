@@ -305,7 +305,7 @@ public:
   void HideTooltip();
   void KillTooltip();
   void EnableTooltips();
-  void DisableTooltips();
+  bool DisableTooltips();
 
 protected:
   // common part of all ctors
@@ -437,8 +437,9 @@ public:
   void EnableTooltips() {
     if (m_ptoolbar) m_ptoolbar->EnableTooltips();
   }
-  void DisableTooltips() {
-    if (m_ptoolbar) m_ptoolbar->DisableTooltips();
+  bool DisableTooltips() {
+    if (m_ptoolbar) return m_ptoolbar->DisableTooltips();
+    return false;
   }
   void UpdateRecoveryWindow(bool b_toolbarEnable);
   void EnableTool(int toolid, bool enable);

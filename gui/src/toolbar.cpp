@@ -850,7 +850,7 @@ void ocpnToolBarSimple::Init() {
   m_last_plugin_down_id = -1;
   m_leftDown = false;
   m_nShowTools = 0;
-  m_btooltip_show = false;
+  DisableTooltips();
 #ifndef __ANDROID__
   EnableTooltips();
 #endif
@@ -1015,14 +1015,16 @@ void ocpnToolBarSimple::EnableTooltips() {
 #endif
 }
 
-void ocpnToolBarSimple::DisableTooltips() {
+bool ocpnToolBarSimple::DisableTooltips() {
 #ifndef __ANDROID__
+  bool ret = ocpnToolBarSimple::m_btooltip_show;
   ocpnToolBarSimple::m_btooltip_show = false;
+  return ret;
 #endif
 }
 
 void ocpnToolBarSimple::KillTooltip() {
-  m_btooltip_show = false;
+  DisableTooltips();
 
   TooltipManager::Get().HideTooltip();
   m_tooltip_timer.Stop();
