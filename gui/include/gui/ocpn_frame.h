@@ -317,6 +317,10 @@ public:
   }
   void OnToolLeftClick(wxCommandEvent& event) override;
 
+  bool DisableTbarTooltips();
+  void EnableTbarTooltips();
+  void HideTbarTooltip();
+
   void SetENCDisplayCategory(ChartCanvas* cc, enum _DisCat nset);
   void ToggleQuiltMode(ChartCanvas* cc);
 

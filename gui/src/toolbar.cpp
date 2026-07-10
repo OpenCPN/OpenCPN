@@ -1015,9 +1015,11 @@ void ocpnToolBarSimple::EnableTooltips() {
 #endif
 }
 
-void ocpnToolBarSimple::DisableTooltips() {
+bool ocpnToolBarSimple::DisableTooltips() {
 #ifndef __ANDROID__
+  bool ret = ocpnToolBarSimple::m_btooltip_show;
   ocpnToolBarSimple::m_btooltip_show = false;
+  return ret;
 #endif
 }
 
