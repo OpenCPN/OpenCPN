@@ -93,6 +93,7 @@
 #include "route_point_gui.h"
 #include "s52plib.h"
 #include "s57chart.h"  // for ArrayOfS57Obj
+#include "s57_load.h"
 #include "s57_ocpn_utils.h"
 #include "shapefile_basemap.h"
 #include "tcmgr.h"
@@ -963,6 +964,8 @@ void glChartCanvas::BuildFBO() {
 }
 
 void glChartCanvas::SetupOpenGL() {
+  LoadS57();
+
   if (IsShown()) SetCurrent(*m_pcontext);
 
   char *str = (char *)glGetString(GL_RENDERER);
@@ -1084,12 +1087,16 @@ void glChartCanvas::SetupOpenGL() {
 #endif
 
   // VBO??
-  g_b_EnableVBO = true;
+  g_b_EnableVBO = true;  // For linestrings
 
   if (g_b_EnableVBO)
     wxLogMessage("OpenGL-> Using Vertexbuffer Objects");
   else
     wxLogMessage("OpenGL-> Vertexbuffer Objects unavailable");
+
+  // Inform S52PLIB of Renderer string, for any possible optimizations
+  //  Especially, for using VBO while AREA rendering.
+  if (ps52plib) ps52plib->SetGLRendererString(GetRendererString());
 
     //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES

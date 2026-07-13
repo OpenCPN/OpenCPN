@@ -657,6 +657,12 @@ void s52plib::SetGLRendererString(const wxString &renderer) {
       (renderer.Upper().Contains("QUADRO")) ||
       (renderer.Upper().Contains("GEFORCE")))
     m_GLAC_VBO = true;
+
+  // ANGLE/Vulkan implementations have also been found to require/prefer
+  // VBOs for stability and performance when rendering dense tessellated
+  // area geometry.
+  if (renderer.Upper().Contains("ANGLE"))
+    m_GLAC_VBO = true;
 }
 
 /*
