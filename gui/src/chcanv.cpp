@@ -4056,6 +4056,14 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           RoutePoint *segShow_point_b =
               (RoutePoint *)m_pRolloverRouteSeg->m_pData2;
 
+          // Minimally validate routepoint pointers
+          int ia = pr->GetIndexOf(segShow_point_a);
+          int ib = pr->GetIndexOf(segShow_point_b);
+          if (ia < 0 || ib < 0) {
+            wxLogMessage("Ignoring stale route segment selection.");
+            return;
+          }
+
           double brg, dist;
           DistanceBearingMercator(
               segShow_point_b->m_lat, segShow_point_b->m_lon,
