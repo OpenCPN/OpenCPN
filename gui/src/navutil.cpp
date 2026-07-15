@@ -2515,18 +2515,8 @@ bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
   pgpx->SaveFile(fns);
   delete pgpx;
 
-  // Kick off the Android file chooser activity
-  wxString path;
-  int response = g_Platform->DoFileSelectorDialog(
-      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      "*.gpx");
-
-  if (path.IsEmpty())  // relocation handled by SAF logic in Java
-    return true;
-
-  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
+  AndroidExportSAF(parent, suggestedName + ".gpx");
   return true;
-
 #endif
 
   return false;
@@ -2552,16 +2542,7 @@ bool ExportGPXTracks(wxWindow *parent, std::vector<Track *> *pTracks,
   pgpx->SaveFile(fns);
   delete pgpx;
 
-  // Kick off the Android file chooser activity
-  wxString path;
-  int response = g_Platform->DoFileSelectorDialog(
-      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      "*.gpx");
-
-  if (path.IsEmpty())  // relocation handled by SAF logic in Java
-    return true;
-
-  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
+  AndroidExportSAF(parent, suggestedName + ".gpx");
   return true;
 #endif
 
@@ -2588,18 +2569,8 @@ bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
   pgpx->SaveFile(fns);
   delete pgpx;
 
-  // Kick off the Android file chooser activity
-  wxString path;
-  int response = g_Platform->DoFileSelectorDialog(
-      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      "*.gpx");
-
-  if (path.IsEmpty())  // relocation handled by SAF logic in Java
-    return true;
-
-  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
+  AndroidExportSAF(parent, suggestedName + ".gpx");
   return true;
-
 #endif
 
   return false;
@@ -2674,17 +2645,10 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   pgpx->SaveFile(fns);
 
 #ifdef __ANDROID__
-  // Kick off the Android file chooser activity
-  wxString path;
-  int response =
-      g_Platform->DoFileSelectorDialog(parent, &path, _("Export GPX file"),
-                                       g_gpx_path, "userobjects.gpx", "*.gpx");
-  if (path.IsEmpty())  // relocation handled by SAF logic in Java
-    return;
-
-  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
+  AndroidExportSAF(parent, "userobjects.gpx");
   return;
 #endif
+
   delete pgpx;
   ::wxEndBusyCursor();
   delete pprog;
@@ -2731,6 +2695,11 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
     }
     delete popenDialog;
 #else  // Android
+    if (!androidCheckSAFPermission("primary:Documents")) {
+      AndroidDoSAFPermissions();
+      return;
+    }
+
     wxString path;
     response = g_Platform->DoFileSelectorDialog(
         NULL, &path, _("Import GPX file"), g_gpx_path, "", "*.gpx");
