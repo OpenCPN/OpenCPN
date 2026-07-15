@@ -175,6 +175,9 @@ bool androidInstallPlaystoreHelp();
 
 void androidLaunchBrowser(wxString URL);
 bool androidCheckOnline();
+bool androidCheckSAFPermission(wxString docID);
+bool AndroidDoSAFPermissions();
+void AndroidExportSAF(wxWindow *parent, wxString export_file_name);
 
 unsigned int androidColorPicker(unsigned int initialColor);
 
