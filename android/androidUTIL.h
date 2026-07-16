@@ -33,6 +33,7 @@
 #endif  // precompiled headers
 
 #include <QString>
+#include <QtWidgets/QWidget>
 #include <string>
 
 #include "o_sound/o_sound.h"
