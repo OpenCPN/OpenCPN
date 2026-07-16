@@ -2846,14 +2846,15 @@ endif ()
 
 if (QT_ANDROID)
   target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::java-jvm)
-  target_include_directories(
-    ${PACKAGE_NAME}
-    PRIVATE ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/include
-  )
+  # OpenSSL comes from the tree staged by the builder image (see
+  # libs/AndroidLibs.cmake), not from the prebuilt 1.1.0c binaries vendored in
+  # buildandroid/libopenssl/, which are from 2016 and long EOL.
+  set(_ssl_base ${OCPN_ANDROID_DEPS}/openssl/${ARCH})
+  target_include_directories(${PACKAGE_NAME} PRIVATE ${_ssl_base}/include)
   target_link_libraries(
     ${PACKAGE_NAME}
     PRIVATE
-      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libssl.a
-      ${CMAKE_SOURCE_DIR}/buildandroid/libopenssl/${ARCH}/openssl/lib/libcrypto.a
+      ${_ssl_base}/lib/libssl.a
+      ${_ssl_base}/lib/libcrypto.a
   )
 endif ()
