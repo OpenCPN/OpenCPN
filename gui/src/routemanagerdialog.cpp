@@ -81,6 +81,8 @@
 #include "track_prop_dlg.h"
 
 #ifdef __ANDROID__
+#include <QtWidgets/QAbstractItemView>
+
 #include "androidUTIL.h"
 #endif
 
@@ -1035,7 +1037,11 @@ void RouteManagerDialog::Create() {
   m_pRouteListCtrl->AssignImageList(imglist, wxIMAGE_LIST_SMALL);
 
 #ifdef __ANDROID__
-  m_pRouteListCtrl->GetHandle()->setIconSize(QSize(imageRefSize, imageRefSize));
+  // wxListCtrl is a QTreeWidget underneath, but GetHandle() is typed QWidget*,
+  // so recover the view to reach setIconSize().
+  if (QAbstractItemView *view =
+          qobject_cast<QAbstractItemView *>(m_pRouteListCtrl->GetHandle()))
+    view->setIconSize(QSize(imageRefSize, imageRefSize));
 #endif
 
   // Assign will handle destroy, Set will not. It's OK, that's what we want
