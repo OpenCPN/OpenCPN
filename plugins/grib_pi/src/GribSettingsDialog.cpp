@@ -83,6 +83,9 @@ static const wxString altitude_from_index[3][5] = {
 
 #ifdef __ANDROID__
 
+#include <QtCore/QString>
+#include <QtWidgets/QWidget>
+
 QString qtStyleSheet =
     "QScrollBar:horizontal {\
 border: 0px solid grey;\
