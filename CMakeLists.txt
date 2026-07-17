@@ -2650,6 +2650,9 @@ if (APPLE)
 
   set(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   set(DIRS "/usr/local/lib")
+  if (EXISTS "/opt/homebrew/lib")
+    list(APPEND DIRS "/opt/homebrew/lib")
+  endif ()
 
   # INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/Plugins")
   install(

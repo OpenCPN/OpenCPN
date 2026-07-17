@@ -97,8 +97,10 @@ bool PublishFileInto(const wxString& root, const wxString& rel,
     return false;
   }
 
-  // Prefer atomic replace when source and dest share a filesystem.
-  if (wxRenameFile(source_path, dest, true /*overwrite*/)) {
+  // wxRenameFile(..., overwrite=true) fails on Windows when the destination
+  // does not exist yet; pass overwrite only when replacing a live file.
+  const bool dest_exists = wxFileExists(dest);
+  if (wxRenameFile(source_path, dest, dest_exists)) {
     return true;
   }
 
@@ -115,7 +117,7 @@ bool PublishFileInto(const wxString& root, const wxString& rel,
     }
     return false;
   }
-  if (!wxRenameFile(publish_tmp, dest, true /*overwrite*/)) {
+  if (!wxRenameFile(publish_tmp, dest, wxFileExists(dest))) {
     if (wxFileExists(publish_tmp)) {
       wxRemoveFile(publish_tmp);
     }
