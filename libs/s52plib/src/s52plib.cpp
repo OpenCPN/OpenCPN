@@ -5767,6 +5767,11 @@ int s52plib::ComputeWinding(ObjRazRules *rzRules, Rules *rules) {
         ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
         nPoints = ls->pedge->nCount;
         if (ls->ls_type == TYPE_EE_REV) idir = -1;
+
+      } else {
+        ppt = (float *)(vbo_point + ls->pcs->vbo_offset);
+        nPoints = 2;
+        bcon = true;
       }
 
       int vbo_index = 0;
