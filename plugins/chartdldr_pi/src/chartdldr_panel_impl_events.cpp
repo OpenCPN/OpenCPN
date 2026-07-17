@@ -65,19 +65,20 @@ void ChartDldrPanelImpl::BindPanelEventHandlers() {
 void ChartDldrPanelImpl::OnPopupClick(wxCommandEvent& evt) {
   switch (evt.GetId()) {
     case ID_MNU_SELALL:
-      CheckAllCharts(true);
+      chart_list_view_.SetAllChecked(true);
       break;
     case ID_MNU_DELALL:
-      CheckAllCharts(false);
+      chart_list_view_.SetAllChecked(false);
       break;
     case ID_MNU_INVSEL:
-      InvertCheckAllCharts();
+      chart_list_view_.InvertAllChecked();
       break;
     case ID_MNU_SELUPD:
-      CheckUpdatedCharts(true);
+      chart_list_view_.SetCheckedForKind(ChartDldrChartUpdateKind::Updated,
+                                         true);
       break;
     case ID_MNU_SELNEW:
-      CheckNewCharts(true);
+      chart_list_view_.SetCheckedForKind(ChartDldrChartUpdateKind::New, true);
       break;
   }
 }

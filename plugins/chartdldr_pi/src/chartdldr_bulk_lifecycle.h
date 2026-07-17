@@ -128,7 +128,6 @@ struct ChartDldrBulkSessionEnd {
   enum class ScheduledFinish { None, Complete, Abort };
 
   bool ShouldCopyStats() const;
-  bool ShouldCancelPanel() const;
   bool ShouldCancelGlobal() const;
   bool ShouldFinalizeUi() const;
   bool ShouldApplyChartDb() const;

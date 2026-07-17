@@ -8,13 +8,8 @@ bool ChartDldrBulkSessionEnd::ShouldCopyStats() const {
   return ChartDldrBulkSessionIsSuccessfulComplete(reason);
 }
 
-bool ChartDldrBulkSessionEnd::ShouldCancelPanel() const {
-  return !ChartDldrBulkSessionIsSuccessfulComplete(reason);
-}
-
 bool ChartDldrBulkSessionEnd::ShouldCancelGlobal() const {
-  return ShouldCancelPanel() &&
-         ChartDldrBulkSessionShouldCancelGlobalDownloads(reason);
+  return ChartDldrBulkSessionShouldCancelGlobalDownloads(reason);
 }
 
 bool ChartDldrBulkSessionEnd::ShouldFinalizeUi() const {

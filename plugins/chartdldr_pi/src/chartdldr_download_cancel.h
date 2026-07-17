@@ -120,11 +120,6 @@ struct ChartDldrDownloadCancelState {
     }
   }
 
-  /** Force a full-session cancel (teardown paths that must not resume). */
-  void ForceCancel() {
-    pending_ = ChartDldrDownloadCancelAction::CancelSession;
-  }
-
 private:
   ChartDldrDownloadCancelPhase resume_after_download_ =
       ChartDldrDownloadCancelPhase::Idle;

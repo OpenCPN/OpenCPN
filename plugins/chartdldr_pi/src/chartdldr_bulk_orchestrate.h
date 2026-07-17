@@ -14,6 +14,7 @@
 #include "chartdldr_scheduled_run_observer.h"
 
 #include <memory>
+#include <vector>
 
 class ChartDldrBulkCatalogController;
 class ChartDldrBulkChartController;
@@ -72,6 +73,7 @@ private:
     ChartDldrBulkSessionPolicy policy;
     ChartDldrBulkRunUiSnapshot ui_before;
     ChartDldrBulkRunStats stats;
+    std::vector<ChartDldrManualDownloadAction> manual_actions;
     ChartDldrBulkPostflight postflight;
   };
 
@@ -80,7 +82,8 @@ private:
   void OnBulkTransferEnd() override;
 
   bool TryStartBulkSession(chartdldr_pi* pi,
-                           const ChartDldrBulkSessionPolicy& policy);
+                           const ChartDldrBulkSessionPolicy& policy,
+                           const ChartDldrBulkRunUiSnapshot& ui_before);
   ChartDldrBulkWalkStep StepChartDownloadPass(int catalog_index);
 
   bool StepBulkRunOnce();
@@ -98,6 +101,7 @@ private:
   void ApplySessionEnd(const ChartDldrBulkSessionEnd& end,
                        const SessionEndContext& ctx,
                        ChartDldrBulkRunStats* out_stats);
+  void PresentPostflight(const ChartDldrBulkPostflight& result);
   void EnsureIdleCatalogUi();
 
   ChartDldrBulkPanelPort& port_;

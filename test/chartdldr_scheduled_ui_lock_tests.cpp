@@ -88,11 +88,10 @@ TEST(ChartDldrScheduledUiLock, SessionCancelDuringChartAbortEndsRun) {
   ChartDldrDownloadCancelState cancel;
   cancel.ResetForBulkRun();
   cancel.BeginBulkSessionCancel();
-  cancel.BeginActiveDownload();
 
   // A pending whole-session cancel implies aborting the current transfer and
   // survives re-arming the next chart download.
-  cancel.ForceCancel();
+  EXPECT_TRUE(cancel.HandleDownloadButtonClick());
   EXPECT_TRUE(cancel.IsSessionCancelled());
   EXPECT_TRUE(cancel.ShouldAbortCurrentTransfer());
   cancel.ConsumeAbortCurrentTransfer();

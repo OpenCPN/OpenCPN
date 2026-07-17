@@ -109,6 +109,22 @@ void ChartDldrPanelChartListView::SyncFromSelection() {
   UpdateSelectionInfoLabel();
 }
 
+void ChartDldrPanelChartListView::SetAllChecked(bool value) {
+  panel_.m_catalogSelection.SetAllChecked(value);
+  SyncFromSelection();
+}
+
+void ChartDldrPanelChartListView::SetCheckedForKind(
+    ChartDldrChartUpdateKind kind, bool value) {
+  panel_.m_catalogSelection.SetCheckedForKind(kind, value);
+  SyncFromSelection();
+}
+
+void ChartDldrPanelChartListView::InvertAllChecked() {
+  panel_.m_catalogSelection.InvertAllChecked();
+  SyncFromSelection();
+}
+
 void ChartDldrPanelChartListView::CaptureSelectionFromWidgets() {
   if (!materialized_ || WidgetCount() != panel_.m_catalogSelection.Count()) {
     return;

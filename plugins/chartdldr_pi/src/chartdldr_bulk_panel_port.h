@@ -7,7 +7,6 @@
 
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_transfer.h"
-#include "chartdldr_catalog_selection.h"
 
 #include <wx/string.h>
 
@@ -25,9 +24,10 @@ enum class ChartDldrCatalogActivation {
 };
 
 /**
- * Single panel surface used by the bulk orchestrator, controllers, and chart
- * transfer helpers. Collapses the former Host / CatalogView / ChartDownloadView
- * split; ChartDldrPanelImpl is the only implementation.
+ * Widget surface used by the bulk orchestrator, controllers, and chart
+ * transfer helpers. Widgets and context reads only: dialogs and workflow
+ * decisions live with the orchestrator (chartdldr_bulk_preflight).
+ * ChartDldrPanelImpl is the only implementation.
  */
 class ChartDldrBulkPanelPort {
 public:
@@ -38,7 +38,6 @@ public:
   virtual wxWindow* AsWindow() = 0;
   virtual wxEvtHandler* AsEventHandler() = 0;
   virtual bool IsShownOnScreen() const = 0;
-  virtual bool IsBulkRunCancelled() const = 0;
   virtual int GetSelectedCatalog() = 0;
 
   // catalog activation -----------------------------------------------------
@@ -53,6 +52,7 @@ public:
       const ChartDldrCatalogUiPolicy& ui = ChartDldrCatalogUiPolicy()) = 0;
 
   // catalog / chart list UI ------------------------------------------------
+  virtual int GetChartCount() = 0;
   virtual int GetCheckedChartCount() = 0;
   virtual bool IsChartChecked(int index) const = 0;
   virtual void CaptureChartListSelectionFromWidgets() = 0;
@@ -61,8 +61,8 @@ public:
                                     const wxString& release_date,
                                     const wxString& local_path) = 0;
   virtual void UpdateChartsLabelForSource(const ChartSource& cs) = 0;
-  virtual void ArmChartDownloadCancelUi() = 0;
-  virtual void DisarmChartDownloadCancelUi() = 0;
+  /** Re-render the download button from the session cancel phase. */
+  virtual void SyncDownloadCancelUi() = 0;
   virtual void UpdateDownloadProgress(
       int downloading, int to_download, int failed_downloads,
       const ChartDldrBulkTransferSlot& transfer) = 0;
@@ -71,15 +71,7 @@ public:
   // session lifecycle ------------------------------------------------------
   virtual int BulkDownloadNotebookPage() const = 0;
   virtual void SetBulkDownloadNotebookPage(int page) = 0;
-  virtual void ApplyBulkRunUiPolicy(
-      const ChartDldrBulkSessionPolicy& policy) = 0;
-  virtual void EndBulkSessionUi() = 0;
   virtual void RefreshCatalogToolbar() = 0;
-  virtual void CancelDownload() = 0;
-  virtual void PresentBulkPostflight(const ChartDldrBulkPostflight& result) = 0;
-  virtual ChartDldrBulkRunPlan BuildSelectedChartsPreflightPlan() = 0;
-  virtual void ExecuteManualDownloadPlan(const ChartDldrBulkRunPlan& plan) = 0;
-  virtual bool ConfirmInteractiveStart() = 0;
 };
 
 #endif  // CHARTDLDR_BULK_PANEL_PORT_H_

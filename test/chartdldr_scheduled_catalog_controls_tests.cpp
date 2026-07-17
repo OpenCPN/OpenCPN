@@ -32,15 +32,15 @@ TEST(ChartDldrCatalogControls, IdlePanelEnablesMutationsAndDownload) {
 TEST(ChartDldrCatalogControls, InteractiveAndScheduledPoliciesStillDistinct) {
   const auto silent =
       ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::ScheduledBulk, false);
-  EXPECT_TRUE(silent.IsScheduled());
-  EXPECT_FALSE(silent.UiMaterialize());
+  EXPECT_TRUE(silent.scheduled);
+  EXPECT_FALSE(silent.ui_materialize);
 
   const auto visible =
       ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::ScheduledBulk, true);
-  EXPECT_TRUE(visible.IsScheduled());
-  EXPECT_TRUE(visible.UiMaterialize());
+  EXPECT_TRUE(visible.scheduled);
+  EXPECT_TRUE(visible.ui_materialize);
 
   EXPECT_FALSE(
       ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::InteractiveBulk, true)
-          .IsScheduled());
+          .scheduled);
 }

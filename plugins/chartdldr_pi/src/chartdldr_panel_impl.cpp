@@ -45,24 +45,6 @@
 #endif
 #endif  // __WXMAC__
 
-namespace {
-
-class ChartDldrBulkPanelNotifier final : public ChartDldrBulkNotifier {
-public:
-  explicit ChartDldrBulkPanelNotifier(ChartDldrPanelImpl &panel)
-      : panel_(panel) {}
-
-  bool ConfirmInteractiveStart() override {
-    chartdldr_pi *const pi = panel_.GetPlugin();
-    return pi && pi->ConfirmInteractiveBulkUpdate(&panel_);
-  }
-
-private:
-  ChartDldrPanelImpl &panel_;
-};
-
-}  // namespace
-
 void ChartDldrPanelImpl::MarkMacCatalogListNeedsRefresh() {
 #ifdef __WXMAC__
   m_macCatalogListNeedsRefresh = true;
@@ -270,24 +252,24 @@ void ChartDldrPanelImpl::OnChartListContextMenu(wxDataViewEvent &event) {
 #endif /* CHART_LIST */
 #if defined(CHART_LIST)
 void ChartDldrPanelImpl::OnSelectNewCharts(wxCommandEvent &event) {
-  CheckNewCharts(true);
+  chart_list_view_.SetCheckedForKind(ChartDldrChartUpdateKind::New, true);
 }
 #endif /* CHART_LIST */
 
 #if defined(CHART_LIST)
 void ChartDldrPanelImpl::OnSelectUpdatedCharts(wxCommandEvent &event) {
-  CheckUpdatedCharts(true);
+  chart_list_view_.SetCheckedForKind(ChartDldrChartUpdateKind::Updated, true);
 }
 #endif /* CHART_LIST */
 
 #if defined(CHART_LIST)
 void ChartDldrPanelImpl::OnSelectAllCharts(wxCommandEvent &event) {
   if (m_bSelectAll->GetLabel() == _("Select All")) {
-    CheckAllCharts(true);
+    chart_list_view_.SetAllChecked(true);
     m_bSelectAll->SetLabel(_("Select None"));
     m_bSelectAll->SetToolTip(_("De-select all charts in the list."));
   } else {
-    CheckAllCharts(false);
+    chart_list_view_.SetAllChecked(false);
     m_bSelectAll->SetLabel(_("Select All"));
     m_bSelectAll->SetToolTip(_("Select all charts in the list."));
   }
@@ -304,27 +286,6 @@ bool ChartDldrPanelImpl::IsChartChecked(int i) const {
   wxASSERT_MSG(i >= 0,
                wxT("This function should be called with non-negative index."));
   return m_catalogSelection.IsChecked(i);
-}
-
-void ChartDldrPanelImpl::CheckAllCharts(bool value) {
-  m_catalogSelection.SetAllChecked(value);
-  chart_list_view_.SyncFromSelection();
-}
-
-void ChartDldrPanelImpl::CheckNewCharts(bool value) {
-  m_catalogSelection.SetCheckedForKind(ChartDldrChartUpdateKind::New, value);
-  chart_list_view_.SyncFromSelection();
-}
-
-void ChartDldrPanelImpl::CheckUpdatedCharts(bool value) {
-  m_catalogSelection.SetCheckedForKind(ChartDldrChartUpdateKind::Updated,
-                                       value);
-  chart_list_view_.SyncFromSelection();
-}
-
-void ChartDldrPanelImpl::InvertCheckAllCharts() {
-  m_catalogSelection.InvertAllChecked();
-  chart_list_view_.SyncFromSelection();
 }
 
 void ChartDldrPanelImpl::UpdateCatalogListRow(int catalog_index,
@@ -349,7 +310,7 @@ void ChartDldrPanelImpl::SetDownloadChartsButtonLabel(const wxString &label) {
   SyncDownloadChartsButtonEnabled();
 }
 
-void ChartDldrPanelImpl::SyncDownloadCancelButton() {
+void ChartDldrPanelImpl::SyncDownloadCancelUi() {
   SetDownloadChartsButtonLabel(ChartDldrDownloadCancelButtonLabel(
       bulk_->Session().DownloadCancel().phase));
 }
@@ -360,20 +321,6 @@ void ChartDldrPanelImpl::SyncDownloadChartsButtonEnabled() {
           bulk_->IsRunActive(),
           bulk_->Session().DownloadCancel().IsDownloadButtonCancelArmed())
           .download_button_enabled);
-}
-
-void ChartDldrPanelImpl::ArmChartDownloadCancelUi() {
-  bulk_->Session().DownloadCancel().BeginActiveDownload();
-  SyncDownloadCancelButton();
-}
-
-void ChartDldrPanelImpl::DisarmChartDownloadCancelUi() {
-  bulk_->Session().DownloadCancel().EndActiveDownload();
-  SyncDownloadCancelButton();
-}
-
-bool ChartDldrPanelImpl::IsBulkRunCancelled() const {
-  return bulk_->Session().DownloadCancel().IsSessionCancelled();
 }
 
 void ChartDldrPanelImpl::UpdateChartList(wxCommandEvent &event) {
@@ -408,8 +355,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl(chartdldr_pi *plugin, wxWindow *parent,
                                        const wxSize &size, long style)
     : ChartDldrPanel(parent, id, pos, size, style),
       chart_list_view_(*this),
-      bulk_(std::make_unique<ChartDldrBulkOrchestrate>(*this)),
-      notifier_(std::make_unique<ChartDldrBulkPanelNotifier>(*this)) {
+      bulk_(std::make_unique<ChartDldrBulkOrchestrate>(*this)) {
   BindPanelEventHandlers();
   m_lbChartSources->InsertColumn(0, _("Catalog"), wxLIST_FORMAT_LEFT,
                                  CATALOGS_NAME_WIDTH);

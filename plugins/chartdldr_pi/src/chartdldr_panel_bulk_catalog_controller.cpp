@@ -32,7 +32,7 @@ ChartDldrBulkCatalogController::ChartDldrBulkCatalogController(
 
 void ChartDldrBulkCatalogController::ApplyCatalogUi(
     int catalog_index, const ChartDldrCatalogUiPolicy& ui) {
-  chartdldr_pi* const pi = port_.GetPlugin();
+  chartdldr_pi* const pi = session_.Plugin();
   if (!pi || !ChartDldrBulkCatalogIndexInRange(catalog_index,
                                                pi->m_ChartSources.size())) {
     return;
@@ -86,7 +86,7 @@ bool ChartDldrBulkCatalogController::BeginCatalogRefresh(
     return false;
   }
 
-  chartdldr_pi* const pi = port_.GetPlugin();
+  chartdldr_pi* const pi = session_.Plugin();
   wxURI url;
   wxFileName output_fn;
   if (!ChartDldrPrepareCatalogDownloadPaths(pi, catalog_index, url,
@@ -169,7 +169,7 @@ ChartDldrBulkWalkStep ChartDldrBulkCatalogController::RunBulkCatalogPrepareStep(
     refresh = ChartDldrCatalogRefreshPayload();
     session_.Transfer().Reset();
 
-    ApplyCatalogDownloadOutcome(done_index, ui, policy.ErrorReporting(), ret,
+    ApplyCatalogDownloadOutcome(done_index, ui, policy.error_reporting, ret,
                                 url);
     if (!ChartDldrCatalogRefreshSucceeded(
             ret, session_.DownloadCancel().IsSessionCancelled())) {
@@ -189,7 +189,7 @@ ChartDldrBulkWalkStep ChartDldrBulkCatalogController::RunBulkCatalogPrepareStep(
   }
 
   ApplyCatalogUi(catalog_index, ui);
-  if (!BeginCatalogRefresh(catalog_index, policy.ErrorReporting())) {
+  if (!BeginCatalogRefresh(catalog_index, policy.error_reporting)) {
     return fail_advance();
   }
   if (session_.Transfer().IsInProgress()) {

@@ -57,15 +57,15 @@ ChartDldrBulkChartController::ChartDldrBulkChartController(
     ChartDldrBulkPanelPort& port, ChartDldrBulkRunSession& session)
     : port_(port), session_(session) {}
 
-void ChartDldrBulkChartController::BeginBulkChartDownload(
-    const ChartDldrBulkSessionPolicy& policy, int catalog_index) {
-  if (!port_.GetPlugin()) {
+void ChartDldrBulkChartController::BeginBulkChartDownload(int catalog_index) {
+  if (!session_.Plugin()) {
     return;
   }
 
+  const ChartDldrBulkSessionPolicy& policy = session_.Policy();
   ChartDldrChartBulkState& chart_bulk = session_.ChartBulk();
   const int selected = port_.GetCheckedChartCount();
-  if (!selected && !policy.AllowEmptySelection()) {
+  if (!selected && !policy.allow_empty_selection) {
     ChartDldrReportBulkError(port_.AsWindow(), policy,
                              _("No charts selected for download."),
                              _("Chart Downloader"));
@@ -83,7 +83,8 @@ void ChartDldrBulkChartController::BeginBulkChartDownload(
   chart_bulk.pending_download_paths = ChartDldrTempDownloadPaths();
   chart_bulk.active = true;
 
-  port_.ArmChartDownloadCancelUi();
+  session_.DownloadCancel().BeginActiveDownload();
+  port_.SyncDownloadCancelUi();
   session_.Transfer().Reset();
 }
 
@@ -104,7 +105,7 @@ ChartDldrBulkWalkStep ChartDldrBulkChartController::PollActiveChartTransfer(
           pi);
       return ChartDldrBulkWalkStep::MoreWork;
     }
-    if (policy.UiShowDownloadProgress()) {
+    if (policy.ui_show_download_progress) {
       port_.UpdateDownloadProgress(chart_bulk.downloading,
                                    chart_bulk.to_download, chart_bulk.failed,
                                    transfer);
@@ -157,11 +158,15 @@ ChartDldrBulkChartController::StartNextCheckedChartDownload(
     switch (ChartDldrPrepareCheckedChartDownload(chart_info, source.GetDir(),
                                                  download_url, paths)) {
       case ChartDldrPrepareCheckedChartDownloadResult::SkipManual:
-        if (ChartDldrBulkPlanOpensDiscoveredManualUrls(policy.plan) &&
+        // Collected once per run; the orchestrator opens the pages after a
+        // successful teardown (never a browser launch mid-walk).
+        if (policy.collect_manual_urls &&
             !chart->GetManualDownloadUrl().IsEmpty()) {
-          wxLaunchDefaultBrowser(chart->GetManualDownloadUrl());
+          session_.ManualActions().push_back(ChartDldrManualDownloadAction{
+              chart->GetChartTitle(), chart->GetManualDownloadUrl(),
+              source.GetDir()});
         }
-        if (!policy.SkipManualUrlCharts()) {
+        if (!policy.skip_manual_url_charts) {
           const wxString extract_dir =
               catalog_source ? catalog_source->GetDir() : wxString();
           wxLogMessage(
@@ -201,8 +206,8 @@ ChartDldrBulkChartController::StartNextCheckedChartDownload(
   return ChartDldrBulkWalkStep::Advance;
 }
 
-ChartDldrBulkWalkStep ChartDldrBulkChartController::StepNextBulkChart(
-    const ChartDldrBulkSessionPolicy& policy) {
+ChartDldrBulkWalkStep ChartDldrBulkChartController::StepNextBulkChart() {
+  const ChartDldrBulkSessionPolicy& policy = session_.Policy();
   ChartDldrChartBulkState& chart_bulk = session_.ChartBulk();
   if (!chart_bulk.active) {
     return ChartDldrBulkWalkStep::NotActive;
@@ -211,7 +216,7 @@ ChartDldrBulkWalkStep ChartDldrBulkChartController::StepNextBulkChart(
     return ChartDldrBulkWalkStep::Advance;
   }
 
-  chartdldr_pi* const pi = port_.GetPlugin();
+  chartdldr_pi* const pi = session_.Plugin();
   const int catalog_index = chart_bulk.catalog_index;
   if (!pi || !ChartDldrBulkCatalogIndexInRange(catalog_index,
                                                pi->m_ChartSources.size())) {
@@ -229,14 +234,14 @@ ChartDldrBulkWalkStep ChartDldrBulkChartController::StepNextBulkChart(
                                        pi);
 }
 
-ChartDldrBulkRunStats ChartDldrBulkChartController::FinishChartPass(
-    const ChartDldrBulkSessionPolicy& policy) {
+ChartDldrBulkRunStats ChartDldrBulkChartController::FinishChartPass() {
+  const ChartDldrBulkSessionPolicy& policy = session_.Policy();
   ChartDldrChartBulkState& chart_bulk = session_.ChartBulk();
   if (!chart_bulk.active) {
     return ChartDldrBulkRunStats();
   }
 
-  chartdldr_pi* const pi = port_.GetPlugin();
+  chartdldr_pi* const pi = session_.Plugin();
   const int catalog_index = chart_bulk.catalog_index;
   ChartSource* source = nullptr;
   if (pi && ChartDldrBulkCatalogIndexInRange(catalog_index,
@@ -260,11 +265,11 @@ ChartDldrBulkRunStats ChartDldrBulkChartController::FinishChartPass(
     ChartDldrCancelAndResetBulkTransfer(session_.Transfer());
   }
 
-  port_.DisarmChartDownloadCancelUi();
+  session_.DownloadCancel().EndActiveDownload();
+  port_.SyncDownloadCancelUi();
   chart_bulk.active = false;
 
-  if (policy.UiMaterialize()) {
-    chartdldr_pi* const pi = port_.GetPlugin();
+  if (policy.ui_materialize) {
     const ChartDldrCatalogUiPolicy ui = policy.CatalogApply(
         pi ? pi->m_preselect_new : true, pi ? pi->m_preselect_updated : true);
     port_.ActivateCatalog(chart_bulk.catalog_index,

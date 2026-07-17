@@ -37,7 +37,6 @@ TEST(ChartDldrBulkPreflight, SelectedPlanOwnsOnlyCheckedManualActions) {
   EXPECT_EQ(plan.manual_downloads.front().url,
             wxT("https://example.test/manual"));
   EXPECT_EQ(plan.manual_downloads.front().target_dir, wxT("/charts"));
-  EXPECT_FALSE(ChartDldrBulkPlanOpensDiscoveredManualUrls(plan));
 }
 
 TEST(ChartDldrBulkPreflight, EmptySelectionNeverCreatesSessionPlan) {
@@ -49,91 +48,75 @@ TEST(ChartDldrBulkPreflight, EmptySelectionNeverCreatesSessionPlan) {
   EXPECT_TRUE(plan.manual_downloads.empty());
 }
 
-TEST(ChartDldrBulkPreflight, UpdateAllResolvedPolicyOpensWithoutPrompting) {
-  ChartDldrBulkRunPlan plan;
-  plan.manual_policy = ChartDldrManualDownloadPolicy::OpenAsDiscovered;
-  EXPECT_TRUE(ChartDldrBulkPlanOpensDiscoveredManualUrls(plan));
-}
-
 TEST(ChartDldrBulkSessionPolicy, ModeUiMatrix) {
   const ChartDldrBulkSessionPolicy scheduled_hidden =
       ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::ScheduledBulk, false);
-  EXPECT_EQ(ChartDldrScheduledUiPresentationFor(false),
-            ChartDldrScheduledUiPresentation::Silent);
-  EXPECT_EQ(ChartDldrScheduledUiPresentationFor(true),
-            ChartDldrScheduledUiPresentation::WithProgress);
-  EXPECT_EQ(scheduled_hidden.ErrorReporting(),
+  EXPECT_EQ(scheduled_hidden.error_reporting,
             ChartDldrErrorReporting::SummaryLog);
   EXPECT_EQ(scheduled_hidden.mode, ChartDldrBulkRunMode::ScheduledBulk);
-  EXPECT_EQ(scheduled_hidden.scheduled_ui,
-            ChartDldrScheduledUiPresentation::Silent);
-  EXPECT_TRUE(scheduled_hidden.IsScheduled());
-  EXPECT_FALSE(scheduled_hidden.UiMaterialize());
-  EXPECT_FALSE(scheduled_hidden.UiShowDownloadProgress());
+  EXPECT_TRUE(scheduled_hidden.scheduled);
+  EXPECT_FALSE(scheduled_hidden.ui_materialize);
+  EXPECT_FALSE(scheduled_hidden.ui_show_download_progress);
   EXPECT_FALSE(scheduled_hidden.confirm_before_start);
-  EXPECT_TRUE(scheduled_hidden.SkipManualUrlCharts());
-  EXPECT_TRUE(scheduled_hidden.AllowEmptySelection());
+  EXPECT_TRUE(scheduled_hidden.skip_manual_url_charts);
+  EXPECT_FALSE(scheduled_hidden.collect_manual_urls);
+  EXPECT_TRUE(scheduled_hidden.allow_empty_selection);
   EXPECT_EQ(scheduled_hidden.walk_bind, ChartDldrBulkWalkBind::AllCatalogs);
   EXPECT_FALSE(scheduled_hidden.manual_plan_before_start);
-  EXPECT_FALSE(scheduled_hidden.FocusChartsAfter());
-  EXPECT_TRUE(scheduled_hidden.PreselectNew(false));
-  EXPECT_TRUE(scheduled_hidden.PreselectUpdated(false));
+  EXPECT_FALSE(scheduled_hidden.focus_charts_after);
+  EXPECT_TRUE(scheduled_hidden.preselect_all_charts);
 
   const ChartDldrBulkSessionPolicy scheduled_visible =
       ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::ScheduledBulk, true);
-  EXPECT_EQ(scheduled_visible.scheduled_ui,
-            ChartDldrScheduledUiPresentation::WithProgress);
-  EXPECT_TRUE(scheduled_visible.IsScheduled());
-  EXPECT_TRUE(scheduled_visible.UiMaterialize());
-  EXPECT_TRUE(scheduled_visible.UiSelectDownloadTab());
-  EXPECT_TRUE(scheduled_visible.UiShowDownloadProgress());
-  EXPECT_TRUE(scheduled_visible.SkipManualUrlCharts());
+  EXPECT_TRUE(scheduled_visible.scheduled);
+  EXPECT_TRUE(scheduled_visible.ui_materialize);
+  EXPECT_TRUE(scheduled_visible.ui_select_download_tab);
+  EXPECT_TRUE(scheduled_visible.ui_show_download_progress);
+  EXPECT_TRUE(scheduled_visible.skip_manual_url_charts);
 
   const ChartDldrBulkSessionPolicy interactive = ChartDldrBulkSessionPolicyFor(
       ChartDldrBulkRunMode::InteractiveBulk, false);
-  EXPECT_EQ(interactive.ErrorReporting(), ChartDldrErrorReporting::Dialog);
+  EXPECT_EQ(interactive.error_reporting, ChartDldrErrorReporting::Dialog);
   EXPECT_EQ(interactive.mode, ChartDldrBulkRunMode::InteractiveBulk);
-  EXPECT_FALSE(interactive.IsScheduled());
-  EXPECT_TRUE(interactive.UiShowDownloadProgress());
-  EXPECT_TRUE(interactive.AllowEmptySelection());
-  EXPECT_FALSE(interactive.SkipManualUrlCharts());
+  EXPECT_FALSE(interactive.scheduled);
+  EXPECT_TRUE(interactive.ui_show_download_progress);
+  EXPECT_TRUE(interactive.allow_empty_selection);
+  EXPECT_FALSE(interactive.skip_manual_url_charts);
+  EXPECT_TRUE(interactive.collect_manual_urls);
   EXPECT_TRUE(interactive.confirm_before_start);
-  EXPECT_FALSE(interactive.PreserveChartSelection());
+  EXPECT_FALSE(interactive.preserve_chart_selection);
   EXPECT_EQ(interactive.walk_bind, ChartDldrBulkWalkBind::AllCatalogs);
-  EXPECT_TRUE(interactive.FocusChartsAfter());
+  EXPECT_TRUE(interactive.focus_charts_after);
   EXPECT_FALSE(interactive.manual_plan_before_start);
-  EXPECT_FALSE(interactive.PreselectNew(false));
-  EXPECT_TRUE(interactive.PreselectNew(true));
-  EXPECT_FALSE(interactive.PreselectUpdated(false));
-  EXPECT_TRUE(interactive.PreselectUpdated(true));
-  EXPECT_EQ(interactive.plan.manual_policy,
-            ChartDldrManualDownloadPolicy::OpenAsDiscovered);
+  EXPECT_FALSE(interactive.preselect_all_charts);
 
   const ChartDldrBulkSessionPolicy selected = ChartDldrBulkSessionPolicyFor(
       ChartDldrBulkRunMode::SelectedCharts, false);
-  EXPECT_FALSE(selected.AllowEmptySelection());
+  EXPECT_FALSE(selected.allow_empty_selection);
   EXPECT_EQ(selected.mode, ChartDldrBulkRunMode::SelectedCharts);
-  EXPECT_FALSE(selected.IsScheduled());
-  EXPECT_TRUE(selected.UiMaterialize());
-  EXPECT_TRUE(selected.UiShowDownloadProgress());
-  EXPECT_TRUE(selected.PreserveChartSelection());
+  EXPECT_FALSE(selected.scheduled);
+  EXPECT_TRUE(selected.ui_materialize);
+  EXPECT_TRUE(selected.ui_show_download_progress);
+  EXPECT_FALSE(selected.ui_select_download_tab);
+  EXPECT_TRUE(selected.preserve_chart_selection);
   EXPECT_EQ(selected.walk_bind, ChartDldrBulkWalkBind::SingleDownload);
   EXPECT_TRUE(selected.manual_plan_before_start);
-  EXPECT_FALSE(selected.FocusChartsAfter());
+  EXPECT_FALSE(selected.collect_manual_urls);
+  EXPECT_FALSE(selected.focus_charts_after);
   EXPECT_FALSE(selected.confirm_before_start);
 
   const ChartDldrBulkSessionPolicy catalog_refresh =
       ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::CatalogRefresh, true);
   EXPECT_EQ(catalog_refresh.mode, ChartDldrBulkRunMode::CatalogRefresh);
-  EXPECT_FALSE(catalog_refresh.IsScheduled());
-  EXPECT_TRUE(catalog_refresh.AllowEmptySelection());
+  EXPECT_FALSE(catalog_refresh.scheduled);
+  EXPECT_TRUE(catalog_refresh.allow_empty_selection);
   EXPECT_FALSE(catalog_refresh.confirm_before_start);
   EXPECT_EQ(catalog_refresh.walk_bind, ChartDldrBulkWalkBind::SinglePrepare);
-  EXPECT_TRUE(catalog_refresh.FocusChartsAfter());
-  EXPECT_TRUE(catalog_refresh.UiMaterialize());
-  EXPECT_FALSE(catalog_refresh.UiSelectDownloadTab());
-  EXPECT_FALSE(catalog_refresh.UiShowDownloadProgress());
-  EXPECT_EQ(catalog_refresh.ErrorReporting(), ChartDldrErrorReporting::Dialog);
+  EXPECT_TRUE(catalog_refresh.focus_charts_after);
+  EXPECT_TRUE(catalog_refresh.ui_materialize);
+  EXPECT_FALSE(catalog_refresh.ui_select_download_tab);
+  EXPECT_FALSE(catalog_refresh.ui_show_download_progress);
+  EXPECT_EQ(catalog_refresh.error_reporting, ChartDldrErrorReporting::Dialog);
 
   const ChartDldrCatalogUiPolicy from_interactive =
       interactive.CatalogApply(false, true);

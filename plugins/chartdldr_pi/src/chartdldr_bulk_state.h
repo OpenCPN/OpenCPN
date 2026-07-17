@@ -13,6 +13,8 @@
 
 #include <wx/string.h>
 
+#include <vector>
+
 class chartdldr_pi;
 
 /**
@@ -66,15 +68,21 @@ struct ChartDldrChartBulkState {
 class ChartDldrBulkRunSession {
 public:
   bool IsActive() const { return active_; }
-  bool IsScheduled() const {
-    return ChartDldrBulkRunModeIsScheduled(policy_.mode);
-  }
+  bool IsScheduled() const { return policy_.scheduled; }
 
   chartdldr_pi* Plugin() const { return pi_; }
   const ChartDldrBulkSessionPolicy& Policy() const { return policy_; }
   const ChartDldrBulkRunUiSnapshot& UiBefore() const { return ui_before_; }
-  const ChartDldrBulkRunPlan& Plan() const { return policy_.plan; }
   ChartDldrBulkRunMode Mode() const { return policy_.mode; }
+
+  /** Manual-URL charts discovered during the walk (collect_manual_urls);
+   * offered to the user once after a successful run. */
+  std::vector<ChartDldrManualDownloadAction>& ManualActions() {
+    return manual_actions_;
+  }
+  const std::vector<ChartDldrManualDownloadAction>& ManualActions() const {
+    return manual_actions_;
+  }
 
   ChartDldrBulkCatalogRunState& CatalogRun() { return catalog_run_; }
   const ChartDldrBulkCatalogRunState& CatalogRun() const {
@@ -122,6 +130,9 @@ public:
     catalog_run_ = ChartDldrBulkCatalogRunState();
     catalog_run_.catalog_bound = static_cast<int>(source_count);
     chart_bulk_.ResetForCatalogPass();
+    // The session owns cancel state: a beginning run is session-cancellable.
+    download_cancel_.ResetForBulkRun();
+    download_cancel_.BeginBulkSessionCancel();
     active_ = pi != nullptr;
     return active_;
   }
@@ -132,6 +143,7 @@ public:
     policy_ = ChartDldrBulkSessionPolicy();
     catalog_run_ = ChartDldrBulkCatalogRunState();
     chart_bulk_.ResetForCatalogPass();
+    manual_actions_.clear();
     // Transfers are disposed by the orchestrator/controllers before End();
     // Reset keeps the retained sinks + generation so any late download event is
     // fenced rather than delivered to a freed slot.
@@ -150,6 +162,7 @@ private:
   ChartDldrBulkTransferSlot transfer_;
   ChartDldrDownloadCancelState download_cancel_;
   ChartDldrCatalogRefreshPayload catalog_refresh_;
+  std::vector<ChartDldrManualDownloadAction> manual_actions_;
   ChartDldrBulkTransferEvents* transfer_events_ = nullptr;
 };
 

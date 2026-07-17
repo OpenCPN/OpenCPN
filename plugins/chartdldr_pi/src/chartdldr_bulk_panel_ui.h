@@ -5,6 +5,8 @@
 #ifndef CHARTDLDR_BULK_PANEL_UI_H_
 #define CHARTDLDR_BULK_PANEL_UI_H_
 
+#include "chartdldr_bulk_transfer.h"
+
 #include <wx/intl.h>
 #include <wx/string.h>
 
@@ -33,6 +35,28 @@ inline wxString ChartDldrFormatBytes(double bytes) {
 
 inline wxString ChartDldrFormatBytes(long bytes) {
   return ChartDldrFormatBytes(static_cast<double>(bytes));
+}
+
+/** One chart-info line for bulk download progress. */
+inline wxString ChartDldrDownloadProgressMessage(
+    int downloading, int to_download, int failed_downloads,
+    const ChartDldrBulkTransferSlot& transfer) {
+  if (failed_downloads) {
+    return wxString::Format(
+        _("Downloading chart %u of %u, %u downloads failed (%s / %s)"),
+        downloading, to_download, failed_downloads,
+        ChartDldrFormatBytes(transfer.transferred_size),
+        ChartDldrFormatBytes(transfer.total_size));
+  }
+  if (transfer.total_size <= 0) {
+    return wxString::Format(_("Downloading chart %u of %u (%s)"), downloading,
+                            to_download,
+                            ChartDldrFormatBytes(transfer.transferred_size));
+  }
+  return wxString::Format(_("Downloading chart %u of %u (%s / %s)"),
+                          downloading, to_download,
+                          ChartDldrFormatBytes(transfer.transferred_size),
+                          ChartDldrFormatBytes(transfer.total_size));
 }
 
 #endif  // CHARTDLDR_BULK_PANEL_UI_H_

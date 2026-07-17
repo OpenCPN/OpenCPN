@@ -28,7 +28,7 @@ TEST(ChartDldrBulkTeardown, CompletedSessionEndIsDerivedFromRealStats) {
   const ChartDldrBulkSessionEnd end = ChartDldrBulkSessionEndFor(
       ChartDldrBulkTeardownReason::Completed, true, stats);
 
-  EXPECT_FALSE(end.ShouldCancelPanel());
+  EXPECT_FALSE(end.ShouldCancelGlobal());
   EXPECT_TRUE(end.ShouldCopyStats());
   EXPECT_TRUE(end.ShouldFinalizeUi());
   EXPECT_TRUE(end.ShouldApplyChartDb());
@@ -42,7 +42,6 @@ TEST(ChartDldrBulkTeardown, CancelNeverAppliesPartiallyDownloadedCharts) {
   const ChartDldrBulkSessionEnd end = ChartDldrBulkSessionEndFor(
       ChartDldrBulkTeardownReason::UserCancelled, true, stats);
 
-  EXPECT_TRUE(end.ShouldCancelPanel());
   EXPECT_TRUE(end.ShouldCancelGlobal());
   EXPECT_FALSE(end.ShouldCopyStats());
   EXPECT_FALSE(end.ShouldFinalizeUi());
@@ -50,12 +49,11 @@ TEST(ChartDldrBulkTeardown, CancelNeverAppliesPartiallyDownloadedCharts) {
   EXPECT_EQ(end.Scheduled(), ChartDldrBulkSessionEnd::ScheduledFinish::Abort);
 }
 
-TEST(ChartDldrBulkTeardown, FailedStartCancelsPanelButNotGlobal) {
+TEST(ChartDldrBulkTeardown, FailedStartNeverCancelsGlobalDownloads) {
   ChartDldrBulkRunStats stats;
   const ChartDldrBulkSessionEnd end = ChartDldrBulkSessionEndFor(
       ChartDldrBulkTeardownReason::FailedStart, false, stats);
 
-  EXPECT_TRUE(end.ShouldCancelPanel());
   EXPECT_FALSE(end.ShouldCancelGlobal());
   EXPECT_FALSE(end.ShouldFinalizeUi());
   EXPECT_FALSE(end.ShouldApplyChartDb());
@@ -67,7 +65,6 @@ TEST(ChartDldrBulkTeardown, ShutdownCancelsGlobalAndAbortsScheduled) {
   const ChartDldrBulkSessionEnd end = ChartDldrBulkSessionEndFor(
       ChartDldrBulkTeardownReason::Shutdown, true, stats);
 
-  EXPECT_TRUE(end.ShouldCancelPanel());
   EXPECT_TRUE(end.ShouldCancelGlobal());
   EXPECT_FALSE(end.ShouldFinalizeUi());
   EXPECT_EQ(end.Scheduled(), ChartDldrBulkSessionEnd::ScheduledFinish::Abort);

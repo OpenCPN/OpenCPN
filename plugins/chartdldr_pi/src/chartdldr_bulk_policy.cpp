@@ -28,23 +28,12 @@ void ChartDldrLeaveBulkModalSuppress() {
 
 bool ChartDldrBulkModalsSuppressed() { return g_bulk_modal_suppress_depth > 0; }
 
-ChartDldrScheduledUiPresentation ChartDldrScheduledUiPresentationFor(
-    bool panel_visible) {
-  return panel_visible ? ChartDldrScheduledUiPresentation::WithProgress
-                       : ChartDldrScheduledUiPresentation::Silent;
-}
-
 ChartDldrBulkSessionPolicy ChartDldrBulkSessionPolicyFor(
-    ChartDldrBulkRunMode mode, bool panel_visible, ChartDldrBulkRunPlan plan) {
-  // Compile the (mode, scheduled_ui, plan) identity plus the StartBulk side
-  // effects into explicit fields; StartBulk reads the fields rather than
-  // re-deriving behavior from the mode.
+    ChartDldrBulkRunMode mode, bool panel_visible) {
+  // Compile every mode-derived behavior into plain fields here; call sites
+  // read fields, never the mode.
   ChartDldrBulkSessionPolicy policy;
   policy.mode = mode;
-  policy.plan = std::move(plan);
-  if (ChartDldrBulkRunModeIsScheduled(mode)) {
-    policy.scheduled_ui = ChartDldrScheduledUiPresentationFor(panel_visible);
-  }
   switch (mode) {
     case ChartDldrBulkRunMode::SelectedCharts:
       policy.manual_plan_before_start = true;
@@ -52,15 +41,33 @@ ChartDldrBulkSessionPolicy ChartDldrBulkSessionPolicyFor(
       break;
     case ChartDldrBulkRunMode::InteractiveBulk:
       policy.confirm_before_start = true;
-      policy.plan.manual_policy =
-          ChartDldrManualDownloadPolicy::OpenAsDiscovered;
+      policy.collect_manual_urls = true;
       break;
     case ChartDldrBulkRunMode::CatalogRefresh:
       policy.walk_bind = ChartDldrBulkWalkBind::SinglePrepare;
       break;
     case ChartDldrBulkRunMode::ScheduledBulk:
+      policy.scheduled = true;
+      policy.skip_manual_url_charts = true;
+      policy.preselect_all_charts = true;
+      policy.error_reporting = ChartDldrErrorReporting::SummaryLog;
       break;
   }
+
+  policy.allow_empty_selection =
+      policy.walk_bind != ChartDldrBulkWalkBind::SingleDownload;
+  policy.preserve_chart_selection =
+      policy.walk_bind == ChartDldrBulkWalkBind::SingleDownload;
+  policy.ui_materialize = !(policy.scheduled && !panel_visible);
+  policy.ui_show_download_progress =
+      policy.ui_materialize &&
+      policy.walk_bind != ChartDldrBulkWalkBind::SinglePrepare;
+  policy.ui_select_download_tab =
+      policy.ui_show_download_progress &&
+      policy.walk_bind != ChartDldrBulkWalkBind::SingleDownload;
+  policy.focus_charts_after =
+      !policy.scheduled &&
+      policy.walk_bind != ChartDldrBulkWalkBind::SingleDownload;
   return policy;
 }
 
@@ -78,11 +85,11 @@ ChartDldrCatalogUiPolicy ChartDldrBrowseCatalogUiPolicy(bool pref_new,
 ChartDldrCatalogUiPolicy ChartDldrBulkSessionPolicy::CatalogApply(
     bool pref_new, bool pref_updated) const {
   ChartDldrCatalogUiPolicy ui;
-  ui.materialize = UiMaterialize();
-  ui.preserve_selection = PreserveChartSelection();
-  ui.preselect_new = PreselectNew(pref_new);
-  ui.preselect_updated = PreselectUpdated(pref_updated);
-  ui.focus_charts_after = FocusChartsAfter();
+  ui.materialize = ui_materialize;
+  ui.preserve_selection = preserve_chart_selection;
+  ui.preselect_new = preselect_all_charts || pref_new;
+  ui.preselect_updated = preselect_all_charts || pref_updated;
+  ui.focus_charts_after = focus_charts_after;
   return ui;
 }
 
@@ -132,8 +139,7 @@ ChartDldrBulkPostflight ChartDldrBulkPostflightFor(
     const ChartDldrBulkRunStats& stats) {
   ChartDldrBulkPostflight result;
   if (reason == ChartDldrBulkTeardownReason::Shutdown ||
-      reason == ChartDldrBulkTeardownReason::FailedStart ||
-      policy.IsScheduled()) {
+      reason == ChartDldrBulkTeardownReason::FailedStart || policy.scheduled) {
     return result;
   }
   if (reason == ChartDldrBulkTeardownReason::UserCancelled) {
@@ -172,5 +178,5 @@ void ChartDldrReportBulkError(wxWindow* parent,
 
 bool ChartDldrBulkRunShouldRestoreUi(const ChartDldrBulkSessionPolicy& policy,
                                      const ChartDldrBulkRunUiSnapshot& before) {
-  return policy.UiMaterialize() && before.panel_visible;
+  return policy.ui_materialize && before.panel_visible;
 }

@@ -8,7 +8,6 @@
 #include "chartdldrgui.h"
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_catalog_run.h"
-#include "chartdldr_bulk_notifier.h"
 #include "chartdldr_bulk_panel_port.h"
 #include "chartdldr_bulk_state.h"
 #include "chartdldr_catalog_selection.h"
@@ -39,7 +38,6 @@ public:
   chartdldr_pi* GetPlugin() const override { return pPlugIn; }
   ChartDldrBulkOrchestrate& Bulk() { return *bulk_; }
   const ChartDldrBulkOrchestrate& Bulk() const { return *bulk_; }
-  ChartDldrBulkNotifier& BulkNotifier() { return *notifier_; }
   ChartDldrPanelChartListView& ChartListView() { return chart_list_view_; }
   const ChartDldrPanelChartListView& ChartListView() const {
     return chart_list_view_;
@@ -48,9 +46,6 @@ public:
   // ChartDldrBulkPanelPort -------------------------------------------------
   bool IsShownOnScreen() const override {
     return ChartDldrPanel::IsShownOnScreen();
-  }
-  bool ConfirmInteractiveStart() override {
-    return notifier_->ConfirmInteractiveStart();
   }
 
   wxWindow* AsWindow() override { return this; }
@@ -61,8 +56,6 @@ public:
   void CaptureChartListSelectionFromWidgets() override {
     chart_list_view_.CaptureSelectionFromWidgets();
   }
-  void ArmChartDownloadCancelUi() override;
-  void DisarmChartDownloadCancelUi() override;
   void SetChartInfo(const wxString& info) override {
     ChartDldrPanel::SetChartInfo(info);
   }
@@ -70,14 +63,11 @@ public:
   void SelectCatalog(int item);
   int GetSelectedCatalog() override;
   void RefreshCatalogToolbar() override;
-  void CancelDownload() override;
   /** OptionsClosed preserves an active scheduled run; PluginShutdown cancels.
    */
   void CancelBulkActivity(ChartDldrBulkCancelScope scope);
-  bool IsBulkRunCancelled() const override;
 
-  void ApplyBulkRunUiPolicy(const ChartDldrBulkSessionPolicy& policy) override;
-  void EndBulkSessionUi() override;
+  int GetChartCount() override;
   int GetCheckedChartCount() override;
   bool IsChartChecked(int index) const override;
   ChartDldrChartUpdateKind ChartKindAt(int index) const;
@@ -87,7 +77,7 @@ public:
                             const wxString& local_path) override;
   void FocusChartsDownloadTab() override;
   void SetDownloadChartsButtonLabel(const wxString& label);
-  void SyncDownloadCancelButton();
+  void SyncDownloadCancelUi() override;
   void UpdateChartsLabelForSource(const ChartSource& cs) override;
   void UpdateDownloadProgress(
       int downloading, int to_download, int failed_downloads,
@@ -95,13 +85,6 @@ public:
 
   int BulkDownloadNotebookPage() const override;
   void SetBulkDownloadNotebookPage(int page) override;
-  void SelectBulkDownloadTab();
-
-  /** Build/execute manual browser decisions before a selected-chart session. */
-  ChartDldrBulkRunPlan BuildSelectedChartsPreflightPlan() override;
-  void ExecuteManualDownloadPlan(const ChartDldrBulkRunPlan& plan) override;
-  /** Render the single postflight result without a nested event loop. */
-  void PresentBulkPostflight(const ChartDldrBulkPostflight& result) override;
 
 #if defined(CHART_LIST)
   bool isNew(int item) override;
@@ -142,12 +125,6 @@ protected:
   void CleanForm();
   void OnContextMenu(wxMouseEvent& event) override;
 
-  int GetChartCount();
-  void CheckAllCharts(bool value);
-  void InvertCheckAllCharts();
-  void CheckNewCharts(bool value);
-  void CheckUpdatedCharts(bool value);
-
   DECLARE_EVENT_TABLE()
 
 private:
@@ -182,7 +159,6 @@ private:
 
   ChartDldrPanelChartListView chart_list_view_;
   std::unique_ptr<ChartDldrBulkOrchestrate> bulk_;
-  std::unique_ptr<ChartDldrBulkNotifier> notifier_;
 };
 
 #endif  // CHARTDLDR_PANEL_IMPL_H_

@@ -19,6 +19,10 @@ public:
   void SyncFromSelection();
   /** Copies widget checkbox state into m_catalogSelection before a bulk run. */
   void CaptureSelectionFromWidgets();
+  // Check-mark mutations: update the selection model, then the widgets.
+  void SetAllChecked(bool value);
+  void SetCheckedForKind(ChartDldrChartUpdateKind kind, bool value);
+  void InvertAllChecked();
   void ClearWidgets();
   int WidgetCount() const;
   void UpdateSelectionInfoLabel();

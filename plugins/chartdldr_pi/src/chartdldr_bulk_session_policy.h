@@ -35,15 +35,6 @@ enum class ChartDldrBulkWalkBind {
   SinglePrepare,
 };
 
-/** Scheduled bulk UI side effects when the panel is visible vs hidden. */
-enum class ChartDldrScheduledUiPresentation {
-  Silent,
-  WithProgress,
-};
-
-ChartDldrScheduledUiPresentation ChartDldrScheduledUiPresentationFor(
-    bool panel_visible);
-
 struct ChartDldrManualDownloadAction {
   wxString title;
   wxString url;
@@ -57,28 +48,19 @@ struct ChartDldrBulkPreflightChart {
   wxString manual_url;
 };
 
-enum class ChartDldrManualDownloadPolicy {
-  Skip,
-  /** User consented before session; open URLs discovered during the walk. */
-  OpenAsDiscovered,
-};
-
-/** Immutable decisions completed before a bulk session starts. */
+/**
+ * Manual-download decisions resolved before a bulk session starts.
+ * SelectedCharts fills this preflight (the charts are known up front);
+ * InteractiveBulk collects actions on the session during the walk instead.
+ */
 struct ChartDldrBulkRunPlan {
   bool allow_start = true;
-  ChartDldrManualDownloadPolicy manual_policy =
-      ChartDldrManualDownloadPolicy::Skip;
   std::vector<ChartDldrManualDownloadAction> manual_downloads;
 };
 
 ChartDldrBulkRunPlan ChartDldrSelectedChartsPreflightPlanFor(
     const std::vector<ChartDldrBulkPreflightChart>& charts,
     const wxString& target_dir);
-
-inline bool ChartDldrBulkPlanOpensDiscoveredManualUrls(
-    const ChartDldrBulkRunPlan& plan) {
-  return plan.manual_policy == ChartDldrManualDownloadPolicy::OpenAsDiscovered;
-}
 
 /**
  * Non-session catalog UI (SetSource browse / manual Update chart list).
@@ -93,21 +75,14 @@ struct ChartDldrCatalogUiPolicy {
 };
 
 /**
- * Frozen session profile compiled once at StartBulk. The run identity is the
- * mode plus the scheduled UI presentation and manual-download plan; the
- * StartBulk side effects (preflight, confirm, manual plan, catalog binding)
- * are compiled into explicit fields by ChartDldrBulkSessionPolicyFor rather
- * than re-derived from the mode at each call site.
+ * Frozen session profile compiled once by ChartDldrBulkSessionPolicyFor at
+ * StartBulk. Every behavior below is a plain field: nothing is re-derived
+ * from the mode at call sites.
  */
 struct ChartDldrBulkSessionPolicy {
   ChartDldrBulkRunMode mode = ChartDldrBulkRunMode::InteractiveBulk;
-  ChartDldrScheduledUiPresentation scheduled_ui =
-      ChartDldrScheduledUiPresentation::Silent;
-  /** The only genuine per-run payload: manual-download decisions. */
-  ChartDldrBulkRunPlan plan;
 
-  // Compiled StartBulk side effects (set once in
-  // ChartDldrBulkSessionPolicyFor).
+  // Compiled StartBulk side effects.
   /** SelectedCharts resolves + executes its manual-download plan before start.
    */
   bool manual_plan_before_start = false;
@@ -116,55 +91,30 @@ struct ChartDldrBulkSessionPolicy {
   /** How the walk binds catalogs at start. */
   ChartDldrBulkWalkBind walk_bind = ChartDldrBulkWalkBind::AllCatalogs;
 
-  bool IsScheduled() const { return ChartDldrBulkRunModeIsScheduled(mode); }
-
-  // Derived run behavior ---------------------------------------------------
-
+  // Compiled run behavior.
+  bool scheduled = false;
   /** Scheduled runs silently skip charts that need a manual browser URL. */
-  bool SkipManualUrlCharts() const { return IsScheduled(); }
-  bool AllowEmptySelection() const {
-    return walk_bind != ChartDldrBulkWalkBind::SingleDownload;
-  }
-  bool PreserveChartSelection() const {
-    return walk_bind == ChartDldrBulkWalkBind::SingleDownload;
-  }
-  /**
-   * A session that materializes the UI also restores the notebook page on
-   * teardown; the other Ui* surfaces below are narrowings of this one.
-   */
-  bool UiMaterialize() const {
-    return !(IsScheduled() &&
-             scheduled_ui == ChartDldrScheduledUiPresentation::Silent);
-  }
-  bool UiShowDownloadProgress() const {
-    return UiMaterialize() && walk_bind != ChartDldrBulkWalkBind::SinglePrepare;
-  }
-  bool UiSelectDownloadTab() const {
-    return UiShowDownloadProgress() &&
-           walk_bind != ChartDldrBulkWalkBind::SingleDownload;
-  }
-  bool FocusChartsAfter() const {
-    return !IsScheduled() && walk_bind != ChartDldrBulkWalkBind::SingleDownload;
-  }
-  ChartDldrErrorReporting ErrorReporting() const {
-    return IsScheduled() ? ChartDldrErrorReporting::SummaryLog
-                         : ChartDldrErrorReporting::Dialog;
-  }
-
-  bool PreselectNew(bool pref_new) const {
-    return IsScheduled() ? true : pref_new;
-  }
-  bool PreselectUpdated(bool pref_updated) const {
-    return IsScheduled() ? true : pref_updated;
-  }
+  bool skip_manual_url_charts = false;
+  /** InteractiveBulk records manual-URL charts; opened on successful end. */
+  bool collect_manual_urls = false;
+  bool allow_empty_selection = true;
+  bool preserve_chart_selection = false;
+  /** Scheduled runs preselect all charts regardless of user prefs. */
+  bool preselect_all_charts = false;
+  /** Materialized sessions also restore the notebook page on teardown; the
+   * two ui_* fields below are narrowings of this one. */
+  bool ui_materialize = true;
+  bool ui_show_download_progress = true;
+  bool ui_select_download_tab = true;
+  bool focus_charts_after = false;
+  ChartDldrErrorReporting error_reporting = ChartDldrErrorReporting::Dialog;
 
   /** Catalog list apply surface compiled from session + user prefs. */
   ChartDldrCatalogUiPolicy CatalogApply(bool pref_new, bool pref_updated) const;
 };
 
 ChartDldrBulkSessionPolicy ChartDldrBulkSessionPolicyFor(
-    ChartDldrBulkRunMode mode, bool panel_visible,
-    ChartDldrBulkRunPlan plan = ChartDldrBulkRunPlan());
+    ChartDldrBulkRunMode mode, bool panel_visible);
 
 ChartDldrCatalogUiPolicy ChartDldrBrowseCatalogUiPolicy(bool pref_new,
                                                         bool pref_updated);
@@ -181,12 +131,12 @@ inline void ChartDldrReportBulkError(wxWindow* parent,
                                      const ChartDldrBulkSessionPolicy& policy,
                                      const wxString& msg,
                                      const wxString& title) {
-  ChartDldrReportBulkError(parent, policy.ErrorReporting(), msg, title);
+  ChartDldrReportBulkError(parent, policy.error_reporting, msg, title);
 }
 
 inline bool ChartDldrVerboseExtractLog(
     const ChartDldrBulkSessionPolicy& policy) {
-  return policy.ErrorReporting() != ChartDldrErrorReporting::SummaryLog;
+  return policy.error_reporting != ChartDldrErrorReporting::SummaryLog;
 }
 
 #endif  // CHARTDLDR_BULK_SESSION_POLICY_H_

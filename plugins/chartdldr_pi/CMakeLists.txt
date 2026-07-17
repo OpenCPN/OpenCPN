@@ -79,6 +79,8 @@ set(SRC_CHARTDLDR
     src/chartdldr_bulk_session.cpp
     src/chartdldr_bulk_orchestrate.h
     src/chartdldr_bulk_orchestrate.cpp
+    src/chartdldr_bulk_preflight.h
+    src/chartdldr_bulk_preflight.cpp
     src/chartdldr_bulk_state.h
     src/chartdldr_download_cancel.h
     src/chartdldr_bulk_request.cpp

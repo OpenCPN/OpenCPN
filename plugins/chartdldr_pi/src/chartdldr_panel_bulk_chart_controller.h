@@ -18,16 +18,14 @@ public:
   ChartDldrBulkChartController(ChartDldrBulkPanelPort& port,
                                ChartDldrBulkRunSession& session);
 
-  void BeginBulkChartDownload(const ChartDldrBulkSessionPolicy& policy,
-                              int catalog_index);
-  ChartDldrBulkWalkStep StepNextBulkChart(
-      const ChartDldrBulkSessionPolicy& policy);
+  // Plugin and policy come from the active session.
+  void BeginBulkChartDownload(int catalog_index);
+  ChartDldrBulkWalkStep StepNextBulkChart();
   /**
    * Orchestrator-only: dispose any open transfer and end the chart pass.
    * Returns pass stats when one was open.
    */
-  ChartDldrBulkRunStats FinishChartPass(
-      const ChartDldrBulkSessionPolicy& policy);
+  ChartDldrBulkRunStats FinishChartPass();
 
 private:
   ChartDldrBulkWalkStep PollActiveChartTransfer(

@@ -35,18 +35,20 @@ TEST(ChartDldrBulkSession, InteractiveSessionIsActiveNotScheduled) {
   EXPECT_EQ(session.Mode(), ChartDldrBulkRunMode::InteractiveBulk);
 }
 
-TEST(ChartDldrBulkSession, OwnsImmutableCopyOfResolvedRunPlan) {
+TEST(ChartDldrBulkSession, BeginArmsSessionCancelAndEndClearsManualActions) {
   ChartDldrBulkRunSession session;
-  ChartDldrBulkRunPlan plan;
-  plan.manual_policy = ChartDldrManualDownloadPolicy::OpenAsDiscovered;
-  const ChartDldrBulkSessionPolicy policy = ChartDldrBulkSessionPolicyFor(
-      ChartDldrBulkRunMode::InteractiveBulk, true, plan);
+  BeginSession(session, ChartDldrBulkRunMode::InteractiveBulk, true);
 
-  session.Begin(reinterpret_cast<chartdldr_pi*>(0x1), policy, {}, 0);
-  plan.manual_policy = ChartDldrManualDownloadPolicy::Skip;
+  // Begin owns the cancel state: the run starts session-cancellable.
+  EXPECT_EQ(session.DownloadCancel().phase,
+            ChartDldrDownloadCancelPhase::SessionCancellable);
+  EXPECT_FALSE(session.DownloadCancel().IsSessionCancelled());
 
-  EXPECT_EQ(session.Plan().manual_policy,
-            ChartDldrManualDownloadPolicy::OpenAsDiscovered);
+  session.ManualActions().push_back(ChartDldrManualDownloadAction{
+      wxT("manual"), wxT("https://example.test/manual"), wxT("/charts")});
+  EXPECT_EQ(session.ManualActions().size(), 1u);
+
   session.End();
-  EXPECT_EQ(session.Plan().manual_policy, ChartDldrManualDownloadPolicy::Skip);
+  EXPECT_TRUE(session.ManualActions().empty());
+  EXPECT_EQ(session.DownloadCancel().phase, ChartDldrDownloadCancelPhase::Idle);
 }

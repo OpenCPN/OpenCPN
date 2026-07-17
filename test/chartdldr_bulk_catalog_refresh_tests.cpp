@@ -9,13 +9,13 @@
 TEST(ChartDldrBulkCatalogRefresh, ScheduledUsesSummaryLog) {
   const ChartDldrBulkSessionPolicy policy =
       ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::ScheduledBulk, false);
-  EXPECT_EQ(policy.ErrorReporting(), ChartDldrErrorReporting::SummaryLog);
+  EXPECT_EQ(policy.error_reporting, ChartDldrErrorReporting::SummaryLog);
 }
 
 TEST(ChartDldrBulkCatalogRefresh, InteractiveUsesDialog) {
   const ChartDldrBulkSessionPolicy policy = ChartDldrBulkSessionPolicyFor(
       ChartDldrBulkRunMode::InteractiveBulk, false);
-  EXPECT_EQ(policy.ErrorReporting(), ChartDldrErrorReporting::Dialog);
+  EXPECT_EQ(policy.error_reporting, ChartDldrErrorReporting::Dialog);
 }
 
 TEST(ChartDldrBulkCatalogRefresh,
