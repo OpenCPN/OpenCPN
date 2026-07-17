@@ -47,6 +47,21 @@
 #include <X11/Xlib.h>
 #endif
 
+#ifdef __WXGTK__
+// Forward-declare the GTK/GDK symbols we need to avoid pulling in <gtk/gtk.h>
+// (build flags do not expose the GTK include paths; libgtk-3 is already linked
+// transitively via libwx_gtk3u_core).
+extern "C" {
+typedef struct _GdkWindow GdkWindow;
+typedef struct _GtkWidget GtkWidget;
+typedef int gboolean;
+void gtk_widget_realize(GtkWidget *widget);
+GdkWindow *gtk_widget_get_window(GtkWidget *widget);
+void gdk_window_set_override_redirect(GdkWindow *window,
+                                      gboolean override_redirect);
+}
+#endif
+
 #include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #ifdef __VISUALC__
@@ -357,6 +372,21 @@ public:
     SetSizer(sizer);
     Layout();
     Center();  // Center the wallpaper frame
+
+#ifdef __WXGTK__
+    // Bypass the WM: make this an override-redirect window so Openbox cannot
+    // restack it (Openbox was sending WM_TAKE_FOCUS to gFrame after its map,
+    // raising gFrame above the fullscreen wallpaper during plugin LateInit
+    // and exposing the chart canvases mid-load).
+    GtkWidget *widget = reinterpret_cast<GtkWidget *>(GetHandle());
+    if (widget) {
+      gtk_widget_realize(widget);
+      GdkWindow *gdk = gtk_widget_get_window(widget);
+      if (gdk) {
+        gdk_window_set_override_redirect(gdk, 1);
+      }
+    }
+#endif
   }
 };
 
@@ -1013,6 +1043,7 @@ bool MyApp::OnInit() {
 
   if (g_kiosk_startup) {
     g_wallpaper = new WallpaperFrame();
+    g_wallpaper->ShowFullScreen(true);
     g_wallpaper->Show();
   }
 
