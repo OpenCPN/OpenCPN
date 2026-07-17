@@ -58,6 +58,8 @@ public:
   bool LoadFromFile(wxString path, bool headerOnly = false);
   bool LoadFromXml(pugi::xml_document *doc, bool headerOnly);
   wxDateTime GetReleaseDate(void);
+  /** Title, release date, and at least one chart with title+url. */
+  bool IsPublishable() const;
   // public properties
   wxString title;
   wxDateTime date_created;
@@ -79,14 +81,16 @@ public:
   Chart(pugi::xml_node &xmldata);
   virtual ~Chart();
   // public methods
-  virtual wxString GetChartTitle() { return title; }
-  virtual wxString GetDownloadLocation() { return zipfile_location; }
-  virtual bool NeedsManualDownload() {
+  virtual wxString GetChartTitle() const { return title; }
+  virtual wxString GetDownloadLocation() const { return zipfile_location; }
+  virtual bool NeedsManualDownload() const {
     return manual_download_url != wxEmptyString;
   }
-  virtual wxString GetManualDownloadUrl() { return manual_download_url; }
+  virtual wxString GetManualDownloadUrl() const { return manual_download_url; }
   virtual wxString GetChartFilename(bool to_check = false);
-  virtual wxDateTime GetUpdateDatetime() { return zipfile_datetime_iso8601; }
+  virtual wxDateTime GetUpdateDatetime() const {
+    return zipfile_datetime_iso8601;
+  }
 
   // public properties
   wxString number;  // chart number used for zip file name, BSB name, cell
@@ -148,9 +152,9 @@ public:
   IEncCell(pugi::xml_node &xmldata);
   ~IEncCell();
   // public methods
-  wxString GetChartTitle();
-  wxString GetDownloadLocation();
-  wxDateTime GetUpdateDatetime();
+  wxString GetChartTitle() const override;
+  wxString GetDownloadLocation() const override;
+  wxDateTime GetUpdateDatetime() const override;
 
   // public properties
   // wxString name;  use wxString number in class Chart .Paul.

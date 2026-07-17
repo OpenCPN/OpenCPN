@@ -43,13 +43,57 @@ set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
   chartdldr_test_wx_init.cpp
+  chartdldr_schedule_config_tests.cpp
+  chartdldr_schedule_state_tests.cpp
+  chartdldr_chart_classify_tests.cpp
+  chartdldr_catalog_prep_tests.cpp
   chartdldr_archive_classify_tests.cpp
+  chartdldr_chart_utils_tests.cpp
+  chartdldr_bulk_yield_integration_tests.cpp
+  chartdldr_prefs_time_tests.cpp
+  chartdldr_bulk_schedule_tests.cpp
+  chartdldr_bulk_request_tests.cpp
+  chartdldr_bulk_run_tests.cpp
+  chartdldr_bulk_catalog_refresh_tests.cpp
+  chartdldr_bulk_catalog_run_tests.cpp
+  chartdldr_bulk_transfer_tests.cpp
+  chartdldr_bulk_teardown_tests.cpp
+  chartdldr_catalog_selection_tests.cpp
+  chartdldr_bulk_report_tests.cpp
+  chartdldr_bulk_chart_loop_tests.cpp
+  chartdldr_temp_download_tests.cpp
   chartdldr_extract_txn_tests.cpp
+  chartdldr_source_catalog_tests.cpp
+  chartdldr_bulk_catalog_result_tests.cpp
+  chartdldr_panel_bulk_state_tests.cpp
+  chartdldr_scheduled_ui_lock_tests.cpp
+  chartdldr_scheduled_run_log_tests.cpp
+  chartdldr_scheduled_catalog_advance_tests.cpp
+  chartdldr_scheduled_catalog_controls_tests.cpp
+  chartdldr_scheduled_stall_tests.cpp
+  chartdldr_schedule_integration_tests.cpp
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
   navutil_base_tests.cpp
   route_point_tests.cpp
   ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_config.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_schedule_state.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_scheduled_run_log.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_chart_source.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_catalog_prep.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_catalog_selection.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartcatalog.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_prefs_time.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_policy.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_session.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_request.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_catalog_run.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_transfer.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_bulk_chart_loop.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_temp_download.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_catalog_download.cpp
+  ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_source_catalog.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_extract_txn.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_extract_common.cpp
   ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/src/chartdldr_extract_recovery.cpp

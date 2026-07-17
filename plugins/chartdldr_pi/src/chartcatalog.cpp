@@ -27,6 +27,7 @@
  */
 
 #include "chartcatalog.h"
+#include "chartdldr_catalog_download.h"
 #include <wx/tokenzr.h>
 #include <memory>
 
@@ -65,8 +66,11 @@ wxDateTime ChartCatalog::GetReleaseDate() {
       dt_valid.MakeFromTimezone(wxDateTime::UTC);
     }
   }
-  wxASSERT(dt_valid.IsValid());
   return dt_valid;
+}
+
+bool ChartCatalog::IsPublishable() const {
+  return ChartDldrSurveyCatalogPublishable(*this).publishable;
 }
 
 bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
@@ -74,6 +78,7 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
 
   wxString rootName = wxString::FromUTF8(root.name());
   charts.clear();
+  // NOAA state/region catalogs use suffixes (EncProductCatalogCA, etc.).
   if (rootName.StartsWith(_T("RncProductCatalog"))) {
     if (!ParseNoaaHeader(root.first_child())) {
       return false;
@@ -98,12 +103,9 @@ bool ChartCatalog::LoadFromXml(pugi::xml_document *doc, bool headerOnly) {
         charts.push_back(std::make_unique<EncCell>(element));
       }
     }
-  }
-  // "IENCBuoyProductCatalog" and "IENCSouthwestPassProductCatalog" added by
-  // .Paul.
-  else if (rootName.StartsWith(_T("IENCU37ProductCatalog")) ||
-           rootName.StartsWith(_T("IENCBuoyProductCatalog")) ||
-           rootName.StartsWith(_T("IENCSouthwestPassProductCatalog"))) {
+  } else if (rootName.StartsWith(_T("IENCU37ProductCatalog")) ||
+             rootName.StartsWith(_T("IENCBuoyProductCatalog")) ||
+             rootName.StartsWith(_T("IENCSouthwestPassProductCatalog"))) {
     if (!ParseNoaaHeader(root.first_child())) {
       return false;
     }
@@ -128,24 +130,40 @@ bool ChartCatalog::ParseNoaaHeader(const pugi::xml_node &xmldata) {
     if (!strcmp(element.name(), "title")) {
       title = wxString::FromUTF8(element.first_child().value());
     } else if (!strcmp(element.name(), "date_created")) {
-      date_created.ParseDate(wxString::FromUTF8(element.first_child().value()));
-      wxASSERT(date_created.IsValid());
+      wxDateTime parsed;
+      if (parsed.ParseDate(wxString::FromUTF8(element.first_child().value())) &&
+          parsed.IsValid()) {
+        date_created = parsed;
+      }
     } else if (!strcmp(element.name(), "time_created")) {
-      time_created.ParseTime(wxString::FromUTF8(element.first_child().value()));
-      wxASSERT(time_created.IsValid());
+      wxDateTime parsed;
+      if (parsed.ParseTime(wxString::FromUTF8(element.first_child().value())) &&
+          parsed.IsValid()) {
+        time_created = parsed;
+      }
     } else if (!strcmp(element.name(), "date_valid")) {
-      date_valid.ParseDate(wxString::FromUTF8(element.first_child().value()));
-      wxASSERT(time_created.IsValid());
+      wxDateTime parsed;
+      if (parsed.ParseDate(wxString::FromUTF8(element.first_child().value())) &&
+          parsed.IsValid()) {
+        date_valid = parsed;
+      }
     } else if (!strcmp(element.name(), "time_valid")) {
-      time_valid.ParseTime(wxString::FromUTF8(element.first_child().value()));
-      wxASSERT(time_created.IsValid());
+      wxDateTime parsed;
+      if (parsed.ParseTime(wxString::FromUTF8(element.first_child().value())) &&
+          parsed.IsValid()) {
+        time_valid = parsed;
+      }
     } else if (!strcmp(element.name(), "dt_valid")) {
       wxStringTokenizer tk(wxString::FromUTF8(element.first_child().value()),
                            _T("TZ"));
-      dt_valid.ParseDate(tk.GetNextToken());
-      dt_valid.ParseTime(tk.GetNextToken());
-      dt_valid.MakeFromTimezone(wxDateTime::UTC);
-      wxASSERT(dt_valid.IsValid());
+      wxDateTime parsed;
+      if (parsed.ParseDate(tk.GetNextToken()) &&
+          parsed.ParseTime(tk.GetNextToken())) {
+        parsed.MakeFromTimezone(wxDateTime::UTC);
+        if (parsed.IsValid()) {
+          dt_valid = parsed;
+        }
+      }
     } else if (!strcmp(element.name(), "ref_spec")) {
       ref_spec = wxString::FromUTF8(element.first_child().value());
     } else if (!strcmp(element.name(), "ref_spec_vers")) {
@@ -375,17 +393,20 @@ IEncCell::~IEncCell() {
   wxDELETE(kml_file);
 }
 
-wxString IEncCell::GetChartTitle()
+wxString IEncCell::GetChartTitle() const
 // Revised by .Paul. to support IENC catalogs that do not identify rivers or
 // river miles.
 {
   if (river_name != wxEmptyString) {
     // This formatting of river_name.c_str() ... river_miles->end works for
     // "IENCU37ProductCatalog" where river_name is specified.
+    const wxString from = location ? location->from : wxString();
+    const wxString to = location ? location->to : wxString();
+    const double begin = river_miles ? river_miles->begin : 0.0;
+    const double end = river_miles ? river_miles->end : 0.0;
     return wxString::Format(_("%s (%s to %s), river miles %3.1f - %3.1f"),
-                            river_name.c_str(), location->from.c_str(),
-                            location->to.c_str(), river_miles->begin,
-                            river_miles->end);
+                            river_name.c_str(), from.c_str(), to.c_str(), begin,
+                            end);
   } else {
     // Simply use the Cell_name for "IENCBuoyProductCatalog" or
     // "IENCSouthwestPassProductCatalog" where river_name is not specified.
@@ -394,9 +415,13 @@ wxString IEncCell::GetChartTitle()
   }
 }
 
-wxString IEncCell::GetDownloadLocation() { return s57_file->location; }
+wxString IEncCell::GetDownloadLocation() const {
+  return s57_file ? s57_file->location : wxString();
+}
 
-wxDateTime IEncCell::GetUpdateDatetime() { return s57_file->date_posted; }
+wxDateTime IEncCell::GetUpdateDatetime() const {
+  return s57_file ? s57_file->date_posted : wxInvalidDateTime;
+}
 
 ChartFile::ChartFile(pugi::xml_node &xmldata) {
   file_size = -1;
