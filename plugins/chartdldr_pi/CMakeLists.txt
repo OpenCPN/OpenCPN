@@ -15,8 +15,8 @@ set(CPACK_PACKAGE_CONTACT "Pavel Kalian")
 
 set(VERSION_MAJOR "1")
 set(VERSION_MINOR "4")
-set(VERSION_PATCH "0")
-set(VERSION_DATE "2019-12-09")
+set(VERSION_PATCH "1")
+set(VERSION_DATE "2026-06-02")
 
 
 # LibArchive_VERSION is defined by cmake 3.17+ i. e. Focal+; Focal needs unarr.
@@ -47,12 +47,78 @@ set(CMAKE_MACOSX_RPATH "ON")
 include("cmake/PluginConfigure.cmake")
 
 set(SRC_CHARTDLDR
+    src/chartdldr_schedule_config.h
+    src/chartdldr_schedule_config.cpp
+    src/chartdldr_schedule_state.h
+    src/chartdldr_schedule_state.cpp
+    src/chartdldr_scheduled_run_log.h
+    src/chartdldr_scheduled_run_log.cpp
+    src/chartdldr_prefs_time.h
+    src/chartdldr_prefs_time.cpp
+    src/chartdldr_prefs.h
+    src/chartdldr_prefs.cpp
+    src/chartdldr_panel.h
+    src/chartdldr_panel_impl.h
+    src/chartdldr_panel.cpp
+    src/chartdldr_panel_impl.cpp
+    src/chartdldr_panel_source_crud.cpp
+    src/chartdldr_panel_impl_events.cpp
+    src/chartdldr_panel_bulk_hooks.cpp
+    src/chartdldr_panel_chart_list_view.h
+    src/chartdldr_panel_chart_list_view.cpp
+    src/chartdldr_bulk.h
+    src/chartdldr_bulk_policy.cpp
+    src/chartdldr_bulk_session.cpp
+    src/chartdldr_bulk_orchestrate.h
+    src/chartdldr_bulk_orchestrate.cpp
+    src/chartdldr_bulk_state.h
+    src/chartdldr_download_cancel.h
+    src/chartdldr_bulk_request.cpp
+    src/chartdldr_bulk_transfer.h
+    src/chartdldr_bulk_transfer.cpp
+    src/chartdldr_bulk_chart_loop.h
+    src/chartdldr_bulk_chart_loop.cpp
+    src/chartdldr_bulk_catalog_run.h
+    src/chartdldr_bulk_catalog_run.cpp
+    src/chartdldr_temp_download.h
+    src/chartdldr_temp_download.cpp
+    src/chartdldr_catalog_download.h
+    src/chartdldr_catalog_download.cpp
+    src/chartdldr_source_catalog.h
+    src/chartdldr_source_catalog.cpp
+    src/chartdldr_panel_bulk_catalog_engine.h
+    src/chartdldr_panel_bulk_catalog_engine.cpp
+    src/chartdldr_panel_bulk_chart_engine.h
+    src/chartdldr_panel_bulk_chart_engine.cpp
+    src/chartdldr_panel_bulk_chart_transfer.cpp
+    src/chartdldr_bulk_schedule.h
+    src/chartdldr_bulk_schedule.cpp
+    src/chartdldr_chart_source.h
+    src/chartdldr_chart_source.cpp
+    src/chartdldr_catalog_prep.h
+    src/chartdldr_catalog_prep.cpp
+    src/chartdldr_catalog_path_prep.cpp
+    src/chartdldr_chart_install.cpp
+    src/chartdldr_catalog_selection.h
+    src/chartdldr_catalog_selection.cpp
+    src/chartdldr_extract_txn.h
+    src/chartdldr_extract_txn.cpp
+    src/chartdldr_extract_common.cpp
+    src/chartdldr_extract_recovery.cpp
+    src/chartdldr_archive_classify.cpp
+    src/chartdldr_archive.cpp
+    src/chartdldr_add_source_dlg.cpp
     src/chartdldr_pi.h
     src/chartdldr_pi.cpp
     src/icons.h
     src/icons.cpp
     src/chartdldrgui.h
     src/chartdldrgui.cpp
+    src/chartdldr_gui_android.cpp
+    src/chartdldr_gui_chart_dir_panel.cpp
+    src/chartdldr_gui_main_panel.cpp
+    src/chartdldr_gui_chart_panel.cpp
+    src/chartdldr_gui_prefs_dlg.cpp
     # src/checkedlistctrl.cpp src/checkedlistctrl.h
     src/base64.h
     src/chartcatalog.cpp
@@ -247,6 +313,13 @@ if (APPLE)
             "-Wno-deprecated-declarations"
             "-Wno-unknown-pragmas"
             "-D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_"
+  )
+  add_custom_command(
+    TARGET ${PACKAGE_NAME}
+    POST_BUILD
+    COMMAND /bin/sh ${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_plugin_symbols.sh
+            $<TARGET_FILE:${PACKAGE_NAME}>
+    COMMENT "Checking ${PACKAGE_NAME} for unresolved ChartDldr symbols"
   )
 endif (APPLE)
 

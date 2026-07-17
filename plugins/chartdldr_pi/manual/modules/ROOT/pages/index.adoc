@@ -132,6 +132,44 @@ charts. You can configure the plugin to automatically preselect the
 updated and/or new charts after an update of the chart catalog in the
 preferences.
 
+==== Scheduled bulk update (optional)
+
+In *Chart Downloader → Preferences*, you can enable a *daily bulk update*
+while OpenCPN is running. This performs the same steps as *Update All* for
+each configured chart source (refresh catalog, then download preselected new
+and updated charts), then rescans the OpenCPN chart database.
+
+* Disabled by default.
+* Enabling it also turns on *Allow bulk update* in the same preferences dialog.
+* Configure chart sources on the Chart Downloader tab (you are warned if none are set).
+* OpenCPN must be running after the scheduled local time (checked about once per minute).
+* *Interactive Update All* refreshes each catalog synchronously (with a progress dialog)
+  and downloads charts back-to-back on the UI thread.
+* *Scheduled* runs use background catalog fetches and the same back-to-back chart
+  transfers as interactive Update All once a run starts. The one-minute timer only
+  decides when to begin; it does not throttle downloads.
+* While any bulk run is active (including a silent scheduled run started with
+  Options closed), Select Catalog and Add/Delete/Edit/Update stay locked; Cancel
+  remains available when armed. Opening Options mid-run refreshes the toolbar.
+  If Options is already open when a scheduled run starts, progress shows on the
+  download tab.
+* Scheduled runs log milestones to the OpenCPN log (`opencpn.log`): start with
+  source count, each catalog refresh result, each chart download start, per-catalog
+  download totals, and a final summary. A still-running line appears after about
+  15 minutes without progress.
+* Charts that require manual download are skipped by the automatic downloader.
+  Scheduled runs only log them. *Update all* opens their browser pages after
+  the initial confirmation. For *Download selected*, OpenCPN asks once before
+  the session whether to open all selected manual-download pages; automatic
+  downloads continue whether you answer Yes or No.
+* *Skipped* runs (bulk update disabled, no chart sources, or panel unavailable)
+  are recorded for that day and not retried until the next day.
+* *All downloads failed* does not count as completed; later checks the same day
+  may retry after about four hours. *No charts to update* is recorded for that
+  day and not retried.
+
+Use *Run update now* in preferences to trigger the same operation immediately.
+
 image::15-chart-status-selection.png[]
 
 NOTE: In addition to the right-click chart selection, you can Highlight
@@ -160,9 +198,10 @@ We’ll do that in the next step.
 
 === After the download
 
-Upon *Closing* the Chart Downloader will automatically complete a *Scan
-and Database Rebuild* of the Chart Database, so the charts will be ready
-for use. For vector charts, one sensible step remains. Go to
+After bulk or selected downloads complete, the chart database is rescanned
+automatically so new files are ready for use. When using the Chart Downloader
+options page, closing the options dialog still applies your catalog settings
+as before. For vector charts, one sensible step remains. Go to
 Options→Charts→Chart Files and press the button *Prepare all ENC
 Charts*. This will preprocess all new vector charts and updates, and
 prevent delays when actually using the charts

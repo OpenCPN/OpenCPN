@@ -192,6 +192,17 @@ include(GoogleTest)
 gtest_add_tests(TARGET tests)
 gtest_add_tests(TARGET buffer_tests)
 
+# Fixture test for the macOS unresolved-symbol checker. The checker only runs on
+# Apple (Mach-O), so exercise its parsing there without touching CI workflows.
+if (APPLE)
+  add_test(
+    NAME chartdldr_check_plugin_symbols
+    COMMAND /bin/sh
+      ${CMAKE_CURRENT_LIST_DIR}/chartdldr_check_plugin_symbols_test.sh
+      ${CMAKE_SOURCE_DIR}/plugins/chartdldr_pi/cmake/check_plugin_symbols.sh
+  )
+endif ()
+
 if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
   # We don't have a session bus available when testing flatpak
   # so these can just be run in native builds.
