@@ -126,10 +126,6 @@ inline void ChartDldrApplyScheduledRunOutcome(
   ChartDldrApplyScheduledRunOutcome(schedule, result, run_time);
 }
 
-void ChartDldrMigrateLegacyScheduleStatus(
-    ChartDldrScheduleConfig& schedule,
-    const wxString& legacy_last_run = wxEmptyString);
-
 /** English msgids for persisted schedule status strings. */
 namespace ChartDldrScheduleMessages {
 

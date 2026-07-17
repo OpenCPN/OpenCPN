@@ -8,13 +8,20 @@
 #include "chartdldr_bulk_catalog_run.h"
 #include "chartdldr_bulk_state.h"
 
-class ChartDldrPanelImpl;
+class ChartDldrChartDownloadView;
 class ChartSource;
 class chartdldr_pi;
-struct ChartDldrPanelBulkState;
+
+struct ChartDldrChartTransferFacts {
+  bool in_progress = false;
+  bool success = false;
+  bool cancelled = false;
+  ChartDldrTempDownloadPaths paths;
+};
 
 void ChartDldrDisposeChartBulkTransfer(
-    ChartDldrPanelImpl& panel, ChartDldrPanelBulkState& state,
+    ChartDldrChartDownloadView& panel, ChartDldrBulkTransferSlot& transfer,
+    const ChartDldrDownloadCancelState& download_cancel,
     ChartDldrChartTransferDisposition disposition, ChartSource* source,
     ChartDldrChartBulkState& chart_bulk,
     const ChartDldrBulkSessionPolicy& policy, chartdldr_pi* pi);

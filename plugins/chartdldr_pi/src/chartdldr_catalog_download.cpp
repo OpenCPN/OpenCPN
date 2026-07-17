@@ -94,15 +94,6 @@ bool ChartDldrCatalogRefreshSucceeded(_OCPN_DLStatus status, bool cancelled) {
   return status == OCPN_DL_NO_ERROR && !cancelled;
 }
 
-bool ChartDldrPublishValidatedCatalog(const wxString& temp_path,
-                                      const wxString& output_path) {
-  if (!ChartDldrCatalogTempIsPublishable(temp_path)) {
-    ChartDldrRemoveTempDownload(temp_path);
-    return false;
-  }
-  return ChartDldrFinalizeTempDownload(temp_path, output_path);
-}
-
 _OCPN_DLStatus ChartDldrCompleteValidatedCatalogDownloadPaths(
     const ChartDldrTempDownloadPaths& paths, bool transfer_success,
     bool cancelled) {

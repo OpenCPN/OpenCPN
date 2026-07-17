@@ -91,17 +91,15 @@ bool WritePublishingOrphan(const wxString& stage_root,
       return false;
     }
   }
-  const wxString journal_path = stage_root + wxFileName::GetPathSeparator() +
-                                wxT("__chartdldr_backup_journal__");
   const wxString manifest_path = stage_root + wxFileName::GetPathSeparator() +
                                  wxT("__chartdldr_manifest__");
-  if (!WriteFileContents(journal_path, journal_line)) {
-    return false;
-  }
+  wxString entry = journal_line;
+  entry.Trim(true).Trim(false);
   return WriteFileContents(
       manifest_path,
-      wxString::Format(wxT("version=1\nlive_root=%s\nphase=PUBLISHING\n"),
-                       CanonicalLiveRoot(live_root).c_str()));
+      wxString::Format(wxT("version=2\nlive_root=%s\nphase=PUBLISHING\n")
+                           wxT("entry=%s\n"),
+                       CanonicalLiveRoot(live_root).c_str(), entry.c_str()));
 }
 
 }  // namespace
@@ -265,7 +263,7 @@ TEST(ChartDldrExtractTxn, RecoverCommittedPhaseRemovesStageOnly) {
                                  wxT("__chartdldr_manifest__");
   ASSERT_TRUE(WriteFileContents(
       manifest_path,
-      wxString::Format(wxT("version=1\nlive_root=%s\nphase=COMMITTED\n"),
+      wxString::Format(wxT("version=2\nlive_root=%s\nphase=COMMITTED\n"),
                        CanonicalLiveRoot(live_root).c_str())));
 
   ChartDldrRecoverOrphanExtractTrees(live_root);

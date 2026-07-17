@@ -7,12 +7,24 @@
 
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_catalog_run.h"
-#include "chartdldr_panel_bulk_state.h"
+#include "chartdldr_bulk_transfer.h"
+#include "chartdldr_download_cancel.h"
 #include "chartdldr_temp_download.h"
 
 #include <wx/string.h>
 
 class chartdldr_pi;
+
+/**
+ * Catalog-refresh payload carried by the active run session. "In progress" is
+ * derived from the transfer owner (ChartDldrBulkTransferOwner::Catalog); these
+ * fields are meaningful only while that transfer is live.
+ */
+struct ChartDldrCatalogRefreshPayload {
+  int index = -1;
+  ChartDldrTempDownloadPaths download_paths;
+  ChartDldrErrorReporting error_reporting = ChartDldrErrorReporting::Dialog;
+};
 
 struct ChartDldrChartBulkState {
   int catalog_index = -1;
@@ -72,6 +84,24 @@ public:
   ChartDldrChartBulkState& ChartBulk() { return chart_bulk_; }
   const ChartDldrChartBulkState& ChartBulk() const { return chart_bulk_; }
 
+  // The single owner of the in-flight transfer, the download-button cancel
+  // state, and the catalog-refresh payload for the whole run. Engines and the
+  // panel operate on these through the session rather than a parallel copy.
+  ChartDldrBulkTransferSlot& Transfer() { return transfer_; }
+  const ChartDldrBulkTransferSlot& Transfer() const { return transfer_; }
+  ChartDldrDownloadCancelState& DownloadCancel() { return download_cancel_; }
+  const ChartDldrDownloadCancelState& DownloadCancel() const {
+    return download_cancel_;
+  }
+  ChartDldrCatalogRefreshPayload& CatalogRefresh() { return catalog_refresh_; }
+  const ChartDldrCatalogRefreshPayload& CatalogRefresh() const {
+    return catalog_refresh_;
+  }
+  /** A catalog refresh is in progress iff the transfer slot is Catalog-owned. */
+  bool CatalogRefreshInProgress() const {
+    return transfer_.IsOwnedBy(ChartDldrBulkTransferOwner::Catalog);
+  }
+
   void Begin(chartdldr_pi* pi, const ChartDldrBulkSessionPolicy& policy,
              const ChartDldrBulkRunUiSnapshot& ui_before, size_t source_count) {
     End();
@@ -90,6 +120,12 @@ public:
     policy_ = ChartDldrBulkSessionPolicy();
     catalog_run_ = ChartDldrBulkCatalogRunState();
     chart_bulk_.ResetForCatalogPass();
+    // Transfers are disposed by the orchestrator/engines before End(); Reset
+    // keeps the retained sinks + generation so any late download event is
+    // fenced rather than delivered to a freed slot.
+    transfer_.Reset();
+    download_cancel_ = ChartDldrDownloadCancelState();
+    catalog_refresh_ = ChartDldrCatalogRefreshPayload();
   }
 
 private:
@@ -99,6 +135,9 @@ private:
   ChartDldrBulkRunUiSnapshot ui_before_;
   ChartDldrBulkCatalogRunState catalog_run_;
   ChartDldrChartBulkState chart_bulk_;
+  ChartDldrBulkTransferSlot transfer_;
+  ChartDldrDownloadCancelState download_cancel_;
+  ChartDldrCatalogRefreshPayload catalog_refresh_;
 };
 
 /** Single derived view of what the session pump should do next. */
@@ -110,17 +149,16 @@ enum class ChartDldrBulkSessionActivity {
 };
 
 inline ChartDldrBulkSessionActivity ChartDldrBulkSessionActivityFor(
-    const ChartDldrBulkRunSession& session,
-    const ChartDldrPanelBulkState& panel_state) {
+    const ChartDldrBulkRunSession& session) {
   if (!session.IsActive()) {
     return ChartDldrBulkSessionActivity::Idle;
   }
   // A pending abort of the current transfer must not park the pump in
   // WaitTransfer: step so the chart engine disposes the in-flight download and
   // resumes the walk instead of blocking until the transfer ends on its own.
-  if (panel_state.transfer.IsInProgress() &&
-      !panel_state.download_cancel.ShouldAbortCurrentTransfer()) {
-    if (ChartDldrGetBulkTransferStuckReason(panel_state.transfer) ==
+  if (session.Transfer().IsInProgress() &&
+      !session.DownloadCancel().ShouldAbortCurrentTransfer()) {
+    if (ChartDldrGetBulkTransferStuckReason(session.Transfer()) ==
         ChartDldrBulkTransferStuckReason::None) {
       return ChartDldrBulkSessionActivity::WaitTransfer;
     }

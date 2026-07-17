@@ -44,8 +44,6 @@
 #endif
 #endif  // __WXMAC__
 
-enum { ThreadId = wxID_HIGHEST + 1 };
-
 void ChartDldrInitPanelBulkDownloadHooks();
 
 namespace {
@@ -110,7 +108,7 @@ void ChartDldrPanelImpl::SetActiveCatalogContext(int catalog_index) {
 void ChartDldrPanelImpl::ApplyCatalogToolbarState() {
   const ChartDldrCatalogControlsState controls = ChartDldrCatalogControlsFor(
       bulk_->IsRunActive(),
-      m_bulkState_.download_cancel.IsDownloadButtonCancelArmed());
+      bulk_->Session().DownloadCancel().IsDownloadButtonCancelArmed());
   const int catalog_index = GetSelectedCatalog();
   const bool has_selection = catalog_index >= 0;
   const bool bulk_update = pPlugIn != nullptr && pPlugIn->m_allow_bulk_update;
@@ -355,16 +353,30 @@ void ChartDldrPanelImpl::SetDownloadChartsButtonLabel(const wxString &label) {
 }
 
 void ChartDldrPanelImpl::SyncDownloadCancelButton() {
-  SetDownloadChartsButtonLabel(
-      ChartDldrDownloadCancelButtonLabel(m_bulkState_.download_cancel.phase));
+  SetDownloadChartsButtonLabel(ChartDldrDownloadCancelButtonLabel(
+      bulk_->Session().DownloadCancel().phase));
 }
 
 void ChartDldrPanelImpl::SyncDownloadChartsButtonEnabled() {
   m_bDnldCharts->Enable(
       ChartDldrCatalogControlsFor(
           bulk_->IsRunActive(),
-          m_bulkState_.download_cancel.IsDownloadButtonCancelArmed())
+          bulk_->Session().DownloadCancel().IsDownloadButtonCancelArmed())
           .download_button_enabled);
+}
+
+void ChartDldrPanelImpl::ArmChartDownloadCancelUi() {
+  bulk_->Session().DownloadCancel().BeginActiveDownload();
+  SyncDownloadCancelButton();
+}
+
+void ChartDldrPanelImpl::DisarmChartDownloadCancelUi() {
+  bulk_->Session().DownloadCancel().EndActiveDownload();
+  SyncDownloadCancelButton();
+}
+
+bool ChartDldrPanelImpl::IsBulkRunCancelled() const {
+  return bulk_->Session().DownloadCancel().IsSessionCancelled();
 }
 
 void ChartDldrPanelImpl::UpdateChartList(wxCommandEvent &event) {
@@ -373,8 +385,10 @@ void ChartDldrPanelImpl::UpdateChartList(wxCommandEvent &event) {
 }
 
 ChartDldrPanelImpl::~ChartDldrPanelImpl() {
-  InvalidatePendingBulkPumps();
-  SetTransferStallTimerRunning(false);
+  if (bulk_) {
+    bulk_->Pump().InvalidatePending();
+    bulk_->Pump().SetTransferStallTimerRunning(false);
+  }
 
   // Unexpected options-page destroy (without ParkOnHost) lands here too:
   // tear down bulk explicitly so session state is not silently dropped.
@@ -409,11 +423,9 @@ ChartDldrPanelImpl::ChartDldrPanelImpl(chartdldr_pi *plugin, wxWindow *parent,
                                  CATALOGS_PATH_WIDTH);
   m_lbChartSources->Enable();
   m_bInfoHold = false;
-  m_bulkState_.download_cancel = ChartDldrDownloadCancelState();
   pPlugIn = plugin;
   m_populated = false;
   SetChartInfo(wxEmptyString);
-  m_bulkState_.transfer.Reset();
 
   for (size_t i = 0; i < pPlugIn->m_ChartSources.size(); i++) {
     AppendCatalog(pPlugIn->m_ChartSources.at(i));

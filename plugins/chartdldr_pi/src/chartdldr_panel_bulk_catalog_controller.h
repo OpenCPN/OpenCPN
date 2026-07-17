@@ -2,23 +2,24 @@
  *   Copyright (C) 2026 OpenCPN Contributors                               *
  ***************************************************************************/
 
-#ifndef CHARTDLDR_PANEL_BULK_CATALOG_ENGINE_H_
-#define CHARTDLDR_PANEL_BULK_CATALOG_ENGINE_H_
+#ifndef CHARTDLDR_PANEL_BULK_CATALOG_CONTROLLER_H_
+#define CHARTDLDR_PANEL_BULK_CATALOG_CONTROLLER_H_
 
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_catalog_run.h"
-#include "chartdldr_panel_bulk_state.h"
+#include "chartdldr_bulk_state.h"
 #include "chartdldr_catalog_download.h"
 #include "chartdldr_temp_download.h"
 
 #include "ocpn_plugin.h"
 
-class ChartDldrPanelImpl;
+class ChartDldrCatalogView;
 class chartdldr_pi;
 
-class ChartDldrPanelBulkCatalogEngine {
+class ChartDldrPanelBulkCatalogController {
 public:
-  explicit ChartDldrPanelBulkCatalogEngine(ChartDldrPanelImpl& panel);
+  ChartDldrPanelBulkCatalogController(ChartDldrCatalogView& panel,
+                                      ChartDldrBulkRunSession& session);
 
   /** Catalog apply paths take CatalogUiPolicy only (project session at the
    * boundary via policy.CatalogApply). */
@@ -26,9 +27,6 @@ public:
                              const ChartDldrCatalogUiPolicy& ui);
   void PrepareBulkCatalog(int catalog_index,
                           const ChartDldrCatalogUiPolicy& ui);
-  /** Manual catalog refresh (modal progress dialog). */
-  bool UpdateChartListForCatalog(int catalog_index,
-                                 const ChartDldrCatalogUiPolicy& ui);
   bool BeginCatalogRefresh(int catalog_index,
                            ChartDldrErrorReporting error_reporting);
   void CancelCatalogRefresh();
@@ -51,12 +49,9 @@ private:
                                    const ChartDldrCatalogUiPolicy& ui,
                                    ChartDldrErrorReporting reporting,
                                    _OCPN_DLStatus status, const wxString& url);
-  /** Interactive CatalogRefresh modal dialog path only. */
-  _OCPN_DLStatus DownloadCatalogFileModal(const wxString& url,
-                                          const wxString& output_path);
 
-  ChartDldrPanelImpl& panel_;
-  ChartDldrPanelBulkState& state_;
+  ChartDldrCatalogView& panel_;
+  ChartDldrBulkRunSession& session_;
 };
 
-#endif  // CHARTDLDR_PANEL_BULK_CATALOG_ENGINE_H_
+#endif  // CHARTDLDR_PANEL_BULK_CATALOG_CONTROLLER_H_

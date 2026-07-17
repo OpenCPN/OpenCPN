@@ -74,35 +74,6 @@
 #include <jni.h>
 #endif
 
-#ifdef __WXMAC__
-#define CATALOGS_NAME_WIDTH 300
-#define CATALOGS_DATE_WIDTH 120
-#define CATALOGS_PATH_WIDTH 100
-#define CHARTS_NAME_WIDTH 300
-#define CHARTS_STATUS_WIDTH 100
-#define CHARTS_DATE_WIDTH 120
-#else
-#ifdef __ANDROID__
-
-#define CATALOGS_NAME_WIDTH 350
-#define CATALOGS_DATE_WIDTH 500
-#define CATALOGS_PATH_WIDTH 1000
-#define CHARTS_NAME_WIDTH 520
-#define CHARTS_STATUS_WIDTH 150
-#define CHARTS_DATE_WIDTH 200
-
-#else
-
-#define CATALOGS_NAME_WIDTH 200
-#define CATALOGS_DATE_WIDTH 130
-#define CATALOGS_PATH_WIDTH 250
-#define CHARTS_NAME_WIDTH 320
-#define CHARTS_STATUS_WIDTH 150
-#define CHARTS_DATE_WIDTH 130
-
-#endif
-#endif  // __WXMAC__
-
 #ifdef __ANDROID__
 #include <QtAndroidExtras/QAndroidJniObject>
 #include "qdebug.h"

@@ -10,6 +10,7 @@
 
 #include "chartdldr_archive_classify.h"
 #include "chartdldr_pi.h"
+#include "chartdldr_extract_common.h"
 #include "chartdldr_extract_txn.h"
 
 #include <wx/dir.h>
@@ -510,16 +511,11 @@ bool chartdldr_pi::ProcessFile(const wxString &aFile,
   // Uncompressed single file: move into place and stamp.
   wxFileName fn(aFile);
   if (fn.GetPath() != aTargetDir) {
-    if (!wxDirExists(aTargetDir)) {
-      if (!wxFileName::Mkdir(aTargetDir, 0755, wxPATH_MKDIR_FULL)) {
-        return false;
-      }
-    }
-    wxFileName dest(aTargetDir, fn.GetFullName());
-    if (!wxRenameFile(aFile, dest.GetFullPath())) {
+    if (!ChartDldrExtractCommon::PublishFileInto(aTargetDir, fn.GetFullName(),
+                                                 aFile)) {
       return false;
     }
-    fn = dest;
+    fn = wxFileName(aTargetDir, fn.GetFullName());
   }
   fn.SetTimes(&aMTime, &aMTime, &aMTime);
   return true;

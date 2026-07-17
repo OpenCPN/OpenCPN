@@ -264,6 +264,20 @@ TEST(ChartDldrBulkCatalogWalk, BindCatalogWalkSkipsPrepare) {
                                                 state.catalog_bound));
 }
 
+TEST(ChartDldrBulkCatalogWalk, BindCatalogPrepareWalkKeepsPrepare) {
+  ChartDldrBulkCatalogRunState state;
+  state.catalog_bound = 5;
+  state.next_catalog = 0;
+  state.phase = ChartDldrBulkCatalogPhase::DownloadChart;
+
+  EXPECT_TRUE(ChartDldrBindCatalogPrepareWalk(state, 1));
+  EXPECT_EQ(state.next_catalog, 1);
+  EXPECT_EQ(state.catalog_bound, 2);
+  EXPECT_EQ(state.phase, ChartDldrBulkCatalogPhase::PrepareCatalog);
+  EXPECT_TRUE(ChartDldrBulkCatalogWalkContinues(state.next_catalog,
+                                                state.catalog_bound));
+}
+
 TEST(ChartDldrBulkCatalogWalk, BindCatalogWalkRejectsNegativeIndex) {
   ChartDldrBulkCatalogRunState state;
   state.catalog_bound = 2;
@@ -271,4 +285,5 @@ TEST(ChartDldrBulkCatalogWalk, BindCatalogWalkRejectsNegativeIndex) {
   EXPECT_EQ(state.next_catalog, 0);
   EXPECT_EQ(state.catalog_bound, 2);
   EXPECT_EQ(state.phase, ChartDldrBulkCatalogPhase::PrepareCatalog);
+  EXPECT_FALSE(ChartDldrBindCatalogPrepareWalk(state, -1));
 }

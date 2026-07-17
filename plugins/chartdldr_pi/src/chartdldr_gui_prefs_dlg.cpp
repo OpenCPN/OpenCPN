@@ -8,7 +8,6 @@
 #include "chartdldr_source_catalog.h"
 #include "chartdldr_temp_download.h"
 #include "manual.h"
-#include "../../../libs/manual/include/manual.h"
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
 #include <wx/spinctrl.h>

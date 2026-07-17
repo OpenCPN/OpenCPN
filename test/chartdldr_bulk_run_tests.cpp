@@ -18,6 +18,8 @@ TEST(ChartDldrBulkRunMode, ScheduledModeIdentified) {
       ChartDldrBulkRunModeIsScheduled(ChartDldrBulkRunMode::InteractiveBulk));
   EXPECT_FALSE(
       ChartDldrBulkRunModeIsScheduled(ChartDldrBulkRunMode::SelectedCharts));
+  EXPECT_FALSE(
+      ChartDldrBulkRunModeIsScheduled(ChartDldrBulkRunMode::CatalogRefresh));
 }
 
 TEST(ChartDldrBulkPreflight, SelectedPlanOwnsOnlyCheckedManualActions) {
@@ -117,9 +119,27 @@ TEST(ChartDldrBulkSessionPolicy, ModeUiMatrix) {
   EXPECT_TRUE(selected.UiShowDownloadProgress());
   EXPECT_TRUE(selected.PreserveChartSelection());
   EXPECT_TRUE(selected.BindSelectedCatalogOnly());
+  EXPECT_FALSE(selected.BindCatalogPrepareOnly());
+  EXPECT_FALSE(selected.SkipChartDownloadAfterRefresh());
   EXPECT_FALSE(selected.FocusChartsAfter());
   EXPECT_FALSE(selected.ConfirmBeforeStart());
   EXPECT_FALSE(selected.ForceFullSelection());
+
+  const ChartDldrBulkSessionPolicy catalog_refresh =
+      ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::CatalogRefresh, true);
+  EXPECT_EQ(catalog_refresh.mode, ChartDldrBulkRunMode::CatalogRefresh);
+  EXPECT_FALSE(catalog_refresh.IsScheduled());
+  EXPECT_TRUE(catalog_refresh.AllowEmptySelection());
+  EXPECT_FALSE(catalog_refresh.ConfirmBeforeStart());
+  EXPECT_FALSE(catalog_refresh.BindSelectedCatalogOnly());
+  EXPECT_TRUE(catalog_refresh.BindCatalogPrepareOnly());
+  EXPECT_TRUE(catalog_refresh.SkipChartDownloadAfterRefresh());
+  EXPECT_TRUE(catalog_refresh.FocusChartsAfter());
+  EXPECT_TRUE(catalog_refresh.UiMaterialize());
+  EXPECT_TRUE(catalog_refresh.UiRestoreNotebook());
+  EXPECT_FALSE(catalog_refresh.UiSelectDownloadTab());
+  EXPECT_FALSE(catalog_refresh.UiShowDownloadProgress());
+  EXPECT_EQ(catalog_refresh.ErrorReporting(), ChartDldrErrorReporting::Dialog);
 
   const ChartDldrCatalogUiPolicy from_interactive =
       interactive.CatalogApply(false, true);
@@ -133,6 +153,14 @@ TEST(ChartDldrBulkSessionPolicy, ModeUiMatrix) {
       selected.CatalogApply(false, false);
   EXPECT_TRUE(from_selected.preserve_selection);
   EXPECT_FALSE(from_selected.focus_charts_after);
+
+  const ChartDldrCatalogUiPolicy from_catalog_refresh =
+      catalog_refresh.CatalogApply(false, true);
+  EXPECT_TRUE(from_catalog_refresh.materialize);
+  EXPECT_FALSE(from_catalog_refresh.preserve_selection);
+  EXPECT_FALSE(from_catalog_refresh.preselect_new);
+  EXPECT_TRUE(from_catalog_refresh.preselect_updated);
+  EXPECT_TRUE(from_catalog_refresh.focus_charts_after);
 
   const ChartDldrCatalogUiPolicy manual =
       ChartDldrManualCatalogRefreshUiPolicy();

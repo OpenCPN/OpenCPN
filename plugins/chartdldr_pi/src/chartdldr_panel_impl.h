@@ -9,7 +9,8 @@
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_catalog_run.h"
 #include "chartdldr_bulk_notifier.h"
-#include "chartdldr_panel_bulk_state.h"
+#include "chartdldr_bulk_panel_view.h"
+#include "chartdldr_bulk_state.h"
 #include "chartdldr_catalog_selection.h"
 #include "chartdldr_bulk_chart_loop.h"
 #include "chartdldr_panel_chart_list_view.h"
@@ -24,32 +25,19 @@ class wxPanel;
 class wxTimer;
 class ChartDldrPanelImpl;
 
-/** RAII: marks the panel (and global) bulk-pump active. */
-class ChartDldrBulkPumpGuard {
-public:
-  explicit ChartDldrBulkPumpGuard(ChartDldrPanelImpl& panel);
-  ~ChartDldrBulkPumpGuard();
-
-  ChartDldrBulkPumpGuard(const ChartDldrBulkPumpGuard&) = delete;
-  ChartDldrBulkPumpGuard& operator=(const ChartDldrBulkPumpGuard&) = delete;
-
-private:
-  ChartDldrPanelImpl& panel_;
-};
-
 /** wx panel implementation for the chart downloader options page. */
-class ChartDldrPanelImpl : public ChartDldrPanel {
+class ChartDldrPanelImpl : public ChartDldrPanel,
+                           public ChartDldrCatalogView,
+                           public ChartDldrChartDownloadView {
 public:
-  ~ChartDldrPanelImpl();
+  ~ChartDldrPanelImpl() override;
   ChartDldrPanelImpl(chartdldr_pi* plugin = NULL, wxWindow* parent = NULL,
                      wxWindowID id = wxID_ANY,
                      const wxPoint& pos = wxDefaultPosition,
                      const wxSize& size = wxDefaultSize,
                      long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 
-  chartdldr_pi* GetPlugin() const { return pPlugIn; }
-  ChartDldrPanelBulkState& BulkState() { return m_bulkState_; }
-  const ChartDldrPanelBulkState& BulkState() const { return m_bulkState_; }
+  chartdldr_pi* GetPlugin() const override { return pPlugIn; }
   ChartDldrBulkOrchestrate& Bulk() { return *bulk_; }
   const ChartDldrBulkOrchestrate& Bulk() const { return *bulk_; }
   ChartDldrBulkNotifier& BulkNotifier() { return *notifier_; }
@@ -58,67 +46,55 @@ public:
     return chart_list_view_;
   }
 
-  // Bulk engines drive the panel directly (no forwarding facade): the panel
-  // *is* the collaborator, so these expose the few extra operations the walk
-  // needs without a mirror class.
-  wxWindow* AsWindow() { return this; }
-  wxEvtHandler* AsEventHandler() { return this; }
-  void SelectActiveCatalog(int catalog_index) { SetSource(catalog_index); }
-  void CaptureChartListSelectionFromWidgets() {
+  // ChartDldrCatalogView / ChartDldrChartDownloadView ----------------------
+  wxWindow* AsWindow() override { return this; }
+  wxEvtHandler* AsEventHandler() override { return this; }
+  void SelectActiveCatalog(int catalog_index) override {
+    SetSource(catalog_index);
+  }
+  void CaptureChartListSelectionFromWidgets() override {
     chart_list_view_.CaptureSelectionFromWidgets();
   }
-  void ArmChartDownloadCancelUi() {
-    m_bulkState_.download_cancel.BeginActiveDownload();
-    SyncDownloadCancelButton();
-  }
-  void DisarmChartDownloadCancelUi() {
-    m_bulkState_.download_cancel.EndActiveDownload();
-    SyncDownloadCancelButton();
+  void ArmChartDownloadCancelUi() override;
+  void DisarmChartDownloadCancelUi() override;
+  void SetChartInfo(const wxString& info) override {
+    ChartDldrPanel::SetChartInfo(info);
   }
 
   void SelectCatalog(int item);
-  int GetSelectedCatalog();
+  int GetSelectedCatalog() override;
   void RefreshCatalogToolbar();
   void CancelDownload();
   /** OptionsClosed preserves an active scheduled run; PluginShutdown cancels.
    */
   void CancelBulkActivity(ChartDldrBulkCancelScope scope);
-  bool IsBulkRunCancelled() const {
-    return m_bulkState_.download_cancel.IsSessionCancelled();
-  }
+  bool IsBulkRunCancelled() const;
 
   void ApplyBulkRunUiPolicy(const ChartDldrBulkSessionPolicy& policy);
   void EndBulkSessionUi();
-  int GetCheckedChartCount();
-  bool IsChartChecked(int index) const;
+  int GetCheckedChartCount() override;
+  bool IsChartChecked(int index) const override;
   ChartDldrChartUpdateKind ChartKindAt(int index) const;
 
   void UpdateCatalogListRow(int catalog_index, const wxString& title,
                             const wxString& release_date,
-                            const wxString& local_path);
-  void FocusChartsDownloadTab();
+                            const wxString& local_path) override;
+  void FocusChartsDownloadTab() override;
   void SetDownloadChartsButtonLabel(const wxString& label);
   void SyncDownloadCancelButton();
   void ReloadCatalogChartList(ChartSource& cs, bool selnew, bool selupd,
-                              bool materialize);
-  void SetActiveCatalogContext(int catalog_index);
-  void UpdateChartsLabelForSource(const ChartSource& cs);
+                              bool materialize) override;
+  void SetActiveCatalogContext(int catalog_index) override;
+  void UpdateChartsLabelForSource(const ChartSource& cs) override;
   void RefreshChartListForSource(int catalog_index,
-                                 const ChartDldrCatalogUiPolicy& ui);
-  void UpdateDownloadProgress(int downloading, int to_download,
-                              int failed_downloads,
-                              const ChartDldrBulkTransferSlot& transfer);
+                                 const ChartDldrCatalogUiPolicy& ui) override;
+  void UpdateDownloadProgress(
+      int downloading, int to_download, int failed_downloads,
+      const ChartDldrBulkTransferSlot& transfer) override;
 
   int BulkDownloadNotebookPage() const;
   void SetBulkDownloadNotebookPage(int page);
   void SelectBulkDownloadTab();
-
-  void EnterBulkPump();
-  void LeaveBulkPump();
-  /** Invalidate queued ScheduleBulkPump CallAfters (DeInit / destroy). */
-  void InvalidatePendingBulkPumps();
-  void ScheduleBulkPump();
-  void SetTransferStallTimerRunning(bool running);
 
   /** Build/execute manual browser decisions before a selected-chart session. */
   ChartDldrBulkRunPlan BuildSelectedChartsPreflightPlan();
@@ -175,16 +151,13 @@ protected:
 
 private:
   friend class ChartDldrPanelChartListView;
-  friend class ChartDldrBulkPumpGuard;
 
   void ApplyCatalogToolbarState();
   void SyncDownloadChartsButtonEnabled();
-  void OnTransferStallTimer(wxTimerEvent& event);
 
   void LoadCatalogSelectionFromDisk(const wxString& path, bool selnew,
                                     bool selupd);
 
-  ChartDldrPanelBulkState m_bulkState_;
   chartdldr_pi* pPlugIn;
   bool m_populated;
 
@@ -201,9 +174,6 @@ private:
   ChartDldrPanelChartListView chart_list_view_;
   std::unique_ptr<ChartDldrBulkOrchestrate> bulk_;
   std::unique_ptr<ChartDldrBulkNotifier> notifier_;
-
-  uint64_t bulk_pump_epoch_ = 0;
-  std::unique_ptr<wxTimer> transfer_stall_timer_;
 };
 
 #endif  // CHARTDLDR_PANEL_IMPL_H_

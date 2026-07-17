@@ -14,7 +14,6 @@
 #include <memory>
 #include <wx/datetime.h>
 
-struct ChartDldrPanelBulkState;
 class ChartDldrBulkTransferEvtSink;
 class wxEvtHandler;
 class wxString;
@@ -136,9 +135,13 @@ inline bool ChartDldrTransferNeedsEventDrain(
   return slot.IsInProgress();
 }
 
+/**
+ * Settle a completed chart temp download and clear the transfer slot.
+ * abort_current_transfer maps a pending user abort/cancel onto the temp gate.
+ */
 _OCPN_DLStatus ChartDldrFinishBackgroundTempDownload(
-    ChartDldrPanelBulkState& state, const ChartDldrTempDownloadPaths& paths,
-    bool transfer_success);
+    ChartDldrBulkTransferSlot& transfer, bool abort_current_transfer,
+    const ChartDldrTempDownloadPaths& paths, bool transfer_success);
 
 #ifdef UNIT_TESTS
 /** Install a live sink without starting OCPN (generation fencing / abandon). */

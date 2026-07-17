@@ -32,7 +32,8 @@ TEST(ChartDldrBulkTeardown, CompletedSessionEndIsDerivedFromRealStats) {
   EXPECT_TRUE(end.ShouldCopyStats());
   EXPECT_TRUE(end.ShouldFinalizeUi());
   EXPECT_TRUE(end.ShouldApplyChartDb());
-  EXPECT_EQ(end.Scheduled(), ChartDldrBulkSessionEnd::ScheduledFinish::Complete);
+  EXPECT_EQ(end.Scheduled(),
+            ChartDldrBulkSessionEnd::ScheduledFinish::Complete);
 }
 
 TEST(ChartDldrBulkTeardown, CancelNeverAppliesPartiallyDownloadedCharts) {
@@ -82,7 +83,8 @@ TEST(ChartDldrBulkTeardown, CompletedWithZeroOkSkipsChartDb) {
   EXPECT_TRUE(end.ShouldCopyStats());
   EXPECT_TRUE(end.ShouldFinalizeUi());
   EXPECT_FALSE(end.ShouldApplyChartDb());
-  EXPECT_EQ(end.Scheduled(), ChartDldrBulkSessionEnd::ScheduledFinish::Complete);
+  EXPECT_EQ(end.Scheduled(),
+            ChartDldrBulkSessionEnd::ScheduledFinish::Complete);
 }
 
 TEST(ChartDldrBulkTeardown, ShutdownPostflightIsSuppressed) {
@@ -127,18 +129,18 @@ TEST(ChartDldrBulkTeardown, ScheduledCompletedPostflightIsSuppressed) {
   EXPECT_TRUE(postflight.message.empty());
 }
 
-TEST(ChartDldrBulkTeardown, ReportBulkErrorIsSilentWhilePumpActive) {
+TEST(ChartDldrBulkTeardown, ReportBulkErrorIsSilentWhileModalsSuppressed) {
   const ChartDldrBulkSessionPolicy dialog_policy =
       ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::InteractiveBulk,
                                     true);
-  EXPECT_FALSE(ChartDldrIsBulkPumpActive());
-  ChartDldrEnterBulkPump();
-  EXPECT_TRUE(ChartDldrIsBulkPumpActive());
+  EXPECT_FALSE(ChartDldrBulkModalsSuppressed());
+  ChartDldrEnterBulkModalSuppress();
+  EXPECT_TRUE(ChartDldrBulkModalsSuppressed());
   // Must not open a modal under the pump (would re-enter DeInit / UAF).
   ChartDldrReportBulkError(nullptr, dialog_policy, wxT("pump failure"),
                            wxT("Error"));
-  ChartDldrLeaveBulkPump();
-  EXPECT_FALSE(ChartDldrIsBulkPumpActive());
+  ChartDldrLeaveBulkModalSuppress();
+  EXPECT_FALSE(ChartDldrBulkModalsSuppressed());
 }
 
 TEST(ChartDldrScheduleState, AbortedAllowsSameDayRetry) {

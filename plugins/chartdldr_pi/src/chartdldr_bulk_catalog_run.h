@@ -87,9 +87,16 @@ bool ChartDldrAdvanceBulkWalk(
 
 /**
  * Bind the walk to a single catalog and skip prepare (SelectedCharts).
- * The only production writer of phase/bound besides AdvanceBulkWalk.
+ * The only production writer of phase/bound besides AdvanceBulkWalk and
+ * ChartDldrBindCatalogPrepareWalk.
  */
 bool ChartDldrBindCatalogWalk(ChartDldrBulkCatalogRunState& state,
                               int catalog_index);
+
+/**
+ * Bind the walk to a single catalog and keep PrepareCatalog (CatalogRefresh).
+ */
+bool ChartDldrBindCatalogPrepareWalk(ChartDldrBulkCatalogRunState& state,
+                                     int catalog_index);
 
 #endif  // CHARTDLDR_BULK_CATALOG_RUN_H_

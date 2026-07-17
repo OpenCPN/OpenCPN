@@ -65,7 +65,7 @@ set(SRC
   chartdldr_extract_txn_tests.cpp
   chartdldr_source_catalog_tests.cpp
   chartdldr_bulk_catalog_result_tests.cpp
-  chartdldr_panel_bulk_state_tests.cpp
+  chartdldr_bulk_state_tests.cpp
   chartdldr_scheduled_ui_lock_tests.cpp
   chartdldr_scheduled_run_log_tests.cpp
   chartdldr_scheduled_catalog_advance_tests.cpp

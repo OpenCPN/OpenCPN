@@ -16,15 +16,11 @@
 #include <wx/filefn.h>
 #include <wx/filename.h>
 #include <wx/log.h>
-#include <wx/textfile.h>
 
 namespace {
 
 using ChartDldrExtractCommon::ExtractManifest;
-using ChartDldrExtractCommon::IsPathInsideDir;
-using ChartDldrExtractCommon::kBackupJournalName;
 using ChartDldrExtractCommon::kExtractDirPrefix;
-using ChartDldrExtractCommon::kManifestName;
 using ChartDldrExtractCommon::kPhaseCommitted;
 using ChartDldrExtractCommon::kPhasePublishing;
 using ChartDldrExtractCommon::kRollbackDirName;
@@ -37,24 +33,7 @@ using ChartDldrExtractCommon::UndoOneOrphanCreate;
 bool RecoverPublishingOrphan(const wxString& live_root,
                              const wxString& stage_root,
                              const ExtractManifest& manifest) {
-  wxArrayString entries = manifest.publish_entries;
-  const wxString journal_path =
-      stage_root + wxFileName::GetPathSeparator() + kBackupJournalName;
-  if (entries.IsEmpty() && wxFileExists(journal_path)) {
-    wxTextFile journal;
-    if (!journal.Open(journal_path)) {
-      wxLogError(_T("chartdldr_pi: cannot read extract backup journal at %s"),
-                 journal_path.c_str());
-      return false;
-    }
-    for (size_t i = 0; i < journal.GetLineCount(); ++i) {
-      const wxString line = journal.GetLine(i).Trim(true).Trim(false);
-      if (!line.IsEmpty()) {
-        entries.Add(line);
-      }
-    }
-    journal.Close();
-  }
+  const wxArrayString& entries = manifest.publish_entries;
   if (entries.IsEmpty()) {
     wxLogWarning(
         _T("chartdldr_pi: PUBLISHING extract manifest has no rollback entries ")
@@ -102,8 +81,8 @@ bool RecoverPublishingOrphan(const wxString& live_root,
   }
   if (entry_count == 0) {
     wxLogError(
-        _T("chartdldr_pi: PUBLISHING extract journal empty or truncated at %s"),
-        journal_path.c_str());
+        _T("chartdldr_pi: PUBLISHING extract manifest entries empty at %s"),
+        stage_root.c_str());
     return false;
   }
 

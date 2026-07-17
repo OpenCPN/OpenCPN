@@ -11,6 +11,7 @@
 #include "chartdldr_panel.h"
 #include "chartdldr_panel_impl.h"
 #include "chartdldr_bulk.h"
+#include "chartdldr_bulk_orchestrate.h"
 #include "chartdldr_bulk_transfer.h"
 
 #include <wx/log.h>
@@ -100,12 +101,12 @@ void ChartDldrDestroyDownloaderUI(chartdldr_pi* pi) {
     ChartDldrPanelImpl* const panel = pi->m_dldrpanel;
 
     panel->CancelBulkActivity(ChartDldrBulkCancelScope::PluginShutdown);
-    panel->InvalidatePendingBulkPumps();
+    panel->Bulk().Pump().InvalidatePending();
     // The pump has no modal/nested-loop paths, so DeInit cannot re-enter this
     // code while the pump stack is active. Keeping the assertion makes any
     // future violation fail in development instead of leaking executable
     // plugin callbacks across library unload.
-    if (ChartDldrIsBulkPumpActive()) {
+    if (ChartDldrBulkModalsSuppressed()) {
       wxLogFatalError(
           wxT("Chart Downloader unloaded from inside its bulk pump"));
     }

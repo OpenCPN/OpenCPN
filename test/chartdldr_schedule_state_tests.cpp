@@ -221,14 +221,6 @@ TEST(ChartDldrScheduleState, ClassifyBulkRunScheduleStatus) {
             "catalog refresh failed: 2 sources");
 }
 
-TEST(ChartDldrScheduleState, MigrateLegacyCombinedStatus) {
-  ChartDldrScheduleConfig schedule;
-  schedule.last_status = "2026-06-02 15:30 2 update 3 new";
-  ChartDldrMigrateLegacyScheduleStatus(schedule);
-  EXPECT_EQ(schedule.last_status, "2 update 3 new");
-  EXPECT_FALSE(schedule.last_attempt_iso.empty());
-}
-
 TEST(ChartDldrScheduleState, ParseScheduledRunOutcome) {
   ChartDldrScheduledRunOutcome outcome = ChartDldrScheduledRunOutcome::Pending;
   EXPECT_TRUE(ChartDldrParseScheduledRunOutcome(

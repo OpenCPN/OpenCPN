@@ -37,7 +37,7 @@ void ChartDldrOnBulkTransferProgress(wxEvtHandler* listener) {
 void ChartDldrOnBulkTransferEnd(wxEvtHandler* listener) {
   auto* panel = dynamic_cast<ChartDldrPanelImpl*>(listener);
   if (panel && panel->Bulk().IsRunActive()) {
-    panel->ScheduleBulkPump();
+    panel->Bulk().Pump().Schedule();
   }
 }
 
@@ -52,8 +52,9 @@ void ChartDldrInitPanelBulkDownloadHooks() {
 
 void ChartDldrPanelImpl::ApplyBulkRunUiPolicy(
     const ChartDldrBulkSessionPolicy& policy) {
-  m_bulkState_.download_cancel.ResetForBulkRun();
-  m_bulkState_.download_cancel.BeginBulkSessionCancel();
+  ChartDldrDownloadCancelState& cancel = bulk_->Session().DownloadCancel();
+  cancel.ResetForBulkRun();
+  cancel.BeginBulkSessionCancel();
   SyncDownloadCancelButton();
   if (policy.UiSelectDownloadTab()) {
     SelectBulkDownloadTab();
@@ -61,13 +62,14 @@ void ChartDldrPanelImpl::ApplyBulkRunUiPolicy(
 }
 
 void ChartDldrPanelImpl::EndBulkSessionUi() {
-  m_bulkState_.download_cancel.EndActiveDownload();
-  m_bulkState_.download_cancel.EndBulkSessionCancel();
+  ChartDldrDownloadCancelState& cancel = bulk_->Session().DownloadCancel();
+  cancel.EndActiveDownload();
+  cancel.EndBulkSessionCancel();
   SyncDownloadCancelButton();
 }
 
 void ChartDldrPanelImpl::OnDownloadCharts(wxCommandEvent& event) {
-  if (m_bulkState_.download_cancel.IsDownloadButtonCancelArmed()) {
+  if (bulk_->Session().DownloadCancel().IsDownloadButtonCancelArmed()) {
     bulk_->RequestBulkUserCancel();
     return;
   }
@@ -118,19 +120,6 @@ void ChartDldrPanelImpl::UpdateDownloadProgress(
   Update();
   Refresh();
 }
-
-ChartDldrBulkPumpGuard::ChartDldrBulkPumpGuard(ChartDldrPanelImpl& panel)
-    : panel_(panel) {
-  panel_.EnterBulkPump();
-}
-
-ChartDldrBulkPumpGuard::~ChartDldrBulkPumpGuard() { panel_.LeaveBulkPump(); }
-
-void ChartDldrPanelImpl::EnterBulkPump() { ChartDldrEnterBulkPump(); }
-
-void ChartDldrPanelImpl::InvalidatePendingBulkPumps() { ++bulk_pump_epoch_; }
-
-void ChartDldrPanelImpl::LeaveBulkPump() { ChartDldrLeaveBulkPump(); }
 
 ChartDldrBulkRunPlan ChartDldrPanelImpl::BuildSelectedChartsPreflightPlan() {
   ChartDldrBulkRunPlan plan;
@@ -207,46 +196,8 @@ void ChartDldrPanelImpl::PresentBulkPostflight(
   wxLogMessage("chartdldr_pi: %s", result.message.c_str());
 }
 
-void ChartDldrPanelImpl::ScheduleBulkPump() {
-  const uint64_t epoch = bulk_pump_epoch_;
-  // Queue on the panel itself: wxEvtHandler destruction removes pending events
-  // before the plugin library can unload.
-  CallAfter([this, epoch]() {
-    if (epoch != bulk_pump_epoch_ || !pPlugIn || !bulk_) {
-      return;
-    }
-    ChartDldrBulkPumpGuard guard(*this);
-    if (!bulk_->PumpBulkRun() && bulk_->IsRunActive()) {
-      bulk_->TeardownBulkSession(
-          ChartDldrBulkTeardownReasonAfterLoop(IsBulkRunCancelled()));
-    }
-  });
-}
-
-void ChartDldrPanelImpl::SetTransferStallTimerRunning(bool running) {
-  if (!transfer_stall_timer_) {
-    transfer_stall_timer_ = std::make_unique<wxTimer>(this);
-    Bind(wxEVT_TIMER, &ChartDldrPanelImpl::OnTransferStallTimer, this,
-         transfer_stall_timer_->GetId());
-  }
-  if (running) {
-    if (!transfer_stall_timer_->IsRunning()) {
-      transfer_stall_timer_->Start(200, wxTIMER_CONTINUOUS);
-    }
-  } else if (transfer_stall_timer_->IsRunning()) {
-    transfer_stall_timer_->Stop();
-  }
-}
-
-void ChartDldrPanelImpl::OnTransferStallTimer(wxTimerEvent& event) {
-  (void)event;
-  if (bulk_) {
-    bulk_->OnTransferStallTick();
-  }
-}
-
 void ChartDldrPanelImpl::CancelDownload() {
-  m_bulkState_.download_cancel.ForceCancel();
+  bulk_->Session().DownloadCancel().ForceCancel();
 }
 
 void ChartDldrPanelImpl::CancelBulkActivity(ChartDldrBulkCancelScope scope) {

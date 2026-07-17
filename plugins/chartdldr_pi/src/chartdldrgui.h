@@ -11,9 +11,6 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
-
-#include "chartdldr_bulk_chart_loop.h"
-
 #include <wx/treectrl.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
@@ -59,12 +56,9 @@ public:
   ~DLDR_OCPNChartDirPanel();
 
   void OnPaint(wxPaintEvent& event);
-  int GetUnselectedHeight() { return m_unselectedHeight; }
-  int GetRefHeight() { return m_refHeight; }
   void SetText(wxString text);
 
 private:
-  // bool m_bSelected;
   wxColour m_boxColour;
   int m_unselectedHeight;
   wxString m_ChartDir;
@@ -130,16 +124,13 @@ protected:
   wxButton* m_bUpdateAllCharts;
   wxStaticText* m_stCatalogInfo;
   wxButton* m_bDnldCharts;
-  // wxButton* m_bShowLocal;
 #if defined(CHART_LIST)
   // Buttons for selecting charts to download
-  wxButton* m_bClear;
   wxButton* m_bSelectNew;
   wxButton* m_bSelectUpdated;
   wxButton* m_bSelectAll;
 #endif /* CHART_LIST */
   wxNotebook* m_DLoadNB;
-  wxString m_csTitle;
   wxStaticText* m_chartsLabel;
 #if !defined(CHART_LIST)  // The chart list viewer does not use m_panelArray
   std::vector<std::unique_ptr<ChartPanel>> m_panelArray;

@@ -84,9 +84,6 @@ private:
   /** Record a successful live→backup move for in-memory rollback. */
   void NoteBackedUp(const wxString& rel);
 
-  /** Drop rel from backed_up_ after a successful immediate restore. */
-  void ForgetBackedUp(const wxString& rel);
-
   /** Restore one published path. Leaves backups in place on failure. */
   bool RestorePublishedPath(const wxString& rel, const wxString& backup_root);
 

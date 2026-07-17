@@ -2,20 +2,21 @@
  *   Copyright (C) 2026 OpenCPN Contributors                               *
  ***************************************************************************/
 
-#ifndef CHARTDLDR_PANEL_BULK_CHART_ENGINE_H_
-#define CHARTDLDR_PANEL_BULK_CHART_ENGINE_H_
+#ifndef CHARTDLDR_PANEL_BULK_CHART_CONTROLLER_H_
+#define CHARTDLDR_PANEL_BULK_CHART_CONTROLLER_H_
 
 #include "chartdldr_bulk_catalog_run.h"
 #include "chartdldr_bulk_state.h"
 
-class ChartDldrPanelImpl;
+class ChartDldrChartDownloadView;
 class ChartSource;
 class chartdldr_pi;
 
 /** Chart download loop and transfer polling for bulk download. */
-class ChartDldrPanelBulkChartEngine {
+class ChartDldrPanelBulkChartController {
 public:
-  explicit ChartDldrPanelBulkChartEngine(ChartDldrPanelImpl& panel);
+  ChartDldrPanelBulkChartController(ChartDldrChartDownloadView& panel,
+                                    ChartDldrBulkRunSession& session);
 
   void BeginBulkChartDownload(const ChartDldrBulkSessionPolicy& policy,
                               int catalog_index,
@@ -43,8 +44,8 @@ private:
       ChartDldrChartBulkState& chart_bulk, ChartSource& source, int chart_count,
       chartdldr_pi* pi);
 
-  ChartDldrPanelImpl& panel_;
-  ChartDldrPanelBulkState& state_;
+  ChartDldrChartDownloadView& panel_;
+  ChartDldrBulkRunSession& session_;
 };
 
-#endif  // CHARTDLDR_PANEL_BULK_CHART_ENGINE_H_
+#endif  // CHARTDLDR_PANEL_BULK_CHART_CONTROLLER_H_

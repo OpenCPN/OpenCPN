@@ -194,13 +194,6 @@ void ChartDldrExtractTxn::NoteBackedUp(const wxString& rel) {
   backed_up_.Add(rel);
 }
 
-void ChartDldrExtractTxn::ForgetBackedUp(const wxString& rel) {
-  const int idx = backed_up_.Index(rel);
-  if (idx != wxNOT_FOUND) {
-    backed_up_.RemoveAt(static_cast<size_t>(idx));
-  }
-}
-
 bool ChartDldrExtractTxn::RestorePublishedPath(const wxString& rel,
                                                const wxString& backup_root) {
 #ifdef UNIT_TESTS

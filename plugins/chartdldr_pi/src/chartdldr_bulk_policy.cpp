@@ -13,19 +13,20 @@
 
 namespace {
 
-int g_bulk_pump_depth = 0;
+/** Depth of nested CallAfter pump turns that must not open modal dialogs. */
+int g_bulk_modal_suppress_depth = 0;
 
 }  // namespace
 
-void ChartDldrEnterBulkPump() { ++g_bulk_pump_depth; }
+void ChartDldrEnterBulkModalSuppress() { ++g_bulk_modal_suppress_depth; }
 
-void ChartDldrLeaveBulkPump() {
-  if (g_bulk_pump_depth > 0) {
-    --g_bulk_pump_depth;
+void ChartDldrLeaveBulkModalSuppress() {
+  if (g_bulk_modal_suppress_depth > 0) {
+    --g_bulk_modal_suppress_depth;
   }
 }
 
-bool ChartDldrIsBulkPumpActive() { return g_bulk_pump_depth > 0; }
+bool ChartDldrBulkModalsSuppressed() { return g_bulk_modal_suppress_depth > 0; }
 
 ChartDldrScheduledUiPresentation ChartDldrScheduledUiPresentationFor(
     bool panel_visible) {
@@ -147,8 +148,8 @@ void ChartDldrReportBulkError(wxWindow* parent,
                               ChartDldrErrorReporting reporting,
                               const wxString& msg, const wxString& title) {
   // Never nest a modal under the bulk pump (DeInit from MessageBox can unload
-  // the plugin DLL before LeaveBulkPump unwinds).
-  if (ChartDldrIsBulkPumpActive()) {
+  // the plugin DLL before LeaveBulkModalSuppress unwinds).
+  if (ChartDldrBulkModalsSuppressed()) {
     wxLogWarning(wxT("chartdldr_pi: %s: %s"), title.c_str(), msg.c_str());
     return;
   }

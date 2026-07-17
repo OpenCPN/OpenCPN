@@ -40,11 +40,13 @@ inline wxString ChartDldrFormatBytes(long bytes) {
   return ChartDldrFormatBytes(static_cast<double>(bytes));
 }
 
-/** Session kinds only. Browse / manual catalog refresh use CatalogUiPolicy. */
+/** Session kinds only. Browse uses CatalogUiPolicy without a session. */
 enum class ChartDldrBulkRunMode {
   InteractiveBulk,
   ScheduledBulk,
   SelectedCharts,
+  /** Single-catalog async refresh; no chart download pass. */
+  CatalogRefresh,
 };
 
 inline bool ChartDldrBulkRunModeIsScheduled(ChartDldrBulkRunMode mode) {
@@ -141,6 +143,17 @@ struct ChartDldrBulkSessionPolicy {
   bool BindSelectedCatalogOnly() const {
     return mode == ChartDldrBulkRunMode::SelectedCharts;
   }
+  /**
+   * CatalogRefresh: bind one catalog and run prepare only (no chart pass).
+   * Distinct from BindSelectedCatalogOnly, which skips prepare.
+   */
+  bool BindCatalogPrepareOnly() const {
+    return mode == ChartDldrBulkRunMode::CatalogRefresh;
+  }
+  /** After a successful catalog refresh, advance without downloading charts. */
+  bool SkipChartDownloadAfterRefresh() const {
+    return mode == ChartDldrBulkRunMode::CatalogRefresh;
+  }
   bool UiMaterialize() const {
     return !(IsScheduled() &&
              scheduled_ui == ChartDldrScheduledUiPresentation::Silent);
@@ -148,6 +161,7 @@ struct ChartDldrBulkSessionPolicy {
   bool UiRestoreNotebook() const {
     return mode == ChartDldrBulkRunMode::InteractiveBulk ||
            mode == ChartDldrBulkRunMode::SelectedCharts ||
+           mode == ChartDldrBulkRunMode::CatalogRefresh ||
            ScheduledWithProgress();
   }
   bool UiSelectDownloadTab() const {
@@ -160,7 +174,8 @@ struct ChartDldrBulkSessionPolicy {
            ScheduledWithProgress();
   }
   bool FocusChartsAfter() const {
-    return mode == ChartDldrBulkRunMode::InteractiveBulk;
+    return mode == ChartDldrBulkRunMode::InteractiveBulk ||
+           mode == ChartDldrBulkRunMode::CatalogRefresh;
   }
   ChartDldrErrorReporting ErrorReporting() const {
     return IsScheduled() ? ChartDldrErrorReporting::SummaryLog

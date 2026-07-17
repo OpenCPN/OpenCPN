@@ -4,7 +4,10 @@
 
 #include "chartdldr_chart_source.h"
 
+#include "chartdldr_extract_common.h"
+
 #include <fstream>
+#include <sstream>
 #include <string>
 
 #include <wx/dir.h>
@@ -119,43 +122,27 @@ void ChartSource::LoadUpdateData() {
 
 bool ChartSource::SaveUpdateData() {
   const wxString published = ChartUpdateDataPath(GetDir());
-  wxString write_path = published;
 
-#ifdef __ANDROID__
-  write_path = AndroidGetCacheDir() + wxFileName::GetPathSeparator() +
-               _T(UPDATE_DATA_FILENAME);
-#else
-  write_path = published + wxT(".publish-tmp");
-#endif
-
-  std::ofstream outfile(write_path.mb_str());
-  if (!outfile.is_open()) {
-    wxLogWarning(
-        wxT("chartdldr_pi: failed to write chart update metadata \"%s\""),
-        write_path.c_str());
-    return false;
-  }
-
+  std::ostringstream body;
   for (std::map<std::string, time_t>::const_iterator iter =
            m_update_data.begin();
        iter != m_update_data.end(); ++iter) {
     if (iter->first.find(" ") == std::string::npos && !iter->first.empty()) {
-      outfile << iter->first << " " << iter->second << "\n";
+      body << iter->first << " " << iter->second << "\n";
     }
   }
+  const wxString contents = wxString::FromUTF8(body.str().c_str());
 
-  outfile.flush();
-  const bool write_ok = static_cast<bool>(outfile);
-  outfile.close();
-  if (!write_ok) {
+#ifdef __ANDROID__
+  const wxString write_path = AndroidGetCacheDir() +
+                              wxFileName::GetPathSeparator() +
+                              _T(UPDATE_DATA_FILENAME);
+  if (!ChartDldrExtractCommon::WriteTextFileAtomic(write_path, contents)) {
     wxLogWarning(
         wxT("chartdldr_pi: failed to write chart update metadata \"%s\""),
         write_path.c_str());
-    wxRemoveFile(write_path);
     return false;
   }
-
-#ifdef __ANDROID__
   if (!AndroidSecureCopyFile(write_path, published)) {
     wxLogWarning(
         wxT("chartdldr_pi: failed to publish chart update metadata \"%s\""),
@@ -164,16 +151,16 @@ bool ChartSource::SaveUpdateData() {
     return false;
   }
   wxRemoveFile(write_path);
+  return true;
 #else
-  if (!wxRenameFile(write_path, published, true /*overwrite*/)) {
+  if (!ChartDldrExtractCommon::WriteTextFileAtomic(published, contents)) {
     wxLogWarning(
         wxT("chartdldr_pi: failed to publish chart update metadata \"%s\""),
         published.c_str());
-    wxRemoveFile(write_path);
     return false;
   }
-#endif
   return true;
+#endif
 }
 
 bool ChartSource::ChartUpdated(wxString filename, time_t timestamp) {

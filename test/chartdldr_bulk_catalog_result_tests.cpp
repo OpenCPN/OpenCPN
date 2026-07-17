@@ -150,7 +150,7 @@ TEST(ChartDldrBulkCatalogResult, CatalogRefreshFailedWhenCancelled) {
   EXPECT_FALSE(ChartDldrCatalogRefreshSucceeded(OCPN_DL_NO_ERROR, true));
 }
 
-TEST(ChartDldrBulkCatalogResult, PublishValidatedCatalogSucceeds) {
+TEST(ChartDldrBulkCatalogResult, CompleteValidatedPathsSucceeds) {
   const wxString dir = MakeTempDir(wxT("chartdldr_catalog_valid"));
   const wxString output_path =
       dir + wxFileName::GetPathSeparator() + wxT("catalog.xml");
@@ -160,8 +160,8 @@ TEST(ChartDldrBulkCatalogResult, PublishValidatedCatalogSucceeds) {
   ChartDldrTempDownloadPaths paths = ChartDldrTempDownloadPathsFor(output_path);
   WriteBytes(paths.temp_path, kValidCatalogHeaderXml);
 
-  EXPECT_TRUE(
-      ChartDldrPublishValidatedCatalog(paths.temp_path, paths.output_path));
+  EXPECT_EQ(ChartDldrCompleteValidatedCatalogDownloadPaths(paths, true, false),
+            OCPN_DL_NO_ERROR);
   EXPECT_TRUE(wxFileExists(output_path));
   EXPECT_FALSE(wxFileExists(paths.temp_path));
   EXPECT_NE(ReadFileContents(output_path), wxString(live_bytes));
@@ -172,7 +172,7 @@ TEST(ChartDldrBulkCatalogResult, PublishValidatedCatalogSucceeds) {
 }
 
 TEST(ChartDldrBulkCatalogResult,
-     PublishValidatedCatalogPreservesLiveOnInvalid) {
+     CompleteValidatedPathsPreservesLiveOnInvalid) {
   const wxString dir = MakeTempDir(wxT("chartdldr_catalog_invalid"));
   const wxString output_path =
       dir + wxFileName::GetPathSeparator() + wxT("catalog.xml");
@@ -182,8 +182,8 @@ TEST(ChartDldrBulkCatalogResult,
   ChartDldrTempDownloadPaths paths = ChartDldrTempDownloadPathsFor(output_path);
   WriteBytes(paths.temp_path, "HTTP 200 but not catalog XML");
 
-  EXPECT_FALSE(
-      ChartDldrPublishValidatedCatalog(paths.temp_path, paths.output_path));
+  EXPECT_EQ(ChartDldrCompleteValidatedCatalogDownloadPaths(paths, true, false),
+            OCPN_DL_FAILED);
   EXPECT_EQ(ReadFileContents(output_path), wxString(live_bytes));
   EXPECT_FALSE(wxFileExists(paths.temp_path));
 
@@ -277,8 +277,8 @@ TEST(ChartDldrBulkCatalogResult, EmptyRncProductCatalogDoesNotOverwriteLive) {
              "<?xml version=\"1.0\"?>\n<RncProductCatalog/>\n");
 
   EXPECT_FALSE(ChartDldrCatalogTempIsPublishable(paths.temp_path));
-  EXPECT_FALSE(
-      ChartDldrPublishValidatedCatalog(paths.temp_path, paths.output_path));
+  EXPECT_EQ(ChartDldrCompleteValidatedCatalogDownloadPaths(paths, true, false),
+            OCPN_DL_FAILED);
   EXPECT_EQ(ReadFileContents(output_path), wxString(live_bytes));
   EXPECT_FALSE(wxFileExists(paths.temp_path));
 
@@ -298,8 +298,8 @@ TEST(ChartDldrBulkCatalogResult,
   WriteBytes(paths.temp_path, kHeaderOnlyCatalogXml);
 
   EXPECT_FALSE(ChartDldrCatalogTempIsPublishable(paths.temp_path));
-  EXPECT_FALSE(
-      ChartDldrPublishValidatedCatalog(paths.temp_path, paths.output_path));
+  EXPECT_EQ(ChartDldrCompleteValidatedCatalogDownloadPaths(paths, true, false),
+            OCPN_DL_FAILED);
   EXPECT_EQ(ReadFileContents(output_path), wxString(live_bytes));
   EXPECT_FALSE(wxFileExists(paths.temp_path));
 
@@ -319,8 +319,8 @@ TEST(ChartDldrBulkCatalogResult,
   WriteBytes(paths.temp_path, kCatalogWithEmptyChartXml);
 
   EXPECT_FALSE(ChartDldrCatalogTempIsPublishable(paths.temp_path));
-  EXPECT_FALSE(
-      ChartDldrPublishValidatedCatalog(paths.temp_path, paths.output_path));
+  EXPECT_EQ(ChartDldrCompleteValidatedCatalogDownloadPaths(paths, true, false),
+            OCPN_DL_FAILED);
   EXPECT_EQ(ReadFileContents(output_path), wxString(live_bytes));
   EXPECT_FALSE(wxFileExists(paths.temp_path));
 

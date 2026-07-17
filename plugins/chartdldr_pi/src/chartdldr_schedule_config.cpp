@@ -75,33 +75,20 @@ void ChartDldrScheduleConfig::Load(wxFileConfig* conf) {
   conf->Read(_T("ScheduledUpdateEnabled"), &enabled, false);
   conf->Read(_T("ScheduledUpdateHour"), &hour, 3);
   conf->Read(_T("ScheduledUpdateMinute"), &minute, 0);
-  wxString legacy_last_run;
-  conf->Read(_T("ScheduledUpdateLastRun"), &legacy_last_run, wxEmptyString);
-  if (legacy_last_run.empty()) {
-    conf->Read(_T("ScheduledUpdateLastRunDate"), &legacy_last_run,
-               wxEmptyString);
-  }
   conf->Read(_T("ScheduledUpdateLastStatus"), &last_status, wxEmptyString);
   conf->Read(_T("ScheduledUpdateLastAttempt"), &last_attempt_iso,
              wxEmptyString);
   long outcome_value = static_cast<long>(ChartDldrScheduledRunOutcome::Pending);
   const bool has_outcome =
       conf->Read(_T("ScheduledUpdateLastOutcome"), &outcome_value);
-  long legacy_catalog_refresh_failures = 0;
-  conf->Read(_T("ScheduledUpdateLastCatalogRefreshFailures"),
-             &legacy_catalog_refresh_failures, 0);
   const bool parsed_outcome = has_outcome && ChartDldrParseScheduledRunOutcome(
                                                  outcome_value, last_outcome);
   SetTime(hour, minute);
   SanitizeTimestamps();
-  ChartDldrMigrateLegacyScheduleStatus(*this, legacy_last_run);
   // No outcome key (or invalid): Pending. Same-day retry stays allowed; the
-  // next completed run persists a real outcome. Do not parse last_status.
+  // next completed run persists a real outcome.
   if (!parsed_outcome) {
     last_outcome = ChartDldrScheduledRunOutcome::Pending;
-  } else if (legacy_catalog_refresh_failures > 0 &&
-             last_outcome == ChartDldrScheduledRunOutcome::BulkPartialSuccess) {
-    last_outcome = ChartDldrScheduledRunOutcome::CatalogRefreshFailed;
   }
   SanitizeTimestamps();
 }
@@ -110,8 +97,6 @@ bool ChartDldrScheduleConfig::Save(wxFileConfig* conf) const {
   if (!conf) {
     return false;
   }
-  // ScheduledUpdateLastRun is read-only migration; LastAttempt is
-  // authoritative.
   return conf->Write(_T("ScheduledUpdateEnabled"), enabled) &&
          conf->Write(_T("ScheduledUpdateHour"), hour) &&
          conf->Write(_T("ScheduledUpdateMinute"), minute) &&

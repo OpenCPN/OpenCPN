@@ -8,12 +8,13 @@
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_catalog_run.h"
 #include "chartdldr_bulk_state.h"
-#include "chartdldr_scheduled_run_log.h"
+#include "chartdldr_bulk_pump.h"
+#include "chartdldr_scheduled_run_observer.h"
 
 #include <memory>
 
-class ChartDldrPanelBulkCatalogEngine;
-class ChartDldrPanelBulkChartEngine;
+class ChartDldrPanelBulkCatalogController;
+class ChartDldrPanelBulkChartController;
 class ChartDldrPanelImpl;
 class chartdldr_pi;
 
@@ -30,6 +31,15 @@ public:
     return session_.IsActive() && session_.IsScheduled();
   }
 
+  // The run session is the single owner of transfer/cancel/refresh state. The
+  // panel reads its download-cancel UI state through here; between runs the
+  // session is inactive and its cancel state is idle.
+  ChartDldrBulkRunSession& Session() { return session_; }
+  const ChartDldrBulkRunSession& Session() const { return session_; }
+
+  ChartDldrBulkPump& Pump() { return pump_; }
+  const ChartDldrBulkPump& Pump() const { return pump_; }
+
   /**
    * Single entry for all bulk modes. Policy comes from
    * ChartDldrBulkSessionPolicyFor(mode, ...). SelectedCharts downloads the
@@ -42,8 +52,6 @@ public:
 
   bool RefreshCatalogManual(int catalog_index);
 
-  /** Schedule a deferred PumpBulkRun (avoids re-entrancy from transfer END). */
-  void ScheduleBulkPump();
   /**
    * Step while idle; return when a transfer is in progress or the walk ends.
    * Returns true if the session is still active and may need another pump.
@@ -74,6 +82,8 @@ private:
   bool StepBulkRunOnce();
   /** Bound the shared walker to one catalog and skip into DownloadChart. */
   bool BindSelectedCatalogDownload(int catalog_index);
+  /** Bound the shared walker to one catalog and keep PrepareCatalog. */
+  bool BindCatalogPrepareOnly(int catalog_index);
   void CleanupActiveBulkRun();
   void ApplyChartDatabaseAfterComplete(chartdldr_pi* pi);
   void FinalizeBulkRun(const ChartDldrBulkSessionPolicy& policy,
@@ -83,16 +93,16 @@ private:
   void ApplySessionEnd(const ChartDldrBulkSessionEnd& end,
                        const SessionEndContext& ctx,
                        ChartDldrBulkRunStats* out_stats);
-  ChartDldrScheduledRunLogSnapshot CaptureScheduledLogSnapshot(
-      chartdldr_pi* pi) const;
   void EnsureIdleCatalogUi();
-  void EnsureTransferStallTimer(bool running);
 
   ChartDldrPanelImpl& panel_;
-  std::unique_ptr<ChartDldrPanelBulkCatalogEngine> catalog_;
-  std::unique_ptr<ChartDldrPanelBulkChartEngine> chart_;
+  // session_ before pump_/controllers so their references bind to a live
+  // subobject; the controllers drive transfer/cancel/refresh through it.
   ChartDldrBulkRunSession session_;
-  ChartDldrScheduledRunLogger scheduled_log_;
+  ChartDldrBulkPump pump_;
+  std::unique_ptr<ChartDldrPanelBulkCatalogController> catalog_;
+  std::unique_ptr<ChartDldrPanelBulkChartController> chart_;
+  ChartDldrScheduledRunObserver scheduled_run_;
   bool pump_reentrant_ = false;
 };
 

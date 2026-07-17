@@ -10,10 +10,11 @@
 
 #include "chartdldr_panel_bulk_chart_transfer.h"
 
+#include "chartdldr_bulk_chart_loop.h"
 #include "chartdldr_bulk_transfer.h"
 #include "chartdldr_catalog_prep.h"
 #include "chartdldr_chart_install.h"
-#include "chartdldr_panel_impl.h"
+#include "chartdldr_bulk_panel_view.h"
 #include "chartdldr_pi.h"
 #include "chartcatalog.h"
 #include "chartdldr_chart_source.h"
@@ -30,7 +31,7 @@ namespace {
 
 #ifdef __ANDROID__
 struct AndroidInstallBusyScope {
-  explicit AndroidInstallBusyScope(ChartDldrPanelImpl& panel) {
+  explicit AndroidInstallBusyScope(ChartDldrChartDownloadView& panel) {
     panel.SetChartInfo(_("Installing charts."));
     androidShowBusyIcon();
   }
@@ -47,7 +48,7 @@ Chart* ChartAt(chartdldr_pi* pi, int index) {
 }
 
 void FinalizePendingChartDownload(
-    ChartDldrPanelImpl& panel, int chart_index,
+    ChartDldrChartDownloadView& panel, int chart_index,
     ChartDldrChartUpdateKind kind, ChartSource& source,
     const wxString& full_path, ChartDldrChartBulkState& chart_bulk,
     const ChartDldrBulkSessionPolicy& policy, chartdldr_pi* pi) {
@@ -68,14 +69,22 @@ void FinalizePendingChartDownload(
 }  // namespace
 
 void ChartDldrDisposeChartBulkTransfer(
-    ChartDldrPanelImpl& panel, ChartDldrPanelBulkState& state,
+    ChartDldrChartDownloadView& panel, ChartDldrBulkTransferSlot& transfer,
+    const ChartDldrDownloadCancelState& download_cancel,
     ChartDldrChartTransferDisposition disposition, ChartSource* source,
     ChartDldrChartBulkState& chart_bulk,
     const ChartDldrBulkSessionPolicy& policy, chartdldr_pi* pi) {
   if (!chart_bulk.active ||
-      !state.transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
+      !transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
     return;
   }
+
+  const ChartDldrChartTransferFacts facts{
+      transfer.IsInProgress(),
+      transfer.IsInProgress() ? false : transfer.success,
+      transfer.IsInProgress() || download_cancel.ShouldAbortCurrentTransfer(),
+      chart_bulk.pending_download_paths,
+  };
 
   switch (disposition) {
     case ChartDldrChartTransferDisposition::None:
@@ -84,19 +93,18 @@ void ChartDldrDisposeChartBulkTransfer(
     case ChartDldrChartTransferDisposition::Settle: {
       if (!source || !pi || chart_bulk.pending_index < 0) {
         ChartDldrDisposeChartBulkTransfer(
-            panel, state, ChartDldrChartTransferDisposition::Abort, source,
-            chart_bulk, policy, pi);
+            panel, transfer, download_cancel,
+            ChartDldrChartTransferDisposition::Abort, source, chart_bulk,
+            policy, pi);
         return;
       }
-      const ChartDldrTempDownloadPaths paths =
-          chart_bulk.pending_download_paths;
       const _OCPN_DLStatus status = ChartDldrFinishBackgroundTempDownload(
-          state, paths, state.transfer.success);
+          transfer, facts.cancelled, facts.paths, facts.success);
       chart_bulk.pending_download_paths = ChartDldrTempDownloadPaths();
       if (status == OCPN_DL_NO_ERROR) {
-        FinalizePendingChartDownload(panel, chart_bulk.pending_index,
-                                     chart_bulk.pending_kind, *source,
-                                     paths.output_path, chart_bulk, policy, pi);
+        FinalizePendingChartDownload(
+            panel, chart_bulk.pending_index, chart_bulk.pending_kind, *source,
+            facts.paths.output_path, chart_bulk, policy, pi);
       } else {
         ChartDldrRecordChartDownloadFailure(chart_bulk);
       }
@@ -105,25 +113,18 @@ void ChartDldrDisposeChartBulkTransfer(
 
     case ChartDldrChartTransferDisposition::Abort: {
       if (chart_bulk.pending_index < 0) {
-        ChartDldrCancelAndResetBulkTransfer(state.transfer);
+        ChartDldrCancelAndResetBulkTransfer(transfer);
         return;
       }
 
-      const ChartDldrTempDownloadPaths paths =
-          chart_bulk.pending_download_paths;
-      const bool in_progress = state.transfer.IsInProgress();
-      const bool transfer_success =
-          in_progress ? false : state.transfer.success;
-      const bool cancelled =
-          in_progress || state.download_cancel.ShouldAbortCurrentTransfer();
-
-      if (in_progress) {
-        ChartDldrCancelAndResetBulkTransfer(state.transfer);
+      if (facts.in_progress) {
+        ChartDldrCancelAndResetBulkTransfer(transfer);
       } else {
-        state.transfer.Reset();
+        transfer.Reset();
       }
 
-      ChartDldrCompleteTempDownloadPaths(paths, transfer_success, cancelled);
+      ChartDldrCompleteTempDownloadPaths(facts.paths, facts.success,
+                                         facts.cancelled);
       chart_bulk.pending_download_paths = ChartDldrTempDownloadPaths();
       ChartDldrRecordChartDownloadFailure(chart_bulk);
       return;

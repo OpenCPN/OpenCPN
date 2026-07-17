@@ -10,6 +10,8 @@
 
 #include "chartdldr_temp_download.h"
 
+#include "chartdldr_extract_common.h"
+
 #include <wx/filename.h>
 
 namespace {
@@ -25,28 +27,6 @@ _OCPN_DLStatus ResolveTempDownloadStatus(bool transfer_success, bool cancelled,
 wxString ChartDldrTempFilesystemPath(const wxString& output_path) {
   wxFileName tfn = wxFileName::CreateTempFileName(output_path);
   return tfn.GetFullPath();
-}
-
-bool PublishViaSiblingTemp(const wxString& temp_path,
-                           const wxString& output_path) {
-  const wxString publish_tmp = output_path + wxT(".publish-tmp");
-  if (wxFileExists(publish_tmp) && !wxRemoveFile(publish_tmp)) {
-    return false;
-  }
-  if (!wxCopyFile(temp_path, publish_tmp)) {
-    if (wxFileExists(publish_tmp)) {
-      wxRemoveFile(publish_tmp);
-    }
-    return false;
-  }
-  if (!wxRenameFile(publish_tmp, output_path, true /*overwrite*/)) {
-    if (wxFileExists(publish_tmp)) {
-      wxRemoveFile(publish_tmp);
-    }
-    return false;
-  }
-  wxRemoveFile(temp_path);
-  return true;
 }
 
 }  // namespace
@@ -82,20 +62,13 @@ bool ChartDldrFinalizeTempDownload(const wxString& temp_path,
   if (!wxFileExists(temp_path)) {
     return false;
   }
-  // Never publish a downloaded file over a directory path.
-  if (wxDirExists(output_path)) {
-    return false;
-  }
 
-  // Prefer atomic replace when temp and output share a filesystem.
-  if (wxRenameFile(temp_path, output_path, true /*overwrite*/)) {
-    return true;
-  }
-
-  // Cross-device fallback: copy to a sibling temp next to the destination,
-  // then rename that over the live path. Leave the download temp intact on
-  // any failure so the caller can retry without clobbering existing output.
-  return PublishViaSiblingTemp(temp_path, output_path);
+  // Publish the leaf into its containing directory: prefers atomic rename,
+  // falls back to a sibling copy+rename across filesystems. Never overwrites a
+  // directory; leaves the download temp intact on any failure.
+  const wxFileName out_fn(output_path);
+  return ChartDldrExtractCommon::PublishFileInto(
+      out_fn.GetPath(), out_fn.GetFullName(), temp_path);
 }
 
 void ChartDldrRemoveTempDownload(const wxString& temp_path) {

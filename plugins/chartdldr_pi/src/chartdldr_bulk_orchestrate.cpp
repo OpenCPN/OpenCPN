@@ -8,8 +8,8 @@
 #include "chartdldr_bulk_transfer.h"
 #include "chartdldr_catalog_prep.h"
 #include "chartdldr_chart_source.h"
-#include "chartdldr_panel_bulk_catalog_engine.h"
-#include "chartdldr_panel_bulk_chart_engine.h"
+#include "chartdldr_panel_bulk_catalog_controller.h"
+#include "chartdldr_panel_bulk_chart_controller.h"
 #include "chartdldr_panel_impl.h"
 #include "chartdldr_pi.h"
 #include "chartdldr_schedule_state.h"
@@ -23,8 +23,11 @@
 
 ChartDldrBulkOrchestrate::ChartDldrBulkOrchestrate(ChartDldrPanelImpl& panel)
     : panel_(panel),
-      catalog_(std::make_unique<ChartDldrPanelBulkCatalogEngine>(panel_)),
-      chart_(std::make_unique<ChartDldrPanelBulkChartEngine>(panel_)) {}
+      pump_(*this, *panel.AsEventHandler()),
+      catalog_(std::make_unique<ChartDldrPanelBulkCatalogController>(panel_,
+                                                                     session_)),
+      chart_(std::make_unique<ChartDldrPanelBulkChartController>(panel_,
+                                                                 session_)) {}
 
 ChartDldrBulkOrchestrate::~ChartDldrBulkOrchestrate() = default;
 
@@ -69,9 +72,7 @@ bool ChartDldrBulkOrchestrate::TryStartBulkSession(
   panel_.ApplyBulkRunUiPolicy(policy);
 
   if (ChartDldrBulkRunModeIsScheduled(policy.mode)) {
-    const int source_count = static_cast<int>(pi->m_ChartSources.size());
-    scheduled_log_.OnStarting();
-    wxLogMessage("%s", ChartDldrFormatScheduledStarting(source_count).mb_str());
+    scheduled_run_.OnStarting(static_cast<int>(pi->m_ChartSources.size()));
   }
   return true;
 }
@@ -81,13 +82,9 @@ void ChartDldrBulkOrchestrate::EnsureIdleCatalogUi() {
   panel_.RefreshCatalogToolbar();
 }
 
-void ChartDldrBulkOrchestrate::EnsureTransferStallTimer(bool running) {
-  panel_.SetTransferStallTimerRunning(running);
-}
-
 void ChartDldrBulkOrchestrate::TeardownBulkSession(
     ChartDldrBulkTeardownReason reason, ChartDldrBulkRunStats* out_stats) {
-  EnsureTransferStallTimer(false);
+  pump_.SetTransferStallTimerRunning(false);
 
   if (!session_.IsActive()) {
     EnsureIdleCatalogUi();
@@ -110,7 +107,13 @@ void ChartDldrBulkOrchestrate::TeardownBulkSession(
   const ChartDldrBulkSessionEnd end =
       ChartDldrBulkSessionEndFor(reason, ctx.was_scheduled, ctx.stats);
 
-  scheduled_log_.Reset();
+  scheduled_run_.Reset();
+  // Cancel-panel + in-flight catalog-refresh disposal must run while the
+  // session still owns transfer/cancel state; session_.End() then clears it.
+  if (end.ShouldCancelPanel()) {
+    panel_.CancelDownload();
+  }
+  CleanupActiveBulkRun();
   session_.End();
   EnsureIdleCatalogUi();
 
@@ -123,10 +126,6 @@ void ChartDldrBulkOrchestrate::ApplySessionEnd(
   if (end.ShouldCopyStats() && out_stats) {
     *out_stats = ctx.stats;
   }
-  if (end.ShouldCancelPanel()) {
-    panel_.CancelDownload();
-  }
-  CleanupActiveBulkRun();
   if (end.ShouldCancelGlobal()) {
 #ifndef __ANDROID__
     OCPN_cancelDownloadFileBackground(0);
@@ -154,8 +153,7 @@ void ChartDldrBulkOrchestrate::ApplySessionEnd(
 }
 
 void ChartDldrBulkOrchestrate::RequestBulkUserCancel() {
-  ChartDldrPanelBulkState& state = panel_.BulkState();
-  if (!state.download_cancel.HandleDownloadButtonClick()) {
+  if (!session_.DownloadCancel().HandleDownloadButtonClick()) {
     return;
   }
   // Let the next pump turn dispose the in-flight transfer: an "Abort download"
@@ -163,7 +161,7 @@ void ChartDldrBulkOrchestrate::RequestBulkUserCancel() {
   // while a "Cancel update" exits the pump loop and tears the session down.
   // Both dispose the transfer (record the failure and clean the temp file)
   // rather than resetting it here and leaking that accounting.
-  ScheduleBulkPump();
+  pump_.Schedule();
 }
 
 void ChartDldrBulkOrchestrate::FinishScheduledAbort(chartdldr_pi* pi) {
@@ -173,8 +171,6 @@ void ChartDldrBulkOrchestrate::FinishScheduledAbort(chartdldr_pi* pi) {
   ChartDldrCommitScheduledRunOutcome(pi, ChartDldrScheduledAbortedResult());
 }
 
-void ChartDldrBulkOrchestrate::ScheduleBulkPump() { panel_.ScheduleBulkPump(); }
-
 bool ChartDldrBulkOrchestrate::PumpBulkRun() {
   if (pump_reentrant_) {
     return session_.IsActive();
@@ -182,14 +178,14 @@ bool ChartDldrBulkOrchestrate::PumpBulkRun() {
   pump_reentrant_ = true;
 
   while (session_.IsActive() && !panel_.IsBulkRunCancelled()) {
-    switch (ChartDldrBulkSessionActivityFor(session_, panel_.BulkState())) {
+    switch (ChartDldrBulkSessionActivityFor(session_)) {
       case ChartDldrBulkSessionActivity::WaitTransfer:
-        EnsureTransferStallTimer(true);
+        pump_.SetTransferStallTimerRunning(true);
         pump_reentrant_ = false;
         return true;
       case ChartDldrBulkSessionActivity::PrepareCatalog:
       case ChartDldrBulkSessionActivity::DownloadCharts:
-        EnsureTransferStallTimer(false);
+        pump_.SetTransferStallTimerRunning(false);
         if (!StepBulkRunOnce()) {
           pump_reentrant_ = false;
           return false;
@@ -210,28 +206,20 @@ void ChartDldrBulkOrchestrate::OnTransferProgressTick() {
   if (!session_.IsActive() || !session_.IsScheduled()) {
     return;
   }
-  chartdldr_pi* const pi = session_.Plugin();
-  if (!pi) {
-    return;
-  }
-  const wxString line =
-      scheduled_log_.NoteStillRunning(CaptureScheduledLogSnapshot(pi));
-  if (!line.empty()) {
-    wxLogMessage("%s", line.mb_str());
-  }
+  scheduled_run_.OnStillRunning(session_, session_.Plugin());
 }
 
 void ChartDldrBulkOrchestrate::OnTransferStallTick() {
   if (!session_.IsActive()) {
-    EnsureTransferStallTimer(false);
+    pump_.SetTransferStallTimerRunning(false);
     return;
   }
 
-  ChartDldrPanelBulkState& state = panel_.BulkState();
-  if (!state.transfer.IsInProgress()) {
+  ChartDldrBulkTransferSlot& transfer = session_.Transfer();
+  if (!transfer.IsInProgress()) {
     // Cancel clears the transfer without posting END. Resume the walk.
-    EnsureTransferStallTimer(false);
-    ScheduleBulkPump();
+    pump_.SetTransferStallTimerRunning(false);
+    pump_.Schedule();
     return;
   }
 
@@ -239,19 +227,19 @@ void ChartDldrBulkOrchestrate::OnTransferStallTick() {
 
   const ChartDldrBulkSessionPolicy& policy = session_.Policy();
   if (policy.UiShowDownloadProgress() &&
-      state.transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
+      transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
     panel_.UpdateDownloadProgress(session_.ChartBulk().downloading,
                                   session_.ChartBulk().to_download,
-                                  session_.ChartBulk().failed, state.transfer);
+                                  session_.ChartBulk().failed, transfer);
   }
 
   // Do not CancelAndReset here — Step/Poll must dispose so chart failures
   // and catalog refresh outcomes stay consistent.
   if (ChartDldrReactToStuckTransfer(
-          state.transfer, ChartDldrStuckTransferSite::OrchestratorStall) ==
+          transfer, ChartDldrStuckTransferSite::OrchestratorStall) ==
       ChartDldrStuckTransferReaction::SchedulePump) {
-    EnsureTransferStallTimer(false);
-    ScheduleBulkPump();
+    pump_.SetTransferStallTimerRunning(false);
+    pump_.Schedule();
   }
 }
 
@@ -270,40 +258,17 @@ bool ChartDldrBulkOrchestrate::BindSelectedCatalogDownload(int catalog_index) {
   return ChartDldrBindCatalogWalk(session_.CatalogRun(), catalog_index);
 }
 
-ChartDldrScheduledRunLogSnapshot
-ChartDldrBulkOrchestrate::CaptureScheduledLogSnapshot(chartdldr_pi* pi) const {
-  ChartDldrScheduledRunLogSnapshot snap;
-  const ChartDldrBulkCatalogRunState& catalog = session_.CatalogRun();
-  const ChartDldrChartBulkState& charts = session_.ChartBulk();
-  snap.catalog_index = catalog.next_catalog;
-  snap.catalog_count = pi ? static_cast<int>(pi->m_ChartSources.size()) : 0;
-  snap.phase = catalog.phase;
-  snap.catalog_refresh_active = panel_.BulkState().catalog_refresh.active;
-  snap.charts_downloading = charts.downloading;
-  snap.charts_to_download = charts.to_download;
-  snap.charts_failed = charts.failed;
-  snap.pending_chart_index = charts.pending_index;
-  if (pi && ChartDldrBulkCatalogIndexInRange(catalog.next_catalog,
-                                             pi->m_ChartSources.size())) {
-    snap.catalog_name =
-        pi->m_ChartSources.at(static_cast<size_t>(catalog.next_catalog))
-            ->GetName();
+bool ChartDldrBulkOrchestrate::BindCatalogPrepareOnly(int catalog_index) {
+  chartdldr_pi* const pi = session_.Plugin();
+  if (!pi || !ChartDldrBulkCatalogIndexInRange(catalog_index,
+                                               pi->m_ChartSources.size())) {
+    return false;
   }
-  if (charts.pending_index >= 0 && pi &&
-      charts.pending_index <
-          static_cast<int>(pi->m_pChartCatalog.charts.size())) {
-    snap.chart_title = pi->m_pChartCatalog.charts
-                           .at(static_cast<size_t>(charts.pending_index))
-                           ->GetChartTitle();
-  }
-  return snap;
+  return ChartDldrBindCatalogPrepareWalk(session_.CatalogRun(), catalog_index);
 }
 
 bool ChartDldrBulkOrchestrate::StepBulkRunOnce() {
-  if (!session_.IsActive()) {
-    return false;
-  }
-  if (panel_.IsBulkRunCancelled()) {
+  if (!session_.IsActive() || panel_.IsBulkRunCancelled()) {
     return false;
   }
 
@@ -319,24 +284,14 @@ bool ChartDldrBulkOrchestrate::StepBulkRunOnce() {
     return false;
   }
 
-  const bool log_milestones = session_.IsScheduled();
+  // Scheduled runs snapshot the pre-step state so the observer can detect
+  // milestone edges; interactive runs skip it entirely.
+  const bool scheduled = session_.IsScheduled();
+  const ChartDldrScheduledStepObservation before =
+      scheduled ? scheduled_run_.BeginStep(session_)
+                : ChartDldrScheduledStepObservation();
+
   const int catalog_index = state.next_catalog;
-  const ChartDldrBulkCatalogPhase phase_before = state.phase;
-  const int charts_downloading_before = session_.ChartBulk().downloading;
-
-  ChartDldrScheduledBulkStepLogInput step;
-  if (log_milestones) {
-    step.phase_before = phase_before;
-    step.catalog_index_before = catalog_index;
-    step.catalog_count = static_cast<int>(pi->m_ChartSources.size());
-    step.charts_downloading_before = charts_downloading_before;
-    if (ChartDldrBulkCatalogIndexInRange(catalog_index,
-                                         pi->m_ChartSources.size())) {
-      step.catalog_name =
-          pi->m_ChartSources.at(static_cast<size_t>(catalog_index))->GetName();
-    }
-  }
-
   ChartDldrBulkWalkStep walk_step = ChartDldrBulkWalkStep::NotActive;
   int charts_selected = 0;
   ChartDldrBulkRunStats catalog_counters;
@@ -355,21 +310,9 @@ bool ChartDldrBulkOrchestrate::StepBulkRunOnce() {
   const bool continue_run = ChartDldrAdvanceBulkWalk(
       state, walk_step, charts_selected, catalog_counters);
 
-  if (log_milestones) {
-    const ChartDldrChartBulkState& charts = session_.ChartBulk();
-    step.charts_downloading = charts.downloading;
-    step.charts_to_download = charts.to_download;
-    step.pending_chart_index = charts.pending_index;
-    if (charts.pending_index >= 0 &&
-        charts.pending_index <
-            static_cast<int>(pi->m_pChartCatalog.charts.size())) {
-      step.chart_title = pi->m_pChartCatalog.charts
-                             .at(static_cast<size_t>(charts.pending_index))
-                             ->GetChartTitle();
-    }
-    scheduled_log_.OnWalkStep(step, walk_step, charts_selected,
-                              catalog_counters,
-                              CaptureScheduledLogSnapshot(pi));
+  if (scheduled) {
+    scheduled_run_.OnStep(before, session_, pi, walk_step, charts_selected,
+                          catalog_counters);
   }
 
   return continue_run;
@@ -415,7 +358,7 @@ bool ChartDldrBulkOrchestrate::StartBulk(ChartDldrBulkRunMode mode) {
 
   // All modes are async: pump via CallAfter / transfer END / stall timer.
   // TeardownBulkSession runs when PumpBulkRun reports the walk has ended.
-  ScheduleBulkPump();
+  pump_.Schedule();
   return true;
 }
 
@@ -424,13 +367,26 @@ bool ChartDldrBulkOrchestrate::RefreshCatalogManual(int catalog_index) {
                                          panel_.AsWindow())) {
     return false;
   }
-  panel_.SetActiveCatalogContext(catalog_index);
-  ChartDldrCatalogUiPolicy ui = ChartDldrManualCatalogRefreshUiPolicy();
-  if (chartdldr_pi* const pi = panel_.GetPlugin()) {
-    ui.preselect_new = pi->m_preselect_new;
-    ui.preselect_updated = pi->m_preselect_updated;
+
+  chartdldr_pi* const pi = panel_.GetPlugin();
+  if (!pi) {
+    return false;
   }
-  catalog_->UpdateChartListForCatalog(catalog_index, ui);
+
+  const ChartDldrBulkSessionPolicy policy = ChartDldrBulkSessionPolicyFor(
+      ChartDldrBulkRunMode::CatalogRefresh, panel_.IsShownOnScreen());
+  if (!TryStartBulkSession(pi, policy)) {
+    return false;
+  }
+
+  panel_.RefreshCatalogToolbar();
+
+  if (!BindCatalogPrepareOnly(catalog_index)) {
+    TeardownBulkSession(ChartDldrBulkTeardownReason::FailedStart);
+    return false;
+  }
+
+  pump_.Schedule();
   return true;
 }
 

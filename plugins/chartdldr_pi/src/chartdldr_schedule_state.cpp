@@ -15,37 +15,9 @@
 #include <wx/datetime.h>
 #include <wx/intl.h>
 
-namespace {
-
-bool TrySplitLegacyCombinedStatus(wxString& status, wxString& attempt_iso) {
-  if (status.length() < 18) {
-    return false;
-  }
-
-  const wxString stamp = status.BeforeFirst(' ');
-  const wxString rest = status.AfterFirst(' ');
-  if (stamp.length() != 10 || rest.length() < 6) {
-    return false;
-  }
-
-  const wxString combined = stamp + " " + rest.BeforeFirst(' ');
-  wxDateTime parsed;
-  if (!parsed.ParseFormat(combined, _("%Y-%m-%d %H:%M"))) {
-    return false;
-  }
-
-  attempt_iso = ChartDldrFormatScheduleRunIso(parsed);
-  status = rest.AfterFirst(' ');
-  status.Trim(false);
-  return true;
-}
-
-}  // namespace
-
 wxString ChartDldrScheduledNeverRunDisplayText() { return _("-- : --"); }
 
 wxString ChartDldrScheduledDisplaySeparator() {
-  // ASCII hyphen; not translated so migration can split reliably.
   return " - ";
 }
 
@@ -78,23 +50,6 @@ bool ChartDldrParseScheduledRunOutcome(long value,
   }
   out = static_cast<ChartDldrScheduledRunOutcome>(value);
   return true;
-}
-
-void ChartDldrMigrateLegacyScheduleStatus(ChartDldrScheduleConfig& schedule,
-                                          const wxString& legacy_last_run) {
-  if (!schedule.last_attempt_iso.IsEmpty()) {
-    return;
-  }
-
-  wxString attempt_iso;
-  if (TrySplitLegacyCombinedStatus(schedule.last_status, attempt_iso)) {
-    schedule.last_attempt_iso = attempt_iso;
-    return;
-  }
-
-  if (!legacy_last_run.IsEmpty() && !schedule.last_status.IsEmpty()) {
-    schedule.last_attempt_iso = legacy_last_run;
-  }
 }
 
 wxString ChartDldrFormatScheduledLastRunDisplay(
@@ -139,77 +94,92 @@ bool ChartDldrScheduledOutcomeAllowsSameDayRetry(
 
 namespace {
 
-wxString ClassifyScheduleStatus(const ChartDldrBulkRunStats& stats) {
+/**
+ * Single ordered decision for a bulk run: catalog-refresh-failed → no-attempts
+ * → all-failed → partial → success. Status and interactive strings derive from
+ * the chosen outcome so the three views cannot drift.
+ */
+struct BulkRunClassificationCore {
+  ChartDldrScheduledRunOutcome outcome =
+      ChartDldrScheduledRunOutcome::BulkNoAttempts;
+  wxString schedule_status;
+  wxString interactive_message;
+};
+
+BulkRunClassificationCore ClassifyBulkRunCore(
+    const ChartDldrBulkRunStats& stats) {
+  BulkRunClassificationCore core;
+
   if (stats.catalog_refresh_failures > 0 && stats.attempted == 0) {
-    return wxString::Format(
+    core.outcome = ChartDldrScheduledRunOutcome::CatalogRefreshFailed;
+    core.schedule_status = wxString::Format(
         _(ChartDldrScheduleMessages::kCatalogRefreshFailedFormat),
         stats.catalog_refresh_failures);
+    core.interactive_message = wxString::Format(
+        _(ChartDldrScheduleMessages::kInteractiveCatalogRefreshFailedFormat),
+        stats.catalog_refresh_failures);
+    return core;
   }
-  wxString status;
+
   if (stats.attempted == 0) {
-    status = _(ChartDldrScheduleMessages::kNoChartsToUpdate);
-  } else if (stats.downloaded_ok() > 0 && stats.failed > 0) {
-    status = wxString::Format(
+    core.outcome = ChartDldrScheduledRunOutcome::BulkNoAttempts;
+    core.schedule_status = _(ChartDldrScheduleMessages::kNoChartsToUpdate);
+    return core;
+  }
+
+  if (stats.downloaded_ok() <= 0) {
+    core.outcome = ChartDldrScheduledRunOutcome::BulkAllFailed;
+    core.schedule_status =
+        wxString::Format(_(ChartDldrScheduleMessages::kFailedChartsFormat),
+                         stats.failed, stats.attempted);
+    core.interactive_message =
+        ChartDldrBulkChartFailureMessage(stats.failed, stats.attempted);
+  } else if (stats.failed > 0) {
+    core.outcome = ChartDldrScheduledRunOutcome::BulkPartialSuccess;
+    core.schedule_status = wxString::Format(
         _(ChartDldrScheduleMessages::kPartialUpdateFormat),
         stats.updated_downloads, stats.new_downloads, stats.failed);
-  } else if (stats.downloaded_ok() > 0) {
-    status =
+    core.interactive_message =
+        ChartDldrBulkChartFailureMessage(stats.failed, stats.attempted);
+  } else {
+    core.outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
+    core.schedule_status =
         wxString::Format(_(ChartDldrScheduleMessages::kSuccessUpdateFormat),
                          stats.updated_downloads, stats.new_downloads);
-  } else {
-    status = wxString::Format(_(ChartDldrScheduleMessages::kFailedChartsFormat),
-                              stats.failed, stats.attempted);
   }
-  if (stats.catalog_refresh_failures > 0 && stats.attempted > 0) {
-    status += wxString::Format(
+
+  // Catalog refresh failures alongside chart attempts: keep the chart outcome
+  // but surface the refresh failure in both status and interactive text.
+  if (stats.catalog_refresh_failures > 0) {
+    if (core.outcome != ChartDldrScheduledRunOutcome::CatalogRefreshFailed) {
+      // Prefer CatalogRefreshFailed when refreshes failed, matching prior
+      // ClassifyOutcome which keyed outcome solely on refresh failures.
+      core.outcome = ChartDldrScheduledRunOutcome::CatalogRefreshFailed;
+    }
+    core.schedule_status += wxString::Format(
         _(ChartDldrScheduleMessages::kCatalogRefreshSuffixFormat),
         stats.catalog_refresh_failures);
-  }
-  return status;
-}
-
-wxString ClassifyInteractiveMessage(const ChartDldrBulkRunStats& stats) {
-  wxString message;
-  if (stats.failed > 0) {
-    message = ChartDldrBulkChartFailureMessage(stats.failed, stats.attempted);
-  }
-  if (stats.catalog_refresh_failures > 0) {
     const wxString catalog_message = wxString::Format(
         _(ChartDldrScheduleMessages::kInteractiveCatalogRefreshFailedFormat),
         stats.catalog_refresh_failures);
-    if (!message.empty()) {
-      message += wxT("\n\n");
+    if (!core.interactive_message.empty()) {
+      core.interactive_message += wxT("\n\n");
     }
-    message += catalog_message;
+    core.interactive_message += catalog_message;
   }
-  return message;
-}
 
-ChartDldrScheduledRunOutcome ClassifyOutcome(
-    const ChartDldrBulkRunStats& stats) {
-  if (stats.catalog_refresh_failures > 0) {
-    return ChartDldrScheduledRunOutcome::CatalogRefreshFailed;
-  }
-  if (stats.attempted == 0) {
-    return ChartDldrScheduledRunOutcome::BulkNoAttempts;
-  }
-  if (stats.downloaded_ok() <= 0) {
-    return ChartDldrScheduledRunOutcome::BulkAllFailed;
-  }
-  if (stats.failed > 0) {
-    return ChartDldrScheduledRunOutcome::BulkPartialSuccess;
-  }
-  return ChartDldrScheduledRunOutcome::BulkSuccess;
+  return core;
 }
 
 }  // namespace
 
 ChartDldrBulkRunClassification ChartDldrClassifyBulkRun(
     const ChartDldrBulkRunStats& stats) {
+  const BulkRunClassificationCore core = ClassifyBulkRunCore(stats);
   ChartDldrBulkRunClassification result;
-  result.outcome = ClassifyOutcome(stats);
-  result.schedule_status = ClassifyScheduleStatus(stats);
-  result.interactive_message = ClassifyInteractiveMessage(stats);
+  result.outcome = core.outcome;
+  result.schedule_status = core.schedule_status;
+  result.interactive_message = core.interactive_message;
   return result;
 }
 

@@ -62,3 +62,15 @@ bool ChartDldrBindCatalogWalk(ChartDldrBulkCatalogRunState& state,
   return ChartDldrBulkCatalogWalkContinues(state.next_catalog,
                                            state.catalog_bound);
 }
+
+bool ChartDldrBindCatalogPrepareWalk(ChartDldrBulkCatalogRunState& state,
+                                     int catalog_index) {
+  if (catalog_index < 0) {
+    return false;
+  }
+  state.next_catalog = catalog_index;
+  state.catalog_bound = catalog_index + 1;
+  state.phase = ChartDldrBulkCatalogPhase::PrepareCatalog;
+  return ChartDldrBulkCatalogWalkContinues(state.next_catalog,
+                                           state.catalog_bound);
+}

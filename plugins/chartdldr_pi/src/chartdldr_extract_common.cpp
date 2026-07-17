@@ -25,7 +25,6 @@
 namespace ChartDldrExtractCommon {
 
 const wxChar* kRollbackDirName = _T("__chartdldr_rollback__");
-const wxChar* kBackupJournalName = _T("__chartdldr_backup_journal__");
 const wxChar* kManifestName = _T("__chartdldr_manifest__");
 const wxChar* kExtractDirPrefix = _T(".chartdldr-extract-");
 
@@ -82,6 +81,48 @@ bool PathTraversesSymlink(const wxString& root, const wxString& rel) {
     }
   }
   return false;
+}
+
+bool PublishFileInto(const wxString& root, const wxString& rel,
+                     const wxString& source_path) {
+  wxString dest;
+  if (!IsPathInsideDir(root, rel, dest) || PathTraversesSymlink(root, rel)) {
+    return false;
+  }
+  // Never publish a file over a directory path.
+  if (wxDirExists(dest)) {
+    return false;
+  }
+  if (!EnsureParentDirsForPath(dest)) {
+    return false;
+  }
+
+  // Prefer atomic replace when source and dest share a filesystem.
+  if (wxRenameFile(source_path, dest, true /*overwrite*/)) {
+    return true;
+  }
+
+  // Cross-device fallback: copy to a sibling temp next to the destination,
+  // then rename that over the live path. Leave the source intact on any
+  // failure so the caller can retry without clobbering existing output.
+  const wxString publish_tmp = dest + wxT(".publish-tmp");
+  if (wxFileExists(publish_tmp) && !wxRemoveFile(publish_tmp)) {
+    return false;
+  }
+  if (!wxCopyFile(source_path, publish_tmp)) {
+    if (wxFileExists(publish_tmp)) {
+      wxRemoveFile(publish_tmp);
+    }
+    return false;
+  }
+  if (!wxRenameFile(publish_tmp, dest, true /*overwrite*/)) {
+    if (wxFileExists(publish_tmp)) {
+      wxRemoveFile(publish_tmp);
+    }
+    return false;
+  }
+  wxRemoveFile(source_path);
+  return true;
 }
 
 wxString NormalizeDir(const wxString& dir) {
@@ -240,8 +281,8 @@ bool ReadExtractManifest(const wxString& stage_root, ExtractManifest& out) {
     }
   }
   file.Close();
-  if ((parsed.version != 1 && parsed.version != 2) ||
-      parsed.live_root.IsEmpty() || parsed.phase.IsEmpty()) {
+  if (parsed.version != 2 || parsed.live_root.IsEmpty() ||
+      parsed.phase.IsEmpty()) {
     return false;
   }
   out = parsed;
@@ -261,8 +302,7 @@ bool UndoOneOrphanCreate(const wxString& live_root, const wxString& rel) {
 }
 
 bool IsTxnMetaRelPath(const wxString& rel) {
-  return rel == kManifestName || rel == kBackupJournalName ||
-         rel.StartsWith(wxString(kRollbackDirName)) ||
+  return rel == kManifestName || rel.StartsWith(wxString(kRollbackDirName)) ||
          rel.StartsWith(wxT("__chartdldr_"));
 }
 

@@ -52,14 +52,6 @@ ChartDldrCatalogPublishSurvey ChartDldrSurveyCatalogPublishable(
 bool ChartDldrCatalogTempIsPublishable(const wxString& temp_path);
 
 /**
- * Parse TEMP catalog XML first; only on success atomically publish temp →
- * live output. On parse failure, leaves the live catalog untouched and
- * removes temp.
- */
-bool ChartDldrPublishValidatedCatalog(const wxString& temp_path,
-                                      const wxString& output_path);
-
-/**
  * Like ChartDldrCompleteTempDownloadPaths, but validates catalog XML before
  * publishing so a malformed HTTP 200 cannot replace a good live catalog.
  */

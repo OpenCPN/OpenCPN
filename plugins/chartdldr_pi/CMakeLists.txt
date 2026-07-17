@@ -53,6 +53,11 @@ set(SRC_CHARTDLDR
     src/chartdldr_schedule_state.cpp
     src/chartdldr_scheduled_run_log.h
     src/chartdldr_scheduled_run_log.cpp
+    src/chartdldr_scheduled_run_observer.h
+    src/chartdldr_scheduled_run_observer.cpp
+    src/chartdldr_bulk_panel_view.h
+    src/chartdldr_bulk_pump.h
+    src/chartdldr_bulk_pump.cpp
     src/chartdldr_prefs_time.h
     src/chartdldr_prefs_time.cpp
     src/chartdldr_prefs.h
@@ -86,10 +91,10 @@ set(SRC_CHARTDLDR
     src/chartdldr_catalog_download.cpp
     src/chartdldr_source_catalog.h
     src/chartdldr_source_catalog.cpp
-    src/chartdldr_panel_bulk_catalog_engine.h
-    src/chartdldr_panel_bulk_catalog_engine.cpp
-    src/chartdldr_panel_bulk_chart_engine.h
-    src/chartdldr_panel_bulk_chart_engine.cpp
+    src/chartdldr_panel_bulk_catalog_controller.h
+    src/chartdldr_panel_bulk_catalog_controller.cpp
+    src/chartdldr_panel_bulk_chart_controller.h
+    src/chartdldr_panel_bulk_chart_controller.cpp
     src/chartdldr_panel_bulk_chart_transfer.cpp
     src/chartdldr_bulk_schedule.h
     src/chartdldr_bulk_schedule.cpp

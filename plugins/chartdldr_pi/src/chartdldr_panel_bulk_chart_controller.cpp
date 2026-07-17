@@ -8,12 +8,12 @@
 #include "wx/wx.h"
 #endif
 
-#include "chartdldr_panel_bulk_chart_engine.h"
+#include "chartdldr_panel_bulk_chart_controller.h"
 
 #include "chartdldr_bulk_chart_loop.h"
 #include "chartdldr_bulk_transfer.h"
 #include "chartdldr_catalog_prep.h"
-#include "chartdldr_panel_impl.h"
+#include "chartdldr_bulk_panel_view.h"
 #include "chartdldr_panel_bulk_chart_transfer.h"
 #include "chartdldr_temp_download.h"
 #include "chartcatalog.h"
@@ -30,17 +30,13 @@
 
 namespace {
 
-void RecordCheckedChartFailure(ChartDldrPanelImpl& panel,
+void RecordCheckedChartFailure(ChartDldrChartDownloadView& panel,
                                const ChartDldrBulkSessionPolicy& policy,
                                ChartDldrChartBulkState& chart_bulk,
                                const wxString& error_msg = wxString(),
-                               const wxString& title = _("Error"),
-                               bool attempt_already_counted = false) {
+                               const wxString& title = _("Error")) {
   if (!error_msg.empty()) {
     ChartDldrReportBulkError(panel.AsWindow(), policy, error_msg, title);
-  }
-  if (!attempt_already_counted) {
-    chart_bulk.downloading++;
   }
   ChartDldrRecordChartDownloadFailure(chart_bulk);
 }
@@ -65,11 +61,11 @@ ChartDldrChartUpdateKind ChartUpdateKindAt(chartdldr_pi* pi, int index,
 
 }  // namespace
 
-ChartDldrPanelBulkChartEngine::ChartDldrPanelBulkChartEngine(
-    ChartDldrPanelImpl& panel)
-    : panel_(panel), state_(panel.BulkState()) {}
+ChartDldrPanelBulkChartController::ChartDldrPanelBulkChartController(
+    ChartDldrChartDownloadView& panel, ChartDldrBulkRunSession& session)
+    : panel_(panel), session_(session) {}
 
-void ChartDldrPanelBulkChartEngine::BeginBulkChartDownload(
+void ChartDldrPanelBulkChartController::BeginBulkChartDownload(
     const ChartDldrBulkSessionPolicy& policy, int catalog_index,
     ChartDldrChartBulkState& chart_bulk) {
   if (!panel_.GetPlugin()) {
@@ -96,48 +92,52 @@ void ChartDldrPanelBulkChartEngine::BeginBulkChartDownload(
   chart_bulk.active = true;
 
   panel_.ArmChartDownloadCancelUi();
-  state_.transfer.Reset();
+  session_.Transfer().Reset();
 }
 
-ChartDldrBulkWalkStep ChartDldrPanelBulkChartEngine::PollActiveChartTransfer(
+ChartDldrBulkWalkStep
+ChartDldrPanelBulkChartController::PollActiveChartTransfer(
     const ChartDldrBulkSessionPolicy& policy,
     ChartDldrChartBulkState& chart_bulk, ChartSource& source, int chart_count,
     chartdldr_pi* pi) {
-  if (state_.transfer.IsInProgress() &&
-      !state_.download_cancel.ShouldAbortCurrentTransfer()) {
+  ChartDldrBulkTransferSlot& transfer = session_.Transfer();
+  ChartDldrDownloadCancelState& download_cancel = session_.DownloadCancel();
+  if (transfer.IsInProgress() &&
+      !download_cancel.ShouldAbortCurrentTransfer()) {
     if (ChartDldrReactToStuckTransfer(
-            state_.transfer, ChartDldrStuckTransferSite::ChartEnginePoll) ==
+            transfer, ChartDldrStuckTransferSite::ChartEnginePoll) ==
         ChartDldrStuckTransferReaction::AbortChartPass) {
       ChartDldrDisposeChartBulkTransfer(
-          panel_, state_, ChartDldrChartTransferDisposition::Abort, &source,
-          chart_bulk, policy, pi);
+          panel_, transfer, download_cancel,
+          ChartDldrChartTransferDisposition::Abort, &source, chart_bulk, policy,
+          pi);
       return ChartDldrBulkWalkStep::MoreWork;
     }
     if (policy.UiShowDownloadProgress()) {
       panel_.UpdateDownloadProgress(chart_bulk.downloading,
                                     chart_bulk.to_download, chart_bulk.failed,
-                                    state_.transfer);
+                                    transfer);
     }
     return ChartDldrBulkWalkStep::TransferWait;
   }
 
   ChartDldrDisposeChartBulkTransfer(
-      panel_, state_,
+      panel_, transfer, download_cancel,
       ChartDldrResolveChartTransferDisposition(
-          state_.transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk),
-          state_.transfer.IsInProgress(), state_.transfer.success,
-          state_.download_cancel.ShouldAbortCurrentTransfer()),
+          transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk),
+          transfer.IsInProgress(), transfer.success,
+          download_cancel.ShouldAbortCurrentTransfer()),
       &source, chart_bulk, policy, pi);
   // Only a whole-session cancel ends the pass here; a one-shot abort of the
   // current chart is consumed so the walk continues to the next checked chart.
-  state_.download_cancel.ConsumeAbortCurrentTransfer();
+  download_cancel.ConsumeAbortCurrentTransfer();
   return ChartDldrBulkChartStepAfterCompletedTransfer(
-      state_.download_cancel.IsSessionCancelled(), chart_bulk.loop_index,
-      chart_count, chart_bulk.to_download);
+      download_cancel.IsSessionCancelled(), chart_bulk.loop_index, chart_count,
+      chart_bulk.to_download);
 }
 
 ChartDldrBulkWalkStep
-ChartDldrPanelBulkChartEngine::StartNextCheckedChartDownload(
+ChartDldrPanelBulkChartController::StartNextCheckedChartDownload(
     const ChartDldrBulkSessionPolicy& policy,
     ChartDldrChartBulkState& chart_bulk, ChartSource& source, int chart_count,
     chartdldr_pi* pi) {
@@ -145,7 +145,7 @@ ChartDldrPanelBulkChartEngine::StartNextCheckedChartDownload(
   for (int i = chart_bulk.loop_index; i < chart_count && chart_bulk.to_download;
        ++i) {
     chart_bulk.loop_index = i + 1;
-    if (state_.download_cancel.IsSessionCancelled()) {
+    if (session_.DownloadCancel().IsSessionCancelled()) {
       return ChartDldrBulkWalkStep::Advance;
     }
     if (!panel_.IsChartChecked(i)) {
@@ -180,6 +180,8 @@ ChartDldrPanelBulkChartEngine::StartNextCheckedChartDownload(
         }
         continue;
       case ChartDldrPrepareCheckedChartDownloadResult::InvalidUrl:
+        // Count the dequeue as an attempt before recording the failure.
+        chart_bulk.downloading++;
         RecordCheckedChartFailure(
             panel_, policy, chart_bulk,
             wxString::Format(
@@ -195,12 +197,11 @@ ChartDldrPanelBulkChartEngine::StartNextCheckedChartDownload(
     chart_bulk.pending_kind = ChartUpdateKindAt(pi, index, source);
 
     if (!ChartDldrTryStartBackgroundDownload(
-            state_.transfer, panel_.AsEventHandler(),
+            session_.Transfer(), panel_.AsEventHandler(),
             ChartDldrBulkTransferOwner::ChartBulk, download_url,
             paths.download_target)) {
       ChartDldrRemoveTempDownload(paths.temp_path);
-      RecordCheckedChartFailure(panel_, policy, chart_bulk, wxString(),
-                                _("Error"), true);
+      RecordCheckedChartFailure(panel_, policy, chart_bulk);
       continue;
     }
     chart_bulk.pending_download_paths = paths;
@@ -210,13 +211,13 @@ ChartDldrPanelBulkChartEngine::StartNextCheckedChartDownload(
   return ChartDldrBulkWalkStep::Advance;
 }
 
-ChartDldrBulkWalkStep ChartDldrPanelBulkChartEngine::StepNextBulkChart(
+ChartDldrBulkWalkStep ChartDldrPanelBulkChartController::StepNextBulkChart(
     const ChartDldrBulkSessionPolicy& policy,
     ChartDldrChartBulkState& chart_bulk) {
   if (!chart_bulk.active) {
     return ChartDldrBulkWalkStep::NotActive;
   }
-  if (state_.download_cancel.IsSessionCancelled()) {
+  if (session_.DownloadCancel().IsSessionCancelled()) {
     return ChartDldrBulkWalkStep::Advance;
   }
 
@@ -231,14 +232,14 @@ ChartDldrBulkWalkStep ChartDldrPanelBulkChartEngine::StepNextBulkChart(
       *pi->m_ChartSources.at(static_cast<size_t>(catalog_index));
   const int chart_count = static_cast<int>(pi->m_pChartCatalog.charts.size());
 
-  if (state_.transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
+  if (session_.Transfer().IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
     return PollActiveChartTransfer(policy, chart_bulk, source, chart_count, pi);
   }
   return StartNextCheckedChartDownload(policy, chart_bulk, source, chart_count,
                                        pi);
 }
 
-ChartDldrBulkRunStats ChartDldrPanelBulkChartEngine::CloseActiveChartPass(
+ChartDldrBulkRunStats ChartDldrPanelBulkChartController::CloseActiveChartPass(
     const ChartDldrBulkSessionPolicy& policy,
     ChartDldrChartBulkState& chart_bulk) {
   if (!chart_bulk.active) {
@@ -253,12 +254,14 @@ ChartDldrBulkRunStats ChartDldrPanelBulkChartEngine::CloseActiveChartPass(
     source = pi->m_ChartSources.at(static_cast<size_t>(catalog_index)).get();
   }
 
+  ChartDldrBulkTransferSlot& transfer = session_.Transfer();
+  ChartDldrDownloadCancelState& download_cancel = session_.DownloadCancel();
   ChartDldrDisposeChartBulkTransfer(
-      panel_, state_,
+      panel_, transfer, download_cancel,
       ChartDldrResolveChartTransferDisposition(
-          state_.transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk),
-          state_.transfer.IsInProgress(), state_.transfer.success,
-          state_.download_cancel.ShouldAbortCurrentTransfer()),
+          transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk),
+          transfer.IsInProgress(), transfer.success,
+          download_cancel.ShouldAbortCurrentTransfer()),
       source, chart_bulk, policy, pi);
 
   const ChartDldrBulkRunStats stats = chart_bulk.ToStats();
@@ -266,15 +269,15 @@ ChartDldrBulkRunStats ChartDldrPanelBulkChartEngine::CloseActiveChartPass(
   return stats;
 }
 
-void ChartDldrPanelBulkChartEngine::EndBulkChartDownload(
+void ChartDldrPanelBulkChartController::EndBulkChartDownload(
     const ChartDldrBulkSessionPolicy& policy,
     ChartDldrChartBulkState& chart_bulk) {
   if (!chart_bulk.active) {
     return;
   }
 
-  if (state_.transfer.IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
-    ChartDldrCancelAndResetBulkTransfer(state_.transfer);
+  if (session_.Transfer().IsOwnedBy(ChartDldrBulkTransferOwner::ChartBulk)) {
+    ChartDldrCancelAndResetBulkTransfer(session_.Transfer());
   }
 
   panel_.DisarmChartDownloadCancelUi();

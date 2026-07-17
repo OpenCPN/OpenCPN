@@ -6,7 +6,6 @@
 
 #include "ocpn_plugin.h"
 
-#include "chartdldr_panel_bulk_state.h"
 #include "chartdldr_temp_download.h"
 
 #include <wx/datetime.h>
@@ -321,21 +320,20 @@ void ChartDldrCancelAndResetBulkTransfer(ChartDldrBulkTransferSlot& slot) {
 }
 
 _OCPN_DLStatus ChartDldrFinishBackgroundTempDownload(
-    ChartDldrPanelBulkState& state, const ChartDldrTempDownloadPaths& paths,
-    bool transfer_success) {
+    ChartDldrBulkTransferSlot& transfer, bool abort_current_transfer,
+    const ChartDldrTempDownloadPaths& paths, bool transfer_success) {
   const _OCPN_DLStatus status = ChartDldrCompleteTempDownloadPaths(
-      paths, transfer_success,
-      state.download_cancel.ShouldAbortCurrentTransfer());
+      paths, transfer_success, abort_current_transfer);
   if (status == OCPN_DL_NO_ERROR) {
-    state.transfer.Reset();
-    state.transfer.live_sink.reset();
-    state.transfer.abandoned_sink.reset();
-  } else if (state.transfer.IsInProgress()) {
-    ChartDldrCancelAndResetBulkTransfer(state.transfer);
+    transfer.Reset();
+    transfer.live_sink.reset();
+    transfer.abandoned_sink.reset();
+  } else if (transfer.IsInProgress()) {
+    ChartDldrCancelAndResetBulkTransfer(transfer);
   } else {
-    state.transfer.Reset();
-    state.transfer.live_sink.reset();
-    state.transfer.abandoned_sink.reset();
+    transfer.Reset();
+    transfer.live_sink.reset();
+    transfer.abandoned_sink.reset();
   }
   return status;
 }

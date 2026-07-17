@@ -12,7 +12,7 @@ script="$1"
 
 fixture=$(cat <<'EOF'
                  U __Z12ChartDldrFoov
-                 U __ZN18ChartDldrPanelImpl9BulkStateEv
+                 U __ZN18ChartDldrPanelImpl4BulkEv
                  U _ChartDldrLegacyEntryPoint
                  U __ZNSt6vectorIiSaIiEE9push_backEOi
                  U _malloc
@@ -41,7 +41,7 @@ expect_absent() {
 # Mangled free function, mangled class method, and an extern "C" plugin symbol
 # with only the Mach-O leading underscore.
 expect_present '^ChartDldrFoo()$'
-expect_present '^ChartDldrPanelImpl::BulkState()$'
+expect_present '^ChartDldrPanelImpl::Bulk()$'
 expect_present '^ChartDldrLegacyEntryPoint$'
 
 # Standard library, libc, and Objective-C runtime symbols must be ignored.

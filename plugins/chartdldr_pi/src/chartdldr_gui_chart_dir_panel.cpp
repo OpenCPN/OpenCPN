@@ -5,8 +5,6 @@
 #include "chartdldr_pi.h"
 #include "chartdldrgui.h"
 #include "chartdldr_prefs.h"
-#include "manual.h"
-#include "../../../libs/manual/include/manual.h"
 #include <wx/msgdlg.h>
 #include <wx/scrolwin.h>
 #include <wx/spinctrl.h>

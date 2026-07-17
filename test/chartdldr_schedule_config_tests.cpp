@@ -59,15 +59,6 @@ private:
   wxString path_;
 };
 
-bool WriteLegacyLastRunDateIni(const wxString& path, const wxString& date) {
-  std::ofstream out(path.ToStdString());
-  if (!out.good()) {
-    return false;
-  }
-  out << "ScheduledUpdateLastRunDate=" << date.ToUTF8().data() << "\n";
-  return out.good();
-}
-
 }  // namespace
 
 TEST(ChartDldrScheduleConfig, SetTimeClamps) {
@@ -240,20 +231,8 @@ TEST(ChartDldrScheduleConfig, LoadRejectsInvalidOutcomeValue) {
   }
 }
 
-TEST(ChartDldrScheduleConfig, LoadLegacyLastRunDateAloneDoesNotSetAttempt) {
+TEST(ChartDldrScheduleConfig, LoadIgnoresUnknownLegacyKeys) {
   ScopedConfigFile config_file("chartdldr_sched_legacy");
-  const wxString& path = config_file.path();
-
-  ASSERT_TRUE(WriteLegacyLastRunDateIni(path, "2026-06-01"));
-
-  wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
-  ChartDldrScheduleConfig loaded;
-  loaded.Load(&conf);
-  EXPECT_TRUE(loaded.last_attempt_iso.empty());
-}
-
-TEST(ChartDldrScheduleConfig, LoadMigratesLegacyLastRunWithStatus) {
-  ScopedConfigFile config_file("chartdldr_sched_legacy_status");
   const wxString& path = config_file.path();
 
   {
@@ -264,6 +243,7 @@ TEST(ChartDldrScheduleConfig, LoadMigratesLegacyLastRunWithStatus) {
   {
     wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
     conf.Write(_T("ScheduledUpdateLastRun"), _T("2026-06-01 03:00:00"));
+    conf.Write(_T("ScheduledUpdateLastRunDate"), _T("2026-06-01"));
     conf.Write(_T("ScheduledUpdateLastStatus"), _T("2 update 1 new"));
     ASSERT_TRUE(conf.Flush());
   }
@@ -272,8 +252,11 @@ TEST(ChartDldrScheduleConfig, LoadMigratesLegacyLastRunWithStatus) {
     wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
     ChartDldrScheduleConfig loaded;
     loaded.Load(&conf);
-    EXPECT_EQ(loaded.last_attempt_iso, "2026-06-01 03:00:00");
+    // Legacy keys are ignored; only LastAttempt / LastOutcome / LastStatus
+    // are authoritative.
+    EXPECT_TRUE(loaded.last_attempt_iso.empty());
     EXPECT_EQ(loaded.last_status, "2 update 1 new");
+    EXPECT_EQ(loaded.last_outcome, ChartDldrScheduledRunOutcome::Pending);
   }
 }
 

@@ -1,7 +1,6 @@
 #include "chartdldrgui.h"
 
 #ifdef __OCPN__ANDROID__
-#ifdef __OCPN__ANDROID__
 
 QString qtStyleSheet =
     "QScrollBar:horizontal {\
@@ -68,5 +67,4 @@ height: 30px;\
 #ifdef __OCPN__ANDROID__
 #include <QtWidgets/QScroller>
 #include "qdebug.h"
-#endif
 #endif

@@ -108,9 +108,12 @@ ChartDldrBulkPostflight ChartDldrBulkPostflightFor(
     const ChartDldrBulkSessionPolicy& policy,
     const ChartDldrBulkRunStats& stats);
 
-void ChartDldrEnterBulkPump();
-void ChartDldrLeaveBulkPump();
-bool ChartDldrIsBulkPumpActive();
+/** Nesting depth for suppressing modal error dialogs during a CallAfter pump
+ * turn. Not a reentrancy guard for the walk itself (that is pump_reentrant_).
+ */
+void ChartDldrEnterBulkModalSuppress();
+void ChartDldrLeaveBulkModalSuppress();
+bool ChartDldrBulkModalsSuppressed();
 
 void ChartDldrReportBulkError(wxWindow* parent,
                               ChartDldrErrorReporting reporting,

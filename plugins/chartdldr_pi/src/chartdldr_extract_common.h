@@ -11,7 +11,6 @@
 namespace ChartDldrExtractCommon {
 
 extern const wxChar* kRollbackDirName;
-extern const wxChar* kBackupJournalName;
 extern const wxChar* kManifestName;
 extern const wxChar* kExtractDirPrefix;
 
@@ -31,6 +30,18 @@ bool IsPathInsideDir(const wxString& target_dir, const wxString& entry_name,
  * or delete.
  */
 bool PathTraversesSymlink(const wxString& root, const wxString& rel);
+
+/**
+ * Publish `source_path` to `root`/`rel`, rejecting traversal escapes. Rejects
+ * when the join leaves `root` (!IsPathInsideDir) or traverses a symlinked
+ * intermediate component of `rel` (PathTraversesSymlink) — the escape an
+ * untrusted relative path can use to write outside the managed root. Ensures
+ * parent dirs, then moves the source into place: prefers an atomic rename,
+ * falls back to a sibling copy+rename across filesystems. Never overwrites a
+ * directory; on failure `source_path` is left intact.
+ */
+bool PublishFileInto(const wxString& root, const wxString& rel,
+                     const wxString& source_path);
 
 wxString NormalizeDir(const wxString& dir);
 
