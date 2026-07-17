@@ -246,8 +246,9 @@ static std::vector<struct symlink> get_all_links() {
                  strerror(errno));
     } else if (S_ISLNK(buf.st_mode)) {
       char buff[PATH_MAX + 1];
-      assert(readlink(path.c_str(), buff, PATH_MAX) >= 0);
-      std::string target(buff);
+      ssize_t size = readlink(path.c_str(), buff, PATH_MAX);
+      assert(size > 0 && size < PATH_MAX);
+      std::string target(buff, size);
       struct symlink link(path.c_str(), prefix + target);
       links.push_back(link);
     }
