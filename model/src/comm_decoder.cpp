@@ -451,7 +451,13 @@ void CommDecoder::handleUpdate(const rapidjson::Value& update,
     sfixtime = update["timestamp"].GetString();
   }
   if (update.HasMember("source") && update["source"].HasMember("src")) {
-    src_string = update["source"]["src"].GetString();
+    if (update["source"]["src"].IsString()) {
+      src_string = update["source"]["src"].GetString();
+    } else if (update["source"]["src"].IsUint64()) {
+      src_string = std::to_string(update["source"]["src"].GetUint64());
+    } else {
+      src_string = "Unknown";
+    }
   }
 
   if (update.HasMember("values") && update["values"].IsArray()) {
