@@ -7,21 +7,23 @@
 
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_catalog_run.h"
+#include "chartdldr_bulk_panel_port.h"
 #include "chartdldr_bulk_state.h"
 #include "chartdldr_bulk_pump.h"
+#include "chartdldr_bulk_transfer.h"
 #include "chartdldr_scheduled_run_observer.h"
 
 #include <memory>
 
-class ChartDldrPanelBulkCatalogController;
-class ChartDldrPanelBulkChartController;
-class ChartDldrPanelImpl;
+class ChartDldrBulkCatalogController;
+class ChartDldrBulkChartController;
 class chartdldr_pi;
 
-class ChartDldrBulkOrchestrate {
+class ChartDldrBulkOrchestrate : private ChartDldrBulkTransferEvents {
 public:
-  explicit ChartDldrBulkOrchestrate(ChartDldrPanelImpl& panel);
-  ~ChartDldrBulkOrchestrate();
+  /** Registers as the run session's transfer-events listener until dtor. */
+  explicit ChartDldrBulkOrchestrate(ChartDldrBulkPanelPort& port);
+  ~ChartDldrBulkOrchestrate() override;
 
   ChartDldrBulkOrchestrate(const ChartDldrBulkOrchestrate&) = delete;
   ChartDldrBulkOrchestrate& operator=(const ChartDldrBulkOrchestrate&) = delete;
@@ -42,15 +44,14 @@ public:
 
   /**
    * Single entry for all bulk modes. Policy comes from
-   * ChartDldrBulkSessionPolicyFor(mode, ...). SelectedCharts downloads the
-   * currently selected source only; other modes walk configured catalogs.
+   * ChartDldrBulkSessionPolicyFor(mode, ...). SelectedCharts and
+   * CatalogRefresh bind the currently selected source; other modes walk all
+   * configured catalogs.
    */
   bool StartBulk(ChartDldrBulkRunMode mode);
 
   void TeardownBulkSession(ChartDldrBulkTeardownReason reason,
                            ChartDldrBulkRunStats* out_stats = nullptr);
-
-  bool RefreshCatalogManual(int catalog_index);
 
   /**
    * Step while idle; return when a transfer is in progress or the walk ends.
@@ -71,37 +72,41 @@ private:
     ChartDldrBulkSessionPolicy policy;
     ChartDldrBulkRunUiSnapshot ui_before;
     ChartDldrBulkRunStats stats;
-    bool was_scheduled = false;
     ChartDldrBulkPostflight postflight;
   };
+
+  // ChartDldrBulkTransferEvents: live download sinks feed the pump.
+  void OnBulkTransferProgress() override;
+  void OnBulkTransferEnd() override;
 
   bool TryStartBulkSession(chartdldr_pi* pi,
                            const ChartDldrBulkSessionPolicy& policy);
   ChartDldrBulkWalkStep StepChartDownloadPass(int catalog_index);
 
   bool StepBulkRunOnce();
-  /** Bound the shared walker to one catalog and skip into DownloadChart. */
-  bool BindSelectedCatalogDownload(int catalog_index);
-  /** Bound the shared walker to one catalog and keep PrepareCatalog. */
-  bool BindCatalogPrepareOnly(int catalog_index);
+  /**
+   * Bound the shared walker to the selected catalog; the phase (prepare-only
+   * vs download) comes from the session policy.
+   */
+  bool BindSingleCatalog(int catalog_index);
   void CleanupActiveBulkRun();
   void ApplyChartDatabaseAfterComplete(chartdldr_pi* pi);
   void FinalizeBulkRun(const ChartDldrBulkSessionPolicy& policy,
                        const ChartDldrBulkRunUiSnapshot& ui_before,
-                       const ChartDldrBulkRunStats& stats, bool was_scheduled);
+                       const ChartDldrBulkRunStats& stats);
   void FinishScheduledAbort(chartdldr_pi* pi);
   void ApplySessionEnd(const ChartDldrBulkSessionEnd& end,
                        const SessionEndContext& ctx,
                        ChartDldrBulkRunStats* out_stats);
   void EnsureIdleCatalogUi();
 
-  ChartDldrPanelImpl& panel_;
+  ChartDldrBulkPanelPort& port_;
   // session_ before pump_/controllers so their references bind to a live
   // subobject; the controllers drive transfer/cancel/refresh through it.
   ChartDldrBulkRunSession session_;
   ChartDldrBulkPump pump_;
-  std::unique_ptr<ChartDldrPanelBulkCatalogController> catalog_;
-  std::unique_ptr<ChartDldrPanelBulkChartController> chart_;
+  std::unique_ptr<ChartDldrBulkCatalogController> catalog_;
+  std::unique_ptr<ChartDldrBulkChartController> chart_;
   ChartDldrScheduledRunObserver scheduled_run_;
   bool pump_reentrant_ = false;
 };

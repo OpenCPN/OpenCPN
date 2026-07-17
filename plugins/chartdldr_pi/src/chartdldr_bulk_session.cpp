@@ -27,7 +27,7 @@ bool ChartDldrBulkSessionEnd::ShouldApplyChartDb() const {
 
 ChartDldrBulkSessionEnd::ScheduledFinish ChartDldrBulkSessionEnd::Scheduled()
     const {
-  if (!was_scheduled) {
+  if (!scheduled) {
     return ScheduledFinish::None;
   }
   return ShouldFinalizeUi() ? ScheduledFinish::Complete
@@ -35,11 +35,11 @@ ChartDldrBulkSessionEnd::ScheduledFinish ChartDldrBulkSessionEnd::Scheduled()
 }
 
 ChartDldrBulkSessionEnd ChartDldrBulkSessionEndFor(
-    ChartDldrBulkTeardownReason reason, bool was_scheduled,
+    ChartDldrBulkTeardownReason reason, bool scheduled,
     const ChartDldrBulkRunStats& stats) {
   ChartDldrBulkSessionEnd end;
   end.reason = reason;
-  end.was_scheduled = was_scheduled;
+  end.scheduled = scheduled;
   end.stats = stats;
   return end;
 }

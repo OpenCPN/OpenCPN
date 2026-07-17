@@ -10,7 +10,6 @@
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_bulk_orchestrate.h"
 #include "chartdldr_pi.h"
-#include "chartdldr_panel_impl.h"
 #include "chartdldr_schedule_config.h"
 #include "chartdldr_schedule_state.h"
 
@@ -175,32 +174,38 @@ bool ChartDldrRequestBulkUpdate(chartdldr_pi* pi, ChartDldrBulkRunMode mode,
       ReportManualSessionActive(pi);
       return false;
     }
-    if (ChartDldrBulkRunModeIsScheduled(mode) &&
-        eligibility.skip != ChartDldrScheduledSkipReason::None) {
+    // eligibility.skip is only set for scheduled requests.
+    if (eligibility.skip != ChartDldrScheduledSkipReason::None) {
       HandleScheduledRequestBlocked(pi, eligibility.skip, origin);
     }
     return false;
   }
 
-  auto block_if_scheduled_panel_unavailable = [&]() {
-    if (ChartDldrBulkRunModeIsScheduled(mode)) {
-      HandleScheduledRequestBlocked(
-          pi, ChartDldrScheduledSkipReason::PanelUnavailable, origin);
+  // A missing panel/orchestrator only counts as a scheduled skip for scheduled
+  // requests; the skip reason encodes that, so no IsScheduled re-test is
+  // needed.
+  const ChartDldrScheduledSkipReason panel_unavailable_skip =
+      ChartDldrBulkRunModeIsScheduled(mode)
+          ? ChartDldrScheduledSkipReason::PanelUnavailable
+          : ChartDldrScheduledSkipReason::None;
+  auto block_panel_unavailable = [&]() {
+    if (panel_unavailable_skip != ChartDldrScheduledSkipReason::None) {
+      HandleScheduledRequestBlocked(pi, panel_unavailable_skip, origin);
     }
   };
 
   if (!pi->EnsureDownloaderPanel()) {
-    block_if_scheduled_panel_unavailable();
+    block_panel_unavailable();
     return false;
   }
 
-  ChartDldrPanelImpl* const panel = pi->GetDownloaderPanel();
-  if (!panel) {
-    block_if_scheduled_panel_unavailable();
+  ChartDldrBulkOrchestrate* const bulk = pi->GetBulkOrchestrate();
+  if (!bulk) {
+    block_panel_unavailable();
     return false;
   }
 
-  return panel->Bulk().StartBulk(mode);
+  return bulk->StartBulk(mode);
 }
 
 void ChartDldrFinishScheduledBulkRun(chartdldr_pi* pi,

@@ -27,6 +27,11 @@ ChartDldrChartUpdateKind ChartDldrCatalogChartStatus(
     const ChartSource& source, const wxString& filename,
     const wxDateTime& catalog_update);
 
+/** Null when index is out of range for the loaded catalog. */
+class Chart;
+class ChartCatalog;
+Chart* ChartDldrChartAt(const ChartCatalog& catalog, int index);
+
 bool ChartDldrShouldPreselectChart(ChartDldrChartUpdateKind kind,
                                    bool preselect_new, bool preselect_updated);
 

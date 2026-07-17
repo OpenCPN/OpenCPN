@@ -34,7 +34,7 @@ TEST(ChartDldrScheduledStall, StallLogThenCancelAfterKeepaliveOnlyProgress) {
                                        t0 + wxTimeSpan(0, minute, 0));
   }
 
-  EXPECT_EQ(ChartDldrLogTransferIfStuck(slot, t0 + wxTimeSpan(0, 16, 0)),
+  EXPECT_EQ(slot.StuckReason(t0 + wxTimeSpan(0, 16, 0)),
             ChartDldrBulkTransferStuckReason::ProgressStalled);
   ChartDldrCancelAndResetBulkTransfer(slot);
   EXPECT_FALSE(slot.IsInProgress());
@@ -63,7 +63,7 @@ TEST(ChartDldrScheduledStall, CatalogStallAdvancesWalker) {
                                      t0 + wxTimeSpan(0, 10, 0));
 
   const wxDateTime stalled = t0 + wxTimeSpan(0, 16, 0);
-  EXPECT_EQ(ChartDldrLogTransferIfStuck(transfer, stalled),
+  EXPECT_EQ(transfer.StuckReason(stalled),
             ChartDldrBulkTransferStuckReason::ProgressStalled);
   ChartDldrCancelAndResetBulkTransfer(transfer);
   EXPECT_FALSE(transfer.IsInProgress());
@@ -86,7 +86,7 @@ TEST(ChartDldrScheduledStall, ChartTransferStallFailsForwardToNextChart) {
   ChartDldrApplyBulkDownloadProgress(transfer, 5000, 10,
                                      t0 + wxTimeSpan(0, 14, 0));
 
-  EXPECT_EQ(ChartDldrLogTransferIfStuck(transfer, t0 + wxTimeSpan(0, 16, 0)),
+  EXPECT_EQ(transfer.StuckReason(t0 + wxTimeSpan(0, 16, 0)),
             ChartDldrBulkTransferStuckReason::ProgressStalled);
   ChartDldrCancelAndResetBulkTransfer(transfer);
   EXPECT_FALSE(transfer.IsInProgress());

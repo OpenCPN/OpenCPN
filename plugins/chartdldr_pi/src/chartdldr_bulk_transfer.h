@@ -15,7 +15,6 @@
 #include <wx/datetime.h>
 
 class ChartDldrBulkTransferEvtSink;
-class wxEvtHandler;
 class wxString;
 
 enum class ChartDldrBulkTransferOwner {
@@ -30,10 +29,12 @@ enum class ChartDldrBulkTransferStuckReason {
   MaxDurationExceeded,
 };
 
-/** Optional UI/pump hooks while a sink owns download events. */
-struct ChartDldrBulkTransferHooks {
-  void (*on_progress)(wxEvtHandler* listener) = nullptr;
-  void (*on_end)(wxEvtHandler* listener) = nullptr;
+/** Pump/UI observer notified after a live sink applies a download event. */
+class ChartDldrBulkTransferEvents {
+public:
+  virtual ~ChartDldrBulkTransferEvents() = default;
+  virtual void OnBulkTransferProgress() = 0;
+  virtual void OnBulkTransferEnd() = 0;
 };
 
 /** Tracks one active OCPN background download on the panel. */
@@ -55,6 +56,8 @@ struct ChartDldrBulkTransferSlot {
   ChartDldrBulkTransferSlot& operator=(const ChartDldrBulkTransferSlot&) =
       delete;
 
+  /** Advance the slot-local event fence generation. */
+  uint64_t BumpGeneration();
   void Begin(ChartDldrBulkTransferOwner new_owner,
              const wxDateTime& now = wxDateTime());
   void Reset();
@@ -72,6 +75,7 @@ struct ChartDldrBulkTransferSlot {
   std::unique_ptr<ChartDldrBulkTransferEvtSink> abandoned_sink;
 
 private:
+  uint64_t next_generation_ = 0;
   wxDateTime begin_time_;
   wxDateTime last_progress_time_;
 };
@@ -87,30 +91,21 @@ void ChartDldrApplyBulkDownloadProgress(ChartDldrBulkTransferSlot& slot,
 void ChartDldrApplyBulkDownloadEnd(ChartDldrBulkTransferSlot& slot, bool ok,
                                    uint64_t expected_generation = 0);
 
-void ChartDldrSetBulkTransferHooks(const ChartDldrBulkTransferHooks& hooks);
-
-bool ChartDldrTryStartBackgroundDownload(ChartDldrBulkTransferSlot& slot,
-                                         wxEvtHandler* listener,
-                                         ChartDldrBulkTransferOwner owner,
-                                         const wxString& url,
-                                         const wxString& path);
+/**
+ * Start an OCPN background download into the slot. The optional events listener
+ * is stored on the live sink and notified after each progress/end event.
+ */
+bool ChartDldrTryStartBackgroundDownload(
+    ChartDldrBulkTransferSlot& slot, ChartDldrBulkTransferOwner owner,
+    const wxString& url, const wxString& path,
+    ChartDldrBulkTransferEvents* events = nullptr);
 
 void ChartDldrCancelAndResetBulkTransfer(ChartDldrBulkTransferSlot& slot);
-
-bool ChartDldrBulkTransferIsStuck(const ChartDldrBulkTransferSlot& slot);
-
-ChartDldrBulkTransferStuckReason ChartDldrGetBulkTransferStuckReason(
-    const ChartDldrBulkTransferSlot& slot,
-    const wxDateTime& now = wxDateTime());
-
-ChartDldrBulkTransferStuckReason ChartDldrLogTransferIfStuck(
-    const ChartDldrBulkTransferSlot& slot,
-    const wxDateTime& now = wxDateTime());
 
 /** Where a stuck-transfer check runs; drives the reaction policy. */
 enum class ChartDldrStuckTransferSite {
   OrchestratorStall,
-  ChartEnginePoll,
+  ChartControllerPoll,
   CatalogPrepare,
 };
 
@@ -123,12 +118,10 @@ enum class ChartDldrStuckTransferReaction {
   AbortCatalogRefresh,
 };
 
+/** Log and classify a stuck transfer for the given call site. */
 ChartDldrStuckTransferReaction ChartDldrReactToStuckTransfer(
     const ChartDldrBulkTransferSlot& slot, ChartDldrStuckTransferSite site,
     const wxDateTime& now = wxDateTime());
-
-void ChartDldrLogBulkTransferStuck(const ChartDldrBulkTransferSlot& slot,
-                                   ChartDldrBulkTransferStuckReason reason);
 
 inline bool ChartDldrTransferNeedsEventDrain(
     const ChartDldrBulkTransferSlot& slot) {
@@ -145,8 +138,7 @@ _OCPN_DLStatus ChartDldrFinishBackgroundTempDownload(
 
 #ifdef UNIT_TESTS
 /** Install a live sink without starting OCPN (generation fencing / abandon). */
-void ChartDldrInstallLiveTransferSinkForTest(ChartDldrBulkTransferSlot& slot,
-                                             wxEvtHandler* listener = nullptr);
+void ChartDldrInstallLiveTransferSinkForTest(ChartDldrBulkTransferSlot& slot);
 /** Deliver END to abandoned_sink when present; returns false if none. */
 bool ChartDldrDispatchAbandonedTransferEndForTest(
     ChartDldrBulkTransferSlot& slot, bool ok);

@@ -51,26 +51,15 @@ bool ChartDldrAdvanceBulkWalk(ChartDldrBulkCatalogRunState& state,
   return false;
 }
 
-bool ChartDldrBindCatalogWalk(ChartDldrBulkCatalogRunState& state,
-                              int catalog_index) {
+bool ChartDldrBindSingleCatalogWalk(ChartDldrBulkCatalogRunState& state,
+                                    int catalog_index,
+                                    ChartDldrBulkCatalogPhase phase) {
   if (catalog_index < 0) {
     return false;
   }
   state.next_catalog = catalog_index;
   state.catalog_bound = catalog_index + 1;
-  state.phase = ChartDldrBulkCatalogPhase::DownloadChart;
-  return ChartDldrBulkCatalogWalkContinues(state.next_catalog,
-                                           state.catalog_bound);
-}
-
-bool ChartDldrBindCatalogPrepareWalk(ChartDldrBulkCatalogRunState& state,
-                                     int catalog_index) {
-  if (catalog_index < 0) {
-    return false;
-  }
-  state.next_catalog = catalog_index;
-  state.catalog_bound = catalog_index + 1;
-  state.phase = ChartDldrBulkCatalogPhase::PrepareCatalog;
+  state.phase = phase;
   return ChartDldrBulkCatalogWalkContinues(state.next_catalog,
                                            state.catalog_bound);
 }

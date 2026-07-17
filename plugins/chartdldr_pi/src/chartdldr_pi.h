@@ -60,6 +60,7 @@
 #include "chartdldr_chart_source.h"
 
 // forward declarations
+class ChartDldrBulkOrchestrate;
 class ChartDldrPanelImpl;
 class ChartDldrGuiAddSourceDlg;
 class ChartDldrPrefsDlgImpl;
@@ -134,6 +135,8 @@ public:
   ChartDldrScheduleConfig& ScheduleConfig() { return m_schedule; }
   const ChartDldrScheduleConfig& ScheduleConfig() const { return m_schedule; }
   ChartDldrPanelImpl* GetDownloaderPanel() { return m_dldrpanel; }
+  /** Bulk orchestrator of the downloader panel, or nullptr without a panel. */
+  ChartDldrBulkOrchestrate* GetBulkOrchestrate();
   ChartDldrScheduler& Scheduler() { return m_scheduler; }
   const ChartDldrScheduler& Scheduler() const { return m_scheduler; }
 

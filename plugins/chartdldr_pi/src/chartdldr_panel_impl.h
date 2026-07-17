@@ -9,7 +9,7 @@
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_catalog_run.h"
 #include "chartdldr_bulk_notifier.h"
-#include "chartdldr_bulk_panel_view.h"
+#include "chartdldr_bulk_panel_port.h"
 #include "chartdldr_bulk_state.h"
 #include "chartdldr_catalog_selection.h"
 #include "chartdldr_bulk_chart_loop.h"
@@ -27,8 +27,7 @@ class ChartDldrPanelImpl;
 
 /** wx panel implementation for the chart downloader options page. */
 class ChartDldrPanelImpl : public ChartDldrPanel,
-                           public ChartDldrCatalogView,
-                           public ChartDldrChartDownloadView {
+                           public ChartDldrBulkPanelPort {
 public:
   ~ChartDldrPanelImpl() override;
   ChartDldrPanelImpl(chartdldr_pi* plugin = NULL, wxWindow* parent = NULL,
@@ -46,12 +45,19 @@ public:
     return chart_list_view_;
   }
 
-  // ChartDldrCatalogView / ChartDldrChartDownloadView ----------------------
+  // ChartDldrBulkPanelPort -------------------------------------------------
+  bool IsShownOnScreen() const override {
+    return ChartDldrPanel::IsShownOnScreen();
+  }
+  bool ConfirmInteractiveStart() override {
+    return notifier_->ConfirmInteractiveStart();
+  }
+
   wxWindow* AsWindow() override { return this; }
   wxEvtHandler* AsEventHandler() override { return this; }
-  void SelectActiveCatalog(int catalog_index) override {
-    SetSource(catalog_index);
-  }
+  void ActivateCatalog(
+      int catalog_index, ChartDldrCatalogActivation activation,
+      const ChartDldrCatalogUiPolicy& ui = ChartDldrCatalogUiPolicy()) override;
   void CaptureChartListSelectionFromWidgets() override {
     chart_list_view_.CaptureSelectionFromWidgets();
   }
@@ -63,15 +69,15 @@ public:
 
   void SelectCatalog(int item);
   int GetSelectedCatalog() override;
-  void RefreshCatalogToolbar();
-  void CancelDownload();
+  void RefreshCatalogToolbar() override;
+  void CancelDownload() override;
   /** OptionsClosed preserves an active scheduled run; PluginShutdown cancels.
    */
   void CancelBulkActivity(ChartDldrBulkCancelScope scope);
-  bool IsBulkRunCancelled() const;
+  bool IsBulkRunCancelled() const override;
 
-  void ApplyBulkRunUiPolicy(const ChartDldrBulkSessionPolicy& policy);
-  void EndBulkSessionUi();
+  void ApplyBulkRunUiPolicy(const ChartDldrBulkSessionPolicy& policy) override;
+  void EndBulkSessionUi() override;
   int GetCheckedChartCount() override;
   bool IsChartChecked(int index) const override;
   ChartDldrChartUpdateKind ChartKindAt(int index) const;
@@ -82,25 +88,20 @@ public:
   void FocusChartsDownloadTab() override;
   void SetDownloadChartsButtonLabel(const wxString& label);
   void SyncDownloadCancelButton();
-  void ReloadCatalogChartList(ChartSource& cs, bool selnew, bool selupd,
-                              bool materialize) override;
-  void SetActiveCatalogContext(int catalog_index) override;
   void UpdateChartsLabelForSource(const ChartSource& cs) override;
-  void RefreshChartListForSource(int catalog_index,
-                                 const ChartDldrCatalogUiPolicy& ui) override;
   void UpdateDownloadProgress(
       int downloading, int to_download, int failed_downloads,
       const ChartDldrBulkTransferSlot& transfer) override;
 
-  int BulkDownloadNotebookPage() const;
-  void SetBulkDownloadNotebookPage(int page);
+  int BulkDownloadNotebookPage() const override;
+  void SetBulkDownloadNotebookPage(int page) override;
   void SelectBulkDownloadTab();
 
   /** Build/execute manual browser decisions before a selected-chart session. */
-  ChartDldrBulkRunPlan BuildSelectedChartsPreflightPlan();
-  void ExecuteManualDownloadPlan(const ChartDldrBulkRunPlan& plan);
+  ChartDldrBulkRunPlan BuildSelectedChartsPreflightPlan() override;
+  void ExecuteManualDownloadPlan(const ChartDldrBulkRunPlan& plan) override;
   /** Render the single postflight result without a nested event loop. */
-  void PresentBulkPostflight(const ChartDldrBulkPostflight& result);
+  void PresentBulkPostflight(const ChartDldrBulkPostflight& result) override;
 
 #if defined(CHART_LIST)
   bool isNew(int item) override;
@@ -154,6 +155,14 @@ private:
 
   void ApplyCatalogToolbarState();
   void SyncDownloadChartsButtonEnabled();
+
+  /** Set the active plugin source id and sources-list highlight. */
+  void SetActiveCatalogContext(int catalog_index);
+  /** Reload the chart list widgets for the given source from disk. */
+  void ReloadCatalogChartList(ChartSource& cs, bool selnew, bool selupd,
+                              bool materialize);
+  /** Read the sources-list widget selection (raw click), not the active id. */
+  int ReadSelectedCatalogFromWidget() const;
 
   void LoadCatalogSelectionFromDisk(const wxString& path, bool selnew,
                                     bool selupd);

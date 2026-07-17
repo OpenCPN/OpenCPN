@@ -11,7 +11,8 @@
 class ChartDldrBulkRunSession;
 class chartdldr_pi;
 
-/** Pre-step scheduled state captured before a walk step advances the session. */
+/** Pre-step scheduled state captured before a walk step advances the session.
+ */
 struct ChartDldrScheduledStepObservation {
   ChartDldrBulkCatalogPhase phase_before =
       ChartDldrBulkCatalogPhase::PrepareCatalog;
@@ -21,8 +22,8 @@ struct ChartDldrScheduledStepObservation {
 
 /**
  * Owns scheduled-run operational logging so the orchestrator's walk kernel
- * stays free of log scaffolding. Builds its own snapshots from the run session
- * and plugin; delegates line formatting/emission to ChartDldrScheduledRunLogger.
+ * stays free of log scaffolding. Inactive until OnStarting; BeginStep / OnStep
+ * / OnStillRunning are cheap no-ops for interactive runs.
  */
 class ChartDldrScheduledRunObserver {
 public:
@@ -44,6 +45,7 @@ public:
 
 private:
   ChartDldrScheduledRunLogger logger_;
+  bool active_ = false;
 };
 
 #endif  // CHARTDLDR_SCHEDULED_RUN_OBSERVER_H_

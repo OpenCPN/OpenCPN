@@ -17,9 +17,7 @@
 
 wxString ChartDldrScheduledNeverRunDisplayText() { return _("-- : --"); }
 
-wxString ChartDldrScheduledDisplaySeparator() {
-  return " - ";
-}
+wxString ChartDldrScheduledDisplaySeparator() { return " - "; }
 
 wxString ChartDldrFormatScheduledRunTimestamp(const wxDateTime& run_time) {
   return run_time.Format(_("%Y-%m-%d %H:%M"));

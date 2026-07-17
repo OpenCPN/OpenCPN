@@ -31,6 +31,14 @@ void TouchChartFile(const wxString& dir, const wxString& name) {
   file.Close();
 }
 
+/** Occupy the update-metadata path so SaveUpdateData cannot publish a file.
+ *  Portable across Unix and Windows (mode 0500 is ignored on NTFS). */
+void BlockUpdateMetadataPath(const wxString& chart_dir) {
+  const wxString meta_path =
+      chart_dir + wxFileName::GetPathSeparator() + _T(UPDATE_DATA_FILENAME);
+  ASSERT_TRUE(wxFileName::Mkdir(meta_path));
+}
+
 }  // namespace
 
 TEST(ChartDldrCatalogPrep, CatalogFilenameFromUrl) {
@@ -167,40 +175,35 @@ TEST(ChartDldrCatalogPrep, PrepareLocalsDropsMetadataForRemovedCharts) {
   wxDir::Remove(dir, wxPATH_RMDIR_RECURSIVE);
 }
 
-TEST(ChartDldrCatalogPrep, CommitChartInstallStampFailsWhenMetadataCannotPersist) {
+TEST(ChartDldrCatalogPrep,
+     CommitChartInstallStampFailsWhenMetadataCannotPersist) {
   const wxString dir = MakeTempChartDir();
   ChartSource source(wxT("US_CA"), wxT("http://example.test/US_CA.xml"), dir);
-
-  wxFileName dir_fn(dir);
-  ASSERT_TRUE(dir_fn.SetPermissions(0500));
+  BlockUpdateMetadataPath(dir);
 
   const wxDateTime stamp = wxDateTime::Now();
   EXPECT_FALSE(
       ChartDldrCommitChartInstallStamp(source, wxT("US5CA11M.zip"), stamp));
   EXPECT_FALSE(source.ExistsLocaly(wxT("US5CA11M.zip")));
 
-  dir_fn.SetPermissions(wxS_DIR_DEFAULT);
   wxDir::Remove(dir, wxPATH_RMDIR_RECURSIVE);
 }
 
-TEST(ChartDldrCatalogPrep, InstallOutcomeTreatsStampPersistFailureAsBulkFailure) {
+TEST(ChartDldrCatalogPrep,
+     InstallOutcomeTreatsStampPersistFailureAsBulkFailure) {
   const wxString dir = MakeTempChartDir();
   ChartSource source(wxT("US_CA"), wxT("http://example.test/US_CA.xml"), dir);
-
-  wxFileName dir_fn(dir);
-  ASSERT_TRUE(dir_fn.SetPermissions(0500));
+  BlockUpdateMetadataPath(dir);
 
   const bool install_ok = ChartDldrCommitChartInstallStamp(
       source, wxT("US5CA11M.zip"), wxDateTime::Now());
 
   ChartDldrChartBulkState chart_bulk;
-  ChartDldrRecordChartDownloadOutcome(install_ok,
-                                      ChartDldrChartUpdateKind::New,
+  ChartDldrRecordChartDownloadOutcome(install_ok, ChartDldrChartUpdateKind::New,
                                       chart_bulk);
   EXPECT_FALSE(install_ok);
   EXPECT_EQ(chart_bulk.failed, 1);
   EXPECT_EQ(chart_bulk.new_downloads, 0);
 
-  dir_fn.SetPermissions(wxS_DIR_DEFAULT);
   wxDir::Remove(dir, wxPATH_RMDIR_RECURSIVE);
 }

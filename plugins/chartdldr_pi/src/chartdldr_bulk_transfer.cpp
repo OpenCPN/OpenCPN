@@ -17,9 +17,6 @@ namespace {
 constexpr int kTransferMaxMinutes = 120;
 constexpr int kTransferStallMinutes = 15;
 
-ChartDldrBulkTransferHooks g_transfer_hooks;
-uint64_t g_transfer_generation = 0;
-
 wxDateTime ChartDldrTransferClock(const wxDateTime& now) {
   return now.IsValid() ? now : wxDateTime::Now();
 }
@@ -31,28 +28,27 @@ wxDateTime ChartDldrTransferClock(const wxDateTime& now) {
 class ChartDldrBulkTransferEvtSink : public wxEvtHandler {
 public:
   ChartDldrBulkTransferEvtSink(ChartDldrBulkTransferSlot* slot,
-                               uint64_t generation, wxEvtHandler* listener)
-      : slot_(slot), generation_(generation), listener_(listener) {
+                               uint64_t generation,
+                               ChartDldrBulkTransferEvents* events)
+      : slot_(slot), generation_(generation), events_(events) {
     // OCPN_downloadEvent is not Bind-friendly (wx event-type trait).
-    Connect(
-        wxEVT_DOWNLOAD_EVENT,
-        (wxObjectEventFunction)(wxEventFunction)&ChartDldrBulkTransferEvtSink::
-            OnDownloadEvent);
+    Connect(wxEVT_DOWNLOAD_EVENT, DownloadEventHandler());
   }
 
   ~ChartDldrBulkTransferEvtSink() override {
-    Disconnect(
-        wxEVT_DOWNLOAD_EVENT,
-        (wxObjectEventFunction)(wxEventFunction)&ChartDldrBulkTransferEvtSink::
-            OnDownloadEvent);
+    Disconnect(wxEVT_DOWNLOAD_EVENT, DownloadEventHandler());
   }
 
-  void Abandon() {
-    slot_ = nullptr;
-    listener_ = nullptr;
-  }
+  void Abandon() { slot_ = nullptr; }
 
 private:
+  // OCPN_downloadEvent is not Bind-friendly; funnel the one required cast here.
+  static wxObjectEventFunction DownloadEventHandler() {
+    return (
+        wxObjectEventFunction)(wxEventFunction)&ChartDldrBulkTransferEvtSink::
+        OnDownloadEvent;
+  }
+
   void OnDownloadEvent(OCPN_downloadEvent& ev) {
     if (!slot_) {
       return;
@@ -61,16 +57,16 @@ private:
       case OCPN_DL_EVENT_TYPE_END:
         ChartDldrApplyBulkDownloadEnd(
             *slot_, ev.getDLEventStatus() == OCPN_DL_NO_ERROR, generation_);
-        if (listener_ && g_transfer_hooks.on_end) {
-          g_transfer_hooks.on_end(listener_);
+        if (events_) {
+          events_->OnBulkTransferEnd();
         }
         break;
       case OCPN_DL_EVENT_TYPE_PROGRESS:
         ChartDldrApplyBulkDownloadProgress(*slot_, ev.getTotal(),
                                            ev.getTransferred(), wxDateTime(),
                                            generation_);
-        if (listener_ && g_transfer_hooks.on_progress) {
-          g_transfer_hooks.on_progress(listener_);
+        if (events_) {
+          events_->OnBulkTransferProgress();
         }
         break;
       default:
@@ -80,12 +76,8 @@ private:
 
   ChartDldrBulkTransferSlot* slot_;
   const uint64_t generation_;
-  wxEvtHandler* listener_;
+  ChartDldrBulkTransferEvents* const events_;
 };
-
-void ChartDldrSetBulkTransferHooks(const ChartDldrBulkTransferHooks& hooks) {
-  g_transfer_hooks = hooks;
-}
 
 ChartDldrBulkTransferSlot::ChartDldrBulkTransferSlot() = default;
 ChartDldrBulkTransferSlot::~ChartDldrBulkTransferSlot() = default;
@@ -93,6 +85,15 @@ ChartDldrBulkTransferSlot::ChartDldrBulkTransferSlot(
     ChartDldrBulkTransferSlot&&) noexcept = default;
 ChartDldrBulkTransferSlot& ChartDldrBulkTransferSlot::operator=(
     ChartDldrBulkTransferSlot&&) noexcept = default;
+
+uint64_t ChartDldrBulkTransferSlot::BumpGeneration() {
+  ++next_generation_;
+  if (next_generation_ == 0) {
+    ++next_generation_;
+  }
+  generation = next_generation_;
+  return generation;
+}
 
 void ChartDldrBulkTransferSlot::Begin(ChartDldrBulkTransferOwner new_owner,
                                       const wxDateTime& now) {
@@ -102,7 +103,7 @@ void ChartDldrBulkTransferSlot::Begin(ChartDldrBulkTransferOwner new_owner,
   total_size = -1;
   transferred_size = 0;
   handle = 0;
-  generation = ++g_transfer_generation;
+  BumpGeneration();
   begin_time_ = ChartDldrTransferClock(now);
   last_progress_time_ = begin_time_;
 }
@@ -195,10 +196,10 @@ void ChartDldrApplyBulkDownloadEnd(ChartDldrBulkTransferSlot& slot, bool ok,
 }
 
 bool ChartDldrTryStartBackgroundDownload(ChartDldrBulkTransferSlot& slot,
-                                         wxEvtHandler* listener,
                                          ChartDldrBulkTransferOwner owner,
                                          const wxString& url,
-                                         const wxString& path) {
+                                         const wxString& path,
+                                         ChartDldrBulkTransferEvents* events) {
   if (slot.IsInProgress()) {
     return false;
   }
@@ -206,7 +207,7 @@ bool ChartDldrTryStartBackgroundDownload(ChartDldrBulkTransferSlot& slot,
   slot.live_sink.reset();
   slot.Begin(owner);
   slot.live_sink = std::make_unique<ChartDldrBulkTransferEvtSink>(
-      &slot, slot.generation, listener);
+      &slot, slot.generation, events);
   const _OCPN_DLStatus started = OCPN_downloadFileBackground(
       url, path, slot.live_sink.get(), &slot.handle);
   if (started != OCPN_DL_STARTED) {
@@ -215,15 +216,6 @@ bool ChartDldrTryStartBackgroundDownload(ChartDldrBulkTransferSlot& slot,
     return false;
   }
   return true;
-}
-
-bool ChartDldrBulkTransferIsStuck(const ChartDldrBulkTransferSlot& slot) {
-  return slot.IsStuck(wxDateTime::Now());
-}
-
-ChartDldrBulkTransferStuckReason ChartDldrGetBulkTransferStuckReason(
-    const ChartDldrBulkTransferSlot& slot, const wxDateTime& now) {
-  return slot.StuckReason(now.IsValid() ? now : wxDateTime::Now());
 }
 
 namespace {
@@ -253,10 +245,8 @@ wxString ChartDldrBulkTransferStuckReasonLabel(
   return wxT("unknown");
 }
 
-}  // namespace
-
-void ChartDldrLogBulkTransferStuck(const ChartDldrBulkTransferSlot& slot,
-                                   ChartDldrBulkTransferStuckReason reason) {
+void LogStuckTransfer(const ChartDldrBulkTransferSlot& slot,
+                      ChartDldrBulkTransferStuckReason reason) {
   if (reason == ChartDldrBulkTransferStuckReason::None) {
     return;
   }
@@ -267,27 +257,21 @@ void ChartDldrLogBulkTransferStuck(const ChartDldrBulkTransferSlot& slot,
                slot.transferred_size);
 }
 
-ChartDldrBulkTransferStuckReason ChartDldrLogTransferIfStuck(
-    const ChartDldrBulkTransferSlot& slot, const wxDateTime& now) {
-  const ChartDldrBulkTransferStuckReason reason =
-      ChartDldrGetBulkTransferStuckReason(slot, now);
-  if (reason != ChartDldrBulkTransferStuckReason::None) {
-    ChartDldrLogBulkTransferStuck(slot, reason);
-  }
-  return reason;
-}
+}  // namespace
 
 ChartDldrStuckTransferReaction ChartDldrReactToStuckTransfer(
     const ChartDldrBulkTransferSlot& slot, ChartDldrStuckTransferSite site,
     const wxDateTime& now) {
-  if (ChartDldrLogTransferIfStuck(slot, now) ==
-      ChartDldrBulkTransferStuckReason::None) {
+  const ChartDldrBulkTransferStuckReason reason =
+      slot.StuckReason(now.IsValid() ? now : wxDateTime::Now());
+  if (reason == ChartDldrBulkTransferStuckReason::None) {
     return ChartDldrStuckTransferReaction::None;
   }
+  LogStuckTransfer(slot, reason);
   switch (site) {
     case ChartDldrStuckTransferSite::OrchestratorStall:
       return ChartDldrStuckTransferReaction::SchedulePump;
-    case ChartDldrStuckTransferSite::ChartEnginePoll:
+    case ChartDldrStuckTransferSite::ChartControllerPoll:
       return ChartDldrStuckTransferReaction::AbortChartPass;
     case ChartDldrStuckTransferSite::CatalogPrepare:
       return ChartDldrStuckTransferReaction::AbortCatalogRefresh;
@@ -316,7 +300,7 @@ void ChartDldrCancelAndResetBulkTransfer(ChartDldrBulkTransferSlot& slot) {
   }
   slot.Reset();
   // Bump generation so the slot's live generation never equals a prior one.
-  slot.generation = ++g_transfer_generation;
+  slot.BumpGeneration();
 }
 
 _OCPN_DLStatus ChartDldrFinishBackgroundTempDownload(
@@ -339,15 +323,14 @@ _OCPN_DLStatus ChartDldrFinishBackgroundTempDownload(
 }
 
 #ifdef UNIT_TESTS
-void ChartDldrInstallLiveTransferSinkForTest(ChartDldrBulkTransferSlot& slot,
-                                             wxEvtHandler* listener) {
+void ChartDldrInstallLiveTransferSinkForTest(ChartDldrBulkTransferSlot& slot) {
   slot.abandoned_sink.reset();
   slot.live_sink.reset();
   if (!slot.IsInProgress()) {
     slot.Begin(ChartDldrBulkTransferOwner::ChartBulk);
   }
   slot.live_sink = std::make_unique<ChartDldrBulkTransferEvtSink>(
-      &slot, slot.generation, listener);
+      &slot, slot.generation, nullptr);
 }
 
 bool ChartDldrDispatchAbandonedTransferEndForTest(

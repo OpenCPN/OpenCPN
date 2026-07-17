@@ -14,7 +14,7 @@
 #include "chartdldr_bulk_transfer.h"
 #include "chartdldr_catalog_prep.h"
 #include "chartdldr_chart_install.h"
-#include "chartdldr_bulk_panel_view.h"
+#include "chartdldr_bulk_panel_port.h"
 #include "chartdldr_pi.h"
 #include "chartcatalog.h"
 #include "chartdldr_chart_source.h"
@@ -31,34 +31,28 @@ namespace {
 
 #ifdef __ANDROID__
 struct AndroidInstallBusyScope {
-  explicit AndroidInstallBusyScope(ChartDldrChartDownloadView& panel) {
-    panel.SetChartInfo(_("Installing charts."));
+  explicit AndroidInstallBusyScope(ChartDldrBulkPanelPort& port) {
+    port.SetChartInfo(_("Installing charts."));
     androidShowBusyIcon();
   }
   ~AndroidInstallBusyScope() { androidHideBusyIcon(); }
 };
 #endif
 
-Chart* ChartAt(chartdldr_pi* pi, int index) {
-  if (!pi || index < 0 ||
-      index >= static_cast<int>(pi->m_pChartCatalog.charts.size())) {
-    return nullptr;
-  }
-  return pi->m_pChartCatalog.charts.at(static_cast<size_t>(index)).get();
-}
-
-void FinalizePendingChartDownload(
-    ChartDldrChartDownloadView& panel, int chart_index,
-    ChartDldrChartUpdateKind kind, ChartSource& source,
-    const wxString& full_path, ChartDldrChartBulkState& chart_bulk,
-    const ChartDldrBulkSessionPolicy& policy, chartdldr_pi* pi) {
-  Chart* const chart = ChartAt(pi, chart_index);
+void FinalizePendingChartDownload(ChartDldrBulkPanelPort& port, int chart_index,
+                                  ChartDldrChartUpdateKind kind,
+                                  ChartSource& source,
+                                  const wxString& full_path,
+                                  ChartDldrChartBulkState& chart_bulk,
+                                  const ChartDldrBulkSessionPolicy& policy,
+                                  chartdldr_pi* pi) {
+  Chart* const chart = ChartDldrChartAt(pi->m_pChartCatalog, chart_index);
   if (!chart || !pi) {
     return;
   }
 
 #ifdef __ANDROID__
-  AndroidInstallBusyScope android_busy(panel);
+  AndroidInstallBusyScope android_busy(port);
 #endif
   const bool install_ok = ChartDldrCommitChartInstall(
       pi, source, full_path, chart->GetChartFilename(true),
@@ -69,7 +63,7 @@ void FinalizePendingChartDownload(
 }  // namespace
 
 void ChartDldrDisposeChartBulkTransfer(
-    ChartDldrChartDownloadView& panel, ChartDldrBulkTransferSlot& transfer,
+    ChartDldrBulkPanelPort& port, ChartDldrBulkTransferSlot& transfer,
     const ChartDldrDownloadCancelState& download_cancel,
     ChartDldrChartTransferDisposition disposition, ChartSource* source,
     ChartDldrChartBulkState& chart_bulk,
@@ -93,7 +87,7 @@ void ChartDldrDisposeChartBulkTransfer(
     case ChartDldrChartTransferDisposition::Settle: {
       if (!source || !pi || chart_bulk.pending_index < 0) {
         ChartDldrDisposeChartBulkTransfer(
-            panel, transfer, download_cancel,
+            port, transfer, download_cancel,
             ChartDldrChartTransferDisposition::Abort, source, chart_bulk,
             policy, pi);
         return;
@@ -103,7 +97,7 @@ void ChartDldrDisposeChartBulkTransfer(
       chart_bulk.pending_download_paths = ChartDldrTempDownloadPaths();
       if (status == OCPN_DL_NO_ERROR) {
         FinalizePendingChartDownload(
-            panel, chart_bulk.pending_index, chart_bulk.pending_kind, *source,
+            port, chart_bulk.pending_index, chart_bulk.pending_kind, *source,
             facts.paths.output_path, chart_bulk, policy, pi);
       } else {
         ChartDldrRecordChartDownloadFailure(chart_bulk);

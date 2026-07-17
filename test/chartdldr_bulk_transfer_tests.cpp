@@ -52,37 +52,37 @@ TEST(ChartDldrBulkTransfer, MaxDurationExceededIsDistinctReason) {
             ChartDldrBulkTransferStuckReason::MaxDurationExceeded);
 }
 
-TEST(ChartDldrBulkTransfer, LogTransferIfStuckReportsWithoutAborting) {
+TEST(ChartDldrBulkTransfer, StuckReasonReportsWithoutAborting) {
   ChartDldrBulkTransferSlot transfer;
   transfer.Begin(ChartDldrBulkTransferOwner::ChartBulk);
 
   wxDateTime now = wxDateTime::Now();
   now.Add(wxTimeSpan(0, 16, 0));
-  EXPECT_EQ(ChartDldrLogTransferIfStuck(transfer, now),
+  EXPECT_EQ(transfer.StuckReason(now),
             ChartDldrBulkTransferStuckReason::ProgressStalled);
   EXPECT_TRUE(transfer.IsInProgress());
 }
 
-TEST(ChartDldrBulkTransfer, LogTransferIfStuckLeavesSlotActive) {
+TEST(ChartDldrBulkTransfer, StuckReasonLeavesSlotActive) {
   ChartDldrBulkTransferSlot transfer;
   transfer.Begin(ChartDldrBulkTransferOwner::Catalog);
 
   wxDateTime now = wxDateTime::Now();
   now.Add(wxTimeSpan(2, 1, 0));
-  EXPECT_EQ(ChartDldrLogTransferIfStuck(transfer, now),
+  EXPECT_EQ(transfer.StuckReason(now),
             ChartDldrBulkTransferStuckReason::MaxDurationExceeded);
   EXPECT_TRUE(transfer.IsInProgress());
   ChartDldrCancelAndResetBulkTransfer(transfer);
   EXPECT_FALSE(transfer.IsInProgress());
 }
 
-TEST(ChartDldrBulkTransfer, LogTransferIfStuckOnStallLeavesSlotActive) {
+TEST(ChartDldrBulkTransfer, StuckReasonOnStallLeavesSlotActive) {
   ChartDldrBulkTransferSlot transfer;
   transfer.Begin(ChartDldrBulkTransferOwner::ChartBulk);
 
   wxDateTime now = wxDateTime::Now();
   now.Add(wxTimeSpan(0, 16, 0));
-  EXPECT_EQ(ChartDldrLogTransferIfStuck(transfer, now),
+  EXPECT_EQ(transfer.StuckReason(now),
             ChartDldrBulkTransferStuckReason::ProgressStalled);
   EXPECT_TRUE(transfer.IsInProgress());
   ChartDldrCancelAndResetBulkTransfer(transfer);
@@ -103,18 +103,18 @@ TEST(ChartDldrBulkTransfer, StuckTransferReactionVariesBySite) {
   transfer.OnProgress(100, 0, t0);
   const wxDateTime stalled_at = t0 + wxTimeSpan(0, 16, 0);
 
-  EXPECT_EQ(ChartDldrReactToStuckTransfer(transfer,
-                                          ChartDldrStuckTransferSite::OrchestratorStall,
-                                          stalled_at),
-            ChartDldrStuckTransferReaction::SchedulePump);
-  EXPECT_EQ(ChartDldrReactToStuckTransfer(transfer,
-                                          ChartDldrStuckTransferSite::ChartEnginePoll,
-                                          stalled_at),
+  EXPECT_EQ(
+      ChartDldrReactToStuckTransfer(
+          transfer, ChartDldrStuckTransferSite::OrchestratorStall, stalled_at),
+      ChartDldrStuckTransferReaction::SchedulePump);
+  EXPECT_EQ(ChartDldrReactToStuckTransfer(
+                transfer, ChartDldrStuckTransferSite::ChartControllerPoll,
+                stalled_at),
             ChartDldrStuckTransferReaction::AbortChartPass);
-  EXPECT_EQ(ChartDldrReactToStuckTransfer(transfer,
-                                          ChartDldrStuckTransferSite::CatalogPrepare,
-                                          stalled_at),
-            ChartDldrStuckTransferReaction::AbortCatalogRefresh);
+  EXPECT_EQ(
+      ChartDldrReactToStuckTransfer(
+          transfer, ChartDldrStuckTransferSite::CatalogPrepare, stalled_at),
+      ChartDldrStuckTransferReaction::AbortCatalogRefresh);
 }
 
 TEST(ChartDldrBulkTransfer, CancelAndResetClearsActiveTransfer) {
@@ -164,7 +164,7 @@ TEST(ChartDldrBulkTransfer, TryStartResetsSlotWhenDownloadDoesNotStart) {
   ChartDldrBulkTransferSlot transfer;
 
   EXPECT_FALSE(ChartDldrTryStartBackgroundDownload(
-      transfer, nullptr, ChartDldrBulkTransferOwner::ChartBulk,
+      transfer, ChartDldrBulkTransferOwner::ChartBulk,
       wxT("http://example.test/chart.zip"), wxT("/tmp/chart.zip")));
   EXPECT_FALSE(transfer.IsInProgress());
   EXPECT_EQ(transfer.owner, ChartDldrBulkTransferOwner::None);
@@ -177,7 +177,7 @@ TEST(ChartDldrBulkTransfer, TryStartRejectsAnActiveSlotWithoutMutation) {
   const uint64_t generation = transfer.generation;
 
   EXPECT_FALSE(ChartDldrTryStartBackgroundDownload(
-      transfer, nullptr, ChartDldrBulkTransferOwner::ChartBulk,
+      transfer, ChartDldrBulkTransferOwner::ChartBulk,
       wxT("http://example.test/chart.zip"), wxT("/tmp/chart.zip")));
   EXPECT_TRUE(transfer.IsInProgress());
   EXPECT_EQ(transfer.owner, ChartDldrBulkTransferOwner::Catalog);
@@ -278,7 +278,7 @@ TEST(ChartDldrBulkTransfer, TryStartClearsAbandonedSinkWithoutDrainGate) {
   // Start fails without a real OCPN download backend, but still clears the
   // abandoned sink before attempting Begin (no retired drain gate).
   EXPECT_FALSE(ChartDldrTryStartBackgroundDownload(
-      transfer, nullptr, ChartDldrBulkTransferOwner::ChartBulk,
+      transfer, ChartDldrBulkTransferOwner::ChartBulk,
       wxT("http://example.test/chart.zip"), wxT("/tmp/chart.zip")));
   EXPECT_EQ(transfer.abandoned_sink, nullptr);
   EXPECT_FALSE(transfer.IsInProgress());

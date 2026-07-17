@@ -8,31 +8,26 @@
 #include "chartdldr_bulk_catalog_run.h"
 #include "chartdldr_bulk_state.h"
 
-class ChartDldrChartDownloadView;
+class ChartDldrBulkPanelPort;
 class ChartSource;
 class chartdldr_pi;
 
 /** Chart download loop and transfer polling for bulk download. */
-class ChartDldrPanelBulkChartController {
+class ChartDldrBulkChartController {
 public:
-  ChartDldrPanelBulkChartController(ChartDldrChartDownloadView& panel,
-                                    ChartDldrBulkRunSession& session);
+  ChartDldrBulkChartController(ChartDldrBulkPanelPort& port,
+                               ChartDldrBulkRunSession& session);
 
   void BeginBulkChartDownload(const ChartDldrBulkSessionPolicy& policy,
-                              int catalog_index,
-                              ChartDldrChartBulkState& chart_bulk);
+                              int catalog_index);
   ChartDldrBulkWalkStep StepNextBulkChart(
-      const ChartDldrBulkSessionPolicy& policy,
-      ChartDldrChartBulkState& chart_bulk);
+      const ChartDldrBulkSessionPolicy& policy);
   /**
    * Orchestrator-only: dispose any open transfer and end the chart pass.
    * Returns pass stats when one was open.
    */
-  ChartDldrBulkRunStats CloseActiveChartPass(
-      const ChartDldrBulkSessionPolicy& policy,
-      ChartDldrChartBulkState& chart_bulk);
-  void EndBulkChartDownload(const ChartDldrBulkSessionPolicy& policy,
-                            ChartDldrChartBulkState& chart_bulk);
+  ChartDldrBulkRunStats FinishChartPass(
+      const ChartDldrBulkSessionPolicy& policy);
 
 private:
   ChartDldrBulkWalkStep PollActiveChartTransfer(
@@ -44,7 +39,7 @@ private:
       ChartDldrChartBulkState& chart_bulk, ChartSource& source, int chart_count,
       chartdldr_pi* pi);
 
-  ChartDldrChartDownloadView& panel_;
+  ChartDldrBulkPanelPort& port_;
   ChartDldrBulkRunSession& session_;
 };
 

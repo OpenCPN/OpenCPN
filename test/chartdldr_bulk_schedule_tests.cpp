@@ -176,8 +176,8 @@ TEST(ChartDldrBulkSchedule, CommitAttemptStartBackoffWhenPersistFails) {
   soon_after.Add(wxTimeSpan(0, 30, 0));
   EXPECT_FALSE(schedule.ShouldRunNow(soon_after));
 
-  EXPECT_TRUE(ChartDldrCommitScheduleAttemptStart(
-      schedule, when, &PersistAlwaysOk, nullptr));
+  EXPECT_TRUE(ChartDldrCommitScheduleAttemptStart(schedule, when,
+                                                  &PersistAlwaysOk, nullptr));
   EXPECT_EQ(schedule.last_outcome, ChartDldrScheduledRunOutcome::Pending);
   EXPECT_EQ(schedule.last_attempt_iso, ChartDldrFormatScheduleRunIso(when));
 }
@@ -208,13 +208,13 @@ TEST(ChartDldrBulkSchedule, CommitOutcomeAppliesInMemoryWhenPersistFails) {
   ChartDldrScheduledBulkResult result;
   result.outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
   result.status_detail = wxT("done");
-  EXPECT_FALSE(ChartDldrCommitScheduleOutcome(
-      schedule, result, &PersistAlwaysFails, nullptr));
+  EXPECT_FALSE(ChartDldrCommitScheduleOutcome(schedule, result,
+                                              &PersistAlwaysFails, nullptr));
   EXPECT_EQ(schedule.last_outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
   EXPECT_EQ(schedule.last_status, wxT("done"));
 
-  EXPECT_TRUE(ChartDldrCommitScheduleOutcome(
-      schedule, result, &PersistAlwaysOk, nullptr));
+  EXPECT_TRUE(ChartDldrCommitScheduleOutcome(schedule, result, &PersistAlwaysOk,
+                                             nullptr));
   EXPECT_EQ(schedule.last_outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
   EXPECT_EQ(schedule.last_status, wxT("done"));
 }

@@ -55,9 +55,12 @@ set(SRC_CHARTDLDR
     src/chartdldr_scheduled_run_log.cpp
     src/chartdldr_scheduled_run_observer.h
     src/chartdldr_scheduled_run_observer.cpp
-    src/chartdldr_bulk_panel_view.h
+    src/chartdldr_bulk_panel_port.h
+    src/chartdldr_bulk_panel_ui.h
     src/chartdldr_bulk_pump.h
     src/chartdldr_bulk_pump.cpp
+    src/chartdldr_android_ui.h
+    src/chartdldr_android_ui.cpp
     src/chartdldr_prefs_time.h
     src/chartdldr_prefs_time.cpp
     src/chartdldr_prefs.h

@@ -51,15 +51,22 @@ ChartDldrScheduledRunLogSnapshot CaptureSnapshot(
 }  // namespace
 
 void ChartDldrScheduledRunObserver::OnStarting(int source_count) {
+  active_ = true;
   logger_.OnStarting();
   wxLogMessage("%s", ChartDldrFormatScheduledStarting(source_count).mb_str());
 }
 
-void ChartDldrScheduledRunObserver::Reset() { logger_.Reset(); }
+void ChartDldrScheduledRunObserver::Reset() {
+  active_ = false;
+  logger_.Reset();
+}
 
 ChartDldrScheduledStepObservation ChartDldrScheduledRunObserver::BeginStep(
     const ChartDldrBulkRunSession& session) const {
   ChartDldrScheduledStepObservation obs;
+  if (!active_) {
+    return obs;
+  }
   obs.phase_before = session.CatalogRun().phase;
   obs.catalog_index_before = session.CatalogRun().next_catalog;
   obs.charts_downloading_before = session.ChartBulk().downloading;
@@ -71,6 +78,9 @@ void ChartDldrScheduledRunObserver::OnStep(
     const ChartDldrBulkRunSession& session, chartdldr_pi* pi,
     ChartDldrBulkWalkStep walk_step, int charts_selected,
     const ChartDldrBulkRunStats& catalog_counters) {
+  if (!active_) {
+    return;
+  }
   const ChartDldrChartBulkState& charts = session.ChartBulk();
 
   ChartDldrScheduledBulkStepLogInput step;
@@ -90,6 +100,9 @@ void ChartDldrScheduledRunObserver::OnStep(
 
 void ChartDldrScheduledRunObserver::OnStillRunning(
     const ChartDldrBulkRunSession& session, chartdldr_pi* pi) {
+  if (!active_) {
+    return;
+  }
   const wxString line = logger_.NoteStillRunning(CaptureSnapshot(session, pi));
   if (!line.empty()) {
     wxLogMessage("%s", line.mb_str());

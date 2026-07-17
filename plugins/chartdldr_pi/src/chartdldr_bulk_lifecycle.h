@@ -122,7 +122,7 @@ void ChartDldrReportBulkError(wxWindow* parent,
 /** Sealed session end: one applicator reads these predicates. */
 struct ChartDldrBulkSessionEnd {
   ChartDldrBulkTeardownReason reason = ChartDldrBulkTeardownReason::Completed;
-  bool was_scheduled = false;
+  bool scheduled = false;
   ChartDldrBulkRunStats stats;
 
   enum class ScheduledFinish { None, Complete, Abort };
@@ -136,7 +136,7 @@ struct ChartDldrBulkSessionEnd {
 };
 
 ChartDldrBulkSessionEnd ChartDldrBulkSessionEndFor(
-    ChartDldrBulkTeardownReason reason, bool was_scheduled,
+    ChartDldrBulkTeardownReason reason, bool scheduled,
     const ChartDldrBulkRunStats& stats);
 
 #endif  // CHARTDLDR_BULK_LIFECYCLE_H_

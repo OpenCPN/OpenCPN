@@ -247,8 +247,8 @@ TEST(ChartDldrTempDownload, PublishFileIntoRejectsSymlinkedRelComponent) {
     file.Write("payload");
   }
 
-  EXPECT_FALSE(ChartDldrExtractCommon::PublishFileInto(root, wxT("sub/chart.000"),
-                                                       temp_path));
+  EXPECT_FALSE(ChartDldrExtractCommon::PublishFileInto(
+      root, wxT("sub/chart.000"), temp_path));
   EXPECT_FALSE(wxFileExists(escape_dir + wxFileName::GetPathSeparator() +
                             wxT("chart.000")));
   EXPECT_TRUE(wxFileExists(temp_path));
@@ -274,11 +274,10 @@ TEST(ChartDldrTempDownload, PublishFileIntoMovesSourceIntoRoot) {
     file.Write("chart");
   }
 
-  EXPECT_TRUE(ChartDldrExtractCommon::PublishFileInto(root, wxT("nested/chart.000"),
-                                                      temp_path));
-  const wxString dest =
-      root + wxFileName::GetPathSeparator() + wxT("nested") +
-      wxFileName::GetPathSeparator() + wxT("chart.000");
+  EXPECT_TRUE(ChartDldrExtractCommon::PublishFileInto(
+      root, wxT("nested/chart.000"), temp_path));
+  const wxString dest = root + wxFileName::GetPathSeparator() + wxT("nested") +
+                        wxFileName::GetPathSeparator() + wxT("chart.000");
   EXPECT_TRUE(wxFileExists(dest));
   EXPECT_EQ(ReadFileContents(dest), wxT("chart"));
   EXPECT_FALSE(wxFileExists(temp_path));

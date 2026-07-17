@@ -10,6 +10,7 @@
 
 #include "chartdldr_panel_impl.h"
 #include "chartdldr_bulk_orchestrate.h"
+#include "chartdldr_bulk_panel_ui.h"
 #include "chartdldr_bulk_schedule.h"
 #include "chartdldr_catalog_prep.h"
 #include "chartdldr_download_cancel.h"
@@ -44,13 +45,11 @@
 #endif
 #endif  // __WXMAC__
 
-void ChartDldrInitPanelBulkDownloadHooks();
-
 namespace {
 
-class ChartDldrPanelBulkNotifier final : public ChartDldrBulkNotifier {
+class ChartDldrBulkPanelNotifier final : public ChartDldrBulkNotifier {
 public:
-  explicit ChartDldrPanelBulkNotifier(ChartDldrPanelImpl &panel)
+  explicit ChartDldrBulkPanelNotifier(ChartDldrPanelImpl &panel)
       : panel_(panel) {}
 
   bool ConfirmInteractiveStart() override {
@@ -174,16 +173,23 @@ void ChartDldrPanelImpl::ReloadCatalogChartList(ChartSource &cs, bool selnew,
   }
 }
 
-void ChartDldrPanelImpl::RefreshChartListForSource(
-    int catalog_index, const ChartDldrCatalogUiPolicy &ui) {
-  if (catalog_index < 0 ||
-      catalog_index >= static_cast<int>(pPlugIn->m_ChartSources.size())) {
+void ChartDldrPanelImpl::ActivateCatalog(int catalog_index,
+                                         ChartDldrCatalogActivation activation,
+                                         const ChartDldrCatalogUiPolicy &ui) {
+  SetActiveCatalogContext(catalog_index);
+  if (activation == ChartDldrCatalogActivation::ContextOnly) {
     return;
   }
-  ChartSource &cs = *pPlugIn->m_ChartSources.at(catalog_index);
-  ReloadCatalogChartList(cs, ui.preselect_new, ui.preselect_updated,
-                         ui.materialize);
-  UpdateChartsLabelForSource(cs);
+  if (catalog_index >= 0 &&
+      catalog_index < static_cast<int>(pPlugIn->m_ChartSources.size())) {
+    ChartSource &cs = *pPlugIn->m_ChartSources.at(catalog_index);
+    ReloadCatalogChartList(cs, ui.preselect_new, ui.preselect_updated,
+                           ui.materialize);
+    UpdateChartsLabelForSource(cs);
+  } else {
+    CleanForm();
+    m_chartsLabel->SetLabel(_("Charts"));
+  }
 }
 
 void ChartDldrPanelImpl::UpdateChartsLabelForSource(const ChartSource &cs) {
@@ -209,31 +215,18 @@ bool ChartDldrPanelImpl::isUpdated(int item) {
 #endif /* CHART_LIST */
 
 void ChartDldrPanelImpl::SetSource(int id) {
-  // User clicks call SelectSource (list already selected). Bulk / mutation
-  // paths go through SetActiveCatalogContext, which owns the list highlight.
-  SetActiveCatalogContext(id);
+  // ActivateCatalog owns the sources-list highlight, chart-list reload, and
+  // label; the toolbar state follows the new active-catalog context.
+  ActivateCatalog(id, ChartDldrCatalogActivation::WithReload,
+                  ChartDldrBrowseCatalogUiPolicy(pPlugIn->m_preselect_new,
+                                                 pPlugIn->m_preselect_updated));
   ApplyCatalogToolbarState();
-
-  if (id >= 0 && id < (int)pPlugIn->m_ChartSources.size()) {
-    const bool show_wait_cursor =
-        wxPanel::IsShownOnScreen() && !bulk_->IsRunActive();
-    if (show_wait_cursor) {
-      ::wxBeginBusyCursor();
-    }
-    RefreshChartListForSource(
-        id, ChartDldrBrowseCatalogUiPolicy(pPlugIn->m_preselect_new,
-                                           pPlugIn->m_preselect_updated));
-    if (show_wait_cursor && ::wxIsBusy()) {
-      ::wxEndBusyCursor();
-    }
-  } else {
-    CleanForm();
-    m_chartsLabel->SetLabel(_("Charts"));
-  }
 }
 
 void ChartDldrPanelImpl::SelectSource(wxListEvent &event) {
-  int i = GetSelectedCatalog();
+  // A list click reads the widget selection directly; GetSelectedCatalog()
+  // reports the active source id that ActivateCatalog is about to set.
+  int i = ReadSelectedCatalogFromWidget();
   if (i >= 0) SetSource(i);
   event.Skip();
 }
@@ -246,9 +239,13 @@ void ChartDldrPanelImpl::CleanForm() {
 }
 
 int ChartDldrPanelImpl::GetSelectedCatalog() {
-  long item =
-      m_lbChartSources->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
-  return item;
+  // Source of truth is the active catalog context set by ActivateCatalog.
+  return pPlugIn ? pPlugIn->GetSourceId() : -1;
+}
+
+int ChartDldrPanelImpl::ReadSelectedCatalogFromWidget() const {
+  return static_cast<int>(m_lbChartSources->GetNextItem(-1, wxLIST_NEXT_ALL,
+                                                        wxLIST_STATE_SELECTED));
 }
 
 void ChartDldrPanelImpl::SelectCatalog(int item) {
@@ -381,7 +378,7 @@ bool ChartDldrPanelImpl::IsBulkRunCancelled() const {
 
 void ChartDldrPanelImpl::UpdateChartList(wxCommandEvent &event) {
   (void)event;
-  Bulk().RefreshCatalogManual(GetSelectedCatalog());
+  Bulk().StartBulk(ChartDldrBulkRunMode::CatalogRefresh);
 }
 
 ChartDldrPanelImpl::~ChartDldrPanelImpl() {
@@ -412,8 +409,7 @@ ChartDldrPanelImpl::ChartDldrPanelImpl(chartdldr_pi *plugin, wxWindow *parent,
     : ChartDldrPanel(parent, id, pos, size, style),
       chart_list_view_(*this),
       bulk_(std::make_unique<ChartDldrBulkOrchestrate>(*this)),
-      notifier_(std::make_unique<ChartDldrPanelBulkNotifier>(*this)) {
-  ChartDldrInitPanelBulkDownloadHooks();
+      notifier_(std::make_unique<ChartDldrBulkPanelNotifier>(*this)) {
   BindPanelEventHandlers();
   m_lbChartSources->InsertColumn(0, _("Catalog"), wxLIST_FORMAT_LEFT,
                                  CATALOGS_NAME_WIDTH);

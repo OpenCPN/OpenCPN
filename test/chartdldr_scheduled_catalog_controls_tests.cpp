@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "chartdldr_bulk.h"
+#include "chartdldr_bulk_panel_ui.h"
 
 TEST(ChartDldrCatalogControls, ActiveBulkRunLocksListAndMutations) {
   const auto locked = ChartDldrCatalogControlsFor(/*run_active=*/true,

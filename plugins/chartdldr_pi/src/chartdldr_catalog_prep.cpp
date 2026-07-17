@@ -6,11 +6,11 @@
 
 #include "chartdldr_bulk_chart_loop.h"
 #include "chartdldr_chart_source.h"
+#include "chartcatalog.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>
 #include <wx/intl.h>
-#include <wx/log.h>
 #include <wx/log.h>
 #include <wx/tokenzr.h>
 #include <wx/url.h>
@@ -61,6 +61,13 @@ ChartDldrChartUpdateKind ChartDldrCatalogChartStatus(
   const bool newer =
       exists && source.IsNewerThanLocal(filename, catalog_update);
   return ChartDldrClassifyChart(exists, newer);
+}
+
+Chart* ChartDldrChartAt(const ChartCatalog& catalog, int index) {
+  if (index < 0 || index >= static_cast<int>(catalog.charts.size())) {
+    return nullptr;
+  }
+  return catalog.charts.at(static_cast<size_t>(index)).get();
 }
 
 bool ChartDldrShouldPreselectChart(ChartDldrChartUpdateKind kind,

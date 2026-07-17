@@ -12,6 +12,8 @@
 
 #include "chartdldr_bulk.h"
 #include "chartdldr_bulk_orchestrate.h"
+#include "chartdldr_bulk_panel_ui.h"
+#include "chartdldr_bulk_transfer.h"
 #include "chartdldr_catalog_prep.h"
 #include "chartdldr_pi.h"
 #include "chartcatalog.h"
@@ -24,31 +26,6 @@
 #include <wx/utils.h>
 
 #include <algorithm>
-
-namespace {
-
-void ChartDldrOnBulkTransferProgress(wxEvtHandler* listener) {
-  auto* panel = dynamic_cast<ChartDldrPanelImpl*>(listener);
-  if (panel && panel->Bulk().IsRunActive()) {
-    panel->Bulk().OnTransferProgressTick();
-  }
-}
-
-void ChartDldrOnBulkTransferEnd(wxEvtHandler* listener) {
-  auto* panel = dynamic_cast<ChartDldrPanelImpl*>(listener);
-  if (panel && panel->Bulk().IsRunActive()) {
-    panel->Bulk().Pump().Schedule();
-  }
-}
-
-}  // namespace
-
-void ChartDldrInitPanelBulkDownloadHooks() {
-  ChartDldrBulkTransferHooks hooks;
-  hooks.on_progress = &ChartDldrOnBulkTransferProgress;
-  hooks.on_end = &ChartDldrOnBulkTransferEnd;
-  ChartDldrSetBulkTransferHooks(hooks);
-}
 
 void ChartDldrPanelImpl::ApplyBulkRunUiPolicy(
     const ChartDldrBulkSessionPolicy& policy) {
@@ -131,10 +108,7 @@ ChartDldrBulkRunPlan ChartDldrPanelImpl::BuildSelectedChartsPreflightPlan() {
   std::vector<ChartDldrBulkPreflightChart> charts;
   charts.reserve(static_cast<size_t>(GetChartCount()));
   for (int i = 0; i < GetChartCount(); ++i) {
-    Chart* const chart =
-        static_cast<size_t>(i) < pi->m_pChartCatalog.charts.size()
-            ? pi->m_pChartCatalog.charts.at(static_cast<size_t>(i)).get()
-            : nullptr;
+    Chart* const chart = ChartDldrChartAt(pi->m_pChartCatalog, i);
     charts.push_back(ChartDldrBulkPreflightChart{
         IsChartChecked(i), chart && chart->NeedsManualDownload(),
         chart ? chart->GetChartTitle() : wxString(),

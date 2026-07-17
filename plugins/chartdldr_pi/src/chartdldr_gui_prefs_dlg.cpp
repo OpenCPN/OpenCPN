@@ -157,10 +157,10 @@ void ChartDldrPrefsDlg::OnDownloadMasterCatalog(wxCommandEvent& event) {
   fn.SetPath(*GetpPrivateApplicationDataLocation());
   fn.SetFullName(_T("chartdldr_pi-chart_sources.xml"));
 
-  // Download beside the live catalog (same filesystem so publish is an atomic
-  // rename), validate the source-catalog XML, then promote. This keeps a good
-  // on-disk catalog intact when the transfer is truncated or the server hands
-  // back an HTTP 200 error page instead of the catalog.
+  // Prefs-path catalog fetch is intentionally sync/modal and outside the bulk
+  // async session (StartBulk / CatalogRefresh). Do not grow a second bulk
+  // transfer state machine here — keep validate+promote on the shared temp
+  // path.
   const ChartDldrTempDownloadPaths paths =
       ChartDldrTempDownloadPathsFor(fn.GetFullPath());
 

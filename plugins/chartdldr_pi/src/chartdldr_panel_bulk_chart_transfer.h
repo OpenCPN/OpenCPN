@@ -8,7 +8,7 @@
 #include "chartdldr_bulk_catalog_run.h"
 #include "chartdldr_bulk_state.h"
 
-class ChartDldrChartDownloadView;
+class ChartDldrBulkPanelPort;
 class ChartSource;
 class chartdldr_pi;
 
@@ -20,7 +20,7 @@ struct ChartDldrChartTransferFacts {
 };
 
 void ChartDldrDisposeChartBulkTransfer(
-    ChartDldrChartDownloadView& panel, ChartDldrBulkTransferSlot& transfer,
+    ChartDldrBulkPanelPort& port, ChartDldrBulkTransferSlot& transfer,
     const ChartDldrDownloadCancelState& download_cancel,
     ChartDldrChartTransferDisposition disposition, ChartSource* source,
     ChartDldrChartBulkState& chart_bulk,

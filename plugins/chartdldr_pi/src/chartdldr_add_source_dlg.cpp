@@ -16,9 +16,7 @@
 #include <wx/regex.h>
 #include <wx/uri.h>
 
-#ifdef __ANDROID__
-extern double g_androidDPmm;
-#endif
+#include "chartdldr_android_ui.h"
 
 ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg(wxWindow *parent)
     : AddSourceDlg(parent) {

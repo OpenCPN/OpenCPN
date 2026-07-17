@@ -36,16 +36,30 @@ ChartDldrScheduledUiPresentation ChartDldrScheduledUiPresentationFor(
 
 ChartDldrBulkSessionPolicy ChartDldrBulkSessionPolicyFor(
     ChartDldrBulkRunMode mode, bool panel_visible, ChartDldrBulkRunPlan plan) {
-  // The compiled profile is just (mode, scheduled_ui, plan); all behavior is
-  // derived from it by ChartDldrBulkSessionPolicy's accessors.
+  // Compile the (mode, scheduled_ui, plan) identity plus the StartBulk side
+  // effects into explicit fields; StartBulk reads the fields rather than
+  // re-deriving behavior from the mode.
   ChartDldrBulkSessionPolicy policy;
   policy.mode = mode;
   policy.plan = std::move(plan);
   if (ChartDldrBulkRunModeIsScheduled(mode)) {
     policy.scheduled_ui = ChartDldrScheduledUiPresentationFor(panel_visible);
   }
-  if (mode == ChartDldrBulkRunMode::InteractiveBulk) {
-    policy.plan.manual_policy = ChartDldrManualDownloadPolicy::OpenAsDiscovered;
+  switch (mode) {
+    case ChartDldrBulkRunMode::SelectedCharts:
+      policy.manual_plan_before_start = true;
+      policy.walk_bind = ChartDldrBulkWalkBind::SingleDownload;
+      break;
+    case ChartDldrBulkRunMode::InteractiveBulk:
+      policy.confirm_before_start = true;
+      policy.plan.manual_policy =
+          ChartDldrManualDownloadPolicy::OpenAsDiscovered;
+      break;
+    case ChartDldrBulkRunMode::CatalogRefresh:
+      policy.walk_bind = ChartDldrBulkWalkBind::SinglePrepare;
+      break;
+    case ChartDldrBulkRunMode::ScheduledBulk:
+      break;
   }
   return policy;
 }
@@ -58,14 +72,6 @@ ChartDldrCatalogUiPolicy ChartDldrBrowseCatalogUiPolicy(bool pref_new,
   ui.preselect_new = pref_new;
   ui.preselect_updated = pref_updated;
   ui.focus_charts_after = false;
-  return ui;
-}
-
-ChartDldrCatalogUiPolicy ChartDldrManualCatalogRefreshUiPolicy() {
-  ChartDldrCatalogUiPolicy ui;
-  ui.materialize = true;
-  ui.preserve_selection = false;
-  ui.focus_charts_after = true;
   return ui;
 }
 
@@ -166,5 +172,5 @@ void ChartDldrReportBulkError(wxWindow* parent,
 
 bool ChartDldrBulkRunShouldRestoreUi(const ChartDldrBulkSessionPolicy& policy,
                                      const ChartDldrBulkRunUiSnapshot& before) {
-  return policy.UiRestoreNotebook() && before.panel_visible;
+  return policy.UiMaterialize() && before.panel_visible;
 }

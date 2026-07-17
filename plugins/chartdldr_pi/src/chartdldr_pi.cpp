@@ -70,17 +70,7 @@
 
 #ifdef __ANDROID__
 #include "androidSupport.h"
-#include "android_jvm.h"
-#include <jni.h>
 #endif
-
-#ifdef __ANDROID__
-#include <QtAndroidExtras/QAndroidJniObject>
-#include "qdebug.h"
-
-#endif
-
-bool getDisplayMetrics();
 
 #define CHART_DIR "Charts"
 
@@ -107,7 +97,6 @@ extern "C" DECL_EXP opencpn_plugin *create_pi(void *ppimgr) {
 
 extern "C" DECL_EXP void destroy_pi(opencpn_plugin *p) { delete p; }
 
-double g_androidDPmm;
 // Singleton plugin pointer for GUI panels and deferred schedule callbacks.
 // OpenCPN loads one chartdldr_pi; DeInit clears this before teardown.
 chartdldr_pi *g_pi;
@@ -119,6 +108,7 @@ chartdldr_pi *g_pi;
 //---------------------------------------------------------------------------------------------------------
 
 #include "icons.h"
+#include "chartdldr_android_ui.h"
 
 //---------------------------------------------------------------------------------------------------------
 //
@@ -168,7 +158,7 @@ int chartdldr_pi::Init(void) {
   //    And load the configuration items
   LoadConfig();
 
-  getDisplayMetrics();
+  ChartDldrInitAndroidDisplayMetrics();
 
   wxStringTokenizer st(m_schartdldr_sources, _T("|"), wxTOKEN_DEFAULT);
   while (st.HasMoreTokens()) {
@@ -193,6 +183,10 @@ int chartdldr_pi::Init(void) {
 bool chartdldr_pi::IsScheduledBulkRunActive() const {
   ChartDldrPanelImpl *const panel = m_dldrpanel;
   return panel && panel->Bulk().IsScheduledRunActive();
+}
+
+ChartDldrBulkOrchestrate *chartdldr_pi::GetBulkOrchestrate() {
+  return m_dldrpanel ? &m_dldrpanel->Bulk() : nullptr;
 }
 
 bool chartdldr_pi::DeInit(void) {
@@ -361,57 +355,6 @@ bool chartdldr_pi::SaveConfig(void) {
     return false;
 }
 
-void SetBackColor(wxWindow *ctrl, wxColour col) {
-  static int depth = 0;  // recursion count
-  if (depth == 0) {      // only for the window root, not for every child
-
-    ctrl->SetBackgroundColour(col);
-  }
-
-  wxWindowList kids = ctrl->GetChildren();
-  for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode *node = kids.Item(i);
-    wxWindow *win = node->GetData();
-
-    if (dynamic_cast<wxListBox *>(win))
-      dynamic_cast<wxListBox *>(win)->SetBackgroundColour(col);
-
-    else if (dynamic_cast<wxTextCtrl *>(win))
-      dynamic_cast<wxTextCtrl *>(win)->SetBackgroundColour(col);
-
-    //        else if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
-    //            ( (wxStaticText*) win )->SetForegroundColour( uitext );
-
-    else if (dynamic_cast<wxChoice *>(win))
-      dynamic_cast<wxChoice *>(win)->SetBackgroundColour(col);
-
-    else if (dynamic_cast<wxComboBox *>(win))
-      dynamic_cast<wxComboBox *>(win)->SetBackgroundColour(col);
-
-    else if (dynamic_cast<wxRadioButton *>(win))
-      dynamic_cast<wxRadioButton *>(win)->SetBackgroundColour(col);
-
-    else if (dynamic_cast<wxScrolledWindow *>(win)) {
-      dynamic_cast<wxScrolledWindow *>(win)->SetBackgroundColour(col);
-    }
-
-    else if (dynamic_cast<wxButton *>(win)) {
-      dynamic_cast<wxButton *>(win)->SetBackgroundColour(col);
-    }
-
-    else {
-      ;
-    }
-
-    if (win->GetChildren().GetCount() > 0) {
-      depth++;
-      wxWindow *w = win;
-      SetBackColor(w, col);
-      depth--;
-    }
-  }
-}
-
 void chartdldr_pi::ShowPreferencesDialog(wxWindow *parent) {
   ChartDldrPrefsDlgImpl *dialog = new ChartDldrPrefsDlgImpl(parent, this);
 
@@ -431,7 +374,7 @@ void chartdldr_pi::ShowPreferencesDialog(wxWindow *parent) {
   }
 
   wxColour cl = wxColour(214, 218, 222);
-  SetBackColor(dialog, cl);
+  ChartDldrSetAndroidBackColor(dialog, cl);
 #endif
 
   dialog->SetPath(m_base_chart_dir);
@@ -535,90 +478,4 @@ ChartDldrBulkRequestInput chartdldr_pi::MakeBulkRequestInput() const {
     input.blocker = ChartDldrBulkStartBlocker::SessionActive;
   }
   return input;
-}
-
-bool getDisplayMetrics() {
-#ifdef __ANDROID__
-
-  g_androidDPmm = 4.0;  // nominal default
-
-  //  Get a reference to the running native activity
-  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
-      "org/qtproject/qt5/android/QtNative", "activity",
-      "()Landroid/app/Activity;");
-
-  if (!activity.isValid()) {
-    return false;
-  }
-
-  //  Call the desired method
-  QAndroidJniObject data =
-      activity.callObjectMethod("getDisplayMetrics", "()Ljava/lang/String;");
-
-  wxString return_string;
-  jstring s = data.object<jstring>();
-
-  //  Need a Java environment to decode the resulting string
-  JNIEnv *jenv;
-  if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) {
-    // qDebug() << "GetEnv failed.";
-  } else {
-    const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-    return_string = wxString(ret_string, wxConvUTF8);
-  }
-
-  //  Return string may have commas instead of periods, if using Euro locale
-  //  We just fix it here...
-  return_string.Replace(_T(","), _T("."));
-
-  //     wxLogMessage(_T("Metrics:") + return_string);
-  //     wxSize screen_size = ::wxGetDisplaySize();
-  //     wxString msg;
-  //     msg.Printf(_T("wxGetDisplaySize(): %d %d"), screen_size.x,
-  //     screen_size.y); wxLogMessage(msg);
-
-  double density = 1.0;
-  wxStringTokenizer tk(return_string, _T(";"));
-  if (tk.HasMoreTokens()) {
-    wxString token = tk.GetNextToken();  // xdpi
-    token = tk.GetNextToken();           // density
-
-    long b = ::wxGetDisplaySize().y;
-    token.ToDouble(&density);
-
-    token = tk.GetNextToken();  // ldpi
-
-    token = tk.GetNextToken();  // width
-    token = tk.GetNextToken();  // height - statusBarHeight
-    token = tk.GetNextToken();  // width
-    token = tk.GetNextToken();  // height
-    token = tk.GetNextToken();  // dm.widthPixels
-    token = tk.GetNextToken();  // dm.heightPixels
-
-    token = tk.GetNextToken();  // actionBarHeight
-    long abh;
-    token.ToLong(&abh);
-    //        g_ActionBarHeight = wxMax(abh, 50);
-
-    //        qDebug() << "g_ActionBarHeight" << abh << g_ActionBarHeight;
-  }
-
-  double ldpi = 160. * density;
-
-  //    double maxDim = wxMax(::wxGetDisplaySize().x, ::wxGetDisplaySize().y);
-  //    ret = (maxDim / ldpi) * 25.4;
-
-  //    msg.Printf(_T("Android Auto Display Size (mm, est.): %g"), ret);
-  //    wxLogMessage(msg);
-
-  //  Save some items as global statics for convenience
-  g_androidDPmm = ldpi / 25.4;
-  //    g_androidDensity = density;
-
-  // qDebug() << "PI Metrics" << g_androidDPmm << density;
-  return true;
-#else
-
-  return true;
-#endif
 }

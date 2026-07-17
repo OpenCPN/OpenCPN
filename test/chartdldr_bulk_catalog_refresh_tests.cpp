@@ -18,9 +18,15 @@ TEST(ChartDldrBulkCatalogRefresh, InteractiveUsesDialog) {
   EXPECT_EQ(policy.ErrorReporting(), ChartDldrErrorReporting::Dialog);
 }
 
-TEST(ChartDldrBulkCatalogRefresh, ManualCatalogUiFocusesCharts) {
-  const ChartDldrCatalogUiPolicy ui = ChartDldrManualCatalogRefreshUiPolicy();
+TEST(ChartDldrBulkCatalogRefresh,
+     SinglePrepareWalkFocusesChartsViaCatalogApply) {
+  const ChartDldrBulkSessionPolicy policy =
+      ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::CatalogRefresh, true);
+  EXPECT_EQ(policy.walk_bind, ChartDldrBulkWalkBind::SinglePrepare);
+  const ChartDldrCatalogUiPolicy ui = policy.CatalogApply(false, true);
   EXPECT_TRUE(ui.materialize);
   EXPECT_TRUE(ui.focus_charts_after);
   EXPECT_FALSE(ui.preserve_selection);
+  EXPECT_FALSE(ui.preselect_new);
+  EXPECT_TRUE(ui.preselect_updated);
 }

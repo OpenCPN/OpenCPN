@@ -171,8 +171,7 @@ TEST(ChartDldrBulkCatalogResult, CompleteValidatedPathsSucceeds) {
   wxFileName::Rmdir(dir, wxPATH_RMDIR_RECURSIVE);
 }
 
-TEST(ChartDldrBulkCatalogResult,
-     CompleteValidatedPathsPreservesLiveOnInvalid) {
+TEST(ChartDldrBulkCatalogResult, CompleteValidatedPathsPreservesLiveOnInvalid) {
   const wxString dir = MakeTempDir(wxT("chartdldr_catalog_invalid"));
   const wxString output_path =
       dir + wxFileName::GetPathSeparator() + wxT("catalog.xml");

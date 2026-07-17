@@ -10,8 +10,8 @@
 #include <cstddef>
 
 /**
- * One walker step from catalog or chart engines. AdvanceBulkWalk consumes this;
- * engines never mutate the walk state themselves.
+ * One walker step from catalog or chart controllers. AdvanceBulkWalk consumes
+ * this; controllers never mutate the walk state themselves.
  */
 enum class ChartDldrBulkWalkStep {
   NotActive,
@@ -77,8 +77,9 @@ inline bool ChartDldrBulkCatalogWalkContinues(int next_catalog,
 }
 
 /**
- * Advance the catalog walk for one engine step. charts_selected is used when
- * step is CatalogReady. catalog_stats accumulate on Advance from DownloadChart.
+ * Advance the catalog walk for one controller step. charts_selected is used
+ * when step is CatalogReady. catalog_stats accumulate on Advance from
+ * DownloadChart.
  */
 bool ChartDldrAdvanceBulkWalk(
     ChartDldrBulkCatalogRunState& state, ChartDldrBulkWalkStep step,
@@ -86,17 +87,13 @@ bool ChartDldrAdvanceBulkWalk(
     const ChartDldrBulkRunStats& catalog_stats = ChartDldrBulkRunStats());
 
 /**
- * Bind the walk to a single catalog and skip prepare (SelectedCharts).
- * The only production writer of phase/bound besides AdvanceBulkWalk and
- * ChartDldrBindCatalogPrepareWalk.
+ * Bind the walk to a single catalog, starting in the given phase:
+ * DownloadChart skips prepare (SelectedCharts); PrepareCatalog runs the
+ * refresh (CatalogRefresh). The only production writer of phase/bound
+ * besides AdvanceBulkWalk.
  */
-bool ChartDldrBindCatalogWalk(ChartDldrBulkCatalogRunState& state,
-                              int catalog_index);
-
-/**
- * Bind the walk to a single catalog and keep PrepareCatalog (CatalogRefresh).
- */
-bool ChartDldrBindCatalogPrepareWalk(ChartDldrBulkCatalogRunState& state,
-                                     int catalog_index);
+bool ChartDldrBindSingleCatalogWalk(ChartDldrBulkCatalogRunState& state,
+                                    int catalog_index,
+                                    ChartDldrBulkCatalogPhase phase);
 
 #endif  // CHARTDLDR_BULK_CATALOG_RUN_H_

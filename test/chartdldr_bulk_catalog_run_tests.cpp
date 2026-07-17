@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "chartdldr_bulk.h"
 #include "chartdldr_bulk_catalog_run.h"
 #include "chartdldr_schedule_state.h"
 
@@ -250,13 +251,14 @@ TEST(ChartDldrScheduledBulkRun, ChartTransferSteps) {
   EXPECT_FALSE(chart_download_active);
 }
 
-TEST(ChartDldrBulkCatalogWalk, BindCatalogWalkSkipsPrepare) {
+TEST(ChartDldrBulkCatalogWalk, BindSingleCatalogWalkDownloadSkipsPrepare) {
   ChartDldrBulkCatalogRunState state;
   state.catalog_bound = 5;
   state.next_catalog = 0;
   state.phase = ChartDldrBulkCatalogPhase::PrepareCatalog;
 
-  EXPECT_TRUE(ChartDldrBindCatalogWalk(state, 2));
+  EXPECT_TRUE(ChartDldrBindSingleCatalogWalk(
+      state, 2, ChartDldrBulkCatalogPhase::DownloadChart));
   EXPECT_EQ(state.next_catalog, 2);
   EXPECT_EQ(state.catalog_bound, 3);
   EXPECT_EQ(state.phase, ChartDldrBulkCatalogPhase::DownloadChart);
@@ -264,13 +266,14 @@ TEST(ChartDldrBulkCatalogWalk, BindCatalogWalkSkipsPrepare) {
                                                 state.catalog_bound));
 }
 
-TEST(ChartDldrBulkCatalogWalk, BindCatalogPrepareWalkKeepsPrepare) {
+TEST(ChartDldrBulkCatalogWalk, BindSingleCatalogWalkPrepareKeepsPrepare) {
   ChartDldrBulkCatalogRunState state;
   state.catalog_bound = 5;
   state.next_catalog = 0;
   state.phase = ChartDldrBulkCatalogPhase::DownloadChart;
 
-  EXPECT_TRUE(ChartDldrBindCatalogPrepareWalk(state, 1));
+  EXPECT_TRUE(ChartDldrBindSingleCatalogWalk(
+      state, 1, ChartDldrBulkCatalogPhase::PrepareCatalog));
   EXPECT_EQ(state.next_catalog, 1);
   EXPECT_EQ(state.catalog_bound, 2);
   EXPECT_EQ(state.phase, ChartDldrBulkCatalogPhase::PrepareCatalog);
@@ -278,12 +281,37 @@ TEST(ChartDldrBulkCatalogWalk, BindCatalogPrepareWalkKeepsPrepare) {
                                                 state.catalog_bound));
 }
 
-TEST(ChartDldrBulkCatalogWalk, BindCatalogWalkRejectsNegativeIndex) {
+TEST(ChartDldrBulkCatalogWalk, BindSingleCatalogWalkRejectsNegativeIndex) {
   ChartDldrBulkCatalogRunState state;
   state.catalog_bound = 2;
-  EXPECT_FALSE(ChartDldrBindCatalogWalk(state, -1));
+  EXPECT_FALSE(ChartDldrBindSingleCatalogWalk(
+      state, -1, ChartDldrBulkCatalogPhase::DownloadChart));
   EXPECT_EQ(state.next_catalog, 0);
   EXPECT_EQ(state.catalog_bound, 2);
   EXPECT_EQ(state.phase, ChartDldrBulkCatalogPhase::PrepareCatalog);
-  EXPECT_FALSE(ChartDldrBindCatalogPrepareWalk(state, -1));
+  EXPECT_FALSE(ChartDldrBindSingleCatalogWalk(
+      state, -1, ChartDldrBulkCatalogPhase::PrepareCatalog));
+}
+
+TEST(ChartDldrBulkCatalogWalk, SinglePrepareBindsLikeSingleDownloadSibling) {
+  // StartBulk(CatalogRefresh) binds prepare-phase; SelectedCharts binds
+  // download-phase. Both pin a single catalog index.
+  ChartDldrBulkCatalogRunState prepare;
+  EXPECT_TRUE(ChartDldrBindSingleCatalogWalk(
+      prepare, 4, ChartDldrBulkCatalogPhase::PrepareCatalog));
+  EXPECT_EQ(prepare.next_catalog, 4);
+  EXPECT_EQ(prepare.catalog_bound, 5);
+  EXPECT_EQ(prepare.phase, ChartDldrBulkCatalogPhase::PrepareCatalog);
+
+  ChartDldrBulkCatalogRunState download;
+  EXPECT_TRUE(ChartDldrBindSingleCatalogWalk(
+      download, 4, ChartDldrBulkCatalogPhase::DownloadChart));
+  EXPECT_EQ(download.next_catalog, 4);
+  EXPECT_EQ(download.catalog_bound, 5);
+  EXPECT_EQ(download.phase, ChartDldrBulkCatalogPhase::DownloadChart);
+
+  const ChartDldrBulkSessionPolicy policy =
+      ChartDldrBulkSessionPolicyFor(ChartDldrBulkRunMode::CatalogRefresh, true);
+  EXPECT_EQ(policy.walk_bind, ChartDldrBulkWalkBind::SinglePrepare);
+  EXPECT_NE(policy.walk_bind, ChartDldrBulkWalkBind::AllCatalogs);
 }

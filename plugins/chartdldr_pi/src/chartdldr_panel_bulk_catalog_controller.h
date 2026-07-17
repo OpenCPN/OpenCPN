@@ -13,35 +13,28 @@
 
 #include "ocpn_plugin.h"
 
-class ChartDldrCatalogView;
+class ChartDldrBulkPanelPort;
 class chartdldr_pi;
 
-class ChartDldrPanelBulkCatalogController {
+class ChartDldrBulkCatalogController {
 public:
-  ChartDldrPanelBulkCatalogController(ChartDldrCatalogView& panel,
-                                      ChartDldrBulkRunSession& session);
+  ChartDldrBulkCatalogController(ChartDldrBulkPanelPort& port,
+                                 ChartDldrBulkRunSession& session);
 
-  /** Catalog apply paths take CatalogUiPolicy only (project session at the
-   * boundary via policy.CatalogApply). */
-  void ReloadCatalogFromDisk(int catalog_index,
-                             const ChartDldrCatalogUiPolicy& ui);
-  void PrepareBulkCatalog(int catalog_index,
-                          const ChartDldrCatalogUiPolicy& ui);
+  /** Apply the catalog UI policy: preserve selection or reload + row update. */
+  void ApplyCatalogUi(int catalog_index, const ChartDldrCatalogUiPolicy& ui);
   bool BeginCatalogRefresh(int catalog_index,
                            ChartDldrErrorReporting error_reporting);
   void CancelCatalogRefresh();
 
-  void ActivateAndPrepareBulkCatalog(int catalog_index,
-                                     const ChartDldrCatalogUiPolicy& ui);
   /**
    * Drive one prepare-phase action and return the walker step. Does not block
-   * on transfer completion. charts_selected is set on CatalogReady;
-   * catalog_stats accumulates catalog_refresh_failures on Advance failures.
+   * on transfer completion. Reads the plugin and policy from the session.
+   * charts_selected is set on CatalogReady; catalog_stats accumulates
+   * catalog_refresh_failures on Advance failures.
    */
   ChartDldrBulkWalkStep RunBulkCatalogPrepareStep(
-      ChartDldrBulkCatalogRunState& state, chartdldr_pi* pi,
-      const ChartDldrBulkSessionPolicy& policy, int catalog_index,
-      int* charts_selected = nullptr,
+      int catalog_index, int* charts_selected = nullptr,
       ChartDldrBulkRunStats* catalog_stats = nullptr);
 
 private:
@@ -50,7 +43,7 @@ private:
                                    ChartDldrErrorReporting reporting,
                                    _OCPN_DLStatus status, const wxString& url);
 
-  ChartDldrCatalogView& panel_;
+  ChartDldrBulkPanelPort& port_;
   ChartDldrBulkRunSession& session_;
 };
 
