@@ -800,22 +800,26 @@ bool glChartCanvas::buildFBOSize(int fboSize) {
   // qDebug() << "FBO Size: " << GetSize().x << GetSize().y << m_cache_tex_x;
 
   int err = GL_NO_ERROR;
-  GLint params;
-  glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &params);
 
-  err = glGetError();
-  if (err == GL_INVALID_ENUM) {
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &params);
-    err = glGetError();
-  }
-
-  if (err == GL_NO_ERROR) {
-    if (fboSize > params) {
-      wxLogMessage(
-          "    OpenGL-> Requested Framebuffer size exceeds "
-          "GL_MAX_RENDERBUFFER_SIZE");
-      return false;
-    }
+  // Drain any stale GL error before querying the size limit. On this GLES/ANGLE
+  // stack the error queue holds a leftover GL_INVALID_ENUM (from the
+  // GLES2-invalid glHint(GL_POLYGON_SMOOTH_HINT) calls), which the previous
+  // code mistook for a failed GL_MAX_RENDERBUFFER_SIZE query and, combined with
+  // an *uninitialised* `params`, made every reasonable FBO size look larger
+  // than the max (read as garbage 112). That rejected the FBO twice, so
+  // BuildFBO gave up and set m_b_DisableFBO -> the pinch-zoom path blitted an
+  // empty texture (black). Read GL_MAX_TEXTURE_SIZE into an initialised var and
+  // only reject on a value we actually trust; otherwise proceed and let the
+  // completeness check at the end of this function be the arbiter.
+  while (glGetError() != GL_NO_ERROR) {
+  }  // drain stale errors
+  GLint params = 0;
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &params);
+  bool maxKnown = (glGetError() == GL_NO_ERROR) && (params > 0);
+  if (maxKnown && fboSize > params) {
+    wxLogMessage(
+        "    OpenGL-> Requested Framebuffer size exceeds GL_MAX_TEXTURE_SIZE");
+    return false;
   }
 
   glGenFramebuffers(1, &m_fb0);
@@ -927,6 +931,27 @@ void glChartCanvas::BuildFBO() {
   }
 
   if (m_b_DisableFBO) return;
+
+#ifdef __ANDROID__
+  // BuildFBO is first called from the initial OnPaint -> SetupOpenGL, which can
+  // run before the EGL surface is ready. Then no GL context is current and
+  // every GL call here is a silent no-op: glGenFramebuffers/glGenTextures
+  // produce nothing and glGetIntegerv leaves its result untouched (seen as
+  // GL_MAX_TEXTURE_SIZE == 0). Make the context current, and if it still is not
+  // ready, defer -- crucially WITHOUT setting m_b_DisableFBO -- so a later call
+  // (lazily from RenderScene, where the context is current) can build it. The
+  // old code let this premature attempt fail twice and permanently disable the
+  // FBO, so the pinch-zoom cache texture was never created and the zoom was
+  // black.
+  if (IsShown()) SetCurrent(*m_pcontext);
+  while (glGetError() != GL_NO_ERROR) {
+  }  // drain stale errors
+  GLint ctxMaxTex = 0;
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &ctxMaxTex);
+  if (ctxMaxTex <= 0) {
+    return;  // GL context not ready yet; retriable, do NOT disable the FBO
+  }
+#endif
 
   //    int initialSize = 2048;
   int gl_width, gl_height;
@@ -1130,7 +1155,15 @@ void glChartCanvas::SetupOpenGL() {
 
   // Accelerated pan is not used for MacOS Retina display
   // So there is no advantage to using FBO
+#ifndef __ANDROID__
+  // On Android the FBO *is* the accelerated pan/zoom engine (FastZoom /
+  // ZoomProject render to and blit from m_cache_tex), so it must stay enabled
+  // regardless of display scale. wxQt 3.2.9 now reports the real device pixel
+  // ratio (> 1 on HiDPI screens), where the wx 3.1 bundle returned 1; letting
+  // this desktop/Retina guard fire disables the FBO and makes pinch-zoom render
+  // an empty (black) texture.
   if (m_displayScale > 1) m_b_DisableFBO = true;
+#endif
 
   //      Maybe build FBO(s)
   BuildFBO();
@@ -5901,6 +5934,15 @@ void glChartCanvas::RenderColorRect(wxRect r, wxColor &color) {
 
 void glChartCanvas::RenderScene(bool bRenderCharts, bool bRenderOverlays) {
 #if defined(USE_ANDROID_GLES2) || defined(ocpnUSE_GLSL)
+
+#ifdef __ANDROID__
+  // The FBO may have been deferred at startup (see BuildFBO) because the GL
+  // context was not yet current. RenderScene is only called from the pinch
+  // handlers, which make the context current just before -- so build it now if
+  // it has not been built yet. Without a valid FBO this renders to the default
+  // framebuffer and the pinch-zoom blit samples an empty texture (black).
+  if (!m_b_BuiltFBO && !m_b_DisableFBO) BuildFBO();
+#endif
 
   ViewPort VPoint = m_pParentCanvas->VPoint;
   ocpnDC gldc(*this);
