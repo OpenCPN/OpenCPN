@@ -387,6 +387,15 @@ void glChartCanvas::Init() {
       (wxObjectEventFunction)(wxEventFunction)&glChartCanvas::OnEvtPinchGesture,
       NULL, this);
 
+  //  Qt delivers a QGestureEvent only to a widget that has grabbed the
+  //  gesture. The wx 3.1 bundle OpenCPN used to ship grabbed Pan/Pinch for us
+  //  (its ungrabGesture() call sites are the remaining evidence); mainline
+  //  wxQt 3.2.9 does not, so the connections above never fire unless we grab
+  //  them here explicitly -- exactly as dashboard_pi does for its window.
+  GetHandle()->setAttribute(Qt::WA_AcceptTouchEvents);
+  GetHandle()->grabGesture(Qt::PanGesture);
+  GetHandle()->grabGesture(Qt::PinchGesture);
+
   Connect(GESTURE_EVENT_TIMER, wxEVT_TIMER,
           (wxObjectEventFunction)(wxEventFunction)&glChartCanvas::
               onGestureTimerEvent,
