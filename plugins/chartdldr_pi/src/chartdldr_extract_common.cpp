@@ -29,20 +29,26 @@ const wxChar* kPhaseCommitted = _T("COMMITTED");
 
 bool IsPathInsideDir(const wxString& target_dir, const wxString& entry_name,
                      wxString& out_full_path) {
-  wxString combined_path = target_dir;
+  // Normalize the root first (it should already exist). On Windows,
+  // wxPATH_NORM_LONG / GetLongPathName leaves a not-yet-created leaf in short
+  // form while converting the existing root to long form, so joining then
+  // LONG-normalizing the full path rejects valid create destinations.
+  wxFileName target_fn(target_dir);
+  target_fn.Normalize(wxPATH_NORM_DOTS | wxPATH_NORM_ABSOLUTE |
+                      wxPATH_NORM_LONG);
+  wxString normalized_target = target_fn.GetFullPath();
+
+  wxString combined_path = normalized_target;
   if (!combined_path.EndsWith(wxFileName::GetPathSeparator())) {
     combined_path += wxFileName::GetPathSeparator();
   }
   combined_path += entry_name;
 
   wxFileName fn(combined_path);
-  fn.Normalize(wxPATH_NORM_DOTS | wxPATH_NORM_ABSOLUTE | wxPATH_NORM_LONG);
+  // Lexical only for the joined path: the leaf (and intermediate dirs) may
+  // not exist yet when publishing a new file.
+  fn.Normalize(wxPATH_NORM_DOTS | wxPATH_NORM_ABSOLUTE);
   out_full_path = fn.GetFullPath();
-
-  wxFileName target_fn(target_dir);
-  target_fn.Normalize(wxPATH_NORM_DOTS | wxPATH_NORM_ABSOLUTE |
-                      wxPATH_NORM_LONG);
-  wxString normalized_target = target_fn.GetFullPath();
 
   if (!normalized_target.EndsWith(wxFileName::GetPathSeparator())) {
     normalized_target += wxFileName::GetPathSeparator();
