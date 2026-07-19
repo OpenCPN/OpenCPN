@@ -55,7 +55,8 @@ void ChartDldrSetAndroidBackColor(wxWindow* ctrl, wxColour col) {
 }
 
 bool ChartDldrInitAndroidDisplayMetrics() {
-  // Keep the default density unless the activity returns a usable metrics string.
+  // Keep the default density unless the activity returns a usable metrics
+  // string.
   g_androidDPmm = 4.0;
 
   wxString metrics = callActivityMethod_vs("getDisplayMetrics");

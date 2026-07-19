@@ -176,8 +176,8 @@ BulkRunClassificationCore ClassifyBulkRunCore(
         _(ChartDldrScheduleMessages::kCatalogRefreshSuffixFormat),
         stats.catalog_refresh_failures);
     AppendInteractiveParagraph(
-        core.interactive_message, FormatCatalogRefreshInteractiveMessage(
-                                      stats.catalog_refresh_failures));
+        core.interactive_message,
+        FormatCatalogRefreshInteractiveMessage(stats.catalog_refresh_failures));
   }
 
   core.allows_same_day_retry = ChartDldrBulkRunAllowsSameDayRetry(
