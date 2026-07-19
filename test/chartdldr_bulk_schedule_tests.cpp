@@ -95,9 +95,11 @@ TEST(ChartDldrBulkSchedule, CatalogRefreshFailuresUseCatalogStatus) {
 
 TEST(ChartDldrBulkSchedule, MixedCatalogRefreshFailureIsVisible) {
   const ChartDldrBulkRunStats stats = MakeStats(5, 0, 2, 1, 1);
-  EXPECT_EQ(ChartDldrClassifyBulkRun(stats).outcome,
-            ChartDldrScheduledRunOutcome::CatalogRefreshFailed);
-  EXPECT_EQ(ChartDldrClassifyBulkRun(stats).schedule_status,
+  const ChartDldrBulkRunClassification classified =
+      ChartDldrClassifyBulkRun(stats);
+  EXPECT_EQ(classified.outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+  EXPECT_TRUE(classified.allows_same_day_retry);
+  EXPECT_EQ(classified.schedule_status,
             "1 update 2 new, 1 catalog refresh failed");
   ChartDldrScheduleConfig schedule;
   schedule.enabled = true;
@@ -105,8 +107,8 @@ TEST(ChartDldrBulkSchedule, MixedCatalogRefreshFailureIsVisible) {
   const wxDateTime run_time = FixedRunTime();
   ChartDldrApplyScheduledRunOutcome(
       schedule, ChartDldrScheduledBulkResultFromStats(stats), &run_time);
-  EXPECT_EQ(schedule.last_outcome,
-            ChartDldrScheduledRunOutcome::CatalogRefreshFailed);
+  EXPECT_EQ(schedule.last_outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+  EXPECT_TRUE(schedule.last_allows_same_day_retry);
 }
 
 TEST(ChartDldrBulkSchedule, AttemptStartCandidateDoesNotMutateLiveConfig) {

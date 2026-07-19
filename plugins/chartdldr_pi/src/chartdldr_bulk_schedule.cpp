@@ -77,6 +77,7 @@ void ApplyScheduledSkip(chartdldr_pi* pi, ChartDldrScheduledSkipReason reason) {
   ChartDldrScheduledBulkResult result;
   result.outcome = ChartDldrScheduledRunOutcome::Skipped;
   result.status_detail = ChartDldrScheduledSkipStatus(reason);
+  result.allows_same_day_retry = false;
   ChartDldrCommitScheduledRunOutcome(pi, result);
 }
 

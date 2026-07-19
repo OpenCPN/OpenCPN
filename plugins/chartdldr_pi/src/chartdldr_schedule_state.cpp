@@ -90,18 +90,39 @@ bool ChartDldrScheduledOutcomeAllowsSameDayRetry(
   return false;
 }
 
+bool ChartDldrBulkRunAllowsSameDayRetry(ChartDldrScheduledRunOutcome outcome,
+                                        int catalog_refresh_failures) {
+  return ChartDldrScheduledOutcomeAllowsSameDayRetry(outcome) ||
+         catalog_refresh_failures > 0;
+}
+
 namespace {
 
+wxString FormatCatalogRefreshInteractiveMessage(int catalog_refresh_failures) {
+  return wxString::Format(
+      _(ChartDldrScheduleMessages::kInteractiveCatalogRefreshFailedFormat),
+      catalog_refresh_failures);
+}
+
+void AppendInteractiveParagraph(wxString& message, const wxString& paragraph) {
+  if (!message.empty()) {
+    message += wxT("\n\n");
+  }
+  message += paragraph;
+}
+
 /**
- * Single ordered decision for a bulk run: catalog-refresh-failed → no-attempts
- * → all-failed → partial → success. Status and interactive strings derive from
- * the chosen outcome so the three views cannot drift.
+ * Single ordered decision for a bulk run: catalog-only refresh failure →
+ * no-attempts → all-failed → partial → success. Catalog refresh failures that
+ * accompany chart attempts keep the chart outcome, append status/interactive
+ * text, and set allows_same_day_retry without renaming the outcome.
  */
 struct BulkRunClassificationCore {
   ChartDldrScheduledRunOutcome outcome =
       ChartDldrScheduledRunOutcome::BulkNoAttempts;
   wxString schedule_status;
   wxString interactive_message;
+  bool allows_same_day_retry = false;
 };
 
 BulkRunClassificationCore ClassifyBulkRunCore(
@@ -113,15 +134,17 @@ BulkRunClassificationCore ClassifyBulkRunCore(
     core.schedule_status = wxString::Format(
         _(ChartDldrScheduleMessages::kCatalogRefreshFailedFormat),
         stats.catalog_refresh_failures);
-    core.interactive_message = wxString::Format(
-        _(ChartDldrScheduleMessages::kInteractiveCatalogRefreshFailedFormat),
-        stats.catalog_refresh_failures);
+    core.interactive_message =
+        FormatCatalogRefreshInteractiveMessage(stats.catalog_refresh_failures);
+    core.allows_same_day_retry = true;
     return core;
   }
 
   if (stats.attempted == 0) {
     core.outcome = ChartDldrScheduledRunOutcome::BulkNoAttempts;
     core.schedule_status = _(ChartDldrScheduleMessages::kNoChartsToUpdate);
+    core.allows_same_day_retry =
+        ChartDldrBulkRunAllowsSameDayRetry(core.outcome, 0);
     return core;
   }
 
@@ -147,25 +170,18 @@ BulkRunClassificationCore ClassifyBulkRunCore(
   }
 
   // Catalog refresh failures alongside chart attempts: keep the chart outcome
-  // but surface the refresh failure in both status and interactive text.
+  // and surface the refresh failure in both status and interactive text.
   if (stats.catalog_refresh_failures > 0) {
-    if (core.outcome != ChartDldrScheduledRunOutcome::CatalogRefreshFailed) {
-      // Prefer CatalogRefreshFailed when refreshes failed, matching prior
-      // ClassifyOutcome which keyed outcome solely on refresh failures.
-      core.outcome = ChartDldrScheduledRunOutcome::CatalogRefreshFailed;
-    }
     core.schedule_status += wxString::Format(
         _(ChartDldrScheduleMessages::kCatalogRefreshSuffixFormat),
         stats.catalog_refresh_failures);
-    const wxString catalog_message = wxString::Format(
-        _(ChartDldrScheduleMessages::kInteractiveCatalogRefreshFailedFormat),
-        stats.catalog_refresh_failures);
-    if (!core.interactive_message.empty()) {
-      core.interactive_message += wxT("\n\n");
-    }
-    core.interactive_message += catalog_message;
+    AppendInteractiveParagraph(
+        core.interactive_message, FormatCatalogRefreshInteractiveMessage(
+                                      stats.catalog_refresh_failures));
   }
 
+  core.allows_same_day_retry = ChartDldrBulkRunAllowsSameDayRetry(
+      core.outcome, stats.catalog_refresh_failures);
   return core;
 }
 
@@ -178,6 +194,7 @@ ChartDldrBulkRunClassification ChartDldrClassifyBulkRun(
   result.outcome = core.outcome;
   result.schedule_status = core.schedule_status;
   result.interactive_message = core.interactive_message;
+  result.allows_same_day_retry = core.allows_same_day_retry;
   return result;
 }
 
@@ -188,6 +205,7 @@ ChartDldrScheduledBulkResult ChartDldrScheduledBulkResultFromStats(
   ChartDldrScheduledBulkResult result;
   result.outcome = classified.outcome;
   result.status_detail = classified.schedule_status;
+  result.allows_same_day_retry = classified.allows_same_day_retry;
   return result;
 }
 
@@ -195,12 +213,14 @@ void ChartDldrRecordScheduledAttemptStart(ChartDldrScheduleConfig& schedule,
                                           const wxDateTime& run_time) {
   schedule.last_attempt_iso = ChartDldrFormatScheduleRunIso(run_time);
   schedule.last_outcome = ChartDldrScheduledRunOutcome::Pending;
+  schedule.last_allows_same_day_retry = true;
 }
 
 ChartDldrScheduledBulkResult ChartDldrScheduledAbortedResult() {
   ChartDldrScheduledBulkResult result;
   result.outcome = ChartDldrScheduledRunOutcome::Aborted;
   result.status_detail = _("Cancelled");
+  result.allows_same_day_retry = true;
   return result;
 }
 
@@ -209,6 +229,7 @@ void ChartDldrApplyScheduledRunOutcome(
     const ChartDldrScheduledBulkResult& result, const wxDateTime* run_time) {
   schedule.last_status = result.status_detail;
   schedule.last_outcome = result.outcome;
+  schedule.last_allows_same_day_retry = result.allows_same_day_retry;
 
   // last_attempt_iso records the *attempt start*, not completion: eligibility
   // keys the once-per-day gate off the attempt day. An explicit run_time stamps
@@ -246,6 +267,7 @@ bool ChartDldrPromoteStalePending(ChartDldrScheduleConfig& schedule) {
     return false;
   }
   schedule.last_outcome = ChartDldrScheduledRunOutcome::Aborted;
+  schedule.last_allows_same_day_retry = true;
   schedule.last_status = _("Previous scheduled update was interrupted");
   return true;
 }
@@ -262,6 +284,7 @@ bool ChartDldrCommitScheduleAttemptStart(
   ChartDldrScheduledBulkResult failed;
   failed.outcome = ChartDldrScheduledRunOutcome::Aborted;
   failed.status_detail = _("Could not save schedule state");
+  failed.allows_same_day_retry = true;
   ChartDldrApplyScheduledRunOutcome(live, failed, &run_time);
   return false;
 }

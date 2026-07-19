@@ -16,11 +16,8 @@ double g_androidDPmm = 4.0;
 
 #ifdef __ANDROID__
 
-#include "androidSupport.h"
 #include "android_jvm.h"
 
-#include <QtAndroidExtras/QAndroidJniObject>
-#include <jni.h>
 #include <wx/tokenzr.h>
 
 void ChartDldrSetAndroidBackColor(wxWindow* ctrl, wxColour col) {
@@ -58,34 +55,24 @@ void ChartDldrSetAndroidBackColor(wxWindow* ctrl, wxColour col) {
 }
 
 bool ChartDldrInitAndroidDisplayMetrics() {
+  // Keep the default density unless the activity returns a usable metrics string.
   g_androidDPmm = 4.0;
 
-  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
-      "org/qtproject/qt5/android/QtNative", "activity",
-      "()Landroid/app/Activity;");
-  if (!activity.isValid()) {
+  wxString metrics = callActivityMethod_vs("getDisplayMetrics");
+  if (metrics.empty() || metrics == wxT("NOK")) {
     return false;
   }
 
-  QAndroidJniObject data =
-      activity.callObjectMethod("getDisplayMetrics", "()Ljava/lang/String;");
-
-  wxString return_string;
-  jstring s = data.object<jstring>();
-  JNIEnv* jenv;
-  if (java_vm->GetEnv((void**)&jenv, JNI_VERSION_1_6) == JNI_OK) {
-    const char* ret_string = (jenv)->GetStringUTFChars(s, NULL);
-    return_string = wxString(ret_string, wxConvUTF8);
-  }
-
-  return_string.Replace(_T(","), _T("."));
+  metrics.Replace(_T(","), _T("."));
 
   double density = 1.0;
-  wxStringTokenizer tk(return_string, _T(";"));
+  wxStringTokenizer tk(metrics, _T(";"));
   if (tk.HasMoreTokens()) {
-    wxString token = tk.GetNextToken();  // xdpi
-    token = tk.GetNextToken();           // density
-    token.ToDouble(&density);
+    (void)tk.GetNextToken();  // xdpi
+    if (tk.HasMoreTokens()) {
+      wxString token = tk.GetNextToken();  // density
+      token.ToDouble(&density);
+    }
   }
 
   const double ldpi = 160. * density;

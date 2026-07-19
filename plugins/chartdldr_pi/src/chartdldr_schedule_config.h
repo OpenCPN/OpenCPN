@@ -30,13 +30,22 @@ public:
   bool enabled = false;
   int hour = 3;
   int minute = 0;
-  /** Authoritative attempt timestamp; drives eligibility with last_outcome. */
+  /**
+   * Authoritative attempt timestamp; drives eligibility with
+   * last_allows_same_day_retry (and last_outcome for display/legacy).
+   */
   wxString last_attempt_iso;
   wxString last_status;
   ChartDldrScheduledRunOutcome last_outcome =
       ChartDldrScheduledRunOutcome::Pending;
+  /**
+   * Same-day retry gate for the last finished (or in-flight Pending) attempt.
+   * Kept separate from last_outcome so BulkSuccess/Partial with catalog refresh
+   * failures can still retry without renaming the chart outcome.
+   */
+  bool last_allows_same_day_retry = true;
 
-  /** Display timestamp; eligibility uses last_attempt_iso + last_outcome. */
+  /** Display timestamp; eligibility uses last_attempt_iso + retry flag. */
   const wxString& LastRunDisplayIso() const { return last_attempt_iso; }
 
   static int MinRetryMinutes();

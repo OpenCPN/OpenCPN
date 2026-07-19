@@ -75,7 +75,6 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg(wxWindow *parent)
   m_treeCtrlPredefSrcs->SetIndent(w);
 
   m_base_path = wxEmptyString;
-  m_last_path = wxEmptyString;
   LoadSources();
   m_nbChoice->SetSelection(0);
   // m_treeCtrlPredefSrcs->ExpandAll();
@@ -262,21 +261,25 @@ void ChartDldrGuiAddSourceDlg::OnChangeType(wxNotebookEvent &event) {
   }
 }
 
+void ChartDldrGuiAddSourceDlg::ApplySourceFields(const ChartSource &cs) {
+  const wxString dir = FixPath(cs.GetDir());
+  m_dirExpanded = dir;
+  m_tSourceName->SetValue(cs.GetName());
+  m_tChartSourceUrl->SetValue(cs.GetUrl());
+  m_tcChartDirectory->SetValue(dir);
+  m_panelChartDirectory->SetText(dir);
+  m_buttonChartDirectory->Enable();
+}
+
 void ChartDldrGuiAddSourceDlg::OnSourceSelected(wxTreeEvent &event) {
   wxTreeItemId item = m_treeCtrlPredefSrcs->GetSelection();
+  if (!item.IsOk()) {
+    event.Skip();
+    return;
+  }
   ChartSource *cs = (ChartSource *)(m_treeCtrlPredefSrcs->GetItemData(item));
   if (cs) {
-    m_dirExpanded = FixPath(cs->GetDir());
-
-    m_tSourceName->SetValue(cs->GetName());
-    m_tChartSourceUrl->SetValue(cs->GetUrl());
-    if (m_tcChartDirectory->GetValue() == m_last_path) {
-      m_tcChartDirectory->SetValue(FixPath(cs->GetDir()));
-      m_panelChartDirectory->SetText(FixPath(cs->GetDir()));
-
-      m_buttonChartDirectory->Enable();
-      m_last_path = m_tcChartDirectory->GetValue();
-    }
+    ApplySourceFields(*cs);
   }
   event.Skip();
 }
@@ -285,12 +288,7 @@ void ChartDldrGuiAddSourceDlg::SetSourceEdit(std::unique_ptr<ChartSource> &cs) {
   m_nbChoice->SetSelection(1);
   m_tChartSourceUrl->Enable();
   m_treeCtrlPredefSrcs->Disable();
-  m_tSourceName->SetValue(cs->GetName());
-  m_tChartSourceUrl->SetValue(cs->GetUrl());
-  m_tcChartDirectory->SetValue(FixPath(cs->GetDir()));
-  m_panelChartDirectory->SetText(FixPath(cs->GetDir()));
-
-  m_buttonChartDirectory->Enable();
+  ApplySourceFields(*cs);
 }
 
 void ChartDldrGuiAddSourceDlg::OnOkClick(wxCommandEvent &event) {

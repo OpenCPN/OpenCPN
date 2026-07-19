@@ -12,11 +12,6 @@
 #include <wx/textfile.h>
 #include <wx/tokenzr.h>
 
-#ifndef _WIN32
-#include <fcntl.h>
-#include <unistd.h>
-#endif
-
 #ifdef __UNIX__
 #include <climits>
 #include <cstdlib>
@@ -97,16 +92,18 @@ bool PublishFileInto(const wxString& root, const wxString& rel,
     return false;
   }
 
-  // wxRenameFile(..., overwrite=true) fails on Windows when the destination
-  // does not exist yet; pass overwrite only when replacing a live file.
+  // overwrite=true is only valid when replacing a live file; on Windows
+  // MoveFileEx(REPLACE_EXISTING) fails when the destination does not exist.
   const bool dest_exists = wxFileExists(dest);
+
+  // 1) Fast path: atomic rename when source and dest share a volume.
   if (wxRenameFile(source_path, dest, dest_exists)) {
     return true;
   }
 
-  // Cross-device fallback: copy to a sibling temp next to the destination,
-  // then rename that over the live path. Leave the source intact on any
-  // failure so the caller can retry without clobbering existing output.
+  // 2) Stage beside the destination, then atomically rename into place.
+  //    Same ladder for create and replace; bridges cross-device sources.
+  //    Leave the source intact on failure so the caller can retry.
   const wxString publish_tmp = dest + wxT(".publish-tmp");
   if (wxFileExists(publish_tmp) && !wxRemoveFile(publish_tmp)) {
     return false;
@@ -117,7 +114,7 @@ bool PublishFileInto(const wxString& root, const wxString& rel,
     }
     return false;
   }
-  if (!wxRenameFile(publish_tmp, dest, wxFileExists(dest))) {
+  if (!wxRenameFile(publish_tmp, dest, dest_exists)) {
     if (wxFileExists(publish_tmp)) {
       wxRemoveFile(publish_tmp);
     }
@@ -183,25 +180,12 @@ bool WriteTextFileAtomic(const wxString& path, const wxString& contents) {
     return false;
   }
   file.Close();
-  if (!wxRenameFile(tmp_path, path, true)) {
+  // overwrite=true only when replacing; on Windows REPLACE_EXISTING fails when
+  // the destination does not exist yet.
+  if (!wxRenameFile(tmp_path, path, wxFileExists(path))) {
     wxRemoveFile(tmp_path);
     return false;
   }
-#ifndef _WIN32
-  const wxCharBuffer parent = wxFileName(path).GetPath().utf8_str();
-  int flags = O_RDONLY;
-#ifdef O_DIRECTORY
-  flags |= O_DIRECTORY;
-#endif
-  const int dir_fd = open(parent.data(), flags);
-  if (dir_fd < 0 || fsync(dir_fd) != 0) {
-    if (dir_fd >= 0) {
-      close(dir_fd);
-    }
-    return false;
-  }
-  close(dir_fd);
-#endif
   return true;
 }
 

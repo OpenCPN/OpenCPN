@@ -182,6 +182,7 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     written.last_attempt_iso = "2026-06-02 14:45:00";
     written.last_status = "2 update 1 new";
     written.last_outcome = ChartDldrScheduledRunOutcome::BulkSuccess;
+    written.last_allows_same_day_retry = false;
     ASSERT_TRUE(written.Save(&conf));
     ASSERT_TRUE(conf.Flush());
   }
@@ -196,6 +197,7 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     EXPECT_EQ(loaded.last_attempt_iso, "2026-06-02 14:45:00");
     EXPECT_EQ(loaded.last_status, "2 update 1 new");
     EXPECT_EQ(loaded.last_outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+    EXPECT_FALSE(loaded.last_allows_same_day_retry);
 
     wxString last_attempt_key;
     conf.Read(_T("ScheduledUpdateLastAttempt"), &last_attempt_key);
@@ -204,6 +206,32 @@ TEST(ChartDldrScheduleConfig, LoadSaveRoundTrip) {
     // Legacy LastRun is no longer written; attempt is authoritative.
     wxString last_run_key;
     EXPECT_FALSE(conf.Read(_T("ScheduledUpdateLastRun"), &last_run_key));
+  }
+}
+
+TEST(ChartDldrScheduleConfig, LoadDerivesRetryFlagFromOutcomeWhenMissing) {
+  ScopedConfigFile config_file("chartdldr_sched_legacy_retry");
+  const wxString& path = config_file.path();
+
+  {
+    wxFFile touch(path, "wb");
+    ASSERT_TRUE(touch.IsOpened());
+  }
+
+  {
+    wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
+    conf.Write(_T("ScheduledUpdateLastOutcome"),
+               static_cast<long>(ChartDldrScheduledRunOutcome::BulkSuccess));
+    conf.Write(_T("ScheduledUpdateLastAttempt"), _T("2026-06-02 04:00:00"));
+    ASSERT_TRUE(conf.Flush());
+  }
+
+  {
+    wxFileConfig conf(wxEmptyString, wxEmptyString, path, wxEmptyString, 0);
+    ChartDldrScheduleConfig loaded;
+    loaded.Load(&conf);
+    EXPECT_EQ(loaded.last_outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+    EXPECT_FALSE(loaded.last_allows_same_day_retry);
   }
 }
 

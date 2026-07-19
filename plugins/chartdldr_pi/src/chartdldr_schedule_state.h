@@ -25,10 +25,9 @@ enum class ChartDldrScheduledRunOutcome {
   BulkAllFailed,
   BulkPartialSuccess,
   BulkSuccess,
-  /** One or more catalog refreshes failed; eligible for same-day retry. */
+  /** Catalog refreshes failed with no chart attempts. */
   CatalogRefreshFailed,
-  /** User cancel or shutdown after attempt start; eligible for same-day retry.
-   */
+  /** User cancel or shutdown after attempt start. */
   Aborted,
 };
 
@@ -47,8 +46,17 @@ bool ChartDldrParseScheduleRunIso(const wxString& iso, wxDateTime& out);
 wxString ChartDldrFormatScheduledLastRunDisplay(
     const ChartDldrScheduleConfig& schedule);
 
+/**
+ * Outcome-only same-day retry defaults (Pending / all-failed / catalog-only /
+ * Aborted). Mixed catalog failures with chart success keep a non-retryable
+ * outcome and set allows_same_day_retry on the classified result instead.
+ */
 bool ChartDldrScheduledOutcomeAllowsSameDayRetry(
     ChartDldrScheduledRunOutcome outcome);
+
+/** True when the outcome is retryable or any catalog refresh failed. */
+bool ChartDldrBulkRunAllowsSameDayRetry(ChartDldrScheduledRunOutcome outcome,
+                                        int catalog_refresh_failures);
 
 bool ChartDldrParseScheduledRunOutcome(long value,
                                        ChartDldrScheduledRunOutcome& out);
@@ -57,6 +65,8 @@ struct ChartDldrScheduledBulkResult {
   ChartDldrScheduledRunOutcome outcome =
       ChartDldrScheduledRunOutcome::BulkNoAttempts;
   wxString status_detail;
+  /** Persisted separately from outcome so catalog-mixed runs can retry. */
+  bool allows_same_day_retry = false;
 };
 
 /** Outcome + status strings for a finished bulk run (scheduled or interactive).
@@ -66,6 +76,7 @@ struct ChartDldrBulkRunClassification {
       ChartDldrScheduledRunOutcome::BulkNoAttempts;
   wxString schedule_status;
   wxString interactive_message;
+  bool allows_same_day_retry = false;
 };
 
 ChartDldrBulkRunClassification ChartDldrClassifyBulkRun(
@@ -101,10 +112,10 @@ bool ChartDldrPromoteStalePending(ChartDldrScheduleConfig& schedule);
  * - Attempt start: persist Pending + attempt stamp. On persist failure, record
  *   Aborted in live config so the timer backs off instead of retrying every
  *   minute with stale disk state.
- * - Run outcome: persist the classified result (success/partial/skip/etc.). On
- *   persist failure, still apply that result in live config so a finished run
- *   does not leave stale Pending that PromoteStalePending would misread after
- *   restart.
+ * - Run outcome: persist the classified result (outcome, status, and
+ *   allows_same_day_retry). On persist failure, still apply that result in live
+ *   config so a finished run does not leave stale Pending that
+ *   PromoteStalePending would misread after restart.
  *
  * Both return false when disk persist fails; callers may log but need not roll
  * back in-memory state.
@@ -123,6 +134,8 @@ inline void ChartDldrApplyScheduledRunOutcome(
   ChartDldrScheduledBulkResult result;
   result.outcome = outcome;
   result.status_detail = status_detail;
+  result.allows_same_day_retry =
+      ChartDldrScheduledOutcomeAllowsSameDayRetry(outcome);
   ChartDldrApplyScheduledRunOutcome(schedule, result, run_time);
 }
 

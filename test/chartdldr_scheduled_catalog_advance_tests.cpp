@@ -37,6 +37,8 @@ TEST(ChartDldrScheduledCatalogAdvance,
   EXPECT_EQ(state.next_catalog, 3);
   EXPECT_EQ(state.stats.attempted, 2);
   EXPECT_EQ(state.stats.updated_downloads, 2);
-  EXPECT_EQ(ChartDldrScheduledBulkResultFromStats(state.stats).outcome,
-            ChartDldrScheduledRunOutcome::CatalogRefreshFailed);
+  const ChartDldrScheduledBulkResult result =
+      ChartDldrScheduledBulkResultFromStats(state.stats);
+  EXPECT_EQ(result.outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+  EXPECT_TRUE(result.allows_same_day_retry);
 }

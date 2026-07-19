@@ -78,6 +78,10 @@ wxString callActivityMethod_vs(const char *method) {
       activity.callObjectMethod(method, "()Ljava/lang/String;");
   if (CheckPendingJNIException()) return "NOK";
 
+  if (!data.isValid()) {
+    return return_string;
+  }
+
   jstring s = data.object<jstring>();
   // qDebug() << s;
 
@@ -87,7 +91,10 @@ wxString callActivityMethod_vs(const char *method) {
       // qDebug() << "GetEnv failed.";
     } else {
       const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
-      return_string = wxString(ret_string, wxConvUTF8);
+      if (ret_string) {
+        return_string = wxString(ret_string, wxConvUTF8);
+        (jenv)->ReleaseStringUTFChars(s, ret_string);
+      }
     }
   }
 

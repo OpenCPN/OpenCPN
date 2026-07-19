@@ -25,7 +25,14 @@ _OCPN_DLStatus ResolveTempDownloadStatus(bool transfer_success, bool cancelled,
 }
 
 wxString ChartDldrTempFilesystemPath(const wxString& output_path) {
-  wxFileName tfn = wxFileName::CreateTempFileName(output_path);
+  // Invariant: the download temp must live under the destination directory so
+  // finalize can rename onto the same volume. Never pass the live output path
+  // as the CreateTempFileName prefix — when that leaf does not exist yet,
+  // prefix handling is unreliable (especially on Windows).
+  const wxFileName out_fn(output_path);
+  const wxString dir = out_fn.GetPath(wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR);
+  wxFileName tfn =
+      wxFileName::CreateTempFileName(dir + wxT("dl-") + out_fn.GetName());
   return tfn.GetFullPath();
 }
 
@@ -63,9 +70,8 @@ bool ChartDldrFinalizeTempDownload(const wxString& temp_path,
     return false;
   }
 
-  // Publish the leaf into its containing directory: prefers atomic rename,
-  // falls back to a sibling copy+rename across filesystems. Never overwrites a
-  // directory; leaves the download temp intact on any failure.
+  // Publish via ChartDldrExtractCommon::PublishFileInto; leaves the download
+  // temp intact on any failure.
   const wxFileName out_fn(output_path);
   return ChartDldrExtractCommon::PublishFileInto(
       out_fn.GetPath(), out_fn.GetFullName(), temp_path);

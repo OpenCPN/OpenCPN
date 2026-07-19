@@ -90,6 +90,12 @@ void ChartDldrScheduleConfig::Load(wxFileConfig* conf) {
   if (!parsed_outcome) {
     last_outcome = ChartDldrScheduledRunOutcome::Pending;
   }
+  // Legacy configs without the retry flag derive it from outcome alone.
+  if (!conf->Read(_T("ScheduledUpdateLastAllowsSameDayRetry"),
+                  &last_allows_same_day_retry)) {
+    last_allows_same_day_retry =
+        ChartDldrScheduledOutcomeAllowsSameDayRetry(last_outcome);
+  }
   SanitizeTimestamps();
 }
 
@@ -103,7 +109,9 @@ bool ChartDldrScheduleConfig::Save(wxFileConfig* conf) const {
          conf->Write(_T("ScheduledUpdateLastStatus"), last_status) &&
          conf->Write(_T("ScheduledUpdateLastAttempt"), last_attempt_iso) &&
          conf->Write(_T("ScheduledUpdateLastOutcome"),
-                     static_cast<long>(last_outcome));
+                     static_cast<long>(last_outcome)) &&
+         conf->Write(_T("ScheduledUpdateLastAllowsSameDayRetry"),
+                     last_allows_same_day_retry);
 }
 
 ChartDldrScheduleEligibility ChartDldrScheduleConfig::EligibilityAt(
@@ -131,7 +139,7 @@ ChartDldrScheduleEligibility ChartDldrScheduleConfig::EligibilityAt(
     return ChartDldrScheduleEligibility::Ready;
   }
 
-  if (ChartDldrScheduledOutcomeAllowsSameDayRetry(last_outcome)) {
+  if (last_allows_same_day_retry) {
     const wxTimeSpan elapsed = now - last_attempt;
     if (elapsed.GetMinutes() < MinRetryMinutes()) {
       return ChartDldrScheduleEligibility::BlockedToday;

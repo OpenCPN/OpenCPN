@@ -91,7 +91,7 @@ TEST(ChartDldrScheduleIntegration, AbortedBulkAllowsSameDayRetryAfterInterval) {
 }
 
 TEST(ChartDldrScheduleIntegration,
-     MixedCatalogRefreshFailureAllowsSameDayRetry) {
+     MixedCatalogRefreshFailureKeepsChartOutcomeAndAllowsRetry) {
   ChartDldrScheduleConfig schedule;
   schedule.enabled = true;
   schedule.SetTime(3, 0);
@@ -104,8 +104,9 @@ TEST(ChartDldrScheduleIntegration,
   stats.catalog_refresh_failures = 1;
   ChartDldrApplyScheduledRunOutcome(
       schedule, ChartDldrScheduledBulkResultFromStats(stats), &run_time);
-  EXPECT_EQ(schedule.last_outcome,
-            ChartDldrScheduledRunOutcome::CatalogRefreshFailed);
+  EXPECT_EQ(schedule.last_outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+  EXPECT_TRUE(schedule.last_allows_same_day_retry);
+  // Outcome stays chart success; retry flag still unlocks same-day retry.
   EXPECT_FALSE(schedule.ShouldRunNow(LocalTime(2, 4, 0)));
   EXPECT_TRUE(schedule.ShouldRunNow(LocalTime(2, 8, 0)));
 }

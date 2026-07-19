@@ -76,10 +76,27 @@ TEST(ChartDldrScheduleState, ClassifyBulkRunOutcome) {
   mixed_catalog_failed.new_downloads = 2;
   mixed_catalog_failed.updated_downloads = 2;
   mixed_catalog_failed.catalog_refresh_failures = 1;
-  EXPECT_EQ(ChartDldrClassifyBulkRun(mixed_catalog_failed).outcome,
-            ChartDldrScheduledRunOutcome::CatalogRefreshFailed);
-  EXPECT_EQ(ChartDldrClassifyBulkRun(mixed_catalog_failed).schedule_status,
-            "2 update 2 new, 1 catalog refresh failed");
+  const ChartDldrBulkRunClassification mixed =
+      ChartDldrClassifyBulkRun(mixed_catalog_failed);
+  EXPECT_EQ(mixed.outcome, ChartDldrScheduledRunOutcome::BulkSuccess);
+  EXPECT_TRUE(mixed.allows_same_day_retry);
+  EXPECT_EQ(mixed.schedule_status, "2 update 2 new, 1 catalog refresh failed");
+
+  ChartDldrBulkRunStats mixed_partial_catalog;
+  mixed_partial_catalog.attempted = 5;
+  mixed_partial_catalog.failed = 2;
+  mixed_partial_catalog.new_downloads = 1;
+  mixed_partial_catalog.updated_downloads = 2;
+  mixed_partial_catalog.catalog_refresh_failures = 1;
+  const ChartDldrBulkRunClassification mixed_partial =
+      ChartDldrClassifyBulkRun(mixed_partial_catalog);
+  EXPECT_EQ(mixed_partial.outcome,
+            ChartDldrScheduledRunOutcome::BulkPartialSuccess);
+  EXPECT_TRUE(mixed_partial.allows_same_day_retry);
+  EXPECT_EQ(mixed_partial.schedule_status,
+            "2 update 1 new, 2 failed, 1 catalog refresh failed");
+  EXPECT_TRUE(mixed_partial.interactive_message.Contains(
+      wxT("Catalog refresh failed for 1 source")));
 }
 
 TEST(ChartDldrScheduleState, SameDayRetryPolicy) {
@@ -99,6 +116,13 @@ TEST(ChartDldrScheduleState, SameDayRetryPolicy) {
       ChartDldrScheduledRunOutcome::Pending));
   EXPECT_TRUE(ChartDldrScheduledOutcomeAllowsSameDayRetry(
       ChartDldrScheduledRunOutcome::Aborted));
+
+  EXPECT_FALSE(ChartDldrBulkRunAllowsSameDayRetry(
+      ChartDldrScheduledRunOutcome::BulkSuccess, 0));
+  EXPECT_TRUE(ChartDldrBulkRunAllowsSameDayRetry(
+      ChartDldrScheduledRunOutcome::BulkSuccess, 1));
+  EXPECT_TRUE(ChartDldrBulkRunAllowsSameDayRetry(
+      ChartDldrScheduledRunOutcome::BulkPartialSuccess, 1));
 }
 
 TEST(ChartDldrScheduleState, SkippedStoresDetailAndAttemptIso) {

@@ -189,8 +189,9 @@ public:
 private:
   bool ValidateUrl(const wxString Url, bool catalog_xml = true);
   wxString FixPath(wxString path);
+  /** Keep name, URL, directory, and m_dirExpanded in lockstep. */
+  void ApplySourceFields(const ChartSource& cs);
   wxString m_base_path;
-  wxString m_last_path;
   wxImageList* p_iconList;
 #ifdef __OCPN__ANDROID__
   wxImageList* p_buttonIconList;

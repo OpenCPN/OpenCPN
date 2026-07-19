@@ -51,6 +51,9 @@ TEST(ChartDldrTempDownload, SyncPathsUseTempFile) {
   EXPECT_EQ(paths.output_path, output_path);
   EXPECT_NE(paths.download_target, output_path);
   EXPECT_NE(paths.temp_path, output_path);
+  // Temp must live under the destination directory (same-volume finalize).
+  EXPECT_EQ(wxFileName(paths.temp_path).GetPath(),
+            wxFileName(output_path).GetPath());
 #ifdef __ANDROID__
   EXPECT_TRUE(paths.download_target.StartsWith(wxT("file://")));
   EXPECT_NE(paths.download_target, paths.temp_path);
@@ -69,17 +72,17 @@ TEST(ChartDldrTempDownload, FinalizeCopiesTempToOutput) {
   const wxString output_path = output_dir.GetPath() +
                                wxFileName::GetPathSeparator() +
                                wxT("catalog.xml");
-  wxFileName temp_fn = wxFileName::CreateTempFileName(output_path);
-  const wxString temp_path = temp_fn.GetFullPath();
+  const ChartDldrTempDownloadPaths paths =
+      ChartDldrTempDownloadPathsFor(output_path);
   {
-    wxFile file(temp_path, wxFile::write);
+    wxFile file(paths.temp_path, wxFile::write);
     file.Write("catalog");
   }
 
-  EXPECT_TRUE(ChartDldrFinalizeTempDownload(temp_path, output_path));
+  EXPECT_TRUE(ChartDldrFinalizeTempDownload(paths.temp_path, output_path));
   EXPECT_TRUE(wxFileExists(output_path));
   EXPECT_EQ(ReadFileContents(output_path), wxT("catalog"));
-  EXPECT_FALSE(wxFileExists(temp_path));
+  EXPECT_FALSE(wxFileExists(paths.temp_path));
   EXPECT_FALSE(wxFileExists(output_path + wxT(".publish-tmp")));
 
   wxRemoveFile(output_path);
@@ -99,16 +102,16 @@ TEST(ChartDldrTempDownload, FinalizeRenameReplacesExistingOutput) {
     wxFile file(output_path, wxFile::write);
     file.Write("old");
   }
-  wxFileName temp_fn = wxFileName::CreateTempFileName(output_path);
-  const wxString temp_path = temp_fn.GetFullPath();
+  const ChartDldrTempDownloadPaths paths =
+      ChartDldrTempDownloadPathsFor(output_path);
   {
-    wxFile file(temp_path, wxFile::write);
+    wxFile file(paths.temp_path, wxFile::write);
     file.Write("new");
   }
 
-  EXPECT_TRUE(ChartDldrFinalizeTempDownload(temp_path, output_path));
+  EXPECT_TRUE(ChartDldrFinalizeTempDownload(paths.temp_path, output_path));
   EXPECT_EQ(ReadFileContents(output_path), wxT("new"));
-  EXPECT_FALSE(wxFileExists(temp_path));
+  EXPECT_FALSE(wxFileExists(paths.temp_path));
   EXPECT_FALSE(wxFileExists(output_path + wxT(".publish-tmp")));
 
   wxRemoveFile(output_path);
@@ -257,6 +260,7 @@ TEST(ChartDldrTempDownload, PublishFileIntoRejectsSymlinkedRelComponent) {
   wxFileName::Rmdir(escape_dir, wxPATH_RMDIR_RECURSIVE);
   wxFileName::Rmdir(root, wxPATH_RMDIR_RECURSIVE);
 }
+#endif  // _WIN32
 
 TEST(ChartDldrTempDownload, PublishFileIntoMovesSourceIntoRoot) {
   wxFileName base_dir =
@@ -281,10 +285,10 @@ TEST(ChartDldrTempDownload, PublishFileIntoMovesSourceIntoRoot) {
   EXPECT_TRUE(wxFileExists(dest));
   EXPECT_EQ(ReadFileContents(dest), wxT("chart"));
   EXPECT_FALSE(wxFileExists(temp_path));
+  EXPECT_FALSE(wxFileExists(dest + wxT(".publish-tmp")));
 
   wxFileName::Rmdir(root, wxPATH_RMDIR_RECURSIVE);
 }
-#endif  // _WIN32
 
 TEST(ChartDldrTempDownload, FinalizeFailureKeepsTempAndPreservesOutput) {
   wxFileName output_dir =
