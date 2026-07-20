@@ -471,6 +471,7 @@ public:
   int auxParm3;
 
   bool bBBObj_valid;
+  bool bOK_to_Render;
 };
 
 typedef std::vector<S57Obj *> S57ObjVector;

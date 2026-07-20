@@ -39,10 +39,10 @@
 #include <signal.h>
 #include <setjmp.h>
 
-struct sigaction sa_all_plib;
-struct sigaction sa_all_plib_previous;
+thread_local struct sigaction sa_all_plib;
+thread_local struct sigaction sa_all_plib_previous;
 
-sigjmp_buf env_plib;  // the context saved by sigsetjmp();
+thread_local sigjmp_buf env_plib;  // the context saved by sigsetjmp();
 
 void catch_signals_plib(int signo) {
   switch (signo) {
@@ -7795,8 +7795,11 @@ int s52plib::RenderObjectToGLText(const wxGLContext &glcc,
 }
 
 int s52plib::DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules) {
+  if (!ObjectRenderCheckRules(rzRules, true)) return 0;
+
 #ifdef __OCPN__ANDROID__
   // Catch a difficult to trap SIGSEGV, avoiding app crash
+  auto rzRules_current = rzRules;    // Save current rules pointer
   sigaction(SIGSEGV, NULL,
             &sa_all_plib_previous);  // save existing action for this signal
 
@@ -7817,11 +7820,11 @@ int s52plib::DoRenderObject(wxDC *pdcin, ObjRazRules *rzRules) {
   {
     // reset signal handler
     sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+    rzRules_current->obj->bOK_to_Render = false;  //Mark object unrenderable
     return 0;
   } else
 #endif
   {
-    if (!ObjectRenderCheckRules(rzRules, true)) return 0;
 
     m_pdc = pdcin;  // use this DC
     Rules *rules = rzRules->LUP->ruleList;
@@ -10081,10 +10084,10 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
 #ifdef ocpnUSE_GL
 
 int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules) {
-  if (!ObjectRenderCheckRules(rzRules, true)) return 0;
 
 #ifdef __OCPN__ANDROID__
   // Catch a difficult to trap SIGSEGV, avoiding app crash
+  auto rzRules_current = rzRules;    // Save current rules pointer
   sigaction(SIGSEGV, NULL,
             &sa_all_plib_previous);  // save existing action for this signal
 
@@ -10105,6 +10108,7 @@ int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules) {
   {
     // reset signal handler
     sigaction(SIGSEGV, &sa_all_plib_previous, NULL);
+    rzRules_current->obj->bOK_to_Render = false;  //Mark object unrenderable
     return 0;
   } else
 #endif
@@ -11006,6 +11010,8 @@ bool s52plib::ObjectRenderCheckDates(ObjRazRules *rzRules) {
 }
 
 bool s52plib::ObjectRenderCheckRules(ObjRazRules *rzRules, bool check_noshow) {
+  if (!rzRules->obj->bOK_to_Render) return false;
+
   if (!ObjectRenderCheckPos(rzRules)) return false;
 
   // The Feature M_QUAL, in MARINERS_STANDARD catagory, is a special case,
