@@ -354,6 +354,8 @@ private:
   }
   void OnAltitude(wxCommandEvent &event);
   void OnOpenFile(wxCommandEvent &event);
+  void OnOpenGribFile(wxCommandEvent &event);
+  void OnMergeGribs(wxCommandEvent &event);
   /** Callback invoked when user clicks download/request forecast data. */
   void OnRequestForecastData(wxCommandEvent &event);
   void createRequestDialog();

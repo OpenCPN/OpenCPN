@@ -29,8 +29,10 @@
 #include "wx/sound.h"
 #include <wx/wfstream.h>
 #include <wx/dir.h>
+#include <wx/filefn.h>
 #include <wx/filename.h>
 #include <wx/debug.h>
+#include <wx/filepicker.h>
 #include <wx/graphics.h>
 #include <wx/regex.h>
 
@@ -43,6 +45,7 @@
 #include "ocpn_plugin.h"
 #include "grib_pi.h"
 #include "GribTable.h"
+#include "GribMerge.h"
 #include "email.h"
 #include "folder.xpm"
 #include "GribUIDialog.h"
@@ -51,6 +54,130 @@
 #ifdef __ANDROID__
 #include "android_jvm.h"
 #endif
+
+namespace {
+
+enum {
+  ID_GRIB_OPEN_FILE_MENU = wxID_HIGHEST + 1800,
+  ID_GRIB_MERGE_MENU
+};
+
+class GribMergeDialog : public wxDialog {
+public:
+  GribMergeDialog(wxWindow *parent, const wxString &gribDir)
+      : wxDialog(parent, wxID_ANY, _("Merge GRIBs"), wxDefaultPosition,
+                 wxDefaultSize,
+                 wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+        m_gribDir(gribDir) {
+    wxBoxSizer *topSizer = new wxBoxSizer(wxVERTICAL);
+    wxFlexGridSizer *gridSizer = new wxFlexGridSizer(0, 2, 6, 8);
+    gridSizer->AddGrowableCol(1);
+
+    m_gribWildcard =
+        _("Grib files") +
+        " (*.grb;*.grib;*.grib2;*.grb2)|*.grb;*.grib;*.grib2;*.grb2|" +
+        _("All files") + " (*.*)|*.*";
+
+    gridSizer->Add(
+        new wxStaticText(this, wxID_ANY, _("Ocean current GRIB file")), 0,
+        wxALIGN_CENTER_VERTICAL);
+    m_currentPicker =
+        new wxFilePickerCtrl(this, wxID_ANY, wxEmptyString,
+                             _("Select ocean current GRIB file"), m_gribWildcard,
+                             wxDefaultPosition, wxDefaultSize,
+                             wxFLP_OPEN | wxFLP_FILE_MUST_EXIST);
+    m_currentPicker->SetInitialDirectory(gribDir);
+    gridSizer->Add(m_currentPicker, 1, wxEXPAND);
+
+    gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Weather/Wind GRIB file")),
+                   0, wxALIGN_CENTER_VERTICAL);
+    m_weatherPicker =
+        new wxFilePickerCtrl(this, wxID_ANY, wxEmptyString,
+                             _("Select weather or wind GRIB file"),
+                             m_gribWildcard, wxDefaultPosition, wxDefaultSize,
+                             wxFLP_OPEN | wxFLP_FILE_MUST_EXIST);
+    m_weatherPicker->SetInitialDirectory(gribDir);
+    gridSizer->Add(m_weatherPicker, 1, wxEXPAND);
+
+    gridSizer->Add(new wxStaticText(this, wxID_ANY, _("Output GRIB file")), 0,
+                   wxALIGN_CENTER_VERTICAL);
+    wxBoxSizer *outputSizer = new wxBoxSizer(wxHORIZONTAL);
+    m_outputPath =
+        new wxTextCtrl(this, wxID_ANY, DefaultOutputPath(gribDir),
+                       wxDefaultPosition, wxDefaultSize);
+    outputSizer->Add(m_outputPath, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, 6);
+    wxButton *browseOutput = new wxButton(this, wxID_ANY, _("Browse..."));
+    outputSizer->Add(browseOutput, 0, wxALIGN_CENTER_VERTICAL);
+    gridSizer->Add(outputSizer, 1, wxEXPAND);
+    browseOutput->Bind(wxEVT_BUTTON, &GribMergeDialog::OnBrowseOutput, this);
+
+    topSizer->Add(gridSizer, 0, wxEXPAND | wxALL, 12);
+
+    wxString orderChoices[] = {_("Ocean current file first"),
+                               _("Weather/Wind file first")};
+    m_order = new wxRadioBox(this, wxID_ANY, _("Merge order"),
+                             wxDefaultPosition, wxDefaultSize, 2, orderChoices,
+                             1, wxRA_SPECIFY_COLS);
+    m_order->SetSelection(0);
+    topSizer->Add(m_order, 0, wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 12);
+
+    wxStaticText *orderNote = new wxStaticText(
+        this, wxID_ANY,
+        _("Some workflows require ocean current records to be read before "
+          "weather records."));
+    orderNote->Wrap(560);
+    topSizer->Add(orderNote, 0, wxLEFT | wxRIGHT | wxBOTTOM | wxEXPAND, 12);
+
+    wxStdDialogButtonSizer *buttonSizer = new wxStdDialogButtonSizer();
+    buttonSizer->AddButton(new wxButton(this, wxID_OK, _("Merge")));
+    buttonSizer->AddButton(new wxButton(this, wxID_CANCEL));
+    buttonSizer->Realize();
+    topSizer->Add(buttonSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 12);
+
+    SetSizerAndFit(topSizer);
+    SetMinSize(wxSize(620, GetBestSize().GetHeight()));
+    CentreOnParent();
+  }
+
+  wxString GetCurrentPath() const { return m_currentPicker->GetPath(); }
+  wxString GetWeatherPath() const { return m_weatherPicker->GetPath(); }
+  wxString GetOutputPath() const {
+    wxFileName output(m_outputPath->GetValue());
+    if (output.GetFullName().IsEmpty()) return wxEmptyString;
+    if (output.GetPath().IsEmpty()) output.SetPath(m_gribDir);
+    if (output.GetExt().IsEmpty()) output.SetExt("grb");
+    return output.GetFullPath();
+  }
+  bool CurrentFirst() const { return m_order->GetSelection() == 0; }
+
+private:
+  static wxString DefaultOutputPath(const wxString &gribDir) {
+    wxString stamp = wxDateTime::UNow().Format("%Y%m%d-%H%MZ", wxDateTime::UTC);
+    wxFileName output(gribDir, "merged_grib_" + stamp + ".grb");
+    return output.GetFullPath();
+  }
+
+  void OnBrowseOutput(wxCommandEvent &event) {
+    wxFileName currentPath(GetOutputPath());
+    wxFileDialog dialog(this, _("Select output GRIB file"),
+                        currentPath.GetPath(), currentPath.GetFullName(),
+                        m_gribWildcard, wxFD_SAVE);
+    if (dialog.ShowModal() != wxID_OK) return;
+
+    wxFileName output(dialog.GetPath());
+    if (output.GetExt().IsEmpty()) output.SetExt("grb");
+    m_outputPath->SetValue(output.GetFullPath());
+  }
+
+  wxString m_gribDir;
+  wxString m_gribWildcard;
+  wxFilePickerCtrl *m_currentPicker;
+  wxFilePickerCtrl *m_weatherPicker;
+  wxTextCtrl *m_outputPath;
+  wxRadioBox *m_order;
+};
+
+}  // namespace
 
 // general variables
 double m_cursor_lat, m_cursor_lon;
@@ -1670,6 +1797,25 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
   if (m_tPlayStop.IsRunning())
     return;  // do nothing when play back is running !
 
+  wxMenu menu;
+  menu.Append(ID_GRIB_OPEN_FILE_MENU, _("Open GRIB file..."));
+#ifndef __OCPN__ANDROID__
+  menu.Append(ID_GRIB_MERGE_MENU, _("Merge GRIBs..."));
+#endif
+
+  Bind(wxEVT_MENU, &GRIBUICtrlBar::OnOpenGribFile, this,
+       ID_GRIB_OPEN_FILE_MENU);
+  Bind(wxEVT_MENU, &GRIBUICtrlBar::OnMergeGribs, this, ID_GRIB_MERGE_MENU);
+  PopupMenu(&menu);
+  Unbind(wxEVT_MENU, &GRIBUICtrlBar::OnOpenGribFile, this,
+         ID_GRIB_OPEN_FILE_MENU);
+  Unbind(wxEVT_MENU, &GRIBUICtrlBar::OnMergeGribs, this, ID_GRIB_MERGE_MENU);
+}
+
+void GRIBUICtrlBar::OnOpenGribFile(wxCommandEvent &event) {
+  if (m_tPlayStop.IsRunning())
+    return;  // do nothing when play back is running !
+
 #ifndef __OCPN__ANDROID__
 
   wxStandardPathsBase &path = wxStandardPaths::Get();
@@ -1713,6 +1859,125 @@ void GRIBUICtrlBar::OnOpenFile(wxCommandEvent &event) {
     m_file_names.Clear();
     m_file_names.Add(file);
     OpenFile();
+    SetDialogsStyleSizePosition(true);
+  }
+#endif
+}
+
+void GRIBUICtrlBar::OnMergeGribs(wxCommandEvent &event) {
+#ifdef __OCPN__ANDROID__
+  wxMessageBox(_("GRIB merging is not available on this platform."),
+               _("Merge GRIBs"), wxOK | wxICON_INFORMATION, this);
+#else
+  if (m_tPlayStop.IsRunning())
+    return;  // do nothing when play back is running !
+
+  if (!wxDir::Exists(m_grib_dir)) {
+    wxStandardPathsBase &path = wxStandardPaths::Get();
+    m_grib_dir = path.GetDocumentsDir();
+  }
+
+  GribMergeDialog dialog(this, m_grib_dir);
+  if (dialog.ShowModal() != wxID_OK) return;
+
+  wxString currentPath = dialog.GetCurrentPath();
+  wxString weatherPath = dialog.GetWeatherPath();
+  wxString outputPath = dialog.GetOutputPath();
+  if (currentPath.IsEmpty() || weatherPath.IsEmpty() || outputPath.IsEmpty()) {
+    wxMessageBox(_("Select an ocean current GRIB file, a weather/wind GRIB "
+                   "file, and an output file."),
+                 _("Merge GRIBs"), wxOK | wxICON_WARNING, this);
+    return;
+  }
+
+  if (currentPath == weatherPath) {
+    wxMessageBox(_("The ocean current and weather/wind inputs must be "
+                   "different files."),
+                 _("Merge GRIBs"), wxOK | wxICON_WARNING, this);
+    return;
+  }
+
+  if (outputPath == currentPath || outputPath == weatherPath) {
+    wxMessageBox(_("The output file must be different from the input files."),
+                 _("Merge GRIBs"), wxOK | wxICON_WARNING, this);
+    return;
+  }
+
+  if (wxFileExists(outputPath)) {
+    wxMessageDialog overwriteDialog(
+        this,
+        _("The output file already exists. Replace it with the merged GRIB "
+          "file?"),
+        _("Merge GRIBs"), wxYES_NO | wxNO_DEFAULT | wxICON_WARNING);
+    if (overwriteDialog.ShowModal() != wxID_YES) return;
+  }
+
+  wxString error;
+  GribMergeFile currentFile;
+  GribMergeFile weatherFile;
+  {
+    wxBusyCursor wait;
+    if (!GribMerge::ReadAndValidate(currentPath, currentFile, error) ||
+        !GribMerge::ReadAndValidate(weatherPath, weatherFile, error)) {
+      wxMessageBox(error, _("Merge GRIBs"), wxOK | wxICON_ERROR, this);
+      return;
+    }
+  }
+
+  bool currentFirst = dialog.CurrentFirst();
+  const GribMergeFile &first = currentFirst ? currentFile : weatherFile;
+  const GribMergeFile &second = currentFirst ? weatherFile : currentFile;
+
+  wxString summary;
+  summary << GribMerge::FormatSummary(_("Ocean current GRIB"),
+                                      currentFile.summary)
+          << "\n";
+  summary << GribMerge::FormatSummary(_("Weather/Wind GRIB"),
+                                      weatherFile.summary)
+          << "\n";
+  summary << GribMerge::FormatOverlap(currentFile.summary, weatherFile.summary)
+          << "\n\n";
+  summary << wxString::Format(_("Merge order: %s\n"),
+                              currentFirst ? _("Ocean current file first")
+                                           : _("Weather/Wind file first"));
+  summary << wxString::Format(_("Output: %s\n\n"), outputPath);
+  summary << _("Create the merged GRIB file?");
+
+  wxMessageDialog confirm(this, summary, _("Merge GRIBs"),
+                          wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION);
+  if (confirm.ShowModal() != wxID_YES) return;
+
+  {
+    wxBusyCursor wait;
+    if (!GribMerge::WriteMerged(first, second, outputPath, error)) {
+      wxMessageBox(error, _("Merge GRIBs"), wxOK | wxICON_ERROR, this);
+      return;
+    }
+  }
+
+  GribMergeFile mergedFile;
+  wxString mergedSummary;
+  if (GribMerge::ReadAndValidate(outputPath, mergedFile, error)) {
+    mergedSummary = GribMerge::FormatSummary(_("Merged GRIB"),
+                                             mergedFile.summary);
+  } else {
+    mergedSummary = _("Merged GRIB file was created, but the summary could not "
+                      "be generated.");
+  }
+
+  wxString done;
+  done << _("Merged GRIB file created.") << "\n\n" << mergedSummary << "\n";
+  done << _("Open the merged GRIB file now?");
+
+  wxMessageDialog openDialog(this, done, _("Merge GRIBs"),
+                             wxYES_NO | wxYES_DEFAULT | wxICON_INFORMATION);
+  if (openDialog.ShowModal() == wxID_YES) {
+    wxFileName outputName(outputPath);
+    m_grib_dir = outputName.GetPath();
+    m_file_names.Clear();
+    m_file_names.Add(outputPath);
+    OpenFile();
+    if (g_pi && g_pi->m_bZoomToCenterAtInit) DoZoomToCenter();
     SetDialogsStyleSizePosition(true);
   }
 #endif
