@@ -8407,6 +8407,22 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
   }
   m_pFoundRoutePoint = NULL;
 
+  // A route/mark edit may have been in progress (m_pRoutePointEditTarget set)
+  // when the menu action deleted that very RoutePoint (e.g. "Delete" on a
+  // waypoint of a route). Nulling m_pSelectedRoute/m_pFoundRoutePoint above is
+  // not enough: m_pRoutePointEditTarget (and m_pFoundPoint) would still point
+  // at the freed point, so the next mouse motion in MouseEventProcessObjects
+  // dereferences it (GetIconName()) -> use-after-free -> crash. Drop the edit
+  // state if its target no longer exists.
+  if (m_pRoutePointEditTarget &&
+      !pSelect->IsSelectableRoutePointValid(m_pRoutePointEditTarget)) {
+    m_pRoutePointEditTarget = NULL;
+    m_lastRoutePointEditTarget = NULL;
+    m_pFoundPoint = NULL;
+    m_bRouteEditing = false;
+    m_bMarkEditing = false;
+  }
+
   Refresh(true);
   // Refresh(false);  // needed for MSW, not GTK  Why??
 }
@@ -9012,6 +9028,22 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
   }
 
   if (event.Dragging()) {
+    // The route/mark edit target is a raw RoutePoint* that can be freed out
+    // from under us by a delete (context menu, Routes panel, or a plugin)
+    // between the press that armed the edit and this drag event. The canvas is
+    // not notified, so the pointer dangles. Validate it against the Select list
+    // before any use below; if it is gone, drop the stale edit state, otherwise
+    // the drag logic dereferences freed memory (e.g. GetIconName()) -> crash.
+    if (m_pRoutePointEditTarget &&
+        !pSelect->IsSelectableRoutePointValid(m_pRoutePointEditTarget)) {
+      m_pRoutePointEditTarget = NULL;
+      m_lastRoutePointEditTarget = NULL;
+      m_pFoundPoint = NULL;
+      m_bRouteEditing = false;
+      m_bMarkEditing = false;
+      return false;
+    }
+
     // in touch screen mode ensure the finger/cursor is on the selected point's
     // radius to allow dragging
     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
