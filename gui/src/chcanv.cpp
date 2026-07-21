@@ -7562,7 +7562,7 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
   double slat, slon;
   GetCanvasPixPoint(x, y, slat, slon);
 
-  SelectItem *pFindAIS;
+  SelectItem *pFindAIS = NULL;
   SelectItem *pFindRP;
   SelectItem *pFindRouteSeg;
   SelectItem *pFindTrackSeg;
@@ -7571,7 +7571,8 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
 
   //      Get all the selectable things at the selected point
   SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
-  pFindAIS = pSelectAIS->FindSelection(ctx, slat, slon, SELTYPE_AISTARGET);
+  if (m_bShowAIS)  // look for AIS targets only if they are shown
+    pFindAIS = pSelectAIS->FindSelection(ctx, slat, slon, SELTYPE_AISTARGET);
   pFindRP = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTEPOINT);
   pFindRouteSeg = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTESEGMENT);
   pFindTrackSeg = pSelect->FindSelection(ctx, slat, slon, SELTYPE_TRACKSEGMENT);
