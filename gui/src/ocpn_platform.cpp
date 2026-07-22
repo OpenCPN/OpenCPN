@@ -87,6 +87,9 @@
 #include "top_frame.h"
 
 #ifdef __ANDROID__
+#include <QtCore/QFile>
+#include <QtWidgets/QApplication>
+
 #include "androidUTIL.h"
 #endif
 
