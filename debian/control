@@ -50,12 +50,13 @@ Recommends: wx3.2-i18n, xdg-utils, libusb-0.1-4
 Suggests: binutils
 Description: Open Source Chartplotter and Marine GPS Navigation Software
  Chart Plotter and Navigational software program for use underway
- or as a planning tool. Developed by a team of active sailors using real
- world conditions for program testing and refinement.
- By default supports raster and vector formats like BSB and S63. Support for
- many other formats are available in plugins. Other plugins provides
- support for e. g., AIS, radar and weather maps.
+ or as a planning tool. By default supports raster and vector formats
+ like BSB and S63. Support for many other formats are available in plugins.
+ Other plugins provides support for e.g., AIS, radar and weather maps.
  Application has language support in 20+ languages.
+ .
+ Developed by a team of active sailors using real world conditions for
+ program testing and refinement.
  .
  This package contains programs, libraries and some support files.
 
@@ -67,11 +68,12 @@ Replaces: opencpn (<< 1:1)
 Depends: ${misc:Depends}
 Description: Open Source Chartplotter and Marine GPS Navigation Software (data)
  Chart Plotter and Navigational software program for use underway
- or as a planning tool. Developed by a team of active sailors using real
- world conditions for program testing and refinement.
- By default supports raster and vector formats like BSB and S63. Support for
- many other formats are available in plugins. Other plugins provides
- support for e. g., AIS, radar and weather maps.
+ or as a planning tool. By default supports raster and vector formats
+ like BSB and S63. Support for many other formats are available in plugins.
+ Other plugins provides support for e.g., AIS, radar and weather maps.
  Application has language support in 20+ languages.
+ .
+ Developed by a team of active sailors using real world conditions for
+ program testing and refinement.
  .
  This package contains architecture independent data files.
