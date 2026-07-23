@@ -2332,9 +2332,27 @@ void MyFrame::RefreshGroupIndices() {
   }
 }
 
-void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
-  if (g_MainToolbar) g_MainToolbar->HideTooltip();
+bool MyFrame::DisableTbarTooltips() {
+  if (g_MainToolbar) {
+    g_MainToolbar->HideTooltip();
+    return g_MainToolbar->DisableTooltips();
+  }
+}
 
+void MyFrame::EnableTbarTooltips() {
+  if (g_MainToolbar) {
+    g_MainToolbar->EnableTooltips();
+  }
+}
+
+void MyFrame::HideTbarTooltip() {
+  if (g_MainToolbar) {
+    g_MainToolbar->HideTooltip();
+  }
+}
+
+void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
+  HideTbarTooltip();
   switch (event.GetId()) {
     case ID_MENU_SCALE_OUT:
       DoStackDelta(GetPrimaryCanvas(), 1);
@@ -2490,7 +2508,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case wxID_PREFERENCES:
     case ID_SETTINGS: {
-      if (g_MainToolbar) g_MainToolbar->HideTooltip();
+      HideTbarTooltip();
       DoSettings();
       break;
     }
@@ -2515,7 +2533,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
       androidDisableFullScreen();
-      if (g_MainToolbar) g_MainToolbar->HideTooltip();
+      HideTbarTooltip();
       DoAndroidPreferences();
 #else
       DoSettings();
@@ -2724,7 +2742,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       //        If found, make the callback.
       //        TODO Modify this to allow multiple tools per plugin
       if (g_pi_manager) {
-        if (g_MainToolbar) g_MainToolbar->HideTooltip();
+        HideTbarTooltip();
 
         ArrayOfPlugInToolbarTools tool_array =
             g_pi_manager->GetPluginToolbarToolArray();
@@ -2756,7 +2774,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 bool MyFrame::SetGlobalToolbarViz(bool viz) {
   bool viz_now = g_bmasterToolbarFull;
 
-  if (g_MainToolbar) g_MainToolbar->HideTooltip();
+  HideTbarTooltip();
   wxString tip = _("Show Toolbar");
   if (viz) {
     tip = _("Hide Toolbar");
@@ -6102,7 +6120,13 @@ void MyFrame::DoPrint(void) {
   auto &printer = PrintDialog::GetInstance();
   printer.Initialize(wxLANDSCAPE);
   printer.EnablePageNumbers(false);
+  // Disable/hide the tooltips during print because they can interfere with the
+  // print dialog
+  bool tooltips_were_enabled = DisableTbarTooltips();
   printer.Print(this, &printout);
+  if (tooltips_were_enabled) {
+    EnableTbarTooltips();
+  }
 
   // Pass two printout objects: for preview, and possible printing.
   /*
