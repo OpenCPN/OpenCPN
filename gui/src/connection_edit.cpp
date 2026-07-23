@@ -243,7 +243,7 @@ void ConnectionEditDialog::Init() {
   m_stBTPairs = 0;
   m_choiceBTDataSources = 0;
 
-  m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
+  m_BTScanTimer.SetOwner(this, WidgetId::BT_SCANTIMER);
   m_BTscanning = 0;
   wxSize displaySize = wxGetDisplaySize();
 
@@ -851,7 +851,7 @@ void ConnectionEditDialog::OnScanBTClick(wxCommandEvent& event) {
     m_btlastResultCount = 0;
 
     Bind(wxEVT_TIMER, &ConnectionEditDialog::onBTScanTimer, this,
-         ID_BT_SCANTIMER);
+         WidgetId::BT_SCANTIMER);
     m_BTScanTimer.Start(1000, wxTIMER_CONTINUOUS);
     g_Platform->startBluetoothScan();
     m_BTscanning = 1;
