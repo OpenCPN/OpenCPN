@@ -2854,8 +2854,12 @@ void SwitchInlandEcdisMode(bool Switch) {
       pConfig->Read("ShowDepthUnits", &g_bShowDepthUnits, 1);
       pConfig->Read("HeightFormat", &g_iHeightFormat);
       int read_int;
-      pConfig->Read("nDisplayCategory", &read_int, (enum _DisCat)STANDARD);
+      pConfig->Read("nDisplayCategory", &read_int, (enum _DisCat)OTHER);  // ALL
       if (ps52plib) ps52plib->SetDisplayCategory((enum _DisCat)read_int);
+      pConfig->Read("ToolbarY", &g_maintoolbar_y);
+      // Check if iENC has changed the default toolbar position to
+      // equal iENCToolbarY. If so reset it to default value.
+      if (g_maintoolbar_y == g_iENCToolbarPosY) g_maintoolbar_y = 4;
       pConfig->SetPath("/Settings/AIS");
       pConfig->Read("bDrawAISSize", &g_bDrawAISSize);
       pConfig->Read("bDrawAISRealtime", &g_bDrawAISRealtime);
