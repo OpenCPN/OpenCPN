@@ -93,6 +93,18 @@ bool MWD::Parse( const SENTENCE& sentence )
    WindSpeedKnots     = sentence.Double( 5 );
    WindSpeedms        = sentence.Double( 7 );
 
+   // --- START NEGATIVE WIND NORMALIZATION ---
+    // 1. Fix negative wind angles (Convert -45 degrees port to 315 degrees standard)
+    if (WindAngleTrue < 0.0) {
+        WindAngleTrue += 360.0;
+    }
+    
+    // 2. Fix negative wind speeds (Rare, but catches heavily glitched sensors)
+    if (WindSpeedKnots < 0.0) {
+        WindSpeedKnots = -WindSpeedKnots; 
+    }
+    // --- END NEGATIVE WIND NORMALIZATION ---
+
    return( TRUE );
 }
 

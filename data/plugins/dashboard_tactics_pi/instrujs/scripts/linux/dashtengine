@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+# /* $Id: dashtengine, v1.0 2019/11/30 VaderDarth Exp $ */
+#
+# Launching a simple node_modules http-server on instrujs folder
+
+echo "Launch a simple, local http-server to provide DashT EngineDJG dials"
+
+if [ -z "$1" ]
+then
+    PORT=8080
+else
+    PORT=$1
+fi
+
+# Source definition
+OPLUGINGLOBDATADIR="/usr/share/opencpn/plugins"
+DASHTPLUGINNAME="dashboard_tactics_pi"
+DASHTGLOBDATADIR="${OPLUGINGLOBDATADIR}/${DASHTPLUGINNAME}/data"
+DASHTGLOBINSTUJS="${DASHTGLOBDATADIR}/instrujs/www"
+
+HTTPSERVER=$(which http-server)
+if [ ! -z "${HTTPSERVER}" ]
+then
+    http-server ${DASHTGLOBINSTUJS} -p ${PORT}
+    if test $? -eq 0
+    then
+        exit 0
+    else
+        echo "---------------------------------------------------------------------------------"
+        echo "'dashtdb' launcher has a more advanced server incorporated in a container:"
+        echo "If there is an address clash with its port ${PORT}, you may want to:"
+        echo "* use the http service on port ${PORT} provided by 'dashtdb'"
+        echo "* change this one by providing another port number as argument"
+        echo "  - change also in opencpn.conf"
+        echo ""
+        exit 1
+    fi
+fi
+
+# Need to check how we can get http-server installed...
+
+NODEJSOK=$(dpkg-query -W --showformat='${Status}\n' nodejs 2>/dev/null |grep "install ok installed")
+NPMOK=$(dpkg-query -W --showformat='${Status}\n' npm 2>/dev/null |grep "install ok installed")
+
+if [ -z "${NODEJSOK}" ]
+then
+    if [ -z "${NPMOK}" ]
+    then
+        echo "No NodeJS and package manager npm installed, do you want to install? [Y/n]"
+    else
+        echo "No NodeJS installed, do you want to install? [Y/n]"
+    fi
+    read
+    if [ "$REPLY" = "Y" ]
+    then
+        sudo apt-get update
+        sudo apt-get install nodejs
+        if [ -z "${NPMOK}" ]
+        then 
+            sudo apt-get install npm
+        fi
+        echo ""
+        echo ""
+        echo "While we are here, do you want to install SignalK node server? [Y/n]"
+        read
+        if [ "$REPLY" = "Y" ]
+        then
+            npm list -g | grep signalk-server || sudo npm install -g signalk-server --unsafe-perm --no-shrinkwrap
+            echo ""
+            echo "-------------------------- BACK TO 'dashtengine' -------------------------"
+            echo ""
+            echo "signalk-server installed. For configuration, refer to:"
+            echo "https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:supplementary_software:signalk"
+            echo ""
+            echo "Do you want to configure SignalK Node Server now? [Y/n]"
+            echo "(You would need your boat's name, its MMSI if you have one and that's about it)"
+            read
+            if [ "$REPLY" = "Y" ]
+            then
+                sudo signalk-server-setup
+            else
+                echo "OK, you can do that later on with command:"
+                echo "sudo signalk-server-setup"
+            fi
+            echo "--------------------------------------------------------------------------"
+            echo ""
+        else
+            echo "Alright, but remember that a Signal K server must exists _somewhere_"
+            echo "to feed EngineDJG dials, they would starve without NMEA-2000 data."
+        fi
+        echo "Launching now the HTTP-server"
+    else
+        echo "OK, nothing installed."
+        echo "If you plan to use an other local server, like Apache set it on port 8088:"
+        echo "- port can be changed in opencpn.conf"
+        echo "- html/js files are in folder:"
+        echo "  ${DASHTGLOBINSTUJS}"
+        exit 1
+    fi
+else
+    if [ -z "${NPMOK}" ]
+    then
+        echo "NodeJS installed, but no package manager npm,do you want to install? [Y/n]"
+        read
+        if [ "$REPLY" = "Y" ]
+        then
+            sudo apt-get install npm
+        else
+            echo "OK, nothing installed."
+            exit 1
+        fi
+    fi
+fi
+
+npm list -g | grep http-server || sudo npm install -g http-server --no-shrinkwrap
+
+http-server ${DASHTGLOBINSTUJS} -p ${PORT}
+
+if test $? -eq 0
+then
+    exit 0
+else
+    echo ""
+    echo "----------------------------------------------------------------------"
+    echo "Do you have other services, like 'dashdb' running on the same ${PORT}?"
+    echo ""
+    exit 1
+fi
+

@@ -1,0 +1,106 @@
+<p>
+<h3>Boat Performance Information</h3>
+
+<p>Most users should measure their boat performance (speed at each wind speed and direction relative to true wind) and load a CSV polar file of these records instead of computing them automatically.  In the future, the computations could be greatly improved with more parameters to yield more accurate results.
+
+<p>
+It is also possible to compute boat polar from an augmented sailboat transform calculation.
+The original sailboat transform:
+<pre>
+                                2
+                  /  sin(A/2)  \
+   sin(W) sin(A) |  ----------  | = VW eta
+                  \ sin(W - A) /
+
+W is true wind angle
+A is apparent Wind angle
+VW is true wind speed
+eta is a boat specific constant specifying it's sailing efficiency.
+</pre>
+<p>Solving for boat speed based on apparent wind we get:
+<pre>
+                    __
+              A    /VA
+VB(t) =  sin (-)  /---
+t->inf        2 \/ eta
+</pre>
+<p>
+This computation is very useful for the standard rig, but doesn't really apply correctly in many cases.  It also doesn't really factor in a huge range of variables as there is only one constant.
+
+<p>I have augmented the sailboat transform to also take into account two types of drag in the hope that it may come closer to resembling the sailing characteristics of more vessels.  This way hull speed is properly taken into account, and for boats with planing ability, you may get the right result if the correct values are used.
+
+<p>The Frictional drag reduces the maximum speed based on the square of its speed.  The Wake drag component uses a complex math formula to compute the energy lost creating a wake:
+<pre>
+                                       2
+           /      sin(Pi - F^-2)      \
+   Drag = |  -----------------------   |
+           \ (Pi - F^-2) (1 + Pi F^2) /
+
+              ___
+    V = F * \/g l
+
+    F = sqrt(g * l) / V;
+
+    g = 9.8 (gravity constant)
+    l is length of vessel in meters
+    V is meters per second
+
+    Reaches a peak at F=Pi^-.5 which is about .56
+
+    The huge increase starts at F = .4  (normal hull speed setting)
+    
+    Also interesting to note that at 80% of normal hull speed, the wave
+    drag is zero as well, but the first hump occurs from .32 to .4, and
+    therefore causes more drag than right at .4.
+
+    In theory, this equation is correct for wave drag for all speeds, from displacement to planing mode.
+</pre>
+
+<p>The basic polar describing boat speed at various wind settings fails on many fronts.
+First of all, various sail combinations become impractical in certain sea states,
+even if the actual wind speed is the same.  The boat also does not sail the same
+speed in these cases, so the actual boat speed may widely vary with identical wind
+speed/direction values in different sea states.   Secondly, the wind is 3 dimensional,
+and near land often has a noticable vertical component not accounted for.
+Thirdly, there may be certain areas conditions, or times when the user may
+selectively want to use a different polar diagram
+(sail plan, navigating in fog or near ice, night vs day, autopilot vs wind vane)
+Fourthly, the actual speed of the boat may change due to various parameters besides
+currents, wind, and sea state. (more on this below)  There are many more reasons as well.
+
+<p>There is also extension for the possibility of other sources of propulsion
+besides wind power (namely PV-solar electric, and/or human power both which I use for
+navigation when wind is unavailable) These are normally used in conjunction with sails.
+This form of power falls into the category of weather routing as it is dependent on solar radiation
+for photovoltaics, and temperature (sculling a yacht in tropical heat has less range than
+in cooler weather).  It may be possible to consider storing generated electrical power
+(one possible case would be charging batteries with a hydro tow generator sailing in strong winds,
+this energy is then to be used the next day when the calm sets in) in an electric drive it is possible
+to reach the final destination at a sooner time than without this consideration.
+(all of this is mostly still unimplemented)
+
+<p>It is also possible to factor slow changing, but important changes to the boat's
+passage-making ability over the course of the voyage.  One example is bottom growth,
+and the rate it might grow given the sailing course and various parameters.  This
+would enable you to gauge how essential it is to actually paint a bottom, or if
+you don't mind (as I have done many times) to clean your bottom in the middle
+of the ocean, you could calculate how much time it would save (hopefully more
+than the time spent scraping the growth off).  There is also the case of sails losing shape, and
+becoming less efficient over the course of a very long passage.
+
+<p><h3>Todo list:</h3>
+<ul>
+<li>Improve boat polar computation
+<li>Optimize ll_gc_ll
+<li>Optimize climatology wind atlas
+<li>implement depth and overhead height from vector charts
+<li>fix runge kutta for grib to use the right timeslices
+<li>Fix issues where routes are not fully normalized
+<li>Fix merdian problem, so we split the world on the opposite of end longitude, and don't propagate past it
+<li>User option for grid reduction resolution?
+<li>Determine best way way to reduce excessive propagations at the edge of graph
+<li>Make segment intersection test smarter and thus avoid deleting points in almost all cases
+<li>Fix inverted region anomalies, analyze child routes, and remove if end is not contained
+<li>Optimize end calculation by using only positions which are parents of non-propagated positions
+<li>Make position removal avoid rebuilding skip list
+</ul>
