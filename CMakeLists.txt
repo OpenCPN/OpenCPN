@@ -448,8 +448,8 @@ if (QT_ANDROID)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   add_definitions(-DNOASSERT)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g -O2")
-  set(CMAKE_C_FLAGS "-pthread -fPIC -g -O2")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g -O2 ${CMAKE_CXX_FLAGS}")
+  set(CMAKE_C_FLAGS "-pthread -fPIC -g -O2 ${CMAKE_C_FLAGS}")
 
   add_compile_options(
     "-Wno-inconsistent-missing-override"
