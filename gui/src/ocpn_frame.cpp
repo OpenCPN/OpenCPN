@@ -5626,7 +5626,8 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
     gCog = 0.0;  // say speed is zero to kill ownship predictor
   }
 
-  //      Update the chart database and displayed chart
+  // Update the chart database and displayed chart
+  // bnew_view is true if Refresh(false) was called
   bool bnew_view = false;
   if (!g_btenhertz) bnew_view = DoChartUpdate();
 
@@ -5670,7 +5671,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
           (!isnan(gHdt) && (gHdt != m_last_hdt))) {
         if (!g_bopengl) cc->UpdateShips();
 
-        bnew_view = true;  // force a full Refresh()
+        bnew_view = false;  // force a full Refresh()
       }
     }
   }
@@ -5681,24 +5682,21 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
 
   //    If any PlugIn requested dynamic overlay callbacks, force a full canvas
   //    refresh thus, ensuring at least 1 Hz. callback.
-  bool brq_dynamic = false;
   if (g_pi_manager) {
     auto *pplugin_array = PluginLoader::GetInstance()->GetPlugInArray();
     for (unsigned int i = 0; i < pplugin_array->GetCount(); i++) {
       PlugInContainer *pic = pplugin_array->Item(i);
       if (pic->m_enabled && pic->m_init_state) {
         if (pic->m_cap_flag & WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK) {
-          brq_dynamic = true;
+          bnew_view = false;
           break;
         }
       }
     }
-
-    if (brq_dynamic) bnew_view = true;
   }
 
   //  Make sure we get a redraw and alert sound on AnchorWatch excursions.
-  if (AnchorAlertOn1 || AnchorAlertOn2) bnew_view = true;
+  if (AnchorAlertOn1 || AnchorAlertOn2) bnew_view = false;
 
   // For each canvas....
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
@@ -5713,7 +5711,7 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
             if ((!g_btenhertz)) {
               if (cc->m_bFollow) {
                 cc->DoCanvasUpdate();
-                if (bnew_view)
+                if (!bnew_view)
                   cc->Refresh(false);  // honor ownship state update
               } else
                 cc->Refresh(false);
