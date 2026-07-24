@@ -10074,6 +10074,7 @@ int s52plib::RenderToGLAP_GLSL(ObjRazRules *rzRules, Rules *rules) {
 #ifdef ocpnUSE_GL
 
 int s52plib::RenderAreaToGL(const wxGLContext &glcc, ObjRazRules *rzRules) {
+ if (!ObjectRenderCheckRules(rzRules, true)) return 0;
 
 #ifdef __OCPN__ANDROID__
   // Catch a difficult to trap SIGSEGV, avoiding app crash
