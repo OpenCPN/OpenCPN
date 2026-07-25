@@ -222,11 +222,13 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number,
 
   //    Odd elements 1,3,5... are waypoints
   //    Even elements 2,4,6... are links
+  int jpoint = 0;  // routepoint index
   for (int i = 1; i < *size; i++) {
     if (i % 2 == 1) /* Odd */
     {
       GPS_PWay pway = ppway[i];
-      auto it = wplist->begin() + (i % 2) - 1;
+      auto it = wplist->begin() + jpoint;
+      jpoint++;
       RoutePoint *prp = *it;
 
       Garmin_GPS_PrepareWptData(pway, prp);
