@@ -170,7 +170,7 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number,
   //    Elements 1..n are waypoints
   for (int i = 1; i < *size; i++) {
     GPS_PWay pway = ppway[i];
-    auto it = wplist->begin() + i;
+    auto it = wplist->begin() + i - 1;
     RoutePoint *prp = *it;
 
     Garmin_GPS_PrepareWptData(pway, prp);
@@ -226,7 +226,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number,
     if (i % 2 == 1) /* Odd */
     {
       GPS_PWay pway = ppway[i];
-      auto it = wplist->begin() + i;
+      auto it = wplist->begin() + (i % 2) - 1;
       RoutePoint *prp = *it;
 
       Garmin_GPS_PrepareWptData(pway, prp);
