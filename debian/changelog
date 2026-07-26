@@ -1,12 +1,12 @@
-opencpn (1:5.14.1+dfsg-4) UNRELEASED; urgency=medium
+opencpn (1:5.14.1+dfsg-4) unstable; urgency=medium
 
   * Add patch for openssl 4. Closes: #1138446
-  * Add patch for enhanced reproducability.
+  * Add patch for enhanced reproducibility.
   * d/control: Drop redundant "Rules-Requires-Root: no" and
     "Priority: optional".
   * d/control: Update package descriptions.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Mon, 01 Jun 2026 16:04:59 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Sun, 26 Jul 2026 23:24:34 +0200
 
 opencpn (1:5.14.1+dfsg-3) unstable; urgency=medium
 
