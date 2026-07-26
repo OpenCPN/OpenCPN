@@ -213,6 +213,7 @@ private:
   char m_TX_flag;
   bool m_TX_available;
   wxTimer m_prodinfo_timer;
+  int m_detect_count;  //  should we invoke DetectFormat?
 
   ObsListener resume_listener;
 

@@ -154,7 +154,8 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       m_connection_type(params->Type),
       m_bok(false),
       m_circle(RX_BUFFER_SIZE_NET),
-      m_TX_available(false) {
+      m_TX_available(false),
+      m_detect_count(-1) {
   m_addr.Hostname(params->NetworkAddress);
   m_addr.Service(params->NetworkPort);
 
@@ -1259,8 +1260,9 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
           // printf("%c", data.at(i));
         }
       }
-
-      m_n2k_format = DetectFormat(data);
+      // Only invoke DetectFormat() on every tenth message:
+      m_detect_count = ++m_detect_count % 10;
+      if (m_detect_count <= 0) m_n2k_format = DetectFormat(data);
 
       switch (m_n2k_format) {
         case N2KFormat_Actisense_RAW_ASCII:
