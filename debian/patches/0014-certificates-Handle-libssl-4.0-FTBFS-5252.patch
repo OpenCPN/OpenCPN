@@ -1,4 +1,3 @@
-From 08876c8956b3dd3427dd36fe5ca4e8123f272427 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Mon, 1 Jun 2026 00:13:29 +0200
 Subject: certificates:  Handle libssl 4.0 FTBFS - #5252
@@ -10,7 +9,7 @@ Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/08876c89
  1 file changed, 10 insertions(+)
 
 diff --git a/model/src/certificates.cpp b/model/src/certificates.cpp
-index c562a7e41..70891e9b5 100644
+index c562a7e..70891e9 100644
 --- a/model/src/certificates.cpp
 +++ b/model/src/certificates.cpp
 @@ -117,7 +117,12 @@ X509 *generate_x509(EVP_PKEY *pkey, string ip_v4) {
@@ -38,6 +37,3 @@ index c562a7e41..70891e9b5 100644
    /* Actually sign the certificate with our key. */
  #if OPENSSL_VERSION_MAJOR * 10 + OPENSSL_VERSION_MINOR >= 32
    const EVP_MD *evp_md = EVP_MD_fetch(0, "SHA-256", 0);
--- 
-2.54.0
-

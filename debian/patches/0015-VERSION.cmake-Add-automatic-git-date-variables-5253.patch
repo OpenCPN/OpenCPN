@@ -1,7 +1,6 @@
-From 0652db75672cfd3d1a46b7c7eccdc7dd2d87465e Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
-Date: Mon, 1 Jun 2026 09:47:21 +0200
-Subject: [PATCH] VERSION.cmake: Add automatic git date variables - #5253
+Date: Mon, 27 Jul 2026 00:24:01 +0200
+Subject: VERSION.cmake: Add automatic git date variables - #5253
 
 In order to create reproducible builds we need to use last commit
 date rather than today's date to mark the build.
@@ -18,9 +17,6 @@ If a checkout is done without filters the %git_date% and %git_stamp%
 are not expanded in VERSION.cmake.
 
 Add a new tool tools/configure-git-filters which sets up filtering.
-
-Bug: https://github.com/OpenCPN/OpenCPN/issues/5253
-Applied-Upstream: https://github.com/OpenCPN/OpenCPN/commit/0652db75
 ---
  .gitattributes              |  3 +++
  CMakeLists.txt              | 25 +++++++++++++++++++++++--
@@ -28,25 +24,24 @@ Applied-Upstream: https://github.com/OpenCPN/OpenCPN/commit/0652db75
  tools/configure_git_filters | 11 +++++++++++
  tools/filter_date.sh        | 35 +++++++++++++++++++++++++++++++++++
  5 files changed, 75 insertions(+), 2 deletions(-)
+ create mode 100644 .gitattributes
  create mode 100755 tools/configure_git_filters
  create mode 100755 tools/filter_date.sh
 
 diff --git a/.gitattributes b/.gitattributes
-index 90e7aa86b..9b2a4fbc0 100644
---- a/.gitattributes
+new file mode 100644
+index 0000000..e394310
+--- /dev/null
 +++ b/.gitattributes
-@@ -102,3 +102,6 @@ Langstrings_*.nsh.in text eol=crlf
- .gitattributes export-ignore
- .gitignore     export-ignore
- .gitkeep       export-ignore
-+
-+# Define keyword substitution for VERSION.cmake
-+VERSION.cmake filter=filter_date
+@@ -0,0 +1,3 @@
++.gitattributes export-ignore
++.gitignore     export-ignore
++.gitkeep       export-ignore
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3cf41befc..2c10175e6 100644
+index 110dfc8..635d72c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -506,8 +506,29 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
+@@ -505,8 +505,29 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
  #
  include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
  
@@ -79,20 +74,20 @@ index 3cf41befc..2c10175e6 100644
    include(Utils)
    commit_id(COMMIT)
 diff --git a/VERSION.cmake b/VERSION.cmake
-index 76d46e469..ab870a168 100644
+index f2a2f3c..eb5d8f2 100644
 --- a/VERSION.cmake
 +++ b/VERSION.cmake
 @@ -1,4 +1,7 @@
 +# filtered, see .gitattributes
  SET(VERSION_MAJOR "5")
- SET(VERSION_MINOR "15")
+ SET(VERSION_MINOR "14")
  SET(VERSION_PATCH "0")
- SET(VERSION_DATE "2026-04-17")
+ SET(VERSION_DATE "2026-04-08")
 +SET(VERSION_GIT_DATE %git_date%)
 +SET(VERSION_GIT_STAMP %git_stamp%)
 diff --git a/tools/configure_git_filters b/tools/configure_git_filters
 new file mode 100755
-index 000000000..fe3b2c641
+index 0000000..fe3b2c6
 --- /dev/null
 +++ b/tools/configure_git_filters
 @@ -0,0 +1,11 @@
@@ -109,7 +104,7 @@ index 000000000..fe3b2c641
 +git config --local filter.filter_date.required  true
 diff --git a/tools/filter_date.sh b/tools/filter_date.sh
 new file mode 100755
-index 000000000..ac4cb962d
+index 0000000..ac4cb96
 --- /dev/null
 +++ b/tools/filter_date.sh
 @@ -0,0 +1,35 @@
@@ -148,6 +143,3 @@ index 000000000..ac4cb962d
 +else
 +    filter $1
 +fi
--- 
-2.54.0
-

@@ -3,7 +3,6 @@ Date: Sun, 12 Apr 2026 10:02:12 +0200
 Subject: libdnet: Handle libdnet cross compile error - #1121371
 
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/1833c0e0
-
 ---
  libs/libdnet/CMakeLists.txt | 2 ++
  1 file changed, 2 insertions(+)
