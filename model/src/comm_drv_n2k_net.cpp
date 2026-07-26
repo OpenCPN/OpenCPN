@@ -178,7 +178,6 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       this);
 
   m_mrq_container = new MrqContainer;
-  m_ib = 0;
   m_bInMsg = false;
   m_bGotESC = false;
   m_bGotSOT = false;
@@ -209,8 +208,8 @@ typedef struct {
 
 std::unordered_map<uint8_t, product_info> prod_info_map;
 
-bool CommDriverN2KNet::HandleMgntMsg(uint64_t pgn,
-                                     std::vector<unsigned char>& payload) {
+bool CommDriverN2KNet::HandleMgntMsg(
+    uint64_t pgn, const std::vector<unsigned char>& payload) {
   // Process a few N2K network management messages
   auto name = PayloadToName(payload);
   auto msg =
@@ -456,8 +455,8 @@ bool CommDriverN2KNet::SendMessage(std::shared_ptr<const NavMsg> msg,
 }
 
 std::vector<unsigned char> CommDriverN2KNet::PrepareLogPayload(
-    std::shared_ptr<const Nmea2000Msg>& msg,
-    std::shared_ptr<const NavAddr2000> addr) {
+    const std::shared_ptr<const Nmea2000Msg>& msg,
+    const std::shared_ptr<const NavAddr2000>& addr) {
   std::vector<unsigned char> data;
   data.push_back(0x94);
   data.push_back(0x13);
@@ -474,7 +473,7 @@ std::vector<unsigned char> CommDriverN2KNet::PrepareLogPayload(
 }
 
 std::vector<unsigned char> CommDriverN2KNet::PushCompleteMsg(
-    const CanHeader header, int position, const can_frame frame) {
+    const CanHeader& header, int position, const can_frame& frame) {
   std::vector<unsigned char> data;
   data.push_back(0x93);
   data.push_back(0x13);
@@ -523,7 +522,7 @@ std::vector<unsigned char> CommDriverN2KNet::PushFastMsgFragment(
  * layers. Otherwise, the fast message fragment is stored waiting for
  * next fragment.
  */
-void CommDriverN2KNet::HandleCanFrameInput(can_frame frame) {
+void CommDriverN2KNet::HandleCanFrameInput(const can_frame& frame) {
   int position = -1;
   bool ready = true;
 
@@ -606,7 +605,8 @@ N2K_Format CommDriverN2KNet::DetectFormat(
   return N2KFormat_Undefined;
 }
 
-bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
+bool CommDriverN2KNet::ProcessActisense_N2K(
+    const std::vector<unsigned char>& packet) {
   // 1002 d0 1500ff0401f80900684c1b00a074eb14f89052d288 1003
 
   std::vector<unsigned char> data;
@@ -718,7 +718,8 @@ bool CommDriverN2KNet::ProcessActisense_N2K(std::vector<unsigned char> packet) {
   return true;
 }
 
-bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
+bool CommDriverN2KNet::ProcessActisense_RAW(
+    const std::vector<unsigned char>& packet) {
   // 1002 95 0e15870402f8094b  fc e6 20 00 00 ff ff 6f 1003
 
   can_frame frame;
@@ -797,7 +798,8 @@ bool CommDriverN2KNet::ProcessActisense_RAW(std::vector<unsigned char> packet) {
   return true;
 }
 
-bool CommDriverN2KNet::ProcessActisense_NGT(std::vector<unsigned char> packet) {
+bool CommDriverN2KNet::ProcessActisense_NGT(
+    const std::vector<unsigned char>& packet) {
   std::vector<unsigned char> data;
   bool bInMsg = false;
   bool bGotESC = false;
@@ -861,7 +863,7 @@ bool CommDriverN2KNet::ProcessActisense_NGT(std::vector<unsigned char> packet) {
 }
 
 bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(
-    std::vector<unsigned char> packet) {
+    const std::vector<unsigned char>& packet) {
   can_frame frame;
 
   while (!m_circle.IsEmpty()) {
@@ -910,7 +912,7 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(
 }
 
 bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(
-    std::vector<unsigned char> packet) {
+    const std::vector<unsigned char>& packet) {
   // A001001.732 04FF6 1FA03 C8FBA80329026400
   std::string sentence;
 
@@ -984,7 +986,8 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_N2K(
   return true;
 }
 
-bool CommDriverN2KNet::ProcessSeaSmart(std::vector<unsigned char> packet) {
+bool CommDriverN2KNet::ProcessSeaSmart(
+    const std::vector<unsigned char>& packet) {
   while (!m_circle.IsEmpty()) {
     char b = m_circle.Get();
     if ((b != 0x0a) && (b != 0x0d)) {
@@ -1055,7 +1058,8 @@ bool CommDriverN2KNet::ProcessSeaSmart(std::vector<unsigned char> packet) {
   return true;
 }
 
-bool CommDriverN2KNet::ProcessMiniPlex(std::vector<unsigned char> packet) {
+bool CommDriverN2KNet::ProcessMiniPlex(
+    const std::vector<unsigned char>& packet) {
   /*
   $MXPGN – NMEA 2000 PGN Data
   This sentence transports NMEA 2000/CAN frames in NMEA 0183 format. The
@@ -1516,7 +1520,7 @@ std::vector<unsigned char> MakeSimpleOutMsg(
 
 std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
     const std::shared_ptr<const Nmea2000Msg>& msg,
-    std::shared_ptr<const NavAddr2000> dest_addr) {
+    const std::shared_ptr<const NavAddr2000>& dest_addr) {
   std::vector<std::vector<unsigned char>> tx_vector;
 
   // Branch based on detected network data format currently in use
@@ -1875,8 +1879,9 @@ bool CommDriverN2KNet::PrepareForTX() {
   return false;
 }
 
-bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
-                                      std::shared_ptr<const NavAddr2000> addr) {
+bool CommDriverN2KNet::SendN2KNetwork(
+    const std::shared_ptr<const Nmea2000Msg>& msg,
+    const std::shared_ptr<const NavAddr2000>& addr) {
   PrepareForTX();
 
   std::vector<std::vector<unsigned char>> out_data = GetTxVector(msg, addr);
@@ -1892,7 +1897,7 @@ bool CommDriverN2KNet::SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
 };
 
 bool CommDriverN2KNet::SendSentenceNetwork(
-    std::vector<std::vector<unsigned char>> payload) {
+    const std::vector<std::vector<unsigned char>>& payload) {
   if (m_txenter)
     return false;  // do not allow recursion, could happen with non-blocking
                    // sockets
@@ -1902,7 +1907,7 @@ bool CommDriverN2KNet::SendSentenceNetwork(
   wxDatagramSocket* udp_socket;
   switch (GetProtocol()) {
     case TCP:
-      for (std::vector<unsigned char>& v : payload) {
+      for (const std::vector<unsigned char>& v : payload) {
         if (GetSock() && GetSock()->IsOk()) {
           m_driver_stats.available = true;
           // printf("---%s", v.data());
