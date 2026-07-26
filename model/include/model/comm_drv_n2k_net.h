@@ -45,7 +45,7 @@
 #include "model/conn_params.h"
 
 #ifdef __WXGTK__
-// newer versions of glib define its own GSocket but we unfortunately use this
+// newer versions of glib define its own GSocket, but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
 #define GSocket GlibGSocket
@@ -60,9 +60,6 @@
 #define ESCAPE 0x10
 #define STARTOFTEXT 0x02
 #define ENDOFTEXT 0x03
-
-#define MsgTypeN2kData 0x93
-#define MsgTypeN2kRequest 0x94
 
 typedef enum {
   N2KFormat_Undefined = 0,
@@ -88,7 +85,7 @@ public:
   CommDriverN2KNet();
   CommDriverN2KNet(const ConnectionParams* params, DriverListener& listener);
 
-  virtual ~CommDriverN2KNet();
+  ~CommDriverN2KNet() override;
 
   DriverStats GetDriverStats() const override { return m_driver_stats; }
 
@@ -108,7 +105,6 @@ public:
   void OpenNetworkUDP(unsigned int addr);
   void OnSocketReadWatchdogTimer(wxTimerEvent& event);
   void HandleResume();
-
   bool SendMessage(std::shared_ptr<const NavMsg> msg,
                    std::shared_ptr<const NavAddr> addr) override;
   wxSocketBase* GetSock() const { return m_sock; }
@@ -134,7 +130,7 @@ private:
 
   NetworkProtocol GetProtocol() { return m_net_protocol; }
   void SetBrxConnectEvent(bool event) { m_brx_connect_event = event; }
-  bool GetBrxConnectEvent() { return m_brx_connect_event; }
+  bool GetBrxConnectEvent() const { return m_brx_connect_event; }
 
   void SetConnectTime(wxDateTime time) { m_connect_time = time; }
   wxDateTime GetConnectTime() { return m_connect_time; }
@@ -144,11 +140,11 @@ private:
 
   std::vector<unsigned char> PushFastMsgFragment(const CanHeader& header,
                                                  int position);
-  std::vector<unsigned char> PushCompleteMsg(const CanHeader header,
+  std::vector<unsigned char> PushCompleteMsg(const CanHeader& header,
                                              int position,
-                                             const can_frame frame);
+                                             const can_frame& frame);
 
-  void HandleCanFrameInput(can_frame frame);
+  void HandleCanFrameInput(const can_frame& frame);
 
   ConnectionType GetConnectionType() const { return m_connection_type; }
 
@@ -156,26 +152,27 @@ private:
   void SetOk(bool ok) { m_bok = ok; };
 
   N2K_Format DetectFormat(const std::vector<unsigned char>& packet);
-  bool ProcessActisense_ASCII_RAW(std::vector<unsigned char> packet);
-  bool ProcessActisense_ASCII_N2K(std::vector<unsigned char> packet);
-  bool ProcessActisense_N2K(std::vector<unsigned char> packet);
-  bool ProcessActisense_RAW(std::vector<unsigned char> packet);
-  bool ProcessActisense_NGT(std::vector<unsigned char> packet);
-  bool ProcessSeaSmart(std::vector<unsigned char> packet);
-  bool ProcessMiniPlex(std::vector<unsigned char> packet);
+  bool ProcessActisense_ASCII_RAW(const std::vector<unsigned char>& packet);
+  bool ProcessActisense_ASCII_N2K(const std::vector<unsigned char>& packet);
+  bool ProcessActisense_N2K(const std::vector<unsigned char>& packet);
+  bool ProcessActisense_RAW(const std::vector<unsigned char>& packet);
+  bool ProcessActisense_NGT(const std::vector<unsigned char>& packet);
+  bool ProcessSeaSmart(const std::vector<unsigned char>& packet);
+  bool ProcessMiniPlex(const std::vector<unsigned char>& packet);
 
-  bool SendN2KNetwork(std::shared_ptr<const Nmea2000Msg>& msg,
-                      std::shared_ptr<const NavAddr2000> dest_addr);
+  bool SendN2KNetwork(const std::shared_ptr<const Nmea2000Msg>& msg,
+                      const std::shared_ptr<const NavAddr2000>& dest_addr);
 
   std::vector<std::vector<unsigned char>> GetTxVector(
       const std::shared_ptr<const Nmea2000Msg>& msg,
-      std::shared_ptr<const NavAddr2000> dest_addr);
-  bool SendSentenceNetwork(std::vector<std::vector<unsigned char>> payload);
-  bool HandleMgntMsg(uint64_t pgn, std::vector<unsigned char>& payload);
+      const std::shared_ptr<const NavAddr2000>& dest_addr);
+  bool SendSentenceNetwork(
+      const std::vector<std::vector<unsigned char>>& payload);
+  bool HandleMgntMsg(uint64_t pgn, const std::vector<unsigned char>& payload);
   bool PrepareForTX();
   std::vector<unsigned char> PrepareLogPayload(
-      std::shared_ptr<const Nmea2000Msg>& msg,
-      std::shared_ptr<const NavAddr2000> addr);
+      const std::shared_ptr<const Nmea2000Msg>& msg,
+      const std::shared_ptr<const NavAddr2000>& addr);
   void OnProdInfoTimer(wxTimerEvent& ev);
 
   StatsTimer m_stats_timer;
@@ -204,7 +201,6 @@ private:
   wxTimer m_socketread_watchdog_timer;
 
   bool m_bok;
-  int m_ib;
   bool m_bInMsg, m_bGotESC, m_bGotSOT;
 
   CircularBuffer<unsigned char> m_circle;
@@ -223,4 +219,4 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-#endif  // guard
+#endif
