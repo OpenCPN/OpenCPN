@@ -40,11 +40,14 @@
 namespace safe_mode {
 
 static const char* LAST_RUN_ERROR_MSG =
-    _("<p>The last opencpn run seems to have failed. Do you want to run\n"
-      "in safe mode without plugins and other possibly problematic\n"
-      "features?\n</p><br/></br><p>You may consider visiting the <a "
-      "href=\"https://github.com/OpenCPN/OpenCPN/wiki/"
-      "OpenCPN-5.10-known-issues\">list of known issues</a>.</p>");
+
+    _(R"( <p>The last opencpn run seems to have failed. Do
+          <br>you want to run in safe mode without plugins and
+          <br> other possibly problematic features? </p>
+       <br/><br/>
+       <p> You may consider visiting the OpenCPN-5.16
+       <br/> <a href="http://repo.opencpn.org/known-issues-5.16.html">
+       list of known issues</a>.</p>)");
 
 /**
  * Check if the last start failed, possibly invoke user dialog and set
