@@ -585,7 +585,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
     }
   }
 
-  if (!IsSystemPluginPath(file_name.ToStdString()) && safe_mode::get_mode()) {
+  if (!IsSystemPluginPath(file_name.ToStdString()) && safe_mode::GetMode()) {
     DEBUG_LOG << "Skipping plugin " << file_name << " in safe mode";
     ClearLoadStamp(plugin_loadstamp.ToStdString());  // Not a fatal error
     return false;
@@ -635,7 +635,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       pic->m_plugin_modification = plugin_modification;
       pic->m_enabled = enabled.Get(false);
 
-      if (safe_mode::get_mode() &&
+      if (safe_mode::GetMode() &&
           !IsSystemPluginPath(file_name.ToStdString())) {
         pic->m_enabled = false;
         enabled.Set(false);

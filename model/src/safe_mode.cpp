@@ -44,21 +44,21 @@ static std::string SEP("/");
 
 bool safe_mode = false;
 
-std::string check_file_path() {
+std::string CheckFilePath() {
   std::string path = g_BasePlatform->GetPrivateDataDir().ToStdString();
   path += SEP;
   path += "startcheck.dat";
   return path;
 }
 
-void set_mode(bool mode) {
+void SetMode(bool mode) {
   safe_mode = mode;
   g_bdisable_opengl = g_bdisable_opengl || mode;
 }
 
-bool get_mode() { return safe_mode; }
+bool GetMode() { return safe_mode; }
 
 /** Mark last run as successful. */
-void clear_check() { remove(check_file_path().c_str()); }
+void MarkStartAsOk() { remove(CheckFilePath().c_str()); }
 
 }  // namespace safe_mode
