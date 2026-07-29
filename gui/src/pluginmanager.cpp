@@ -2538,7 +2538,7 @@ std::vector<const PlugInData*> GetInstalled() {
 
 /* Is plugin with given name present in loaded or safe list if installed? */
 static bool IsPluginLoaded(const std::string& name) {
-  if (safe_mode::get_mode()) {
+  if (safe_mode::GetMode()) {
     auto installed = PluginHandler::GetInstance()->GetInstalldataPlugins();
     auto found =
         std::find(installed.begin(), installed.end(), ocpn::tolower(name));
@@ -2574,7 +2574,7 @@ void PluginListPanel::ReloadPluginPanels() {
   Hide();
   m_PluginSelected = 0;
 
-  if (safe_mode::get_mode()) {
+  if (safe_mode::GetMode()) {
     /** Add panels for installed, unloaded plugins. */
     auto installed = PluginHandler::GetInstance()->GetInstalldataPlugins();
     for (const auto& name : installed) AddPlugin(name);
@@ -2776,7 +2776,7 @@ static bool canUninstall(std::string name) {
 
   for (auto plugin : pluginHandler->GetInstalled()) {
     if (plugin.name == name) {
-      if (safe_mode::get_mode())
+      if (safe_mode::GetMode())
         return true;
       else
         return !plugin.readonly;

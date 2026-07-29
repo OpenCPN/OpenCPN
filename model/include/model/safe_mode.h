@@ -32,13 +32,18 @@ namespace safe_mode {
 
 extern bool safe_mode;
 
-std::string check_file_path();
+/**
+ * Return path to file created when start is commenced and removed when
+ * completed
+ */
+std::string CheckFilePath();
 
-bool get_mode();
+/** Return true if we are running in safe mode. */
+bool GetMode();
 
-void set_mode(bool mode);
+void SetMode(bool mode);
 
 /** Mark last run as successful. */
-void clear_check();
+void MarkStartAsOk();
 
 }  // namespace safe_mode
