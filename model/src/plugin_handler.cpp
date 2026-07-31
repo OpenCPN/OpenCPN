@@ -289,7 +289,7 @@ public:
         "debian-armhf;12;ubuntu-armhf;23.04",
         "debian-armhf;12;ubuntu-armhf;23.10",
         "debian-armhf;12;ubuntu-armhf;24.04",
-        "debian-armhf;sid;ubuntu-armhf;24.04" };  // clang-format: on
+        "debian-armhf;sid;ubuntu-armhf;24.04"};  // clang-format: on
 
     if (ocpn::startswith(plugin.abi(), "debian")) {
       DEBUG_LOG << "Checking for debian plugin on a ubuntu host";
