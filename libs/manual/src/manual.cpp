@@ -47,7 +47,7 @@ static const std::unordered_map<std::string, std::string> kOnlineEntries = {
   {"Toc", "@ONLINE_ROOT@/index.html"},
   {"Chartdldr",
      "@ONLINE_ROOT@/chartdldr/index.html"},
-  {"Wmm",  "@ONLINE_PLUG@/wmm/index.html"},
+  {"Wmm",  "@ONLINE_ROOT@/wmm/index.html"},
   {"Dashboard", "@ONLINE_ROOT@/dashboard/index.html"},
   {"Grib", "@ONLINE_ROOT@/grib/index.html"},
   {"Hotkeys",
