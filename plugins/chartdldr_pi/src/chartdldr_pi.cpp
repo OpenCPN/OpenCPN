@@ -102,6 +102,7 @@
 
 #ifdef __ANDROID__
 #include <QtAndroidExtras/QAndroidJniObject>
+#include <QtWidgets/QTreeView>
 #include "qdebug.h"
 
 #endif
@@ -909,9 +910,14 @@ void ChartDldrPanelImpl::AppendCatalog(std::unique_ptr<ChartSource> &cs) {
               _T("%Y-%m-%d %H:%M")));
       m_lbChartSources->SetItem(id, 2, path);
 #ifdef __ANDROID__
-      m_lbChartSources->GetHandle()->resizeColumnToContents(0);
-      m_lbChartSources->GetHandle()->resizeColumnToContents(1);
-      m_lbChartSources->GetHandle()->resizeColumnToContents(2);
+      // wxListCtrl is a QTreeWidget underneath, but GetHandle() is typed
+      // QWidget*, so recover the view to reach resizeColumnToContents().
+      if (QTreeView *view =
+              qobject_cast<QTreeView *>(m_lbChartSources->GetHandle())) {
+        view->resizeColumnToContents(0);
+        view->resizeColumnToContents(1);
+        view->resizeColumnToContents(2);
+      }
 #endif
     }
   }
@@ -2261,29 +2267,12 @@ ChartDldrGuiAddSourceDlg::ChartDldrGuiAddSourceDlg(wxWindow *parent)
   w = 6 * g_androidDPmm;  // mm nominal size
   h = w;
 
-  p_buttonIconList = new wxImageList(w, h);
-
-  fn.SetFullName(_T("button_right.png"));
-  wxImage im1(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
-  im1.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
-  p_buttonIconList->Add(im1);
-
-  fn.SetFullName(_T("button_right.png"));
-  wxImage im2(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
-  im2.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
-  p_buttonIconList->Add(im2);
-
-  fn.SetFullName(_T("button_down.png"));
-  wxImage im3(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
-  im3.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
-  p_buttonIconList->Add(im3);
-
-  fn.SetFullName(_T("button_down.png"));
-  wxImage im4(fn.GetFullPath(), wxBITMAP_TYPE_PNG);
-  im4.Rescale(w, h, wxIMAGE_QUALITY_HIGH);
-  p_buttonIconList->Add(im4);
-
-  m_treeCtrlPredefSrcs->AssignButtonsImageList(p_buttonIconList);
+  // The custom expand/collapse arrows cannot be applied here: they are set with
+  // AssignButtonsImageList(), which is wxGenericTreeCtrl-only, and wxQt's
+  // wxTreeCtrl is the native Qt control. Qt draws its own branch indicators, so
+  // build no list rather than build one nothing can take ownership of.
+  (void)w;
+  (void)h;
 #else
   p_iconList = new wxImageList(w, h);
 

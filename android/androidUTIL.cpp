@@ -41,6 +41,11 @@
 
 #include <QtAndroidExtras/QAndroidJniObject>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
+#include <QtWidgets/QAbstractItemView>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QListView>
+#include <QtWidgets/QMenu>
 #include "o_sound/o_sound.h"
 
 #include "model/ais_state_vars.h"
@@ -4531,7 +4536,10 @@ void setChoiceStyleSheet(wxChoice *win, int refDim) {
 
   // qDebug() << styleString;
 
-  win->GetHandle()->setView(new QListView());  // Magic
+  // wxChoice keeps its QComboBox private and GetHandle() is typed QWidget*,
+  // so recover the combo box to reach setView().
+  if (QComboBox *combo = qobject_cast<QComboBox *>(win->GetHandle()))
+    combo->setView(new QListView());  // Magic
   win->GetHandle()->setStyleSheet(styleString);
 }
 

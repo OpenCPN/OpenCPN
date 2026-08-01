@@ -17,6 +17,9 @@
 
 #ifdef __OCPN__ANDROID__
 
+#include <QtCore/QString>
+#include <QtWidgets/QWidget>
+
 QString qtStyleSheet =
     "QScrollBar:horizontal {\
 border: 0px solid grey;\
@@ -260,9 +263,8 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
       m_panelPredefined, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       wxTR_DEFAULT_STYLE | wxTR_HIDE_ROOT | wxTR_HAS_BUTTONS);
   bSizerPredefTree->Add(m_treeCtrlPredefSrcs, 1, wxALL | wxEXPAND, 5);
-#ifdef __OCPN__ANDROID__
-  m_treeCtrlPredefSrcs->SetScrollRate(0, 1);
-#endif
+  // No SetScrollRate() here: it is wxScrolled API, which wxQt's native
+  // wxTreeCtrl does not derive from. The Qt view scrolls on its own.
   m_panelPredefined->SetSizer(bSizerPredefTree);
   m_panelPredefined->Layout();
   bSizerPredefTree->Fit(m_treeCtrlPredefSrcs /*m_panelPredefined*/);

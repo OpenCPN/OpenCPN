@@ -105,6 +105,7 @@ static const long long lNaN = 0xfff8000000000000;
 #endif
 
 #ifdef __OCPN__ANDROID__
+#include <QtWidgets/QWidget>
 #include "qdebug.h"
 #endif
 
