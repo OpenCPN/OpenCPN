@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M769 1270c0-18 14-43 41-43v-56l90-70 90 70v56c27 0 41 25 41 43H769z"/>
+    <path d="m900 1046-90 71v-51l90-70 90 70v51z"/>
+    <path d="m900 941-90 71v-51l90-70 90 70v51z"/>
+    <path d="m900 838-90 71v-50l90-71 90 71v50z"/>
+    <path d="m900 733-90 71v-50l90-71 90 71v50z"/>
+    <path d="m900 636-90 71V600l90-70 90 70v107z"/>
+</svg>

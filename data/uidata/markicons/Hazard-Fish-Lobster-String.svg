@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <ellipse fill="none" stroke="#00f" stroke-width="50" cx="900" cy="1145" rx="257" ry="87"/>
+    <path fill="#fff" d="M871 691h57.106v97.902H871z"/>
+    <path d="M871 789h57.106v118.679H871zm0 237h57.106v118.679H871z"/>
+    <path fill="#fff" d="M871 908h57.106v118.679H871z"/>
+    <circle fill="red" cx="900" cy="684" r="116"/>
+</svg>

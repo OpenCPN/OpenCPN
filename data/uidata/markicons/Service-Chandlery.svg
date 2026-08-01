@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M900 650h143l72 125 71 125-71 125-72 125H900V998h4c52-2 94-45 94-98 0-52-41-95-92-98h-6V650zM614 900l71-125 72-125h143v152c-54 0-98 44-98 98s44 98 98 98v152H757l-72-125-71-125z" fill="#00f"/>
+</svg>

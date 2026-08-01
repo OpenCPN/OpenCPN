@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <g fill-rule="nonzero">
+        <path d="m1000 827-173 173-27-27 173-173z"/>
+        <path d="m827 800 173 173-27 27-173-173z"/>
+    </g>
+</svg>

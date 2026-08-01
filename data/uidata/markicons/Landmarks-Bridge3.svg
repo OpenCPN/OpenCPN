@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M687 981h61.721v59.343H687z"/>
+    <path d="M700 799h35.608v186.821H700z"/>
+    <path d="m700 807-68-57h171l-68 57zm351 174h61.721v59.343H1051z"/>
+    <path d="M1065 799h35.608v186.821H1065z"/>
+    <path d="m1065 807-68-57h171l-68 57z"/>
+    <path d="M500 683h800.003v68.959H500zm0-53h800.003v27.562H500z"/>
+    <path d="M517 652h18.991v32.968H517zm374 0h18.991v32.968H891zm-183 0h18.991v32.968H708zm365 0h18.991v32.968H1073zm179 0h18.991v32.968H1252z"/>
+    <path fill="#0C85CA" d="M500 1170h800v-153c-39 2-33 22-62 22-27 0-32-23-61-23-54 0-42 23-73 23-27 0-32-23-61-23-53 0-43 23-73 23-28 0-33-23-61-23-52 0-45 23-70 23-36 0-31-23-69-23-43 0-44 23-65 23-37 0-30-23-68-23-44 0-45 23-66 23-37 0-30-23-68-23h-3v154z"/>
+</svg>

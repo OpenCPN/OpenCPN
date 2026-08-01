@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path d="M528 853h740.09v55.21H528z"/>
+    <path d="M655 1093V614h56v479z"/>
+    <path d="M674 615v-38h18v38zm-39 502v-90h96v90zm450-24V614h56v479z"/>
+    <path d="M1104 615v-38h18v38zm-39 502v-90h96v90z"/>
+    <path fill="#373435" fill-rule="nonzero" d="M720 612c19 82 55 138 99 168 25 17 52 26 80 26 27 0 55-9 80-27 43-30 79-85 97-167l19 4c-19 87-58 147-105 180-29 20-60 30-91 30-32 0-63-10-91-30-48-33-88-93-107-180l19-4z"/>
+    <path fill="#373435" fill-rule="nonzero" d="M779 745v108h-20V745zm86 64v44h-20v-44zm86 0v44h-20v-44zm86-62v106h-20V747z"/>
+    <path fill="#0C85CA" d="M528 1223h740v-153c-36 2-30 23-57 23-25 0-30-23-57-23-49 0-38 23-67 23-25 0-30-23-57-23-48 0-39 23-67 23-26 0-30-23-57-23-48 0-42 23-65 23-32 0-28-23-63-23-40 0-41 23-61 23-34 0-27-23-63-23-40 0-41 23-61 23-34 0-27-23-63-23h-2v153z"/>
+    <path fill="#373435" fill-rule="nonzero" d="M528 791c27-13 52-35 73-66 19-30 35-67 45-113l19 4c-10 48-27 88-48 120-23 34-50 59-80 73l-9-18z"/>
+    <path fill="#373435" fill-rule="nonzero" d="M607 747v106h-20V747zm543-135c11 46 27 85 47 114 22 32 48 54 75 67l-8 18c-31-14-59-38-83-73-22-32-39-73-50-122l19-4z"/>
+    <path fill="#373435" fill-rule="nonzero" d="M1209 745v108h-20V745z"/>
+</svg>

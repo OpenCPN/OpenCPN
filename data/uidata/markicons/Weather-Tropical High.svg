@@ -1,0 +1,5 @@
+<svg xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800" xmlns="http://www.w3.org/2000/svg">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <circle fill="#fff" stroke="#000" stroke-width="50" stroke-dasharray="100, 50" cx="900" cy="900" r="310"/>
+    <path fill="#00f" fill-rule="nonzero" d="M818 695v164h164V695h84v416h-84V929H818v182h-84V695z"/>
+</svg>

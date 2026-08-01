@@ -1,0 +1,32 @@
+version: '3'
+services:
+  web: 
+    image: nginx:latest
+    container_name: dasht_nginx
+    depends_on:
+      - db
+    volumes:
+      - /c/Users/Public/DashT/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /c/Users/Public/DashT/www:/data/www
+    ports:
+      - 8088:80
+      - 8089:8089
+  graphs:
+    image: grafana/grafana:latest
+    container_name: dasht_grafana
+    depends_on:
+      - db
+    links:
+      - db
+    volumes:
+      - /c/Users/Public/DashT/grafana:/var/lib/grafana
+    ports:
+      - 30000:3000
+  db: 
+    image: influxdb:latest
+    container_name: dasht_influxdb
+    volumes:
+      - /c/Users/Public/DashT/influxdb2:/var/lib/influxdb2
+    command: influxd run --bolt-path /var/lib/influxdb2/influxd.bolt --engine-path /var/lib/influxdb2/engine --store bolt --reporting-disabled
+    ports:
+      - 9999:8086

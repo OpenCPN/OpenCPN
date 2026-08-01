@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path style="fill:none;stroke-width:.94074076" d="M0 106.667h1693.333V1800H0z"/>
+    <path style="fill:#ff0;stroke-width:.93393499" d="M1587.085 169.287c105 191.892-380 272.137-669 272.137 186-192.764 568-465.773 669-272.137z"/>
+    <g transform="translate(-26.865 -380.125)">
+        <circle style="fill:#000;stroke:#000;stroke-width:20" r="60" cy="563" cx="900"/>
+        <circle style="fill:#000;stroke:#000;stroke-width:20" r="60" cy="708" cx="900"/>
+        <path style="fill:#000;stroke:#000;stroke-width:20" d="m931 836 53 303 119 49v109H697v-109l119-49 53-303z"/>
+        <path style="fill:red;stroke:#000;stroke-width:20" d="m816 1139 53-303h62l53 303z"/>
+        <path style="fill:#000;stroke:#000;stroke-width:20" d="m844 979 25-143h62l25 142z"/>
+    </g>
+</svg>

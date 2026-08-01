@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <rect fill="#C1FEFE" stroke="#0D0FFE" stroke-width="35" x="689" y="666" width="421" height="467" rx="107" ry="94"/>
+    <path fill="none" stroke="#0D0FFE" stroke-width="35" d="M900 792v292M770 972c-1 86 71 112 130 112m131-112c0 86-72 112-131 112m-96-230h192"/>
+    <circle fill="none" stroke="#0D0FFE" stroke-width="35" cx="900" cy="766" r="44"/>
+    <path fill="#0D0FFE" d="m808 982-38-61-39 61zm261 0-38-61-39 61z"/>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+</svg>

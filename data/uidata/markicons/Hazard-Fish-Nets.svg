@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="none" stroke="red" stroke-width="25" d="M556 1214c234-183 399-62 616-62 170 1 265-58 264-252M556 586c234 183 399 62 616 62 170-1 265 58 264 252"/>
+    <path fill="none" stroke="red" stroke-width="25" d="M772 683c223 91 212 365 0 434"/>
+    <path d="M880 860c-28 0-37 16-51 37-77 0-160-83-229 12 69 96 152 12 229 12 14 22 23 38 51 38-28-27-28-72 0-99z"/>
+    <path fill="none" stroke="red" stroke-width="7.62" d="m923 681-60 60m203-85L913 810m280-162L935 906m362-243-450 450m526-407-420 419m466-347-364 364m381-262-272 272m258-139-124 124m-374-16-58-59m200 81L915 993m278 159L935 894m362 243L847 687m526 407L953 675m466 346-364-363m381 262-272-272m258 139-124-124"/>
+    <path d="M644 1005c-28-1-36 15-51 37-76 0-160-84-229 12 69 96 153 12 229 12 15 21 23 37 51 37-28-27-28-72 0-98zm73-267c-29-1-37 15-51 37-77 0-160-84-230 12 70 96 153 12 230 12 14 21 22 37 51 37-28-27-28-72 0-98z"/>
+</svg>

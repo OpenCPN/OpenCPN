@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path style="fill:none;stroke-width:.94074076" d="M0 106.667h1693.333V1800H0z"/>
+    <circle cx="870.923" cy="335.667" r="71.842" style="fill:red;stroke:#000;stroke-width:16.83804893;stroke-miterlimit:4;stroke-dasharray:none"/>
+    <path transform="translate(15.885 -321.808) scale(.95249)" style="fill:#000;stroke:#000;stroke-width:27.94485283;stroke-miterlimit:4;stroke-dasharray:none" d="M1103 1297H697v-109l119-49 53-303h62l53 303 119 49z"/>
+    <path d="m850.26 484.869-45.548 282.888.395 144.864h60.36l1.077-427.904z" style="fill:red;fill-rule:evenodd;stroke:red;stroke-width:13.22916698;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+    <path style="fill:#fff;fill-rule:evenodd;stroke:#fff;stroke-width:13.22916698;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m895.589 484.869 45.548 282.888-.395 144.864h-60.36l-1.077-427.904zM690.856 817.77l100.24-38.802-.001 132.575h-100.24z"/>
+    <path d="m1055.29 818.65-100.24-38.802.001 132.575h100.24z" style="fill:red;fill-rule:evenodd;stroke:red;stroke-width:13.22916508;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+    <path style="fill:#ff0;stroke-width:.93393499" d="M1582.57 192.024c105 191.892-380 272.137-669 272.137 186-192.764 568-465.773 669-272.137Z"/>
+</svg>

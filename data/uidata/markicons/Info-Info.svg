@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <circle fill="#00f" cx="900" cy="900" r="248"/>
+    <rect fill="#fff" stroke="#fff" stroke-width="20" x="861" y="830" width="77.442" height="261.76" rx="39" ry="42"/>
+    <circle fill="#fff" stroke="#fff" stroke-width="20" cx="900" cy="747" r="39"/>
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+</svg>

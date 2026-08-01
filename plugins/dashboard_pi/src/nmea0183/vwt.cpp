@@ -97,6 +97,14 @@ bool VWT::Parse(const SENTENCE& sentence) {
   WindSpeedms = sentence.Double(5);
   WindSpeedKmh = sentence.Double(7);
 
+  // --- START NEGATIVE WIND NORMALIZATION ---
+  // 1. Fix negative wind angles (Convert -45 degrees port to 315 degrees standard)
+  if (WindDirectionMagnitude < 0.0) {
+        WindDirectionMagnitude += 360.0;
+  }
+  // --- END NEGATIVE WIND NORMALIZATION ---
+
+
   return (TRUE);
 }
 

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="18mm" height="18mm" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 1800 1800">
+    <path fill="none" d="M0 0h1800v1800H0z"/>
+    <path fill="#fff" stroke="#0D0FFE" stroke-width="50" d="M900 650c138 0 250 112 250 250s-112 250-250 250-250-112-250-250 112-250 250-250z"/>
+    <path fill="#0D0FFE" d="m761 900 139-224 139 224-139 224z"/>
+</svg>

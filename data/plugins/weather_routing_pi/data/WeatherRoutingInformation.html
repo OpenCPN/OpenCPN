@@ -1,0 +1,131 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <title>Weather Routing Plugin for OpenCPN</title>
+  </head>
+<body alink="#ff0000" bgcolor="#ffffff" link="#0000e2" text="#000000" vlink="#bb0000">
+    <center><h1>Weather Routing Plugin for OpenCPN</h1></center>
+    <h3>Introduction</h3>
+
+<p>The Weather Routing Plugin is designed to
+compute iteratively positions the boat could possibly make at
+a certain time.  By merging the results of many calculations,
+it is possible to form a map determining routes
+to any given location within the map.
+
+<h3>Quick Start</h3>
+First, load the grib file used for routing using the grib plugin.  Next, open the Weather Routing plugin from the main toolbar and right click the map and Select "Weather Route Position" at the starting location.  Repeat this step for the destination.  Now, in the Weather Routing window from the Configuration menu (next to File) Select "New".  From here you must configure your vessel correctly in the boat dialog; add a polar to specify how the boat sails.  When ready, select "Compute" from the Configuration menu to compute the weather route.
+
+<h3>Background</h3>
+
+<p>Integration with the grib plugin allows for
+knowledge of weather conditions.  The climatology plugin can also
+provide a source of data for longer voyages, but be warned that using
+the climatology data, especially in variable wind areas is unlikely
+to give realistic results.  Using climatology for currents is more useful
+and can be used with grib wind data when grib current data is not available.
+<br>
+For example, in the case where data is valid from both sources,
+grib will always be choosen.  If current data is available from climatology,
+and only wind from grib, then the grib wind is used with the climatology current.
+
+<p>The grib time selected on the timeline at the time the computation is
+started can be syncronized.  From there, the grib timeline data is accessed
+as the computation proceeds.  Once a computation is completed, the
+course and position of the boat as it sails along the computed route
+can be viewed during grib playback.
+
+<p>Wind data is required; if no Current or Swell data is available, they are assumed to be zero.
+
+<h3>Configuration Options</h3>
+
+<p>
+<ul>
+  <li><b>Time Step</b> Time to sail before considering a course or sail change.  This is the difference in time between the isochrones on the map.  Small time-steps are needed to navigate through narrow channels and give a more accurate result.  Generally the route's computed time becomes faster with smaller time steps as it can find a more optimal route with more variation, however it will take longer to calculate (generally four times longer for half the time step).</li>
+  <li><b>Grib</b> Enable using current grib from grib plugin.</li>
+  <li><b>Climatology</b> <ul>
+      <li><b>Disable</b> Do not allow climatology to be used.</li>
+      <li><b>Currents Only</b> Use climatology for currents, but never wind.</li>
+      <li><b>Cumulative Map</b> Pretend the wind comes from all of the directions in the wind atlas
+        for the percentage of time based on the atlas.  For this mode to work optimally, you should sail
+      at all angles from 0 to 360, and enable "optimize tacking".  This will
+      allow the program to assume you will tack as needed in intervals shorter than the isochrones to take advantage of wind shifts.</li>
+      <li><b>Cumulative - Calms</b> Like Cumulative Map, except the boat also drifts without sailing during calms.</li>
+      <li><b>Most Likely</b> Use the interpolated most likely wind data from the wind atlas, with the most likely wind speed.</li>
+      <li><b>Average</b> Use wind vector average for wind direction, and wind magnitude average for wind speed.  This
+    is the fastest to compute, but not very realistic (it may be close in prevailing conditions).</li></ul>
+  <li><b>Last Valid Wind Data if Deficient</b> Continue to navigate on last valid wind data
+    even if there is no more valid wind data in the area/time.  Currents will be assumed to be zero if data is deficient.  Cases with deficient data include navigating outside the space or time of the grib file without climatology data, or into an area also not covered by climatology.</li>
+  <li><b>Wind Strength Percentage</b> Multiply wind strength from data source by this percentage to allow computation of possible "what if" scenarios of greater or lesser wind strength.</li>
+  <li><b>Integrator</b> Newton's method is default and fastest, but doesn't take into account changes
+    in wind/current along each step.  Rutta Kunge (4th order) is much more accurate taking 4 samples, but a lot slower.  Generally Newton's method with a smaller time step is recommended for more accuracy.</li>
+  <li><b>Detect Land</b> Use GSHHS coastline data to avoid sailing through land.  This check is quite slow and should be optimized in the future.  It is recommended to upgrade to the high resolution background map <a href="http://opencpn.org/ocpn/chart_sources">available here</a>.</li>
+  <li><b>Optimize Tacking</b> Boat may sail on all courses 0-360, even directly upwind and it is assumed that the captain performs tacking at the optimal angles to closely approximate the generated weather route for upwind and downwind.  Tacks will not be visible in the generated route.  This may allow navigation in tighter areas, or otherwise better results without decreasing the time step.
+  <li><b>Inverted Regions</b> This is relatively rare, but in some cases it may be
+    possible to reach a location from two different routes (imagine either side of an island)
+    which is further away from the destination before the destination can be reached.  At this
+    point, the algorithm must invert and work inwards on this inverted region (rather than outwards)
+    to possibly reach the destination.  This case can occur when routing around islands,
+    or occasionally when routing near a high pressure system. Normally this should be disabled,
+    and extra computations are avoided.  NOTE: this mode has bugs</li>
+  <li><b>Anchoring</b>  In some cases, it may be preferable to anchor (assuming it
+    isn't too deep) rather than continue to navigate if there is a contrary current which
+    is swifter than the boat can travel.  This allows the route to reach the destination sooner
+    by sitting in place until the current abades.</li>
+  <li><b>Max Diverted Course</b> Maximum course error to continue toward destination.  Not all possible courses will be considered and therefore the most optimal route may not be found.  This usually (but not in all cases) is obvious when the optimal route is sometimes near the edge of the graph.  Using a reasonable value can greatly speeds the rate of computation.</li>
+  <li><b>Max Course Angle</b> Like Max Diverted Course, except the search range is based from the starting position to the destination.  Normally should be set to 180.</li>
+  <li><b>Max Search Angle</b> This specifies how much the boat course can change between propagations.  A value of 180 gives the maximum flexibility of boat movement, but increases the computation time.  A minimum of 90 is usually needed for tacking, a value of 120 is recommended with strong currents.  Smaller values (60 or less) can give very fast results, but should be used with care, as if the other settings are not appropriate, an inaccurate graph will result.  For example, if tacking is needed at any time, then in this case, all courses (0-360) must be specified as degree steps and "optimize tacking" should be enabled.
+  <li><b>Max True Wind Knots</b> Do not navigate in areas with more true wind than this value.</li>
+  <li><b>Max Apparent Wind Knots</b> Do not navigate in areas with more apparent wind than this value.  This should be set to a high value (ie: 100) if not used to avoid extra calculations.</li>
+  <li><b>Max Swell Meters</b> Do not attempt to navigate in areas with more wave average height than this value.</li>
+  <li><b>Max Latitude</b> Do not navigate above (or below in the southern hemisphere) this latitude.</li>
+  <li><b>Max # of Tacks</b> Does not attempt to tack more than this number of times.  Currently it tacks as much as it likes initially, then stops tacking at the limit, therefore if a very low number or an even/odd mis-match is given, a very sub-optimal track may be produced.  For this reason a value of -1 (unlimited tacks) is recomended</li>
+  <li><b>Tacking Time</b> Penalty for course change from one tack to the other in seconds.  This is normally irrelevant for ocean passages, but could be useful for routes in tight quarters  Setting to 0 avoids extra calculations. </li>
+  <li><b>Wind VS Current</b> When wind opposes current rough seas can be produced.  This constraint takes the dot product of the current and wind vectors, and if the result exceeds this value, navigation in this area is avoided.  For example, a value of 60 would avoid 30 knots of wind opposing a 2 knot current as well as 20 knots of wind opposing a 3 knot current.  Higher values allow for rougher conditions; the special value 0 (default) allows any conditions.
+  <li><b>Avoid Cyclone Tracks</b> Uses climatology cyclone tracks to avoid routings which cross historic cyclones.  The settings in the climatology configuration for windspeed, pressure elnino etc are used, so only visible tracks are considered.</li>
+  <li><b>Courses (relative to true wind)</b> A list of courses to attempt sailing.  Excluding certain values can force the route to explicity show tacks/jibes.  Another option is to remove all upwind values to find a course which is always running off the wind (even if it is much longer.)  Good results typically have a course every 3-5 degrees; more steps takes longer computation time.</li>
+</ul>
+
+<h3>Failures</h3>
+  If the route failes to complete there are various reasons why displayed in the status column of that configuration.
+  <ul>
+    <li><b>Grib</b> Grib data not available at the needed time step.  This is different from being outside of the grib area.</li>
+    <li><b>Climatology</b> Can only occur if trying to avoid climatology cyclone data and the data isn't available.</li>
+    <li><b>Polar</b> Occurs when there is no polar defined for the conditions.</li>
+    <li><b>No Data</b> Occurs when navigating in an area where there exists no wind data.</li>
+  </ul>
+
+<p>It is also possible to fail with none of the above specified.  In this case it is likely due to the configuration settings being too restrictive.
+
+<p>It is possible to be restricted by constraints in one area, not have data in another area and have undefined polar data elsewhere, and changing any of the three allows for a successful route.  For this reason the cause of failure may be unclear.
+
+<h3>Batch Mode</h3>
+<p>Once a weather route is successfully computed, it is possible to determine the best time to leave.  To do this, many configurations must be generated each with a different start time.  Starting by selecting a single configuration with the earliest starting time.  From the configuration menu, select batch (ctrl+b) From here, enter the number of days/hours to generate spans.  Using decimal values for hours is allowed (ie: 0.5 for half-hour)  Once generate is selected, many configurations should appear.  Now, "Compute All (ctrl+a)" can be selected from the configurations menu.  A total progress bar can be seen under the configurations.  Finally a report describing the routes is available from the View menu.
+
+<h3>Boat</h3>
+
+<p>
+The boat dialog displays the polar plot of the boat's speed vs true wind direction as well as showing other details.  An xml file specifies the boat parameters and each sail plan.  Two file types of polars are supported; CSV (same as qtVlm) and xml parameters which describe how to compute the polar.
+
+<p>
+<h4>Plot tab</h4>
+<dt>specifies the parameters for the plot displayed.
+<ul>
+  <li><b>Polar</b> Typical polar diagram showing boat speeds at a given wind speed.
+  <li><b>Speed</b> Plot boat speed across all wind speeds at a given wind angle.
+</ul>
+
+The tracking displays give data based on the mouse position over the plot.
+
+<p>
+<h4>Crossover tab</h4>
+<dt>Shows the relationship of the polars and which one is used
+  for each condition.
+
+<p>
+<p>
+<h4>Statistics</h4>
+<dt>Displays miscellaneous statistics about the boat.
+
+
+<p><h4>The Weather Routing plugin is written and maintained by <a href="http://seandepagnier.users.sourceforge.net">Sean D'Epagnier</a></h4> Please contact me with questions, suggestions and feedback.
+</body></html>
