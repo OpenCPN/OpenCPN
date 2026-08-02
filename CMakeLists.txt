@@ -1522,6 +1522,9 @@ endif ()
 # Add android and windows extra, bundled GL headers
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
 
+add_subdirectory(libs/nlohmann-json)
+target_link_libraries(${PACKAGE_NAME} PUBLIC nlohmann::json)
+
 # Ensure we have ghc::filesystem if std::filesystem is missing.
 add_subdirectory(libs/std_filesystem)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
