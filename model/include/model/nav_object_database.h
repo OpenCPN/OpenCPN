@@ -79,8 +79,9 @@ class TrackPoint;  // circular
 using RouteList = std::vector<Route *>;  // circular
 
 bool WptIsInRouteList(RoutePoint *pr);
-RoutePoint *WaypointExists(const wxString &name, double lat, double lon);
-RoutePoint *WaypointExists(const wxString &guid);
+RoutePoint *WaypointExistsByNamePosition(const wxString &name, double lat,
+                                         double lon);
+RoutePoint *WaypointExistsByGUID(const wxString &guid);
 Route *RouteExists(const wxString &guid);
 Route *RouteExists(Route *pTentRoute);
 Track *TrackExists(const wxString &guid);
