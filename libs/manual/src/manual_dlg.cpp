@@ -78,4 +78,5 @@ ManualDlg::ManualDlg(wxWindow* parent, const std::string& url)
   SetSizer(vbox);
   Fit();
   Layout();
+  Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent&) { Destroy(); });
 }
