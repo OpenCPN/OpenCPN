@@ -527,7 +527,7 @@ Route *GPXLoadRoute1(pugi::xml_node &wpt_node, bool b_fullviz, bool b_layer,
             ::GPXLoadWaypoint1(tschild, "square", "", b_fullviz, b_layer,
                                b_layerviz, layer_id, false);
         RoutePoint *erp = NULL;
-        if (!b_layer) erp = ::WaypointExists(tpWp->m_GUID);
+        if (!b_layer) erp = ::WaypointExistsByGUID(tpWp->m_GUID);
         // 1) if b_change is true, that means we are after crash - load the
         // route and points as found in source file 2) if route_existing, we are
         // loading a different route with the same guid. In this case load
@@ -1149,7 +1149,7 @@ bool InsertTrack(Track *pTentTrack, bool bApplyChanges) {
 bool InsertWpt(RoutePoint *pWp, bool overwrite) {
   bool res = false;
   RoutePoint *pExisting =
-      WaypointExists(pWp->GetName(), pWp->m_lat, pWp->m_lon);
+      WaypointExistsByNamePosition(pWp->GetName(), pWp->m_lat, pWp->m_lon);
   if (!pExisting || overwrite) {
     if (NULL != pWayPointMan) {
       if (pExisting) {
@@ -1192,7 +1192,7 @@ static void UpdateRouteA(Route *pTentRoute, NavObjectCollection1 *navobj) {
   for (RoutePoint *prp : *pTentRoute->pRoutePointList) {
     // if some wpts have been not deleted, that means they should be used in
     // other routes or are isolated way points so need to be updated
-    RoutePoint *ex_rp = ::WaypointExists(prp->m_GUID);
+    RoutePoint *ex_rp = ::WaypointExistsByGUID(prp->m_GUID);
     if (ex_rp) {
       pSelect->DeleteSelectableRoutePoint(ex_rp);
       ex_rp->m_lat = prp->m_lat;
@@ -1404,18 +1404,53 @@ bool NavObjectCollection1::LoadAllGPXObjects(bool b_full_viz,
           ::GPXLoadWaypoint1(object, "circle", "", b_full_viz, false, false, 0);
 
       pWp->m_bIsolatedMark = true;  // This is an isolated mark
-      RoutePoint *pExisting =
-          WaypointExists(pWp->GetName(), pWp->m_lat, pWp->m_lon);
+      RoutePoint *pExisting = WaypointExistsByGUID(pWp->m_GUID);
       if (!pExisting) {
-        if (NULL != pWayPointMan) pWayPointMan->AddRoutePoint(pWp);
-        NavObj_dB::GetInstance().InsertRoutePoint(pWp);
-        pSelect->AddSelectableRoutePoint(pWp->m_lat, pWp->m_lon, pWp);
-        LLBBox wptbox;
-        wptbox.Set(pWp->m_lat, pWp->m_lon, pWp->m_lat, pWp->m_lon);
-        BBox.Expand(wptbox);
+        // Normal import of new waypoint
+        if (NavObj_dB::GetInstance().InsertRoutePoint(pWp)) {
+          if (NULL != pWayPointMan) {
+            pWayPointMan->AddRoutePoint(pWp);
+            pSelect->AddSelectableRoutePoint(pWp->m_lat, pWp->m_lon, pWp);
+            LLBBox wptbox;
+            wptbox.Set(pWp->m_lat, pWp->m_lon, pWp->m_lat, pWp->m_lon);
+            BBox.Expand(wptbox);
+          }
+        }
       } else {
-        delete pWp;
-        wpt_duplicates++;
+        // identical position (within epsilon) ?
+        // If so, drop the import
+        if (fabs(pWp->m_lat - pExisting->m_lat) < 1.e-6 &&
+            fabs(pWp->m_lon - pExisting->m_lon) < 1.e-6) {
+          delete pWp;
+          wpt_duplicates++;
+        } else {
+          // The GUID already exists, but the position is different
+          // Assign a new GUID to the imported waypoint
+          // thus avoiding database duplicate
+          // Also, if existing point and import point have identical
+          // name fields set, then assign the imported point's name field as a
+          // time-stamped derivative of the common point name.
+          if (NULL != pWayPointMan) {
+            pWp->m_GUID = pWayPointMan->CreateGUID(pWp);
+            // Handle possible name change
+            if (!pExisting->GetName().IsEmpty() || !pWp->GetName().IsEmpty()) {
+              // Case 1, names are not empty, and exactly the same
+              if (pExisting->GetName().IsSameAs(pWp->GetName())) {
+                wxString mod_name = pWp->GetName() + "-Dup-";
+                wxDateTime dt = wxDateTime::Now();
+                mod_name += dt.Format("%Y-%m-%d");
+                pWp->SetName(mod_name);
+              }
+            }
+            if (NavObj_dB::GetInstance().InsertRoutePoint(pWp)) {
+              pWayPointMan->AddRoutePoint(pWp);
+              pSelect->AddSelectableRoutePoint(pWp->m_lat, pWp->m_lon, pWp);
+              LLBBox wptbox;
+              wptbox.Set(pWp->m_lat, pWp->m_lon, pWp->m_lat, pWp->m_lon);
+              BBox.Expand(wptbox);
+            }
+          }
+        }
       }
     } else if (!strcmp(object.name(), "trk")) {
       Track *pTrack = GPXLoadTrack1(object, b_full_viz, false, false, 0);
@@ -1517,7 +1552,8 @@ bool NavObjectCollection1::LoadAllGPXPointObjects() {
   return true;
 }
 
-RoutePoint *WaypointExists(const wxString &name, double lat, double lon) {
+RoutePoint *WaypointExistsByNamePosition(const wxString &name, double lat,
+                                         double lon) {
   RoutePoint *pret = NULL;
   //    if( g_bIsNewLayer ) return NULL;
   for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
@@ -1532,7 +1568,7 @@ RoutePoint *WaypointExists(const wxString &name, double lat, double lon) {
   return pret;
 }
 
-RoutePoint *WaypointExists(const wxString &guid) {
+RoutePoint *WaypointExistsByGUID(const wxString &guid) {
   for (RoutePoint *pr : *pWayPointMan->GetWaypointList()) {
     if (guid == pr->m_GUID) {
       return pr;
