@@ -271,14 +271,16 @@ public:
         "debian-x86_64;12;ubuntu-x86_64;23.04",
         "debian-x86_64;12;ubuntu-x86_64;23.10",
         "debian-x86_64;12;ubuntu-x86_64;24.04",
-        "debian-x86_64;sid;ubuntu-x86_64;24.04",
+        "debian-x86_64;13;ubuntu-x86_64;26.04",
+        "debian-x86_64;sid;ubuntu-x86_64;26.04",
 
         "debian-arm64;11;ubuntu-gtk3-arm64;20.04",
         "debian-wx32-arm64;11;ubuntu-wx32-arm64;22.04",
         "debian-arm64;12;ubuntu-arm64;23.04",
         "debian-arm64;12;ubuntu-arm64;23.10",
         "debian-arm64;12;ubuntu-arm64;24.04",
-        "debian-arm64;sid;ubuntu-arm64;24.04",
+        "debian-arm64;13;ubuntu-arm64;26.04",
+        "debian-arm64;sid;ubuntu-arm64;26.04",
 
         "debian-armhf;10;ubuntu-armhf;18.04",
         "debian-gtk3-armhf;10;ubuntu-gtk3-armhf;18.04",

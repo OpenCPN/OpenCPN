@@ -39,26 +39,27 @@
 
 namespace safe_mode {
 
-static const char* LAST_RUN_ERROR_MSG =
-    _("<p>The last opencpn run seems to have failed. Do you want to run\n"
-      "in safe mode without plugins and other possibly problematic\n"
-      "features?\n</p><br/></br><p>You may consider visiting the <a "
-      "href=\"https://github.com/OpenCPN/OpenCPN/wiki/"
-      "OpenCPN-5.10-known-issues\">list of known issues</a>.</p>");
+static const char* kLastRunErrorMsg =
+    // clang-format off
+  _(R"( <p>The last opencpn run seems to have failed. Do <br/>
+        you want to run in safe mode without plugins and <br/>
+        other possibly problematic features? </p>
+        <br/><br/>
+        <p> You may consider visiting the OpenCPN-5.16 <br/>
+        <a href="http://repo.opencpn.org/known-issues-5.16.html">
+        list of known issues</a>.</p>)");  // clang-format on
 
 /**
  * Check if the last start failed, possibly invoke user dialog and set
- * safe mode state.
+ * global safe mode state.
  */
-void check_last_start() {
-  std::string path = check_file_path();
+void CheckLastStart() {
+  std::string path = CheckFilePath();
   if (!ocpn::exists(path)) {
     std::ofstream dest(path, std::ios::binary);
-    dest << "Internal opencpn use" << std::endl;
-    dest.close();
+    dest << "Internal opencpn use\n";
     return;
   }
-
   std::string title = _("Safe Restart").ToStdString();
   std::string action = _("Safe mode start").ToStdString();
   AlertDialog dlg(0, title, action);
@@ -68,9 +69,7 @@ void check_last_start() {
   dlg.SetTimer(15);
 
   std::stringstream html;
-  html << "<html><body>";
-  html << LAST_RUN_ERROR_MSG;
-  html << "</body></html>";
+  html << "<html><body>" << kLastRunErrorMsg << "</body></html>";
   dlg.AddHtmlContent(html);
 
   int reply = dlg.ShowModal();

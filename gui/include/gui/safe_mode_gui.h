@@ -19,6 +19,6 @@ namespace safe_mode {
  * Check if the last start failed, possibly invoke user dialog and set
  * safe mode state.
  */
-void check_last_start();
+void CheckLastStart();
 
 }  // namespace safe_mode

@@ -649,7 +649,7 @@ bool MyApp::OnCmdLineParsed(wxCmdLineParser &parser) {
     g_unit_test_1 = static_cast<int>(number);
     if (g_unit_test_1 == 0) g_unit_test_1 = -1;
   }
-  safe_mode::set_mode(parser.Found("safe_mode"));
+  safe_mode::SetMode(parser.Found("safe_mode"));
   ParseLoglevel(parser);
   wxString wxstr;
   if (parser.Found("configdir", &wxstr)) {
@@ -839,8 +839,8 @@ bool MyApp::OnInit() {
 
 #ifndef __ANDROID__
   // Check if last run failed, set up safe_mode.
-  if (!safe_mode::get_mode()) {
-    safe_mode::check_last_start();
+  if (!safe_mode::GetMode()) {
+    safe_mode::CheckLastStart();
   }
 #endif
 
@@ -1909,7 +1909,7 @@ int MyApp::OnExit() {
   FontMgr::Shutdown();
 
   g_Platform->OnExit_2();
-  safe_mode::clear_check();
+  safe_mode::MarkStartAsOk();
   delete g_Platform;
 
   return TRUE;
