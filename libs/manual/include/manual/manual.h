@@ -26,7 +26,7 @@
 #include <wx/window.h>
 
 #include <string>
-#include <wx/jsonreader.h>
+#include "nlohmann/json.hpp"
 
 class Manual {
 public:
@@ -53,8 +53,10 @@ public:
   bool Launch(const std::string& entrypoint);
 
 private:
+  using json = nlohmann::json;
+
   std::string m_datadir;
-  wxJSONValue m_root;
+  json m_root;
   wxWindow* m_parent;
 };
 
