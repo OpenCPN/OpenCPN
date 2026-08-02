@@ -32,10 +32,10 @@
 #include <wx/stattext.h>
 #include <wx/string.h>
 
-#include "ocpn_plugin.h"
-
 #include "hotkeys_dlg.h"
-#include "manual.h"
+
+#include "manual/manual.h"
+#include "ocpn_plugin.h"
 
 static inline wxString U8(const char* s) { return wxString::FromUTF8(s); }
 
