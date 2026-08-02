@@ -11,8 +11,9 @@
 #include <wx/scrolwin.h>
 #include <wx/textwrapper.h>
 
+#include "manual/manual.h"
+
 #include "chartdldr_pi.h"
-#include "manual.h"
 
 ///////////////////////////////////////////////////////////////////////////
 

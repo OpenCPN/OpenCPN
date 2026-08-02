@@ -38,17 +38,19 @@
 
 #include "gui/ocpn_fontdlg.h"
 
+#include "manual/manual.h"
+
 #include "altitude.h"
 #include "baro_history.h"
 #include "clock.h"
+#include "depth.h"
 #include "compass.h"
 #include "dashboard_pi.h"
-#include "depth.h"
 #include "from_ownship.h"
 #include "gps.h"
 #include "icons.h"
 #include "jsonreader.h"
-#include "manual.h"
+#include "jsonwriter.h"
 #include "N2KParser.h"
 
 wxFontData *g_pFontTitle;
