@@ -787,7 +787,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   if (firstTimeUse) {
     g_AisFirstTimeUse = true;
     //   Show Status Bar CPA warning status
-    cp->ToggleCPAWarn();
+    if (cp) cp->ToggleCPAWarn();
     g_AisFirstTimeUse = false;
     firstTimeUse = false;
   }
