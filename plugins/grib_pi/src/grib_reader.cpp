@@ -81,39 +81,39 @@ void GribReader::clean_vector(std::vector<GribRecord *> &ls) {
 void GribReader::storeRecordInMap(GribRecord *rec) {
 #if 0
     fprintf(stderr,
-        "GribReader: STORE record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
-            rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
-            rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
+        "GribReader: STORE record type: data_type=%d level_type=%d level_value=%d idCenter==%d && idModel==%d && idGrid==%d\n",
+            rec->GetDataType(), rec->GetLevelType(), rec->GetLevelValue(),
+            rec->GetIdCenter(), rec->GetIdModel(), rec->GetIdGrid()
         );
 #endif
   std::map<std::string, std::vector<GribRecord *> *>::iterator it;
-  it = mapGribRecords.find(rec->getKey());
+  it = mapGribRecords.find(rec->GetKey());
   if (it == mapGribRecords.end()) {
-    mapGribRecords[rec->getKey()] = new std::vector<GribRecord *>;
-    assert(mapGribRecords[rec->getKey()]);
+    mapGribRecords[rec->GetKey()] = new std::vector<GribRecord *>;
+    assert(mapGribRecords[rec->GetKey()]);
   }
-  mapGribRecords[rec->getKey()]->push_back(rec);
+  mapGribRecords[rec->GetKey()]->push_back(rec);
 }
 
 //---------------------------------------------------------------------------------
 static bool RecordIsWind(GribRecord *rec) {
-  return rec->getDataType() == GRB_WIND_VX ||
-         rec->getDataType() == GRB_WIND_VY ||
-         rec->getDataType() == GRB_WIND_DIR ||
-         rec->getDataType() == GRB_WIND_SPEED;
+  return rec->GetDataType() == GRB_WIND_VX ||
+         rec->GetDataType() == GRB_WIND_VY ||
+         rec->GetDataType() == GRB_WIND_DIR ||
+         rec->GetDataType() == GRB_WIND_SPEED;
 }
 
 //---------------------------------------------------------------------------------
 static bool RecordIsGust(GribRecord *rec) {
-  return rec->getDataType() == GRB_WIND_GUST_VX ||
-         rec->getDataType() == GRB_WIND_GUST_VY ||
-         rec->getDataType() == GRB_WIND_GUST;
+  return rec->GetDataType() == GRB_WIND_GUST_VX ||
+         rec->GetDataType() == GRB_WIND_GUST_VY ||
+         rec->GetDataType() == GRB_WIND_GUST;
 }
 
 static bool RecordIsCurrent(GribRecord *rec) {
-  return rec->getDataType() == GRB_UOGRD || rec->getDataType() == GRB_VOGRD ||
-         rec->getDataType() == GRB_CUR_DIR ||
-         rec->getDataType() == GRB_CUR_SPEED;
+  return rec->GetDataType() == GRB_UOGRD || rec->GetDataType() == GRB_VOGRD ||
+         rec->GetDataType() == GRB_CUR_DIR ||
+         rec->GetDataType() == GRB_CUR_SPEED;
 }
 
 void GribReader::readAllGribRecords() {
@@ -137,10 +137,10 @@ void GribReader::readAllGribRecords() {
 
     if (is_v2 == false) {
       rec = new GribV1Record(file, id);
-      if (rec->isOk() == false) {
+      if (rec->IsOk() == false) {
         delete rec;
         rec = new GribV2Record(file, id);
-        is_v2 = rec->isOk();
+        is_v2 = rec->IsOk();
       }
     } else {
       GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
@@ -151,20 +151,20 @@ void GribReader::readAllGribRecords() {
         rec = new GribV2Record(file, id);
       }
 
-      is_v2 = rec->isOk();
-      if (rec->isOk() == false) {
+      is_v2 = rec->IsOk();
+      if (rec->IsOk() == false) {
         delete rec;
         rec = new GribV1Record(file, id);
       }
     }
     prevDataSet = nullptr;
-    if (rec->isOk() == false) {
+    if (rec->IsOk() == false) {
       delete rec;
       break;
     }
-    b_EOF = rec->isEof();
+    b_EOF = rec->IsEof();
 
-    if (!rec->isDataKnown()) {
+    if (!rec->IsDataKnown()) {
       GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
       if (rec2 == nullptr || !rec2->hasMoreDataSet()) {
         delete rec;
@@ -176,104 +176,104 @@ void GribReader::readAllGribRecords() {
     }
     ok = true;  // au moins 1 record ok
 
-    if (firstdate == -1) firstdate = rec->getRecordCurrentDate();
+    if (firstdate == -1) firstdate = rec->GetRecordCurrentDate();
 
-    if ((rec->getDataType() == GRB_PRESSURE && rec->getLevelValue() == 0 &&
-         (rec->getLevelType() == LV_MSL ||
-          rec->getLevelType() == LV_GND_SURF)) ||
-        (RecordIsWind(rec) && rec->getLevelType() == LV_ABOV_GND &&
-         rec->getLevelValue() == 10) ||
+    if ((rec->GetDataType() == GRB_PRESSURE && rec->GetLevelValue() == 0 &&
+         (rec->GetLevelType() == LV_MSL ||
+          rec->GetLevelType() == LV_GND_SURF)) ||
+        (RecordIsWind(rec) && rec->GetLevelType() == LV_ABOV_GND &&
+         rec->GetLevelValue() == 10) ||
         (RecordIsWind(rec) &&
-         rec->getLevelType() == LV_ISOBARIC  // wind at x hpa
-         && (rec->getLevelValue() == 850 || rec->getLevelValue() == 700 ||
-             rec->getLevelValue() == 500 || rec->getLevelValue() == 300)))
+         rec->GetLevelType() == LV_ISOBARIC  // wind at x hpa
+         && (rec->GetLevelValue() == 850 || rec->GetLevelValue() == 700 ||
+             rec->GetLevelValue() == 500 || rec->GetLevelValue() == 300)))
       storeRecordInMap(rec);
 
-    else if ((RecordIsGust(rec) && rec->getLevelType() == LV_GND_SURF &&
-              rec->getLevelValue() == 0))
+    else if ((RecordIsGust(rec) && rec->GetLevelType() == LV_GND_SURF &&
+              rec->GetLevelValue() == 0))
       storeRecordInMap(rec);
 
-    else if (RecordIsWind(rec) && rec->getLevelType() == LV_GND_SURF)
+    else if (RecordIsWind(rec) && rec->GetLevelType() == LV_GND_SURF)
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_TEMP  // Air temperature at 2m
-             && rec->getLevelType() == LV_ABOV_GND && rec->getLevelValue() == 2)
+    else if (rec->GetDataType() == GRB_TEMP  // Air temperature at 2m
+             && rec->GetLevelType() == LV_ABOV_GND && rec->GetLevelValue() == 2)
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_TEMP  // Air temperature at x hpa
-             && rec->getLevelType() == LV_ISOBARIC &&
-             (rec->getLevelValue() == 850 || rec->getLevelValue() == 700 ||
-              rec->getLevelValue() == 500 || rec->getLevelValue() == 300))
+    else if (rec->GetDataType() == GRB_TEMP  // Air temperature at x hpa
+             && rec->GetLevelType() == LV_ISOBARIC &&
+             (rec->GetLevelValue() == 850 || rec->GetLevelValue() == 700 ||
+              rec->GetLevelValue() == 500 || rec->GetLevelValue() == 300))
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_PRECIP_TOT  // total rainfall
-             && rec->getLevelType() == LV_GND_SURF && rec->getLevelValue() == 0)
+    else if (rec->GetDataType() == GRB_PRECIP_TOT  // total rainfall
+             && rec->GetLevelType() == LV_GND_SURF && rec->GetLevelValue() == 0)
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_PRECIP_RATE &&
-             rec->getLevelType() == LV_GND_SURF && rec->getLevelValue() == 0)
+    else if (rec->GetDataType() == GRB_PRECIP_RATE &&
+             rec->GetLevelType() == LV_GND_SURF && rec->GetLevelValue() == 0)
       storeRecordInMap(rec);
 
-    else if ((rec->getDataType() == GRB_CLOUD_TOT  // cloud cover
-              || rec->getDataType() == GRB_COMP_REFL) &&
-             rec->getLevelType() == LV_ATMOS_ALL && rec->getLevelValue() == 0)
+    else if ((rec->GetDataType() == GRB_CLOUD_TOT  // cloud cover
+              || rec->GetDataType() == GRB_COMP_REFL) &&
+             rec->GetLevelType() == LV_ATMOS_ALL && rec->GetLevelValue() == 0)
       storeRecordInMap(rec);
-    else if (rec->getDataType() == GRB_HTSGW)  // Significant Wave Height
+    else if (rec->GetDataType() == GRB_HTSGW)  // Significant Wave Height
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() ==
+    else if (rec->GetDataType() ==
              GRB_PER)  // Combined Wind Waves and Swell period
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() ==
+    else if (rec->GetDataType() ==
              GRB_DIR)  // Combined Wind Waves and Swell Direction
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_WVHGT)  // Wind Wave Height
+    else if (rec->GetDataType() == GRB_WVHGT)  // Wind Wave Height
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_WVPER)  // Wind Waves period
+    else if (rec->GetDataType() == GRB_WVPER)  // Wind Waves period
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_WVDIR)  // Wind Waves Direction
+    else if (rec->GetDataType() == GRB_WVDIR)  // Wind Waves Direction
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_CRAIN)  // Catagorical Rain  1/0
+    else if (rec->GetDataType() == GRB_CRAIN)  // Catagorical Rain  1/0
       storeRecordInMap(rec);
 
-    else if ((rec->getDataType() == GRB_WTMP) &&
-             (rec->getLevelType() == LV_GND_SURF) &&
-             (rec->getLevelValue() == 0))
+    else if ((rec->GetDataType() == GRB_WTMP) &&
+             (rec->GetLevelType() == LV_GND_SURF) &&
+             (rec->GetLevelValue() == 0))
       storeRecordInMap(rec);  // rtofs Water Temp + translated gfs Water Temp
 
     else if (RecordIsCurrent(rec))  // rtofs model sea current current
       storeRecordInMap(rec);
 
-    else if (rec->getDataType() == GRB_CAPE &&
-             rec->getLevelType() == LV_GND_SURF &&
-             rec->getLevelValue() == 0)  // Potential energy
+    else if (rec->GetDataType() == GRB_CAPE &&
+             rec->GetLevelType() == LV_GND_SURF &&
+             rec->GetLevelValue() == 0)  // Potential energy
       storeRecordInMap(rec);
 
-    else if ((rec->getDataType() == GRB_GEOPOT_HGT &&
-              rec->getLevelType() ==
+    else if ((rec->GetDataType() == GRB_GEOPOT_HGT &&
+              rec->GetLevelType() ==
                   LV_ISOBARIC)  // geopotentiel geight at x hpa
-             && (rec->getLevelValue() == 850 || rec->getLevelValue() == 700 ||
-                 rec->getLevelValue() == 500 || rec->getLevelValue() == 300))
+             && (rec->GetLevelValue() == 850 || rec->GetLevelValue() == 700 ||
+                 rec->GetLevelValue() == 500 || rec->GetLevelValue() == 300))
       storeRecordInMap(rec);
 
-    else if ((rec->getDataType() == GRB_HUMID_REL &&
-              rec->getLevelType() == LV_ISOBARIC)  // relative humidity at x hpa
-             && (rec->getLevelValue() == 850 || rec->getLevelValue() == 700 ||
-                 rec->getLevelValue() == 500 || rec->getLevelValue() == 300))
+    else if ((rec->GetDataType() == GRB_HUMID_REL &&
+              rec->GetLevelType() == LV_ISOBARIC)  // relative humidity at x hpa
+             && (rec->GetLevelValue() == 850 || rec->GetLevelValue() == 700 ||
+                 rec->GetLevelValue() == 500 || rec->GetLevelValue() == 300))
       storeRecordInMap(rec);
 
     else {
       GribV2Record *rec2 = dynamic_cast<GribV2Record *>(rec);
 #if 0
             fprintf(stderr,
-                       "GribReader: unknown record type: dataType=%d levelType=%d levelValue=%d idCenter==%d && idModel==%d && idGrid==%d\n",
-                       rec->getDataType(), rec->getLevelType(), rec->getLevelValue(),
-                       rec->getIdCenter(), rec->getIdModel(), rec->getIdGrid()
+                       "GribReader: unknown record type: data_type=%d level_type=%d level_value=%d idCenter==%d && idModel==%d && idGrid==%d\n",
+                       rec->GetDataType(), rec->GetLevelType(), rec->GetLevelValue(),
+                       rec->GetIdCenter(), rec->GetIdModel(), rec->GetIdGrid()
                 );
 #endif
       if (rec2 == nullptr || !rec2->hasMoreDataSet()) {
@@ -296,23 +296,23 @@ void GribReader::copyFirstCumulativeRecord(int dataType, int levelType,
     rec = getFirstGribRecord(dataType, levelType, levelValue);
     if (rec != nullptr) {
       GribRecord *r2 = new GribRecord(*rec);
-      r2->setRecordCurrentDate(dateref);  // 1er enregistrement factice
+      r2->SetRecordCurrentDate(dateref);  // 1er enregistrement factice
       storeRecordInMap(r2);
     }
   }
 }
 /*
 //---------------------------------------------------------------------------------
-void  GribReader::removeFirstCumulativeRecord (int dataType,int levelType,int
-levelValue)
+void  GribReader::removeFirstCumulativeRecord (int data_type,int level_type,int
+level_value)
 {
     time_t dateref = getRefDate();
-    GribRecord *rec = getFirstGribRecord(dataType, levelType, levelValue);
+    GribRecord *rec = getFirstGribRecord(data_type, level_type, level_value);
 
-    if (rec!=nullptr  &&  rec->getRecordCurrentDate() == dateref)
+    if (rec!=nullptr  &&  rec->GetRecordCurrentDate() == dateref)
     {
-        std::vector<GribRecord *> *liste = getListOfGribRecords(dataType,
-levelType, levelValue); if (liste != nullptr) { std::vector<GribRecord
+        std::vector<GribRecord *> *liste = getListOfGribRecords(data_type,
+level_type, level_value); if (liste != nullptr) { std::vector<GribRecord
 *>::iterator it; for (it=liste->begin(); it!=liste->end() && (*it)!=rec; it++)
             {
             }
@@ -337,10 +337,10 @@ void GribReader::copyMissingWaveRecords(int dataType, int levelType,
         time_t date2 = *itd2;
         GribRecord *rec2 =
             getGribRecord(dataType, levelType, levelValue, date2);
-        if (rec2 && rec2->isOk()) {
+        if (rec2 && rec2->IsOk()) {
           // create a copied record from date2
           GribRecord *r2 = new GribRecord(*rec2);
-          r2->setRecordCurrentDate(date);
+          r2->SetRecordCurrentDate(date);
           storeRecordInMap(r2);
         }
       }
@@ -361,36 +361,36 @@ void GribReader::computeAccumulationRecords(int dataType, int levelType,
   for (rit = setdates.rbegin(); rit != setdates.rend(); ++rit) {
     time_t date = *rit;
     GribRecord *rec = getGribRecord(dataType, levelType, levelValue, date);
-    if (rec && rec->isOk()) {
+    if (rec && rec->IsOk()) {
       // XXX double check reference date and timerange
       if (prev != 0) {
-        if (prev->getPeriodP1() == rec->getPeriodP1()) {
+        if (prev->GetPeriodP1() == rec->GetPeriodP1()) {
           // printf("substract %d %d %d\n", prev->getPeriodP1(),
-          // prev->getPeriodP2(), prev->getPeriodSec());
-          if (rec->getTimeRange() == 4) {
+          // prev->GetPeriodP2(), prev->GetPeriodSec());
+          if (rec->GetTimeRange() == 4) {
             // accumulation
             // prev = prev -rec
             prev->Substract(*rec);
-            p1 = rec->getPeriodP2();
-          } else if (rec->getTimeRange() == 3) {
+            p1 = rec->GetPeriodP2();
+          } else if (rec->GetTimeRange() == 3) {
             // average
             // prev = (prev*d2 - rec*d1) / (double) (d2 - d1);
             prev->Average(*rec);
-            p1 = rec->getPeriodP2();
+            p1 = rec->GetPeriodP2();
           }
         }
         // convert to mm/h
-        if (p2 > p1 && rec->getTimeRange() == 4) {
+        if (p2 > p1 && rec->GetTimeRange() == 4) {
           prev->multiplyAllData(1.0 / (p2 - p1));
         }
         p2 = p1 = 0;
       }
       prev = rec;
-      p1 = prev->getPeriodP1();
-      p2 = prev->getPeriodP2();
+      p1 = prev->GetPeriodP1();
+      p2 = prev->GetPeriodP2();
     }
   }
-  if (prev != 0 && p2 > p1 && prev->getTimeRange() == 4) {
+  if (prev != 0 && p2 > p1 && prev->GetTimeRange() == 4) {
     // the last one
     prev->multiplyAllData(1.0 / (p2 - p1));
   }
@@ -437,7 +437,7 @@ void GribReader::readGribFileContent() {
       GribRecord *recY = getGribRecord(GRB_WIND_GUST_VY, LV_GND_SURF, 0, date);
       if (recY == nullptr) continue;
       GribRecord *rec = GribRecord::MagnitudeRecord(*recX, *recY);
-      rec->setDataType(GRB_WIND_GUST);
+      rec->SetDataType(GRB_WIND_GUST);
       storeRecordInMap(rec);
     }
   }
@@ -461,13 +461,13 @@ void GribReader::readGribFileContent() {
 
     // Crée un GribRecord avec les dewpoints calculés
     GribRecord *recDewpoint = new GribRecord(*recModel);
-    recDewpoint->setDataType(GRB_DEWPOINT);
-    for (zuint i = 0; i < (zuint)recModel->getNi(); i++) {
-      for (zuint j = 0; j < (zuint)recModel->getNj(); j++) {
+    recDewpoint->SetDataType(GRB_DEWPOINT);
+    for (zuint i = 0; i < (zuint)recModel->GetNi(); i++) {
+      for (zuint j = 0; j < (zuint)recModel->GetNj(); j++) {
         double x, y;
         recModel->getXY(i, j, &x, &y);
         double dp = computeDewPoint(x, y, date);
-        recDewpoint->setValue(i, j, dp);
+        recDewpoint->SetValue(i, j, dp);
       }
     }
     storeRecordInMap(recDewpoint);
@@ -475,7 +475,7 @@ void GribReader::readGribFileContent() {
 }
 
 //---------------------------------------------------
-int GribReader::getDewpointDataStatus(int /*levelType*/, int /*levelValue*/) {
+int GribReader::getDewpointDataStatus(int /*level_type*/, int /*level_value*/) {
   return dewpointDataStatus;
 }
 
@@ -515,7 +515,7 @@ int GribReader::getNumberOfGribRecords(int dataType, int levelType,
 std::vector<GribRecord *> *GribReader::getListOfGribRecords(int dataType,
                                                             int levelType,
                                                             int levelValue) {
-  std::string key = GribRecord::makeKey(dataType, levelType, levelValue);
+  std::string key = GribRecord::MakeKey(dataType, levelType, levelValue);
   if (mapGribRecords.find(key) != mapGribRecords.end())
     return mapGribRecords[key];
   else
@@ -542,12 +542,12 @@ void GribReader::findGribsAroundDate(int dataType, int levelType,
   zuint nb = ls->size();
   for (zuint i = 0; i < nb && *before == nullptr && *after == nullptr; i++) {
     GribRecord *rec = (*ls)[i];
-    if (rec->getRecordCurrentDate() == date) {
+    if (rec->GetRecordCurrentDate() == date) {
       *before = rec;
       *after = rec;
-    } else if (rec->getRecordCurrentDate() < date) {
+    } else if (rec->GetRecordCurrentDate() < date) {
       *before = rec;
-    } else if (rec->getRecordCurrentDate() > date && *before != nullptr) {
+    } else if (rec->GetRecordCurrentDate() > date && *before != nullptr) {
       *after = rec;
     }
   }
@@ -561,15 +561,15 @@ double GribReader::get2GribsInterpolatedValueByDate(double px, double py,
   double val = GRIB_NOTDEF;
   if (before != nullptr && after != nullptr) {
     if (before == after) {
-      val = before->getInterpolatedValue(px, py);
+      val = before->GetInterpolatedValue(px, py);
     } else {
-      time_t t1 = before->getRecordCurrentDate();
-      time_t t2 = after->getRecordCurrentDate();
+      time_t t1 = before->GetRecordCurrentDate();
+      time_t t2 = after->GetRecordCurrentDate();
       if (t1 == t2) {
-        val = before->getInterpolatedValue(px, py);
+        val = before->GetInterpolatedValue(px, py);
       } else {
-        double v1 = before->getInterpolatedValue(px, py);
-        double v2 = after->getInterpolatedValue(px, py);
+        double v1 = before->GetInterpolatedValue(px, py);
+        double v2 = after->GetInterpolatedValue(px, py);
         if (v1 != GRIB_NOTDEF && v2 != GRIB_NOTDEF) {
           double k = fabs((double)(date - t1) / (t2 - t1));
           val = (1.0 - k) * v1 + k * v2;
@@ -611,8 +611,8 @@ double GribReader::computeHoursBeetweenGribRecords() {
   double res = 1;
   std::vector<GribRecord *> *ls = getFirstNonEmptyList();
   if (ls != nullptr) {
-    time_t t0 = (*ls)[0]->getRecordCurrentDate();
-    time_t t1 = (*ls)[1]->getRecordCurrentDate();
+    time_t t0 = (*ls)[0]->GetRecordCurrentDate();
+    time_t t1 = (*ls)[1]->GetRecordCurrentDate();
     res = fabs((double)(t1 - t0)) / 3600.0;
     if (res < 1) res = 1;
   }
@@ -628,7 +628,7 @@ GribRecord *GribReader::getGribRecord(int dataType, int levelType,
     GribRecord *res = nullptr;
     zuint nb = ls->size();
     for (zuint i = 0; i < nb && res == nullptr; i++) {
-      if ((*ls)[i]->getRecordCurrentDate() == date) res = (*ls)[i];
+      if ((*ls)[i]->GetRecordCurrentDate() == date) res = (*ls)[i];
     }
     return res;
   } else {
@@ -645,7 +645,7 @@ void GribReader::createListDates() {  // Le set assure l'ordre et l'unicité des
   for (it = mapGribRecords.begin(); it != mapGribRecords.end(); it++) {
     std::vector<GribRecord *> *ls = (*it).second;
     for (zuint i = 0; i < ls->size(); i++) {
-      setAllDates.insert(ls->at(i)->getRecordCurrentDate());
+      setAllDates.insert(ls->at(i)->GetRecordCurrentDate());
     }
   }
 }
@@ -657,14 +657,14 @@ double GribReader::computeDewPoint(double lon, double lat, time_t now) {
   GribRecord *recTempDiew = getGribRecord(GRB_DEWPOINT, LV_ABOV_GND, 2, now);
   if (recTempDiew != nullptr) {
     // GRIB file contains diew point data
-    diewpoint = recTempDiew->getInterpolatedValue(lon, lat);
+    diewpoint = recTempDiew->GetInterpolatedValue(lon, lat);
   } else {
     // Compute diew point with Magnus-Tetens formula
     GribRecord *recTemp = getGribRecord(GRB_TEMP, LV_ABOV_GND, 2, now);
     GribRecord *recHumid = getGribRecord(GRB_HUMID_REL, LV_ABOV_GND, 2, now);
     if (recTemp && recHumid) {
-      double temp = recTemp->getInterpolatedValue(lon, lat);
-      double humid = recHumid->getInterpolatedValue(lon, lat);
+      double temp = recTemp->GetInterpolatedValue(lon, lat);
+      double humid = recHumid->GetInterpolatedValue(lon, lat);
       if (temp != GRIB_NOTDEF && humid != GRIB_NOTDEF) {
         double a = 17.27;
         double b = 237.7;

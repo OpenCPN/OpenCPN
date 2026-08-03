@@ -39,8 +39,8 @@
  * and times.
  */
 
-#ifndef GRIBTABLE_H__
-#define GRIBTABLE_H__
+#ifndef GRIBTABLE_H_
+#define GRIBTABLE_H_
 
 #include <wx/wxprec.h>
 
@@ -71,7 +71,7 @@ class GRIBTable : public GRIBTableBase {
 public:
   GRIBTable(GRIBUICtrlBar &parent);
 
-  ~GRIBTable() { delete m_pGribTable; }
+  ~GRIBTable() override { delete m_pGribTable; }
 
   /**
    * Initialize the GRIB data table.
@@ -93,11 +93,14 @@ public:
   }
   void CloseDialog();
 
+protected:
+  void OnClose(wxCloseEvent &event) override;
+  void OnOKButton(wxCommandEvent &event) override;
+
 private:
   void AddDataRow(int num_rows, int num_cols, wxString label,
                   wxGridCellAttr *row_attr);
   void AutoSizeDataRows();
-  int GetVisibleRow(int col);
   void OnScrollToNowTimer(wxTimerEvent &event);
 
   wxString GetWind(GribRecord **recordarray, int datatype, double &wdir);
@@ -111,13 +114,11 @@ private:
   wxString GetCAPE(GribRecord **recordarray);
   wxString GetCompRefl(GribRecord **recordarray);
   wxString GetCurrent(GribRecord **recordarray, int datatype, double &wdir);
-
-  void OnClose(wxCloseEvent &event);
-  void OnOKButton(wxCommandEvent &event);
+  int GetVisibleRow(int col);
 
   GRIBUICtrlBar *m_pGDialog;
   wxColour m_pDataCellsColour;
   wxTimer m_tScrollToNowTimer;
 };
 
-#endif  //  GRIBTABLE_H__
+#endif  //  GRIBTABLE_H_

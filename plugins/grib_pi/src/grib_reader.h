@@ -115,8 +115,8 @@ public:
    */
   void copyMissingWaveRecords();
   void copyFirstCumulativeRecord(int dataType, int levelType, int levelValue);
-  // void  removeFirstCumulativeRecord (int dataType,int levelType,int
-  // levelValue);
+  // void  removeFirstCumulativeRecord (int data_type,int level_type,int
+  // level_value);
   void copyMissingWaveRecords(int dataType, int levelType, int levelValue);
 
   void computeAccumulationRecords(int dataType, int levelType, int levelValue);

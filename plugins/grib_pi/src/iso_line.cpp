@@ -178,8 +178,8 @@ IsoLine::IsoLine(double val, double coeff, double offset,
   value = val / coeff - offset;
 
   rec = rec_;
-  W = rec_->getNi();
-  H = rec_->getNj();
+  W = rec_->GetNi();
+  H = rec_->GetNj();
 
   //---------------------------------------------------------
   // Génère la liste des segments.
@@ -625,8 +625,8 @@ void Segment::intersectionAreteGrille(int i, int j, int k, int l, double *x,
                                       double *y, const GribRecord *rec,
                                       double pressure) {
   double xa, xb, ya, yb, pa, pb, dec;
-  pa = rec->getValue(i, j);
-  pb = rec->getValue(k, l);
+  pa = rec->GetValue(i, j);
+  pb = rec->GetValue(k, l);
 
   rec->getXY(i, j, &xa, &ya);
   rec->getXY(k, l, &xb, &yb);
@@ -685,24 +685,24 @@ void Segment::traduitCode(int I, int w, int J, char c1, int &i, int &j) {
 void IsoLine::extractIsoLine(const GribRecord *rec) {
   int i, j, W, H;
   double a, b, c, d;
-  W = rec->getNi();
-  H = rec->getNj();
+  W = rec->GetNi();
+  H = rec->GetNj();
 
   int We = W;
-  if (rec->getLonMax() + rec->getDi() - rec->getLonMin() == 360) We++;
+  if (rec->GetLonMax() + rec->GetDi() - rec->GetLonMin() == 360) We++;
 
   for (j = 1; j < H; j++)  // !!!! 1 to end
   {
-    a = rec->getValue(0, j - 1);
-    c = rec->getValue(0, j);
+    a = rec->GetValue(0, j - 1);
+    c = rec->GetValue(0, j);
     for (i = 1; i < We; i++, a = b, c = d) {
-      //            x = rec->getX(i);
-      //            y = rec->getY(j);
+      //            x = rec->GetX(i);
+      //            y = rec->GetY(j);
 
       int ni = i;
       if (i == W) ni = 0;
-      b = rec->getValue(ni, j - 1);
-      d = rec->getValue(ni, j);
+      b = rec->GetValue(ni, j - 1);
+      d = rec->GetValue(ni, j);
 
       if (a == GRIB_NOTDEF || b == GRIB_NOTDEF || c == GRIB_NOTDEF ||
           d == GRIB_NOTDEF)

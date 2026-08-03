@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define zuint unsigned int
 #define zuchar unsigned char
 
-#define GRIB_NOTDEF -999999999
+#define GRIB_NOTDEF (-999999999)
 
 //--------------------------------------------------------
 // dataTypes    Cf function translateDataType()
@@ -187,7 +187,7 @@ class GribRecord {
 public:
   /** Copy constructor performs a deep copy of the GribRecord. */
   GribRecord(const GribRecord &rec);
-  GribRecord() { m_bfilled = false; }
+  GribRecord() { is_filled = false; }
 
   virtual ~GribRecord();
 
@@ -278,10 +278,10 @@ public:
   void Substract(const GribRecord &rec, bool positive = true);
   void Average(const GribRecord &rec);
 
-  bool isOk() const { return ok; };
-  bool isDataKnown() const { return knownData; };
-  bool isEof() const { return eof; };
-  bool isDuplicated() const { return IsDuplicated; };
+  [[nodiscard]] bool IsOk() const { return ok; };
+  [[nodiscard]] bool IsDataKnown() const { return known_data; };
+  [[nodiscard]] bool IsEof() const { return eof; };
+  [[nodiscard]] bool isDuplicated() const { return is_duplicated; };
   /**
    * Returns the type of meteorological parameter stored in this grid.
    *
@@ -299,8 +299,8 @@ public:
    * @see The full list of parameter codes is defined at the top of GribRecord.h
    * @note Parameter definitions can vary between GRIB1 and GRIB2 formats
    */
-  zuchar getDataType() const { return dataType; }
-  void setDataType(const zuchar t);
+  [[nodiscard]] zuchar GetDataType() const { return data_type; }
+  void SetDataType(zuchar t);
 
   /**
    * Returns the type of vertical level for this grid's data.
@@ -316,7 +316,7 @@ public:
    *
    * @see levelValue() for the specific value within this level type
    */
-  zuchar getLevelType() const { return levelType; }
+  [[nodiscard]] zuchar GetLevelType() const { return level_type; }
   /**
    * Returns the numeric value associated with the level type.
    *
@@ -329,7 +329,7 @@ public:
    *
    * @see getLevelType() to determine how to interpret this value
    */
-  zuint getLevelValue() const { return levelValue; }
+  [[nodiscard]] zuint GetLevelValue() const { return level_value; }
   /**
    * Returns the numerical weather prediction model/center that produced this
    * data.
@@ -349,7 +349,7 @@ public:
    * @note Different centers may use different parameters, units, grid
    * structures, and update frequencies
    */
-  zuint getDataCenterModel() const { return dataCenterModel; }
+  [[nodiscard]] zuint GetDataCenterModel() const { return data_center_model; }
   //-----------------------------------------
 
   /**
@@ -365,7 +365,7 @@ public:
    *
    * @return Center identification code as defined in GRIB Table 0
    */
-  zuchar getIdCenter() const { return idCenter; }
+  [[nodiscard]] zuchar GetIdCenter() const { return id_center; }
   /**
    * Returns the model/process ID within the originating center.
    *
@@ -377,7 +377,7 @@ public:
    * center
    * @see getIdCenter()
    */
-  zuchar getIdModel() const { return idModel; }
+  [[nodiscard]] zuchar GetIdModel() const { return id_model; }
   /**
    * Returns the grid definition template number.
    *
@@ -388,17 +388,17 @@ public:
    *
    * @return Grid definition identifier as defined in GRIB specifications
    */
-  zuchar getIdGrid() const { return idGrid; }
+  [[nodiscard]] zuchar GetIdGrid() const { return id_grid; }
 
   //-----------------------------------------
-  std::string getKey() const { return dataKey; }
-  static std::string makeKey(int dataType, int levelType, int levelValue);
+  [[nodiscard]] std::string GetKey() const { return data_key; }
+  static std::string MakeKey(int dataType, int levelType, int levelValue);
 
   //-----------------------------------------
   /**
    * Returns the start of the period (P1) used for this record.
    *
-   * The meaning depends on the time range indicator (getTimeRange()):
+   * The meaning depends on the time range indicator (GetTimeRange()):
    * - For forecasts: Hours after reference time.
    * - For accumulations: Start of accumulation period.
    * - For averages: Start of averaging period.
@@ -406,11 +406,11 @@ public:
    * @return Period start indicator in units determined by time range.
    * @see getTimeRange()
    */
-  int getPeriodP1() const { return periodP1; }
+  [[nodiscard]] int GetPeriodP1() const { return static_cast<int>(period_p1); }
   /**
    * Returns the end of the period (P2) used for this record.
    *
-   * The meaning depends on the time range indicator (getTimeRange()):
+   * The meaning depends on the time range indicator (GetTimeRange()):
    * - For forecasts: Usually same as P1
    * - For accumulations: End of accumulation period
    * - For averages: End of averaging period
@@ -418,7 +418,7 @@ public:
    * @return Period end indicator in units determined by time range
    * @see getTimeRange()
    */
-  int getPeriodP2() const { return periodP2; }
+  [[nodiscard]] int GetPeriodP2() const { return static_cast<int>(period_p2); }
   /**
    * Returns the forecast period in seconds from reference time.
    *
@@ -428,7 +428,7 @@ public:
    * @return Time offset in seconds from reference time.
    * @see getRecordRefDate()
    */
-  zuint getPeriodSec() const { return periodsec; }
+  [[nodiscard]] zuint GetPeriodSec() const { return periodsec; }
   /**
    * Returns the time range indicator that defines how P1 and P2 should be
    * interpreted.
@@ -441,7 +441,7 @@ public:
    *
    * @return Time range indicator as defined in GRIB specifications
    */
-  zuchar getTimeRange() const { return timeRange; }
+  [[nodiscard]] zuchar GetTimeRange() const { return time_range; }
 
   // Number of points in the grid
   /**
@@ -449,26 +449,26 @@ public:
    *
    * @return Number of grid points along longitude
    */
-  int getNi() const { return Ni; }
+  [[nodiscard]] int GetNi() const { return static_cast<int>(Ni); }
   /**
    * Returns the number of points in the latitude (j) direction of the grid.
    *
    * @return Number of grid points along latitude
    */
-  int getNj() const { return Nj; }
+  [[nodiscard]] int GetNj() const { return static_cast<int>(Nj); }
   /**
    * Returns the grid spacing in longitude (i) direction in degrees.
    *
    * @return Grid spacing in degrees longitude
    */
-  double getDi() const { return Di; }
+  [[nodiscard]] double GetDi() const { return Di; }
   /**
    * Returns the grid spacing in latitude (j) direction in degrees.
    *
    * @return Grid spacing in degrees latitude
    * @note Can be negative if grid runs from north to south
    */
-  double getDj() const { return Dj; }
+  [[nodiscard]] double GetDj() const { return Dj; }
 
   /**
    * Returns the data value at a specific grid point.
@@ -481,9 +481,9 @@ public:
    * @return Data value at grid point (i,j)
    * @note No bounds checking is performed
    */
-  double getValue(int i, int j) const { return data[j * Ni + i]; }
+  [[nodiscard]] double GetValue(int i, int j) const { return data[j * Ni + i]; }
 
-  void setValue(zuint i, zuint j, double v) {
+  void SetValue(zuint i, zuint j, double v) {
     if (i < Ni && j < Nj) data[j * Ni + i] = v;
   }
 
@@ -500,9 +500,9 @@ public:
    * direction).
    * @return Spatially interpolated value or GRIB_NOTDEF if outside grid.
    */
-  double getInterpolatedValue(double px, double py,
-                              bool numericalInterpolation = true,
-                              bool dir = false) const;
+  [[nodiscard]] double GetInterpolatedValue(double px, double py,
+                                            bool numericalInterpolation = true,
+                                            bool dir = false) const;
 
   /**
    * Gets spatially interpolated wind or current vector values at a specific
@@ -528,7 +528,7 @@ public:
    * @note The method expects the input components to follow meteorological
    * conventions where u is positive eastward and v is positive northward
    */
-  static bool getInterpolatedValues(double &M, double &A, const GribRecord *GRX,
+  static bool GetInterpolatedValues(double &M, double &A, const GribRecord *GRX,
                                     const GribRecord *GRY, double px, double py,
                                     bool numericalInterpolation = true);
 
@@ -541,7 +541,7 @@ public:
    * @param i Grid index in longitude direction (0 to Ni-1)
    * @return Longitude in degrees
    */
-  inline double getX(int i) const { return Lo1 + i * Di; }
+  [[nodiscard]] inline double GetX(int i) const { return Lo1 + i * Di; }
   /**
    * Converts grid index j to latitude in degrees.
    *
@@ -552,7 +552,7 @@ public:
    * @return Latitude in degrees
    * @note Returns decreasing latitudes when Dj is negative
    */
-  inline double getY(int j) const { return La1 + j * Dj; }
+  [[nodiscard]] inline double GetY(int j) const { return La1 + j * Dj; }
   /**
    * Converts grid indices to longitude/latitude coordinates.
    *
@@ -564,39 +564,39 @@ public:
    * @param[out] y Pointer to store latitude in degrees
    */
   void getXY(int i, int j, double *x, double *y) const {
-    *x = getX(i);
-    *y = getY(j);
+    *x = GetX(i);
+    *y = GetY(j);
   };
 
-  double getLatMin() const { return latMin; }
-  double getLonMin() const { return lonMin; }
-  double getLatMax() const { return latMax; }
-  double getLonMax() const { return lonMax; }
+  [[nodiscard]] double GetLatMin() const { return lat_min; }
+  [[nodiscard]] double GetLonMin() const { return lon_min; }
+  [[nodiscard]] double GetLatMax() const { return lat_max; }
+  [[nodiscard]] double GetLonMax() const { return lon_max; }
 
   // Is there a value at a particular grid point ?
-  inline bool hasValue(int i, int j) const;
+  [[nodiscard]] inline bool HasValue(int i, int j) const;
   // Is there a value that is not GRIB_NOTDEF ?
-  inline bool isDefined(int i, int j) const {
-    return hasValue(i, j) && getValue(i, j) != GRIB_NOTDEF;
+  [[nodiscard]] inline bool IsDefined(int i, int j) const {
+    return HasValue(i, j) && GetValue(i, j) != GRIB_NOTDEF;
   }
 
   // Reference date Date (file creation date)
-  time_t getRecordRefDate() const { return refDate; }
-  const char *getStrRecordRefDate() const { return strRefDate; }
+  [[nodiscard]] time_t GetRecordRefDate() const { return ref_date; }
+  [[nodiscard]] const char *GetStrRecordRefDate() const { return str_ref_date; }
 
   // Date courante des prévisions
-  time_t getRecordCurrentDate() const { return curDate; }
-  const char *getStrRecordCurDate() const { return strCurDate; }
-  void setRecordCurrentDate(time_t t);
-  void print();
-  bool isFilled() { return m_bfilled; }
-  void setFilled(bool val = true) { m_bfilled = val; }
+  [[nodiscard]] time_t GetRecordCurrentDate() const { return cur_date; }
+  [[nodiscard]] const char *GetStrRecordCurDate() const { return str_cur_date; }
+  void SetRecordCurrentDate(time_t t);
+  void Print() const;
+  [[nodiscard]] bool IsFilled() const { return is_filled; }
+  void SetFilled(bool val = true) { is_filled = val; }
 
 private:
   // Is a point within the extent of the grid?
-  inline bool isPointInMap(double x, double y) const;
-  inline bool isXInMap(double x) const;
-  inline bool isYInMap(double y) const;
+  [[nodiscard]] inline bool IsPointInMap(double x, double y) const;
+  [[nodiscard]] inline bool IsXInMap(double x) const;
+  [[nodiscard]] inline bool IsYInMap(double y) const;
 
 protected:
   // private:
@@ -627,12 +627,12 @@ protected:
    * Indicates whether the data type in this record is recognized by the parser.
    * Used to skip unknown data types during processing.
    */
-  bool knownData;
+  bool known_data;
   /**
    * Differentiates wave-related parameters (height, direction, period) from
    * other meteorological data for specialized processing.
    */
-  bool waveData;
+  bool wave_data;
   /**
    * Indicates if this record was created through copying rather than direct
    * reading.
@@ -640,7 +640,7 @@ protected:
    * Tracks whether this record was copied to maintain data continuity. This
    * happens with wave data gaps or initial values for cumulative parameters.
    */
-  bool IsDuplicated;
+  bool is_duplicated;
   /**
    * Signals when the end of the GRIB file has been reached during parsing.
    */
@@ -649,9 +649,9 @@ protected:
    * Unique string identifier constructed from data type, level type, and level
    * value. Used for record lookup and comparison.
    */
-  std::string dataKey;
-  char strRefDate[32];
-  char strCurDate[32];
+  std::string data_key;
+  char str_ref_date[32];
+  char str_cur_date[32];
   /**
    * Identifies the numerical weather model that produced this data.
    *
@@ -664,12 +664,12 @@ protected:
    * - 85: French Weather Service (Meteo France)
    * - 251: Norwegian Meteorological Institute
    */
-  int dataCenterModel;
+  int data_center_model;
   /**
    * Indicates whether the data array has been populated. Used to track
    * partial loading states during record construction.
    */
-  bool m_bfilled;
+  bool is_filled;
 
   //---------------------------------------------
   // SECTION 0: THE INDICATOR SECTION (IS)
@@ -678,40 +678,40 @@ protected:
    * GRIB edition number, indicating the version of the GRIB specification used.
    * Determines how subsequent sections should be parsed.
    */
-  zuchar editionNumber;
+  zuchar edition_number;
 
   // SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
   /**
    * Originating center ID as defined by WMO common table C-1.
    * Identifies which meteorological center generated the forecast.
    */
-  zuchar idCenter;
+  zuchar id_center;
   /**
    * Model identifier within the originating center.
    * Distinguishes between different forecast models run by the same center.
    */
-  zuchar idModel;
+  zuchar id_model;
   /**
    * Grid identifier used by the originating center.
    * Specifies the coordinate system and projection of the data grid.
    */
-  zuchar idGrid;
+  zuchar id_grid;
   /**
    * Parameter identifier as defined by GRIB tables.
    * Specifies what physical quantity is represented (wind, temperature, etc).
    */
-  zuchar dataType;  // octet 9 = parameters and units
+  zuchar data_type;  // octet 9 = parameters and units
   /**
    * Vertical level type indicator.
    * Specifies the type of vertical coordinate (pressure level, height above
    * ground, etc).
    */
-  zuchar levelType;
+  zuchar level_type;
   /**
-   * Numeric value associated with levelType.
+   * Numeric value associated with level_type.
    * For example, the specific pressure level in hectopascals.
    */
-  zuint levelValue;
+  zuint level_value;
 
   /**
    * Indicates presence of a bitmap section.
@@ -723,18 +723,18 @@ protected:
    * Specifies when the forecast model was initialized.
    */
   zuint refyear, refmonth, refday, refhour, refminute;
-  // zuchar periodP1, periodP2;
+  // zuchar period_p1, period_p2;
   /**
    * Time range indicators for this forecast step.
    * Used to calculate the valid time period for this data.
    */
-  zuint periodP1, periodP2;
+  zuint period_p1, period_p2;
   /**
    * Statistical processing indicator.
    * Describes how the data was processed over time (e.g., accumulation,
    * average).
    */
-  zuchar timeRange;
+  zuchar time_range;
   /**
    * Forecast period in seconds.
    * Time offset from the reference time.
@@ -743,66 +743,66 @@ protected:
   /**
    * Unix timestamp of model initialization time.
    */
-  time_t refDate;
+  time_t ref_date;
   /**
    * Unix timestamp of when this forecast is valid.
    */
-  time_t curDate;
+  time_t cur_date;
   // SECTION 2: THE GRID DESCRIPTION SECTION (GDS)
   zuchar NV, PV;
-  zuchar gridType;
+  zuchar grid_type;
   zuint Ni, Nj;
   double La1, Lo1;  ///< Grid origin coordinates
   double La2, Lo2;  ///< Grid end coordinates
-  double latMin, lonMin, latMax, lonMax;
+  double lat_min, lon_min, lat_max, lon_max;
   double Di, Dj;
-  zuchar resolFlags, scanFlags;
-  bool hasDiDj;
-  bool isEarthSpheric;
-  bool isUeastVnorth;
-  bool isScanIpositive;
-  bool isScanJpositive;
-  bool isAdjacentI;
+  zuchar resol_flags, scan_flags;
+  bool has_di_dj;
+  bool is_earth_spheric;
+  bool is_ueast_vnorth;
+  bool is_scan_i_positive;
+  bool is_scan_j_positive;
+  bool is_adjacent_i;
   // SECTION 3: BIT MAP SECTION (BMS)
-  zuint BMSsize;
-  zuchar *BMSbits;
+  zuint bms_size;
+  zuchar *bms_bits;
   // SECTION 4: BINARY DATA SECTION (BDS)
   double *data;
   // SECTION 5: END SECTION (ES)
 
-  time_t makeDate(zuint year, zuint month, zuint day, zuint hour, zuint min,
+  time_t MakeDate(zuint year, zuint month, zuint day, zuint hour, zuint min,
                   zuint sec);
 
   //        void   print();
 };
 
 //==========================================================================
-inline bool GribRecord::hasValue(int i, int j) const {
+inline bool GribRecord::HasValue(int i, int j) const {
   // is data present in BMS ?
   if (!hasBMS) {
     return true;
   }
   int bit;
-  if (isAdjacentI) {
-    bit = j * Ni + i;
+  if (is_adjacent_i) {
+    bit = static_cast<int>(j * Ni + i);
   } else {
-    bit = i * Nj + j;
+    bit = static_cast<int>(i * Nj + j);
   }
-  zuchar c = BMSbits[bit / 8];
-  zuchar m = (zuchar)128 >> (bit % 8);
+  zuchar c = bms_bits[bit / 8];
+  zuchar m = static_cast<zuchar>(128) >> (bit % 8);
   return (m & c) != 0;
 }
 
 //-----------------------------------------------------------------
-inline bool GribRecord::isPointInMap(double x, double y) const {
-  return isXInMap(x) && isYInMap(y);
+inline bool GribRecord::IsPointInMap(double x, double y) const {
+  return IsXInMap(x) && IsYInMap(y);
   /*    if (Dj < 0)
           return x>=Lo1 && y<=La1 && x<=Lo1+(Ni-1)*Di && y>=La1+(Nj-1)*Dj;
       else
           return x>=Lo1 && y>=La1 && x<=Lo1+(Ni-1)*Di && y<=La1+(Nj-1)*Dj;*/
 }
 //-----------------------------------------------------------------
-inline bool GribRecord::isXInMap(double x) const {
+inline bool GribRecord::IsXInMap(double x) const {
   //    return x>=Lo1 && x<=Lo1+(Ni-1)*Di;
   // printf ("%f %f %f\n", Lo1, Lo2, x);
   if (Di > 0) {
@@ -818,7 +818,7 @@ inline bool GribRecord::isXInMap(double x) const {
   }
 }
 //-----------------------------------------------------------------
-inline bool GribRecord::isYInMap(double y) const {
+inline bool GribRecord::IsYInMap(double y) const {
   if (Dj < 0)
     return y <= La1 && y >= La2;
   else

@@ -25,6 +25,9 @@
  * (wind, pressure, waves, etc.) valid at a single forecast time.
  */
 
+#ifndef GRiB_REcorD_SeT_H
+#define GRiB_REcorD_SeT_H
+
 #include "grib_record.h"
 
 /**
@@ -162,7 +165,7 @@ public:
    */
   GribRecordSet(unsigned int id) : m_Reference_Time(-1), m_ID(id) {
     for (int i = 0; i < Idx_COUNT; i++) {
-      m_GribRecordPtrArray[i] = 0;
+      m_GribRecordPtrArray[i] = nullptr;
       m_GribRecordUnref[i] = false;
     }
   }
@@ -221,3 +224,4 @@ private:
   // interpolated grib are not, keep track of them
   bool m_GribRecordUnref[Idx_COUNT];
 };
+#endif  // GRiB_REcorD_SeT_H

@@ -362,7 +362,7 @@ wxString GRIBTable::GetWind(GribRecord **recordarray, int datatype,
   int altitude = 0;
   double vkn, ang;
   wdir = GRIB_NOTDEF;
-  if (GribRecord::getInterpolatedValues(
+  if (GribRecord::GetInterpolatedValues(
           vkn, ang, recordarray[Idx_WIND_VX + altitude],
           recordarray[Idx_WIND_VY + altitude], m_cursor_lon, m_cursor_lat)) {
     if (datatype == 1) {
@@ -392,7 +392,7 @@ wxString GRIBTable::GetWind(GribRecord **recordarray, int datatype,
 wxString GRIBTable::GetWindGust(GribRecord **recordarray, int datatype) {
   wxString skn(wxEmptyString);
   if (recordarray[Idx_WIND_GUST]) {
-    double vkn = recordarray[Idx_WIND_GUST]->getInterpolatedValue(
+    double vkn = recordarray[Idx_WIND_GUST]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
     if (vkn != GRIB_NOTDEF) {
       double cvkn = m_pGDialog->m_OverlaySettings.CalibrateValue(
@@ -420,7 +420,7 @@ wxString GRIBTable::GetWindGust(GribRecord **recordarray, int datatype) {
 wxString GRIBTable::GetPressure(GribRecord **recordarray) {
   wxString skn(wxEmptyString);
   if (recordarray[Idx_PRESSURE]) {
-    double press = recordarray[Idx_PRESSURE]->getInterpolatedValue(
+    double press = recordarray[Idx_PRESSURE]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (press != GRIB_NOTDEF) {
@@ -447,7 +447,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray, int datatype,
   switch (datatype) {
     case Idx_HTSIGW:
       if (recordarray[Idx_HTSIGW]) {
-        double height = recordarray[Idx_HTSIGW]->getInterpolatedValue(
+        double height = recordarray[Idx_HTSIGW]->GetInterpolatedValue(
             m_cursor_lon, m_cursor_lat, true);
         if (height != GRIB_NOTDEF) {
           double cheight = m_pGDialog->m_OverlaySettings.CalibrateValue(
@@ -464,7 +464,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray, int datatype,
       break;
     case Idx_WVDIR:
       if (recordarray[Idx_WVDIR]) {
-        double direction = recordarray[Idx_WVDIR]->getInterpolatedValue(
+        double direction = recordarray[Idx_WVDIR]->GetInterpolatedValue(
             m_cursor_lon, m_cursor_lat, true, true);
         wdir = direction;
         return skn;
@@ -472,7 +472,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray, int datatype,
       break;
     case Idx_WVPER:
       if (recordarray[Idx_WVPER]) {
-        double period = recordarray[Idx_WVPER]->getInterpolatedValue(
+        double period = recordarray[Idx_WVPER]->GetInterpolatedValue(
             m_cursor_lon, m_cursor_lat, true);
         if (period != GRIB_NOTDEF)
           skn.Printf(wxString::Format("%01ds", (int)(period + 0.5)));
@@ -484,7 +484,7 @@ wxString GRIBTable::GetWaves(GribRecord **recordarray, int datatype,
 wxString GRIBTable::GetRainfall(GribRecord **recordarray) {
   wxString skn(wxEmptyString);
   if (recordarray[Idx_PRECIP_TOT]) {
-    double precip = recordarray[Idx_PRECIP_TOT]->getInterpolatedValue(
+    double precip = recordarray[Idx_PRECIP_TOT]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (precip != GRIB_NOTDEF) {
@@ -504,7 +504,7 @@ wxString GRIBTable::GetRainfall(GribRecord **recordarray) {
 wxString GRIBTable::GetCloudCover(GribRecord **recordarray) {
   wxString skn(wxEmptyString);
   if (recordarray[Idx_CLOUD_TOT]) {
-    double cloud = recordarray[Idx_CLOUD_TOT]->getInterpolatedValue(
+    double cloud = recordarray[Idx_CLOUD_TOT]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (cloud != GRIB_NOTDEF) {
@@ -524,7 +524,7 @@ wxString GRIBTable::GetCloudCover(GribRecord **recordarray) {
 wxString GRIBTable::GetAirTemp(GribRecord **recordarray) {
   wxString skn(wxEmptyString);
   if (recordarray[Idx_AIR_TEMP]) {
-    double temp = recordarray[Idx_AIR_TEMP]->getInterpolatedValue(
+    double temp = recordarray[Idx_AIR_TEMP]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (temp != GRIB_NOTDEF) {
@@ -544,7 +544,7 @@ wxString GRIBTable::GetAirTemp(GribRecord **recordarray) {
 wxString GRIBTable::GetSeaTemp(GribRecord **recordarray) {
   wxString skn(wxEmptyString);
   if (recordarray[Idx_SEA_TEMP]) {
-    double temp = recordarray[Idx_SEA_TEMP]->getInterpolatedValue(
+    double temp = recordarray[Idx_SEA_TEMP]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (temp != GRIB_NOTDEF) {
@@ -564,7 +564,7 @@ wxString GRIBTable::GetSeaTemp(GribRecord **recordarray) {
 wxString GRIBTable::GetCAPE(GribRecord **recordarray) {
   wxString skn(wxEmptyString);
   if (recordarray[Idx_CAPE]) {
-    double cape = recordarray[Idx_CAPE]->getInterpolatedValue(
+    double cape = recordarray[Idx_CAPE]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (cape != GRIB_NOTDEF) {
@@ -585,7 +585,7 @@ wxString GRIBTable::GetCAPE(GribRecord **recordarray) {
 wxString GRIBTable::GetCompRefl(GribRecord **recordarray) {
   wxString skn(wxEmptyString);
   if (recordarray[Idx_COMP_REFL]) {
-    double refl = recordarray[Idx_COMP_REFL]->getInterpolatedValue(
+    double refl = recordarray[Idx_COMP_REFL]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (refl != GRIB_NOTDEF) {
@@ -608,7 +608,7 @@ wxString GRIBTable::GetCurrent(GribRecord **recordarray, int datatype,
   wxString skn(wxEmptyString);
   double vkn, ang;
   wdir = GRIB_NOTDEF;
-  if (GribRecord::getInterpolatedValues(
+  if (GribRecord::GetInterpolatedValues(
           vkn, ang, recordarray[Idx_SEACURRENT_VX],
           recordarray[Idx_SEACURRENT_VY], m_cursor_lon, m_cursor_lat)) {
     if (datatype == 1) {

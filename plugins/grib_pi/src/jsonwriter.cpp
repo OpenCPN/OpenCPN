@@ -20,12 +20,12 @@
 #define wxDEBUG_LEVEL 0
 #endif
 
-#include <wx/jsonwriter.h>
-
 #include <wx/sstream.h>
 #include <wx/mstream.h>
 #include <wx/debug.h>
 #include <wx/log.h>
+
+#include "jsonwriter.h"
 
 #if wxDEBUG_LEVEL > 0
 static const wxChar* writerTraceMask = "traceWriter";

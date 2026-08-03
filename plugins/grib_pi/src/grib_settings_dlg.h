@@ -45,7 +45,7 @@
 #ifndef GRIBSETTINGSDIALOG_H__
 #define GRIBSETTINGSDIALOG_H__
 
-#include <wx/jsonval.h>
+#include "jsonval.h"
 
 #include "grib_ui_dlg_base.h"
 

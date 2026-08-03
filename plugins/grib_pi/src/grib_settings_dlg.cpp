@@ -23,23 +23,23 @@
 
 #include "pi_gl.h"
 
+#include "jsonwriter.h"
+
 #include "grib_pi.h"
 #include "folder.xpm"
 
-static const wxString units0_names[] = {
-    _("Knots"), _("m/s"), _("mph"), _("km/h"), _("Beaufort"), wxEmptyString};
+static const wxString units0_names[] = {_("Knots"), _("m/s"),      _("mph"),
+                                        _("km/h"),  _("Beaufort"), ""};
 static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), _("inHG"),
-                                        wxEmptyString};
-static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
-static const wxString units3_names[] = {_("Celsius"), _("Fahrenheit"),
-                                        wxEmptyString};
-static const wxString units4_names[] = {_("Millimeters"), _("Inches"),
-                                        wxEmptyString};
-static const wxString units5_names[] = {_("Percentage"), wxEmptyString};
-static const wxString units6_names[] = {_("j/kg"), wxEmptyString};
+                                        ""};
+static const wxString units2_names[] = {_("Meters"), _("Feet"), ""};
+static const wxString units3_names[] = {_("Celsius"), _("Fahrenheit"), ""};
+static const wxString units4_names[] = {_("Millimeters"), _("Inches"), ""};
+static const wxString units5_names[] = {_("Percentage"), ""};
+static const wxString units6_names[] = {_("j/kg"), ""};
 static const wxString units7_names[] = {_("Knots"), _("m/s"), _("mph"),
-                                        _("km/h"), wxEmptyString};
-static const wxString units8_names[] = {_("dBZ"), wxEmptyString};
+                                        _("km/h"), ""};
+static const wxString units8_names[] = {_("dBZ"), ""};
 static const wxString *unit_names[] = {
     units0_names, units1_names, units2_names, units3_names, units4_names,
     units5_names, units6_names, units7_names, units8_names};
@@ -201,7 +201,7 @@ void GribOverlaySettings::Read() {
                 i == WIND);
     pConf->Read(Name + "BarbedColors", &Settings[i].m_iBarbedColour, 0);
     pConf->Read(Name + "BarbedArrowFixedSpacing",
-                &Settings[i].m_bBarbArrFixSpac, 0);
+                &Settings[i].m_bBarbArrFixSpac, false);
     pConf->Read(Name + "BarbedArrowSpacing", &Settings[i].m_iBarbArrSpacing,
                 50);
 
@@ -224,7 +224,7 @@ void GribOverlaySettings::Read() {
     pConf->Read(Name + "DirectionArrowSize", &Settings[i].m_iDirectionArrowSize,
                 0);
     pConf->Read(Name + "DirectionArrowFixedSpacing",
-                &Settings[i].m_bDirArrFixSpac, 0);
+                &Settings[i].m_bDirArrFixSpac, false);
     pConf->Read(Name + "DirectionArrowSpacing", &Settings[i].m_iDirArrSpacing,
                 50);
 
@@ -235,7 +235,8 @@ void GribOverlaySettings::Read() {
                 defcolor[i]);
 
     pConf->Read(Name + "Numbers", &Settings[i].m_bNumbers, false);
-    pConf->Read(Name + "NumbersFixedSpacing", &Settings[i].m_bNumFixSpac, 0);
+    pConf->Read(Name + "NumbersFixedSpacing", &Settings[i].m_bNumFixSpac,
+                false);
     pConf->Read(Name + "NumbersSpacing", &Settings[i].m_iNumbersSpacing, 50);
 
     pConf->Read(Name + "Particles", &Settings[i].m_bParticles, false);
@@ -348,6 +349,8 @@ void GribOverlaySettings::SaveSettingGroups(wxFileConfig *pConf, int settings,
       pConf->Write(Name + "ParticleDensity",
                    Settings[settings].m_dParticleDensity);
       break;
+    default:
+      assert(false && "SaveSettinsGroup: Illegal group");
   }
 }
 
@@ -1289,9 +1292,9 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
     wxString s;
 
     if (root[Name + "Units"].IsString()) {
-      wxString s = root[Name + "Units"].AsString();
+      wxString ss = root[Name + "Units"].AsString();
       long units = -1;
-      s.ToLong(&units);
+      ss.ToLong(&units);
       for (int j = 0; !unit_names[unittype[i]][j].empty(); j++)
         Settings[i].m_Units = (units < 0 || units > j - 1)
                                   ? (SettingsType)0
@@ -1306,9 +1309,9 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
           root[Name + "BarbedVisibility"].AsBool();
 
     if (root[Name + "BarbedColors"].IsString()) {
-      wxString s = root[Name + "BarbedColors"].AsString();
+      wxString ss = root[Name + "BarbedColors"].AsString();
       long val = -1;
-      s.ToLong(&val);
+      ss.ToLong(&val);
       Settings[i].m_iBarbedColour = val;
     }
 
@@ -1317,9 +1320,9 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
           root[Name + "BarbedArrowFixedSpacing"].AsBool();
 
     if (root[Name + "BarbedArrowSpacing"].IsString()) {
-      wxString s = root[Name + "BarbedArrowSpacing"].AsString();
+      wxString ss = root[Name + "BarbedArrowSpacing"].AsString();
       long val = -1;
-      s.ToLong(&val);
+      ss.ToLong(&val);
       Settings[i].m_iBarbArrSpacing = val;
     }
 
@@ -1327,9 +1330,9 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
       Settings[i].m_bIsoBars = root[Name + "DisplayIsobars"].AsBool();
 
     if (root[Name + "IsoBarSpacing"].IsString()) {
-      wxString s = root[Name + "IsoBarSpacing"].AsString();
+      wxString ss = root[Name + "IsoBarSpacing"].AsString();
       long val = -1;
-      s.ToLong(&val);
+      ss.ToLong(&val);
       Settings[i].m_iIsoBarSpacing = val;
     }
 
@@ -1345,16 +1348,16 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
       Settings[i].m_bDirectionArrows = root[Name + "DirectionArrows"].AsBool();
 
     if (root[Name + "DirectionArrowForm"].IsString()) {
-      wxString s = root[Name + "DirectionArrowForm"].AsString();
+      wxString ss = root[Name + "DirectionArrowForm"].AsString();
       long val = -1;
-      s.ToLong(&val);
+      ss.ToLong(&val);
       Settings[i].m_iDirectionArrowForm = val;
     }
 
     if (root[Name + "DirectionArrowSize"].IsString()) {
-      wxString s = root[Name + "DirectionArrowSize"].AsString();
+      wxString ss = root[Name + "DirectionArrowSize"].AsString();
       long val = -1;
-      s.ToLong(&val);
+      ss.ToLong(&val);
       Settings[i].m_iDirectionArrowSize = val;
     }
 
@@ -1363,9 +1366,9 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
           root[Name + "DirectionArrowFixedSpacing"].AsBool();
 
     if (root[Name + "DirectionArrowSpacing"].IsString()) {
-      wxString s = root[Name + "DirectionArrowSpacing"].AsString();
+      wxString ss = root[Name + "DirectionArrowSpacing"].AsString();
       long val = -1;
-      s.ToLong(&val);
+      ss.ToLong(&val);
       Settings[i].m_iDirArrSpacing = val;
     }
 
@@ -1373,9 +1376,9 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
       Settings[i].m_bOverlayMap = root[Name + "OverlayMap"].AsBool();
 
     if (root[Name + "OverlayMapColors"].IsString()) {
-      wxString s = root[Name + "OverlayMapColors"].AsString();
+      wxString ss = root[Name + "OverlayMapColors"].AsString();
       long val = -1;
-      s.ToLong(&val);
+      ss.ToLong(&val);
       Settings[i].m_iOverlayMapColors = val;
     }
 
@@ -1386,9 +1389,9 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
       Settings[i].m_bNumFixSpac = root[Name + "NumbersFixedSpacing"].AsBool();
 
     if (root[Name + "NumbersSpacing"].IsString()) {
-      wxString s = root[Name + "NumbersSpacing"].AsString();
+      wxString ss = root[Name + "NumbersSpacing"].AsString();
       long val = -1;
-      s.ToLong(&val);
+      ss.ToLong(&val);
       Settings[i].m_iNumbersSpacing = val;
     }
 
@@ -1396,9 +1399,9 @@ bool GribOverlaySettings::JSONToSettings(wxString json) {
       Settings[i].m_bParticles = root[Name + "Particles"].AsBool();
 
     if (root[Name + "ParticleDensity"].IsString()) {
-      wxString s = root[Name + "ParticleDensity"].AsString();
+      wxString ss = root[Name + "ParticleDensity"].AsString();
       double val = -1;
-      s.ToDouble(&val);
+      ss.ToDouble(&val);
       Settings[i].m_dParticleDensity = val;
     }
   }

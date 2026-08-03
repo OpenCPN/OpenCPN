@@ -40,9 +40,9 @@ class GribV1Record : public GribRecord {
 public:
   GribV1Record(ZUFILE* file, int id_);
   GribV1Record(const GribRecord& rec);
-  GribV1Record() {}
+  GribV1Record() = default;
 
-  ~GribV1Record();
+  ~GribV1Record() override;
 
 protected:
 private:
@@ -54,7 +54,7 @@ private:
   //---------------------------------------------
   zuint fileOffset0;
   zuint seekStart, totalSize;
-  // zuchar editionNumber;
+  // zuchar edition_number;
   bool b_len_add_8;
 
   // SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
@@ -71,7 +71,7 @@ private:
   // SECTION 3: BIT MAP SECTION (BMS)
   zuint fileOffset3;
   zuint sectionSize3;
-  // zuchar *BMSbits;
+  // zuchar *bms_bits;
   // SECTION 4: BINARY DATA SECTION (BDS)
   zuint fileOffset4;
   zuint sectionSize4;

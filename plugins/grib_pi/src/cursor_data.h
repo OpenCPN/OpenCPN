@@ -66,7 +66,7 @@ private:
   void AddTrackingControl(wxControl *ctrl1, wxControl *ctrl2, wxControl *ctrl3,
                           wxControl *ctrl4, bool show, bool vertical,
                           int wictrl2, int wictrl3 = 0);
-  void MenuAppend(wxMenu *menu, int id, wxString label, int setting);
+  void MenuAppend(wxMenu *menu, int id, const wxString &label, int setting_);
   void OnCBAny(wxCommandEvent &event);
   void OnMenuCallBack(wxMouseEvent &event);
 

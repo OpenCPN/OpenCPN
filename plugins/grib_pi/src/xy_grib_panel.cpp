@@ -211,8 +211,8 @@ XyGribPanel::XyGribPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                         wxALL, 5);
 
   this->SetSizer(m_separator_line);
-  this->Layout();
+  wxWindow::Layout();
   m_separator_line->Fit(this);
 }
 
-XyGribPanel::~XyGribPanel() {}
+XyGribPanel::~XyGribPanel() = default;

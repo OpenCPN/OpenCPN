@@ -74,7 +74,7 @@ CustomGrid::CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
   SetLabelBackgroundColour(colour);
   // set row label size
   int w;
-  GetTextExtent("Ab", &w, nullptr, 0, 0, &labelfont);
+  GetTextExtent("Ab", &w, nullptr, nullptr, nullptr, &labelfont);
   double x = (double)w * 6.5;
   SetRowLabelSize((int)x);
 
@@ -261,7 +261,7 @@ void CustomGrid::OnLabeClick(wxGridEvent& event) {
 
 int CustomGrid::GetRowIndex(int row) {
   int idx = wxNOT_FOUND;
-  for (unsigned int i = 0; i < m_NumRow.size(); i++) {
+  for (unsigned i = 0; i < m_NumRow.size(); i++) {
     if (m_NumRow[i] == row) idx = i;
   }
   return idx;
@@ -410,7 +410,7 @@ void CustomRenderer::Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
 
 #if wxUSE_GRAPHICS_CONTEXT
     wxGraphicsContext* gdc;
-    wxClientDC* cdc = new wxClientDC(dynamic_cast<wxWindow*>(&grid));
+    auto* cdc = new wxClientDC(dynamic_cast<wxWindow*>(&grid));
     cdc = dynamic_cast<wxClientDC*>(&dc);
     if (cdc) {
       gdc = wxGraphicsContext::Create(*cdc);

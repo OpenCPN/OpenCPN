@@ -37,10 +37,10 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     m_fgCtrlBarSizer->SetFlexibleDirection(wxHORIZONTAL);
     m_fgCtrlBarSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
 
-    wxBoxSizer* mainBox = new wxBoxSizer(wxVERTICAL);
+    auto* mainBox = new wxBoxSizer(wxVERTICAL);
     m_fgCtrlBarSizer->Add(mainBox, 1, wxEXPAND, 0);
 
-    wxBoxSizer* fgSizer50 = new wxBoxSizer(wxHORIZONTAL);
+    auto* fgSizer50 = new wxBoxSizer(wxHORIZONTAL);
     mainBox->Add(fgSizer50, 0, wxEXPAND, 5);
 
     m_bpPrev =
@@ -65,7 +65,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
 
     fgSizer50->Add(m_bpNext, 0, wxALL, 1);
 
-    wxBoxSizer* fgSizer51 = new wxBoxSizer(wxHORIZONTAL);
+    auto* fgSizer51 = new wxBoxSizer(wxHORIZONTAL);
     mainBox->Add(fgSizer51, 0, wxEXPAND, 5);
 
     m_bpAltitude =
@@ -143,7 +143,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     m_fgCtrlGrabberSize->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
     this->SetSizer(m_fgCtrlBarSizer);
-    this->Layout();
+    wxDialog::Layout();
     m_fgCtrlBarSizer->Fit(this);
   } else {
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
@@ -153,7 +153,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     m_fgCtrlBarSizer->SetFlexibleDirection(wxHORIZONTAL);
     m_fgCtrlBarSizer->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_NONE);
 
-    wxFlexGridSizer* fgSizer49 = new wxFlexGridSizer(0, 1, 0, 0);
+    auto* fgSizer49 = new wxFlexGridSizer(0, 1, 0, 0);
     fgSizer49->AddGrowableCol(0);
     fgSizer49->SetFlexibleDirection(wxVERTICAL);
     fgSizer49->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
@@ -266,7 +266,7 @@ GRIBUICtrlBarBase::GRIBUICtrlBarBase(wxWindow* parent, wxWindowID id,
     m_fgCtrlBarSizer->Add(m_fgCtrlGrabberSize, 1, wxEXPAND, 0);
 
     this->SetSizer(m_fgCtrlBarSizer);
-    this->Layout();
+    wxDialog::Layout();
     m_fgCtrlBarSizer->Fit(this);
   }
 
@@ -571,8 +571,8 @@ wxBitmap GRIBUICtrlBarBase::GetScaledBitmap(wxBitmap bitmap,
   // wxBitmapButton
   int w = bitmap.GetWidth() - margin;
   int h = bitmap.GetHeight() - margin;
-  w *= scale_factor;
-  h *= scale_factor;
+  w *= static_cast<int>(scale_factor);
+  h *= static_cast<int>(scale_factor);
 
 #ifdef ocpnUSE_SVG
   wxString shareLocn = *GetpSharedDataLocation() + "plugins" +
@@ -597,8 +597,8 @@ GRIBUICDataBase::GRIBUICDataBase(wxWindow* parent, wxWindowID id,
                                  const wxSize& size, long style)
     : wxDialog(parent, id, title, pos, size, style) {
   this->SetSizeHints(wxSize(-1, -1), wxDefaultSize);
-  this->SetFont(wxFont(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-                       wxFONTWEIGHT_NORMAL, false, wxEmptyString));
+  wxWindow::SetFont(wxFont(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+                           wxFONTWEIGHT_NORMAL, false, wxEmptyString));
 
   wxFlexGridSizer* fgSizer57;
   fgSizer57 = new wxFlexGridSizer(0, 2, 0, 0);
@@ -612,13 +612,13 @@ GRIBUICDataBase::GRIBUICDataBase(wxWindow* parent, wxWindowID id,
   fgSizer57->Add(m_fgCdataSizer, 1, wxEXPAND, 5);
 
   this->SetSizer(fgSizer57);
-  this->Layout();
+  wxDialog::Layout();
   fgSizer57->Fit(this);
 
   this->Centre(wxBOTH);
 }
 
-GRIBUICDataBase::~GRIBUICDataBase() {}
+GRIBUICDataBase::~GRIBUICDataBase() = default;
 
 CursorDataBase::CursorDataBase(wxWindow* parent, wxWindowID id,
                                const wxPoint& pos, const wxSize& size,
@@ -874,7 +874,7 @@ CursorDataBase::CursorDataBase(wxWindow* parent, wxWindowID id,
   fgSizer30->Add(fgSizer43, 1, wxEXPAND, 5);
 
   this->SetSizer(fgSizer30);
-  this->Layout();
+  wxWindow::Layout();
   fgSizer30->Fit(this);
 
   // Connect Events
@@ -2110,12 +2110,12 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   wxBoxSizer* itemBoxSizerMainPanel = new wxBoxSizer(wxVERTICAL);
   SetSizer(itemBoxSizerMainPanel);
 
-  wxScrolledWindow* scrollWin = new wxScrolledWindow(
-      this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxVSCROLL);
+  auto* scrollWin = new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition,
+                                         wxSize(-1, -1), wxVSCROLL);
   scrollWin->SetScrollRate(1, 1);
   itemBoxSizerMainPanel->Add(scrollWin, 1, wxEXPAND | wxALL, 0);
 
-  wxBoxSizer* bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
+  auto* bSizerPrefsMain = new wxBoxSizer(wxVERTICAL);
   scrollWin->SetSizer(bSizerPrefsMain);
 
   wxStdDialogButtonSizer* m_sdbSizer2;
@@ -2201,7 +2201,7 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
                      wxDefaultSize, wxTE_READONLY);
   sbSizerFolder->Add(m_textDirectory, 1, wxALL, 5);
 
-  wxButton* dbFolderButton = new wxButton(scrollWin, wxID_ANY, _("Browse..."));
+  auto* dbFolderButton = new wxButton(scrollWin, wxID_ANY, _("Browse..."));
   sbSizerFolder->Add(dbFolderButton, 0, wxALL, 5);
 
   bSizerPrefsMain->Add(sbSizerFolder, 0, wxALL | wxEXPAND, 5);
@@ -2233,8 +2233,8 @@ GribPreferencesDialogBase::GribPreferencesDialogBase(
   fgSizer47->Add(m_sIconSizeFactor, 0, wxALL | wxEXPAND, 5);
   bSizerPrefsMain->Add(fgSizer47, 0, wxALL | wxEXPAND, 5);
 #endif
-  Layout();
-  Fit();
+  wxDialog::Layout();
+  wxWindow::Fit();
 
   // Connect Events
   m_rbStartOptions->Connect(
@@ -2397,7 +2397,7 @@ wxStaticBoxSizer* GribRequestSettingBase::createAreaSelectionSection(
   fgSizer37->SetFlexibleDirection(wxBOTH);
   fgSizer37->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-  wxBoxSizer* zoneSelBoxSizer = new wxBoxSizer(wxVERTICAL);
+  auto* zoneSelBoxSizer = new wxBoxSizer(wxVERTICAL);
   m_rbCurrentView =
       new wxRadioButton(parent, AUTOSELECT, _("Current View"),
                         wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
@@ -3023,7 +3023,7 @@ void GribRequestSettingBase::createEmailPanel() {
 
   fgSizer101->Add(m_fgFixedSizer, 1, wxEXPAND, 5);
 
-  wxBoxSizer* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
+  auto* buttonSizer = new wxBoxSizer(wxHORIZONTAL);
   m_rButtonYes = new wxButton(m_panelEmail, wxID_YES);
   m_rButtonYes->SetLabel(_("Send"));
   buttonSizer->Add(m_rButtonYes, 0, wxALL, 5);
@@ -3076,7 +3076,7 @@ GribRequestSettingBase::GribRequestSettingBase(GRIBUICtrlBarBase* parent,
   bSizerMain->Add(m_notebookGetGrib, 1, wxEXPAND | wxALL, 5);
 
   // Add Save and Cancel buttons.
-  wxBoxSizer* bottomButtonSizer = new wxBoxSizer(wxHORIZONTAL);
+  auto* bottomButtonSizer = new wxBoxSizer(wxHORIZONTAL);
   m_rButtonCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
   bottomButtonSizer->Add(m_rButtonCancel, 0, wxALL, 5);
 
@@ -3088,7 +3088,7 @@ GribRequestSettingBase::GribRequestSettingBase(GRIBUICtrlBarBase* parent,
   bSizerMain->Add(bottomButtonSizer, 0, wxEXPAND | wxALL, 5);
 
   this->SetSizer(bSizerMain);
-  this->Layout();
+  wxDialog::Layout();
   // this->Fit();
   bSizerMain->Fit(this);
 
@@ -3612,7 +3612,7 @@ GRIBTableBase::GRIBTableBase(wxWindow* parent, wxWindowID id,
 
   fgSizer18->Add(fgSizer20, 1, wxEXPAND, 5);
 
-  wxStdDialogButtonSizer* m_pButtonTable = new wxStdDialogButtonSizer();
+  auto* m_pButtonTable = new wxStdDialogButtonSizer();
   m_pButtonTableOK = new wxButton(this, wxID_OK, _("Close"));
   m_pButtonTableOK->SetFont(GetOCPNGUIScaledFont_PlugIn(_("Dialog")));
   m_pButtonTable->AddButton(m_pButtonTableOK);
@@ -3623,7 +3623,7 @@ GRIBTableBase::GRIBTableBase(wxWindow* parent, wxWindowID id,
   bSizer1->Add(fgSizer18, 1, wxEXPAND, 5);
 
   this->SetSizer(bSizer1);
-  this->Layout();
+  wxDialog::Layout();
   bSizer1->Fit(this);
 
   this->Centre(wxBOTH);
@@ -3649,11 +3649,11 @@ ProjectBoatPanel::ProjectBoatPanel(wxWindow* parent, wxWindowID id,
                                    const wxPoint& pos, const wxSize& size,
                                    long style, const wxString& name)
     : wxPanel(parent, id, pos, size, style, name) {
-  SetFont(*OCPNGetFont(_("Dialog")));
+  wxWindow::SetFont(*OCPNGetFont(_("Dialog")));
 
-  SetMinSize(wxSize(-1, GetCharHeight()) * 2);
+  wxWindow::SetMinSize(wxSize(-1, wxWindow::GetCharHeight()) * 2);
 
-  wxBoxSizer* bSizerProjectBoat = new wxBoxSizer(wxHORIZONTAL);
+  auto* bSizerProjectBoat = new wxBoxSizer(wxHORIZONTAL);
   SetSizer(bSizerProjectBoat);
 
   m_cbProjectPosition = new wxCheckBox(this, wxID_ANY, _("Project position"),
@@ -3684,10 +3684,10 @@ ProjectBoatPanel::ProjectBoatPanel(wxWindow* parent, wxWindowID id,
   m_stSpeedUnit->Wrap(-1);
   bSizerProjectBoat->Add(m_stSpeedUnit, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  this->Layout();
+  wxWindow::Layout();
 }
 
-ProjectBoatPanel::~ProjectBoatPanel() {}
+ProjectBoatPanel::~ProjectBoatPanel() = default;
 
 double ProjectBoatPanel::GetCourse() {
   double val;

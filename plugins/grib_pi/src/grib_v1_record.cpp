@@ -36,228 +36,228 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Adjust data type from different mete center
 //-------------------------------------------------------------------------------
 void GribV1Record::translateDataType() {
-  this->knownData = true;
+  this->known_data = true;
   //------------------------
   // NOAA GFS
   //------------------------
-  if (idCenter == 7 && (idModel == 96 || idModel == 81)  // NOAA
-      && (idGrid == 4 || idGrid == 255))                 // Saildocs
+  if (id_center == 7 && (id_model == 96 || id_model == 81)  // NOAA
+      && (id_grid == 4 || id_grid == 255))                  // Saildocs
   {
-    dataCenterModel = NOAA_GFS;
-    if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
+    data_center_model = NOAA_GFS;
+    if (data_type == GRB_PRECIP_RATE) {  // mm/s -> mm/h
       multiplyAllData(3600.0);
     }
-    if (dataType == GRB_TEMP  // gfs Water surface Temperature
-        && levelType == LV_GND_SURF && levelValue == 0)
-      dataType = GRB_WTMP;
+    if (data_type == GRB_TEMP  // gfs Water surface Temperature
+        && level_type == LV_GND_SURF && level_value == 0)
+      data_type = GRB_WTMP;
 
     // altitude level (entire atmosphere vs entire atmosphere considered as 1
     // level)
-    if (levelType == LV_ATMOS_ENT) {
-      levelType = LV_ATMOS_ALL;
+    if (level_type == LV_ATMOS_ENT) {
+      level_type = LV_ATMOS_ALL;
     }
   }
   //------------------------
   // ICON DWD Saildoc
   //------------------------
-  else if (idCenter == 78 && idModel == 1 && idGrid == 255) {
-    if (dataType == GRB_TEMP  // ICON Water surface Temperature
-        && levelType == LV_GND_SURF && levelValue == 0)
-      dataType = GRB_WTMP;
+  else if (id_center == 78 && id_model == 1 && id_grid == 255) {
+    if (data_type == GRB_TEMP  // ICON Water surface Temperature
+        && level_type == LV_GND_SURF && level_value == 0)
+      data_type = GRB_WTMP;
   }
   //------------------------
   // EMCF masquaraded as NOAA ?
   //------------------------
-  else if (idCenter == 7 && idModel == 64 && idGrid == 4) {
-    dataCenterModel = NOAA_GFS;
-    if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
+  else if (id_center == 7 && id_model == 64 && id_grid == 4) {
+    data_center_model = NOAA_GFS;
+    if (data_type == GRB_PRECIP_RATE) {  // mm/s -> mm/h
       multiplyAllData(3600.0);
     }
   }
   //------------------------
   // DNMI-NEurope.grb
   //------------------------
-  else if ((idCenter == 88 && idModel == 255 && idGrid == 255) ||
-           (idCenter == 88 && idModel == 230 && idGrid == 255) ||
-           (idCenter == 88 && idModel == 200 && idGrid == 255) ||
-           (idCenter == 88 && idModel == 67 && idGrid == 255)) {
-    if (dataType == GRB_TEMP && levelType == LV_GND_SURF &&
-        levelValue == 0) {  // air temperature at groud level
-      levelType = LV_ABOV_GND;
-      levelValue = 2;
+  else if ((id_center == 88 && id_model == 255 && id_grid == 255) ||
+           (id_center == 88 && id_model == 230 && id_grid == 255) ||
+           (id_center == 88 && id_model == 200 && id_grid == 255) ||
+           (id_center == 88 && id_model == 67 && id_grid == 255)) {
+    if (data_type == GRB_TEMP && level_type == LV_GND_SURF &&
+        level_value == 0) {  // air temperature at groud level
+      level_type = LV_ABOV_GND;
+      level_value = 2;
     }
-    dataCenterModel = NORWAY_METNO;
+    data_center_model = NORWAY_METNO;
   }
   //------------------------
   // WRF NMM grib.meteorologic.net
   //------------------------
-  else if (idCenter == 7 && idModel == 89 && idGrid == 255) {
-    // dataCenterModel ??
-    if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
+  else if (id_center == 7 && id_model == 89 && id_grid == 255) {
+    // data_center_model ??
+    if (data_type == GRB_PRECIP_RATE) {  // mm/s -> mm/h
       multiplyAllData(3600.0);
     }
-  } else if (idCenter == 7 && idModel == 88 && idGrid == 255) {  // saildocs
-    dataCenterModel = NOAA_NCEP_WW3;
+  } else if (id_center == 7 && id_model == 88 && id_grid == 255) {  // saildocs
+    data_center_model = NOAA_NCEP_WW3;
   }
   //----------------------------
   // NOAA RTOFS
   //--------------------------------
-  else if (idCenter == 7 && idModel == 45 && idGrid == 255) {
-    dataCenterModel = NOAA_RTOFS;
+  else if (id_center == 7 && id_model == 45 && id_grid == 255) {
+    data_center_model = NOAA_RTOFS;
   }
   //----------------------------------------------
   // NCEP sea surface temperature
   //----------------------------------------------
-  else if ((idCenter == 7 && idModel == 44 && idGrid == 173) ||
-           (idCenter == 7 && idModel == 44 && idGrid == 235)) {
-    dataCenterModel = NOAA_NCEP_SST;
+  else if ((id_center == 7 && id_model == 44 && id_grid == 173) ||
+           (id_center == 7 && id_model == 44 && id_grid == 235)) {
+    data_center_model = NOAA_NCEP_SST;
   }
   //----------------------------------------------
   // FNMOC WW3 mediterranean sea
   //----------------------------------------------
-  else if (idCenter == 58 && idModel == 111 && idGrid == 179) {
-    dataCenterModel = FNMOC_WW3_MED;
+  else if (id_center == 58 && id_model == 111 && id_grid == 179) {
+    data_center_model = FNMOC_WW3_MED;
   }
   //----------------------------------------------
   // FNMOC WW3
   //----------------------------------------------
-  else if (idCenter == 58 && idModel == 110 && idGrid == 240) {
-    dataCenterModel = FNMOC_WW3_GLB;
+  else if (id_center == 58 && id_model == 110 && id_grid == 240) {
+    data_center_model = FNMOC_WW3_GLB;
   }
   //------------------------
   // Meteorem (Scannav)
   //------------------------
-  else if (idCenter == 59 && idModel == 78 && idGrid == 255) {
-    // dataCenterModel = ??
-    if ((getDataType() == GRB_WIND_VX || getDataType() == GRB_WIND_VY) &&
-        getLevelType() == LV_MSL && getLevelValue() == 0) {
-      levelType = LV_ABOV_GND;
-      levelValue = 10;
+  else if (id_center == 59 && id_model == 78 && id_grid == 255) {
+    // data_center_model = ??
+    if ((GetDataType() == GRB_WIND_VX || GetDataType() == GRB_WIND_VY) &&
+        GetLevelType() == LV_MSL && GetLevelValue() == 0) {
+      level_type = LV_ABOV_GND;
+      level_value = 10;
     }
-    if (getDataType() == GRB_PRECIP_TOT && getLevelType() == LV_MSL &&
-        getLevelValue() == 0) {
-      levelType = LV_GND_SURF;
-      levelValue = 0;
+    if (GetDataType() == GRB_PRECIP_TOT && GetLevelType() == LV_MSL &&
+        GetLevelValue() == 0) {
+      level_type = LV_GND_SURF;
+      level_value = 0;
     }
   }
   //----------------------------------------------
   // ECMWF ERA5
   //----------------------------------------------
-  else if (idCenter == 98 && (idModel == 145 || idModel == 255) &&
-           idGrid == 255 && tableVersion == 128) {
-    dataCenterModel = ECMWF_ERA5;
-    if (getLevelType() == LV_ISOBARIC) {  // for pressure level data
-      if (getDataType() == 130) {
-        dataType = GRB_TEMP;
-      } else if (getDataType() == 131)  // u wind
+  else if (id_center == 98 && (id_model == 145 || id_model == 255) &&
+           id_grid == 255 && tableVersion == 128) {
+    data_center_model = ECMWF_ERA5;
+    if (GetLevelType() == LV_ISOBARIC) {  // for pressure level data
+      if (GetDataType() == 130) {
+        data_type = GRB_TEMP;
+      } else if (GetDataType() == 131)  // u wind
       {
-        dataType = GRB_WIND_VX;
-      } else if (getDataType() == 132)  // v wind
+        data_type = GRB_WIND_VX;
+      } else if (GetDataType() == 132)  // v wind
       {
-        dataType = GRB_WIND_VY;
-      } else if (getDataType() == 157)  // rh
+        data_type = GRB_WIND_VY;
+      } else if (GetDataType() == 157)  // rh
       {
-        dataType = GRB_HUMID_REL;
-      } else if (getDataType() == 129)  // geopotential
+        data_type = GRB_HUMID_REL;
+      } else if (GetDataType() == 129)  // geopotential
       {
-        dataType = GRB_GEOPOT_HGT;
+        data_type = GRB_GEOPOT_HGT;
         multiplyAllData(0.102);  // convert to geopot height
       }
     }
-    if (getLevelType() == LV_GND_SURF &&
-        getLevelValue() == 0) {  // single level data
-      if (getDataType() == 141)  // Snow depth  (m of water equivalent)
+    if (GetLevelType() == LV_GND_SURF &&
+        GetLevelValue() == 0) {  // single level data
+      if (GetDataType() == 141)  // Snow depth  (m of water equivalent)
       {
-        dataType = GRB_SNOW_DEPTH;
-      } else if (getDataType() == 151) {
-        dataType = GRB_PRESSURE;
-        levelType = LV_MSL;
-      } else if (getDataType() == 165 || getDataType() == 166) {
-        if (getDataType() == 165) dataType = GRB_WIND_VX;
-        if (getDataType() == 166) dataType = GRB_WIND_VY;
-        levelType = LV_ABOV_GND;
-        levelValue = 10;
-      } else if (getDataType() == 167) {
-        dataType = GRB_TEMP;
-        levelType = LV_ABOV_GND;
-        levelValue = 2;
-      } else if (getDataType() == 168) {
-        dataType = GRB_DEWPOINT;
-        levelType = LV_ABOV_GND;
-        levelValue = 2;
-      } else if (getDataType() == 34) {
-        dataType = -1;  // Sea surface temperature (K)
-      } else if (getDataType() == 164) {
-        dataType = GRB_CLOUD_TOT;
-        levelType = LV_ATMOS_ALL;
+        data_type = GRB_SNOW_DEPTH;
+      } else if (GetDataType() == 151) {
+        data_type = GRB_PRESSURE;
+        level_type = LV_MSL;
+      } else if (GetDataType() == 165 || GetDataType() == 166) {
+        if (GetDataType() == 165) data_type = GRB_WIND_VX;
+        if (GetDataType() == 166) data_type = GRB_WIND_VY;
+        level_type = LV_ABOV_GND;
+        level_value = 10;
+      } else if (GetDataType() == 167) {
+        data_type = GRB_TEMP;
+        level_type = LV_ABOV_GND;
+        level_value = 2;
+      } else if (GetDataType() == 168) {
+        data_type = GRB_DEWPOINT;
+        level_type = LV_ABOV_GND;
+        level_value = 2;
+      } else if (GetDataType() == 34) {
+        data_type = -1;  // Sea surface temperature (K)
+      } else if (GetDataType() == 164) {
+        data_type = GRB_CLOUD_TOT;
+        level_type = LV_ATMOS_ALL;
         multiplyAllData(
             100.0);  // ECMWF ERA5 cloud range is 0-1, but we expect 0-100
-      } else if (getDataType() == 228) {
-        dataType = GRB_PRECIP_TOT;
+      } else if (GetDataType() == 228) {
+        data_type = GRB_PRECIP_TOT;
         // m/h -> mm/h
         multiplyAllData(1000.0);
       }
     }
-  } else if (idCenter == 98 && idModel == 145 && idGrid == 255 &&
+  } else if (id_center == 98 && id_model == 145 && id_grid == 255 &&
              tableVersion == 228) {
-    dataCenterModel = ECMWF_ERA5;
-    if (getLevelType() == LV_GND_SURF && getLevelValue() == 0) {
-      if (getDataType() == 29) {
-        dataType = GRB_WIND_GUST;
-        // levelValue = 10; // XXX really 10 but we only display 0
+    data_center_model = ECMWF_ERA5;
+    if (GetLevelType() == LV_GND_SURF && GetLevelValue() == 0) {
+      if (GetDataType() == 29) {
+        data_type = GRB_WIND_GUST;
+        // level_value = 10; // XXX really 10 but we only display 0
       }
     }
   }
   //----------------------------------------------
   // ECMWF ERA5 WAVE
   //----------------------------------------------
-  else if (idCenter == 98 && idModel == 111 && idGrid == 255 &&
+  else if (id_center == 98 && id_model == 111 && id_grid == 255 &&
            tableVersion == 140) {
-    dataCenterModel = ECMWF_ERA5;
-    switch (getDataType()) {
+    data_center_model = ECMWF_ERA5;
+    switch (GetDataType()) {
       case 229:  // SWH Significant height of combined wind waves and swell (m)
-        dataType = GRB_HTSGW;
+        data_type = GRB_HTSGW;
         break;
       case 230:  // MWD Mean wave direction (Degree true)
-        dataType = GRB_WVDIR;
+        data_type = GRB_WVDIR;
         break;
       case 232:  // MWP Mean wave period  (s)
-        dataType = GRB_WVPER;
+        data_type = GRB_WVPER;
         break;
     }
   }
   //------------------------
   // EMCWF grib1...
   //------------------------
-  else if (idCenter == 98 /*&& idModel==148*/ && idGrid == 255) {
-    dataCenterModel = OTHER_DATA_CENTER;
-    if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
-      // dataType=71 levelType=1 levelValue=0
+  else if (id_center == 98 /*&& id_model==148*/ && id_grid == 255) {
+    data_center_model = OTHER_DATA_CENTER;
+    if (data_type == GRB_PRECIP_RATE) {  // mm/s -> mm/h
+      // data_type=71 level_type=1 level_value=0
       multiplyAllData(3600.0);
-    } else if (getDataType() == GRB_CLOUD_TOT &&
-               getLevelType() == LV_GND_SURF && getLevelValue() == 0) {
-      // dataType=59 levelType=1 levelValue=0
-      levelType = LV_ATMOS_ALL;
-    } else if (getDataType() == GRB_PRESSURE && getLevelType() == LV_GND_SURF &&
-               getLevelValue() == 0) {
-      // dataType=2 levelType=1 levelValue=0
-      levelType = LV_MSL;
+    } else if (GetDataType() == GRB_CLOUD_TOT &&
+               GetLevelType() == LV_GND_SURF && GetLevelValue() == 0) {
+      // data_type=59 level_type=1 level_value=0
+      level_type = LV_ATMOS_ALL;
+    } else if (GetDataType() == GRB_PRESSURE && GetLevelType() == LV_GND_SURF &&
+               GetLevelValue() == 0) {
+      // data_type=2 level_type=1 level_value=0
+      level_type = LV_MSL;
     }
   }
   //------------------------------------------
   // KNMI
   // ------------------------
-  else if (idCenter == 99 && idGrid == 255) {
-    if (idModel == 8) {
-      dataCenterModel = KNMI_HIRLAM;
-    } else if (idModel == 2) {
-      dataCenterModel = KNMI_HARMONIE_AROME;
+  else if (id_center == 99 && id_grid == 255) {
+    if (id_model == 8) {
+      data_center_model = KNMI_HIRLAM;
+    } else if (id_model == 2) {
+      data_center_model = KNMI_HARMONIE_AROME;
     }
-    switch (getDataType()) {
+    switch (GetDataType()) {
       case 1:
-        if (getLevelType() == LV_ABOV_MSL) {
-          dataType = GRB_PRESSURE;
-          levelType = LV_MSL;
+        if (GetLevelType() == LV_ABOV_MSL) {
+          data_type = GRB_PRESSURE;
+          level_type = LV_MSL;
         }
         break;
       case GRB_HUMID_REL:
@@ -265,27 +265,27 @@ void GribV1Record::translateDataType() {
         multiplyAllData(100.0);
         break;
       case 162:
-        dataType = GRB_WIND_GUST_VX;
-        levelType = LV_GND_SURF;
-        levelValue = 0;
+        data_type = GRB_WIND_GUST_VX;
+        level_type = LV_GND_SURF;
+        level_value = 0;
         break;
       case 163:
-        dataType = GRB_WIND_GUST_VY;
-        levelType = LV_GND_SURF;
-        levelValue = 0;
+        data_type = GRB_WIND_GUST_VY;
+        level_type = LV_GND_SURF;
+        level_value = 0;
         break;
       case GRB_CLOUD_TOT:
-        levelType = LV_ATMOS_ALL;
-        levelValue = 0;
+        level_type = LV_ATMOS_ALL;
+        level_value = 0;
         multiplyAllData(100.0);
         break;
       case 181:
-        levelType = LV_GND_SURF;
-        levelValue = 0;
-        if (getTimeRange() == 4) {
-          dataType = GRB_PRECIP_TOT;
-        } else if (getTimeRange() == 0) {
-          dataType = GRB_PRECIP_RATE;
+        level_type = LV_GND_SURF;
+        level_value = 0;
+        if (GetTimeRange() == 4) {
+          data_type = GRB_PRECIP_TOT;
+        } else if (GetTimeRange() == 0) {
+          data_type = GRB_PRECIP_RATE;
         }
         break;
     }
@@ -294,24 +294,24 @@ void GribV1Record::translateDataType() {
   // Unknown center
   //------------------------
   else {
-    dataCenterModel = OTHER_DATA_CENTER;
+    data_center_model = OTHER_DATA_CENTER;
     //      printf("Uncorrected GribRecord: ");
     //      this->print();
-    //      this->knownData = false;
+    //      this->known_data = false;
   }
   // translate significant wave height and dir
-  if (this->knownData) {
-    switch (getDataType()) {
+  if (this->known_data) {
+    switch (GetDataType()) {
       case GRB_UOGRD:
       case GRB_VOGRD:
-        levelType = LV_GND_SURF;
-        levelValue = 0;
+        level_type = LV_GND_SURF;
+        level_value = 0;
         break;
       case GRB_HTSGW:
       case GRB_WVDIR:
       case GRB_WVPER:
-        levelType = LV_GND_SURF;
-        levelValue = 0;
+        level_type = LV_GND_SURF;
+        level_value = 0;
         break;
     }
   }
@@ -325,10 +325,10 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_) {
   id = id_;
   //   seekStart = zu_tell(file);           // moved to section 0 read
   data = nullptr;
-  BMSbits = nullptr;
+  bms_bits = nullptr;
   eof = false;
-  knownData = true;
-  IsDuplicated = false;
+  known_data = true;
+  is_duplicated = false;
   long start = zu_tell(file);
 
   //      Pre read 4 bytes to check for length adder needed for some GRIBS (like
@@ -403,7 +403,7 @@ GribV1Record::GribV1Record(ZUFILE* file, int id_) {
 
   if (ok) {
     translateDataType();
-    setDataType(dataType);
+    SetDataType(data_type);
   } else {
     // XXX very slow with bzip2 file
     zu_seek(file, start, SEEK_SET);
@@ -491,8 +491,8 @@ bool GribV1Record::readGribSection0_IS(ZUFILE* file,
   seekStart = zu_tell(file) - 4;
   totalSize = readInt3(file);
 
-  editionNumber = readChar(file);
-  if (editionNumber != 1) {
+  edition_number = readChar(file);
+  if (edition_number != 1) {
     ok = false;
     eof = true;
     return false;
@@ -512,15 +512,15 @@ bool GribV1Record::readGribSection1_PDS(ZUFILE* file) {
   }
   sectionSize1 = makeInt3(data1[0], data1[1], data1[2]);
   tableVersion = data1[3];
-  idCenter = data1[4];
-  idModel = data1[5];
-  idGrid = data1[6];
+  id_center = data1[4];
+  id_model = data1[5];
+  id_grid = data1[6];
   hasGDS = (data1[7] & 128) != 0;
   hasBMS = (data1[7] & 64) != 0;
 
-  dataType = data1[8];  // octet 9 = parameters and units
-  levelType = data1[9];
-  levelValue = makeInt2(data1[10], data1[11]);
+  data_type = data1[8];  // octet 9 = parameters and units
+  level_type = data1[9];
+  level_value = makeInt2(data1[10], data1[11]);
 
   refyear = (data1[24] - 1) * 100 + data1[12];
   refmonth = data1[13];
@@ -528,16 +528,17 @@ bool GribV1Record::readGribSection1_PDS(ZUFILE* file) {
   refhour = data1[15];
   refminute = data1[16];
 
-  refDate = makeDate(refyear, refmonth, refday, refhour, refminute, 0);
-  sprintf(strRefDate, "%04d-%02d-%02d %02d:%02d", refyear, refmonth, refday,
+  ref_date = MakeDate(refyear, refmonth, refday, refhour, refminute, 0);
+  sprintf(str_ref_date, "%04d-%02d-%02d %02d:%02d", refyear, refmonth, refday,
           refhour, refminute);
 
-  periodP1 = data1[18];
-  periodP2 = data1[19];
-  timeRange = data1[20];
-  periodsec = periodSeconds(data1[17], data1[18], data1[19], timeRange);
-  curDate = makeDate(refyear, refmonth, refday, refhour, refminute, periodsec);
-  // if (dataType == GRB_PRECIP_TOT) printf("P1=%d p2=%d\n", periodP1,periodP2);
+  period_p1 = data1[18];
+  period_p2 = data1[19];
+  time_range = data1[20];
+  periodsec = periodSeconds(data1[17], data1[18], data1[19], time_range);
+  cur_date = MakeDate(refyear, refmonth, refday, refhour, refminute, periodsec);
+  // if (data_type == GRB_PRECIP_TOT) printf("P1=%d p2=%d\n",
+  // period_p1,period_p2);
 
   int decim;
   decim = (int)(((((zuint)data1[26] & 0x7F) << 8) + (zuint)data1[27]) & 0x7FFF);
@@ -564,12 +565,12 @@ bool GribV1Record::readGribSection2_GDS(ZUFILE* file) {
   sectionSize2 = readInt3(file);  // byte 1-2-3
   NV = readChar(file);            // byte 4
   PV = readChar(file);            // byte 5
-  gridType = readChar(file);      // byte 6
+  grid_type = readChar(file);     // byte 6
 
-  if (gridType != 0
-      // && gridType != 4
+  if (grid_type != 0
+      // && grid_type != 4
   ) {
-    erreur("Record %d: unknown grid type GDS(6) : %d", id, gridType);
+    erreur("Record %d: unknown grid type GDS(6) : %d", id, grid_type);
     ok = false;
   }
 
@@ -577,7 +578,7 @@ bool GribV1Record::readGribSection2_GDS(ZUFILE* file) {
   Nj = readInt2(file);                  // byte 9-10
   La1 = readSignedInt3(file) / 1000.0;  // byte 11-12-13
   Lo1 = readSignedInt3(file) / 1000.0;  // byte 14-15-16
-  resolFlags = readChar(file);          // byte 17
+  resol_flags = readChar(file);         // byte 17
   La2 = readSignedInt3(file) / 1000.0;  // byte 18-19-20
   Lo2 = readSignedInt3(file) / 1000.0;  // byte 21-22-23
 
@@ -591,28 +592,28 @@ bool GribV1Record::readGribSection2_GDS(ZUFILE* file) {
   while (Lo1 > Lo2 && Di > 0) {  // horizontal size > 360 °
     Lo1 -= 360.0;
   }
-  hasDiDj = (resolFlags & 0x80) != 0;
-  isEarthSpheric = (resolFlags & 0x40) == 0;
-  isUeastVnorth = (resolFlags & 0x08) == 0;
+  has_di_dj = (resol_flags & 0x80) != 0;
+  is_earth_spheric = (resol_flags & 0x40) == 0;
+  is_ueast_vnorth = (resol_flags & 0x08) == 0;
 
-  scanFlags = readChar(file);  // byte 28
-  isScanIpositive = (scanFlags & 0x80) == 0;
-  isScanJpositive = (scanFlags & 0x40) != 0;
-  isAdjacentI = (scanFlags & 0x20) == 0;
+  scan_flags = readChar(file);  // byte 28
+  is_scan_i_positive = (scan_flags & 0x80) == 0;
+  is_scan_j_positive = (scan_flags & 0x40) != 0;
+  is_adjacent_i = (scan_flags & 0x20) == 0;
 
   if (Lo2 > Lo1) {
-    lonMin = Lo1;
-    lonMax = Lo2;
+    lon_min = Lo1;
+    lon_max = Lo2;
   } else {
-    lonMin = Lo2;
-    lonMax = Lo1;
+    lon_min = Lo2;
+    lon_max = Lo1;
   }
   if (La2 > La1) {
-    latMin = La1;
-    latMax = La2;
+    lat_min = La1;
+    lat_max = La2;
   } else {
-    latMin = La2;
-    latMax = La1;
+    lat_min = La2;
+    lat_max = La1;
   }
   if (Ni <= 1 || Nj <= 1) {
     erreur("Record %d: Ni=%d Nj=%d", id, Ni, Nj);
@@ -626,10 +627,10 @@ bool GribV1Record::readGribSection2_GDS(ZUFILE* file) {
     printf("==== GV1 \n");
     printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", Lo1, Lo2, La1, La2);
     printf("Ni=%d Nj=%d\n", Ni, Nj);
-    printf("hasDiDj=%d Di,Dj=(%f %f)\n", hasDiDj, Di, Dj);
+    printf("has_di_dj=%d Di,Dj=(%f %f)\n", has_di_dj, Di, Dj);
     printf("hasBMS=%d\n", hasBMS);
-    printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",
-           isScanIpositive, isScanJpositive, isAdjacentI);
+    printf("is_scan_i_positive=%d is_scan_j_positive=%d is_adjacent_i=%d\n",
+           is_scan_i_positive, is_scan_j_positive, is_adjacent_i);
   }
   return ok;
 }
@@ -654,11 +655,11 @@ bool GribV1Record::readGribSection3_BMS(ZUFILE* file) {
     ok = false;
     return ok;
   }
-  BMSsize = sectionSize3 - 6;
-  BMSbits = new zuchar[BMSsize];
+  bms_size = sectionSize3 - 6;
+  bms_bits = new zuchar[bms_size];
 
-  for (zuint i = 0; i < BMSsize; i++) {
-    BMSbits[i] = readChar(file);
+  for (zuint i = 0; i < bms_size; i++) {
+    bms_bits[i] = readChar(file);
   }
   return ok;
 }
@@ -680,8 +681,8 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
   isSimplePacking = (flags & 0x80) == 0;
   isFloatValues = (flags & 0x80) == 0;
 
-  // printf("BDS type=%3d - bits=%02d - level %3d - %d\n", dataType,
-  // nbBitsInPack, levelType,levelValue);
+  // printf("BDS type=%3d - bits=%02d - level %3d - %d\n", data_type,
+  // nbBitsInPack, level_type,level_value);
 
   if (!isGridData) {
     erreur("Record %d: need grid data", id);
@@ -723,16 +724,16 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
   // Allocate memory for the data
   data = new double[Ni * Nj];
 
-  // Read data in the order given by isAdjacentI
+  // Read data in the order given by is_adjacent_i
   zuint i, j, x;
   int ind;
-  if (isAdjacentI) {
+  if (is_adjacent_i) {
     for (j = 0; j < Nj; j++) {
       for (i = 0; i < Ni; i++) {
 #if 0
                 // XXX
                 // not need because we do it in XY after recomputing Di and Dj?
-                if (!hasDiDj && !isScanJpositive) {
+                if (!has_di_dj && !is_scan_j_positive) {
                     ind = (Nj-1 -j)*Ni+i;
                 }
                 else {
@@ -742,7 +743,7 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
         ind = j * Ni + i;
 #endif
 
-        if (hasValue(i, j)) {
+        if (HasValue(i, j)) {
           x = readPackedBits(buf, startbit, nbBitsInPack);
           data[ind] = (refValue + x * scaleFactorEpow2) / decimalFactorD;
           startbit += nbBitsInPack;
@@ -756,7 +757,7 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
     for (i = 0; i < Ni; i++) {
       for (j = 0; j < Nj; j++) {
 #if 0
-                if (!hasDiDj && !isScanJpositive) {
+                if (!has_di_dj && !is_scan_j_positive) {
                     ind = (Nj-1 -j)*Ni+i;
                 }
                 else {
@@ -766,7 +767,7 @@ bool GribV1Record::readGribSection4_BDS(ZUFILE* file) {
         ind = j * Ni + i;
 #endif
 
-        if (hasValue(i, j)) {
+        if (HasValue(i, j)) {
           x = readPackedBits(buf, startbit, nbBitsInPack);
           startbit += nbBitsInPack;
           data[ind] = (refValue + x * scaleFactorEpow2) / decimalFactorD;

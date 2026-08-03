@@ -24,10 +24,7 @@
 #include "pi_gl.h"
 #include "grib_pi.h"
 
-#include "folder.xpm"
-
 extern int m_Altitude;
-extern double m_cursor_lat, m_cursor_lon;
 extern int m_DialogStyle;
 
 //---------------------------------------------------------------------------------------
@@ -133,7 +130,7 @@ void CursorData::AddTrackingControl(wxControl *ctrl1, wxControl *ctrl2,
 void CursorData::PopulateTrackingControls(bool vertical) {
   m_fgTrackingControls->Clear();
   if (!vertical) {
-    wxFlexGridSizer *ps = (wxFlexGridSizer *)(m_gparent.GetSizer());
+    auto *ps = (wxFlexGridSizer *)(m_gparent.GetSizer());
     if (ps && (ps->GetCols() == 1))
       m_fgTrackingControls->SetCols(4);  // compact mode
     else
@@ -145,21 +142,20 @@ void CursorData::PopulateTrackingControls(bool vertical) {
   // Get text controls sizing data
   wxFont *font = OCPNGetFont(_("Dialog"));
   int wn, wd, ws, wl;
-  GetTextExtent("abcdefghihjk", &wn, nullptr, 0, 0,
+  GetTextExtent("abcdefghihjk", &wn, nullptr, nullptr, nullptr,
                 font);  // normal width text control size
-  GetTextExtent("abcdef", &ws, nullptr, 0, 0,
+  GetTextExtent("abcdef", &ws, nullptr, nullptr, nullptr,
                 font);  // short width text control size for direction only
   GetTextExtent(
-      "abcdefghijklmopq", &wd, nullptr, 0, 0,
+      "abcdefghijklmopq", &wd, nullptr, nullptr, nullptr,
       font);  // long width text control size for double unit wind display
   GetTextExtent(
-      "abcdefghijklm", &wl, nullptr, 0, 0,
+      "abcdefghijklm", &wl, nullptr, nullptr, nullptr,
       font);  // long width text control size for double unit wave display
   //
   // create a dummy textCtrl to be used as a "space" in vertical display
-  wxTextCtrl *dummy =
-      new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                     wxDefaultSize, wxTE_READONLY | wxNO_BORDER);
+  auto *dummy = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                               wxDefaultSize, wxTE_READONLY | wxNO_BORDER);
   //
   bool bf =
       m_gparent.m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units ==
@@ -173,20 +169,20 @@ void CursorData::PopulateTrackingControls(bool vertical) {
   AddTrackingControl(
       m_cbWind, m_tcWindSpeed,
       vertical ? (bf ? dummy : m_tcWindSpeedBf) : m_tcWindDirection,
-      vertical ? m_tcWindDirection : 0,
+      vertical ? m_tcWindDirection : nullptr,
       m_gparent.m_pTimelineSet &&
           m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) !=
               wxNOT_FOUND &&
           m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) !=
               wxNOT_FOUND,
       vertical, wd, ws);
-  AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, 0,
+  AddTrackingControl(m_cbWindGust, m_tcWindGust, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_WIND_GUST) != wxNOT_FOUND &&
                          m_Altitude == 0,
                      vertical, wn);
-  AddTrackingControl(m_cbPressure, m_tcPressure, 0, 0,
+  AddTrackingControl(m_cbPressure, m_tcPressure, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_PRESSURE) != wxNOT_FOUND &&
@@ -204,24 +200,25 @@ void CursorData::PopulateTrackingControls(bool vertical) {
         wxNOT_FOUND)
       AddTrackingControl(m_cbWave, m_tcWaveHeight,
                          vertical ? m_tcWavePeriode : m_tcWaveDirection,
-                         vertical ? m_tcWaveDirection : 0, m_Altitude == 0,
-                         vertical, wl, ws);
+                         vertical ? m_tcWaveDirection : nullptr,
+                         m_Altitude == 0, vertical, wl, ws);
     else
-      AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, 0, m_Altitude == 0,
-                         vertical, wn);
+      AddTrackingControl(m_cbWave, m_tcWaveHeight, nullptr, nullptr,
+                         m_Altitude == 0, vertical, wn);
   } else {
     if (m_gparent.m_pTimelineSet &&
         m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) !=
             wxNOT_FOUND)
-      AddTrackingControl(m_cbWave, m_tcWaveDirection, 0, 0, m_Altitude == 0,
-                         vertical, wn);
+      AddTrackingControl(m_cbWave, m_tcWaveDirection, nullptr, nullptr,
+                         m_Altitude == 0, vertical, wn);
   }
 
-  AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection, 0,
-                     false, vertical, 0, 0);  // hide all current's parameters
+  AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection,
+                     nullptr, false, vertical, 0,
+                     0);  // hide all current's parameters
   AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity,
                      vertical ? dummy : m_tcCurrentDirection,
-                     vertical ? m_tcCurrentDirection : 0,
+                     vertical ? m_tcCurrentDirection : nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_SEACURRENT_VX) != wxNOT_FOUND &&
@@ -229,37 +226,37 @@ void CursorData::PopulateTrackingControls(bool vertical) {
                              Idx_SEACURRENT_VY) != wxNOT_FOUND &&
                          m_Altitude == 0,
                      vertical, wn, ws);
-  AddTrackingControl(m_cbPrecipitation, m_tcPrecipitation, 0, 0,
+  AddTrackingControl(m_cbPrecipitation, m_tcPrecipitation, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_PRECIP_TOT) != wxNOT_FOUND &&
                          m_Altitude == 0,
                      vertical, wn);
-  AddTrackingControl(m_cbCloud, m_tcCloud, 0, 0,
+  AddTrackingControl(m_cbCloud, m_tcCloud, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_CLOUD_TOT) != wxNOT_FOUND &&
                          m_Altitude == 0,
                      vertical, wn);
-  AddTrackingControl(m_cbAirTemperature, m_tcAirTemperature, 0, 0,
+  AddTrackingControl(m_cbAirTemperature, m_tcAirTemperature, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_AIR_TEMP) != wxNOT_FOUND &&
                          m_Altitude == 0,
                      vertical, wn);
-  AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, 0, 0,
+  AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_SEA_TEMP) != wxNOT_FOUND &&
                          m_Altitude == 0,
                      vertical, wn);
-  AddTrackingControl(m_cbCAPE, m_tcCAPE, 0, 0,
+  AddTrackingControl(m_cbCAPE, m_tcCAPE, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_CAPE) != wxNOT_FOUND &&
                          m_Altitude == 0,
                      vertical, wn);
-  AddTrackingControl(m_cbReflC, m_tcReflC, 0, 0,
+  AddTrackingControl(m_cbReflC, m_tcReflC, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_COMP_REFL) != wxNOT_FOUND &&
@@ -267,19 +264,19 @@ void CursorData::PopulateTrackingControls(bool vertical) {
                      vertical, wn);
   //
   // init and show extra parameters for altitude tracking if necessary
-  AddTrackingControl(m_cbAltitude, m_tcAltitude, 0, 0,
+  AddTrackingControl(m_cbAltitude, m_tcAltitude, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_GEOP_HGT + m_Altitude) != wxNOT_FOUND &&
                          m_Altitude != 0,
                      vertical, wn);
-  AddTrackingControl(m_cbTemp, m_tcTemp, 0, 0,
+  AddTrackingControl(m_cbTemp, m_tcTemp, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_AIR_TEMP + m_Altitude) != wxNOT_FOUND &&
                          m_Altitude != 0,
                      vertical, wn);
-  AddTrackingControl(m_cbRelHumid, m_tcRelHumid, 0, 0,
+  AddTrackingControl(m_cbRelHumid, m_tcRelHumid, nullptr, nullptr,
                      m_gparent.m_pTimelineSet &&
                          m_gparent.m_bGRIBActiveFile->m_GribIdxArray.Index(
                              Idx_HUMID_RE + m_Altitude) != wxNOT_FOUND &&
@@ -352,13 +349,13 @@ void CursorData::PopulateTrackingControls(bool vertical) {
   dummy->Show(false);
 }
 
-void CursorData::UpdateTrackingControls(void) {
+void CursorData::UpdateTrackingControls() {
   if (!m_gparent.m_pTimelineSet) return;
 
   GribRecord **RecordArray = m_gparent.m_pTimelineSet->m_GribRecordPtrArray;
   //    Update the wind control
   double vkn, ang;
-  if (GribRecord::getInterpolatedValues(
+  if (GribRecord::GetInterpolatedValues(
           vkn, ang, RecordArray[Idx_WIND_VX + m_Altitude],
           RecordArray[Idx_WIND_VY + m_Altitude], m_cursor_lon, m_cursor_lat)) {
     double vk = m_gparent.m_OverlaySettings.CalibrateValue(
@@ -390,23 +387,23 @@ void CursorData::UpdateTrackingControls(void) {
 
   //    Update the Wind gusts control
   if (RecordArray[Idx_WIND_GUST]) {
-    double vkn = RecordArray[Idx_WIND_GUST]->getInterpolatedValue(
+    double vkn_ = RecordArray[Idx_WIND_GUST]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
-    if (vkn != GRIB_NOTDEF) {
-      vkn = m_gparent.m_OverlaySettings.CalibrateValue(
-          GribOverlaySettings::WIND_GUST, vkn);
+    if (vkn_ != GRIB_NOTDEF) {
+      vkn_ = m_gparent.m_OverlaySettings.CalibrateValue(
+          GribOverlaySettings::WIND_GUST, vkn_);
       m_tcWindGust->SetValue(
           wxString::Format("%2d " + m_gparent.m_OverlaySettings.GetUnitSymbol(
                                         GribOverlaySettings::WIND_GUST),
-                           (int)round(vkn)));
+                           (int)round(vkn_)));
     } else
       m_tcWindGust->SetValue(_("N/A"));
   }
 
   //    Update the Pressure control
   if (RecordArray[Idx_PRESSURE]) {
-    double press = RecordArray[Idx_PRESSURE]->getInterpolatedValue(
+    double press = RecordArray[Idx_PRESSURE]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (press != GRIB_NOTDEF) {
@@ -427,7 +424,7 @@ void CursorData::UpdateTrackingControls(void) {
 
   //    Update the Sig Wave Height
   if (RecordArray[Idx_HTSIGW]) {
-    double height = RecordArray[Idx_HTSIGW]->getInterpolatedValue(
+    double height = RecordArray[Idx_HTSIGW]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (height != GRIB_NOTDEF) {
@@ -438,7 +435,7 @@ void CursorData::UpdateTrackingControls(void) {
                                           GribOverlaySettings::WAVE),
                            height));
       if (RecordArray[Idx_WVPER]) {
-        double period = RecordArray[Idx_WVPER]->getInterpolatedValue(
+        double period = RecordArray[Idx_WVPER]->GetInterpolatedValue(
             m_cursor_lon, m_cursor_lat, true);
         if (period != GRIB_NOTDEF) {
           if (m_DialogStyle == SEPARATED_VERTICAL)
@@ -458,7 +455,7 @@ void CursorData::UpdateTrackingControls(void) {
 
   // Update the Wave direction
   if (RecordArray[Idx_WVDIR]) {
-    double direction = RecordArray[Idx_WVDIR]->getInterpolatedValue(
+    double direction = RecordArray[Idx_WVDIR]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true, true);
     if (direction != GRIB_NOTDEF)
       m_tcWaveDirection->SetValue(
@@ -468,7 +465,7 @@ void CursorData::UpdateTrackingControls(void) {
   }
 
   //    Update the Current control
-  if (GribRecord::getInterpolatedValues(
+  if (GribRecord::GetInterpolatedValues(
           vkn, ang, RecordArray[Idx_SEACURRENT_VX],
           RecordArray[Idx_SEACURRENT_VY], m_cursor_lon, m_cursor_lat)) {
     // Current direction is generally reported as the "flow" direction,
@@ -495,7 +492,7 @@ void CursorData::UpdateTrackingControls(void) {
 
   //    Update total rainfall control
   if (RecordArray[Idx_PRECIP_TOT]) {
-    double precip = RecordArray[Idx_PRECIP_TOT]->getInterpolatedValue(
+    double precip = RecordArray[Idx_PRECIP_TOT]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (precip != GRIB_NOTDEF) {
@@ -517,7 +514,7 @@ void CursorData::UpdateTrackingControls(void) {
 
   //    Update total cloud control
   if (RecordArray[Idx_CLOUD_TOT]) {
-    double cloud = RecordArray[Idx_CLOUD_TOT]->getInterpolatedValue(
+    double cloud = RecordArray[Idx_CLOUD_TOT]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (cloud != GRIB_NOTDEF) {
@@ -532,7 +529,7 @@ void CursorData::UpdateTrackingControls(void) {
 
   //    Update the Air Temperature
   if (RecordArray[Idx_AIR_TEMP]) {
-    double temp = RecordArray[Idx_AIR_TEMP]->getInterpolatedValue(
+    double temp = RecordArray[Idx_AIR_TEMP]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (temp != GRIB_NOTDEF) {
@@ -548,7 +545,7 @@ void CursorData::UpdateTrackingControls(void) {
 
   //    Update the Sea Surface Temperature
   if (RecordArray[Idx_SEA_TEMP]) {
-    double temp = RecordArray[Idx_SEA_TEMP]->getInterpolatedValue(
+    double temp = RecordArray[Idx_SEA_TEMP]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (temp != GRIB_NOTDEF) {
@@ -564,7 +561,7 @@ void CursorData::UpdateTrackingControls(void) {
 
   //    Update the Convective Available Potential Energy (CAPE)
   if (RecordArray[Idx_CAPE]) {
-    double cape = RecordArray[Idx_CAPE]->getInterpolatedValue(
+    double cape = RecordArray[Idx_CAPE]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (cape != GRIB_NOTDEF) {
@@ -578,7 +575,7 @@ void CursorData::UpdateTrackingControls(void) {
       m_tcCAPE->SetValue(_("N/A"));
   }
   if (RecordArray[Idx_COMP_REFL]) {
-    double c_refl = RecordArray[Idx_COMP_REFL]->getInterpolatedValue(
+    double c_refl = RecordArray[Idx_COMP_REFL]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (c_refl != GRIB_NOTDEF) {
@@ -594,7 +591,7 @@ void CursorData::UpdateTrackingControls(void) {
   // Update extra data for altitude
   // geopotential altitude
   if (RecordArray[Idx_GEOP_HGT + m_Altitude]) {
-    double geop = RecordArray[Idx_GEOP_HGT + m_Altitude]->getInterpolatedValue(
+    double geop = RecordArray[Idx_GEOP_HGT + m_Altitude]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (geop != GRIB_NOTDEF) {
@@ -609,7 +606,7 @@ void CursorData::UpdateTrackingControls(void) {
 
   // temperature
   if (RecordArray[Idx_AIR_TEMP + m_Altitude]) {
-    double temp = RecordArray[Idx_AIR_TEMP + m_Altitude]->getInterpolatedValue(
+    double temp = RecordArray[Idx_AIR_TEMP + m_Altitude]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (temp != GRIB_NOTDEF) {
@@ -623,7 +620,7 @@ void CursorData::UpdateTrackingControls(void) {
   }
   // relative humidity
   if (RecordArray[Idx_HUMID_RE + m_Altitude]) {
-    double humi = RecordArray[Idx_HUMID_RE + m_Altitude]->getInterpolatedValue(
+    double humi = RecordArray[Idx_HUMID_RE + m_Altitude]->GetInterpolatedValue(
         m_cursor_lon, m_cursor_lat, true);
 
     if (humi != GRIB_NOTDEF) {
@@ -639,7 +636,7 @@ void CursorData::UpdateTrackingControls(void) {
 
 void CursorData::OnMenuCallBack(wxMouseEvent &event) {
   // populate menu
-  wxMenu *menu = new wxMenu();
+  auto *menu = new wxMenu();
   int id = event.GetId();
   switch (id) {
     case GribOverlaySettings::WIND:
@@ -721,6 +718,8 @@ void CursorData::OnMenuCallBack(wxMouseEvent &event) {
         break;
       case PARTICLES:
         m_gparent.m_OverlaySettings.Settings[id].m_bParticles = it->IsChecked();
+      default:
+        assert(false && "Illegal menu item");
     }
     node = node->GetNext();
   }
@@ -735,8 +734,9 @@ void CursorData::OnMenuCallBack(wxMouseEvent &event) {
   delete menu;
 }
 
-void CursorData::MenuAppend(wxMenu *menu, int id, wxString label, int setting) {
-  wxMenuItem *item = new wxMenuItem(menu, id, label, "", wxITEM_CHECK);
+void CursorData::MenuAppend(wxMenu *menu, int id, const wxString &label,
+                            int setting_) {
+  auto *item = new wxMenuItem(menu, id, label, "", wxITEM_CHECK);
 
 #ifdef __WXMSW__
   wxFont *qFont = OCPNGetFont(_("Menu"));
@@ -747,19 +747,20 @@ void CursorData::MenuAppend(wxMenu *menu, int id, wxString label, int setting) {
 
   bool check;
   if (id == B_ARROWS)
-    check = m_gparent.m_OverlaySettings.Settings[setting].m_bBarbedArrows;
+    check = m_gparent.m_OverlaySettings.Settings[setting_].m_bBarbedArrows;
   else if (id == ISO_LINE)
-    check = m_gparent.m_OverlaySettings.Settings[setting].m_bIsoBars;
+    check = m_gparent.m_OverlaySettings.Settings[setting_].m_bIsoBars;
   else if (id == ISO_ABBR)
-    check = m_gparent.m_OverlaySettings.Settings[setting].m_bAbbrIsoBarsNumbers;
+    check =
+        m_gparent.m_OverlaySettings.Settings[setting_].m_bAbbrIsoBarsNumbers;
   else if (id == D_ARROWS)
-    check = m_gparent.m_OverlaySettings.Settings[setting].m_bDirectionArrows;
+    check = m_gparent.m_OverlaySettings.Settings[setting_].m_bDirectionArrows;
   else if (id == OVERLAY)
-    check = m_gparent.m_OverlaySettings.Settings[setting].m_bOverlayMap;
+    check = m_gparent.m_OverlaySettings.Settings[setting_].m_bOverlayMap;
   else if (id == NUMBERS)
-    check = m_gparent.m_OverlaySettings.Settings[setting].m_bNumbers;
+    check = m_gparent.m_OverlaySettings.Settings[setting_].m_bNumbers;
   else if (id == PARTICLES)
-    check = m_gparent.m_OverlaySettings.Settings[setting].m_bParticles;
+    check = m_gparent.m_OverlaySettings.Settings[setting_].m_bParticles;
   else
     check = false;
   item->Check(check);
@@ -769,7 +770,7 @@ void CursorData::OnMouseEvent(wxMouseEvent &event) {
   if (event.RightDown()) {
     if (m_DialogStyle >> 1 == ATTACHED) {
       wxMouseEvent evt(event);
-      m_gparent.OnMouseEvent(evt);
+      m_gparent.DoOnMouseEvent(evt);
     }
     return;
   }

@@ -39,8 +39,8 @@
  * providing intuitive visualization of both scalar and vector quantities.
  */
 
-#ifndef CUSTOmGRID_H__
-#define CUSTOmGRID_H__
+#ifndef CUSTOmGRID_H_
+#define CUSTOmGRID_H_
 
 #include <vector>
 
@@ -48,7 +48,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <wx/grid.h>
 #include <wx/graphics.h>
@@ -67,18 +67,18 @@ public:
   CustomGrid(wxWindow* parent, wxWindowID id, const wxPoint& pos,
              const wxSize& size, long style, const wxString& name);
 
-  ~CustomGrid();
+  ~CustomGrid() override;
 
   void GetFirstVisibleCell(int& frow, int& fcol);
   void GetLastVisibleCell(int& lrow, int& lcol);
   void SetNumericalRow(int row, int col, int datatype, double value);
+  void DrawColLabel(wxDC& dc, int col) override;
+  void DrawRowLabel(wxDC& dc, int row) override;
+  void DrawCornerLabel(wxDC& dc) override;
 
   GRIBTable* m_gParent;
 
 private:
-  void DrawColLabel(wxDC& dc, int col);
-  void DrawRowLabel(wxDC& dc, int row);
-  void DrawCornerLabel(wxDC& dc);
   void OnScroll(wxScrollEvent& event);
   void OnMouseEvent(wxMouseEvent& event);
   void OnResize(wxSizeEvent& event);
@@ -108,14 +108,14 @@ public:
   CustomRenderer(double dir, bool isdigit)
       : wxGridCellRenderer(), m_dDir(dir), m_IsDigit(isdigit) {}
 
-  virtual void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc,
-                    const wxRect& rect, int row, int col, bool isSelected);
+  void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect,
+            int row, int col, bool isSelected) override;
 
   wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row,
-                     int col) {
-    return wxSize(-1, -1);
+                     int col) override {
+    return {-1, -1};
   }
-  wxGridCellRenderer* Clone() const {
+  [[nodiscard]] wxGridCellRenderer* Clone() const override {
     return new CustomRenderer(m_dDir, m_IsDigit);
   }
 
@@ -128,4 +128,4 @@ private:
   bool m_IsDigit;
 };
 
-#endif  //  CUSTOmGRID_H__
+#endif  //  CUSTOmGRID_H_

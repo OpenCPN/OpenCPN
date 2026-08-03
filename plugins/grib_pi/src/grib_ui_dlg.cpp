@@ -40,6 +40,7 @@
 #include <math.h>
 #include <time.h>
 
+#include "jsonwriter.h"
 #include "ocpn_plugin.h"
 #include "grib_pi.h"
 #include "grib_table.h"
@@ -82,7 +83,7 @@ int m_SavedZoneSelMode;
  */
 int m_ZoneSelMode;
 
-extern grib_pi *g_pi;
+extern GribPi *g_pi;
 
 #ifdef __MSVC__
 #if _MSC_VER < 1700
@@ -170,7 +171,7 @@ void GribTimelineRecordSet::ClearCachedData() {
 
 GRIBUICtrlBar::GRIBUICtrlBar(wxWindow *parent, wxWindowID id,
                              const wxString &title, const wxPoint &pos,
-                             const wxSize &size, long style, grib_pi *ppi,
+                             const wxSize &size, long style, GribPi *ppi,
                              double scale_factor)
     : GRIBUICtrlBarBase(parent, id, title, pos, size, style, scale_factor) {
   pParent = parent;
@@ -606,10 +607,10 @@ bool GRIBUICtrlBar::GetGribZoneLimits(GribTimelineRecordSet *timelineSet,
   for (unsigned int i = 0; i < Idx_COUNT; i++) {
     GribRecord *pGRA = pGR[i];
     if (!pGRA) continue;
-    if (pGRA->getLatMin() < ltmi) ltmi = pGRA->getLatMin();
-    if (pGRA->getLatMax() > ltma) ltma = pGRA->getLatMax();
-    if (pGRA->getLonMin() < lnmi) lnmi = pGRA->getLonMin();
-    if (pGRA->getLonMax() > lnma) lnma = pGRA->getLonMax();
+    if (pGRA->GetLatMin() < ltmi) ltmi = pGRA->GetLatMin();
+    if (pGRA->GetLatMax() > ltma) ltma = pGRA->GetLatMax();
+    if (pGRA->GetLonMin() < lnmi) lnmi = pGRA->GetLonMin();
+    if (pGRA->GetLonMax() > lnma) lnma = pGRA->GetLonMax();
   }
   if (ltmi == -GRIB_NOTDEF || lnmi == -GRIB_NOTDEF || ltma == GRIB_NOTDEF ||
       lnma == GRIB_NOTDEF)
@@ -1559,8 +1560,8 @@ double GRIBUICtrlBar::getTimeInterpolatedValue(int idx, double lon, double lat,
     GribRecord *GR = GRS->m_GribRecordPtrArray[idx];
     if (!GR) continue;
 
-    time_t curtime = GR->getRecordCurrentDate();
-    if (curtime == t) return GR->getInterpolatedValue(lon, lat);
+    time_t curtime = GR->GetRecordCurrentDate();
+    if (curtime == t) return GR->GetInterpolatedValue(lon, lat);
 
     if (curtime < t) before = GR;
 
@@ -1572,12 +1573,12 @@ double GRIBUICtrlBar::getTimeInterpolatedValue(int idx, double lon, double lat,
   // time_t wxDateTime::GetTicks();
   if (!before || !after) return GRIB_NOTDEF;
 
-  time_t t1 = before->getRecordCurrentDate();
-  time_t t2 = after->getRecordCurrentDate();
-  if (t1 == t2) return before->getInterpolatedValue(lon, lat);
+  time_t t1 = before->GetRecordCurrentDate();
+  time_t t2 = after->GetRecordCurrentDate();
+  if (t1 == t2) return before->GetInterpolatedValue(lon, lat);
 
-  double v1 = before->getInterpolatedValue(lon, lat);
-  double v2 = after->getInterpolatedValue(lon, lat);
+  double v1 = before->GetInterpolatedValue(lon, lat);
+  double v2 = after->GetInterpolatedValue(lon, lat);
   if (v1 != GRIB_NOTDEF && v2 != GRIB_NOTDEF) {
     double k = fabs((double)(t - t1) / (t2 - t1));
     return (1.0 - k) * v1 + k * v2;
@@ -1608,9 +1609,9 @@ bool GRIBUICtrlBar::getTimeInterpolatedValues(double &M, double &A, int idx1,
     GribRecord *GY = GRS->m_GribRecordPtrArray[idx2];
     if (!GX || !GY) continue;
 
-    time_t curtime = GX->getRecordCurrentDate();
+    time_t curtime = GX->GetRecordCurrentDate();
     if (curtime == t) {
-      return GribRecord::getInterpolatedValues(M, A, GX, GY, lon, lat, true);
+      return GribRecord::GetInterpolatedValues(M, A, GX, GY, lon, lat, true);
     }
     if (curtime < t) {
       beforeX = GX;
@@ -1625,18 +1626,18 @@ bool GRIBUICtrlBar::getTimeInterpolatedValues(double &M, double &A, int idx1,
   // time_t wxDateTime::GetTicks();
   if (!beforeX || !afterX) return false;
 
-  time_t t1 = beforeX->getRecordCurrentDate();
-  time_t t2 = afterX->getRecordCurrentDate();
+  time_t t1 = beforeX->GetRecordCurrentDate();
+  time_t t2 = afterX->GetRecordCurrentDate();
   if (t1 == t2) {
-    return GribRecord::getInterpolatedValues(M, A, beforeX, beforeY, lon, lat,
+    return GribRecord::GetInterpolatedValues(M, A, beforeX, beforeY, lon, lat,
                                              true);
   }
   double v1m, v2m, v1a, v2a;
-  if (!GribRecord::getInterpolatedValues(v1m, v1a, beforeX, beforeY, lon, lat,
+  if (!GribRecord::GetInterpolatedValues(v1m, v1a, beforeX, beforeY, lon, lat,
                                          true))
     return false;
 
-  if (!GribRecord::getInterpolatedValues(v2m, v2a, afterX, afterY, lon, lat,
+  if (!GribRecord::GetInterpolatedValues(v2m, v2a, afterX, afterY, lon, lat,
                                          true))
     return false;
 
@@ -2100,19 +2101,19 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
     for (zuint i = 0; i < ls->size(); i++) {
       pRec = ls->at(i);
       isOK = true;
-      time_t thistime = pRec->getRecordCurrentDate();
+      time_t thistime = pRec->GetRecordCurrentDate();
 
       //   Search the GribRecordSet array for a GribRecordSet with matching time
       for (unsigned int j = 0; j < m_GribRecordSetArray.GetCount(); j++) {
         if (m_GribRecordSetArray.Item(j).m_Reference_Time == thistime) {
           int idx = -1, mdx = -1;
-          switch (pRec->getDataType()) {
+          switch (pRec->GetDataType()) {
             case GRB_WIND_DIR:
               polarWind = true;
               // fall through
             case GRB_WIND_VX:
-              if (pRec->getLevelType() == LV_ISOBARIC) {
-                switch (pRec->getLevelValue()) {
+              if (pRec->GetLevelType() == LV_ISOBARIC) {
+                switch (pRec->GetLevelValue()) {
                   case 300:
                     idx = Idx_WIND_VX300;
                     break;
@@ -2133,8 +2134,8 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
               polarWind = true;
               // fall through
             case GRB_WIND_VY:
-              if (pRec->getLevelType() == LV_ISOBARIC) {
-                switch (pRec->getLevelValue()) {
+              if (pRec->GetLevelType() == LV_ISOBARIC) {
+                switch (pRec->GetLevelValue()) {
                   case 300:
                     idx = Idx_WIND_VY300;
                     break;
@@ -2198,8 +2199,8 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
               idx = Idx_CLOUD_TOT;
               break;
             case GRB_TEMP:
-              if (pRec->getLevelType() == LV_ISOBARIC) {
-                switch (pRec->getLevelValue()) {
+              if (pRec->GetLevelType() == LV_ISOBARIC) {
+                switch (pRec->GetLevelValue()) {
                   case 300:
                     idx = Idx_AIR_TEMP300;
                     break;
@@ -2215,12 +2216,12 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
                 }
               } else
                 idx = Idx_AIR_TEMP;
-              if (pRec->getDataCenterModel() == NORWAY_METNO)
+              if (pRec->GetDataCenterModel() == NORWAY_METNO)
                 mdx = 1000 + NORWAY_METNO;
               break;
             case GRB_WTMP:
               idx = Idx_SEA_TEMP;
-              if (pRec->getDataCenterModel() == NOAA_GFS) mdx = 1000 + NOAA_GFS;
+              if (pRec->GetDataCenterModel() == NOAA_GFS) mdx = 1000 + NOAA_GFS;
               break;
             case GRB_CAPE:
               idx = Idx_CAPE;
@@ -2229,8 +2230,8 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
               idx = Idx_COMP_REFL;
               break;
             case GRB_HUMID_REL:
-              if (pRec->getLevelType() == LV_ISOBARIC) {
-                switch (pRec->getLevelValue()) {
+              if (pRec->GetLevelType() == LV_ISOBARIC) {
+                switch (pRec->GetLevelValue()) {
                   case 300:
                     idx = Idx_HUMID_RE300;
                     break;
@@ -2247,8 +2248,8 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
               }
               break;
             case GRB_GEOPOT_HGT:
-              if (pRec->getLevelType() == LV_ISOBARIC) {
-                switch (pRec->getLevelValue()) {
+              if (pRec->GetLevelType() == LV_ISOBARIC) {
+                switch (pRec->GetLevelValue()) {
                   case 300:
                     idx = Idx_GEOP_HGT300;
                     break;
@@ -2277,31 +2278,31 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
             GribRecord *oRec =
                 m_GribRecordSetArray.Item(j).m_GribRecordPtrArray[idx];
             if (idx == Idx_PRESSURE) {
-              skip = (oRec->getLevelType() == LV_MSL);
+              skip = (oRec->GetLevelType() == LV_MSL);
             } else {
               // we favor UV over DIR/SPEED
               if (polarWind) {
-                if (oRec->getDataType() == GRB_WIND_VY ||
-                    oRec->getDataType() == GRB_WIND_VX)
+                if (oRec->GetDataType() == GRB_WIND_VY ||
+                    oRec->GetDataType() == GRB_WIND_VX)
                   skip = true;
               }
               if (polarCurrent) {
-                if (oRec->getDataType() == GRB_UOGRD ||
-                    oRec->getDataType() == GRB_VOGRD)
+                if (oRec->GetDataType() == GRB_UOGRD ||
+                    oRec->GetDataType() == GRB_VOGRD)
                   skip = true;
               }
-              // favor average aka timeRange == 3 (HRRR subhourly subsets have
+              // favor average aka time_range == 3 (HRRR subhourly subsets have
               // both 3 and 0 records for winds)
-              if (!skip && (oRec->getTimeRange() == 3)) {
+              if (!skip && (oRec->GetTimeRange() == 3)) {
                 skip = true;
               }
               // we favor significant Wave other wind wave.
               if (sigH) {
-                if (oRec->getDataType() == GRB_HTSGW) skip = true;
+                if (oRec->GetDataType() == GRB_HTSGW) skip = true;
               }
               if (sigWave) {
-                if (oRec->getDataType() == GRB_DIR ||
-                    oRec->getDataType() == GRB_PER)
+                if (oRec->GetDataType() == GRB_DIR ||
+                    oRec->GetDataType() == GRB_PER)
                   skip = true;
               }
             }
@@ -2327,7 +2328,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
           GribRecord *pRec =
               m_GribRecordSetArray.Item(j).m_GribRecordPtrArray[i];
 
-          if (pRec != nullptr && pRec->getDataType() == GRB_WIND_DIR) {
+          if (pRec != nullptr && pRec->GetDataType() == GRB_WIND_DIR) {
             switch (i) {
               case Idx_WIND_VX300:
                 idx = Idx_WIND_VY300;
@@ -2350,7 +2351,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
             if (idx != -1) {
               GribRecord *pRec1 =
                   m_GribRecordSetArray.Item(j).m_GribRecordPtrArray[idx];
-              if (pRec1 != nullptr && pRec1->getDataType() == GRB_WIND_SPEED)
+              if (pRec1 != nullptr && pRec1->GetDataType() == GRB_WIND_SPEED)
                 GribRecord::Polar2UV(pRec, pRec1);
             }
           }
@@ -2360,7 +2361,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
           GribRecord *pRec =
               m_GribRecordSetArray.Item(j).m_GribRecordPtrArray[i];
 
-          if (pRec != nullptr && pRec->getDataType() == GRB_CUR_DIR) {
+          if (pRec != nullptr && pRec->GetDataType() == GRB_CUR_DIR) {
             switch (i) {
               case Idx_SEACURRENT_VX:
                 idx = Idx_SEACURRENT_VY;
@@ -2371,7 +2372,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
             if (idx != -1) {
               GribRecord *pRec1 =
                   m_GribRecordSetArray.Item(j).m_GribRecordPtrArray[idx];
-              if (pRec1 != nullptr && pRec1->getDataType() == GRB_CUR_SPEED)
+              if (pRec1 != nullptr && pRec1->GetDataType() == GRB_CUR_SPEED)
                 GribRecord::Polar2UV(pRec, pRec1);
             }
           }
@@ -2382,7 +2383,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
 
   if (isOK)
     m_pRefDateTime =
-        pRec->getRecordRefDate();  // to ovoid crash with some bad files
+        pRec->GetRecordRefDate();  // to ovoid crash with some bad files
 }
 
 GRIBFile::~GRIBFile() { delete m_pGribReader; }

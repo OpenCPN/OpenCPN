@@ -44,13 +44,13 @@
  * requests with size and coverage validation.
  */
 
-#ifndef GRIBREQUESTDIALOG_H__
-#define GRIBREQUESTDIALOG_H__
+#ifndef GRIBREQUESTDIALOG_H_
+#define GRIBREQUESTDIALOG_H_
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-#include <wx/jsonreader.h>
+#include "jsonreader.h"
 
 #include "grib_ui_dlg_base.h"
 #include "grib_ui_dlg.h"
@@ -94,7 +94,7 @@ class GribRequestSetting : public GribRequestSettingBase {
 public:
   GribRequestSetting(GRIBUICtrlBar &parent);
 
-  ~GribRequestSetting();
+  ~GribRequestSetting() override;
 
   void OnClose(wxCloseEvent &event) override;
   void SetVpSize(PlugIn_ViewPort *vp);
@@ -158,41 +158,43 @@ public:
   /**
    * Get the minimum latitude of the bounding box for the download request.
    *
-   * The bouding box is defined by the user during manual zone selection
+   * The bounding box is defined by the user during manual zone selection
    * or by the visible area of the chart in focus.
    *
    * @return The minimum latitude of the bounding box.
    */
-  double GetMinLat() const;
+  [[nodiscard]] double GetMinLat() const;
   /**
    * Get the maximum latitude of the bounding box for the download request.
    *
-   * The bouding box is defined by the user during manual zone selection
+   * The bounding box is defined by the user during manual zone selection
    * or by the visible area of the chart in focus.
    *
    * @return The maximum latitude of the bounding box.
    */
-  double GetMaxLat() const;
+  [[nodiscard]] double GetMaxLat() const;
   /**
    * Get the minimum longitude of the bounding box for the download request.
    *
-   * The bouding box is defined by the user during manual zone selection
+   * The bounding box is defined by the user during manual zone selection
    * or by the visible area of the chart in focus.
    *
    * @return The minimum longitude of the bounding box.
    */
-  double GetMinLon() const;
+  [[nodiscard]] double GetMinLon() const;
   /**
    * Get the maximum longitude of the bounding box for the download request.
    *
-   * The bouding box is defined by the user during manual zone selection
+   * The bounding box is defined by the user during manual zone selection
    * or by the visible area of the chart in focus.
    *
    * @return The maximum longitude of the bounding box.
    */
-  double GetMaxLon() const;
+  [[nodiscard]] double GetMaxLon() const;
 
-  int GetBoundingBoxCanvasIndex() const { return m_boundingBoxCanvasIndex; }
+  [[nodiscard]] int GetBoundingBoxCanvasIndex() const {
+    return m_boundingBoxCanvasIndex;
+  }
 
   void Save() {
     wxCommandEvent evt;
@@ -233,6 +235,41 @@ public:
   /** The longitude at the mouse cursor while drawing a bounding box. */
   double m_Lon;
 
+protected:
+  void OnTopChange(wxCommandEvent &event) override;
+  void OnMovingClick(wxCommandEvent &event) override;
+  void OnAnyChange(wxCommandEvent &event) override;
+  void OnAnySpinChange(wxSpinEvent &event) override {
+    wxCommandEvent evt;
+    OnAnyChange(evt);
+  }
+  /** Save the "download" configuration to disk. */
+  void OnNotebookPageChanged(wxNotebookEvent &event) override {
+    HighlightArea(0, 0, 0, 0);
+  }
+  void OnTimeRangeChange(wxCommandEvent &event) override;
+  void OnSendMaiL(wxCommandEvent &event) override;
+  void OnOK(wxCommandEvent &event) override;
+  void OnZoneSelectionModeChange(wxCommandEvent &event) override;
+  void OnCancel(wxCommandEvent &event) override {
+    wxCloseEvent evt;
+    OnClose(evt);
+  }
+  void OnWorldLengthChoice(wxCommandEvent &event) override { event.Skip(); }
+  void OnWorldResolutionChoice(wxCommandEvent &event) override { event.Skip(); }
+  void OnWorldDownload(wxCommandEvent &event) override;
+  void OnLocalTreeItemExpanded(wxTreeEvent &event) override { event.Skip(); }
+  void OnLocalTreeSelChanged(wxTreeEvent &event) override;
+  void OnUpdateLocalCatalog(wxCommandEvent &event) override;
+  // XyGrib GUI callbacks
+  void OnXyGribDownloadButton(wxCommandEvent &event) override;
+  void OnXyGribAtmModelChoice(wxCommandEvent &event) override;
+  void OnXyGribWaveModelChoice(wxCommandEvent &event) override;
+  void OnXyGribConfigChange(wxCommandEvent &event) override;
+  void OnDownloadLocal(wxCommandEvent &event) override;
+  void OnCoordinatesChange(wxSpinEvent &event) override;
+  void SaveConfig() override;
+
 private:
   void HighlightArea(double latmax, double lonmax, double latmin,
                      double lonmin);
@@ -247,8 +284,6 @@ private:
 
   static wxString GetDownloadProgressText(long bytesTransferred,
                                           long bytesTotal);
-  /** Save the "download" configuration to disk. */
-  void SaveConfig() override;
   /** Load the "download" configuration from disk and initialize the dialog
    * widgets based on the configuration that was loaded from disk. */
   void InitRequestConfig();
@@ -256,34 +291,10 @@ private:
     wxCloseEvent evt;
     OnClose(evt);
   }
-  void OnTopChange(wxCommandEvent &event) override;
-  void OnMovingClick(wxCommandEvent &event) override;
-  void OnAnyChange(wxCommandEvent &event) override;
-  void OnAnySpinChange(wxSpinEvent &event) override {
-    wxCommandEvent evt;
-    OnAnyChange(evt);
-  }
-  void OnNotebookPageChanged(wxNotebookEvent &event) override {
-    HighlightArea(0, 0, 0, 0);
-  }
-  void OnTimeRangeChange(wxCommandEvent &event) override;
-  void OnSendMaiL(wxCommandEvent &event) override;
-  void OnOK(wxCommandEvent &event) override;
-  void OnZoneSelectionModeChange(wxCommandEvent &event) override;
-  void OnCancel(wxCommandEvent &event) override {
-    wxCloseEvent evt;
-    OnClose(evt);
-  }
-  void OnCoordinatesChange(wxSpinEvent &event) override;
+
   void OnMouseEventTimer(wxTimerEvent &event);
   void SetCoordinatesText();
-  void OnWorldLengthChoice(wxCommandEvent &event) override { event.Skip(); }
-  void OnWorldResolutionChoice(wxCommandEvent &event) override { event.Skip(); }
-  void OnWorldDownload(wxCommandEvent &event) override;
-  void OnLocalTreeItemExpanded(wxTreeEvent &event) override { event.Skip(); }
-  void OnLocalTreeSelChanged(wxTreeEvent &event) override;
-  void OnUpdateLocalCatalog(wxCommandEvent &event) override;
-  void OnDownloadLocal(wxCommandEvent &event) override;
+
   void onDLEvent(OCPN_downloadEvent &ev);
   void EnableDownloadButtons();
 
@@ -291,11 +302,7 @@ private:
   void InitializeXygribDialog();
   wxString BuildXyGribUrl();
   wxString BuildGribFileName();
-  // XyGrib GUI callbacks
-  void OnXyGribDownloadButton(wxCommandEvent &event) override;
-  void OnXyGribAtmModelChoice(wxCommandEvent &event) override;
-  void OnXyGribWaveModelChoice(wxCommandEvent &event) override;
-  void OnXyGribConfigChange(wxCommandEvent &event) override;
+
   // Manage XyGrib UI Configuration
   void ApplyXyGribConfiguration();
   void MemorizeXyGribConfiguration();
@@ -337,4 +344,4 @@ private:
   int m_boundingBoxCanvasIndex;
 };
 
-#endif  //    GRIBREQUESTDIALOG_H__
+#endif  //    GRIBREQUESTDIALOG_H_

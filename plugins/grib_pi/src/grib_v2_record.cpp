@@ -1418,79 +1418,79 @@ static bool mapTimeRange(GRIBMessage *grid, zuint *p1, zuint *p2,
 // Adjust data type from different mete center
 //-------------------------------------------------------------------------------
 void GribV2Record::translateDataType() {
-  this->knownData = true;
-  dataCenterModel = OTHER_DATA_CENTER;
+  this->known_data = true;
+  data_center_model = OTHER_DATA_CENTER;
   //------------------------
   // NOAA GFS
   //------------------------
-  if (dataType == GRB_PRECIP_RATE) {  // mm/s -> mm/h
+  if (data_type == GRB_PRECIP_RATE) {  // mm/s -> mm/h
     multiplyAllData(3600.0);
   }
-  if (idCenter == 7 && idModel == 2)  // NOAA
+  if (id_center == 7 && id_model == 2)  // NOAA
   {
-    dataCenterModel = NOAA_GFS;
+    data_center_model = NOAA_GFS;
     // altitude level (entire atmosphere vs entire atmosphere considered as 1
     // level)
-    if (levelType == LV_ATMOS_ENT) {
-      levelType = LV_ATMOS_ALL;
+    if (level_type == LV_ATMOS_ENT) {
+      level_type = LV_ATMOS_ALL;
     }
-    if (dataType == GRB_TEMP  // gfs Water surface Temperature
-        && levelType == LV_GND_SURF && levelValue == 0)
-      dataType = GRB_WTMP;
+    if (data_type == GRB_TEMP  // gfs Water surface Temperature
+        && level_type == LV_GND_SURF && level_value == 0)
+      data_type = GRB_WTMP;
   }
   //------------------------
   // DNMI-NEurope.grb
   //------------------------
-  else if (idCenter == 7 && idModel == 88 && idGrid == 255) {  // saildocs
-    dataCenterModel = NOAA_NCEP_WW3;
+  else if (id_center == 7 && id_model == 88 && id_grid == 255) {  // saildocs
+    data_center_model = NOAA_NCEP_WW3;
   }
   //----------------------------
   // NOAA RTOFS
   //--------------------------------
-  else if (idCenter == 7 && idModel == 45 && idGrid == 255) {
-    dataCenterModel = NOAA_RTOFS;
+  else if (id_center == 7 && id_model == 45 && id_grid == 255) {
+    data_center_model = NOAA_RTOFS;
   }
   //----------------------------------------------
   // NCEP sea surface temperature
   //----------------------------------------------
-  else if ((idCenter == 7 && idModel == 44 && idGrid == 173) ||
-           (idCenter == 7 && idModel == 44 && idGrid == 235)) {
-    dataCenterModel = NOAA_NCEP_SST;
+  else if ((id_center == 7 && id_model == 44 && id_grid == 173) ||
+           (id_center == 7 && id_model == 44 && id_grid == 235)) {
+    data_center_model = NOAA_NCEP_SST;
   }
   //----------------------------------------------
   // FNMOC WW3 mediterranean sea
   //----------------------------------------------
-  else if (idCenter == 58 && idModel == 111 && idGrid == 179) {
-    dataCenterModel = FNMOC_WW3_MED;
+  else if (id_center == 58 && id_model == 111 && id_grid == 179) {
+    data_center_model = FNMOC_WW3_MED;
   }
   //----------------------------------------------
   // FNMOC WW3
   //----------------------------------------------
-  else if (idCenter == 58 && idModel == 110 && idGrid == 240) {
-    dataCenterModel = FNMOC_WW3_GLB;
+  else if (id_center == 58 && id_model == 110 && id_grid == 240) {
+    data_center_model = FNMOC_WW3_GLB;
   }
   //------------------------
   // Meteorem (Scannav)
   //------------------------
-  else if (idCenter == 59 && idModel == 78 && idGrid == 255) {
-    // dataCenterModel = ??
-    if ((getDataType() == GRB_WIND_VX || getDataType() == GRB_WIND_VY) &&
-        getLevelType() == LV_MSL && getLevelValue() == 0) {
-      levelType = LV_ABOV_GND;
-      levelValue = 10;
+  else if (id_center == 59 && id_model == 78 && id_grid == 255) {
+    // data_center_model = ??
+    if ((GetDataType() == GRB_WIND_VX || GetDataType() == GRB_WIND_VY) &&
+        GetLevelType() == LV_MSL && GetLevelValue() == 0) {
+      level_type = LV_ABOV_GND;
+      level_value = 10;
     }
-    if (getDataType() == GRB_PRECIP_TOT && getLevelType() == LV_MSL &&
-        getLevelValue() == 0) {
-      levelType = LV_GND_SURF;
-      levelValue = 0;
+    if (GetDataType() == GRB_PRECIP_TOT && GetLevelType() == LV_MSL &&
+        GetLevelValue() == 0) {
+      level_type = LV_GND_SURF;
+      level_value = 0;
     }
-  } else if (idCenter == 84 && idModel <= 5 && idGrid == 0) {
+  } else if (id_center == 84 && id_model <= 5 && id_grid == 0) {
   }
   // MeteoFrance
-  else if (idCenter == 85) {
-    if (dataType == GRB_CLOUD_TOT && levelType == LV_GND_SURF &&
-        levelValue == 0) {
-      levelType = LV_ATMOS_ALL;
+  else if (id_center == 85) {
+    if (data_type == GRB_CLOUD_TOT && level_type == LV_GND_SURF &&
+        level_value == 0) {
+      level_type = LV_ATMOS_ALL;
     }
   }
 
@@ -1498,31 +1498,31 @@ void GribV2Record::translateDataType() {
   // Unknown center
   //------------------------
   else {
-    dataCenterModel = OTHER_DATA_CENTER;
+    data_center_model = OTHER_DATA_CENTER;
     //      printf("Uncorrected GribRecord: ");
     //      this->print();
-    //      this->knownData = false;
+    //      this->known_data = false;
   }
   // translate significant wave height and dir
-  if (this->knownData) {
-    switch (levelType) {
+  if (this->known_data) {
+    switch (level_type) {
       case 100:  // LV_ISOBARIC
         /* GRIB1 is in hectoPascal
            GRIB2 in Pascal, convert to GRIB1
         */
-        levelValue = levelValue / 100;
+        level_value = level_value / 100;
         break;
       case 103:
-        levelType = LV_ABOV_GND;
+        level_type = LV_ABOV_GND;
         break;
       case 101:
-        levelType = LV_MSL;
+        level_type = LV_MSL;
         break;
     }
-    switch (getDataType()) {
+    switch (GetDataType()) {
       case GRB_WIND_GUST:
-        levelType = LV_GND_SURF;
-        levelValue = 0;
+        level_type = LV_GND_SURF;
+        level_value = 0;
         break;
       case GRB_UOGRD:
       case GRB_VOGRD:
@@ -1533,8 +1533,8 @@ void GribV2Record::translateDataType() {
       case GRB_WVPER:
       case GRB_DIR:
       case GRB_PER:
-        levelType = LV_GND_SURF;
-        levelValue = 0;
+        level_type = LV_GND_SURF;
+        level_value = 0;
         break;
     }
   }
@@ -1548,10 +1548,10 @@ void GribV2Record::readDataSet(ZUFILE *file) {
   int len, sec_num;
 
   data = nullptr;
-  BMSbits = nullptr;
+  bms_bits = nullptr;
   hasBMS = false;
-  knownData = false;
-  IsDuplicated = false;
+  known_data = false;
+  is_duplicated = false;
 
   while (strncmp(&((char *)grib_msg->buffer)[grib_msg->offset / 8], "7777",
                  4) != 0) {
@@ -1575,31 +1575,31 @@ void GribV2Record::readDataSet(ZUFILE *file) {
           Lo2 = grib_msg->md.lons.elon;
           Di = grib_msg->md.xinc.loinc;
           Dj = grib_msg->md.yinc.lainc;
-          scanFlags = grib_msg->md.scan_mode;
-          isScanIpositive = (scanFlags & 0x80) == 0;
-          isScanJpositive = (scanFlags & 0x40) != 0;
-          isAdjacentI = (scanFlags & 0x20) == 0;
+          scan_flags = grib_msg->md.scan_mode;
+          is_scan_i_positive = (scan_flags & 0x80) == 0;
+          is_scan_j_positive = (scan_flags & 0x40) != 0;
+          is_adjacent_i = (scan_flags & 0x20) == 0;
           if (Lo1 >= 0 && Lo1 <= 180 && Lo2 < 0)
             Lo2 +=
                 360.0;  // cross the 180 deg meridien,beetwen alaska and russia
 
-          if (isScanIpositive)
+          if (is_scan_i_positive)
             while (Lo1 > Lo2) {  // horizontal size > 360 °
               Lo1 -= 360.0;
             }
           if (Lo2 > Lo1) {
-            lonMin = Lo1;
-            lonMax = Lo2;
+            lon_min = Lo1;
+            lon_max = Lo2;
           } else {
-            lonMin = Lo2;
-            lonMax = Lo1;
+            lon_min = Lo2;
+            lon_max = Lo1;
           }
           if (La2 > La1) {
-            latMin = La1;
-            latMax = La2;
+            lat_min = La1;
+            lat_max = La2;
           } else {
-            latMin = La2;
-            latMax = La1;
+            lat_min = La2;
+            lat_max = La1;
           }
           if (Ni <= 1 || Nj <= 1) {
             erreur("Record %d: Ni=%d Nj=%d", id, Ni, Nj);
@@ -1620,35 +1620,35 @@ void GribV2Record::readDataSet(ZUFILE *file) {
           productTemplate = grib_msg->md.pds_templ_num;
           dataCat = grib_msg->md.param_cat;
           dataNum = grib_msg->md.param_num;
-          dataType = GRBV2_TO_DATA(productDiscipline, dataCat, dataNum);
-          if (dataType == 255) {
+          data_type = GRBV2_TO_DATA(productDiscipline, dataCat, dataNum);
+          if (data_type == 255) {
             // printf("unused data type, skip\n");
             skip = true;
             break;
           }
 
-          levelType = grib_msg->md.lvl1_type;
-          levelValue = grib_msg->md.lvl1;
+          level_type = grib_msg->md.lvl1_type;
+          level_value = grib_msg->md.lvl1;
           if (grib_msg->md.lvl2_type == 8 && grib_msg->md.lvl1_type == 1) {
             // cf table 4.5:  8 Nominal top of the atmosphere
-            levelType = LV_ATMOS_ALL;
-            levelValue = 0.;
+            level_type = LV_ATMOS_ALL;
+            level_value = 0.;
           }
           int n_avg, n_missing;
 
-          if (!mapTimeRange(grib_msg, &periodP1, &periodP2, &timeRange, &n_avg,
-                            &n_missing, idCenter)) {
+          if (!mapTimeRange(grib_msg, &period_p1, &period_p2, &time_range,
+                            &n_avg, &n_missing, id_center)) {
             skip = true;
             break;
           }
-          periodsec = periodSeconds(grib_msg->md.time_unit, periodP1, periodP2,
-                                    timeRange);
-          setRecordCurrentDate(makeDate(refyear, refmonth, refday, refhour,
+          periodsec = periodSeconds(grib_msg->md.time_unit, period_p1,
+                                    period_p2, time_range);
+          SetRecordCurrentDate(MakeDate(refyear, refmonth, refday, refhour,
                                         refminute, periodsec));
           // printf("%d %d %d %d %d %d \n",
           // refyear,refmonth,refday,refhour,refminute,periodsec); printf("%d
           // Periode %d P1=%d p2=%d %s\n", grib_msg->md.time_unit, periodsec,
-          // periodP1,periodP2, strCurDate);
+          // period_p1,period_p2, str_cur_date);
         }
         break;
       case 5:  //  Section 5: Data Representation Section
@@ -1661,9 +1661,9 @@ void GribV2Record::readDataSet(ZUFILE *file) {
         if (ok) {
           if (grib_msg->md.bmssize != 0) {
             hasBMS = true;
-            BMSsize = grib_msg->md.bmssize;
-            BMSbits = new zuchar[grib_msg->md.bmssize];
-            memcpy(BMSbits, grib_msg->md.bms, grib_msg->md.bmssize);
+            bms_size = grib_msg->md.bmssize;
+            bms_bits = new zuchar[grib_msg->md.bmssize];
+            memcpy(bms_bits, grib_msg->md.bms, grib_msg->md.bmssize);
           }
         }
         break;
@@ -1690,15 +1690,15 @@ void GribV2Record::readDataSet(ZUFILE *file) {
     printf("Lo1=%f Lo2=%f    La1=%f La2=%f\n", grib_msg->md.slon,
            grib_msg->md.lons.elon, grib_msg->md.slat, grib_msg->md.lats.elat);
     printf("Ni=%d Nj=%d\n", Ni, Nj);
-    printf("hasDiDj=%d Di,Dj=(%f %f)\n", hasDiDj, Di, Dj);
-    printf("isScanIpositive=%d isScanJpositive=%d isAdjacentI=%d\n",
-           isScanIpositive, isScanJpositive, isAdjacentI);
+    printf("has_di_dj=%d Di,Dj=(%f %f)\n", has_di_dj, Di, Dj);
+    printf("is_scan_i_positive=%d is_scan_j_positive=%d is_adjacent_i=%d\n",
+           is_scan_i_positive, is_scan_j_positive, is_adjacent_i);
     printf("hasBMS=%d\n", hasBMS);
   }
   if (ok) {
     if (!skip) {
       translateDataType();
-      setDataType(dataType);
+      SetDataType(data_type);
     }
   }
   if (!ok || !DS ||
@@ -1714,12 +1714,12 @@ GribV2Record::GribV2Record(ZUFILE *file, int id_) {
   id = id_;
   seekStart = zu_tell(file);  // moved to section 0 read
   data = nullptr;
-  BMSsize = 0;
-  BMSbits = nullptr;
+  bms_size = 0;
+  bms_bits = nullptr;
   hasBMS = false;
   eof = false;
-  knownData = false;
-  IsDuplicated = false;
+  known_data = false;
+  is_duplicated = false;
   long start = seekStart;
 
   grib_msg = new GRIBMessage();
@@ -1773,12 +1773,12 @@ GribV2Record::GribV2Record(ZUFILE *file, int id_) {
   refday = grib_msg->dy;
   refhour = grib_msg->time / 10000;
   refminute = (grib_msg->time / 100) % 100;
-  refDate = makeDate(refyear, refmonth, refday, refhour, refminute, 0);
-  sprintf(strRefDate, "%04d-%02d-%02d %02d:%02d", refyear, refmonth, refday,
+  ref_date = MakeDate(refyear, refmonth, refday, refhour, refminute, 0);
+  sprintf(str_ref_date, "%04d-%02d-%02d %02d:%02d", refyear, refmonth, refday,
           refhour, refminute);
-  idCenter = grib_msg->center_id;
-  idModel = grib_msg->table_ver;
-  idGrid = 0;  // FIXME data1[6];
+  id_center = grib_msg->center_id;
+  id_model = grib_msg->table_ver;
+  id_grid = 0;  // FIXME data1[6];
   productDiscipline = grib_msg->disc;
   readDataSet(file);
 }
@@ -1793,7 +1793,7 @@ GribV2Record *GribV2Record::GribV2NextDataSet(ZUFILE *file, int id_) {
   GribV2Record *rec1 = new GribV2Record(*this);
   // XXX should have a shallow copy constructor
   delete[] rec1->data;
-  delete[] rec1->BMSbits;
+  delete[] rec1->bms_bits;
   // new records take ownership
   this->grib_msg = 0;
   rec1->id = id_;
@@ -1895,8 +1895,8 @@ bool GribV2Record::readGribSection0_IS(ZUFILE *file, bool b_skip_initial_GRIB) {
     return false;
   }
 
-  editionNumber = grib_msg->ed_num;
-  if (editionNumber != 2) {
+  edition_number = grib_msg->ed_num;
+  if (edition_number != 2) {
     ok = false;
     eof = true;
     return false;

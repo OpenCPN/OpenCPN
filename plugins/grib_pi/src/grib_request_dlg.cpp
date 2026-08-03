@@ -72,7 +72,7 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
   m_displayScale = 1.0;
 #if defined(__WXOSX__) || defined(__WXGTK3__)
   // Support scaled HDPI displays.
-  m_displayScale = GetContentScaleFactor();
+  m_displayScale = wxWindow::GetContentScaleFactor();
 #endif
 
   InitRequestConfig();
@@ -161,9 +161,7 @@ GribRequestSetting::~GribRequestSetting() {
   }
   delete m_VpFocus;
   delete m_VpMouse;
-  if (m_oDC) {
-    delete m_oDC;
-  }
+  delete m_oDC;
 }
 
 void GribRequestSetting::SaveConfig() {
@@ -256,7 +254,7 @@ void GribRequestSetting::InitRequestConfig() {
 
   // Set wxSpinCtrl sizing
   int w, h;
-  GetTextExtent("-360", &w, &h, 0, 0,
+  GetTextExtent("-360", &w, &h, nullptr, nullptr,
                 OCPNGetFont(_("Dialog")));  // optimal text control size
   w += 30;
   h += 4;
@@ -347,7 +345,7 @@ void GribRequestSetting::OnClose(wxCloseEvent &event) {
 void GribRequestSetting::SetRequestDialogSize() {
   int y;
   /*first let's size the mail display space*/
-  GetTextExtent("abc", nullptr, &y, 0, 0, OCPNGetFont(_("Dialog")));
+  GetTextExtent("abc", nullptr, &y, nullptr, nullptr, OCPNGetFont(_("Dialog")));
   m_MailImage->SetMinSize(
       wxSize(-1, ((y * m_MailImage->GetNumberOfLines()) + 10)));
 
@@ -645,8 +643,7 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
         wxEVT_DOWNLOAD_EVENT,
         (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
   }
-  auto res =
-      OCPN_downloadFileBackground(oss.str(), path, this, &m_download_handle);
+  OCPN_downloadFileBackground(oss.str(), path, this, &m_download_handle);
   while (m_downloading) {
     wxTheApp->ProcessPendingEvents();
     wxMilliSleep(10);
@@ -722,7 +719,7 @@ void GribRequestSetting::FillTreeCtrl(wxJSONValue &data) {
       if (source.HasMember("areas") && source["areas"].IsArray()) {
         for (int j = 0; j < source["areas"].Size(); j++) {
           wxJSONValue area = source["areas"][j];
-          auto info = new GribCatalogInfo(
+          auto info_1 = new GribCatalogInfo(
               LocalSourceItem::AREA, area["name"].AsString(),
               source["description"].AsString(), source["url"].AsString(),
               wxEmptyString, LocalGribDownloadType::WEBPAGE,
@@ -731,11 +728,11 @@ void GribRequestSetting::FillTreeCtrl(wxJSONValue &data) {
               area["boundary"]["lat_max"].AsDouble(),
               area["boundary"]["lon_max"].AsDouble());
           m_SourcesTreeCtrl1->AppendItem(src_id, area["name"].AsString(), -1,
-                                         -1, info);
+                                         -1, info_1);
           if (area.HasMember("gribs") && area["gribs"].IsArray()) {
             for (int k = 0; k < area["gribs"].Size(); k++) {
               wxJSONValue grib = area["gribs"][k];
-              auto info = new GribCatalogInfo(
+              auto inf_1 = new GribCatalogInfo(
                   LocalSourceItem::GRIB, grib["name"].AsString(),
                   source["description"].AsString(),
                   grib.HasMember("url") ? grib["url"].AsString()
@@ -749,7 +746,7 @@ void GribRequestSetting::FillTreeCtrl(wxJSONValue &data) {
                   area["boundary"]["lon_max"].AsDouble());
               m_SourcesTreeCtrl1->AppendItem(
                   m_SourcesTreeCtrl1->GetLastChild(src_id),
-                  grib["name"].AsString(), -1, -1, info);
+                  grib["name"].AsString(), -1, -1, inf_1);
             }
           }
         }
@@ -824,9 +821,9 @@ void GribRequestSetting::OnUpdateLocalCatalog(wxCommandEvent &event) {
         wxEVT_DOWNLOAD_EVENT,
         (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
   }
-  auto res = OCPN_downloadFileBackground(
-      CATALOG_URL, m_parent.pPlugIn->m_local_sources_catalog + "new", this,
-      &m_download_handle);
+  OCPN_downloadFileBackground(CATALOG_URL,
+                              m_parent.pPlugIn->m_local_sources_catalog + "new",
+                              this, &m_download_handle);
   while (m_downloading) {
     wxTheApp->ProcessPendingEvents();
     wxMilliSleep(10);
@@ -894,7 +891,7 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
     wxString path = m_parent.GetGribDir();
     path.Append(wxFileName::GetPathSeparator());
     path.Append("grib_manifest.json");
-    auto res = OCPN_downloadFileBackground(url, path, this, &m_download_handle);
+    OCPN_downloadFileBackground(url, path, this, &m_download_handle);
     while (m_downloading) {
       wxTheApp->ProcessPendingEvents();
       wxMilliSleep(10);
@@ -969,7 +966,7 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
   wxString path = m_parent.GetGribDir();
   path.Append(wxFileName::GetPathSeparator());
   path.Append(filename);
-  auto res = OCPN_downloadFileBackground(url, path, this, &m_download_handle);
+  OCPN_downloadFileBackground(url, path, this, &m_download_handle);
   while (m_downloading) {
     wxTheApp->ProcessPendingEvents();
     wxMilliSleep(10);
@@ -1177,7 +1174,7 @@ void GribRequestSetting::OnTopChange(wxCommandEvent &event) {
   // deactivate momentary ZyGrib option
   if (m_pMailTo->GetCurrentSelection() == ZYGRIB) {
     m_pMailTo->SetSelection(0);
-    int mes = OCPNMessageBox_PlugIn(
+    OCPNMessageBox_PlugIn(
         this,
         _("Sorry...\nZyGrib momentary stopped providing this service...\nOnly "
           "Saildocs option is available"),
@@ -1338,26 +1335,26 @@ bool GribRequestSetting::DoRenderZoneOverlay() {
 
     m_oDC->GetTextExtent("W", &ww, &hw);
 
-    int label_offsetx = ww, label_offsety = 1;
-    int x = center.x - w / 2;
-    int y = center.y - h / 2;
+    int label_offsetx_ = ww, label_offsety_ = 1;
+    int x_ = center.x - w / 2;
+    int y_ = center.y - h / 2;
 
-    w += 2 * label_offsetx, h += 2 * label_offsety;
+    w += 2 * label_offsetx_, h += 2 * label_offsety_;
 
     m_oDC->SetBrush(wxBrush(back_color));
-    m_oDC->DrawRoundedRectangle(x, y, w, h, 0);
+    m_oDC->DrawRoundedRectangle(x_, y_, w, h, 0);
 
     /* draw bounding rectangle */
     m_oDC->SetPen(wxPen(wxColour(0, 0, 0), 1));
 
-    outline[0] = wxPoint(x, y);
-    outline[1] = wxPoint(x + w, y);
-    outline[2] = wxPoint(x + w, y + h);
-    outline[3] = wxPoint(x, y + h);
-    outline[4] = wxPoint(x, y);
+    outline[0] = wxPoint(x_, y_);
+    outline[1] = wxPoint(x_ + w, y_);
+    outline[2] = wxPoint(x_ + w, y_ + h);
+    outline[3] = wxPoint(x_, y_ + h);
+    outline[4] = wxPoint(x_, y_);
     m_oDC->DrawLines(5, outline);
 
-    m_oDC->DrawText(label, x + label_offsetx, y + label_offsety);
+    m_oDC->DrawText(label, x_ + label_offsetx_, y_ + label_offsety_);
 
 #endif
 #endif

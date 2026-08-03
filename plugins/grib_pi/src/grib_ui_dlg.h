@@ -37,15 +37,14 @@
  * - Animation controls
  */
 
-#ifndef GRIBUICTRLBAR_H__
-#define GRIBUICTRLBAR_H__
+#ifndef GRIBUICTRLBAR_H_
+#define GRIBUICTRLBAR_H_
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
-#include <wx/fileconf.h>
+#endif
 #include <wx/glcanvas.h>
 
 #include "cursor_data.h"
@@ -61,6 +60,8 @@
 #define PI 3.1415926535897931160E0 /* pi */
 #endif
 
+extern double m_cursor_lat, m_cursor_lon;
+
 class GRIBUICtrlBar;
 class GRIBUICData;
 class GRIBFile;
@@ -73,7 +74,7 @@ class GribGrabberWin;
 class GribSpacerWin;
 
 class wxFileConfig;
-class grib_pi;
+class GribPi;
 class wxGraphicsContext;
 
 WX_DECLARE_OBJARRAY(GribRecordSet, ArrayOfGribRecordSets);
@@ -159,7 +160,7 @@ public:
   GribTimelineRecordSet(unsigned int cnt);
   //    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double
   //    interp_const);
-  ~GribTimelineRecordSet();
+  ~GribTimelineRecordSet() override;
 
   void ClearCachedData();
 
@@ -181,9 +182,9 @@ class GRIBUICtrlBar : public GRIBUICtrlBarBase {
 
 public:
   GRIBUICtrlBar(wxWindow *parent, wxWindowID id, const wxString &title,
-                const wxPoint &pos, const wxSize &size, long style,
-                grib_pi *ppi, double scale_factor);
-  ~GRIBUICtrlBar();
+                const wxPoint &pos, const wxSize &size, long style, GribPi *ppi,
+                double scale_factor);
+  ~GRIBUICtrlBar() override;
 
   void OpenFile(bool newestFile = false);
 
@@ -244,7 +245,6 @@ public:
   void SetDialogsStyleSizePosition(bool force_recompute = false);
   /** Set the icon and tooltip for the download request button. */
   void SetRequestButtonBitmap(int type);
-  void OnMouseEvent(wxMouseEvent &event);
   GRIBUICData *GetCDataDialog() { return m_gGRIBUICData; }
   bool InDataPlot(int id) {
     return id > wxID_ANY && id < (int)GribOverlaySettings::GEO_ALTITUDE;
@@ -267,7 +267,7 @@ public:
   /** Timer for controlling GRIB animation playback. */
   wxTimer m_tPlayStop;
   /** Plugin instance that owns this control bar. */
-  grib_pi *pPlugIn;
+  GribPi *pPlugIn;
   GribRequestSetting *pReq_Dialog;
   /** Currently active GRIB file being displayed. */
   GRIBFile *m_bGRIBActiveFile;
@@ -328,40 +328,45 @@ public:
   wxString m_grib_dir;
   /** List of GRIB filenames being displayed. */
   wxArrayString m_file_names;
+  void DoOnMouseEvent(wxMouseEvent &event) { OnMouseEvent(event); }
 
-private:
-  void OnClose(wxCloseEvent &event);
-  void OnSize(wxSizeEvent &event);
-  void OnPaint(wxPaintEvent &event);
-  void OnSettings(wxCommandEvent &event);
-  void OnPlayStop(wxCommandEvent &event);
-  void OnPlayStopTimer(wxTimerEvent &event);
-  void OnMove(wxMoveEvent &event);
-  void OnMenuEvent(wxMenuEvent &event);
-  void MenuAppend(wxMenu *menu, int id, wxString label, wxItemKind kind,
-                  wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = nullptr);
-  void OnZoomToCenterClick(wxCommandEvent &event);
-  void OnPrev(wxCommandEvent &event);
-  void OnRecordForecast(wxCommandEvent &event) {
+protected:
+  void OnClose(wxCloseEvent &event) override;
+  void OnSize(wxSizeEvent &event) override;
+  void OnPaint(wxPaintEvent &event) override;
+  void OnSettings(wxCommandEvent &event) override;
+  void OnPlayStop(wxCommandEvent &event) override;
+  void OnZoomToCenterClick(wxCommandEvent &event) override;
+  void OnPrev(wxCommandEvent &event) override;
+  void OnMouseEvent(wxMouseEvent &event) override;
+  void OnRecordForecast(wxCommandEvent &event) override {
     StopPlayBack();
     m_InterpolateMode = false;
     m_pNowMode = false;
     TimelineChanged();
   }
-  void OnNext(wxCommandEvent &event);
-  void OnNow(wxCommandEvent &event) {
+  void OnNext(wxCommandEvent &event) override;
+  void OnNow(wxCommandEvent &event) override {
     StopPlayBack();
     ComputeBestForecastForNow();
   }
-  void OnAltitude(wxCommandEvent &event);
-  void OnOpenFile(wxCommandEvent &event);
+  void OnAltitude(wxCommandEvent &event) override;
+  void OnOpenFile(wxCommandEvent &event) override;
   /** Callback invoked when user clicks download/request forecast data. */
-  void OnRequestForecastData(wxCommandEvent &event);
-  void createRequestDialog();
-  void OnCompositeDialog(wxCommandEvent &event);
+  void OnRequestForecastData(wxCommandEvent &event) override;
+  void OnCompositeDialog(wxCommandEvent &event) override;
 
-  void OnTimeline(wxScrollEvent &event);
-  void OnShowCursorData(wxCommandEvent &event);
+  void OnTimeline(wxScrollEvent &event) override;
+  void OnShowCursorData(wxCommandEvent &event) override;
+
+private:
+  void OnPlayStopTimer(wxTimerEvent &event);
+  void OnMove(wxMoveEvent &event);
+  void OnMenuEvent(wxMenuEvent &event);
+  void MenuAppend(wxMenu *menu, int id, wxString label, wxItemKind kind,
+                  wxBitmap bitmap = wxNullBitmap, wxMenu *submenu = nullptr);
+
+  void createRequestDialog();
 
   wxDateTime MinTime();
   wxArrayString GetFilesInDirectory();
@@ -446,23 +451,23 @@ public:
    * Checks if file loading and parsing was successful.
    * @return true if at least one valid GRIB record was loaded.
    */
-  bool IsOK(void) { return m_bOK; }
+  [[nodiscard]] bool IsOK() const { return m_bOK; }
   /**
    * Gets the list of source filenames being used.
    * When newestFile=true, will contain only the newest file.
    * Otherwise contains all input files.
    */
-  wxArrayString &GetFileNames(void) { return m_FileNames; }
+  wxArrayString &GetFileNames() { return m_FileNames; }
   /**
    * Gets the last error message if file loading failed.
    */
-  wxString GetLastMessage(void) { return m_last_message; }
+  wxString GetLastMessage() { return m_last_message; }
   /**
    * Gets pointer to array of record sets organized by timestamp.
    * Contains combined data from all source files (or just newest file
    * if newestFile=true).
    */
-  ArrayOfGribRecordSets *GetRecordSetArrayPtr(void) {
+  ArrayOfGribRecordSets *GetRecordSetArrayPtr() {
     return &m_GribRecordSetArray;
   }
   /**
@@ -474,9 +479,9 @@ public:
    * reference_time + forecast_hour. For example, a 24h forecast from a
    * 00Z model run would have reference_time=00Z and forecast_time=00Z+24h.
    */
-  time_t GetRefDateTime(void) { return m_pRefDateTime; }
+  [[nodiscard]] time_t GetRefDateTime() const { return m_pRefDateTime; }
 
-  const unsigned int GetCounter() { return m_counter; }
+  [[nodiscard]] unsigned int GetCounter() const { return m_counter; }
 
   WX_DEFINE_ARRAY_INT(int, GribIdxArray);
   GribIdxArray m_GribIdxArray;
@@ -503,7 +508,7 @@ private:
 class GRIBUICData : public GRIBUICDataBase {
 public:
   GRIBUICData(GRIBUICtrlBar &parent);
-  ~GRIBUICData() {}
+  ~GRIBUICData() override = default;
 
   // GribGrabberWin      *m_gGrabber;
   GRIBUICtrlBar &m_gpparent;
@@ -513,4 +518,4 @@ private:
   void OnMove(wxMoveEvent &event);
 };
 
-#endif  //      GRIBUICTRLBAR_H__
+#endif  //      GRIBUICTRLBAR_H_

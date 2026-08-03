@@ -65,7 +65,7 @@ private:
   //---------------------------------------------
   zuint fileOffset0;
   zuint seekStart, totalSize;
-  // zuchar editionNumber;
+  // zuchar edition_number;
   bool b_len_add_8;
 
   // SECTION 1: THE PRODUCT DEFINITION SECTION (PDS)
@@ -82,7 +82,7 @@ private:
   // SECTION 3: BIT MAP SECTION (BMS)
   zuint fileOffset3;
   zuint sectionSize3;
-  // zuchar *BMSbits;
+  // zuchar *bms_bits;
   // SECTION 4: BINARY DATA SECTION (BDS)
   int productTemplate;
   int productDiscipline;

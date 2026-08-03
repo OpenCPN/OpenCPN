@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef ZU_FILE_H
 #define ZU_FILE_H
 
-#define ZU_COMPRESS_AUTO -1
+#define ZU_COMPRESS_AUTO (-1)
 #define ZU_COMPRESS_NONE 0
 #define ZU_COMPRESS_GZIP 1
 #define ZU_COMPRESS_BZIP 2

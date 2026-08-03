@@ -38,13 +38,11 @@
 
 #include <map>
 
-#include <wx/geometry.h>
-
 #include "pi_gl.h"
 
 #include "pi_ocpndc.h"
 #include "pi_tex_font.h"
-
+#include "grib_ui_dlg.h"
 /**
  * Container for rendered GRIB data visualizations in texture or bitmap form.
  *
@@ -54,12 +52,12 @@
  */
 class GribOverlay {
 public:
-  GribOverlay(void) {
+  GribOverlay() {
     m_iTexture = 0;
     m_pDCBitmap = nullptr, m_pRGBA = nullptr;
   }
 
-  ~GribOverlay(void) {
+  ~GribOverlay() {
 #ifdef ocpnUSE_GL
     if (m_iTexture) {
       glDeleteTextures(1, &m_iTexture);
@@ -181,13 +179,13 @@ public:
 
   void SetSettings(bool hiDefGraphics, bool GradualColors,
                    bool BarbedArrowHead = true) {
-    m_hiDefGraphics = hiDefGraphics;
-    m_bGradualColors = GradualColors;
-    m_bDrawBarbedArrowHead = BarbedArrowHead;
+    m_hi_def_graphics = hiDefGraphics;
+    m_gradual_colors = GradualColors;
+    m_draw_barbed_arrow_head = BarbedArrowHead;
     ClearCachedData();
   }
   void SetMessageFont();
-  void SetMessage(wxString message) { m_Message = message; }
+  void SetMessage(wxString message) { m_message = message; }
   void SetParentSize(int w, int h) {
     m_ParentSize.SetWidth(w);
     m_ParentSize.SetHeight(h);
@@ -198,11 +196,11 @@ public:
   bool RenderGLGribOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
   void Reset();
-  void ClearCachedData(void);
-  void ClearCachedLabel(void) { m_labelCache.clear(); }
+  void ClearCachedData();
+  void ClearCachedLabel() { m_label_cache.clear(); }
   void ClearParticles() {
-    delete m_ParticleMap;
-    m_ParticleMap = nullptr;
+    delete m_particle_map;
+    m_particle_map = nullptr;
   }
 
   GribTimelineRecordSet *m_pGribTimelineRecordSet;
@@ -222,22 +220,22 @@ private:
   void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar);
   bool DoRenderGribOverlay(PlugIn_ViewPort *vp);
   /**
-   * Renders wind or current barbed arrows on the chart.
+   * Render wind or current barbed arrows on the chart.
    *
-   * This function draws barbed arrows representing wind or current directions
+   * Draw barbed arrows representing wind or current directions
    * and magnitudes. The barbs change appearance based on speed (more barbs for
    * higher speed). The arrows can be drawn using fixed spacing (grid) or
    * minimum spacing modes.
    *
-   * @param settings The settings index identifying the data type (WIND,
-   * CURRENT, etc.)
+   * @param config The settings index identifying the data type (WIND,
+   *     CURRENT, etc.)
    * @param pGR Array of GribRecord pointers containing the data
    * @param vp Current viewport for rendering
    */
   void RenderGribBarbedArrows(int config, GribRecord **pGR,
                               PlugIn_ViewPort *vp);
   /**
-   * Renders isobars (lines of equal value) for pressure or other scalar fields.
+   * Render isobars (lines of equal value) for pressure or other scalar fields.
    *
    * This function draws isobar lines at specific intervals defined in the
    * settings. It also handles label placement along the isobars. For pressure,
@@ -253,7 +251,7 @@ private:
   void RenderGribIsobar(int config, GribRecord **pGR,
                         wxArrayPtrVoid **pIsobarArray, PlugIn_ViewPort *vp);
   /**
-   * Renders direction arrows for vector fields like wind or current.
+   * Render direction arrows for vector fields like wind or current.
    *
    * This function draws arrows showing flow direction for vector data. The
    * arrows can be single, double, or width-varied based on settings. Supports
@@ -269,34 +267,36 @@ private:
   /**
    * Renders color-coded overlay maps showing data distribution.
    *
-   * This function creates and draws bitmap or OpenGL texture overlays showing
-   * geographic distribution of data using color gradients. It handles both
+   * Create and draw bitmap or OpenGL texture overlays showing
+   * geographic distribution of data using color gradients. Handle both
    * scalar and vector magnitude fields, and manages appropriate color mapping
-   * based on data range. Includes transparency support for certain data types.
+   * based on data range. Include transparency support for certain data types.
    *
-   * @param settings The settings index identifying the data type
+   * @param config The settings index identifying the data type
    * @param pGR Array of GribRecord pointers containing the data
    * @param vp Current viewport for rendering
    */
   void RenderGribOverlayMap(int config, GribRecord **pGR, PlugIn_ViewPort *vp);
+
   /**
-   * Renders numeric values at fixed or minimum-spaced grid points.
+   * Render numeric values at fixed or minimum-spaced grid points.
    *
-   * This function displays actual data values at locations across the chart.
+   * Display actual data values at locations across the chart.
    * Values are drawn with background colors matching the data scale.
-   * Supports both fixed spacing (grid) mode and minimum spacing mode.
+   * Support both fixed spacing (grid) mode and minimum spacing mode.
    * Grid placement is aligned to geographic coordinates to maintain proper
    * positioning during panning.
    *
-   * @param settings The settings index identifying the data type
+   * @param config The settings index identifying the data type
    * @param pGR Array of GribRecord pointers containing the data
    * @param vp Current viewport for rendering
    */
   void RenderGribNumbers(int config, GribRecord **pGR, PlugIn_ViewPort *vp);
+
   /**
-   * Renders animated particles showing flow patterns.
+   * Render animated particles showing flow patterns.
    *
-   * This function creates and updates flowing particles that visualize vector
+   * Create and update flowing particles that visualize vector
    * fields like wind or current. Particles have position history, move based on
    * field strength and direction, and are color-coded by magnitude. The
    * implementation manages particle lifecycle, trajectory calculation, and
@@ -316,21 +316,21 @@ private:
 
   void DrawProjectedPosition(int x, int y);
 
-  void drawDoubleArrow(int x, int y, double ang, wxColour arrowColor,
+  void DrawDoubleArrow(int x, int y, double ang, wxColour arrowColor,
                        int arrowWidth, int arrowSizeIdx, double scale);
-  void drawSingleArrow(int x, int y, double ang, wxColour arrowColor,
+  void DrawSingleArrow(int x, int y, double ang, wxColour arrowColor,
                        int arrowWidth, int arrowSizeIdx, double scale);
-  void drawWindArrowWithBarbs(int settings, int x, int y, double vkn,
+  void DrawWindArrowWithBarbs(int settings, int x, int y, double vkn,
                               double ang, bool south, wxColour arrowColor,
                               double rotate_angle);
-  void drawLineBuffer(LineBuffer &buffer, int x, int y, double ang,
+  void DrawLineBuffer(LineBuffer &buffer, int x, int y, double ang,
                       double scale, bool south = false, bool head = true);
 
   void DrawNumbers(wxPoint p, double value, int settings, wxColour back_color);
   void FillGrid(GribRecord *pGR);
 
-  wxString getLabelString(double value, int settings);
-  wxImage &getLabel(double value, int settings, wxColour back_colour);
+  wxString GetLabelString(double value, int settings);
+  wxImage &GetLabel(double value, int settings, wxColour back_colour);
 
 #ifdef ocpnUSE_GL
   void DrawGLTexture(GribOverlay *pGO, GribRecord *pGR, PlugIn_ViewPort *vp);
@@ -347,8 +347,8 @@ private:
 
   GribOverlay *m_pOverlay[GribOverlaySettings::SETTINGS_COUNT];
 
-  wxString m_Message;
-  wxString m_Message_Hiden;
+  wxString m_message;
+  wxString m_message_hiden;
 
   wxDC *m_pdc;
 #if wxUSE_GRAPHICS_CONTEXT
@@ -357,26 +357,28 @@ private:
 
   wxFont *m_Font_Message;
 
-  bool m_hiDefGraphics;
-  bool m_bGradualColors;
-  bool m_bDrawBarbedArrowHead;
+  bool m_hi_def_graphics;
+  bool m_gradual_colors;
+  bool m_draw_barbed_arrow_head;
 
-  std::map<double, wxImage> m_labelCache;
+  std::map<double, wxImage> m_label_cache;
 
-  TexFont m_TexFontMessage, m_TexFontNumbers;
+  TexFont m_tex_font_message;
+  TexFont m_tex_font_numbers;
 
   GRIBUICtrlBar &m_dlg;
-  GribOverlaySettings &m_Settings;
+  GribOverlaySettings &m_settings;
 
-  ParticleMap *m_ParticleMap;
-  wxTimer m_tParticleTimer;
-  bool m_bUpdateParticles;
+  ParticleMap *m_particle_map;
+  wxTimer m_particle_time_timer;
+  bool m_update_particle_particles;
 
-  LineBuffer m_WindArrowCache[14];
-  LineBuffer m_SingleArrow[2], m_DoubleArrow[2];
+  LineBuffer m_wind_arrow_cach_cache[14];
+  LineBuffer m_single_arrow[2];
+  LineBuffer m_double_arrow[2];
 
-  double m_pixelMM;
-  int windArrowSize;
+  double m_pixel_mm;
+  int m_wind_arrow_size;
 };
 
 #endif  //      GRIBOVERLAYFACTORY_H_

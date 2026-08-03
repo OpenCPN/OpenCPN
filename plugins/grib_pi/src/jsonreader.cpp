@@ -20,12 +20,12 @@
 #define wxDEBUG_LEVEL 0
 #endif
 
-#include <wx/jsonreader.h>
-
 #include <wx/mstream.h>
 #include <wx/sstream.h>
 #include <wx/debug.h>
 #include <wx/log.h>
+
+#include "jsonreader.h"
 
 /*! \class wxJSONReader
  \brief The JSON parser
