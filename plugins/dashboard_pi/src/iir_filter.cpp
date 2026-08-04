@@ -5,7 +5,7 @@
 #include "wx/wx.h"
 #endif  // precompiled headers
 
-#include "iirfilter.h"
+#include "iir_filter.h"
 #include <cmath>
 
 #include <wx/math.h>

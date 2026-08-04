@@ -50,12 +50,12 @@ extern "C" void WMMLogMessage(const char *s) {
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin *create_pi(void *ppimgr) {
-  return new wmm_pi(ppimgr);
+  return new WmmPi(ppimgr);
 }
 
 extern "C" DECL_EXP void destroy_pi(opencpn_plugin *p) { delete p; }
 
-wmm_pi *g_pi;
+WmmPi *g_pi;
 
 bool g_compact;
 
@@ -109,7 +109,7 @@ and extended by Sean D'Epagnier to support plotting."));
 //
 //---------------------------------------------------------------------------------------------------------
 
-wmm_pi::wmm_pi(void *ppimgr)
+WmmPi::WmmPi(void *ppimgr)
     : opencpn_plugin_118(ppimgr),
       m_bShowPlot(false),
       m_DeclinationMap(DECLINATION_PLOT, MagneticModel, TimedMagneticModel,
@@ -125,7 +125,7 @@ wmm_pi::wmm_pi(void *ppimgr)
   g_pi = this;
 }
 
-int wmm_pi::Init(void) {
+int WmmPi::Init(void) {
   AddLocaleCatalog(PLUGIN_CATALOG_NAME);
 
   // Set some default private member parameters
@@ -248,7 +248,7 @@ int wmm_pi::Init(void) {
   return ret_flag;
 }
 
-bool wmm_pi::DeInit(void) {
+bool WmmPi::DeInit(void) {
   //    Record the dialog position
   if (NULL != m_pWmmDialog) {
     wxPoint p = m_pWmmDialog->GetPosition();
@@ -282,23 +282,23 @@ bool wmm_pi::DeInit(void) {
   return true;
 }
 
-int wmm_pi::GetAPIVersionMajor() { return MY_API_VERSION_MAJOR; }
+int WmmPi::GetAPIVersionMajor() { return MY_API_VERSION_MAJOR; }
 
-int wmm_pi::GetAPIVersionMinor() { return MY_API_VERSION_MINOR; }
+int WmmPi::GetAPIVersionMinor() { return MY_API_VERSION_MINOR; }
 
-int wmm_pi::GetPlugInVersionMajor() { return PLUGIN_VERSION_MAJOR; }
+int WmmPi::GetPlugInVersionMajor() { return PLUGIN_VERSION_MAJOR; }
 
-int wmm_pi::GetPlugInVersionMinor() { return PLUGIN_VERSION_MINOR; }
+int WmmPi::GetPlugInVersionMinor() { return PLUGIN_VERSION_MINOR; }
 
-wxBitmap *wmm_pi::GetPlugInBitmap() { return _img_wmm_pi; }
+wxBitmap *WmmPi::GetPlugInBitmap() { return _img_wmm_pi; }
 
-wxString wmm_pi::GetCommonName() { return _("WMM"); }
+wxString WmmPi::GetCommonName() { return _("WMM"); }
 
-wxString wmm_pi::GetShortDescription() {
+wxString WmmPi::GetShortDescription() {
   return _("World Magnetic Model PlugIn for OpenCPN");
 }
 
-wxString wmm_pi::GetLongDescription() {
+wxString WmmPi::GetLongDescription() {
   return _(
       "World Magnetic Model PlugIn for OpenCPN\n\
 Implements the NOAA World Magnetic Model\n\
@@ -310,14 +310,14 @@ in time, get a new WMM.COF from NOAA and place it to the\n\
 location you can find in the OpenCPN logfile.");
 }
 
-int wmm_pi::GetToolbarToolCount(void) { return 1; }
+int WmmPi::GetToolbarToolCount(void) { return 1; }
 
-void wmm_pi::SetColorScheme(PI_ColorScheme cs) {
+void WmmPi::SetColorScheme(PI_ColorScheme cs) {
   if (NULL == m_pWmmDialog) return;
   DimeWindow(m_pWmmDialog);
 }
 
-void wmm_pi::SetIconType() {
+void WmmPi::SetIconType() {
   if (m_bShowLiveIcon) {
     SetToolbarToolBitmaps(m_leftclick_tool_id, _img_wmm, _img_wmm);
     SetToolbarToolBitmapsSVG(m_leftclick_tool_id, "", "", "");
@@ -332,7 +332,7 @@ void wmm_pi::SetIconType() {
   }
 }
 
-void wmm_pi::RearrangeWindow() {
+void WmmPi::RearrangeWindow() {
   if (NULL == m_pWmmDialog) return;
   if (m_iViewType == 1) {
     m_pWmmDialog->sbScursor->Hide(m_pWmmDialog->gScursor, true);
@@ -375,7 +375,7 @@ void wmm_pi::RearrangeWindow() {
       m_pWmmDialog->SetTransparent(m_iOpacity);
 }
 
-void wmm_pi::OnToolbarToolCallback(int id) {
+void WmmPi::OnToolbarToolCallback(int id) {
   if (!m_buseable) return;
   if (NULL == m_pWmmDialog) {
     m_pWmmDialog = new WmmUIDialog(*this, m_parent_window);
@@ -406,7 +406,7 @@ void wmm_pi::OnToolbarToolCallback(int id) {
 #endif
 }
 
-void wmm_pi::RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp) {
+void WmmPi::RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp) {
   if (!m_bShowPlot) return;
 
   m_DeclinationMap.Plot(dc, vp, wxColour(255, 0, 90, 220));
@@ -414,7 +414,7 @@ void wmm_pi::RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp) {
   m_FieldStrengthMap.Plot(dc, vp, wxColour(0, 60, 255, 220));
 }
 
-bool wmm_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
+bool WmmPi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
   if (!m_bShowPlot) return true;
 
   if (!m_oDC) m_oDC = new pi_ocpnDC();
@@ -427,7 +427,7 @@ bool wmm_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) {
   return true;
 }
 
-bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
+bool WmmPi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
   if (!m_bShowPlot) return true;
 
   if (!m_oDC) {
@@ -466,7 +466,7 @@ bool wmm_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
   return true;
 }
 
-void wmm_pi::RecomputePlot() {
+void WmmPi::RecomputePlot() {
   if (m_bCachedPlotOk) return;
 
   if (m_bComputingPlot) return;
@@ -483,7 +483,7 @@ void wmm_pi::RecomputePlot() {
   m_bComputingPlot = false;
 }
 
-void wmm_pi::SetCursorLatLon(double lat, double lon) {
+void WmmPi::SetCursorLatLon(double lat, double lon) {
   if (!m_pWmmDialog) return;
 
   if (!m_bShowAtCursor)
@@ -540,7 +540,7 @@ void wmm_pi::SetCursorLatLon(double lat, double lon) {
   SendCursorVariation();
 }
 
-void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
+void WmmPi::SetPositionFix(PlugIn_Position_Fix &pfix) {
   if (!m_buseable) {
     return;
   }
@@ -680,7 +680,7 @@ void wmm_pi::SetPositionFix(PlugIn_Position_Fix &pfix) {
 }
 
 // Demo implementation of response mechanism
-void wmm_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
+void WmmPi::SetPluginMessage(wxString &message_id, wxString &message_body) {
   if (message_id == "WMM_VARIATION_REQUEST") {
     wxJSONReader r;
     wxJSONValue v;
@@ -698,7 +698,7 @@ void wmm_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
   }
 }
 
-void wmm_pi::SendVariationAt(double lat, double lon, int year, int month,
+void WmmPi::SendVariationAt(double lat, double lon, int year, int month,
                              int day) {
   wxJSONValue v;
   v["Lat"] = lat;
@@ -749,7 +749,7 @@ void wmm_pi::SendVariationAt(double lat, double lon, int year, int month,
   SendPluginMessage(wxString("WMM_VARIATION"), out);
 }
 
-void wmm_pi::SendBoatVariation() {
+void WmmPi::SendBoatVariation() {
   wxJSONValue v;
   v["Decl"] = m_boatVariation.Decl;
   v["Decldot"] = m_boatVariation.Decldot;
@@ -776,7 +776,7 @@ void wmm_pi::SendBoatVariation() {
   SendPGN127258(m_boatVariation.Decl);
 }
 
-void wmm_pi::SendCursorVariation() {
+void WmmPi::SendCursorVariation() {
   wxJSONValue v;
   v["Decl"] = m_cursorVariation.Decl;
   v["Decldot"] = m_cursorVariation.Decldot;
@@ -800,7 +800,7 @@ void wmm_pi::SendCursorVariation() {
   SendPluginMessage(wxString("WMM_VARIATION_CURSOR"), out);
 }
 
-wxString wmm_pi::AngleToText(double angle) {
+wxString WmmPi::AngleToText(double angle) {
   int deg = (int)fabs(angle);
   int min = (fabs(angle) - deg) * 60;
   if (angle < 0)
@@ -809,7 +809,7 @@ wxString wmm_pi::AngleToText(double angle) {
     return wxString::Format("%u%c%u' E", deg, 0x00B0, min);
 }
 
-bool wmm_pi::LoadConfig(void) {
+bool WmmPi::LoadConfig(void) {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 
   if (pConf) {
@@ -858,7 +858,7 @@ bool wmm_pi::LoadConfig(void) {
     return false;
 }
 
-bool wmm_pi::SaveConfig(void) {
+bool WmmPi::SaveConfig(void) {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 
   if (pConf) {
@@ -891,7 +891,7 @@ bool wmm_pi::SaveConfig(void) {
     return false;
 }
 
-void wmm_pi::ShowPreferencesDialog(wxWindow *parent) {
+void WmmPi::ShowPreferencesDialog(wxWindow *parent) {
   WmmPrefsDialog *dialog =
       new WmmPrefsDialog(parent, wxID_ANY, _("WMM Preferences"),
                          wxPoint(m_wmm_dialog_x, m_wmm_dialog_y), wxDefaultSize,
@@ -921,7 +921,7 @@ void wmm_pi::ShowPreferencesDialog(wxWindow *parent) {
   delete dialog;
 }
 
-void wmm_pi::ShowPlotSettings() {
+void WmmPi::ShowPlotSettings() {
   WmmPlotSettingsDialog *dialog = new WmmPlotSettingsDialog(m_parent_window);
   wxFont *pFont = OCPNGetFont(_("Dialog"));
   dialog->SetFont(*pFont);
@@ -963,7 +963,7 @@ void wmm_pi::ShowPlotSettings() {
   delete dialog;
 }
 
-void wmm_pi::SendBoatVarHVD(double d_var) {
+void WmmPi::SendBoatVarHVD(double d_var) {
   // We use the HVD NMEA sentence to send magnetic variation.
   // The user can then select the desired variation
   // via the priority of the source code. The not official Talker: WM
@@ -982,7 +982,7 @@ void wmm_pi::SendBoatVarHVD(double d_var) {
   PushNMEABuffer(S);
 }
 
-void wmm_pi::SendPGN127258(double d_var) {
+void WmmPi::SendPGN127258(double d_var) {
   // Send Magnetic Variation as PGN 127258 Magnetic Variation
   double var_rad = d_var * (M_PI / 180.0);
   // Calculate the number of days since the Unix epoch
@@ -996,7 +996,7 @@ void wmm_pi::SendPGN127258(double d_var) {
   WriteCommDriverN2K(m_handleN2k, 127258, 0xFF, 7, payload);
 }
 
-unsigned char wmm_pi::ComputeChecksum(wxString sentence) const {
+unsigned char WmmPi::ComputeChecksum(wxString sentence) const {
   unsigned char calculated_checksum = 0;
   for (wxString::const_iterator i = sentence.begin() + 1;
        i != sentence.end() && *i != '*'; ++i)

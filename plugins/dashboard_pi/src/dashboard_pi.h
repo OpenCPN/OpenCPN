@@ -54,7 +54,7 @@
 #include "depth.h"
 #include "from_ownship.h"
 #include "gps.h"
-#include "iirfilter.h"
+#include "iir_filter.h"
 #include "instrument.h"
 #include "nmea0183/nmea0183.h"
 #include "ocpn_plugin.h"

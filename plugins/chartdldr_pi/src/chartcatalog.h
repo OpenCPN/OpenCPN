@@ -106,13 +106,10 @@ public:
   std::vector<std::unique_ptr<Panel>> coverage;
 };
 
-class RasterChart : public Chart  //<chart>
-{
+class RasterChart : public Chart {
 public:
   RasterChart(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   int source_edition;
   int raster_edition;
   int ntm_edition;
@@ -127,10 +124,7 @@ class EncCell : public Chart  //<cell>
 {
 public:
   EncCell(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
-  // wxString name;  use wxString number in class Chart .Paul.
   wxString src_chart;
   int cscale;
   wxString status;
@@ -151,7 +145,6 @@ public:
   wxDateTime GetUpdateDatetime() override;
 
   // public properties
-  // wxString name;  use wxString number in class Chart .Paul.
   Location *location;
   wxString river_name;
   RiverMiles *river_miles;
@@ -165,9 +158,7 @@ public:
 class ChartFile {
 public:
   ChartFile(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   wxString location;
   wxDateTime date_posted;
   wxDateTime time_posted;
@@ -187,9 +178,7 @@ public:
 class RiverMiles {
 public:
   RiverMiles(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   double begin;
   double end;
 };
@@ -197,9 +186,7 @@ public:
 class Area {
 public:
   Area(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   double north;
   double south;
   double east;
@@ -210,9 +197,7 @@ class NoticeToMariners  // for <nm> and <lnm>
 {
 public:
   NoticeToMariners(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   wxString agency;  //<nm_agency> or <lnm_agency>
   wxString doc;
   wxDateTime date;
@@ -222,9 +207,7 @@ class Vertex {
 public:
   Vertex(pugi::xml_node &xmldata);
   virtual ~Vertex() = default;
-  // public methods
 
-  // public properties
   double lat;
   double lon;
 };
@@ -232,10 +215,8 @@ public:
 class Panel {
 public:
   Panel(pugi::xml_node &xmldata);
-  virtual ~Panel();
-  // public methods
+  virtual ~Panel() = default;
 
-  // public properties
   int panel_no;
   std::vector<Vertex> vertexes;
 };
@@ -243,9 +224,7 @@ public:
 class RncPanel : public Panel {
 public:
   RncPanel(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   wxString panel_title;
   wxString file_name;
   int scale;
@@ -254,9 +233,7 @@ public:
 class EncPanel : public Panel {
 public:
   EncPanel(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   wxString type;
 };
 

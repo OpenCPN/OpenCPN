@@ -189,7 +189,8 @@ void DLDR_OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
   wxArrayString nameWrapped = wrapper.GetLineArray();
 
   if (height < static_cast<int>(nameWrapped.GetCount() + 1) * m_refHeight) {
-    SetMinSize(wxSize(-1, (nameWrapped.GetCount() + 1) * m_refHeight));
+    SetMinSize(
+        wxSize(-1, static_cast<int>(nameWrapped.GetCount() + 1) * m_refHeight));
     GetParent()->GetSizer()->Layout();
   }
 
@@ -199,7 +200,7 @@ void DLDR_OCPNChartDirPanel::OnPaint(wxPaintEvent& event) {
     GetGlobalColor("UITX1", &c);
     dc.SetPen(wxPen(wxColor(0xCE, 0xD5, 0xD6), 3));
 
-    dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10);
+    dc.DrawRoundedRectangle(0, 0, width - 1, height - 1, height / 10.0);
 
     int offset = height / 10;
     int text_x = offset;
@@ -597,7 +598,7 @@ ChartDldrPanel::ChartDldrPanel(wxWindow* parent, wxWindowID id,
 
 #endif /* CHART_LIST */
 
-  Layout();
+  wxWindow::Layout();
 
   //     m_lbChartSources->GetHandle()->setStyleSheet( qtStyleSheet);
   //     m_clCharts->GetHandle()->setStyleSheet( qtStyleSheet);

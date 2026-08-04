@@ -53,12 +53,12 @@
 //    The PlugIn Class Definition
 //-----------------------------------------------------------------------------------
 
-class wmm_pi;
+class WmmPi;
 class WmmPrefsDialog;
 
 class WmmUIDialog : public WmmUIDialogBase {
 public:
-  WmmUIDialog(wmm_pi &_wmm_pi, wxWindow *parent, wxWindowID id = wxID_ANY,
+  WmmUIDialog(WmmPi &_wmm_pi, wxWindow *parent, wxWindowID id = wxID_ANY,
               const wxString &title = "WMM",
               const wxPoint &pos = wxDefaultPosition,
               const wxSize &size = wxSize(250, 495),
@@ -67,11 +67,11 @@ public:
       : WmmUIDialogBase(parent, id, title, pos, size, style),
         m_wmm_pi(_wmm_pi) {}
 
-  void EnablePlotChanged(wxCommandEvent &event);
-  void PlotSettings(wxCommandEvent &event);
 
 protected:
-  wmm_pi &m_wmm_pi;
+  WmmPi &m_wmm_pi;
+  void EnablePlotChanged(wxCommandEvent &event) override;
+  void PlotSettings(wxCommandEvent &event) override;
 };
 
 class WmmPlotSettingsDialog : public WmmPlotSettingsDialogBase {
@@ -83,46 +83,46 @@ public:
                         long style = wxDEFAULT_DIALOG_STYLE)
       : WmmPlotSettingsDialogBase(parent, id, title, pos, size, style) {}
 
-  void About(wxCommandEvent &event);
-  void Save(wxCommandEvent &event) { EndDialog(wxID_OK); }
-  void Cancel(wxCommandEvent &event) { EndDialog(wxID_CANCEL); }
+protected:
+  void About(wxCommandEvent &event) override;
+  void Save(wxCommandEvent &event)  override{ EndDialog(wxID_OK); }
+  void Cancel(wxCommandEvent &event)  override{ EndDialog(wxID_CANCEL); }
 };
 
-class wmm_pi : public wxEvtHandler, public opencpn_plugin_118 {
+class WmmPi : public wxEvtHandler, public opencpn_plugin_118 {
 public:
-  wmm_pi(void *ppimgr);
+  WmmPi(void *ppimgr);
 
   //    The required PlugIn Methods
-  int Init(void);
-  bool DeInit(void);
+  int Init() override;
+  bool DeInit() override;
 
-  int GetAPIVersionMajor();
-  int GetAPIVersionMinor();
-  int GetPlugInVersionMajor();
-  int GetPlugInVersionMinor();
-  wxBitmap *GetPlugInBitmap();
-  wxString GetCommonName();
-  wxString GetShortDescription();
-  wxString GetLongDescription();
+  int GetAPIVersionMajor() override;
+  int GetAPIVersionMinor() override;
+  int GetPlugInVersionMajor() override;
+  int GetPlugInVersionMinor() override;
+  wxBitmap *GetPlugInBitmap() override;
+  wxString GetCommonName() override;
+  wxString GetShortDescription() override;
+  wxString GetLongDescription() override;
 
   //    The required override PlugIn Methods
-  void SetCursorLatLon(double lat, double lon);
-  void SetPositionFix(PlugIn_Position_Fix &pfix);
+  void SetCursorLatLon(double lat, double lon) override;
+  void SetPositionFix(PlugIn_Position_Fix &pfix) override;
 
   void RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp);
-  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
-  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) override;
+  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) override;
   void RecomputePlot();
 
-  int GetToolbarToolCount(void);
-  void ShowPreferencesDialog(wxWindow *parent);
-  void ShowPlotSettingsDialog(wxCommandEvent &event);
+  int GetToolbarToolCount() override;
+  void ShowPreferencesDialog(wxWindow *parent) override;
 
-  void OnToolbarToolCallback(int id);
+  void OnToolbarToolCallback(int id) override;
 
   //    Optional plugin overrides
-  void SetColorScheme(PI_ColorScheme cs);
-  void SetPluginMessage(wxString &message_id, wxString &message_body);
+  void SetColorScheme(PI_ColorScheme cs) override;
+  void SetPluginMessage(wxString &message_id, wxString &message_body) override;
 
   void SetShowPlot(bool showplot) { m_bShowPlot = showplot; }
 
@@ -130,7 +130,6 @@ public:
   void SetWmmDialogX(int x) { m_wmm_dialog_x = x; };
   void SetWmmDialogY(int x) { m_wmm_dialog_y = x; }
 
-  void OnWmmDialogClose();
   void ShowPlotSettings();
 
   //    WMM Declarations
@@ -151,8 +150,8 @@ public:
 
 private:
   wxFileConfig *m_pconfig;
-  bool LoadConfig(void);
-  bool SaveConfig(void);
+  bool LoadConfig();
+  bool SaveConfig();
 
   int m_wmm_dialog_x, m_wmm_dialog_y;
   int m_display_width, m_display_height;
@@ -185,7 +184,7 @@ private:
   void SendCursorVariation();
   void SendBoatVarHVD(double d_var);  // send variation to NMEA handler
   void SendPGN127258(double d_var);   // send variation via N2k
-  unsigned char ComputeChecksum(wxString sentence) const;
+  [[nodiscard]] unsigned char ComputeChecksum(wxString sentence) const;
 
   MAGtype_GeoMagneticElements m_cursorVariation;
   MAGtype_GeoMagneticElements m_boatVariation;

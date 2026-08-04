@@ -227,7 +227,6 @@ protected:
   void FillFromFile(const wxString& url, const wxString& dir,
                     bool selnew = false, bool selupd = false);
 
-  void OnContextMenu(wxMouseEvent& event) override;
   void SetBulkUpdate(bool bulk_update);
 
   int GetChartCount();
@@ -257,6 +256,7 @@ public:
     m_cancelled = true;
     m_is_connected = false;
   }
+  void OnContextMenu(wxMouseEvent& event) override;
 
 private:
   DECLARE_EVENT_TABLE()

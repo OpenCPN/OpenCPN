@@ -337,14 +337,14 @@ EncCell::EncCell(pugi::xml_node &xmldata) : Chart(xmldata) {
 IEncCell::IEncCell(pugi::xml_node &xmldata) : Chart(xmldata) {
   //  Use number (not name) for zip file name and cell name  .Paul.
   number = "";
-  location = NULL;
+  location = nullptr;
   river_name = "";
-  river_miles = NULL;
-  area = NULL;
+  river_miles = nullptr;
+  area = nullptr;
   edition = "";
-  shp_file = NULL;
-  s57_file = NULL;
-  kml_file = NULL;
+  shp_file = nullptr;
+  s57_file = nullptr;
+  kml_file = nullptr;
 
   for (pugi::xml_node element = xmldata.first_child(); element;
        element = element.next_sibling()) {
@@ -511,8 +511,6 @@ Panel::Panel(pugi::xml_node &xmldata) {
     }
   }
 }
-
-Panel::~Panel() {}
 
 RncPanel::RncPanel(pugi::xml_node &xmldata) : Panel(xmldata) {
   panel_title = "";
