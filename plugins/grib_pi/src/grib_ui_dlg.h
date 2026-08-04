@@ -227,7 +227,6 @@ public:
   void SetViewPortUnderMouse(PlugIn_ViewPort *vp);
   /** Set the ViewPort that has the focus */
   void SetViewPortWithFocus(PlugIn_ViewPort *vp);
-  void SetDataBackGroundColor();
   void SetTimeLineMax(bool SetValue);
   void SetCursorLatLon(double lat, double lon);
   /**
@@ -277,7 +276,7 @@ public:
   int m_ZoneSelAllowed;
   int m_old_DialogStyle;
   void DoZoomToCenter();
-  const wxString GetGribDir() {
+  wxString GetGribDir() {
     if (m_grib_dir.IsEmpty() || !wxDirExists(m_grib_dir)) {
       m_grib_dir = GetpPrivateApplicationDataLocation()
                        ->Append(wxFileName::GetPathSeparator())

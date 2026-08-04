@@ -44,9 +44,9 @@ class GribV2Record : public GribRecord {
 public:
   GribV2Record(ZUFILE* file, int id_);
   GribV2Record(const GribRecord& rec);
-  GribV2Record() { grib_msg = 0; }
+  GribV2Record() { grib_msg = nullptr; }
 
-  ~GribV2Record();
+  ~GribV2Record() override;
 
   // return a new record for next data set
   GribV2Record* GribV2NextDataSet(ZUFILE* file, int id_);

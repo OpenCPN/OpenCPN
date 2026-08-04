@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif  // precompiled headers
+#endif
 
 #include <stdlib.h>
 
@@ -66,8 +66,8 @@ public:
 
 class GRIBMetadata {
 public:
-  GRIBMetadata() : bitmap(0), bms(0) {
-    stat_proc.t = 0;
+  GRIBMetadata() : bitmap(nullptr), bms(nullptr) {
+    stat_proc.t = nullptr;
     lvl1_type = 0;
     lvl2_type = 0;
     lvl1 = 0.;
@@ -157,7 +157,7 @@ public:
 
 class GRIB2Grid {
 public:
-  GRIB2Grid() : gridpoints(0) {};
+  GRIB2Grid() : gridpoints(nullptr) {};
   ~GRIB2Grid() { delete[] gridpoints; };
 
   double *gridpoints;
@@ -165,7 +165,7 @@ public:
 
 class GRIBMessage {
 public:
-  GRIBMessage() : buffer(0) {};
+  GRIBMessage() : buffer(nullptr) {};
   ~GRIBMessage() { delete[] buffer; };
   unsigned char *buffer;
   int offset; /* offset in bytes to next GRIB2 section */
@@ -226,7 +226,7 @@ static int dec_jpeg2000(char *injpc, int bufsize, int *outfld)
   jas_image_t *image = nullptr;
   jas_stream_t *jpcstream;
   jas_image_cmpt_t *pcmpt;
-  char *opts = 0;
+  char *opts = nullptr;
   jas_matrix_t *data;
 
   //    jas_init();
@@ -943,13 +943,13 @@ static bool unpackDS(GRIBMessage *grib_msg) {
       // Grid point data - IEEE Floating Point Data
       if (grib_msg->md.precision == 1) {  // IEEE754 single precision
         grib_msg->grids.gridpoints = new double[npoints];
-        for (int l = 0; l < npoints; l++) {
-          if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) {
-            grib_msg->grids.gridpoints[l] =
+        for (int ll = 0; ll < npoints; ll++) {
+          if (grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[ll] == 1) {
+            grib_msg->grids.gridpoints[ll] =
                 ieee2flt(grib_msg->buffer + off / 8);
             off += 32;
           } else
-            grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
+            grib_msg->grids.gridpoints[ll] = GRIB_MISSING_VALUE;
         }
       } else if (grib_msg->md.precision == 2) {  // IEEE754 single precision
         static const int one = 1;

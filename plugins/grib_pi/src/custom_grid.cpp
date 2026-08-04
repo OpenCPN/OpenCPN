@@ -225,7 +225,6 @@ void CustomGrid::OnResize(wxSizeEvent& event) {
 void CustomGrid::OnLabeClick(wxGridEvent& event) {
   int row = event.GetRow();
   int col = event.GetCol();
-  wxPoint p = event.GetPosition();
   ClearSelection();
   if (row == wxNOT_FOUND && event.GetCol() == wxNOT_FOUND) {  // corner label
     // find the first visible row/col
@@ -262,7 +261,7 @@ void CustomGrid::OnLabeClick(wxGridEvent& event) {
 int CustomGrid::GetRowIndex(int row) {
   int idx = wxNOT_FOUND;
   for (unsigned i = 0; i < m_NumRow.size(); i++) {
-    if (m_NumRow[i] == row) idx = i;
+    if (m_NumRow[i] == row) idx = static_cast<int>(i);
   }
   return idx;
 }

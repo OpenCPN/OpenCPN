@@ -565,7 +565,7 @@ GRIBUICtrlBarBase::~GRIBUICtrlBarBase() {
 }
 
 wxBitmap GRIBUICtrlBarBase::GetScaledBitmap(wxBitmap bitmap,
-                                            const wxString svgFileName,
+                                            const wxString& svgFileName,
                                             double scale_factor) {
   int margin = 4;  // there is a small margin around the bitmap drawn by the
   // wxBitmapButton

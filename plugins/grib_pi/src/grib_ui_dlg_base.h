@@ -32,20 +32,15 @@
  * maintaining consistency across the interface.
  */
 
-#ifndef GRIBUIDIALOGBASE_H__
-#define GRIBUIDIALOGBASE_H__
+#ifndef GRIBuidiALOGBASE_H_
+#define GRIBuidiALOGBASE_H_
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
 #include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
 #include <wx/bmpbuttn.h>
 #include <wx/gdicmn.h>
-#include <wx/font.h>
-#include <wx/colour.h>
-#include <wx/settings.h>
 #include <wx/string.h>
 #include <wx/button.h>
 #include <wx/choice.h>
@@ -57,14 +52,10 @@
 #include <wx/textctrl.h>
 #include <wx/panel.h>
 #include <wx/spinctrl.h>
-#include <wx/statbox.h>
-#include <wx/scrolwin.h>
 #include <wx/radiobut.h>
 #include <wx/statbmp.h>
 #include <wx/notebook.h>
 #include <wx/radiobox.h>
-#include <wx/statline.h>
-#include <wx/notebook.h>
 #include <wx/treectrl.h>
 #include <wx/html/htmlwin.h>
 #include <wx/tglbtn.h>
@@ -155,7 +146,7 @@ public:
                    long style = wxTAB_TRAVERSAL,
                    const wxString& name = wxEmptyString);
 
-  ~ProjectBoatPanel();
+  ~ProjectBoatPanel() override;
 
   double GetCourse();
   double GetSpeed();
@@ -223,11 +214,11 @@ public:
                     const wxSize& size = wxDefaultSize,
                     long style = wxDEFAULT_DIALOG_STYLE | wxSYSTEM_MENU,
                     double scale_factor = 1.0);
-  ~GRIBUICtrlBarBase();
+  ~GRIBUICtrlBarBase() override;
 
   void SetScaleFactor(double factor) { m_ScaledFactor = factor; }
-  double GetScaleFactor() { return m_ScaledFactor; }
-  static wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString svgFileName,
+  double GetScaleFactor() const { return m_ScaledFactor; }
+  static wxBitmap GetScaledBitmap(wxBitmap bitmap, const wxString& svgFileName,
                                   double scale_factor);
 };
 
@@ -245,7 +236,7 @@ public:
                   const wxPoint& pos = wxDefaultPosition,
                   const wxSize& size = wxSize(-1, -1),
                   long style = wxSYSTEM_MENU | wxNO_BORDER);
-  ~GRIBUICDataBase();
+  ~GRIBUICDataBase() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -302,7 +293,7 @@ public:
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxSize(-1, -1),
                  long style = wxNO_BORDER | wxTAB_TRAVERSAL);
-  ~CursorDataBase();
+  ~CursorDataBase() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -416,7 +407,7 @@ public:
                          const wxPoint& pos = wxDefaultPosition,
                          const wxSize& size = wxSize(-1, -1),
                          long style = wxDEFAULT_DIALOG_STYLE);
-  ~GribSettingsDialogBase();
+  ~GribSettingsDialogBase() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -451,7 +442,7 @@ public:
                             const wxPoint& pos = wxDefaultPosition,
                             const wxSize& size = wxDefaultSize,
                             long style = wxDEFAULT_DIALOG_STYLE);
-  ~GribPreferencesDialogBase();
+  ~GribPreferencesDialogBase() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -607,7 +598,7 @@ public:
                          const wxPoint& pos = wxDefaultPosition,
                          const wxSize& size = wxSize(-1, -1),
                          long style = wxDEFAULT_DIALOG_STYLE);
-  ~GribRequestSettingBase();
+  ~GribRequestSettingBase() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -636,7 +627,7 @@ public:
                 const wxSize& size = wxSize(-1, -1),
                 long style = wxDEFAULT_DIALOG_STYLE | wxMAXIMIZE_BOX |
                              wxRESIZE_BORDER);
-  ~GRIBTableBase();
+  ~GRIBTableBase() override;
 };
 
-#endif  //  GRIBUIDIALOGBASE_H__
+#endif  //  GRIBuidiALOGBASE_H_

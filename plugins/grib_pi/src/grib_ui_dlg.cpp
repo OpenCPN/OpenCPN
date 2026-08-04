@@ -2036,9 +2036,9 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
   wxString file_name;
   for (unsigned int i = 0; i < file_names.GetCount(); i++) {
     file_name = file_names[i];
-    m_pGribReader->openFile(file_name);
+    m_pGribReader->OpenFile(file_name);
 
-    if (m_pGribReader->isOk()) {
+    if (m_pGribReader->IsOk()) {
       m_bOK = true;
       if (newestFile) {
         break;
@@ -2058,22 +2058,22 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
   }
 
   // fixup Accumulation records
-  m_pGribReader->computeAccumulationRecords(GRB_PRECIP_TOT, LV_GND_SURF, 0);
-  m_pGribReader->computeAccumulationRecords(GRB_PRECIP_RATE, LV_GND_SURF, 0);
-  m_pGribReader->computeAccumulationRecords(GRB_CLOUD_TOT, LV_ATMOS_ALL, 0);
+  m_pGribReader->ComputeAccumulationRecords(GRB_PRECIP_TOT, LV_GND_SURF, 0);
+  m_pGribReader->ComputeAccumulationRecords(GRB_PRECIP_RATE, LV_GND_SURF, 0);
+  m_pGribReader->ComputeAccumulationRecords(GRB_CLOUD_TOT, LV_ATMOS_ALL, 0);
 
   if (CumRec)
-    m_pGribReader->copyFirstCumulativeRecord();  // add missing records if
+    m_pGribReader->CopyFirstCumulativeRecord();  // add missing records if
                                                  // option selected
   if (WaveRec)
-    m_pGribReader->copyMissingWaveRecords();  //  ""                   ""
+    m_pGribReader->CopyMissingWaveRecords();  //  ""                   ""
 
-  m_nGribRecords = m_pGribReader->getTotalNumberOfGribRecords();
+  m_nGribRecords = m_pGribReader->GetTotalNumberOfGribRecords();
 
   //    Walk the GribReader date list to populate our array of GribRecordSets
 
   std::set<time_t>::iterator iter;
-  std::set<time_t> date_list = m_pGribReader->getListDates();
+  std::set<time_t> date_list = m_pGribReader->GetListDates();
   for (iter = date_list.begin(); iter != date_list.end(); iter++) {
     GribRecordSet *t = new GribRecordSet(m_counter);
     time_t reftime = *iter;
@@ -2092,7 +2092,7 @@ GRIBFile::GRIBFile(const wxArrayString &file_names, bool CumRec, bool WaveRec,
   bool sigH(false);
   //    Get the map of GribRecord vectors
   std::map<std::string, std::vector<GribRecord *> *> *p_map =
-      m_pGribReader->getGribMap();
+      m_pGribReader->GetGribMap();
 
   //    Iterate over the map to get vectors of related GribRecords
   std::map<std::string, std::vector<GribRecord *> *>::iterator it;

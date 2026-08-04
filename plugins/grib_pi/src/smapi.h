@@ -12,6 +12,8 @@
 #define WX_SMAPI_H_
 
 #include "msg.h"
+#include <wx/string.h>
+#include <wx/window.h>
 
 class WXDLLIMPEXP_NETUTILS wxMapiData;
 

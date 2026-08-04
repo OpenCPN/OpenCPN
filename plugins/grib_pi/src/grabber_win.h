@@ -37,8 +37,8 @@
  * within the OpenCPN interface while maintaining a consistent user experience.
  */
 
-#ifndef GRIBGRABBERWIN_H__
-#define GRIBGRABBERWIN_H__
+#ifndef GRIBgrabberWIN_H_
+#define GRIBgrabberWIN_H_
 
 #include <wx/wxprec.h>
 
@@ -70,4 +70,4 @@ private:
   DECLARE_EVENT_TABLE()
 };
 
-#endif  //      GRIBGRABBERWIN_H__
+#endif  //      GRIBgrabberWIN_H_

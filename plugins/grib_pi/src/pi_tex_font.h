@@ -39,8 +39,8 @@
  * plugin's overlay displays and data visualization components.
  */
 
-#ifndef TEXFONT_H__
-#define TEXFONT_H__
+#ifndef TExfoNT_H_
+#define TExfoNT_H_
 
 /* support ascii plus degree symbol for now pack font in a single texture 16x8
  */
@@ -77,7 +77,7 @@ public:
   void GetTextExtent(const wxString &string, int *width, int *height);
   void RenderString(const char *string, int x = 0, int y = 0);
   void RenderString(const wxString &string, int x = 0, int y = 0);
-  bool IsBuilt() { return m_built; }
+  bool IsBuilt() const { return m_built; }
 
 private:
   void GetTextExtent(const char *string, int *width, int *height);
@@ -98,4 +98,4 @@ private:
   float m_dy;
 };
 
-#endif  // TEXFONT_H__
+#endif  // TExfoNT_H_

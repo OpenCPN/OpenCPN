@@ -150,7 +150,7 @@ void TexFont::Build(wxFont &font, bool blur) {
   unsigned char *imgdata = image.GetData();
 
   if (imgdata) {
-    unsigned char *teximage = (unsigned char *)malloc(stride * tex_w * tex_h);
+    auto *teximage = (unsigned char *)malloc(stride * tex_w * tex_h);
 
     for (int j = 0; j < tex_w * tex_h; j++)
       for (int k = 0; k < stride; k++)

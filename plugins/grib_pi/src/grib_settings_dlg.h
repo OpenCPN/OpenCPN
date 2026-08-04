@@ -42,8 +42,8 @@
  * - Profile management for different use cases
  */
 
-#ifndef GRIBSETTINGSDIALOG_H__
-#define GRIBSETTINGSDIALOG_H__
+#ifndef GRIBsettingSDIALOG_H_
+#define GRIBsettingSDIALOG_H_
 
 #include "jsonval.h"
 
@@ -150,7 +150,17 @@ public:
 
   void SetSettingsDialogSize();
   void SaveLastPage();
-  int GetPageIndex() { return m_SetBookpageIndex; }
+  int GetPageIndex() const { return m_SetBookpageIndex; }
+
+protected:
+  void OnDataTypeChoice(wxCommandEvent& event) override;
+  void OnUnitChange(wxCommandEvent& event) override;
+  void OnTransparencyChange(wxScrollEvent& event) override;
+  void OnApply(wxCommandEvent& event) override;
+  void OnIntepolateChange(wxCommandEvent& event) override;
+  void OnSpacingModeChange(wxCommandEvent& event) override;
+  void OnPageChange(wxNotebookEvent& event) override;
+  void OnCtrlandDataStyleChanged(wxCommandEvent& event) override;
 
 private:
   void SetDataTypeSettings(int settings);
@@ -158,14 +168,6 @@ private:
   void PopulateUnits(int settings);
   void ShowFittingSettings(int settings);
   void ShowSettings(int params, bool show = true);
-  void OnDataTypeChoice(wxCommandEvent& event);
-  void OnUnitChange(wxCommandEvent& event);
-  void OnTransparencyChange(wxScrollEvent& event);
-  void OnApply(wxCommandEvent& event);
-  void OnIntepolateChange(wxCommandEvent& event);
-  void OnSpacingModeChange(wxCommandEvent& event);
-  void OnPageChange(wxNotebookEvent& event);
-  void OnCtrlandDataStyleChanged(wxCommandEvent& event);
 
   GRIBUICtrlBar& m_parent;
 
@@ -174,4 +176,4 @@ private:
   int m_SetBookpageIndex;
 };
 
-#endif  //      GRIBSETTINGSDIALOG_H__
+#endif  //      GRIBSettingsDIALOG_H_

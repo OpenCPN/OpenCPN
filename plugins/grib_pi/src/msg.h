@@ -56,7 +56,7 @@ public:
     }
   }
 
-  wxMailMessage() {};
+  wxMailMessage() = default;
 
   //// Accessors
 

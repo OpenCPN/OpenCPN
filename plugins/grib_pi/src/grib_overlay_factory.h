@@ -175,7 +175,7 @@ class GribTimelineRecordSet;
 class GRIBOverlayFactory : public wxEvtHandler {
 public:
   GRIBOverlayFactory(GRIBUICtrlBar &dlg);
-  ~GRIBOverlayFactory();
+  ~GRIBOverlayFactory() override;
 
   void SetSettings(bool hiDefGraphics, bool GradualColors,
                    bool BarbedArrowHead = true) {
@@ -185,7 +185,7 @@ public:
     ClearCachedData();
   }
   void SetMessageFont();
-  void SetMessage(wxString message) { m_message = message; }
+  void SetMessage(wxString message) { m_message = std::move(message); }
   void SetParentSize(int w, int h) {
     m_ParentSize.SetWidth(w);
     m_ParentSize.SetHeight(h);
@@ -311,7 +311,6 @@ private:
   void DrawLineBuffer(LineBuffer &buffer);
   void OnParticleTimer(wxTimerEvent &event);
 
-  wxString GetRefString(GribRecord *rec, int map);
   void DrawMessageWindow(wxString msg, int x, int y, wxFont *mfont);
 
   void DrawProjectedPosition(int x, int y);

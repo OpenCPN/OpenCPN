@@ -725,7 +725,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUICtrlBar &parent,
   GetHandle()->setStyleSheet(qtStyleSheet);
 #endif
 
-  Fit();
+  wxWindow::Fit();
 }
 
 void GribSettingsDialog::SaveLastPage() {

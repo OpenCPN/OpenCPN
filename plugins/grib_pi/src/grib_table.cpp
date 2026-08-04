@@ -65,7 +65,7 @@ void GRIBTable::InitGribTable(ArrayOfGribRecordSets *rsa, int NowIndex) {
   m_pGribTable->AppendCols(rsa->GetCount());
 
   // populate grid
-  wxDateTime time, day, ptime;
+  wxDateTime time;
   int nrows, wcols = 0;
   for (unsigned i = 0; i < rsa->GetCount(); i++) {
     // populate time labels
@@ -76,7 +76,7 @@ void GRIBTable::InitGribTable(ArrayOfGribRecordSets *rsa, int NowIndex) {
         i, toUsrDateTimeFormat_Plugin(wxDateTime(time), opts));
     nrows = -1;
     GribTimelineRecordSet *pTimeset = m_pGDialog->GetTimeLineRecordSet(time);
-    if (pTimeset == 0) continue;
+    if (!pTimeset) continue;
 
     GribRecord **RecordArray = pTimeset->m_GribRecordPtrArray;
 

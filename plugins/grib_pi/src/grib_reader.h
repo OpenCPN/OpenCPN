@@ -57,42 +57,42 @@ public:
   GribReader(const wxString fname);
   ~GribReader();
 
-  void openFile(const wxString fname);
-  bool isOk() { return ok; }
-  long getFileSize() { return fileSize; }
-  wxString getFileName() { return fileName; }
+  void OpenFile(const wxString fname);
+  bool IsOk() const { return ok; }
+  long GetFileSize() const { return fileSize; }
+  wxString GetFileName() const { return fileName; }
 
-  int getNumberOfGribRecords(int dataType, int levelType, int levelValue);
-  int getTotalNumberOfGribRecords();
+  int GetNumberOfGribRecords(int dataType, int levelType, int levelValue);
+  int GetTotalNumberOfGribRecords();
 
-  GribRecord *getGribRecord(int dataType, int levelType, int levelValue,
+  GribRecord *GetGribRecord(int dataType, int levelType, int levelValue,
                             time_t date);
 
-  GribRecord *getFirstGribRecord();
-  GribRecord *getFirstGribRecord(int dataType, int levelType, int levelValue);
+  GribRecord *GetFirstGribRecord();
+  GribRecord *GetFirstGribRecord(int dataType, int levelType, int levelValue);
 
   std::vector<GribRecord *> *getListOfGribRecords(int dataType, int levelType,
                                                   int levelValue);
 
   //      double       getHoursBeetweenGribRecords()  {return
   //      hoursBetweenRecords;}
-  std::set<time_t> getListDates() { return setAllDates; }
-  int getNumberOfDates() { return setAllDates.size(); }
-  time_t getRefDate() {
-    return setAllDates.size() > 0 ? *setAllDates.begin() : 0;
+  std::set<time_t> GetListDates() { return SetAllDates; }
+  int GetNumberOfDates() { return SetAllDates.size(); }
+  time_t GetRefDate() {
+    return !SetAllDates.empty() > 0 ? *SetAllDates.begin() : 0;
   }
 
   // Valeur pour un point et une date quelconques
-  double getTimeInterpolatedValue(int dataType, int levelType, int levelValue,
+  double GetTimeInterpolatedValue(int dataType, int levelType, int levelValue,
                                   double px, double py, time_t date);
 
   // Crée un GribRecord interpolé
-  GribRecord *getTimeInterpolatedGribRecord(int dataType, int levelType,
+  GribRecord *GetTimeInterpolatedGribRecord(int dataType, int levelType,
                                             int levelValue, time_t date);
 
-  double computeDewPoint(double lon, double lat, time_t date);
+  double ComputeDewPoint(double lon, double lat, time_t date);
 
-  int getDewpointDataStatus(int levelType, int levelValue);
+  int GetDewpointDataStatus(int levelType, int levelValue);
 
   enum GribFileDataStatus { DATA_IN_FILE, NO_DATA_IN_FILE, COMPUTED_DATA };
 
@@ -103,7 +103,7 @@ public:
    * This establishes a proper baseline for accumulation parameters like total
    * precipitation and cloud cover, preventing artificial zero-value periods.
    */
-  void copyFirstCumulativeRecord();
+  void CopyFirstCumulativeRecord();
   // void  removeFirstCumulativeRecord ();
   /**
    * Fills gaps in wave-related data fields by propagating known values across
@@ -113,15 +113,15 @@ public:
    * height, direction and period, ensuring continuous visualization of marine
    * conditions.
    */
-  void copyMissingWaveRecords();
-  void copyFirstCumulativeRecord(int dataType, int levelType, int levelValue);
+  void CopyMissingWaveRecords();
+  void CopyFirstCumulativeRecord(int dataType, int levelType, int levelValue);
   // void  removeFirstCumulativeRecord (int data_type,int level_type,int
   // level_value);
-  void copyMissingWaveRecords(int dataType, int levelType, int levelValue);
+  void CopyMissingWaveRecords(int dataType, int levelType, int levelValue);
 
-  void computeAccumulationRecords(int dataType, int levelType, int levelValue);
+  void ComputeAccumulationRecords(int dataType, int levelType, int levelValue);
 
-  std::map<std::string, std::vector<GribRecord *> *> *getGribMap() {
+  std::map<std::string, std::vector<GribRecord *> *> *GetGribMap() {
     return &mapGribRecords;
   }  // dsr
 
@@ -137,23 +137,23 @@ private:
 
   void storeRecordInMap(GribRecord *rec);
 
-  void readGribFileContent();
-  void readAllGribRecords();
-  void createListDates();
-  double computeHoursBeetweenGribRecords();
-  std::set<time_t> setAllDates;
+  void ReadGribFileContent();
+  void ReadAllGribRecords();
+  void CreateListDates();
+  double ComputeHoursBeetweenGribRecords();
+  std::set<time_t> SetAllDates;
 
-  void clean_vector(std::vector<GribRecord *> &ls);
-  void clean_all_vectors();
-  std::vector<GribRecord *> *getFirstNonEmptyList();
+  void CleanVector(std::vector<GribRecord *> &ls);
+  void CleanAllVectors();
+  std::vector<GribRecord *> *GetFirstNonEmptyList();
 
   // Interpolation between 2 GribRecord
-  double get2GribsInterpolatedValueByDate(double px, double py, time_t date,
+  double Get2GribsInterpolatedValueByDate(double px, double py, time_t date,
                                           GribRecord *before,
                                           GribRecord *after);
 
   // Détermine les GribRecord qui encadrent une date
-  void findGribsAroundDate(int dataType, int levelType, int levelValue,
+  void FindGribsAroundDate(int dataType, int levelType, int levelValue,
                            time_t date, GribRecord **before,
                            GribRecord **after);
 };

@@ -40,13 +40,13 @@
 class WXDLLIMPEXP_NETUTILS wxEmail {
 public:
   //// Ctor/dtor
-  wxEmail() {};
+  wxEmail() = default;
 
   //// Operations
 
   // Send a message.
   // Specify profile, or leave it to wxWidgets to find the current user name
-  // two sending methods for Unix plateforms : sendmail or xdg-email shell
+  // two sending methods for Unix platforms : sendmail or xdg-email shell
   // script
   static bool Send(
       wxMailMessage& message, int sendMethod,

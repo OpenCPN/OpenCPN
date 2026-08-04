@@ -142,7 +142,7 @@ public:
     return *this;
   }
 
-  ~PI_GLShaderProgram() {}
+  ~PI_GLShaderProgram() = default;
 
   GLuint programId() const { return programId_; }
 

@@ -25,7 +25,7 @@
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif  // precompiled headers
+#endif
 
 #include "pi_gl.h"
 
@@ -1595,8 +1595,8 @@ void GRIBOverlayFactory::RenderGribDirectionArrows(int settings,
     // Get spacing in pixels from settings
     int space_pixels =
         adjustSpacing(m_settings.Settings[settings].m_iBarbArrSpacing);
-    int arrowSize = 16;
-    int total_spacing = space_pixels + arrowSize;  // Physical pixels.
+    int arrow_size = 16;
+    int total_spacing = space_pixels + arrow_size;  // Physical pixels.
 
     // Convert pixel spacing to geographic spacing
     // We need to create a reference point and move it by the spacing to find
@@ -2126,7 +2126,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
     for (it = particles.begin(); it != particles.end(); it++)
       for (int i = 0; i < it->m_HistorySize; i++) {
         Particle::ParticleNode &n = it->m_History[i];
-        float(&p)[2] = n.m_Pos;
+        float (&p)[2] = n.m_Pos;
         if (p[0] == -10000) continue;
 
         wxPoint ps;
@@ -2147,7 +2147,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
       for (it = particles.begin(); it != particles.end(); it++)
         for (int i = 0; i < it->m_HistorySize; i++) {
           Particle::ParticleNode &n = it->m_History[i];
-          float(&p)[2] = n.m_Pos;
+          float (&p)[2] = n.m_Pos;
           if (p[0] == -10000) continue;
 
           n.m_Screen[0] += p1.x;
@@ -2177,7 +2177,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
 
       particle.m_Duration++;
 
-      float(&pp)[2] = particle.m_History[particle.m_HistoryPos].m_Pos;
+      float (&pp)[2] = particle.m_History[particle.m_HistoryPos].m_Pos;
 
       // maximum history size
       if (++particle.m_HistorySize > history_size)
@@ -2186,7 +2186,7 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
       if (++particle.m_HistoryPos >= history_size) particle.m_HistoryPos = 0;
 
       Particle::ParticleNode &n = particle.m_History[particle.m_HistoryPos];
-      float(&p)[2] = n.m_Pos;
+      float (&p)[2] = n.m_Pos;
       double vkn = 0, ang;
 
       if (particle.m_Duration < max_duration - history_size &&
@@ -2341,9 +2341,9 @@ void GRIBOverlayFactory::RenderGribParticles(int settings, GribRecord **pGR,
     float lcf[4];
 
     for (;;) {
-      float(&dp)[2] = particle->m_History[i].m_Pos;
+      float (&dp)[2] = particle->m_History[i].m_Pos;
       if (dp[0] != -10000) {
-        float(&sp)[2] = particle->m_History[i].m_Screen;
+        float (&sp)[2] = particle->m_History[i].m_Screen;
         wxUint8(&ci)[3] = particle->m_History[i].m_Color;
 
         wxUint8 c[4] = {ci[0], ci[1], (unsigned char)(ci[2] + 240 - alpha / 2),

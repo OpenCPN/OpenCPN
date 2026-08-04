@@ -43,14 +43,14 @@ GribReader::GribReader(const wxString fname) {
   ok = false;
   dewpointDataStatus = NO_DATA_IN_FILE;
   if (fname != "") {
-    openFile(fname);
+    OpenFile(fname);
   } else {
-    clean_all_vectors();
+    CleanAllVectors();
   }
 }
 //-------------------------------------------------------------------------------
 GribReader::~GribReader() {
-  clean_all_vectors();
+  CleanAllVectors();
   if (file != nullptr) {
     zu_close(file);
     file = nullptr;
@@ -58,17 +58,17 @@ GribReader::~GribReader() {
 }
 
 //-------------------------------------------------------------------------------
-void GribReader::clean_all_vectors() {
+void GribReader::CleanAllVectors() {
   std::map<std::string, std::vector<GribRecord *> *>::iterator it;
   for (it = mapGribRecords.begin(); it != mapGribRecords.end(); it++) {
     std::vector<GribRecord *> *ls = (*it).second;
-    clean_vector(*ls);
+    CleanVector(*ls);
     delete ls;
   }
   mapGribRecords.clear();
 }
 //-------------------------------------------------------------------------------
-void GribReader::clean_vector(std::vector<GribRecord *> &ls) {
+void GribReader::CleanVector(std::vector<GribRecord *> &ls) {
   std::vector<GribRecord *>::iterator it;
   for (it = ls.begin(); it != ls.end(); it++) {
     delete *it;
@@ -116,7 +116,7 @@ static bool RecordIsCurrent(GribRecord *rec) {
          rec->GetDataType() == GRB_CUR_SPEED;
 }
 
-void GribReader::readAllGribRecords() {
+void GribReader::ReadAllGribRecords() {
   //--------------------------------------------------------
   // Lecture de l'ensemble des GribRecord du fichier
   // et stockage dans les listes appropriées.
@@ -288,12 +288,12 @@ void GribReader::readAllGribRecords() {
 }
 
 //---------------------------------------------------------------------------------
-void GribReader::copyFirstCumulativeRecord(int dataType, int levelType,
+void GribReader::CopyFirstCumulativeRecord(int dataType, int levelType,
                                            int levelValue) {
-  time_t dateref = getRefDate();
-  GribRecord *rec = getGribRecord(dataType, levelType, levelValue, dateref);
+  time_t dateref = GetRefDate();
+  GribRecord *rec = GetGribRecord(dataType, levelType, levelValue, dateref);
   if (rec == nullptr) {
-    rec = getFirstGribRecord(dataType, levelType, levelValue);
+    rec = GetFirstGribRecord(dataType, levelType, levelValue);
     if (rec != nullptr) {
       GribRecord *r2 = new GribRecord(*rec);
       r2->SetRecordCurrentDate(dateref);  // 1er enregistrement factice
@@ -323,20 +323,20 @@ level_type, level_value); if (liste != nullptr) { std::vector<GribRecord
     }
 }
 */
-void GribReader::copyMissingWaveRecords(int dataType, int levelType,
+void GribReader::CopyMissingWaveRecords(int dataType, int levelType,
                                         int levelValue) {
-  std::set<time_t> setdates = getListDates();
+  std::set<time_t> setdates = GetListDates();
   std::set<time_t>::iterator itd, itd2;
   for (itd = setdates.begin(); itd != setdates.end(); itd++) {
     time_t date = *itd;
-    GribRecord *rec = getGribRecord(dataType, levelType, levelValue, date);
+    GribRecord *rec = GetGribRecord(dataType, levelType, levelValue, date);
     if (rec == nullptr) {
       itd2 = itd;
       itd2++;  // next date
       if (itd2 != setdates.end()) {
         time_t date2 = *itd2;
         GribRecord *rec2 =
-            getGribRecord(dataType, levelType, levelValue, date2);
+            GetGribRecord(dataType, levelType, levelValue, date2);
         if (rec2 && rec2->IsOk()) {
           // create a copied record from date2
           GribRecord *r2 = new GribRecord(*rec2);
@@ -348,9 +348,9 @@ void GribReader::copyMissingWaveRecords(int dataType, int levelType,
   }
 }
 
-void GribReader::computeAccumulationRecords(int dataType, int levelType,
+void GribReader::ComputeAccumulationRecords(int dataType, int levelType,
                                             int levelValue) {
-  std::set<time_t> setdates = getListDates();
+  std::set<time_t> setdates = GetListDates();
   std::set<time_t>::reverse_iterator rit;
   GribRecord *prev = 0;
   int p1 = 0, p2 = 0;
@@ -360,7 +360,7 @@ void GribReader::computeAccumulationRecords(int dataType, int levelType,
   // XXX only work if P2 -P1 === time
   for (rit = setdates.rbegin(); rit != setdates.rend(); ++rit) {
     time_t date = *rit;
-    GribRecord *rec = getGribRecord(dataType, levelType, levelValue, date);
+    GribRecord *rec = GetGribRecord(dataType, levelType, levelValue, date);
     if (rec && rec->IsOk()) {
       // XXX double check reference date and timerange
       if (prev != 0) {
@@ -397,9 +397,9 @@ void GribReader::computeAccumulationRecords(int dataType, int levelType,
 }
 
 //---------------------------------------------------------------------------------
-void GribReader::copyFirstCumulativeRecord() {
-  copyFirstCumulativeRecord(GRB_CLOUD_TOT, LV_ATMOS_ALL, 0);
-  copyFirstCumulativeRecord(GRB_PRECIP_TOT, LV_GND_SURF, 0);
+void GribReader::CopyFirstCumulativeRecord() {
+  CopyFirstCumulativeRecord(GRB_CLOUD_TOT, LV_ATMOS_ALL, 0);
+  CopyFirstCumulativeRecord(GRB_PRECIP_TOT, LV_GND_SURF, 0);
 }
 /*
 //---------------------------------------------------------------------------------
@@ -414,27 +414,27 @@ void  GribReader::removeFirstCumulativeRecord()
     removeFirstCumulativeRecord(GRB_FRZRAIN_CATEG, LV_GND_SURF, 0);
 }
 */
-void GribReader::copyMissingWaveRecords() {
-  copyMissingWaveRecords(GRB_HTSGW, LV_GND_SURF, 0);
-  copyMissingWaveRecords(GRB_WVDIR, LV_GND_SURF, 0);
-  copyMissingWaveRecords(GRB_WVPER, LV_GND_SURF, 0);
-  copyMissingWaveRecords(GRB_DIR, LV_GND_SURF, 0);
-  copyMissingWaveRecords(GRB_PER, LV_GND_SURF, 0);
+void GribReader::CopyMissingWaveRecords() {
+  CopyMissingWaveRecords(GRB_HTSGW, LV_GND_SURF, 0);
+  CopyMissingWaveRecords(GRB_WVDIR, LV_GND_SURF, 0);
+  CopyMissingWaveRecords(GRB_WVPER, LV_GND_SURF, 0);
+  CopyMissingWaveRecords(GRB_DIR, LV_GND_SURF, 0);
+  CopyMissingWaveRecords(GRB_PER, LV_GND_SURF, 0);
 }
 
 //---------------------------------------------------------------------------------
-void GribReader::readGribFileContent() {
+void GribReader::ReadGribFileContent() {
   fileSize = zu_filesize(file);
-  readAllGribRecords();
-  createListDates();
+  ReadAllGribRecords();
+  CreateListDates();
   //    hoursBetweenRecords = computeHoursBeetweenGribRecords();
   // XXX should it be done after reading all files, rather than per file?
-  if (getNumberOfGribRecords(GRB_WIND_GUST, LV_GND_SURF, 0) == 0) {
-    for (auto date : setAllDates) {
-      GribRecord *recX = getGribRecord(GRB_WIND_GUST_VX, LV_GND_SURF, 0, date);
+  if (GetNumberOfGribRecords(GRB_WIND_GUST, LV_GND_SURF, 0) == 0) {
+    for (auto date : SetAllDates) {
+      GribRecord *recX = GetGribRecord(GRB_WIND_GUST_VX, LV_GND_SURF, 0, date);
       if (recX == nullptr) continue;
 
-      GribRecord *recY = getGribRecord(GRB_WIND_GUST_VY, LV_GND_SURF, 0, date);
+      GribRecord *recY = GetGribRecord(GRB_WIND_GUST_VY, LV_GND_SURF, 0, date);
       if (recY == nullptr) continue;
       GribRecord *rec = GribRecord::MagnitudeRecord(*recX, *recY);
       rec->SetDataType(GRB_WIND_GUST);
@@ -446,17 +446,17 @@ void GribReader::readGribFileContent() {
   // If no, compute it with Magnus-Tetens formula, if possible.
   //-----------------------------------------------------
   dewpointDataStatus = DATA_IN_FILE;
-  if (getNumberOfGribRecords(GRB_DEWPOINT, LV_ABOV_GND, 2) != 0) return;
+  if (GetNumberOfGribRecords(GRB_DEWPOINT, LV_ABOV_GND, 2) != 0) return;
 
   dewpointDataStatus = NO_DATA_IN_FILE;
-  if (getNumberOfGribRecords(GRB_HUMID_REL, LV_ABOV_GND, 2) == 0 ||
-      getNumberOfGribRecords(GRB_TEMP, LV_ABOV_GND, 2) == 0)
+  if (GetNumberOfGribRecords(GRB_HUMID_REL, LV_ABOV_GND, 2) == 0 ||
+      GetNumberOfGribRecords(GRB_TEMP, LV_ABOV_GND, 2) == 0)
     return;
 
   dewpointDataStatus = COMPUTED_DATA;
-  for (auto iter : setAllDates) {
+  for (auto iter : SetAllDates) {
     time_t date = iter;
-    GribRecord *recModel = getGribRecord(GRB_TEMP, LV_ABOV_GND, 2, date);
+    GribRecord *recModel = GetGribRecord(GRB_TEMP, LV_ABOV_GND, 2, date);
     if (recModel == nullptr) continue;
 
     // Crée un GribRecord avec les dewpoints calculés
@@ -466,7 +466,7 @@ void GribReader::readGribFileContent() {
       for (zuint j = 0; j < (zuint)recModel->GetNj(); j++) {
         double x, y;
         recModel->getXY(i, j, &x, &y);
-        double dp = computeDewPoint(x, y, date);
+        double dp = ComputeDewPoint(x, y, date);
         recDewpoint->SetValue(i, j, dp);
       }
     }
@@ -475,12 +475,12 @@ void GribReader::readGribFileContent() {
 }
 
 //---------------------------------------------------
-int GribReader::getDewpointDataStatus(int /*level_type*/, int /*level_value*/) {
+int GribReader::GetDewpointDataStatus(int /*level_type*/, int /*level_value*/) {
   return dewpointDataStatus;
 }
 
 //---------------------------------------------------
-int GribReader::getTotalNumberOfGribRecords() {
+int GribReader::GetTotalNumberOfGribRecords() {
   int nb = 0;
   std::map<std::string, std::vector<GribRecord *> *>::iterator it;
   for (it = mapGribRecords.begin(); it != mapGribRecords.end(); it++) {
@@ -490,7 +490,7 @@ int GribReader::getTotalNumberOfGribRecords() {
 }
 
 //---------------------------------------------------
-std::vector<GribRecord *> *GribReader::getFirstNonEmptyList() {
+std::vector<GribRecord *> *GribReader::GetFirstNonEmptyList() {
   std::vector<GribRecord *> *ls = nullptr;
   std::map<std::string, std::vector<GribRecord *> *>::iterator it;
   for (it = mapGribRecords.begin(); ls == nullptr && it != mapGribRecords.end();
@@ -501,7 +501,7 @@ std::vector<GribRecord *> *GribReader::getFirstNonEmptyList() {
 }
 
 //---------------------------------------------------
-int GribReader::getNumberOfGribRecords(int dataType, int levelType,
+int GribReader::GetNumberOfGribRecords(int dataType, int levelType,
                                        int levelValue) {
   std::vector<GribRecord *> *liste =
       getListOfGribRecords(dataType, levelType, levelValue);
@@ -522,16 +522,16 @@ std::vector<GribRecord *> *GribReader::getListOfGribRecords(int dataType,
     return nullptr;
 }
 //---------------------------------------------------------------------------
-double GribReader::getTimeInterpolatedValue(int dataType, int levelType,
+double GribReader::GetTimeInterpolatedValue(int dataType, int levelType,
                                             int levelValue, double px,
                                             double py, time_t date) {
   GribRecord *before, *after;
-  findGribsAroundDate(dataType, levelType, levelValue, date, &before, &after);
-  return get2GribsInterpolatedValueByDate(px, py, date, before, after);
+  FindGribsAroundDate(dataType, levelType, levelValue, date, &before, &after);
+  return Get2GribsInterpolatedValueByDate(px, py, date, before, after);
 }
 
 //------------------------------------------------------------------
-void GribReader::findGribsAroundDate(int dataType, int levelType,
+void GribReader::FindGribsAroundDate(int dataType, int levelType,
                                      int levelValue, time_t date,
                                      GribRecord **before, GribRecord **after) {
   // Cherche les GribRecord qui encadrent la date
@@ -554,7 +554,7 @@ void GribReader::findGribsAroundDate(int dataType, int levelType,
 }
 
 //------------------------------------------------------------------
-double GribReader::get2GribsInterpolatedValueByDate(double px, double py,
+double GribReader::Get2GribsInterpolatedValueByDate(double px, double py,
                                                     time_t date,
                                                     GribRecord *before,
                                                     GribRecord *after) {
@@ -582,8 +582,8 @@ double GribReader::get2GribsInterpolatedValueByDate(double px, double py,
 
 //---------------------------------------------------
 // Premier GribRecord trouvé (pour récupérer la grille)
-GribRecord *GribReader::getFirstGribRecord() {
-  std::vector<GribRecord *> *ls = getFirstNonEmptyList();
+GribRecord *GribReader::GetFirstGribRecord() {
+  std::vector<GribRecord *> *ls = GetFirstNonEmptyList();
   if (ls != nullptr) {
     return ls->at(0);
   } else {
@@ -592,14 +592,14 @@ GribRecord *GribReader::getFirstGribRecord() {
 }
 //---------------------------------------------------
 // Premier GribRecord (par date) pour un type donné
-GribRecord *GribReader::getFirstGribRecord(int dataType, int levelType,
+GribRecord *GribReader::GetFirstGribRecord(int dataType, int levelType,
                                            int levelValue) {
   std::set<time_t>::iterator it;
   GribRecord *rec = nullptr;
-  for (it = setAllDates.begin(); rec == nullptr && it != setAllDates.end();
+  for (it = SetAllDates.begin(); rec == nullptr && it != SetAllDates.end();
        it++) {
     time_t date = *it;
-    rec = getGribRecord(dataType, levelType, levelValue, date);
+    rec = GetGribRecord(dataType, levelType, levelValue, date);
   }
   return rec;
 }
@@ -607,9 +607,9 @@ GribRecord *GribReader::getFirstGribRecord(int dataType, int levelType,
 // Délai en heures entre 2 records
 // On suppose qu'il est fixe pour tout le fichier !!!
 // NOT USED
-double GribReader::computeHoursBeetweenGribRecords() {
+double GribReader::ComputeHoursBeetweenGribRecords() {
   double res = 1;
-  std::vector<GribRecord *> *ls = getFirstNonEmptyList();
+  std::vector<GribRecord *> *ls = GetFirstNonEmptyList();
   if (ls != nullptr) {
     time_t t0 = (*ls)[0]->GetRecordCurrentDate();
     time_t t1 = (*ls)[1]->GetRecordCurrentDate();
@@ -619,7 +619,7 @@ double GribReader::computeHoursBeetweenGribRecords() {
   return res;
 }
 //---------------------------------------------------
-GribRecord *GribReader::getGribRecord(int dataType, int levelType,
+GribRecord *GribReader::GetGribRecord(int dataType, int levelType,
                                       int levelValue, time_t date) {
   std::vector<GribRecord *> *ls =
       getListOfGribRecords(dataType, levelType, levelValue);
@@ -638,30 +638,30 @@ GribRecord *GribReader::getGribRecord(int dataType, int levelType,
 
 //-------------------------------------------------------
 // Génère la liste des dates pour lesquelles des prévisions existent
-void GribReader::createListDates() {  // Le set assure l'ordre et l'unicité des
+void GribReader::CreateListDates() {  // Le set assure l'ordre et l'unicité des
                                       // dates
-  setAllDates.clear();
+  SetAllDates.clear();
   std::map<std::string, std::vector<GribRecord *> *>::iterator it;
   for (it = mapGribRecords.begin(); it != mapGribRecords.end(); it++) {
     std::vector<GribRecord *> *ls = (*it).second;
     for (zuint i = 0; i < ls->size(); i++) {
-      setAllDates.insert(ls->at(i)->GetRecordCurrentDate());
+      SetAllDates.insert(ls->at(i)->GetRecordCurrentDate());
     }
   }
 }
 
 //-------------------------------------------------------
-double GribReader::computeDewPoint(double lon, double lat, time_t now) {
+double GribReader::ComputeDewPoint(double lon, double lat, time_t now) {
   double diewpoint = GRIB_NOTDEF;
 
-  GribRecord *recTempDiew = getGribRecord(GRB_DEWPOINT, LV_ABOV_GND, 2, now);
+  GribRecord *recTempDiew = GetGribRecord(GRB_DEWPOINT, LV_ABOV_GND, 2, now);
   if (recTempDiew != nullptr) {
     // GRIB file contains diew point data
     diewpoint = recTempDiew->GetInterpolatedValue(lon, lat);
   } else {
     // Compute diew point with Magnus-Tetens formula
-    GribRecord *recTemp = getGribRecord(GRB_TEMP, LV_ABOV_GND, 2, now);
-    GribRecord *recHumid = getGribRecord(GRB_HUMID_REL, LV_ABOV_GND, 2, now);
+    GribRecord *recTemp = GetGribRecord(GRB_TEMP, LV_ABOV_GND, 2, now);
+    GribRecord *recHumid = GetGribRecord(GRB_HUMID_REL, LV_ABOV_GND, 2, now);
     if (recTemp && recHumid) {
       double temp = recTemp->GetInterpolatedValue(lon, lat);
       double humid = recHumid->GetInterpolatedValue(lon, lat);
@@ -685,7 +685,7 @@ double GribReader::computeDewPoint(double lon, double lat, time_t now) {
 //-------------------------------------------------------------------------------
 // Lecture complète d'un fichier GRIB
 //-------------------------------------------------------------------------------
-void GribReader::openFile(const wxString fname) {
+void GribReader::OpenFile(const wxString fname) {
   grib_debug("Open file: %s", (const char *)fname.mb_str());
   fileName = fname;
   ok = false;
@@ -698,23 +698,23 @@ void GribReader::openFile(const wxString fname) {
     erreur("Can't open file: %s", (const char *)fname.mb_str());
     return;
   }
-  readGribFileContent();
+  ReadGribFileContent();
 
   // Look for compressed files with alternate extensions
   if (!ok) {
     if (file != nullptr) zu_close(file);
     file = zu_open((const char *)fname.mb_str(), "rb", ZU_COMPRESS_BZIP);
-    if (file != nullptr) readGribFileContent();
+    if (file != nullptr) ReadGribFileContent();
   }
   if (!ok) {
     if (file != nullptr) zu_close(file);
     file = zu_open((const char *)fname.mb_str(), "rb", ZU_COMPRESS_GZIP);
-    if (file != nullptr) readGribFileContent();
+    if (file != nullptr) ReadGribFileContent();
   }
   if (!ok) {
     if (file != nullptr) zu_close(file);
     file = zu_open((const char *)fname.mb_str(), "rb", ZU_COMPRESS_NONE);
-    if (file != nullptr) readGribFileContent();
+    if (file != nullptr) ReadGribFileContent();
   }
   if (file != nullptr) {
     zu_close(file);
