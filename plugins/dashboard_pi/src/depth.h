@@ -22,8 +22,8 @@
  * Dashboard depth instrument
  */
 
-#ifndef DEPTH_H__
-#define DEPTH_H__
+#ifndef DEPTH_H_
+#define DEPTH_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -44,24 +44,24 @@ public:
   DashboardInstrument_Depth(wxWindow* parent, wxWindowID id, wxString title,
                             InstrumentProperties* Properties);
 
-  ~DashboardInstrument_Depth(void) {}
+  ~DashboardInstrument_Depth() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP, double, wxString) override;
 
 private:
   int w_label, h_label, m_plotdown, m_plotup, m_plotheight;
 
 protected:
-  double m_ArrayDepth[DEPTH_RECORD_COUNT];
-  double m_MaxDepth;
-  double m_Depth;
-  wxString m_DepthUnit;
-  wxString m_Temp;
+  double m_array_depth[DEPTH_RECORD_COUNT];
+  double m_max_depth;
+  double m_depth;
+  wxString m_depth_unit;
+  wxString m_temp;
 
-  void Draw(wxGCDC* dc);
+  void Draw(wxGCDC* dc) override;
   void DrawBackground(wxGCDC* dc);
   void DrawForeground(wxGCDC* dc);
 };
 
-#endif  // DEPTH_H__
+#endif  // DEPTH_H_

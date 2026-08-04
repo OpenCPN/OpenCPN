@@ -23,8 +23,8 @@
  * Dashboard altitude instrument.
  */
 
-#ifndef ALTITUDE_H__
-#define ALTITUDE_H__
+#ifndef ALTITUDE_H_
+#define ALTITUDE_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -45,34 +45,34 @@ public:
   DashboardInstrument_Altitude(wxWindow* parent, wxWindowID id, wxString title,
                                InstrumentProperties* Properties);
 
-  ~DashboardInstrument_Altitude(void) {}
+  ~DashboardInstrument_Altitude() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP, double, wxString) override;
 
 private:
 protected:
-  const int c_GridLines = 4;
-  double m_ArrayAltitude[ALTITUDE_RECORD_COUNT];  // FIFO
-  double m_MinAltitude;
-  double m_MaxAltitude;
-  double m_Range = c_GridLines;  // will change in 1 2 5 steps
-  double m_Altitude;             // the actual measurement value
-  double m_meanAltitude = 0.0;   // moving average
-  double m_sum2Altitude = 0.0;   // squared sum moving average
-  int m_cntValid = 0;            // number of valid FIFO entries
-  int m_Attenuation = 1;         // 1 2 5
-  int m_Decade = 1;              // 1 10 100 1000 ..
-  wxString m_AltitudeUnit;
-  wxString m_Temp;
+  const int c_grid_lines = 4;
+  double m_array_altitude[ALTITUDE_RECORD_COUNT];  // FIFO
+  double m_min_altitude;
+  double m_max_altitude;
+  double m_range = c_grid_lines;  // will change in 1 2 5 steps
+  double m_altitude;              // the actual measurement value
+  double m_mean_altitude = 0.0;   // moving average
+  double m_sum2_altitude = 0.0;   // squared sum moving average
+  int m_cnt_valid = 0;            // number of valid FIFO entries
+  int m_attenuation = 1;          // 1 2 5
+  int m_decade = 1;               // 1 10 100 1000 ..
+  wxString m_altitude_unit;
+  wxString m_temp;
 
-  void Draw(wxGCDC* dc);
+  void Draw(wxGCDC* dc) override;
   void DrawBackground(wxGCDC* dc);
   void DrawForeground(wxGCDC* dc);
 
   // plot scaling utilities
-  void setAttenuation(int steps);
-  int getAttenuation();
+  void SetAttenuation(int steps);
+  int GetAttenuation() const;
 };
 
-#endif  // ALTITUDE_H__
+#endif  // ALTITUDE_H_

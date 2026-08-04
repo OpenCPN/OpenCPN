@@ -24,8 +24,8 @@
  * Inspired by original work from Andreas Heiming
  */
 
-#ifndef Compass_H__
-#define Compass_H__
+#ifndef Compass_H_
+#define Compass_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -45,14 +45,14 @@ public:
                               InstrumentProperties* Properties,
                               DASH_CAP cap_flag);
 
-  ~DashboardInstrument_Compass(void) {}
+  ~DashboardInstrument_Compass() override = default;
 
-  void SetData(DASH_CAP, double, wxString);
+  void SetData(DASH_CAP, double, wxString) override;
 
 private:
 protected:
-  void DrawBackground(wxGCDC* dc);
-  void DrawForeground(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc) override;
+  void DrawForeground(wxGCDC* dc) override;
 };
 
-#endif  // Compass_H__
+#endif  // Compass_H_

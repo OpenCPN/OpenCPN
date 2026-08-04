@@ -22,8 +22,8 @@
  * Dashboard rudder angle instrument
  */
 
-#ifndef RudderAngle_H__
-#define RudderAngle_H__
+#ifndef RudderAngle_H_
+#define RudderAngle_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -41,15 +41,15 @@ public:
   DashboardInstrument_RudderAngle(wxWindow* parent, wxWindowID id,
                                   wxString title,
                                   InstrumentProperties* Properties);
-  ~DashboardInstrument_RudderAngle(void) {}
+  ~DashboardInstrument_RudderAngle() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP, double, wxString) override;
 
 private:
 protected:
-  void DrawFrame(wxGCDC* dc);
-  void DrawBackground(wxGCDC* dc);
+  void DrawFrame(wxGCDC* dc) override;
+  void DrawBackground(wxGCDC* dc) override;
 };
 
-#endif  // RudderAngle_H__
+#endif  // RudderAngle_H_

@@ -26,13 +26,10 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "wind.h"
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 #include <cmath>
 
 #include "wx/tokenzr.h"
@@ -43,8 +40,8 @@
 DashboardInstrument_Wind::DashboardInstrument_Wind(
     wxWindow* parent, wxWindowID id, wxString title,
     InstrumentProperties* Properties, DASH_CAP cap_flag)
-    : DashboardInstrument_Dial(parent, id, title, Properties, cap_flag, 0, 360,
-                               0, 360) {
+    : DashboardInstrument_Dial(parent, id, std::move(title), Properties,
+                               cap_flag, 0, 360, 0, 360) {
   SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
   // Labels are set static because we've no logic to display them this way
   wxString labels[] = {"", "30",  "60",  "90", "120", "150",
@@ -59,8 +56,8 @@ void DashboardInstrument_Wind::DrawBackground(wxGCDC* dc) {
 DashboardInstrument_WindCompass::DashboardInstrument_WindCompass(
     wxWindow* parent, wxWindowID id, wxString title,
     InstrumentProperties* Properties, DASH_CAP cap_flag)
-    : DashboardInstrument_Dial(parent, id, title, Properties, cap_flag, 0, 360,
-                               0, 360) {
+    : DashboardInstrument_Dial(parent, id, std::move(title), Properties,
+                               cap_flag, 0, 360, 0, 360) {
   SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
   wxString labels[] = {_("N"), _("NE"), _("E"), _("SE"),
                        _("S"), _("SW"), _("W"), _("NW")};
@@ -68,8 +65,8 @@ DashboardInstrument_WindCompass::DashboardInstrument_WindCompass(
 }
 
 void DashboardInstrument_WindCompass::DrawBackground(wxGCDC* dc) {
-  DrawCompassRose(dc, m_cx, m_cy, m_radius * 0.85, m_AngleStart, false,
-                  m_Properties);
+  DrawCompassRose(dc, m_cx, m_cy, static_cast<int>(m_radius * 0.85),
+                  m_angle_start, false, m_Properties);
 }
 
 // Display the arrow for MainValue (wind angle)
@@ -78,8 +75,8 @@ void DashboardInstrument_WindCompass::DrawBackground(wxGCDC* dc) {
 DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle(
     wxWindow* parent, wxWindowID id, wxString title,
     InstrumentProperties* Properties, DASH_CAP cap_flag)
-    : DashboardInstrument_Dial(parent, id, title, Properties, cap_flag, 0, 360,
-                               0, 360) {
+    : DashboardInstrument_Dial(parent, id, std::move(title), Properties,
+                               cap_flag, 0, 360, 0, 360) {
   SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
   // Labels are set static because we've no logic to display them this way
   wxString labels[] = {"", "30",  "60",  "90", "120", "150",
@@ -153,26 +150,26 @@ void DashboardInstrument_AppTrueWindAngle::Draw(wxGCDC* bdc) {
     f = m_Properties->m_LabelFont.GetChosenFont();
   else
     f = g_pFontLabel->GetChosenFont();
-  bdc->GetTextExtent("000", &width, &height, 0, 0, &f);
+  bdc->GetTextExtent("000", &width, &height, nullptr, nullptr, &f);
   m_cx = size.x / 2;
   int availableHeight = GetDataBottom(size.y) - m_DataTop;
   InitTitleAndDataPosition(availableHeight);
   availableHeight -= height;
   m_cy = m_DataTop + height / 2;
   m_cy += availableHeight / 2;
-  m_radius = availableHeight / 2.0 * 0.95;
+  m_radius = static_cast<int>(availableHeight / 2.0 * 0.95);
 
   DrawLabels(bdc);
   DrawFrame(bdc);
   DrawMarkers(bdc);
   DrawBackground(bdc);
-  DrawData(bdc, m_MainValueApp, m_MainValueAppUnit, m_MainValueFormat,
+  DrawData(bdc, m_MainValueApp, m_MainValueAppUnit, m_main_value_format,
            m_MainValueOption1);
-  DrawData(bdc, m_MainValueTrue, m_MainValueTrueUnit, m_MainValueFormat,
+  DrawData(bdc, m_MainValueTrue, m_MainValueTrueUnit, m_main_value_format,
            m_MainValueOption2);
-  DrawData(bdc, m_ExtraValueApp, m_ExtraValueAppUnit, m_ExtraValueFormat,
+  DrawData(bdc, m_ExtraValueApp, m_ExtraValueAppUnit, m_extra_value_format,
            m_ExtraValueOption1);
-  DrawData(bdc, m_ExtraValueTrue, m_ExtraValueTrueUnit, m_ExtraValueFormat,
+  DrawData(bdc, m_ExtraValueTrue, m_ExtraValueTrueUnit, m_extra_value_format,
            m_ExtraValueOption2);
   DrawForeground(bdc);
 }
@@ -215,25 +212,25 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc) {
     data = m_MainValueTrue;
 
   // The arrow should stay inside fixed limits
-  if (data < m_MainValueMin)
-    val = m_MainValueMin;
-  else if (data > m_MainValueMax)
-    val = m_MainValueMax;
+  if (data < m_main_value_min)
+    val = m_main_value_min;
+  else if (data > m_main_value_max)
+    val = m_main_value_max;
   else
     val = data;
 
-  value = deg2rad((val - m_MainValueMin) * m_AngleRange /
-                  (m_MainValueMax - m_MainValueMin)) +
-          deg2rad(m_AngleStart - ANGLE_OFFSET);
+  value = deg2rad((val - m_main_value_min) * m_angle_range /
+                  (m_main_value_max - m_main_value_min)) +
+          deg2rad(m_angle_start - ANGLE_OFFSET);
 
-  points[0].x = m_cx + (m_radius * 0.95 * cos(value - .010));
-  points[0].y = m_cy + (m_radius * 0.95 * sin(value - .010));
-  points[1].x = m_cx + (m_radius * 0.95 * cos(value + .015));
-  points[1].y = m_cy + (m_radius * 0.95 * sin(value + .015));
-  points[2].x = m_cx + (m_radius * 0.22 * cos(value + 2.8));
-  points[2].y = m_cy + (m_radius * 0.22 * sin(value + 2.8));
-  points[3].x = m_cx + (m_radius * 0.22 * cos(value - 2.8));
-  points[3].y = m_cy + (m_radius * 0.22 * sin(value - 2.8));
+  points[0].x = static_cast<int>(m_cx + (m_radius * 0.95 * cos(value - .010)));
+  points[0].y = static_cast<int>(m_cy + (m_radius * 0.95 * sin(value - .010)));
+  points[1].x = static_cast<int>(m_cx + (m_radius * 0.95 * cos(value + .015)));
+  points[1].y = static_cast<int>(m_cy + (m_radius * 0.95 * sin(value + .015)));
+  points[2].x = static_cast<int>(m_cx + (m_radius * 0.22 * cos(value + 2.8)));
+  points[2].y = static_cast<int>(m_cy + (m_radius * 0.22 * sin(value + 2.8)));
+  points[3].x = static_cast<int>(m_cx + (m_radius * 0.22 * cos(value - 2.8)));
+  points[3].y = static_cast<int>(m_cy + (m_radius * 0.22 * sin(value - 2.8)));
   dc->DrawPolygon(4, points, 0, 0);
 
   /* Apparent Wind*/
@@ -255,25 +252,25 @@ void DashboardInstrument_AppTrueWindAngle::DrawForeground(wxGCDC* dc) {
     data = m_MainValueApp;
 
   // The arrow should stay inside fixed limits
-  if (data < m_MainValueMin)
-    val = m_MainValueMin;
-  else if (data > m_MainValueMax)
-    val = m_MainValueMax;
+  if (data < m_main_value_min)
+    val = m_main_value_min;
+  else if (data > m_main_value_max)
+    val = m_main_value_max;
   else
     val = data;
 
-  value = deg2rad((val - m_MainValueMin) * m_AngleRange /
-                  (m_MainValueMax - m_MainValueMin)) +
-          deg2rad(m_AngleStart - ANGLE_OFFSET);
+  value = deg2rad((val - m_main_value_min) * m_angle_range /
+                  (m_main_value_max - m_main_value_min)) +
+          deg2rad(m_angle_start - ANGLE_OFFSET);
 
-  points[0].x = m_cx + (m_radius * 0.95 * cos(value - .010));
-  points[0].y = m_cy + (m_radius * 0.95 * sin(value - .010));
-  points[1].x = m_cx + (m_radius * 0.95 * cos(value + .015));
-  points[1].y = m_cy + (m_radius * 0.95 * sin(value + .015));
-  points[2].x = m_cx + (m_radius * 0.22 * cos(value + 2.8));
-  points[2].y = m_cy + (m_radius * 0.22 * sin(value + 2.8));
-  points[3].x = m_cx + (m_radius * 0.22 * cos(value - 2.8));
-  points[3].y = m_cy + (m_radius * 0.22 * sin(value - 2.8));
+  points[0].x = static_cast<int>(m_cx + (m_radius * 0.95 * cos(value - .010)));
+  points[0].y = static_cast<int>(m_cy + (m_radius * 0.95 * sin(value - .010)));
+  points[1].x = static_cast<int>(m_cx + (m_radius * 0.95 * cos(value + .015)));
+  points[1].y = static_cast<int>(m_cy + (m_radius * 0.95 * sin(value + .015)));
+  points[2].x = static_cast<int>(m_cx + (m_radius * 0.22 * cos(value + 2.8)));
+  points[2].y = static_cast<int>(m_cy + (m_radius * 0.22 * sin(value + 2.8)));
+  points[3].x = static_cast<int>(m_cx + (m_radius * 0.22 * cos(value - 2.8)));
+  points[3].y = static_cast<int>(m_cy + (m_radius * 0.22 * sin(value - 2.8)));
   dc->DrawPolygon(4, points, 0, 0);
 }
 void DashboardInstrument_AppTrueWindAngle::DrawData(
@@ -320,7 +317,7 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
     f = m_Properties->m_LabelFont.GetChosenFont();
   else
     f = g_pFontLabel->GetChosenFont();
-  dc->GetMultiLineTextExtent(text, &width, &height, NULL, &f);
+  dc->GetMultiLineTextExtent(text, &width, &height, nullptr, &f);
 
   wxRect TextPoint;
   TextPoint.width = width;
@@ -384,10 +381,10 @@ void DashboardInstrument_AppTrueWindAngle::DrawData(
   while (token.Length()) {
     if (m_Properties) {
       f = m_Properties->m_LabelFont.GetChosenFont();
-      dc->GetTextExtent(token, &width, &height, NULL, NULL, &f);
+      dc->GetTextExtent(token, &width, &height, nullptr, nullptr, &f);
     } else {
       f = g_pFontLabel->GetChosenFont();
-      dc->GetTextExtent(token, &width, &height, NULL, NULL, &f);
+      dc->GetTextExtent(token, &width, &height, nullptr, nullptr, &f);
     }
     dc->DrawText(token, TextPoint.x, TextPoint.y);
     TextPoint.y += height;

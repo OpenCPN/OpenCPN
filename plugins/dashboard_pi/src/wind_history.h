@@ -22,8 +22,8 @@
  * Dashboard wind history instrument
  */
 
-#ifndef WIND_HISTORY_H__
-#define WIND_HISTORY_H__
+#ifndef WIND_HisTORY_H_
+#define WIND_HisTORY_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -45,9 +45,9 @@ public:
   DashboardInstrument_WindDirHistory(wxWindow* parent, wxWindowID id,
                                      wxString title,
                                      InstrumentProperties* Properties);
-  ~DashboardInstrument_WindDirHistory(void) {}
-  void SetData(DASH_CAP, double, wxString);
-  wxSize GetSize(int orient, wxSize hint);
+  ~DashboardInstrument_WindDirHistory() override = default;
+  void SetData(DASH_CAP, double, wxString) override;
+  wxSize GetSize(int orient, wxSize hint) override;
 
 private:
   int m_soloInPane;
@@ -87,7 +87,7 @@ protected:
   int m_currSec, m_lastSec, m_SpdCntperSec, m_DirCntperSec;
   double m_cntSpd, m_cntDir, m_avgSpd, m_avgDir;
 
-  void Draw(wxGCDC* dc);
+  void Draw(wxGCDC* dc) override;
   void DrawBackground(wxGCDC* dc);
   void DrawForeground(wxGCDC* dc);
   void SetMinMaxWindScale();
@@ -97,4 +97,4 @@ protected:
   wxString GetWindDirStr(wxString WindDir);
 };
 
-#endif  // WIND_HISTORY_H__
+#endif  // WIND_HisTORY_H_

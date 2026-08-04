@@ -45,10 +45,10 @@ public:
                                   DASH_CAP cap_flag2 = OCPN_DBP_STC_PLO,
                                   DASH_CAP cap_flag3 = OCPN_DBP_STC_LAT,
                                   DASH_CAP cap_flag4 = OCPN_DBP_STC_LON);
-  ~DashboardInstrument_FromOwnship() {}
+  ~DashboardInstrument_FromOwnship() override = default;
 
-  void SetData(DASH_CAP st, double data, wxString unit);
-  wxSize GetSize(int orient, wxSize hint);
+  void SetData(DASH_CAP st, double data, wxString unit) override;
+  wxSize GetSize(int orient, wxSize hint) override;
 
 protected:
   wxString m_data1;
@@ -62,7 +62,7 @@ protected:
   DASH_CAP m_cap_flag3;
   DASH_CAP m_cap_flag4;
 
-  void Draw(wxGCDC* dc);
+  void Draw(wxGCDC* dc) override;
 };
 
 #endif  // FROM_OWNSHIP_H_

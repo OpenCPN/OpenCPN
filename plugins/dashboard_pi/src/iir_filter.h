@@ -48,23 +48,23 @@ enum {
   IIRFILTER_TYPE_RAD = 1 << 2
 };
 
-class iirfilter {
+class IirFilter {
 public:
   //    iirfilter() {setFC(0.5); type = IIRFILTER_TYPE_LINEAR; reset();};
 
-  iirfilter(double fc = 0.5, int tp = IIRFILTER_TYPE_LINEAR);
-  ~iirfilter() = default;
-  double filter(double data);   // Return filtered data given new data point
+  IirFilter(double fc = 0.5, int tp = IIRFILTER_TYPE_LINEAR);
+  ~IirFilter() = default;
+  double Filter(double data);   // Return filtered data given new data point
   void reset(double a = 0.0);   // Clear filter
-  void setFC(double fc = 0.1);  // Set cutoff frequency
-  void setType(int tp);         // Set type of filter (linear or angle type)
-  double getFc(void);           // Return cutoff frequency
-  int getType(void);            // Return type of filter
-  double get(void);             // Return the current filtered data
+  void SetFc(double fc = 0.1);  // Set cutoff frequency
+  void SetType(int tp);         // Set type of filter (linear or angle type)
+  double GetFc() const;         // Return cutoff frequency
+  int GetType() const;          // Return type of filter
+  double get() const;           // Return the current filtered data
 
 protected:
-  void unwrapDeg(double deg);
-  void unwrapRad(double rad);
+  void UnwrapDeg(double deg);
+  void UnwrapRad(double rad);
 
 private:
   double a0;

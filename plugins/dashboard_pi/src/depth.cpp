@@ -26,7 +26,7 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "depth.h"
 extern int g_iDashDepthUnit;
@@ -40,12 +40,12 @@ DashboardInstrument_Depth::DashboardInstrument_Depth(
     InstrumentProperties* Properties)
     : DashboardInstrument(parent, id, title, OCPN_DBP_STC_DPT, Properties) {
   m_cap_flag.set(OCPN_DBP_STC_TMP);
-  m_MaxDepth = 0;
-  m_Depth = 0;
-  m_DepthUnit = getUsrDistanceUnit_Plugin(g_iDashDepthUnit);
-  m_Temp = "--";
+  m_max_depth = 0;
+  m_depth = 0;
+  m_depth_unit = getUsrDistanceUnit_Plugin(g_iDashDepthUnit);
+  m_temp = "--";
   for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++) {
-    m_ArrayDepth[idx] = 0;
+    m_array_depth[idx] = 0;
   }
 }
 
@@ -59,16 +59,17 @@ wxSize DashboardInstrument_Depth::GetSize(int orient, wxSize hint) {
   if (m_Properties) {
     // Space for bottom(temp)text later.
     f = m_Properties->m_LabelFont.GetChosenFont();
-    dc.GetTextExtent("20.8 C", &w_label, &h_label, 0, 0, &f);
+    dc.GetTextExtent("20.8 C", &w_label, &h_label, nullptr, nullptr, &f);
   } else {
     // Space for bottom(temp)text later.
     f = g_pFontLabel->GetChosenFont();
-    dc.GetTextExtent("20.8 C", &w_label, &h_label, 0, 0, &f);
+    dc.GetTextExtent("20.8 C", &w_label, &h_label, nullptr, nullptr, &f);
   }
 
   //  Depth data       plot area            w-temp
-  int drawHeight = m_DataTextHeight + 4 * m_DataTextHeight + h_label +
-                   m_DataTextHeight * g_TitleVerticalOffset;
+  int drawHeight =
+      static_cast<int>(m_DataTextHeight + 4 * m_DataTextHeight + h_label +
+                       m_DataTextHeight * g_TitleVerticalOffset);
   InitTitleAndDataPosition(drawHeight);
   int y_total = GetFullHeight(drawHeight);
 
@@ -84,18 +85,18 @@ wxSize DashboardInstrument_Depth::GetSize(int orient, wxSize hint) {
 void DashboardInstrument_Depth::SetData(DASH_CAP st, double data,
                                         wxString unit) {
   if (st == OCPN_DBP_STC_DPT) {
-    m_Depth = std::isnan(data) ? 0.0 : data;
+    m_depth = std::isnan(data) ? 0.0 : data;
 
     for (int idx = 1; idx < DEPTH_RECORD_COUNT; idx++) {
-      m_ArrayDepth[idx - 1] = m_ArrayDepth[idx];
+      m_array_depth[idx - 1] = m_array_depth[idx];
     }
-    m_ArrayDepth[DEPTH_RECORD_COUNT - 1] = m_Depth;
-    m_DepthUnit = unit;
+    m_array_depth[DEPTH_RECORD_COUNT - 1] = m_depth;
+    m_depth_unit = unit;
   } else if (st == OCPN_DBP_STC_TMP) {
     if (!std::isnan(data)) {
-      m_Temp = wxString::Format("%.1f", data) + DEGREE_SIGN + unit;
+      m_temp = wxString::Format("%.1f", data) + DEGREE_SIGN + unit;
     } else {
-      m_Temp = "---";
+      m_temp = "---";
     }
   }
 }
@@ -163,30 +164,30 @@ void DashboardInstrument_Depth::DrawBackground(wxGCDC* dc) {
     dc->SetFont(g_pFontSmall->GetChosenFont());
     dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
   }
-  m_MaxDepth = 0;
+  m_max_depth = 0;
   for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++) {
-    if (m_ArrayDepth[idx] > m_MaxDepth) m_MaxDepth = m_ArrayDepth[idx];
+    if (m_array_depth[idx] > m_max_depth) m_max_depth = m_array_depth[idx];
   }
   // Increase MaxDepth slightly for nicer display
-  m_MaxDepth *= 1.2;
+  m_max_depth *= 1.2;
 
   wxString label;
-  label.Printf("%.0f " + m_DepthUnit, 0.0);
+  label.Printf("%.0f " + m_depth_unit, 0.0);
   int width, height;
   wxFont f;
   if (m_Properties)
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  dc->GetTextExtent(label, &width, &height, 0, 0, &f);
+  dc->GetTextExtent(label, &width, &height, nullptr, nullptr, &f);
   dc->DrawText(label, size.x - width - 1, m_plotup - height);
 
-  label.Printf("%.0f " + m_DepthUnit, m_MaxDepth);
+  label.Printf("%.0f " + m_depth_unit, m_max_depth);
   if (m_Properties)
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  dc->GetTextExtent(label, &width, &height, 0, 0, &f);
+  dc->GetTextExtent(label, &width, &height, nullptr, nullptr, &f);
   dc->DrawText(label, size.x - width - 1, m_plotdown);
 }
 
@@ -208,7 +209,7 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
   dc->SetBrush(brush);
   dc->SetPen(*wxTRANSPARENT_PEN);
 
-  double ratioH = double(m_plotheight) / m_MaxDepth;
+  double ratioH = double(m_plotheight) / m_max_depth;
   double ratioW = double(size.x - 6) / (DEPTH_RECORD_COUNT - 1);
   wxPoint points[DEPTH_RECORD_COUNT + 2];
 
@@ -219,14 +220,14 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
 
   for (int idx = 0; idx < DEPTH_RECORD_COUNT - 1; idx++) {
     points[1].x = points[0].x;
-    if (m_ArrayDepth[idx])
-      points[1].y = m_plotup + m_ArrayDepth[idx] * ratioH;
+    if (m_array_depth[idx])
+      points[1].y = m_plotup + m_array_depth[idx] * ratioH;
     else
       points[1].y = m_plotdown;
 
     points[2].x = points[1].x + ratioW;
-    if (m_ArrayDepth[idx + 1])
-      points[2].y = m_plotup + m_ArrayDepth[idx + 1] * ratioH;
+    if (m_array_depth[idx + 1])
+      points[2].y = m_plotup + m_array_depth[idx + 1] * ratioH;
     else
       points[2].y = m_plotdown;
 
@@ -240,9 +241,9 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
 
 #else
   for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++) {
-    points[idx].x = idx * ratioW + 3;
-    if (m_ArrayDepth[idx])
-      points[idx].y = m_plotup + m_ArrayDepth[idx] * ratioH;
+    points[idx].x = static_cast<int>(idx * ratioW + 3);
+    if (m_array_depth[idx])
+      points[idx].y = static_cast<int>(m_plotup + m_array_depth[idx] * ratioH);
     else
       points[idx].y = m_plotdown;
   }
@@ -261,16 +262,16 @@ void DashboardInstrument_Depth::DrawForeground(wxGCDC* dc) {
     dc->SetTextForeground(GetColourSchemeFont(g_pFontData->GetColour()));
     dc->SetFont(g_pFontData->GetChosenFont());
   }
-  if (m_DepthUnit != "-") {  // Watchdog
-    wxString s_depth = wxString::Format("%.2f", m_Depth);
+  if (m_depth_unit != "-") {  // Watchdog
+    wxString s_depth = wxString::Format("%.2f", m_depth);
     // We want only one decimal but for security not rounded up.
     s_depth = s_depth.Mid(0, s_depth.length() - 1);
-    dc->DrawText(s_depth + " " + m_DepthUnit, 10, m_DataTop);
+    dc->DrawText(s_depth + " " + m_depth_unit, 10, m_DataTop);
   } else
     dc->DrawText("---", 10, m_DataTop);
   if (m_Properties)
     dc->SetFont(m_Properties->m_LabelFont.GetChosenFont());
   else
     dc->SetFont(g_pFontLabel->GetChosenFont());
-  dc->DrawText(m_Temp, 5, m_plotdown);
+  dc->DrawText(m_temp, 5, m_plotdown);
 }

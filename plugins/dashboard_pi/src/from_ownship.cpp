@@ -47,6 +47,8 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(
   m_cap_flag4 = cap_flag4;
   s_lat = 99999999;
   s_lon = 99999999;
+  c_lat = 0;
+  c_lon = 0;
 }
 
 void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc) {
@@ -57,9 +59,9 @@ void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc) {
 
   if (m_DataRightAlign) {
     int w, h;
-    dc->GetTextExtent(m_data1, &w, &h, 0, 0);
+    dc->GetTextExtent(m_data1, &w, &h, nullptr, nullptr);
     x1 = GetClientSize().GetWidth() - w - m_DataMargin;
-    dc->GetTextExtent(m_data2, &w, &h, 0, 0);
+    dc->GetTextExtent(m_data2, &w, &h, nullptr, nullptr);
     x2 = GetClientSize().GetWidth() - w - m_DataMargin;
   }
 
@@ -111,8 +113,8 @@ wxSize DashboardInstrument_FromOwnship::GetSize(int orient, wxSize hint) {
   }
   InitDataTextHeight(sampleText, w);
 
-  int drawHeight =
-      m_DataTextHeight * 2 + m_DataTextHeight * g_TitleVerticalOffset;
+  int drawHeight = static_cast<int>(m_DataTextHeight * 2 +
+                                    m_DataTextHeight * g_TitleVerticalOffset);
   InitTitleAndDataPosition(drawHeight);
   int h = GetFullHeight(drawHeight);
 

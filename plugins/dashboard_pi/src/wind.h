@@ -22,8 +22,8 @@
  * Dashboard wind instrument implementation.
  */
 
-#ifndef Wind_H__
-#define Wind_H__
+#ifndef Wind_H_
+#define Wind_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -42,11 +42,11 @@ public:
   DashboardInstrument_Wind(wxWindow* parent, wxWindowID id, wxString title,
                            InstrumentProperties* Properties, DASH_CAP cap_flag);
 
-  ~DashboardInstrument_Wind(void) {}
+  ~DashboardInstrument_Wind() override = default;
 
 private:
 protected:
-  void DrawBackground(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc) override;
 };
 
 class DashboardInstrument_WindCompass : public DashboardInstrument_Dial {
@@ -56,11 +56,10 @@ public:
                                   InstrumentProperties* Properties,
                                   DASH_CAP cap_flag);
 
-  ~DashboardInstrument_WindCompass(void) {}
+  ~DashboardInstrument_WindCompass() override = default;
 
-private:
 protected:
-  void DrawBackground(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc) override;
 };
 
 class DashboardInstrument_TrueWindAngle : public DashboardInstrument_Dial {
@@ -70,11 +69,10 @@ public:
                                     InstrumentProperties* Properties,
                                     DASH_CAP cap_flag);
 
-  ~DashboardInstrument_TrueWindAngle(void) {}
+  ~DashboardInstrument_TrueWindAngle() override = default;
 
-private:
 protected:
-  void DrawBackground(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc) override;
 };
 /*****************************************************************************
 Apparent & True wind angle combined in one dial instrument
@@ -87,8 +85,8 @@ public:
                                        InstrumentProperties* Properties,
                                        DASH_CAP cap_flag);
 
-  ~DashboardInstrument_AppTrueWindAngle(void) {}
-  void SetData(DASH_CAP, double, wxString);
+  ~DashboardInstrument_AppTrueWindAngle() override = default;
+  void SetData(DASH_CAP, double, wxString) override;
 
 private:
 protected:
@@ -99,11 +97,11 @@ protected:
       m_MainValueTrueUnit;
   DialPositionOption m_MainValueOption1, m_MainValueOption2,
       m_ExtraValueOption1, m_ExtraValueOption2;
-  void DrawBackground(wxGCDC* dc);
-  virtual void Draw(wxGCDC* dc);
-  virtual void DrawForeground(wxGCDC* dc);
-  virtual void DrawData(wxGCDC* dc, double value, wxString unit,
-                        wxString format, DialPositionOption position);
+  void DrawBackground(wxGCDC* dc) override;
+  void Draw(wxGCDC* dc) override;
+  void DrawForeground(wxGCDC* dc) override;
+  void DrawData(wxGCDC* dc, double value, wxString unit, wxString format,
+                DialPositionOption position) override;
 };
 
-#endif  // Wind_H__
+#endif  // Wind_H_

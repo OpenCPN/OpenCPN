@@ -90,6 +90,8 @@ SET(SRC_DASHBOARD
     src/dial.h
     src/gps.cpp
     src/gps.h
+    src/iir_filter.h
+    src/iir_filter.cpp
     src/rudder_angle.cpp
     src/rudder_angle.h
     src/speedometer.cpp

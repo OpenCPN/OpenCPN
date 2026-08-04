@@ -28,13 +28,9 @@
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "dial.h"
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 #include <cmath>
 #include "wx/tokenzr.h"
@@ -51,25 +47,25 @@ DashboardInstrument_Dial::DashboardInstrument_Dial(
     InstrumentProperties* Properties, DASH_CAP cap_flag, int s_angle,
     int r_angle, int s_value, int e_value)
     : DashboardInstrument(parent, id, title, cap_flag, Properties) {
-  m_AngleStart = s_angle;
-  m_AngleRange = r_angle;
-  m_MainValueMin = s_value;
-  m_MainValueMax = e_value;
-  m_MainValueCap = cap_flag;
+  m_angle_start = s_angle;
+  m_angle_range = r_angle;
+  m_main_value_min = s_value;
+  m_main_value_max = e_value;
+  m_main_value_cap = cap_flag;
 
-  m_MainValue = s_value;
-  m_ExtraValue = 0;
-  m_MainValueFormat = "%d";
-  m_MainValueUnit = "";
-  m_MainValueOption = DIAL_POSITION_NONE;
-  m_ExtraValueFormat = "%d";
-  m_ExtraValueUnit = "";
-  m_ExtraValueOption = DIAL_POSITION_NONE;
-  m_MarkerOption = DIAL_MARKER_SIMPLE;
-  m_MarkerStep = 1;
-  m_LabelStep = 1;
-  m_MarkerOffset = 1;
-  m_LabelOption = DIAL_LABEL_HORIZONTAL;
+  m_main_value = s_value;
+  m_extra_value = 0;
+  m_main_value_format = "%d";
+  m_main_value_unit = "";
+  m_main_value_option = DIAL_POSITION_NONE;
+  m_extra_value_format = "%d";
+  m_extra_value_unit = "";
+  m_extra_value_option = DIAL_POSITION_NONE;
+  m_marker_option = DIAL_MARKER_SIMPLE;
+  m_marker_step = 1;
+  m_label_step = 1;
+  m_marker_offset = 1;
+  m_label_option = DIAL_LABEL_HORIZONTAL;
 }
 
 wxSize DashboardInstrument_Dial::GetSize(int orient, wxSize hint) {
@@ -87,12 +83,12 @@ wxSize DashboardInstrument_Dial::GetSize(int orient, wxSize hint) {
 
 void DashboardInstrument_Dial::SetData(DASH_CAP st, double data,
                                        wxString unit) {
-  if (st == m_MainValueCap) {
-    m_MainValue = data;
-    m_MainValueUnit = unit;
-  } else if (st == m_ExtraValueCap) {
-    m_ExtraValue = data;
-    m_ExtraValueUnit = unit;
+  if (st == m_main_value_cap) {
+    m_main_value = data;
+    m_main_value_unit = unit;
+  } else if (st == m_extra_value_cap) {
+    m_extra_value = data;
+    m_extra_value_unit = unit;
   }
   Refresh();
 }
@@ -121,7 +117,7 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
     f = m_Properties->m_LabelFont.GetChosenFont();
   else
     f = g_pFontLabel->GetChosenFont();
-  bdc->GetTextExtent("000", &width, &height, 0, 0, &f);
+  bdc->GetTextExtent("000", &width, &height, nullptr, nullptr, &f);
   m_cy = m_DataTop + 2;
   m_cy += availableHeight / 2;
   m_radius = availableHeight / 2;
@@ -130,10 +126,10 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc) {
   DrawLabels(bdc);
   DrawMarkers(bdc);
   DrawBackground(bdc);
-  DrawData(bdc, m_MainValue, m_MainValueUnit, m_MainValueFormat,
-           m_MainValueOption);
-  DrawData(bdc, m_ExtraValue, m_ExtraValueUnit, m_ExtraValueFormat,
-           m_ExtraValueOption);
+  DrawData(bdc, m_main_value, m_main_value_unit, m_main_value_format,
+           m_main_value_option);
+  DrawData(bdc, m_extra_value, m_extra_value_unit, m_extra_value_format,
+           m_extra_value_option);
   DrawForeground(bdc);
 }
 
@@ -151,7 +147,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
   int penwidth = 1 + size.x / 100;
   wxPen pen(cl, penwidth, wxPENSTYLE_SOLID);
 
-  if (m_MarkerOption == DIAL_MARKER_REDGREENBAR) {
+  if (m_marker_option == DIAL_MARKER_REDGREENBAR) {
     pen.SetWidth(penwidth * 2);
     GetGlobalColor("DASHR", &cl);
     pen.SetColour(cl);
@@ -202,7 +198,7 @@ void DashboardInstrument_Dial::DrawFrame(wxGCDC* dc) {
 }
 
 void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
-  if (m_MarkerOption == DIAL_MARKER_NONE) return;
+  if (m_marker_option == DIAL_MARKER_NONE) return;
 
   wxColour cl;
   GetGlobalColor("DASHF", &cl);
@@ -210,16 +206,17 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
   wxPen pen(cl, penwidth, wxPENSTYLE_SOLID);
   dc->SetPen(pen);
 
-  int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
+  int diff_angle = m_angle_start + m_angle_range - ANGLE_OFFSET;
   // angle between markers
-  double abm = m_AngleRange * m_MarkerStep / (m_MainValueMax - m_MainValueMin);
+  double abm =
+      m_angle_range * m_marker_step / (m_main_value_max - m_main_value_min);
   // don't draw last value, it's already done as first
-  if (m_AngleRange == 360) diff_angle -= abm;
+  if (m_angle_range == 360) diff_angle -= abm;
 
   int offset = 0;
-  for (double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle;
+  for (double angle = m_angle_start - ANGLE_OFFSET; angle <= diff_angle;
        angle += abm) {
-    if (m_MarkerOption == DIAL_MARKER_REDGREEN) {
+    if (m_marker_option == DIAL_MARKER_REDGREEN) {
       int a = int(angle + ANGLE_OFFSET) % 360;
       if (a > 180)
         GetGlobalColor("DASHR", &cl);
@@ -233,7 +230,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
     }
 
     double size = 0.92;
-    if (offset % m_MarkerOffset) {
+    if (offset % m_marker_offset) {
       size = 0.96;
     }
     offset++;
@@ -244,7 +241,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
                  m_cy + ((m_radius - 1) * sin(deg2rad(angle))));
   }
   // We must reset pen color so following drawings are fine
-  if (m_MarkerOption == DIAL_MARKER_REDGREEN) {
+  if (m_marker_option == DIAL_MARKER_REDGREEN) {
     GetGlobalColor("DASHF", &cl);
     pen.SetStyle(wxPENSTYLE_SOLID);
     pen.SetColour(cl);
@@ -253,7 +250,7 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc) {
 }
 
 void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
-  if (m_LabelOption == DIAL_LABEL_NONE) return;
+  if (m_label_option == DIAL_LABEL_NONE) return;
 
   wxPoint TextPoint;
   wxPen pen;
@@ -268,27 +265,28 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
     dc->SetFont(g_pFontSmall->GetChosenFont());
     dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
   }
-  int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
+  int diff_angle = m_angle_start + m_angle_range - ANGLE_OFFSET;
   // angle between markers
-  double abm = m_AngleRange * m_LabelStep / (m_MainValueMax - m_MainValueMin);
+  double abm =
+      m_angle_range * m_label_step / (m_main_value_max - m_main_value_min);
   // don't draw last value, it's already done as first
-  if (m_AngleRange == 360) diff_angle -= abm;
+  if (m_angle_range == 360) diff_angle -= abm;
 
   int offset = 0;
-  int value = m_MainValueMin;
+  int value = m_main_value_min;
   int width, height;
   wxFont f;
-  for (double angle = m_AngleStart - ANGLE_OFFSET; angle <= diff_angle;
+  for (double angle = m_angle_start - ANGLE_OFFSET; angle <= diff_angle;
        angle += abm) {
-    wxString label = (m_LabelArray.GetCount() ? m_LabelArray.Item(offset)
-                                              : wxString::Format("%d", value));
+    wxString label = (m_label_array.GetCount() ? m_label_array.Item(offset)
+                                               : wxString::Format("%d", value));
     if (m_Properties)
       f = m_Properties->m_SmallFont.GetChosenFont();
     else
       f = g_pFontSmall->GetChosenFont();
-    dc->GetTextExtent(label, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label, &width, &height, nullptr, nullptr, &f);
     double halfW = width / 2;
-    if (m_LabelOption == DIAL_LABEL_HORIZONTAL) {
+    if (m_label_option == DIAL_LABEL_HORIZONTAL) {
       double halfH = height / 2;
       // double delta = sqrt(width*width+height*height);
       double delta = sqrt(halfW * halfW + halfH * halfH);
@@ -298,7 +296,7 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
           m_cy + ((m_radius * 0.90) - delta) * sin(deg2rad(angle)) - halfH;
       dc->DrawText(label, TextPoint);
 
-    } else if (m_LabelOption == DIAL_LABEL_ROTATED) {
+    } else if (m_label_option == DIAL_LABEL_ROTATED) {
       // The coordinates of dc->DrawRotatedText refer to the top-left corner
       // of the rectangle bounding the string. So we must calculate the
       // right coordinates depending of the angle.
@@ -309,7 +307,7 @@ void DashboardInstrument_Dial::DrawLabels(wxGCDC* dc) {
       dc->DrawRotatedText(label, TextPoint, -90 - angle);
     }
     offset++;
-    value += m_LabelStep;
+    value += m_label_step;
   }
 }
 
@@ -361,7 +359,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
     f = m_Properties->m_LabelFont.GetChosenFont();
   else
     f = g_pFontLabel->GetChosenFont();
-  dc->GetMultiLineTextExtent(text, &width, &height, NULL, &f);
+  dc->GetMultiLineTextExtent(text, &width, &height, nullptr, &f);
 
   wxRect TextPoint;
   TextPoint.width = width;
@@ -439,7 +437,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value, wxString unit,
       f = m_Properties->m_LabelFont.GetChosenFont();
     else
       f = g_pFontLabel->GetChosenFont();
-    dc->GetTextExtent(token, &width, &height, NULL, NULL, &f);
+    dc->GetTextExtent(token, &width, &height, nullptr, nullptr, &f);
     dc->DrawText(token, TextPoint.x, TextPoint.y);
     TextPoint.y += height;
     token = tkz.GetNextToken();
@@ -475,23 +473,23 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc) {
   /* this is fix for a +/-180� round instrument, when m_MainValue is supplied as
    * <0..180><L | R> for example TWA & AWA */
   double data;
-  if (m_MainValueUnit == "\u00B0L")
-    data = 360 - m_MainValue;
+  if (m_main_value_unit == "\u00B0L")
+    data = 360 - m_main_value;
   else
-    data = m_MainValue;
+    data = m_main_value;
 
   // The arrow should stay inside fixed limits
   double val;
-  if (data < m_MainValueMin)
-    val = m_MainValueMin;
-  else if (data > m_MainValueMax)
-    val = m_MainValueMax;
+  if (data < m_main_value_min)
+    val = m_main_value_min;
+  else if (data > m_main_value_max)
+    val = m_main_value_max;
   else
     val = data;
 
-  double value = deg2rad((val - m_MainValueMin) * m_AngleRange /
-                         (m_MainValueMax - m_MainValueMin)) +
-                 deg2rad(m_AngleStart - ANGLE_OFFSET);
+  double value = deg2rad((val - m_main_value_min) * m_angle_range /
+                         (m_main_value_max - m_main_value_min)) +
+                 deg2rad(m_angle_start - ANGLE_OFFSET);
 
   wxPoint points[4];
   points[0].x = m_cx + (m_radius * 0.95 * cos(value - .010));
@@ -539,10 +537,10 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
       Value = CompassArray[offset];
       if (Properties) {
         f = Properties->m_SmallFont.GetChosenFont();
-        dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
+        dc->GetTextExtent(Value, &width, &height, nullptr, nullptr, &f);
       } else {
         f = g_pFontSmall->GetChosenFont();
-        dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
+        dc->GetTextExtent(Value, &width, &height, nullptr, nullptr, &f);
       }
       double x = width / 2;
       long double anglefortext = tmpangle - rad2deg(asin((x / radius)));
@@ -552,10 +550,10 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
       Value = CompassArray[offset + 1];
       if (Properties) {
         f = Properties->m_SmallFont.GetChosenFont();
-        dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
+        dc->GetTextExtent(Value, &width, &height, nullptr, nullptr, &f);
       } else {
         f = g_pFontSmall->GetChosenFont();
-        dc->GetTextExtent(Value, &width, &height, 0, 0, &f);
+        dc->GetTextExtent(Value, &width, &height, nullptr, nullptr, &f);
       }
       x = width / 2;
       anglefortext = tmpangle - rad2deg(asin((x / radius))) + 45;

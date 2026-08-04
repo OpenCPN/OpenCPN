@@ -22,8 +22,8 @@
  * Dashboard clock instrument
  */
 
-#ifndef CLOCK_H__
-#define CLOCK_H__
+#ifndef CLOCK_H_
+#define CLOCK_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -52,13 +52,13 @@ public:
                             DASH_CAP cap_flag = OCPN_DBP_STC_CLK,
                             wxString format = "%02i:%02i:%02i UTC");
 
-  ~DashboardInstrument_Clock(void) {}
+  ~DashboardInstrument_Clock() override = default;
 
-  void SetData(DASH_CAP, double, wxString);
+  void SetData(DASH_CAP, double, wxString) override;
   virtual void SetUtcTime(wxDateTime value);
   wxString GetDisplayTime(wxDateTime UTCtime);
-  bool getUTC() { return bUTC; }
-  void setUTC(bool flag) { bUTC = flag; }
+  [[nodiscard]] bool GetUtc() const { return bUTC; }
+  void SetUtc(bool flag) { bUTC = flag; }
   InstrumentProperties *m_Properties;
 
 private:
@@ -77,12 +77,14 @@ class DashboardInstrument_Moon : public DashboardInstrument_Clock {
 public:
   DashboardInstrument_Moon(wxWindow *parent, wxWindowID id, wxString title,
                            InstrumentProperties *Properties);
-  ~DashboardInstrument_Moon() {}
+  ~DashboardInstrument_Moon() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP, double, wxString);
-  void Draw(wxGCDC *dc);
-  void SetUtcTime(wxDateTime value);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP, double, wxString) override;
+  void SetUtcTime(wxDateTime value) override;
+
+protected:
+  void Draw(wxGCDC *dc) override;
 
 private:
   int moon_phase(int y, int m, int d);
@@ -100,12 +102,14 @@ public:
                           InstrumentProperties *Properties,
                           wxString format = "%02i:%02i:%02i UTC");
 
-  ~DashboardInstrument_Sun() {}
+  ~DashboardInstrument_Sun() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void Draw(wxGCDC *dc);
-  void SetData(DASH_CAP st, double data, wxString unit);
-  void SetUtcTime(wxDateTime value);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP st, double data, wxString unit) override;
+  void SetUtcTime(wxDateTime value) override;
+
+protected:
+  void Draw(wxGCDC *dc) override;
 
 private:
   wxString m_sunrise;
@@ -127,10 +131,10 @@ public:
                                InstrumentProperties *Properties,
                                wxString format = "%02i:%02i:%02i UTC");
 
-  ~DashboardInstrument_CPUClock() {}
+  ~DashboardInstrument_CPUClock() override = default;
 
-  void SetData(DASH_CAP, double, wxString);
+  void SetData(DASH_CAP, double, wxString) override;
 
-  void SetUtcTime(wxDateTime value);
+  void SetUtcTime(wxDateTime value) override;
 };
-#endif  // CLOCK_H__
+#endif  // CLOCK_H_

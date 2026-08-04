@@ -22,8 +22,8 @@
  * Dashboard speed instrument
  */
 
-#ifndef Speedometer_H__
-#define Speedometer_H__
+#ifndef Speedometer_H_
+#define Speedometer_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -44,9 +44,7 @@ public:
                                   InstrumentProperties* Properties,
                                   DASH_CAP cap_flag, int s_value, int e_value);
 
-  ~DashboardInstrument_Speedometer(void) {}
-
-private:
+  ~DashboardInstrument_Speedometer() override = default;
 };
 
-#endif  // Speedometer_H__
+#endif  // Speedometer_H_

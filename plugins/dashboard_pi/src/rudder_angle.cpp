@@ -27,10 +27,6 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
@@ -43,7 +39,7 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle(
     : DashboardInstrument_Dial(parent, id, title, Properties, OCPN_DBP_STC_RSA,
                                100, 160, -40, +40) {
   // Default Rudder position is centered
-  m_MainValue = 0;
+  m_main_value = 0;
 
   // SetOptionMainValue("%3.0f Deg", DIAL_POSITION_BOTTOMLEFT);
   SetOptionMarker(5, DIAL_MARKER_REDGREEN, 2);
@@ -67,21 +63,21 @@ wxSize DashboardInstrument_RudderAngle::GetSize(int orient, wxSize hint) {
 
 void DashboardInstrument_RudderAngle::SetData(DASH_CAP st, double data,
                                               wxString unit) {
-  if (st == m_MainValueCap) {
+  if (st == m_main_value_cap) {
     // Dial works clockwise but Rudder has negative values for left
     // and positive for right so we must inverse it.
     data = -data;
 
-    if (data < m_MainValueMin)
-      m_MainValue = m_MainValueMin;
-    else if (data > m_MainValueMax)
-      m_MainValue = m_MainValueMax;
+    if (data < m_main_value_min)
+      m_main_value = m_main_value_min;
+    else if (data > m_main_value_max)
+      m_main_value = m_main_value_max;
     else
-      m_MainValue = data;
-    m_MainValueUnit = unit;
-  } else if (st == m_ExtraValueCap) {
-    m_ExtraValue = data;
-    m_ExtraValueUnit = unit;
+      m_main_value = data;
+    m_main_value_unit = unit;
+  } else if (st == m_extra_value_cap) {
+    m_extra_value = data;
+    m_extra_value_unit = unit;
   } else
     return;
 }

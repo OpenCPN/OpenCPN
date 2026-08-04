@@ -150,7 +150,9 @@ public:
     GetGlobalColor("DASHN", &m_Arrow_First_Colour);
     GetGlobalColor("BLUE3", &m_Arrow_Second_Colour);
   }
-  ~InstrumentProperties() {}
+
+  ~InstrumentProperties() = default;
+
   void SetDefault() {
     m_aInstrument = -1;
     m_Listplace = -1;
@@ -199,8 +201,8 @@ class DashboardInstrument : public wxControl {
 public:
   DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title,
                       DASH_CAP cap_flag,
-                      InstrumentProperties *Properties = NULL);
-  ~DashboardInstrument() {}
+                      InstrumentProperties *Properties = nullptr);
+  ~DashboardInstrument() override = default;
 
   CapType GetCapacity();
   void OnEraseBackground(wxEraseEvent &WXUNUSED(evt));
@@ -248,10 +250,10 @@ public:
   DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title,
                              InstrumentProperties *Properties, DASH_CAP cap,
                              wxString format);
-  ~DashboardInstrument_Single() {}
+  ~DashboardInstrument_Single() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP st, double data, wxString unit);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP st, double data, wxString unit) override;
 
 protected:
   wxString m_data;
@@ -259,19 +261,19 @@ protected:
   //  int m_DataHeight;
   //  InstrumentProperties* m_Properties;
 
-  void Draw(wxGCDC *dc);
+  void Draw(wxGCDC *dc) override;
 };
 
 class DashboardInstrument_Position : public DashboardInstrument {
 public:
   DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title,
-                               InstrumentProperties *Properties = NULL,
+                               InstrumentProperties *Properties = nullptr,
                                DASH_CAP cap_flag1 = OCPN_DBP_STC_LAT,
                                DASH_CAP cap_flag2 = OCPN_DBP_STC_LON);
-  ~DashboardInstrument_Position() {}
+  ~DashboardInstrument_Position() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP st, double data, wxString unit);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP st, double data, wxString unit) override;
 
 protected:
   wxString m_data1;
@@ -280,7 +282,7 @@ protected:
   DASH_CAP m_cap_flag2;
   //  int m_DataHeight;
 
-  void Draw(wxGCDC *dc);
+  void Draw(wxGCDC *dc) override;
 };
 
 #endif  // InSTRUMENT_H_

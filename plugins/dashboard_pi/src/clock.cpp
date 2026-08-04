@@ -44,9 +44,9 @@ DashboardInstrument_Clock::DashboardInstrument_Clock(
                                  format) {
   // if format contains the string "LCL" then display time in local TZ
   if (format.Contains("LCL"))
-    setUTC(false);
+    SetUtc(false);
   else
-    setUTC(true);
+    SetUtc(true);
   m_Properties = Properties;
 }
 
@@ -62,7 +62,7 @@ void DashboardInstrument_Clock::SetUtcTime(wxDateTime data) {
 wxString DashboardInstrument_Clock::GetDisplayTime(wxDateTime UTCtime) {
   wxString result("---");
   if (UTCtime.IsValid()) {
-    if (getUTC()) {
+    if (GetUtc()) {
       result = UTCtime.FormatISOTime().Append(" UTC");
       return result;
     }

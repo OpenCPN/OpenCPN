@@ -22,8 +22,8 @@
  * Dashboard GPS instrument
  */
 
-#ifndef GpS_H__
-#define GpS_H__
+#ifndef GpS_H_
+#define GpS_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -44,29 +44,29 @@ public:
   DashboardInstrument_GPS(wxWindow* parent, wxWindowID id, wxString title,
                           InstrumentProperties* Properties);
 
-  ~DashboardInstrument_GPS(void) {}
+  ~DashboardInstrument_GPS() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP, double, wxString) {};
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP, double, wxString) override {};
   void SetSatInfo(int cnt, int seq, wxString talk, SAT_INFO sats[4]);
 
 private:
 protected:
 #define GNSS_SYSTEM 6
-  int m_cx, m_cy, m_radius, m_refDim, m_scaleDelta, m_scaleBase;
-  int m_SatCount;
-  int m_MaxSatCount;
-  wxString talkerID;
-  SAT_INFO m_SatInfo[12];
+  int m_cx, m_cy, m_radius, m_ref_dim, m_scale_delta, m_scale_base;
+  int m_sat_count;
+  int m_max_sat_count;
+  wxString talker_id;
+  SAT_INFO m_sat_info[12];
   bool b_shift;
-  wxDateTime m_lastShift;
-  wxDateTime m_Gtime[GNSS_SYSTEM];
-  int m_iMaster;
-  wxString s_gTalker;
-  void Draw(wxGCDC* dc);
+  wxDateTime m_last_shift;
+  wxDateTime m_gtime[GNSS_SYSTEM];
+  int m_master;
+  wxString m_talker;
+  void Draw(wxGCDC* dc) override;
   void DrawFrame(wxGCDC* dc);
   void DrawBackground(wxGCDC* dc);
   void DrawForeground(wxGCDC* dc);
 };
 
-#endif  // GpS_H__
+#endif  // GpS_H_

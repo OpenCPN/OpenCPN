@@ -53,37 +53,37 @@ public:
   wxSize GetSize(int orient, wxSize hint);
 
 private:
-  int m_soloInPane;
-  int m_SpdRecCnt, m_DirRecCnt, m_SpdStartVal, m_DirStartVal;
-  int m_isNULL;
-  int m_WindDirShift;
+  int m_solo_in_pane;
+  int m_spd_rec_cnt, m_dir_rec_cnt, m_spd_start_val, m_dir_start_val;
+  int m_is_null;
+  int m_wind_dir_shift;
 
 protected:
   double alpha;
-  double m_ArrayBaroHistory[BARO_RECORD_COUNT];
-  double m_ArrayPressHistory[BARO_RECORD_COUNT];
-  double m_ExpSmoothArrayPressure[BARO_RECORD_COUNT];
+  double m_array_baro_history[BARO_RECORD_COUNT];
+  double m_array_press_history[BARO_RECORD_COUNT];
+  double m_exp_smooth_array_pressure[BARO_RECORD_COUNT];
 
-  wxDateTime::Tm m_ArrayRecTime[BARO_RECORD_COUNT];
+  wxDateTime::Tm m_array_rec_time[BARO_RECORD_COUNT];
 
-  double m_MaxPress;       //...in array
-  double m_MinPress;       //...in array
-  double m_TotalMaxPress;  // since O is started
-  double m_TotalMinPress;
-  double m_Press;
-  double m_MaxPressScale;
-  double m_ratioW;
+  double m_max_press;        //...in array
+  double m_min_press;        //...in array
+  double m_total_max_press;  // since O is started
+  double m_total_min_press;
+  double m_press;
+  double m_max_press_scale;
+  double m_ratio_w;
 
-  bool m_IsRunning;
-  int m_SampleCount;
-  int m_SetNewData;
-  wxRect m_WindowRect;
-  wxRect m_DrawAreaRect;  // the coordinates of the real darwing area
-  int m_DrawingWidth, m_TopLineHeight, m_DrawingHeight;
+  bool m_is_running;
+  int m_sample_count;
+  int m_set_new_data;
+  wxRect m_window_rect;
+  wxRect m_draw_area_rect;  // the coordinates of the real darwing area
+  int m_drawing_width, m_top_line_height, m_drawing_height;
   int m_width, m_height;
-  int m_LeftLegend, m_RightLegend;
-  int m_currSec, m_lastSec, m_SpdCntperSec;
-  double m_cntSpd, m_cntDir, m_avgSpd, m_avgDir;
+  int m_left_legend, m_right_legend;
+  int m_curr_sec, m_last_sec, m_spd_cntper_sec;
+  double m_cnt_spd, m_cnt_dir, m_avg_spd, m_avg_dir;
 
   void Draw(wxGCDC* dc);
   void DrawBackground(wxGCDC* dc);
