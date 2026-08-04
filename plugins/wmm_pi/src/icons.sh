@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/ bin / bash
 
 path=$(dirname $0)
 
-# Require icotool from package icoutils
-# Require convert from package ImageMagick
-# Require inkscape
+#Require icotool from package icoutils
+#Require convert from package ImageMagick
+#Require inkscape
 
 for pic in $path/wmm.svg $path/wmm_pi.svg
 do
@@ -15,4 +15,3 @@ done
 $path/../../../src/bitmaps/png2wx.pl -C $path/icons.cpp -H $path/icons.h -M ICONS_H $path/*.png
 
 rm $path/*.png
-

@@ -25,7 +25,7 @@
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif  // precompiled headers
+#endif
 
 #include <wx/progdlg.h>
 
@@ -53,7 +53,7 @@ void ParamCache::Initialize(double step) {
   if (m_step != step) {
     m_step = step;
     delete[] values;
-    int size = 360 / step;
+    int size = static_cast<int>(360 / step);
     values = new double[size];
   }
   m_lat = 100; /* invalidate data */
@@ -279,7 +279,7 @@ void AddLineSeg(std::list<PlotLineSeg *> &region, double lat1, double lon1,
   if (contour1 != contour2) /* this should not be possible */
     return;
 
-  PlotLineSeg *seg = new PlotLineSeg(lat1, lon1, lat2, lon2, contour1);
+  auto *seg = new PlotLineSeg(lat1, lon1, lat2, lon2, contour1);
   region.push_back(seg);
 }
 
@@ -395,7 +395,7 @@ bool MagneticPlotMap::Recompute(wxDateTime date) {
       m_type == DECLINATION_PLOT   ? _("Variation")
       : m_type == INCLINATION_PLOT ? _("Inclination")
                                    : _("Field Strength"),
-      180, NULL,
+      180, nullptr,
       wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_ABORT);
 
   int cachepage = 0;
@@ -545,8 +545,7 @@ void MagneticPlotMap::Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color) {
   for (int latind = startlatind; latind <= endlatind; latind++)
     for (int lonind = startlonind;; lonind++) {
       if (lonind > LONGITUDE_ZONES - 1) lonind = 0;
-      for (std::list<PlotLineSeg *>::iterator it =
-               m_map[latind][lonind].begin();
+      for (auto it = m_map[latind][lonind].begin();
            it != m_map[latind][lonind].end(); it++) {
         DrawLineSeg(dc, *vp, (*it)->lat1, (*it)->lon1, (*it)->lat2,
                     (*it)->lon2);

@@ -45,8 +45,6 @@ set(CMAKE_MACOSX_RPATH "ON")
 include("cmake/PluginConfigure.cmake")
 
 set(SRC_WMM
-    src/wmm_pi.h
-    src/wmm_pi.cpp
     src/magnetic_plot_map.h
     src/magnetic_plot_map.cpp
     src/icons.h
@@ -60,6 +58,8 @@ set(SRC_WMM
     src/pi_tex_font.h
     src/pi_ocpndc.cpp
     src/pi_ocpndc.h
+    src/wmm_pi.h
+    src/wmm_pi.cpp
 )
 
 if (QT_ANDROID)

@@ -47,7 +47,7 @@
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 9
 
-#define WMM_TOOL_POSITION   -1  // Request default positioning of toolbar tool
+#define WMM_TOOL_POSITION -1  // Request default positioning of toolbar tool
 
 //-----------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -67,7 +67,6 @@ public:
       : WmmUIDialogBase(parent, id, title, pos, size, style),
         m_wmm_pi(_wmm_pi) {}
 
-
 protected:
   WmmPi &m_wmm_pi;
   void EnablePlotChanged(wxCommandEvent &event) override;
@@ -85,8 +84,8 @@ public:
 
 protected:
   void About(wxCommandEvent &event) override;
-  void Save(wxCommandEvent &event)  override{ EndDialog(wxID_OK); }
-  void Cancel(wxCommandEvent &event)  override{ EndDialog(wxID_CANCEL); }
+  void Save(wxCommandEvent &event) override { EndDialog(wxID_OK); }
+  void Cancel(wxCommandEvent &event) override { EndDialog(wxID_CANCEL); }
 };
 
 class WmmPi : public wxEvtHandler, public opencpn_plugin_118 {

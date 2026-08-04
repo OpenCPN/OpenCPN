@@ -5,22 +5,18 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef WMMUIDIALOG_H__
-#define WMMUIDIALOG_H__
+#ifndef WMMuiDIALOG_H_
+#define WMMuiDIALOG_H_
 
 #include <wx/artprov.h>
 #include <wx/button.h>
 #include <wx/checkbox.h>
-#include <wx/colour.h>
-#include <wx/datectrl.h>
 #include <wx/dateevt.h>
 #include <wx/dialog.h>
-#include <wx/font.h>
 #include <wx/frame.h>
 #include <wx/gdicmn.h>
 #include <wx/intl.h>
 #include <wx/radiobox.h>
-#include <wx/settings.h>
 #include <wx/sizer.h>
 #include <wx/slider.h>
 #include <wx/spinctrl.h>
@@ -51,7 +47,7 @@ protected:
   wxStaticText* m_staticText141;
   wxStaticText* m_staticText131;
 
-  // Virtual event handlers, overide them in your derived class
+  // Virtual event handlers, override them in your derived class
   virtual void EnablePlotChanged(wxCommandEvent& event) { event.Skip(); }
   virtual void PlotSettings(wxCommandEvent& event) { event.Skip(); }
 
@@ -86,7 +82,7 @@ public:
                   long style = wxCAPTION | wxDEFAULT_FRAME_STYLE |
                                wxTAB_TRAVERSAL | wxFRAME_FLOAT_ON_PARENT |
                                wxFRAME_NO_TASKBAR);
-  ~WmmUIDialogBase();
+  ~WmmUIDialogBase() override;
   void OnKey(wxKeyEvent& ke);
   void OnClose(wxCloseEvent& event);
   void OnClose(wxCommandEvent& event);
@@ -117,7 +113,7 @@ public:
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxDefaultSize,
                  long style = wxCAPTION | wxDEFAULT_DIALOG_STYLE);
-  ~WmmPrefsDialog();
+  ~WmmPrefsDialog() override;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -136,7 +132,7 @@ protected:
   wxButton* m_bSave;
   wxButton* m_bCancel;
 
-  // Virtual event handlers, overide them in your derived class
+  // Virtual event handlers, override them in your derived class
   virtual void About(wxCommandEvent& event) { event.Skip(); }
   virtual void Save(wxCommandEvent& event) { event.Skip(); }
   virtual void Cancel(wxCommandEvent& event) { event.Skip(); }
@@ -157,7 +153,7 @@ public:
                             const wxPoint& pos = wxDefaultPosition,
                             const wxSize& size = wxSize(375, 270),
                             long style = wxDEFAULT_DIALOG_STYLE);
-  ~WmmPlotSettingsDialogBase();
+  ~WmmPlotSettingsDialogBase() override;
 };
 
-#endif  //  WMMUIDIALOG_H__
+#endif  //  WMMuiDIALOG_H_

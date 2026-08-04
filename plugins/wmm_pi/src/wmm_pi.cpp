@@ -699,7 +699,7 @@ void WmmPi::SetPluginMessage(wxString &message_id, wxString &message_body) {
 }
 
 void WmmPi::SendVariationAt(double lat, double lon, int year, int month,
-                             int day) {
+                            int day) {
   wxJSONValue v;
   v["Lat"] = lat;
   v["Lon"] = lon;
