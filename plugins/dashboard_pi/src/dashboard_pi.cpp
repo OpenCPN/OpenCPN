@@ -4366,7 +4366,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
   auto *itemBoxSizer04 = new wxBoxSizer(wxVERTICAL);
   itemStaticBoxSizer03->Add(itemBoxSizer04, 0, wxALIGN_TOP | wxALL,
                             border_size);
-  m_pButtonAdd = new wxButton(m_pPanelDashboard, wxID_ANY, _("Add"),
+  m_pButtonAdd = new wxButton(m_pPanelDashboard, wxID_ANY, _("Add..."),
                               wxDefaultPosition, wxSize(-1, -1));
   itemBoxSizer04->Add(m_pButtonAdd, 0, wxEXPAND | wxALL, border_size);
   m_pButtonAdd->Connect(
@@ -4375,7 +4375,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog(
       nullptr, this);
 
   // TODO  Instrument Properties ... done by Bernd Cirotzki
-  m_pButtonEdit = new wxButton(m_pPanelDashboard, wxID_ANY, _("Edit"),
+  m_pButtonEdit = new wxButton(m_pPanelDashboard, wxID_ANY, _("Edit..."),
                                wxDefaultPosition, wxDefaultSize);
   itemBoxSizer04->Add(m_pButtonEdit, 0, wxEXPAND | wxALL, border_size);
   m_pButtonEdit->Connect(
