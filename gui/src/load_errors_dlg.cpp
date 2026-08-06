@@ -33,12 +33,13 @@
 #include <wx/event.h>
 #include <wx/window.h>
 
-#include "model/plugin_handler.h"
+#include "observable/event.h"
 
+#include "model/plugin_handler.h"
 #include "model/plugin_loader.h"
+
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
-#include "observable_evt.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

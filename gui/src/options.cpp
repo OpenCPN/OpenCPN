@@ -78,6 +78,8 @@
 
 #include "config.h"
 
+#include "observable/evtvar.h"
+#include "observable/global_var.h"
 #include "o_sound/o_sound.h"
 
 #include "model/ais_decoder.h"
@@ -110,8 +112,6 @@
 #include "font_mgr.h"
 #include "mark_info.h"
 #include "navutil.h"
-#include "observable_evtvar.h"
-#include "observable_globvar.h"
 #include "ocpn_platform.h"
 #include "options.h"
 #include "s52plib.h"

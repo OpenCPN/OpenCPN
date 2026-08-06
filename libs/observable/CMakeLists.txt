@@ -5,11 +5,11 @@ if (TARGET observable::observable)
 endif ()
 
 set(SRC
-  include/observable_confvar.h
-  include/observable_evt.h
-  include/observable_evtvar.h
-  include/observable_globvar.h
-  include/observable.h
+  include/observable/configvar.h
+  include/observable/event.h
+  include/observable/evtvar.h
+  include/observable/global_var.h
+  include/observable/observable.h
   src/observable_confvar.cpp
   src/observable.cpp
 )
@@ -22,4 +22,7 @@ endif ()
 
 target_include_directories(
   _OBSERVABLE PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_include_directories(
+  _OBSERVABLE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/observable
 )

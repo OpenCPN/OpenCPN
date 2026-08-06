@@ -28,7 +28,7 @@
 
 #include <wx/bitmap.h>
 
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 
 /**
  * Small monochrome SVG icon scaled to the height of a char. Aware of

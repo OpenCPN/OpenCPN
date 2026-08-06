@@ -32,6 +32,9 @@
 #include <wx/jsonreader.h>
 #include <wx/log.h>
 
+#include "observable/evtvar.h"
+#include "observable/global_var.h"
+
 #include "model/base_platform.h"
 #include "model/catalog_handler.h"
 #include "model/catalog_parser.h"
@@ -39,8 +42,6 @@
 #include "model/downloader.h"
 #include "model/ocpn_utils.h"
 #include "model/plugin_handler.h"
-#include "observable_evtvar.h"
-#include "observable_globvar.h"
 
 #ifdef _WIN32
 static const std::string SEP("\\");

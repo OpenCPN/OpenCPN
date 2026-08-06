@@ -31,11 +31,12 @@
 #include <wx/wx.h>
 #endif
 
+#include "observable/evtvar.h"
+
 #include "model/nmea_log.h"
 #include "model/multiplexer.h"
 #include "model/route.h"
 #include "model/route_point.h"
-#include "observable_evtvar.h"
 
 /**
  * Failed to initialize Garmin device.

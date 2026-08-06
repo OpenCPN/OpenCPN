@@ -43,11 +43,11 @@
 #include <wx/timer.h>
 #include <wx/window.h>
 
+#include "observable/evtvar.h"
+
 #include "model/route.h"
 #include "model/route_point.h"
 #include "model/track.h"
-
-#include "observable_evtvar.h"
 
 //    Constants for SendToPeer... Dialog
 #define ID_STPDIALOG 10006

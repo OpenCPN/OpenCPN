@@ -49,6 +49,7 @@
 #endif
 
 #include "o_sound/o_sound.h"
+#include "observable/observable.h"
 
 #include "model/ais_target_data.h"
 #include "model/catalog_parser.h"
@@ -58,7 +59,6 @@
 #include "model/semantic_vers.h"
 
 #include "chartimg.h"
-#include "observable.h"
 #include "ocpndc.h"
 #include "ocpn_plugin.h"
 #include "s57chart.h"  // for Object list

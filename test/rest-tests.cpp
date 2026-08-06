@@ -22,13 +22,14 @@
 
 #include <gtest/gtest.h>
 
+#include "observable/configvar.h"
+
 #include "ocpn_plugin.h"
 #include "model/certificates.h"
 #include "model/cli_platform.h"
 #include "model/config_vars.h"
 #include "model/comm_navmsg.h"
 #include "model/mdns_query.h"
-#include "observable_confvar.h"
 #include "model/ocpn_types.h"
 #include "model/ocpn_utils.h"
 #include "model/rest_server.h"

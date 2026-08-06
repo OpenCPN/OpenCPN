@@ -43,12 +43,13 @@
 #include "model/notification_manager.h"
 #include "model/svg_utils.h"
 
+#include "observable/global_var.h"
+
 #include "chcanv.h"
 #include "color_handler.h"
 #include "gl_chart_canvas.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "observable_globvar.h"
 #include "ocpn_platform.h"
 #include "styles.h"
 

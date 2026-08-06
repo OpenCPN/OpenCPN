@@ -38,7 +38,7 @@
 
 #include <wx/event.h>
 
-#include "observable_evt.h"
+#include "event.h"
 
 #ifndef DECL_EXP
 #if defined(_MSC_VER) || defined(__CYGWIN__)

@@ -28,7 +28,8 @@
 #include <memory>
 #include <string>
 
-#include "observable.h"
+#include "observable/observable.h"
+
 #include "comm_drv_registry.h"
 #include "comm_navmsg.h"
 #include "periodic_timer.h"

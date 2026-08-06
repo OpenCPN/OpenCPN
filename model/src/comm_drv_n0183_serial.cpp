@@ -36,12 +36,12 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
+#include "observable/observable.h"
+
 #include "model/comm_buffers.h"
 #include "model/comm_drv_n0183_serial.h"
 #include "model/comm_drv_stats.h"
 #include "model/logger.h"
-
-#include "observable.h"
 
 using namespace std::literals::chrono_literals;
 

@@ -27,7 +27,7 @@
 #include <functional>
 
 #include <wx/window.h>
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 
 class FilterEvents {
 public:

@@ -35,7 +35,7 @@
 #include <wx/event.h>
 
 #include "model/comm_driver.h"
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 
 /** The raw message layer, a singleton. */
 class NavMsgBus : public wxEvtHandler, public DriverListener {

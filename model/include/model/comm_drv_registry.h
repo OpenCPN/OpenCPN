@@ -25,8 +25,9 @@
 #ifndef COMMDRIVERREGISTRY_H_
 #define COMMDRIVERREGISTRY_H_
 
+#include "observable/evtvar.h"
+
 #include "model/comm_driver.h"
-#include "observable_evtvar.h"
 
 using DriverPtr = std::unique_ptr<AbstractCommDriver>;
 

@@ -32,8 +32,9 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 
+#include "observable/global_var.h"
+
 #include "cat_settings.h"
-#include "observable_globvar.h"
 #include "model/config_vars.h"
 #include "model/ocpn_utils.h"
 #include "model/plugin_cache.h"

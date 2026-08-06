@@ -37,7 +37,7 @@
 #include <netinet/in.h>
 #endif
 
-#include "observable.h"
+#include "observable/observable.h"
 
 using NavmsgClock = std::chrono::system_clock;
 using NavmsgTimePoint = std::chrono::time_point<NavmsgClock>;

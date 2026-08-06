@@ -9,15 +9,15 @@
 
 #include <gtest/gtest.h>
 
+#include "observable/observable.h"
 #include "std_filesystem.h"
+
 #include "model/base_platform.h"
 #include "model/comm_buffers.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_out_queue.h"
 #include "model/logger.h"
 #include "model/ocpn_utils.h"
-
-#include "observable.h"
 
 using namespace std::literals::chrono_literals;
 

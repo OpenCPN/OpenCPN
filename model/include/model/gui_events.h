@@ -24,7 +24,7 @@
 #ifndef GUI_EVENTS_H
 #define GUI_EVENTS_H
 
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 
 /** EventVar exchange point, a singleton. */
 class GuiEvents {

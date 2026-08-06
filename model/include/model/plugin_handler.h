@@ -31,13 +31,12 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <archive.h>
 
 #include <wx/cmdline.h>
 
-#include <archive.h>
-
+#include "observable/evtvar.h"
 #include "model/catalog_parser.h"
-#include "observable_evtvar.h"
 
 bool isRegularFile(const char* path);
 

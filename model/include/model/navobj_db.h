@@ -25,8 +25,10 @@
 #define _NAVOBJ_DB_H__
 
 #include <wx/timer.h>
+
+#include "observable/evtvar.h"
+
 #include "notification.h"
-#include "observable_evtvar.h"
 #include "comm_appmsg.h"
 #include <sqlite3.h>
 #include "track.h"

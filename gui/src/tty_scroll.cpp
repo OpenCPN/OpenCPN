@@ -28,9 +28,10 @@
 #include <wx/string.h>
 #include <wx/textctrl.h>
 
+#include "observable/observable.h"
+
 #include "tty_scroll.h"
 #include "model/config_vars.h"
-#include "observable.h"
 
 // Recursive include of winsock2.h -> redefined DrawText.
 // See: https://forums.wxwidgets.org/viewtopic.php?f=19&t=51849

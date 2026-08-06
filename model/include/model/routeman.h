@@ -33,8 +33,9 @@
 #include <wx/pen.h>
 #include <wx/string.h>
 
-#include "model/MarkIcon.h"
+#include "observable/evtvar.h"
 
+#include "model/MarkIcon.h"
 #include "model/nav_object_database.h"
 #include "model/nmea_log.h"
 #include "model/ocpn_types.h"
@@ -44,7 +45,6 @@
 
 #include "color_types.h"
 #include "nmea0183.h"
-#include "observable_evtvar.h"
 
 //----------------------------------------------------------------------------
 //   constants

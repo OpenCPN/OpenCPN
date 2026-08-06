@@ -38,11 +38,12 @@
 #include <wx/textctrl.h>
 #include <wx/timer.h>
 
+#include "observable/observable.h"
+
 #include "model/route.h"
 #include "model/route_point.h"
 #include "model/track.h"
 
-#include "observable.h"
 #include "layer.h"
 
 #define NAME_COLUMN 2

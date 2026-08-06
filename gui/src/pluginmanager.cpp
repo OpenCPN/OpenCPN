@@ -92,6 +92,8 @@
 #include "pluginmanager.h"
 
 #include "o_sound/o_sound.h"
+#include "observable/configvar.h"
+#include "observable/global_var.h"
 
 #include "model/ais_decoder.h"
 #include "model/ais_target_data.h"
@@ -139,8 +141,6 @@
 #include "gshhs.h"
 #include "mygeom.h"
 #include "navutil.h"
-#include "observable_confvar.h"
-#include "observable_globvar.h"
 #include "ocpn_aui_manager.h"
 #include "ocpndc.h"
 #include "ocpn_pixel.h"

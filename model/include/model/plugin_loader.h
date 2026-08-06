@@ -34,10 +34,11 @@
 
 #include "config.h"
 
+#include "observable/evtvar.h"
+
 #include "model/catalog_parser.h"
 #include "model/plugin_blacklist.h"
 #include "model/semantic_vers.h"
-#include "observable_evtvar.h"
 #include "ocpn_plugin.h"
 
 enum class PluginStatus {

@@ -59,6 +59,8 @@
 #include <wx/string.h>
 #include <wx/utils.h>
 
+#include "observable/evtvar.h"
+
 #include "model/ais_state_vars.h"
 #include "model/catalog_handler.h"
 #include "model/cli_platform.h"
@@ -76,8 +78,6 @@
 #include "model/routeman.h"
 #include "model/select.h"
 #include "model/track.h"
-
-#include "observable_evtvar.h"
 
 void* g_pi_manager = reinterpret_cast<void*>(1L);
 

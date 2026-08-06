@@ -38,8 +38,9 @@
 #include <wx/string.h>
 #include <wx/thread.h>  // for wxSemaphore, std::semaphore is c++20
 
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 #include "std_filesystem.h"
+
 #include "pugixml.hpp"
 #include "pincode.h"
 #include "route.h"

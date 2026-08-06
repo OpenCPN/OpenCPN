@@ -58,6 +58,7 @@
 #include <wx/timectrl.h>
 #include <wx/tokenzr.h>
 
+#include "observable/global_var.h"
 #include "o_sound/o_sound.h"
 
 #include "model/ais_decoder.h"
@@ -95,7 +96,6 @@
 #include "layer.h"
 #include "navutil.h"
 #include "nmea0183.h"
-#include "observable_globvar.h"
 #include "ocpndc.h"
 #include "ocpn_plugin.h"
 #include "ocpn_platform.h"

@@ -32,7 +32,7 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
-#include "observable.h"
+#include "observable/observable.h"
 #include "wx/jsonreader.h"
 
 #include "config.h"

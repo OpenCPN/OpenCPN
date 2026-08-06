@@ -27,11 +27,12 @@
 
 #include <wx/socket.h>
 
+#include "observable/observable.h"
+
 #include "rapidjson/document.h"
 #include "ixwebsocket/IXNetSystem.h"
 #include "ixwebsocket/IXSocketTLSOptions.h"
 #include "ixwebsocket/IXWebSocket.h"
-#include "observable.h"
 
 #include "model/comm_drv_signalk_net.h"
 #include "model/comm_navmsg_bus.h"

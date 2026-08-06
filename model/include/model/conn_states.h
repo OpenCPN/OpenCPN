@@ -29,7 +29,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_drv_stats.h"
 #include "model/comm_navmsg.h"

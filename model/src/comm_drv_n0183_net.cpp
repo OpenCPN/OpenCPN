@@ -48,6 +48,8 @@
 #include <wx/chartype.h>
 #include <wx/sckaddr.h>
 
+#include "observable/observable.h"
+
 #include "model/comm_drv_n0183_net.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
@@ -56,8 +58,6 @@
 #include "model/idents.h"
 #include "model/logger.h"
 #include "model/sys_events.h"
-
-#include "observable.h"
 
 using namespace std::literals::chrono_literals;
 

@@ -10,6 +10,10 @@
 
 #include "config.h"
 
+#include "observable/configvar.h"
+
+#include "model/ais_decoder.h"
+#include "model/ais_defs.h"
 #include "model/ais_state_vars.h"
 #include "model/cli_platform.h"
 #include "model/cmdline.h"
@@ -17,19 +21,15 @@
 #include "model/comm_appmsg_bus.h"
 #include "model/comm_bridge.h"
 #include "model/comm_drv_file.h"
+#include "model/comm_drv_n2k_socketcan.h"
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/config_vars.h"
 #include "model/conn_params.h"
-#include "observable_confvar.h"
 #include "model/ocpn_types.h"
 #include "model/own_ship.h"
 #include "model/routeman.h"
-#include "model/ais_defs.h"
-#include "model/ais_decoder.h"
 #include "model/select.h"
-
-#include "model/comm_drv_n2k_socketcan.h"
 
 #ifdef _MSC_VER
 const static std::string kSEP("\\");
