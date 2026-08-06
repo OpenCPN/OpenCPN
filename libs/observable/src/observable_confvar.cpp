@@ -34,7 +34,7 @@
  * Add >> support for wxString, for some reason missing in wxWidgets 3.0,
  * required by ConfigVar::get()
  */
-std::istream& operator>>(std::istream& input, wxString& ws) {
+static std::istream& operator>>(std::istream& input, wxString& ws) {
   std::string s;
   input >> s;
   ws.Append(s);
@@ -47,15 +47,15 @@ template <typename T>
 ConfigVar<T>::ConfigVar(const std::string& section_, const std::string& key_,
                         wxConfigBase* cb)
     : Observable(section_ + "/" + key_),
-      section(section_),
-      key(key_),
-      config(cb) {}
+      m_section(section_),
+      m_key(key_),
+      m_config(cb) {}
 
 template <typename T>
-const T ConfigVar<T>::Get(const T& default_val) {
+T ConfigVar<T>::Get(const T& default_val) {
   std::istringstream iss;
-  config->SetPath(section);
-  auto value = config->Read(key, "").ToStdString();
+  m_config->SetPath(m_section);
+  auto value = m_config->Read(m_key, "").ToStdString();
   iss.str(value);
   T r;
   iss >> r;
@@ -67,14 +67,14 @@ void ConfigVar<T>::Set(const T& arg) {
   std::ostringstream oss;
   oss << arg;
   if (oss.fail()) {
-    wxLogWarning("Cannot dump failed buffer for key %s:%s", section.c_str(),
-                 key.c_str());
+    wxLogWarning("Cannot dump failed buffer for key %s:%s", m_section.c_str(),
+                 m_key.c_str());
     return;
   }
-  config->SetPath(section);
-  if (!config->Write(key.c_str(), oss.str().c_str())) {
-    wxLogWarning("Error writing buffer to key %s:%s", section.c_str(),
-                 key.c_str());
+  m_config->SetPath(m_section);
+  if (!m_config->Write(m_key.c_str(), oss.str().c_str())) {
+    wxLogWarning("Error writing buffer to key %s:%s", m_section.c_str(),
+                 m_key.c_str());
   }
   Observable::Notify();
 }

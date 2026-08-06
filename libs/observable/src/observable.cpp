@@ -35,7 +35,7 @@
 
 #include "observable.h"
 
-std::string ptr_key(const void* ptr) {
+std::string PtrKey(const void* ptr) {
   std::ostringstream oss;
   oss << ptr;
   return oss.str();
@@ -56,13 +56,13 @@ ListenersByKey& ListenersByKey::GetInstance(const std::string& key) {
 
 /* Observable implementation. */
 
-using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
+using EvPair = std::pair<wxEvtHandler*, wxEventType>;
 
 void Observable::Listen(wxEvtHandler* listener, wxEventType ev_type) {
   std::lock_guard<std::mutex> lock(m_mutex);
   const auto& listeners = m_list.listeners;
 
-  ev_pair key_pair(listener, ev_type);
+  EvPair key_pair(listener, ev_type);
   auto found = std::find(listeners.begin(), listeners.end(), key_pair);
   assert((found == listeners.end()) && "Duplicate listener");
   m_list.listeners.push_back(key_pair);
@@ -72,7 +72,7 @@ bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto& listeners = m_list.listeners;
 
-  ev_pair key_pair(listener, ev_type);
+  EvPair key_pair(listener, ev_type);
   auto found = std::find(listeners.begin(), listeners.end(), key_pair);
   if (found == listeners.end()) return false;
   listeners.erase(found);
@@ -101,24 +101,24 @@ void Observable::Notify() { Notify("", nullptr); }
 
 void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
                                 wxEventType e) {
-  if (!key.empty()) Unlisten();
-  key = k;
-  listener = l;
-  ev_type = e;
+  if (!m_key.empty()) Unlisten();
+  m_key = k;
+  m_listener = l;
+  m_ev_type = e;
   Listen();
 }
 
 void ObservableListener::Listen() {
-  if (!key.empty()) {
-    assert(listener);
-    Observable(key).Listen(listener, ev_type);
+  if (!m_key.empty()) {
+    assert(m_listener);
+    Observable(m_key).Listen(m_listener, m_ev_type);
   }
 }
 
 void ObservableListener::Unlisten() {
-  if (!key.empty()) {
-    assert(listener);
-    Observable(key).Unlisten(listener, ev_type);
-    key = "";
+  if (!m_key.empty()) {
+    assert(m_listener);
+    Observable(m_key).Unlisten(m_listener, m_ev_type);
+    m_key = "";
   }
 }

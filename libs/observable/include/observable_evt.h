@@ -38,7 +38,10 @@ class ObservedEvt;
 
 wxDECLARE_EVENT(obsNOTIFY, ObservedEvt);
 
-/** Adds a std::shared<void> element to wxCommandEvent. */
+/**
+ * Adds a std::shared<void> element to wxCommandEvent. A copy is present
+ * in ocpn_plugin.h, so cannot be modified.
+ */
 class ObservedEvt : public wxCommandEvent {
 public:
   explicit ObservedEvt(wxEventType commandType = obsNOTIFY, int id = 0)

@@ -66,7 +66,7 @@
 template <typename T>
 class GlobalVar : public Observable {
 public:
-  explicit GlobalVar(T* ptr) : Observable(ptr_key(ptr)), variable(ptr) {}
+  explicit GlobalVar(T* ptr) : Observable(PtrKey(ptr)), variable(ptr) {}
 
   GlobalVar() = delete;
 

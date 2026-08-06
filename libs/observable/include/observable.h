@@ -51,7 +51,7 @@
 #endif  // DECL_EXP
 
 /** Return address as printable string. */
-std::string ptr_key(const void* ptr);
+std::string PtrKey(const void* ptr);
 
 class Observable;
 class ObservableListener;
@@ -114,7 +114,9 @@ public:
   /** Notify all listeners about variable change. */
   virtual void Notify();
 
-  void Notify(const std::shared_ptr<const void>& p) { Notify(p, "", 0, nullptr); }
+  virtual void Notify(const std::shared_ptr<const void>& p) {
+    Notify(p, "", 0, nullptr);
+  }
 
   /**
    * Remove window listening to ev from list of listeners.
@@ -157,11 +159,11 @@ class DECL_EXP ObservableListener final {
 
 public:
   /** Default constructor, does not listen to anything. */
-  ObservableListener() : listener(nullptr), ev_type(wxEVT_NULL) {}
+  ObservableListener() : m_listener(nullptr), m_ev_type(wxEVT_NULL) {}
 
   /** Construct a listening object. */
   ObservableListener (std::string k, wxEvtHandler* l, wxEventType e)
-      : key(std::move(k)), listener(l), ev_type(e) {
+      : m_key(std::move(k)), m_listener(l), m_ev_type(e) {
     Listen();
   }
 
@@ -170,18 +172,18 @@ public:
 
   /** A listener can only be transferred using std::move(). */
   ObservableListener(ObservableListener&& other) noexcept {
-    key = other.key;
-    listener = other.listener;
-    ev_type = other.ev_type;
+    m_key = other.m_key;
+    m_listener = other.m_listener;
+    m_ev_type = other.m_ev_type;
     other.Unlisten();
     Listen();
   }
 
   /** A listener can only be transferred using std::move(). */
   ObservableListener& operator=(ObservableListener&& other) noexcept {
-    key = other.key;
-    listener = other.listener;
-    ev_type = other.ev_type;
+    m_key = other.m_key;
+    m_listener = other.m_listener;
+    m_ev_type = other.m_ev_type;
     other.Unlisten();
     Listen();
     return *this;
@@ -204,9 +206,9 @@ private:
   void Listen();
   void Unlisten();
 
-  std::string key;
-  wxEvtHandler* listener;
-  wxEventType ev_type;
+  std::string m_key;
+  wxEvtHandler* m_listener;
+  wxEventType m_ev_type;
 };
 
 /**
@@ -265,7 +267,7 @@ public:
     Unbind(other.m_obs_evt, other.m_action);
     m_action = other.m_action;
     Bind(m_obs_evt, m_action);
-    m_listener.Listen(other.m_listener.key, this, m_obs_evt);
+    m_listener.Listen(other.m_listener.m_key, this, m_obs_evt);
   }
 
   ObsListener& operator=(ObsListener&& other) noexcept {
@@ -273,7 +275,7 @@ public:
     Unbind(other.m_obs_evt, other.m_action);
     m_action = other.m_action;
     Bind(m_obs_evt, m_action);
-    m_listener.Listen(other.m_listener.key, this, m_obs_evt);
+    m_listener.Listen(other.m_listener.m_key, this, m_obs_evt);
     return *this;
   }
 

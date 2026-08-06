@@ -26,8 +26,8 @@
  */
 
 
-#ifndef OBSERVABLE___EVTVAR__H
-#define OBSERVABLE___EVTVAR__H
+#ifndef Observable_EVTVAR_H
+#define Observable_EVTVAR_H
 
 #include <atomic>
 #include <memory>
@@ -105,15 +105,15 @@ public:
   }
 
   /** Notify all listeners about variable change with const* shared_ptr, */
-  void Notify(const std::shared_ptr<const void>& p) {
+  void Notify(const std::shared_ptr<const void>& p) override  {
     Observable::Notify(p, "", 0, nullptr);
   }
 
 private:
-  std::string Autokey() {
+  static std::string Autokey() {
     static std::atomic<unsigned long> last_ix(0);
     return std::string("!@%/+") + std::to_string(last_ix++);
   }
 };
 
-#endif  // OBSERVABLE___EVTVAR__H
+#endif  // Observable_EVTVAR_H
