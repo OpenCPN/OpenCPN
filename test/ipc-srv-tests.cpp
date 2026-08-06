@@ -76,17 +76,17 @@ private:
     ObsListener() {}
 
     /** Create object which invokes action when kp is notified. */
-    ObsListener(const KeyProvider& kp,
+    ObsListener(const obs::KeyProvider& kp,
                 std::function<void(ObservedEvt& ev)> action) {
       Init(kp, action);
     }
 
     /** Create object which invokes action when kp is notified. */
-    ObsListener(const KeyProvider& kp, std::function<void()> action)
+    ObsListener(const obs::KeyProvider& kp, std::function<void()> action)
         : ObsListener(kp, [&](ObservedEvt&) { action(); }) {}
 
     /** Initiate an object yet not listening. */
-    void Init(const KeyProvider& kp,
+    void Init(const obs::KeyProvider& kp,
               std::function<void(ObservedEvt& ev)> action) {
       // i. e. wxDEFINE_EVENT(), avoiding the evil macro.
       const wxEventTypeTag<ObservedEvt> EvtObs(wxNewEventType());

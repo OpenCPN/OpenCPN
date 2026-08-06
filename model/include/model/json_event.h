@@ -45,7 +45,7 @@ public:
   }
 
 private:
-  EventVar event;
+  obs::EventVar event;
 };
 
 #endif

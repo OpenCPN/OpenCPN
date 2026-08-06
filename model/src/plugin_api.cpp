@@ -49,27 +49,27 @@
 using namespace std;
 
 vector<uint8_t> GetN2000Payload(NMEA2000Id id, ObservedEvt ev) {
-  auto msg = UnpackEvtPointer<Nmea2000Msg>(ev);
+  auto msg = obs::UnpackEvtPointer<Nmea2000Msg>(ev);
   return msg->payload;
 }
 
 std::string GetN2000Source(NMEA2000Id id, ObservedEvt ev) {
-  auto msg = UnpackEvtPointer<Nmea2000Msg>(ev);
+  auto msg = obs::UnpackEvtPointer<Nmea2000Msg>(ev);
   return msg->source->to_string();
 }
 
 std::string GetN0183Payload(NMEA0183Id id, ObservedEvt ev) {
-  auto msg = UnpackEvtPointer<Nmea0183Msg>(ev);
+  auto msg = obs::UnpackEvtPointer<Nmea0183Msg>(ev);
   return msg->payload;
 }
 
 std::string GetPluginMsgPayload(PluginMsgId id, ObservedEvt ev) {
-  auto msg = UnpackEvtPointer<PluginMsg>(ev);
+  auto msg = obs::UnpackEvtPointer<PluginMsg>(ev);
   return msg->message;
 }
 
 std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev) {
-  auto msg = UnpackEvtPointer<SignalkMsg>(ev);
+  auto msg = obs::UnpackEvtPointer<SignalkMsg>(ev);
   wxJSONReader reader;
   wxJSONValue data;
   reader.Parse(wxString(msg->raw_message), &data);
@@ -95,7 +95,7 @@ std::shared_ptr<void> GetSignalkPayload(ObservedEvt ev) {
 
 std::shared_ptr<PI_Notification> GetNotificationMsgPayload(NotificationMsgId id,
                                                            ObservedEvt ev) {
-  auto msg = UnpackEvtPointer<NotificationMsg>(ev);
+  auto msg = obs::UnpackEvtPointer<NotificationMsg>(ev);
   auto note = msg->notification;
   auto rv = std::make_shared<PI_Notification>(
       (PI_NotificationSeverity)note->GetSeverity(), note->GetMessage(),
@@ -136,7 +136,7 @@ std::shared_ptr<ObservableListener> GetListener(NotificationMsgId id,
 }
 
 PluginNavdata GetEventNavdata(ObservedEvt ev) {
-  auto msg = UnpackEvtPointer<BasicNavDataMsg>(ev);
+  auto msg = obs::UnpackEvtPointer<BasicNavDataMsg>(ev);
   PluginNavdata data;
 
   data.lat = msg->pos.lat;

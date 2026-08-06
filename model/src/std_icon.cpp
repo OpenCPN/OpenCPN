@@ -44,14 +44,14 @@ public:
    * @param touch  If true, ensure icon is "big enough" for touch screens
    */
   StdIcon(const wxWindow* parent, const std::string& svg_file,
-          EventVar& color_change_evt, bool touch);
+          obs::EventVar& color_change_evt, bool touch);
 
   /** Return bitmap, either day or inverted night variant. */
   const wxBitmap& GetBitmap();
 
 private:
-  ObsListener m_color_change_lstnr;
-  EventVar& m_color_change_evt;
+  obs::ObsListener m_color_change_lstnr;
+  obs::EventVar& m_color_change_evt;
   bool m_is_night;
   wxBitmap m_day_bitmap;
   wxBitmap m_night_bitmap;
@@ -90,7 +90,7 @@ static wxBitmap InvertColors(const wxBitmap& original) {
 }
 
 StdIcon::StdIcon(const wxWindow* parent, const std::string& svg_file,
-                 EventVar& color_change_evt, bool touch)
+                 obs::EventVar& color_change_evt, bool touch)
     : m_color_change_evt(color_change_evt),
       m_is_night(false),
       m_day_bitmap(LoadSvgStdIcon(svg_file, parent, touch)),

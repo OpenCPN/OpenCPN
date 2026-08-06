@@ -730,7 +730,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
       [&](ObservedEvt &) { UpdateStatusBar(); });
   m_center_aistarget_listener.Init(
       GuiEvents::GetInstance().on_center_ais_target, [&](ObservedEvt &ev) {
-        auto ais_target = UnpackEvtPointer<AisTargetData>(ev);
+        auto ais_target = obs::UnpackEvtPointer<AisTargetData>(ev);
         CenterAisTarget(ais_target);
       });
   m_reload_charts_listener.Init(

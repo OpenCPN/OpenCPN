@@ -224,7 +224,7 @@ public:
 };
 
 /** Actual data sent between application and transport layer */
-class NavMsg : public KeyProvider {
+class NavMsg : public obs::KeyProvider {
 public:
   enum class State { kOk, kCannotParse, kBadChecksum, kFiltered };
 

@@ -525,7 +525,7 @@ bool RestServer::CheckApiKey(const RestIoEvtData& evt_data) {
 }
 
 void RestServer::HandleServerMessage(ObservedEvt& event) {
-  auto evt_data = UnpackEvtPointer<RestIoEvtData>(event);
+  auto evt_data = obs::UnpackEvtPointer<RestIoEvtData>(event);
   m_reply_body = "";
   switch (event.GetId()) {
     case ORS_START_OF_SESSION:

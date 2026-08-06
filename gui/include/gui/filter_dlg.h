@@ -40,13 +40,13 @@ public:
   FilterEvents& operator=(const FilterEvents&) = delete;
 
   /** Notified without data when user creates or removes a filter. */
-  EventVar filter_list_change;
+  obs::EventVar filter_list_change;
 
   /** Notified with filter name when filter is updated on disk. */
-  EventVar filter_update;
+  obs::EventVar filter_update;
 
   /** Notified with filter name when applied by user. */
-  EventVar filter_apply;
+  obs::EventVar filter_apply;
 
 private:
   FilterEvents() = default;

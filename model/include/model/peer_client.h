@@ -58,7 +58,7 @@ struct PeerData {
   bool activate;   ///< API parameter, activate route after transfer
 
   /** Notified with transfer percent progress (0-100). */
-  EventVar& progress;
+  obs::EventVar& progress;
 
   /** Dialog displaying status (good, bad, ...) */
   std::function<PeerDlgResult(PeerDlg, int)> run_status_dlg;
@@ -69,7 +69,7 @@ struct PeerData {
    */
   std::function<std::pair<PeerDlgResult, std::string>()> run_pincode_dlg;
 
-  PeerData(EventVar& p);
+  PeerData(obs::EventVar& p);
 };
 
 void GetApiVersion(PeerData& peer_data);

@@ -66,7 +66,7 @@ public:
   const std::set<std::string>& GetActiveMessages() { return m_active_messages; }
 
   /** Notified without data when new message type(s) are detected. */
-  EventVar new_msg_event;
+  obs::EventVar new_msg_event;
 
 private:
   std::mutex m_mutex;

@@ -246,7 +246,7 @@ public:
   wxString GetRouteResequenceMessage(void);
   struct RoutemanDlgCtx &GetDlgContext() { return m_route_dlg_ctx; }
   NMEA0183 GetNMEA0183() { return m_NMEA0183; }
-  EventVar &GetMessageSentEventVar() { return on_message_sent; }
+  obs::EventVar &GetMessageSentEventVar() { return on_message_sent; }
   std::vector<DriverHandle> GetOutpuDriverArray() { return m_output_drivers; }
   bool m_bDataValid;
 
@@ -254,13 +254,13 @@ public:
    * Notified with message targeting all plugins. Contains a message type
    * string and a wxJSONValue shared_ptr.
    */
-  EventVar json_msg;
+  obs::EventVar json_msg;
 
   /** Notified with a shared_ptr<ActiveLegDat>, leg info to all plugins.  */
-  EventVar json_leg_info;
+  obs::EventVar json_leg_info;
 
   /** Notified when a message available as GetString() is sent to garmin. */
-  EventVar on_message_sent;
+  obs::EventVar on_message_sent;
 
 private:
   Route *pActiveRoute;
@@ -297,8 +297,8 @@ private:
   struct RoutePropDlgCtx m_prop_dlg_ctx;
   struct RoutemanDlgCtx m_route_dlg_ctx;
 
-  ObsListener msg_sent_listener;
-  ObsListener active_route_listener;
+  obs::ObsListener msg_sent_listener;
+  obs::ObsListener active_route_listener;
   std::vector<DriverHandle> m_output_drivers;
   bool m_have_n0183_out;
   bool m_have_n2000_out;

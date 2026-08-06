@@ -42,36 +42,36 @@ public:
    * a boolean "day" value, true if the new scheme uses dark text on light
    * background.
    */
-  EventVar color_scheme_change;
+  obs::EventVar color_scheme_change;
 
   /**
    * Notified when the top level status bas should be updated by gFrame
    */
-  EventVar gframe_update_status_bar;
+  obs::EventVar gframe_update_status_bar;
 
   /**
    * Notified with a shared_ptr<const AisTargetData> when gFrame should center
    * the given AIS target
    */
-  EventVar on_center_ais_target;
+  obs::EventVar on_center_ais_target;
 
   /**
    * Notified without arguments when the global variables housing the Data
    * Monitor user defined colors are updated.
    */
-  EventVar on_dm_colors_change;
+  obs::EventVar on_dm_colors_change;
 
   /** Notified when list of routes is updated (no data in event) */
-  EventVar on_routes_update;
+  obs::EventVar on_routes_update;
 
   /** Notified when waypoint(s) is updated (no data in event) */
-  EventVar on_waypoint_update;
+  obs::EventVar on_waypoint_update;
 
   /** Notified when chartdbs async operations complete, to reload charts */
-  EventVar on_finalize_chartdbs;
+  obs::EventVar on_finalize_chartdbs;
 
   /** Notified when chartdbs async operations complete, to finalize settings */
-  EventVar options_on_finalize_chartdbs;
+  obs::EventVar options_on_finalize_chartdbs;
 
 private:
   GuiEvents() = default;

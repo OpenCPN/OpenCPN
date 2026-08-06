@@ -83,7 +83,7 @@ private:
   double TypeToLong(Type t, double lon);
 };
 
-class AppMsg : public KeyProvider {
+class AppMsg : public obs::KeyProvider {
 public:
   enum class Type;
 

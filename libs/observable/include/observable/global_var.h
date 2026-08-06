@@ -28,6 +28,7 @@
 
 #include "observable.h"
 
+namespace obs {
 /**
  *  Wrapper for global variable, supports notification events when value
  *  changes.
@@ -78,8 +79,9 @@ public:
   T Get() { return *variable; }
 
 private:
-
   T* const variable;
 };
+
+}  // namespace obs
 
 #endif  // OBSERVABLE_GLOBVAR_H

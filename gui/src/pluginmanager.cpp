@@ -186,10 +186,10 @@ WX_DEFINE_LIST(Plugin_HyperlinkList);
 wxDEFINE_EVENT(EVT_SIGNALK, ObservedEvt);
 
 /** KeyProvider wrapper for a plain key string. */
-class RawKey : public KeyProvider {
+class RawKey : public obs::KeyProvider {
 public:
   explicit RawKey(const std::string& key) : m_key(key) {}
-  [[nodiscard]] std::string GetKey() const override { return m_key; }
+  [[nodiscard]] std::string GetKey() const { return m_key; }
 
 private:
   std::string m_key;
@@ -918,7 +918,7 @@ PlugInManager::PlugInManager(AbstractTopFrame* parent) {
   evt_routeman_leginfo_listener.Listen(g_pRouteMan->json_leg_info, this,
                                        EVT_LEGINFO_TO_ALL_PLUGINS);
   Bind(EVT_LEGINFO_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
-    auto ptr = UnpackEvtPointer<ActiveLegDat>(ev);
+    auto ptr = obs::UnpackEvtPointer<ActiveLegDat>(ev);
     SendActiveLegInfoToAllPlugIns(ptr.get());
   });
 
@@ -948,7 +948,7 @@ void PlugInManager::InitCommListeners() {
   m_listener_SignalK.Listen(sk_msg, this, EVT_SIGNALK);
 
   Bind(EVT_SIGNALK, [&](ObservedEvt ev) {
-    HandleSignalK(UnpackEvtPointer<SignalkMsg>(ev));
+    HandleSignalK(obs::UnpackEvtPointer<SignalkMsg>(ev));
   });
 }
 
@@ -959,8 +959,8 @@ void PlugInManager::OnNewMessageType() {
     auto key_parts = ocpn::split(msg_key, "::");
     if (key_parts.size() < 2) continue;
     if (NavMsg::GetBusByKey(msg_key) == NavAddr::Bus::N0183) {
-      ObsListener ol(RawKey(key_parts[1]), [&](ObservedEvt& ev) {
-        HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
+      obs::ObsListener ol(RawKey(key_parts[1]), [&](ObservedEvt& ev) {
+        HandleN0183(obs::UnpackEvtPointer<Nmea0183Msg>(ev));
       });
       m_0183_listeners[msg_key] = std::move(ol);
     }
@@ -1060,11 +1060,11 @@ void PlugInManager::HandlePluginLoaderEvents() {
   evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this,
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG, [&](ObservedEvt& ev) {
-    auto pTarget = UnpackEvtPointer<AisTargetData>(ev);
+    auto pTarget = obs::UnpackEvtPointer<AisTargetData>(ev);
     SendAisJsonMessage(pTarget);
   });
   Bind(EVT_PLUGMGR_ROUTEMAN_MSG, [&](ObservedEvt& ev) {
-    auto msg = UnpackEvtPointer<wxJSONValue>(ev);
+    auto msg = obs::UnpackEvtPointer<wxJSONValue>(ev);
     SendJSONMessageToAllPlugins(ev.GetString(), *msg);
   });
 }
@@ -2208,7 +2208,7 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
   rowSizer2->AddSpacer(4 * GetCharWidth());
   m_adv_button = new wxButton(this, wxID_ANY, _("Settings..."),
                               wxDefaultPosition, wxDefaultSize, 0);
-  ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
+  obs::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
   if (expert.Get(false)) {
     m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                        &CatalogMgrPanel::OnPluginSettingsButton, this);
@@ -2229,14 +2229,14 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
   SetMinSize(wxSize(m_parent->GetClientSize().x - (4 * GetCharWidth()), -1));
   Fit();
 
-  GlobalVar<wxString> catalog(&g_catalog_channel);
+  obs::GlobalVar<wxString> catalog(&g_catalog_channel);
   wxDEFINE_EVENT(EVT_CATALOG_CHANGE, wxCommandEvent);
   catalog_listener.Listen(catalog, this, EVT_CATALOG_CHANGE);
   Bind(EVT_CATALOG_CHANGE, [&](wxCommandEvent&) { SetUpdateButtonLabel(); });
 
 #else  // __ANDROID__
   SetBackgroundColour(wxColour(0x7c, 0xb0, 0xe9));  // light blue
-  ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
+  obs::ConfigVar<bool> expert("/PlugIns", "CatalogExpert", pConfig);
   if (!expert.Get(false)) {
     m_updateButton =
         new wxButton(this, wxID_ANY, _("Update Plugin Catalog: master"),

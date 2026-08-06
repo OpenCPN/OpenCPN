@@ -31,7 +31,7 @@ class OverrunEvent : public wxAppConsole {
 public:
   OverrunEvent() {
     bool result = false;
-    ObsListener listener;
+    obs::ObsListener listener;
     listener.Init(CommDriverRegistry::GetInstance().evt_comm_overrun,
                   [&](ObservedEvt&) { result = true; });
 

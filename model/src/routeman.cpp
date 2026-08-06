@@ -95,7 +95,7 @@ Routeman::Routeman(struct RoutePropDlgCtx ctx,
       m_NMEA0183(NmeaCtxFactory()),
       m_prop_dlg_ctx(ctx),
       m_route_dlg_ctx(route_dlg_ctx) {
-  GlobalVar<wxString> active_route(&g_active_route);
+  obs::GlobalVar<wxString> active_route(&g_active_route);
   auto route_action = [&](wxCommandEvent) {
     if (g_persist_active_route) ActivatePersistedRoute(this);
   };

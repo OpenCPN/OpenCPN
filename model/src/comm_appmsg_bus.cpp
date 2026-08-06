@@ -35,7 +35,7 @@
 void AppMsgBus::Notify(const std::shared_ptr<const AppMsg>& msg) {
   std::string key = "Internal::" + msg->GetKey();
   NavMsgBus::GetInstance().RegisterKey(key);
-  Observable(*msg).Notify(msg);
+  obs::Observable(*msg).Notify(msg);
 }
 
 AppMsgBus& AppMsgBus::GetInstance() {

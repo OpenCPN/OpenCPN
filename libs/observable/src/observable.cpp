@@ -25,7 +25,6 @@
  * Implement observable.h
  */
 
-
 #include <algorithm>
 #include <mutex>
 #include <sstream>
@@ -35,6 +34,7 @@
 
 #include "observable.h"
 
+namespace obs {
 std::string PtrKey(const void* ptr) {
   std::ostringstream oss;
   oss << ptr;
@@ -80,8 +80,7 @@ bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
 }
 
 void Observable::Notify(const std::shared_ptr<const void>& ptr,
-                              const std::string& s, int num,
-                              void* client_data) {
+                        const std::string& s, int num, void* client_data) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto& listeners = m_list.listeners;
 
@@ -96,8 +95,8 @@ void Observable::Notify(const std::shared_ptr<const void>& ptr,
 }
 
 void Observable::Notify() { Notify("", nullptr); }
-
 /* ObservableListener implementation. */
+}  // namespace obs
 
 void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
                                 wxEventType e) {
@@ -111,14 +110,14 @@ void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
 void ObservableListener::Listen() {
   if (!m_key.empty()) {
     assert(m_listener);
-    Observable(m_key).Listen(m_listener, m_ev_type);
+    obs::Observable(m_key).Listen(m_listener, m_ev_type);
   }
 }
 
 void ObservableListener::Unlisten() {
   if (!m_key.empty()) {
     assert(m_listener);
-    Observable(m_key).Unlisten(m_listener, m_ev_type);
+    obs::Observable(m_key).Unlisten(m_listener, m_ev_type);
     m_key = "";
   }
 }

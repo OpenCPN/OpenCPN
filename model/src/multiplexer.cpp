@@ -51,7 +51,7 @@
 Multiplexer *g_pMUX;
 
 /** KeyProvider wrapper for a plain key string. */
-class RawKey : public KeyProvider {
+class RawKey : public obs::KeyProvider {
 public:
   explicit RawKey(const std::string &key) : m_key(key) {}
   [[nodiscard]] std::string GetKey() const override { return m_key; }
@@ -352,15 +352,15 @@ void Multiplexer::OnNewMessageType() {
     switch (NavMsg::GetBusByKey(msg_key)) {
       case NavAddr::Bus::N0183:
         m_listeners[msg_key] =
-            ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
-              HandleN0183(UnpackEvtPointer<Nmea0183Msg>(ev));
+            obs::ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
+              HandleN0183(obs::UnpackEvtPointer<Nmea0183Msg>(ev));
             });
         break;
 
       case NavAddr::Bus::N2000:
         m_listeners[msg_key] =
-            ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
-              HandleN2kLog(UnpackEvtPointer<Nmea2000Msg>(ev));
+            obs::ObsListener(RawKey(key_parts[1]), [&](ObservedEvt &ev) {
+              HandleN2kLog(obs::UnpackEvtPointer<Nmea2000Msg>(ev));
             });
         break;
 

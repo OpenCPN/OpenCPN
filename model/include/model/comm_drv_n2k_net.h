@@ -215,7 +215,7 @@ private:
   wxTimer m_prodinfo_timer;
   int m_detect_count;  //  should we invoke DetectFormat?
 
-  ObsListener resume_listener;
+  obs::ObsListener resume_listener;
 
   DECLARE_EVENT_TABLE()
 };

@@ -67,7 +67,7 @@ private:
   const std::string m_iface;
   std::string m_token;
   ix::WebSocket m_ws;
-  ObsListener m_resume_listener;
+  obs::ObsListener m_resume_listener;
   DriverStats m_driver_stats;
   mutable std::mutex m_stats_mutex;
 };

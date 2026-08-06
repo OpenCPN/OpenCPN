@@ -107,9 +107,9 @@ private:
 
   void OnNewMsgTypes();
 
-  ObsListener rest_activate_listener;
-  ObsListener rest_reverse_listener;
-  ObsListener new_msg_type_listener;
+  obs::ObsListener rest_activate_listener;
+  obs::ObsListener rest_reverse_listener;
+  obs::ObsListener new_msg_type_listener;
 
   CallbacksByPlugin m_api_events_callbacks;
 };

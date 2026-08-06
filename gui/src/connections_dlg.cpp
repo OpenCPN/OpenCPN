@@ -358,7 +358,7 @@ public:
 /** The "Add new connection" button */
 class AddConnectionButton final : public wxButton {
 public:
-  AddConnectionButton(wxWindow* parent, EventVar& evt_add_connection,
+  AddConnectionButton(wxWindow* parent, obs::EventVar& evt_add_connection,
                       const std::function<void(ConnectionParams* p,
                                                bool editing)>& _start_edit_conn)
       : wxButton(parent, wxID_ANY, _("Add new connection...")),
@@ -371,7 +371,7 @@ public:
 private:
   void OnAddConnection() const { m_start_edit_conn(nullptr, false); }
 
-  EventVar& m_evt_add_connection;
+  obs::EventVar& m_evt_add_connection;
   std::function<void(ConnectionParams* p, bool editing)> m_start_edit_conn;
 };
 
@@ -380,7 +380,7 @@ class Connections final : public wxGrid {
 public:
   Connections(wxWindow* parent,
               const std::vector<ConnectionParams*>& connections,
-              EventVar& on_conn_update,
+              obs::EventVar& on_conn_update,
               const std::function<void(ConnectionParams* p, bool editing)>&
                   on_edit_conn)
       : wxGrid(parent, wxID_ANY),
@@ -796,14 +796,14 @@ private:
     }
   }
 
-  ObsListener conn_change_lstnr;
+  obs::ObsListener conn_change_lstnr;
   std::vector<std::vector<std::string>> m_tooltips;
   ConnStates m_conn_states;
   const std::vector<ConnectionParams*>& m_connections;
   std::array<unsigned, 7> m_header_column_widths;
   int m_last_tooltip_cell;
   ColorScheme m_cs;
-  EventVar& m_on_conn_delete;
+  obs::EventVar& m_on_conn_delete;
   StdIcons m_icons;
   std::vector<BitmapCellRenderer*> m_renderer_status_vector;
   std::function<void(ConnectionParams* p, bool editing)> m_on_edit_conn;
@@ -1083,7 +1083,7 @@ private:
 class TopPanel : public wxPanel {
 public:
   TopPanel(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
-           EventVar& evt_add_connection,
+           obs::EventVar& evt_add_connection,
            const std::function<void(ConnectionParams* p, bool editing)>&
                on_edit_conn)
       : wxPanel(parent, wxID_ANY),
@@ -1138,11 +1138,11 @@ public:
   }
   [[nodiscard]] Connections* GetConnectionsGrid() const { return m_conn_grid; }
 
-  EventVar& m_evt_add_connection;
+  obs::EventVar& m_evt_add_connection;
 
 private:
   const std::vector<ConnectionParams*>& m_connections;
-  ObsListener m_add_connection_lstnr;
+  obs::ObsListener m_add_connection_lstnr;
   Connections* m_conn_grid;
   GeneralPanel* m_general_panel;
   AdvancedPanel* m_advanced_panel;
@@ -1152,7 +1152,7 @@ private:
 class TopScroll : public wxScrolledWindow {
 public:
   TopScroll(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
-            EventVar& evt_add_connection)
+            obs::EventVar& evt_add_connection)
       : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                          wxVSCROLL | wxHSCROLL, TopScrollWindowName) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);

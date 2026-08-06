@@ -111,8 +111,8 @@ private:
   wxStaticText* premtext;
   wxButton* m_RescanButton;
   wxCheckBox* m_activate_chkbox;
-  EventVar progress;
-  ObsListener progress_listener;
+  obs::EventVar progress;
+  obs::ObsListener progress_listener;
   std::vector<std::string> m_own_ip_addresses;
 
   wxTimer m_autoScanTimer;
