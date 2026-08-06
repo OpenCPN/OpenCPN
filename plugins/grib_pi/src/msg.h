@@ -4,12 +4,13 @@
 // Author:      Julian Smart
 // Modified by:
 // Created:     2001-08-21
-// RCS-ID:      $Id: msg.h 28475 2004-07-25 15:44:47Z VZ $
 // Copyright:   (c) Julian Smart
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * Email Message Encapsulation.
  *
  * Provides a cross-platform email message class for GRIB data requests:
@@ -26,8 +27,9 @@
  * requests for weather data from GRIB servers and services that support
  * email-based data delivery.
  */
-#ifndef _WX_MSG_H_
-#define _WX_MSG_H_
+
+#ifndef WX_MSG_H_
+#define WX_MSG_H_
 
 #define WXDLLIMPEXP_NETUTILS
 #define WXDLLIMPEXP_DATA_NETUTILS(type) type
@@ -54,7 +56,7 @@ public:
     }
   }
 
-  wxMailMessage() {};
+  wxMailMessage() = default;
 
   //// Accessors
 
@@ -83,4 +85,4 @@ public:
       m_attachmentTitles;  // Titles to use for the email file attachments
 };
 
-#endif  // _WX_MSG_H_
+#endif  // WX_MSG_H_

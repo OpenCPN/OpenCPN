@@ -13,12 +13,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
+
 /**
  * \file
+ *
  * Device Context Abstraction Layer.
  *
  * Provides a unified drawing interface that works across different rendering
@@ -37,13 +37,14 @@
  * consistent rendering capabilities for weather data visualization across
  * different platforms and rendering systems.
  */
-#ifndef __PIOCPNDC_H__
-#define __PIOCPNDC_H__
+
+#ifndef PIOCPNDC_H__
+#define PIOCPNDC_H__
 
 #include <vector>
 #include "linmath.h"
 
-#include "pi_TexFont.h"
+#include "pi_tex_font.h"
 #include "ocpn_plugin.h"
 
 #ifdef ocpnUSE_GL
@@ -179,4 +180,4 @@ protected:
   bool m_buseGL;
 };
 
-#endif
+#endif  //      PIOCPNDC_H__

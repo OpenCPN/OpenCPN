@@ -1,0 +1,77 @@
+/***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * GRIB Cursor Data Tracking and Display.
+ *
+ * Classes for tracking and displaying GRIB weather data at the cursor
+ * position on the chart. Provides real-time updates of meteorological
+ * parameters as the cursor moves.
+ */
+
+#ifndef GRIBUICData_H__
+#define GRIBUICData_H__
+
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include "grib_ui_dlg_base.h"
+#include "grib_settings_dlg.h"
+#include "grabber_win.h"
+
+class GRIBUICtrlBar;
+class GribGrabberWin;
+class GribSpacerWin;
+
+/**
+ * Tracks and displays GRIB meteorological data at cursor position.
+ *
+ * Display various meteorological parameters (wind, pressure, waves, etc.) at
+ * the current cursor position on the chart. Manages data display controls and
+ * handles user interactions for display preferences.
+ */
+class CursorData : public CursorDataBase {
+public:
+  CursorData(wxWindow *window, GRIBUICtrlBar &parent);
+  ~CursorData() {}
+
+  void OnCursorTrackTimer(wxTimerEvent &event) { UpdateTrackingControls(); }
+  void PopulateTrackingControls(bool vertical);
+  void UpdateTrackingControls();
+  void ResolveDisplayConflicts(int Id);
+  void OnMouseEvent(wxMouseEvent &event);
+
+  wxTimer m_tCursorTrackTimer;
+
+private:
+  void AddTrackingControl(wxControl *ctrl1, wxControl *ctrl2, wxControl *ctrl3,
+                          wxControl *ctrl4, bool show, bool vertical,
+                          int wictrl2, int wictrl3 = 0);
+  void MenuAppend(wxMenu *menu, int id, const wxString &label, int setting_);
+  void OnCBAny(wxCommandEvent &event);
+  void OnMenuCallBack(wxMouseEvent &event);
+
+  GRIBUICtrlBar &m_gparent;
+  bool m_bLeftDown;
+};
+
+#endif  //      GRIBUICData_H__

@@ -7,22 +7,25 @@
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * \implements \ref jsonreader.h
  */
+
 #ifdef NDEBUG
 // make wxLogTrace a noop if no debug set, it's really slow
 // must be defined before including debug.h
 #define wxDEBUG_LEVEL 0
 #endif
 
-#include <wx/jsonreader.h>
-
 #include <wx/mstream.h>
 #include <wx/sstream.h>
 #include <wx/debug.h>
 #include <wx/log.h>
+
+#include "jsonreader.h"
 
 /*! \class wxJSONReader
  \brief The JSON parser

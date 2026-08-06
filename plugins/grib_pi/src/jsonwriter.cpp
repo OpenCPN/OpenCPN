@@ -7,22 +7,25 @@
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * \implements \ref jsonwriter.h
  */
+
 #ifdef NDEBUG
 // make wxLogTrace a noop if no debug set, it's really slow
 // must be defined before including debug.h
 #define wxDEBUG_LEVEL 0
 #endif
 
-#include <wx/jsonwriter.h>
-
 #include <wx/sstream.h>
 #include <wx/mstream.h>
 #include <wx/debug.h>
 #include <wx/log.h>
+
+#include "jsonwriter.h"
 
 #if wxDEBUG_LEVEL > 0
 static const wxChar* writerTraceMask = "traceWriter";

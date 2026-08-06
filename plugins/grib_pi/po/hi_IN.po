@@ -73,7 +73,7 @@ msgstr ""
 
 #: src/GribUIDialog.cpp:1012 src/GribUIDialogBase.cpp:118
 #: src/GribUIDialogBase.cpp:244 src/GribUIDialogBase.cpp:1835
-#: src/GribUIDialogBase.h:412
+#: src/grib_ui_dlg_base.h:412
 msgid "Settings"
 msgstr ""
 
@@ -102,7 +102,7 @@ msgid " can't be read!"
 msgstr ""
 
 #: src/GribUIDialog.cpp:2388 src/GribUIDialog.cpp:2392
-#: src/GribUIDialogBase.h:241
+#: src/grib_ui_dlg_base.h:241
 msgid "GRIB Display Control"
 msgstr ""
 
@@ -304,7 +304,7 @@ msgstr "यह विकल्प आपको सूचित करता ह�
 "यह नहीं भूलना चाहिए कि प्रदर्शित डेटा वास्तविक नहीं होगा, लेकिन पुन: कंप्यूट किया जाएगा\n"
 "यह सटीकता कम कर सकता है!"
 
-#: src/GribUIDialog.h:289 src/GribUIDialogBase.cpp:2374
+#: src/grib_ui_dlg.h:289 src/GribUIDialogBase.cpp:2374
 msgid "Choose GRIB File Directory"
 msgstr ""
 
@@ -944,15 +944,15 @@ msgstr ""
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr ""
 
-#: src/GribUIDialogBase.h:447
+#: src/grib_ui_dlg_base.h:447
 msgid "Preferences"
 msgstr ""
 
-#: src/GribUIDialogBase.h:603
+#: src/grib_ui_dlg_base.h:603
 msgid "Get forecast..."
 msgstr ""
 
-#: src/GribUIDialogBase.h:631
+#: src/grib_ui_dlg_base.h:631
 msgid "Grib Data Table"
 msgstr ""
 

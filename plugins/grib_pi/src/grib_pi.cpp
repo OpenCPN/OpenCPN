@@ -12,30 +12,33 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
+
 /**
  * \file
+ *
  * \implements \ref grib_pi.h
  */
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
+#endif
 
 #include "pi_gl.h"
 
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
 #endif
-#endif  // precompiled headers
 
 #include <wx/fileconf.h>
 #include <wx/stdpaths.h>
 
 #include "grib_pi.h"
+
+#include "jsonwriter.h"
 
 #ifdef __WXQT__
 #include "qdebug.h"
@@ -46,14 +49,14 @@ double g_ContentScaleFactor;
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin *create_pi(void *ppimgr) {
-  return new grib_pi(ppimgr);
+  return new GribPi(ppimgr);
 }
 
 extern "C" DECL_EXP void destroy_pi(opencpn_plugin *p) { delete p; }
 
 extern int m_DialogStyle;
 
-grib_pi *g_pi;
+GribPi *g_pi;
 bool g_bpause;
 
 //---------------------------------------------------------------------------------------------------------
@@ -70,7 +73,7 @@ bool g_bpause;
 //
 //---------------------------------------------------------------------------------------------------------
 
-grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
+GribPi::GribPi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
   // Create the PlugIn icons
   initialize_images();
 
@@ -90,13 +93,13 @@ grib_pi::grib_pi(void *ppimgr) : opencpn_plugin_116(ppimgr) {
   g_pi = this;
 }
 
-grib_pi::~grib_pi(void) {
+GribPi::~GribPi() {
   delete _img_grib_pi;
   delete _img_grib;
   delete m_pLastTimelineSet;
 }
 
-int grib_pi::Init(void) {
+int GribPi::Init() {
   AddLocaleCatalog("opencpn-grib_pi");
 
   // Set some default private member parameters
@@ -171,7 +174,7 @@ int grib_pi::Init(void) {
           WANTS_ONPAINT_VIEWPORT | WANTS_MOUSE_EVENTS | WANTS_NMEA_EVENTS);
 }
 
-bool grib_pi::DeInit(void) {
+bool GribPi::DeInit() {
   // Reset timeline to system time before shutting down
   SendTimelineMessage(wxInvalidDateTime);
 
@@ -187,21 +190,21 @@ bool grib_pi::DeInit(void) {
   return true;
 }
 
-int grib_pi::GetAPIVersionMajor() { return MY_API_VERSION_MAJOR; }
+int GribPi::GetAPIVersionMajor() { return MY_API_VERSION_MAJOR; }
 
-int grib_pi::GetAPIVersionMinor() { return MY_API_VERSION_MINOR; }
+int GribPi::GetAPIVersionMinor() { return MY_API_VERSION_MINOR; }
 
-int grib_pi::GetPlugInVersionMajor() { return PLUGIN_VERSION_MAJOR; }
+int GribPi::GetPlugInVersionMajor() { return PLUGIN_VERSION_MAJOR; }
 
-int grib_pi::GetPlugInVersionMinor() { return PLUGIN_VERSION_MINOR; }
+int GribPi::GetPlugInVersionMinor() { return PLUGIN_VERSION_MINOR; }
 
-wxBitmap *grib_pi::GetPlugInBitmap() { return &m_panelBitmap; }
+wxBitmap *GribPi::GetPlugInBitmap() { return &m_panelBitmap; }
 
-wxString grib_pi::GetCommonName() { return "GRIB"; }
+wxString GribPi::GetCommonName() { return "GRIB"; }
 
-wxString grib_pi::GetShortDescription() { return _("GRIB PlugIn for OpenCPN"); }
+wxString GribPi::GetShortDescription() { return _("GRIB PlugIn for OpenCPN"); }
 
-wxString grib_pi::GetLongDescription() {
+wxString GribPi::GetLongDescription() {
   return _(
       "GRIB PlugIn for OpenCPN\n\
 Provides basic GRIB file overlay capabilities for several GRIB file types\n\
@@ -220,18 +223,18 @@ Supported GRIB data include:\n\
 - wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa.");
 }
 
-void grib_pi::SetDefaults(void) {}
+void GribPi::SetDefaults() {}
 
-int grib_pi::GetToolBarToolCount(void) { return 1; }
+int GribPi::GetToolBarToolCount() { return 1; }
 
-bool grib_pi::MouseEventHook(wxMouseEvent &event) {
+bool GribPi::MouseEventHook(wxMouseEvent &event) {
   if ((m_pGribCtrlBar && m_pGribCtrlBar->pReq_Dialog))
     return m_pGribCtrlBar->pReq_Dialog->MouseEventHook(event);
   return false;
 }
 
-void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
-  GribPreferencesDialog *Pref = new GribPreferencesDialog(parent);
+void GribPi::ShowPreferencesDialog(wxWindow *parent) {
+  auto *Pref = new GribPreferencesDialog(parent);
 
   DimeWindow(Pref);     // aplly global colours scheme
   SetDialogFont(Pref);  // Apply global font
@@ -249,8 +252,8 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
     wxFileConfig *pConf = GetOCPNConfigObject();
     if (pConf) {
       wxString l_grib_dir;
-      pConf->SetPath(_T ( "/Directories" ));
-      pConf->Read(_T ( "GRIBDirectory" ), &l_grib_dir);
+      pConf->SetPath("/Directories");
+      pConf->Read("GRIBDirectory", &l_grib_dir);
       Pref->m_grib_dir_sel = l_grib_dir;
       Pref->m_textDirectory->ChangeValue(l_grib_dir);
     }
@@ -261,7 +264,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
   Pref->m_sIconSizeFactor->SetValue(val);
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   if (m_parent_window) {
     int xmax = m_parent_window->GetSize().GetWidth();
     int ymax = m_parent_window->GetParent()
@@ -293,7 +296,7 @@ void grib_pi::ShowPreferencesDialog(wxWindow *parent) {
 #endif
 }
 
-void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
+void GribPi::UpdatePrefs(GribPreferencesDialog *Pref) {
   m_bGRIBUseHiDef = Pref->m_cbUseHiDef->GetValue();
   m_bGRIBUseGradualColors = Pref->m_cbUseGradualColors->GetValue();
   m_bLoadLastOpenFile = Pref->m_rbLoadOptions->GetSelection();
@@ -356,16 +359,16 @@ void grib_pi::UpdatePrefs(GribPreferencesDialog *Pref) {
   if (Pref->m_grib_dir_sel.Length()) {
     wxFileConfig *pConf = GetOCPNConfigObject();
     if (pConf) {
-      pConf->SetPath(_T ( "/Directories" ));
-      pConf->Write(_T ( "GRIBDirectory" ), Pref->m_grib_dir_sel);
-      pConf->DeleteGroup(_T ( "/Settings/GRIB/FileNames" ));
+      pConf->SetPath("/Directories");
+      pConf->Write("GRIBDirectory", Pref->m_grib_dir_sel);
+      pConf->DeleteGroup("/Settings/GRIB/FileNames");
       pConf->Flush();
     }
   }
   SaveConfig();
 }
 
-bool grib_pi::QualifyCtrlBarPosition(
+bool GribPi::QualifyCtrlBarPosition(
     wxPoint position,
     wxSize size) {  // Make sure drag bar (title bar) or grabber always screen
   bool b_reset_pos = false;
@@ -398,7 +401,7 @@ bool grib_pi::QualifyCtrlBarPosition(
   return !b_reset_pos;
 }
 
-void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position) {
+void GribPi::MoveDialog(wxDialog *dialog, wxPoint position) {
   //  Use the application frame to bound the control bar position.
   wxApp *app = wxTheApp;
 
@@ -420,7 +423,7 @@ void grib_pi::MoveDialog(wxDialog *dialog, wxPoint position) {
   dialog->Move(frame->ClientToScreen(p));
 }
 
-void grib_pi::OnToolbarToolCallback(int id) {
+void GribPi::OnToolbarToolCallback(int id) {
   // if( !::wxIsBusy() ) ::wxBeginBusyCursor();
 
   bool starting = false;
@@ -445,10 +448,9 @@ void grib_pi::OnToolbarToolCallback(int id) {
                                        this, scale_factor);
     m_pGribCtrlBar->SetScaledBitmap(scale_factor);
 
-    wxMenu *dummy = new wxMenu("Plugin");
-    wxMenuItem *table =
-        new wxMenuItem(dummy, wxID_ANY, wxString(_("Weather table")),
-                       wxEmptyString, wxITEM_NORMAL);
+    auto *dummy = new wxMenu("Plugin");
+    auto *table = new wxMenuItem(dummy, wxID_ANY, wxString(_("Weather table")),
+                                 wxEmptyString, wxITEM_NORMAL);
     /* Menu font do not work properly for MSW (wxWidgets 3.2.1)
     #ifdef __WXMSW__
         wxFont *qFont = OCPNGetFont(_("Menu"));
@@ -493,7 +495,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
         MoveDialog(m_pGribCtrlBar->GetCDataDialog(), GetCursorDataXY());
         m_pGribCtrlBar->GetCDataDialog()->Show(m_pGribCtrlBar->m_CDataIsShown);
       }
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
       m_pGribCtrlBar->SetDialogsStyleSizePosition(true);
       m_pGribCtrlBar->Refresh();
 #endif
@@ -526,7 +528,7 @@ void grib_pi::OnToolbarToolCallback(int id) {
     m_pGribCtrlBar->Close();
 }
 
-void grib_pi::OnGribCtrlBarClose() {
+void GribPi::OnGribCtrlBarClose() {
   m_bShowGrib = false;
   SetToolbarItemState(m_leftclick_tool_id, m_bShowGrib);
 
@@ -540,7 +542,7 @@ void grib_pi::OnGribCtrlBarClose() {
 
   if (::wxIsBusy()) ::wxEndBusyCursor();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_DialogStyleChanged = true;  //  Force a delete of the control bar dialog
 #endif
 
@@ -551,9 +553,9 @@ void grib_pi::OnGribCtrlBarClose() {
   }
 }
 
-bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) { return false; }
+bool GribPi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) { return false; }
 
-bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) {
+bool GribPi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) {
   if (!m_pGribCtrlBar || !m_pGribCtrlBar->IsShown() || !m_pGRIBOverlayFactory)
     return false;
 
@@ -574,12 +576,12 @@ bool grib_pi::DoRenderOverlay(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex) {
   return true;
 }
 
-bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
+bool GribPi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) {
   return false;
 }
 
-bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
-                                int canvasIndex) {
+bool GribPi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
+                               int canvasIndex) {
   if (!m_pGribCtrlBar || !m_pGribCtrlBar->IsShown() || !m_pGRIBOverlayFactory)
     return false;
 
@@ -599,34 +601,34 @@ bool grib_pi::DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
 
   if (::wxIsBusy()) ::wxEndBusyCursor();
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
   m_pGribCtrlBar->Raise();  // Control bar should always be visible
 #endif
 
   return true;
 }
 
-bool grib_pi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
-                                         PlugIn_ViewPort *vp, int canvasIndex) {
+bool GribPi::RenderGLOverlayMultiCanvas(wxGLContext *pcontext,
+                                        PlugIn_ViewPort *vp, int canvasIndex) {
   return DoRenderGLOverlay(pcontext, vp, canvasIndex);
 }
 
-bool grib_pi::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
-                                       int canvasIndex) {
+bool GribPi::RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
+                                      int canvasIndex) {
   return DoRenderOverlay(dc, vp, canvasIndex);
 }
 
-void grib_pi::SetCursorLatLon(double lat, double lon) {
+void GribPi::SetCursorLatLon(double lat, double lon) {
   if (m_pGribCtrlBar && m_pGribCtrlBar->IsShown())
     m_pGribCtrlBar->SetCursorLatLon(lat, lon);
 }
 
-void grib_pi::OnContextMenuItemCallback(int id) {
+void GribPi::OnContextMenuItemCallback(int id) {
   if (!m_pGribCtrlBar->m_bGRIBActiveFile) return;
   m_pGribCtrlBar->ContextMenuItemCallback(id);
 }
 
-void grib_pi::SetDialogFont(wxWindow *dialog, wxFont *font) {
+void GribPi::SetDialogFont(wxWindow *dialog, wxFont *font) {
   dialog->SetFont(*font);
   wxWindowList list = dialog->GetChildren();
   wxWindowListNode *node = list.GetFirst();
@@ -639,7 +641,7 @@ void grib_pi::SetDialogFont(wxWindow *dialog, wxFont *font) {
   dialog->Refresh();
 }
 
-void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
+void GribPi::SetPluginMessage(wxString &message_id, wxString &message_body) {
   if (message_id == "GRIB_VALUES_REQUEST") {
     if (!m_pGribCtrlBar) OnToolbarToolCallback(-1);
 
@@ -764,70 +766,70 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body) {
   }
 }
 
-bool grib_pi::LoadConfig(void) {
-  wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
+bool GribPi::LoadConfig() {
+  auto *pConf = (wxFileConfig *)m_pconfig;
 
   if (!pConf) return false;
 
-  pConf->SetPath(_T( "/PlugIns/GRIB" ));
-  pConf->Read(_T( "LoadLastOpenFile" ), &m_bLoadLastOpenFile, 0);
-  pConf->Read(_T("OpenFileOption" ), &m_bStartOptions, 1);
-  pConf->Read(_T( "GRIBUseHiDef" ), &m_bGRIBUseHiDef, 0);
-  pConf->Read(_T( "GRIBUseGradualColors" ), &m_bGRIBUseGradualColors, 0);
-  pConf->Read(_T( "DrawBarbedArrowHead" ), &m_bDrawBarbedArrowHead, 1);
-  pConf->Read(_T( "ZoomToCenterAtInit"), &m_bZoomToCenterAtInit, 1);
-  pConf->Read(_T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1);
-  pConf->Read(_T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1);
-  pConf->Read(_T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1);
+  pConf->SetPath("/PlugIns/GRIB");
+  pConf->Read("LoadLastOpenFile", &m_bLoadLastOpenFile, 0);
+  pConf->Read("OpenFileOption", &m_bStartOptions, 1);
+  pConf->Read("GRIBUseHiDef", &m_bGRIBUseHiDef, false);
+  pConf->Read("GRIBUseGradualColors", &m_bGRIBUseGradualColors, false);
+  pConf->Read("DrawBarbedArrowHead", &m_bDrawBarbedArrowHead, true);
+  pConf->Read("ZoomToCenterAtInit", &m_bZoomToCenterAtInit, true);
+  pConf->Read("ShowGRIBIcon", &m_bGRIBShowIcon, true);
+  pConf->Read("CopyFirstCumulativeRecord", &m_bCopyFirstCumRec, true);
+  pConf->Read("CopyMissingWaveRecord", &m_bCopyMissWaveRec, true);
 #ifdef __WXMSW__
   pConf->Read("GribIconsScaleFactor", &m_GribIconsScaleFactor, 1);
 #endif
 
-  m_CtrlBar_Sizexy.x = pConf->Read(_T ( "GRIBCtrlBarSizeX" ), 1400L);
-  m_CtrlBar_Sizexy.y = pConf->Read(_T ( "GRIBCtrlBarSizeY" ), 800L);
-  m_CtrlBarxy.x = pConf->Read(_T ( "GRIBCtrlBarPosX" ), 20L);
-  m_CtrlBarxy.y = pConf->Read(_T ( "GRIBCtrlBarPosY" ), 60L);
-  m_CursorDataxy.x = pConf->Read(_T ( "GRIBCursorDataPosX" ), 20L);
-  m_CursorDataxy.y = pConf->Read(_T ( "GRIBCursorDataPosY" ), 170L);
+  m_CtrlBar_Sizexy.x = pConf->Read("GRIBCtrlBarSizeX", 1400L);
+  m_CtrlBar_Sizexy.y = pConf->Read("GRIBCtrlBarSizeY", 800L);
+  m_CtrlBarxy.x = pConf->Read("GRIBCtrlBarPosX", 20L);
+  m_CtrlBarxy.y = pConf->Read("GRIBCtrlBarPosY", 60L);
+  m_CursorDataxy.x = pConf->Read("GRIBCursorDataPosX", 20L);
+  m_CursorDataxy.y = pConf->Read("GRIBCursorDataPosY", 170L);
 
-  pConf->Read(_T ( "GribCursorDataDisplayStyle" ), &m_DialogStyle, 0);
+  pConf->Read("GribCursorDataDisplayStyle", &m_DialogStyle, 0);
   if (m_DialogStyle > 3)
     m_DialogStyle = 0;  // ensure validity of the .conf value
 
   return true;
 }
 
-bool grib_pi::SaveConfig(void) {
+bool GribPi::SaveConfig(void) {
   wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
 
   if (!pConf) return false;
 
-  pConf->SetPath(_T( "/PlugIns/GRIB" ));
+  pConf->SetPath("/PlugIns/GRIB");
 
-  pConf->Write(_T ( "LoadLastOpenFile" ), m_bLoadLastOpenFile);
-  pConf->Write(_T ( "OpenFileOption" ), m_bStartOptions);
-  pConf->Write(_T ( "ShowGRIBIcon" ), m_bGRIBShowIcon);
-  pConf->Write(_T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef);
-  pConf->Write(_T ( "GRIBUseGradualColors" ), m_bGRIBUseGradualColors);
-  pConf->Write(_T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec);
-  pConf->Write(_T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec);
-  pConf->Write(_T ( "DrawBarbedArrowHead" ), m_bDrawBarbedArrowHead);
-  pConf->Write(_T ( "ZoomToCenterAtInit"), m_bZoomToCenterAtInit);
+  pConf->Write("LoadLastOpenFile", m_bLoadLastOpenFile);
+  pConf->Write("OpenFileOption", m_bStartOptions);
+  pConf->Write("ShowGRIBIcon", m_bGRIBShowIcon);
+  pConf->Write("GRIBUseHiDef", m_bGRIBUseHiDef);
+  pConf->Write("GRIBUseGradualColors", m_bGRIBUseGradualColors);
+  pConf->Write("CopyFirstCumulativeRecord", m_bCopyFirstCumRec);
+  pConf->Write("CopyMissingWaveRecord", m_bCopyMissWaveRec);
+  pConf->Write("DrawBarbedArrowHead", m_bDrawBarbedArrowHead);
+  pConf->Write("ZoomToCenterAtInit", m_bZoomToCenterAtInit);
 #ifdef __WXMSW__
   pConf->Write("GribIconsScaleFactor", m_GribIconsScaleFactor);
 #endif
 
-  pConf->Write(_T ( "GRIBCtrlBarSizeX" ), m_CtrlBar_Sizexy.x);
-  pConf->Write(_T ( "GRIBCtrlBarSizeY" ), m_CtrlBar_Sizexy.y);
-  pConf->Write(_T ( "GRIBCtrlBarPosX" ), m_CtrlBarxy.x);
-  pConf->Write(_T ( "GRIBCtrlBarPosY" ), m_CtrlBarxy.y);
-  pConf->Write(_T ( "GRIBCursorDataPosX" ), m_CursorDataxy.x);
-  pConf->Write(_T ( "GRIBCursorDataPosY" ), m_CursorDataxy.y);
+  pConf->Write("GRIBCtrlBarSizeX", m_CtrlBar_Sizexy.x);
+  pConf->Write("GRIBCtrlBarSizeY", m_CtrlBar_Sizexy.y);
+  pConf->Write("GRIBCtrlBarPosX", m_CtrlBarxy.x);
+  pConf->Write("GRIBCtrlBarPosY", m_CtrlBarxy.y);
+  pConf->Write("GRIBCursorDataPosX", m_CursorDataxy.x);
+  pConf->Write("GRIBCursorDataPosY", m_CursorDataxy.y);
 
   return true;
 }
 
-void grib_pi::SetColorScheme(PI_ColorScheme cs) {
+void GribPi::SetColorScheme(PI_ColorScheme cs) {
   DimeWindow(m_pGribCtrlBar);
   if (m_pGribCtrlBar) {
     if (m_pGRIBOverlayFactory) m_pGRIBOverlayFactory->ClearCachedLabel();
@@ -837,7 +839,7 @@ void grib_pi::SetColorScheme(PI_ColorScheme cs) {
   }
 }
 
-void grib_pi::SendTimelineMessage(wxDateTime time) {
+void GribPi::SendTimelineMessage(wxDateTime time) {
   if (!m_pGribCtrlBar) return;
 
   wxJSONValue v;
@@ -862,7 +864,7 @@ void grib_pi::SendTimelineMessage(wxDateTime time) {
   SendPluginMessage(wxString("GRIB_TIMELINE"), out);
 }
 
-void grib_pi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
+void GribPi::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) {
   m_boat_cog = pfix.Cog;
   m_boat_sog = pfix.Sog;
   m_boat_lat = pfix.Lat;

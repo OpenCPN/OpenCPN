@@ -4,14 +4,16 @@
 // Author:      PJ Naughter <pjna@naughter.com>
 // Modified by: Julian Smart
 // Created:     2001-08-21
-// RCS-ID:      $Id: smapi.cpp 35650 2005-09-23 12:56:45Z MR $
 // Copyright:   (c) PJ Naughter
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * \implements \ref smapi.h
  */
+
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -190,8 +192,8 @@ bool wxMapiSession::Logon(const wxString& sProfileName,
                               flags | MAPI_NEW_SESSION, 0, &m_data->m_hSession);
   if (nError != SUCCESS_SUCCESS && nError != MAPI_E_USER_ABORT) {
     // Failed to create a create mapi session, try to acquire a shared mapi
-    // session wxLogDebug(_T("Failed to logon to MAPI using a new session,
-    // trying to acquire a shared one\n"));
+    // session wxLogDebug("Failed to logon to MAPI using a new session,
+    // trying to acquire a shared one\n");
     nError = m_data->m_lpfnMAPILogon(nUIParam, nullptr, nullptr, 0, 0,
                                      &m_data->m_hSession);
     if (nError == SUCCESS_SUCCESS) {

@@ -12,12 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
+
 /**
  * \file
+ *
  * GRIB Weather Data Plugin for OpenCPN.
  *
  * Primary plugin interface for the GRIB weather data visualization system.
@@ -33,15 +33,24 @@
  * interpolation between forecast times, and provides various visualization
  * options including wind barbs, particle animations, and color-coded overlays.
  */
-#ifndef _GRIBPI_H_
-#define _GRIBPI_H_
 
-#include "wx/wxprec.h"
+#ifndef GRIBPI_H_
+#define GRIBPI_H_
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
+#include <wx/wx.h>
 #include <wx/glcanvas.h>
-#endif  // precompiled headers
+#endif
+
+#include "jsonreader.h"
+#include "jsonwriter.h"
+
+#include "grib_settings_dlg.h"
+#include "grib_overlay_factory.h"
+#include "grib_ui_dlg.h"
+#include "ocpn_plugin.h"
 
 #define PLUGIN_VERSION_MAJOR 5
 #define PLUGIN_VERSION_MINOR 0
@@ -49,29 +58,20 @@
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 16
 
-#include "ocpn_plugin.h"
-
-#include "wx/jsonreader.h"
-#include "wx/jsonwriter.h"
-
-#include "GribSettingsDialog.h"
-#include "GribOverlayFactory.h"
-#include "GribUIDialog.h"
-
-class GribPreferencesDialog;
-
-//----------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //    The PlugIn Class Definition
-//----------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-#define GRIB_TOOL_POSITION -1  // Request default positioning of ToolBar tool
-#define STARTING_STATE_STYLE 9999  // style option undifined
+#define GRIB_TOOL_POSITION (-1)    // Request Toolbar tool default positioning
+#define STARTING_STATE_STYLE 9999  // style option undefined
 #define ATTACHED 0                 // dialog are attached
 #define SEPARATED 1                // dialog are separated
 #define ATTACHED_HAS_CAPTION 0     // dialog attached  has a caption
 #define ATTACHED_NO_CAPTION 1      // dialog attached don't have caption
-#define SEPARATED_HORIZONTAL 2     // dialog separated shown honrizontaly
-#define SEPARATED_VERTICAL 3       // dialog separated shown vaerticaly
+#define SEPARATED_HORIZONTAL 2     // dialog separated shown horizontally
+#define SEPARATED_VERTICAL 3       // dialog separated shown vertically
+
+class GribPreferencesDialog;
 
 enum SettingsDisplay {
   B_ARROWS,
@@ -85,48 +85,49 @@ enum SettingsDisplay {
   PARTICLES
 };
 
-class grib_pi : public opencpn_plugin_116 {
+class GribPi : public opencpn_plugin_116 {
 public:
-  grib_pi(void *ppimgr);
-  ~grib_pi(void);
+  GribPi(void *ppimgr);
+  ~GribPi() override;
 
   //    The required PlugIn Methods
-  int Init(void);
-  bool DeInit(void);
+  int Init() override;
+  bool DeInit() override;
 
-  int GetAPIVersionMajor();
-  int GetAPIVersionMinor();
-  int GetPlugInVersionMajor();
-  int GetPlugInVersionMinor();
-  wxBitmap *GetPlugInBitmap();
-  wxString GetCommonName();
-  wxString GetShortDescription();
-  wxString GetLongDescription();
+  int GetAPIVersionMajor() override;
+  int GetAPIVersionMinor() override;
+  int GetPlugInVersionMajor() override;
+  int GetPlugInVersionMinor() override;
+  wxBitmap *GetPlugInBitmap() override;
+  wxString GetCommonName() override;
+  wxString GetShortDescription() override;
+  wxString GetLongDescription() override;
 
   //    The override PlugIn Methods
-  bool MouseEventHook(wxMouseEvent &event);
-  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
-  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp, int canvasIndex);
-  void SetCursorLatLon(double lat, double lon);
-  void OnContextMenuItemCallback(int id);
-  void SetPluginMessage(wxString &message_id, wxString &message_body);
-  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+  bool MouseEventHook(wxMouseEvent &event) override;
+  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) override;
+  bool RenderOverlayMultiCanvas(wxDC &dc, PlugIn_ViewPort *vp,
+                                int canvasIndex) override;
+  void SetCursorLatLon(double lat, double lon) override;
+  void OnContextMenuItemCallback(int id) override;
+  void SetPluginMessage(wxString &message_id, wxString &message_body) override;
+  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) override;
   bool RenderGLOverlayMultiCanvas(wxGLContext *pcontext, PlugIn_ViewPort *vp,
-                                  int canvasIndex);
+                                  int canvasIndex) override;
   void SendTimelineMessage(wxDateTime time);
-  void SetDefaults(void);
-  int GetToolBarToolCount(void);
-  void ShowPreferencesDialog(wxWindow *parent);
-  void OnToolbarToolCallback(int id);
+  void SetDefaults() override;
+  int GetToolBarToolCount();
+  void ShowPreferencesDialog(wxWindow *parent) override;
+  void OnToolbarToolCallback(int id) override;
   bool QualifyCtrlBarPosition(wxPoint position, wxSize size);
   void MoveDialog(wxDialog *dialog, wxPoint position);
-  void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
+  void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix) override;
 
   // Other public methods
   void SetCtrlBarXY(wxPoint p) { m_CtrlBarxy = p; }
   void SetCursorDataXY(wxPoint p) { m_CursorDataxy = p; }
   void SetCtrlBarSizeXY(wxSize p) { m_CtrlBar_Sizexy = p; }
-  void SetColorScheme(PI_ColorScheme cs);
+  void SetColorScheme(PI_ColorScheme cs) override;
   void SetDialogFont(wxWindow *window, wxFont *font = OCPNGetFont(_("Dialog")));
   /**
    * Callback invoked by OpenCPN core whenever the current ViewPort changes or
@@ -134,21 +135,21 @@ public:
    *
    * In multi-canvas configurations, each canvas triggers a viewport update.
    */
-  void SetCurrentViewPort(PlugIn_ViewPort &vp) { m_current_vp = vp; }
+  void SetCurrentViewPort(PlugIn_ViewPort &vp) override { m_current_vp = vp; }
   PlugIn_ViewPort &GetCurrentViewPort() { return m_current_vp; }
 
   void OnGribCtrlBarClose();
 
   wxPoint GetCtrlBarXY() { return m_CtrlBarxy; }
   wxPoint GetCursorDataXY() { return m_CursorDataxy; }
-  int GetStartOptions() { return m_bStartOptions; }
+  [[nodiscard]] int GetStartOptions() const { return m_bStartOptions; }
   /**
    * Returns true if cumulative parameters like precipitation and cloud cover
    * should initialize their start values from the first record.
    *
    * This avoids artificial zero values at the beginning of the time series.
    */
-  bool GetCopyFirstCumRec() { return m_bCopyFirstCumRec; }
+  [[nodiscard]] bool GetCopyFirstCumRec() const { return m_bCopyFirstCumRec; }
   /**
    * Returns true if wave data should be propagated across time periods where
    * wave records are missing.
@@ -156,10 +157,12 @@ public:
    * This ensures continuity of wave visualization even when data points are
    * sparse.
    */
-  bool GetCopyMissWaveRec() { return m_bCopyMissWaveRec; }
+  [[nodiscard]] bool GetCopyMissWaveRec() const { return m_bCopyMissWaveRec; }
 
   GRIBOverlayFactory *m_pGRIBOverlayFactory;
-  GRIBOverlayFactory *GetGRIBOverlayFactory() { return m_pGRIBOverlayFactory; }
+  [[nodiscard]] GRIBOverlayFactory *GetGRIBOverlayFactory() const {
+    return m_pGRIBOverlayFactory;
+  }
 
   void UpdatePrefs(GribPreferencesDialog *Pref);
 
@@ -175,8 +178,8 @@ public:
   time_t m_boat_time;
 
 private:
-  bool LoadConfig(void);
-  bool SaveConfig(void);
+  bool LoadConfig();
+  bool SaveConfig();
 
   bool DoRenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp,
                          int canvasIndex);
@@ -245,11 +248,12 @@ class GribPreferencesDialog : public GribPreferencesDialogBase {
 public:
   GribPreferencesDialog(wxWindow *pparent)
       : GribPreferencesDialogBase(pparent) {}
-  ~GribPreferencesDialog() {}
+  ~GribPreferencesDialog() override = default;
 
-  void OnOKClick(wxCommandEvent &event);
+protected:
+  void OnOKClick(wxCommandEvent &event) override;
 
 private:
-  void OnStartOptionChange(wxCommandEvent &event);
+  void OnStartOptionChange(wxCommandEvent &event) override;
 };
-#endif
+#endif  //      GRIBPI_H_

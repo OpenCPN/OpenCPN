@@ -4,12 +4,13 @@
 // Author:      Julian Smart
 // Modified by:
 // Created:     2001-08-21
-// RCS-ID:      $Id: email.h 35650 2005-09-23 12:56:45Z MR $
-// Copyright:   (c) Julian Smart
+// Copyright:   (c) Julian Smart 2001
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * Email Request System for GRIB Data.
  *
  * Provides portable email functionality for requesting GRIB weather data from
@@ -25,8 +26,9 @@
  * The system allows mariners to request GRIB files through email services
  * when direct downloads are not available or preferred.
  */
-#ifndef _WX_EMAIL_H_
-#define _WX_EMAIL_H_
+
+#ifndef WX_EMAIL_H_
+#define WX_EMAIL_H_
 
 #include "msg.h"
 
@@ -38,13 +40,13 @@
 class WXDLLIMPEXP_NETUTILS wxEmail {
 public:
   //// Ctor/dtor
-  wxEmail() {};
+  wxEmail() = default;
 
   //// Operations
 
   // Send a message.
   // Specify profile, or leave it to wxWidgets to find the current user name
-  // two sending methods for Unix plateforms : sendmail or xdg-email shell
+  // two sending methods for Unix platforms : sendmail or xdg-email shell
   // script
   static bool Send(
       wxMailMessage& message, int sendMethod,
@@ -56,4 +58,4 @@ public:
 protected:
 };
 
-#endif  //_WX_EMAIL_H_
+#endif  //  WX_EMAIL_H_

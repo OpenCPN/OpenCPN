@@ -1,0 +1,178 @@
+/***************************************************************************
+ *   Copyright (C) 2014 by Sean D'Epagnier                                 *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
+
+/**
+ * \file
+ *
+ * GRIB Display Settings Configuration Interface.
+ *
+ * Provides comprehensive configuration options for customizing GRIB weather
+ * data visualization, including:
+ * - Units and display formats for each meteorological parameter
+ * - Overlay styling (transparency, colors, arrows, isobars)
+ * - Animation and playback settings
+ * - Data interpolation options
+ * - Layout and GUI preferences
+ *
+ * The settings system supports:
+ * - Multiple meteorological parameters (wind, pressure, waves, etc.)
+ * - Different visualization methods (arrows, particles, contours)
+ * - Unit conversion and calibration
+ * - Persistent storage of user preferences
+ * - JSON import/export of configurations
+ *
+ * Key features:
+ * - Per-parameter customization of display elements
+ * - Flexible unit systems (metric, imperial, nautical)
+ * - Real-time preview of setting changes
+ * - Profile management for different use cases
+ */
+
+#ifndef GRIBsettingSDIALOG_H_
+#define GRIBsettingSDIALOG_H_
+
+#include "grib_ui_dlg_base.h"
+#include "jsonval.h"
+
+//-------------------------------------------------------------
+//    Grib OverlaySettings Specification
+//-------------------------------------------------------------
+struct GribOverlaySettings {
+  static wxString NameFromIndex(int index);
+
+  void Read();
+  void Write();
+  void SaveSettingGroups(wxFileConfig* pConf, int settings, int group);
+
+  wxString SettingsToJSON(wxString json);
+  bool JSONToSettings(wxString json);
+  bool UpdateJSONval(wxJSONValue& v, int settings, int group);
+
+  double CalibrationOffset(int settings);
+  double CalibrationFactor(int settings, double input, bool reverse = false);
+  double CalibrateValue(int settings, double input) {
+    return (input + CalibrationOffset(settings)) *
+           CalibrationFactor(settings, input);
+  }
+  int GetMinFromIndex(int index);
+  wxString GetAltitudeFromIndex(int index, int unit);
+  double GetmstobfFactor(double input);
+  double GetbftomsFactor(double input);
+  wxString GetUnitSymbol(int settings);
+  double GetMin(int settings);
+  double GetMax(int settings);
+  // playback options
+  bool m_bInterpolate;
+  bool m_bLoopMode;
+  int m_LoopStartPoint;
+  int m_SlicesPerUpdate;
+  int m_UpdatesPerSecond;
+  // display
+  int m_iOverlayTransparency;
+  // gui
+  int m_iCtrlandDataStyle;
+  wxString m_iCtrlBarCtrlVisible[2];
+
+  enum SettingsType {
+    WIND,
+    WIND_GUST,
+    PRESSURE,
+    WAVE,
+    CURRENT,
+    PRECIPITATION,
+    CLOUD,
+    AIR_TEMPERATURE,
+    SEA_TEMPERATURE,
+    CAPE,
+    COMP_REFL,
+    GEO_ALTITUDE,
+    REL_HUMIDITY,
+    SETTINGS_COUNT
+  };
+  enum Units0 { KNOTS, M_S, MPH, KPH, BFS };
+  enum Units1 { MILLIBARS, MMHG, INHG };
+  enum Units2 { METERS, FEET };
+  enum Units3 { CELCIUS, FAHRENHEIT };
+  enum Units4 { MILLIMETERS, INCHES };
+  enum Units5 { PERCENTAGE };
+  enum Units6 { JPKG };
+  enum Units7 { DBZ };
+
+  struct OverlayDataSettings {
+    int m_Units;
+    bool m_bBarbedArrows;
+    bool m_iBarbedVisibility;
+    int m_iBarbedColour;
+    bool m_bBarbArrFixSpac;
+    int m_iBarbArrSpacing;
+    bool m_bIsoBars;
+    bool m_bAbbrIsoBarsNumbers;
+    bool m_iIsoBarVisibility;
+    double m_iIsoBarSpacing;
+    bool m_bDirectionArrows;
+    int m_iDirectionArrowForm;
+    bool m_bDirArrFixSpac;
+    int m_iDirectionArrowSize;
+    int m_iDirArrSpacing;
+    bool m_bOverlayMap;
+    int m_iOverlayMapColors;
+    bool m_bNumbers;
+    bool m_bNumFixSpac;
+    int m_iNumbersSpacing;
+    bool m_bParticles;
+    double m_dParticleDensity;
+
+  } Settings[SETTINGS_COUNT];
+};
+
+class GRIBUICtrlBar;
+
+class GribSettingsDialog : public GribSettingsDialogBase {
+public:
+  GribSettingsDialog(GRIBUICtrlBar& parent, GribOverlaySettings& extSettings,
+                     int& lastdatatype, int fileIntervalIndex);
+  void WriteSettings();
+
+  void SetSettingsDialogSize();
+  void SaveLastPage();
+  int GetPageIndex() const { return m_SetBookpageIndex; }
+
+protected:
+  void OnDataTypeChoice(wxCommandEvent& event) override;
+  void OnUnitChange(wxCommandEvent& event) override;
+  void OnTransparencyChange(wxScrollEvent& event) override;
+  void OnApply(wxCommandEvent& event) override;
+  void OnIntepolateChange(wxCommandEvent& event) override;
+  void OnSpacingModeChange(wxCommandEvent& event) override;
+  void OnPageChange(wxNotebookEvent& event) override;
+  void OnCtrlandDataStyleChanged(wxCommandEvent& event) override;
+
+private:
+  void SetDataTypeSettings(int settings);
+  void ReadDataTypeSettings(int settings);
+  void PopulateUnits(int settings);
+  void ShowFittingSettings(int settings);
+  void ShowSettings(int params, bool show = true);
+
+  GRIBUICtrlBar& m_parent;
+
+  GribOverlaySettings m_Settings, &m_extSettings;
+  int& m_lastdatatype;
+  int m_SetBookpageIndex;
+};
+
+#endif  //      GRIBSettingsDIALOG_H_

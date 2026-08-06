@@ -73,7 +73,7 @@ msgstr "Öppna en ny fil"
 
 #: src/GribUIDialog.cpp:1012 src/GribUIDialogBase.cpp:118
 #: src/GribUIDialogBase.cpp:244 src/GribUIDialogBase.cpp:1835
-#: src/GribUIDialogBase.h:412
+#: src/grib_ui_dlg_base.h:412
 msgid "Settings"
 msgstr "Inställningar"
 
@@ -102,7 +102,7 @@ msgid " can't be read!"
 msgstr " går inte att läsa!"
 
 #: src/GribUIDialog.cpp:2388 src/GribUIDialog.cpp:2392
-#: src/GribUIDialogBase.h:241
+#: src/grib_ui_dlg_base.h:241
 msgid "GRIB Display Control"
 msgstr "GRIB Visningskontroll"
 
@@ -307,7 +307,7 @@ msgstr "Detta alternativ innebär interpolation. \n"
 "Tänk på att data som då visas är beräknade och möjligen\n"
 "har minskad noggrannhet!"
 
-#: src/GribUIDialog.h:289 src/GribUIDialogBase.cpp:2374
+#: src/grib_ui_dlg.h:289 src/GribUIDialogBase.cpp:2374
 msgid "Choose GRIB File Directory"
 msgstr "Välj folder för GRIB-filer"
 
@@ -947,15 +947,15 @@ msgstr "Förväntad position"
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr "Epostfel: Mapi är inte installerat eller saknas på datorn!"
 
-#: src/GribUIDialogBase.h:447
+#: src/grib_ui_dlg_base.h:447
 msgid "Preferences"
 msgstr "Inställningar"
 
-#: src/GribUIDialogBase.h:603
+#: src/grib_ui_dlg_base.h:603
 msgid "Get forecast..."
 msgstr "Hämta prognos..."
 
-#: src/GribUIDialogBase.h:631
+#: src/grib_ui_dlg_base.h:631
 msgid "Grib Data Table"
 msgstr "GRIB datatabell"
 
