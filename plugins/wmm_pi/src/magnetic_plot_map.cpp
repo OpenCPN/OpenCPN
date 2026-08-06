@@ -1,11 +1,4 @@
-/******************************************************************************
- * $Id: MagneticPlotMap.cpp,v 1.0 2011/02/26 01:54:37 nohal Exp $
- *
- * Project:  OpenCPN
- * Purpose:  WMM Plugin
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2013 by Sean D'Epagnier   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,24 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement MagneticPlotmap.h
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
 
 #include <wx/progdlg.h>
 
 #include "ocpn_plugin.h"
 #include "pi_ocpndc.h"
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 #include <GL/gl.h>
 #include <GL/glu.h>
 #else
@@ -45,7 +41,7 @@
 #endif
 
 #include "GeomagnetismHeader.h"
-#include "MagneticPlotMap.h"
+#include "magnetic_plot_map.h"
 
 // static const long long lNaN = 0xfff8000000000000;
 // #define qNan (*(double *)&lNaN)
@@ -57,7 +53,7 @@ void ParamCache::Initialize(double step) {
   if (m_step != step) {
     m_step = step;
     delete[] values;
-    int size = 360 / step;
+    int size = static_cast<int>(360 / step);
     values = new double[size];
   }
   m_lat = 100; /* invalidate data */
@@ -283,7 +279,7 @@ void AddLineSeg(std::list<PlotLineSeg *> &region, double lat1, double lon1,
   if (contour1 != contour2) /* this should not be possible */
     return;
 
-  PlotLineSeg *seg = new PlotLineSeg(lat1, lon1, lat2, lon2, contour1);
+  auto *seg = new PlotLineSeg(lat1, lon1, lat2, lon2, contour1);
   region.push_back(seg);
 }
 
@@ -399,7 +395,7 @@ bool MagneticPlotMap::Recompute(wxDateTime date) {
       m_type == DECLINATION_PLOT   ? _("Variation")
       : m_type == INCLINATION_PLOT ? _("Inclination")
                                    : _("Field Strength"),
-      180, NULL,
+      180, nullptr,
       wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_ABORT);
 
   int cachepage = 0;
@@ -475,7 +471,7 @@ void MagneticPlotMap::DrawContour(pi_ocpnDC *dc, PlugIn_ViewPort &VP,
   lasty = r.y;
 
   wxString msg;
-  msg.Printf(_T("%.0f"), contour);
+  msg.Printf("%.0f", contour);
 
   int w, h;
   dc->GetTextExtent(msg, &w, &h);
@@ -549,8 +545,7 @@ void MagneticPlotMap::Plot(pi_ocpnDC *dc, PlugIn_ViewPort *vp, wxColour color) {
   for (int latind = startlatind; latind <= endlatind; latind++)
     for (int lonind = startlonind;; lonind++) {
       if (lonind > LONGITUDE_ZONES - 1) lonind = 0;
-      for (std::list<PlotLineSeg *>::iterator it =
-               m_map[latind][lonind].begin();
+      for (auto it = m_map[latind][lonind].begin();
            it != m_map[latind][lonind].end(); it++) {
         DrawLineSeg(dc, *vp, (*it)->lat1, (*it)->lon1, (*it)->lat2,
                     (*it)->lon2);

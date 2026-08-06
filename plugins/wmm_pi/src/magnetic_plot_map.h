@@ -1,12 +1,5 @@
-/******************************************************************************
- * $Id: MagneticPlotMap.h,v 1.0 2011/02/26 01:54:37 nohal Exp $
- *
- * Project:  OpenCPN
- * Purpose:  WMM Plugin
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
- *   Copyright (C) 2013 by Sean D'Epagnier   *
+/**************************************************************************
+ *   Copyright (C) 2013 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,23 +12,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * WMM plugin magnetic plotmap utility.
  */
 
+#ifndef MagNETiC_PlotMAP_H_
+#define MagNETiC_PlotMAP_H_
+
 #include <list>
-#include "pi_TexFont.h"
+#include "pi_tex_font.h"
 #include "GeomagnetismHeader.h"
-
-enum MagneticPlotType {
-  DECLINATION_PLOT,
-  INCLINATION_PLOT,
-  FIELD_STRENGTH_PLOT
-};
-
-class pi_ocpnDC;
+#include "ocpn_plugin.h"
 
 /* must be a power of 2, and also divide 360 and 176;
    really only 8 works without more modifications */
@@ -46,6 +38,14 @@ class pi_ocpnDC;
 #define MAX_LAT 88
 #define LATITUDE_ZONES (2 * MAX_LAT / ZONE_SIZE) /* perfectly divisible */
 #define LONGITUDE_ZONES (360 / ZONE_SIZE)
+
+enum MagneticPlotType {
+  DECLINATION_PLOT,
+  INCLINATION_PLOT,
+  FIELD_STRENGTH_PLOT
+};
+
+class pi_ocpnDC;
 
 /* a single line segment in the plot */
 class PlotLineSeg {
@@ -130,3 +130,5 @@ public:
   TexFont m_TexFont;
   int lastx, lasty; /* when rendering to prevent overcluttering */
 };
+
+#endif  //  MagNETiC_PlotMAP_H_

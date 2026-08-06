@@ -3,24 +3,19 @@
 // Purpose:     the parser of JSON text
 // Author:      Luciano Cattani
 // Created:     2007/09/15
-// RCS-ID:      $Id: jsonreader.h,v 1.3 2008/03/03 19:05:45 luccat Exp $
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(_WX_JSONREADER_H)
-#define _WX_JSONREADER_H
+#ifndef WX_JSONREADER_H
+#define WX_JSONREADER_H
 
 #ifdef __GNUG__
 #pragma interface "jsonreader.h"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
+#include <wx/wxprec.h>
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -142,4 +137,4 @@ protected:
   bool m_noUtf8;
 };
 
-#endif  // not defined _WX_JSONREADER_H
+#endif  // WX_JSONREADER_H

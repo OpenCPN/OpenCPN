@@ -3,7 +3,6 @@
 // Purpose:     the wxJSONValue class: it holds a JSON value
 // Author:      Luciano Cattani
 // Created:     2007/09/15
-// RCS-ID:      $Id: jsonval.h,v 1.4 2008/01/10 21:27:15 luccat Exp $
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
@@ -15,15 +14,8 @@
 #pragma interface "jsonval.h"
 #endif
 
-// For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
 #include <wx/object.h>
 #include <wx/hashmap.h>

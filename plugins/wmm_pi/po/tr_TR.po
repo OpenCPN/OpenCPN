@@ -46,7 +46,7 @@ msgstr "WMM Eklentisi"
 msgid "WMM_Live_Overlay"
 msgstr ""
 
-#: src/wmm_pi.cpp:242 src/wmm_pi.cpp:300 src/WmmUIDialog.h:85
+#: src/wmm_pi.cpp:242 src/wmm_pi.cpp:300 src/wmm_ui_dialog.h:85
 msgid "WMM"
 msgstr "Manyetik Sapma (WMM)"
 
@@ -73,11 +73,11 @@ msgstr ""
 msgid "Error, see log."
 msgstr "Hata. kütüğe bakın."
 
-#: src/wmm_pi.cpp:903 src/WmmUIDialog.h:118
+#: src/wmm_pi.cpp:903 src/wmm_ui_dialog.h:118
 msgid "WMM Preferences"
 msgstr "WMM Seçenekleri"
 
-#: src/wmm_pi.h:86 src/WmmUIDialog.h:158
+#: src/wmm_pi.h:86 src/wmm_ui_dialog.h:158
 msgid "Magnetic Plot Settings"
 msgstr "Manyetik Sapma Ayarları"
 

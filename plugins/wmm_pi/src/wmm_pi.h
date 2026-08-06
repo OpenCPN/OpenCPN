@@ -1,71 +1,65 @@
-/******************************************************************************
- * $Id: wmm_pi.h,v 1.0 2011/02/26 01:54:37 nohal Exp $
- *
- * Project:  OpenCPN
- * Purpose:  WMM Plugin
- * Author:   Pavel Kalian
- *
- ***************************************************************************
- *   Copyright (C) 2011 by Pavel Kalian   *
- *   $EMAIL$   *
- *                                                 *
+/**************************************************************************
+ *   Copyright (C) 2011 by Pavel Kalian                                    *
+ *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                         *
- *                                                 *
- *   This program is distributed in the hope that it will be useful,     *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of      *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the       *
- *   GNU General Public License for more details.                  *
- *                                                 *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                 *
- *   Free Software Foundation, Inc.,                           *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * WMM plugin
  */
 
-#ifndef _WMMPI_H_
-#define _WMMPI_H_
+#ifndef WMMPI_H_
+#define WMMPI_H_
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
 
 #include <wx/fileconf.h>
 
 #include "version.h"
+#include "ocpn_plugin.h"
+
+#include "EGM9615.h"
+#include "GeomagnetismHeader.h"
+#include "jsonreader.h"
+#include "jsonwriter.h"
+#include "magnetic_plot_map.h"
+#include "pi_ocpndc.h"
+#include "wmm_ui_dialog.h"
 #include "wxWTranslateCatalog.h"
 
 #define MY_API_VERSION_MAJOR 1
 #define MY_API_VERSION_MINOR 9
 
-#include "ocpn_plugin.h"
-#include "pi_ocpndc.h"
-
-#include "GeomagnetismHeader.h"
-#include "EGM9615.h"
-#include "WmmUIDialog.h"
-#include "MagneticPlotMap.h"
-
-#include "jsonreader.h"
-#include "jsonwriter.h"
-
-//----------------------------------------------------------------------------------------------------------
-//    The PlugIn Class Definition
-//----------------------------------------------------------------------------------------------------------
-
 #define WMM_TOOL_POSITION -1  // Request default positioning of toolbar tool
-class wmm_pi;
+
+//-----------------------------------------------------------------------------------
+//    The PlugIn Class Definition
+//-----------------------------------------------------------------------------------
+
+class WmmPi;
 class WmmPrefsDialog;
 
 class WmmUIDialog : public WmmUIDialogBase {
 public:
-  WmmUIDialog(wmm_pi &_wmm_pi, wxWindow *parent, wxWindowID id = wxID_ANY,
-              const wxString &title = _T("WMM"),
+  WmmUIDialog(WmmPi &_wmm_pi, wxWindow *parent, wxWindowID id = wxID_ANY,
+              const wxString &title = "WMM",
               const wxPoint &pos = wxDefaultPosition,
               const wxSize &size = wxSize(250, 495),
               long style = wxCAPTION | wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL |
@@ -73,11 +67,10 @@ public:
       : WmmUIDialogBase(parent, id, title, pos, size, style),
         m_wmm_pi(_wmm_pi) {}
 
-  void EnablePlotChanged(wxCommandEvent &event);
-  void PlotSettings(wxCommandEvent &event);
-
 protected:
-  wmm_pi &m_wmm_pi;
+  WmmPi &m_wmm_pi;
+  void EnablePlotChanged(wxCommandEvent &event) override;
+  void PlotSettings(wxCommandEvent &event) override;
 };
 
 class WmmPlotSettingsDialog : public WmmPlotSettingsDialogBase {
@@ -89,46 +82,46 @@ public:
                         long style = wxDEFAULT_DIALOG_STYLE)
       : WmmPlotSettingsDialogBase(parent, id, title, pos, size, style) {}
 
-  void About(wxCommandEvent &event);
-  void Save(wxCommandEvent &event) { EndDialog(wxID_OK); }
-  void Cancel(wxCommandEvent &event) { EndDialog(wxID_CANCEL); }
+protected:
+  void About(wxCommandEvent &event) override;
+  void Save(wxCommandEvent &event) override { EndDialog(wxID_OK); }
+  void Cancel(wxCommandEvent &event) override { EndDialog(wxID_CANCEL); }
 };
 
-class wmm_pi : public wxEvtHandler, public opencpn_plugin_118 {
+class WmmPi : public wxEvtHandler, public opencpn_plugin_118 {
 public:
-  wmm_pi(void *ppimgr);
+  WmmPi(void *ppimgr);
 
   //    The required PlugIn Methods
-  int Init(void);
-  bool DeInit(void);
+  int Init() override;
+  bool DeInit() override;
 
-  int GetAPIVersionMajor();
-  int GetAPIVersionMinor();
-  int GetPlugInVersionMajor();
-  int GetPlugInVersionMinor();
-  wxBitmap *GetPlugInBitmap();
-  wxString GetCommonName();
-  wxString GetShortDescription();
-  wxString GetLongDescription();
+  int GetAPIVersionMajor() override;
+  int GetAPIVersionMinor() override;
+  int GetPlugInVersionMajor() override;
+  int GetPlugInVersionMinor() override;
+  wxBitmap *GetPlugInBitmap() override;
+  wxString GetCommonName() override;
+  wxString GetShortDescription() override;
+  wxString GetLongDescription() override;
 
   //    The required override PlugIn Methods
-  void SetCursorLatLon(double lat, double lon);
-  void SetPositionFix(PlugIn_Position_Fix &pfix);
+  void SetCursorLatLon(double lat, double lon) override;
+  void SetPositionFix(PlugIn_Position_Fix &pfix) override;
 
   void RenderOverlayBoth(pi_ocpnDC *dc, PlugIn_ViewPort *vp);
-  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
-  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
+  bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp) override;
+  bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp) override;
   void RecomputePlot();
 
-  int GetToolbarToolCount(void);
-  void ShowPreferencesDialog(wxWindow *parent);
-  void ShowPlotSettingsDialog(wxCommandEvent &event);
+  int GetToolbarToolCount() override;
+  void ShowPreferencesDialog(wxWindow *parent) override;
 
-  void OnToolbarToolCallback(int id);
+  void OnToolbarToolCallback(int id) override;
 
   //    Optional plugin overrides
-  void SetColorScheme(PI_ColorScheme cs);
-  void SetPluginMessage(wxString &message_id, wxString &message_body);
+  void SetColorScheme(PI_ColorScheme cs) override;
+  void SetPluginMessage(wxString &message_id, wxString &message_body) override;
 
   void SetShowPlot(bool showplot) { m_bShowPlot = showplot; }
 
@@ -136,7 +129,6 @@ public:
   void SetWmmDialogX(int x) { m_wmm_dialog_x = x; };
   void SetWmmDialogY(int x) { m_wmm_dialog_y = x; }
 
-  void OnWmmDialogClose();
   void ShowPlotSettings();
 
   //    WMM Declarations
@@ -157,8 +149,8 @@ public:
 
 private:
   wxFileConfig *m_pconfig;
-  bool LoadConfig(void);
-  bool SaveConfig(void);
+  bool LoadConfig();
+  bool SaveConfig();
 
   int m_wmm_dialog_x, m_wmm_dialog_y;
   int m_display_width, m_display_height;
@@ -191,7 +183,7 @@ private:
   void SendCursorVariation();
   void SendBoatVarHVD(double d_var);  // send variation to NMEA handler
   void SendPGN127258(double d_var);   // send variation via N2k
-  unsigned char ComputeChecksum(wxString sentence) const;
+  [[nodiscard]] unsigned char ComputeChecksum(wxString sentence) const;
 
   MAGtype_GeoMagneticElements m_cursorVariation;
   MAGtype_GeoMagneticElements m_boatVariation;
@@ -206,4 +198,4 @@ private:
 
 int WMM_setupMagneticModel(char *data, MAGtype_MagneticModel *MagneticModel);
 
-#endif
+#endif  //      WMMPI_H_

@@ -1,10 +1,4 @@
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenGL text rendering
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2014 Sean D'Epagnier                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,13 +12,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
-#ifndef __TEXFONT_H__
-#define __TEXFONT_H__
+/**
+ * \file
+ *
+ * OpenGL text rendering
+ */
+
+#ifndef TexFONT_H__
+#define TexFONT_H__
+
+#include <wx/font.h>
+#include <wx/string.h>
 
 /* support ascii plus degree symbol for now pack font in a single texture 16x8
  */
@@ -81,4 +82,4 @@ private:
   float m_dx;
   float m_dy;
 };
-#endif  // guard
+#endif  // TexFONT_H__
