@@ -195,7 +195,7 @@ protected:
       s_result = "";
       s_result2 = "";
       fs::path curl_prog(CURLPROG);
-      obs::ObsListener listener;
+      obs::Listener listener;
       listener.Init(PluginMsg("msg1", ""), [&](ObservedEvt ev) {
         auto msg = obs::UnpackEvtPointer<PluginMsg>(ev);
         s_result = msg->name;

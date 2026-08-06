@@ -112,7 +112,7 @@ private:
   wxButton* m_RescanButton;
   wxCheckBox* m_activate_chkbox;
   obs::EventVar progress;
-  obs::ObsListener progress_listener;
+  obs::Listener progress_listener;
   std::vector<std::string> m_own_ip_addresses;
 
   wxTimer m_autoScanTimer;

@@ -91,9 +91,9 @@ private:
   DataMonitorSrc m_monitor_src;
   wxWindow* m_quick_filter;
   DataLogger m_logger;
-  obs::ObsListener m_filter_list_lstnr;
-  obs::ObsListener m_filter_update_lstnr;
-  obs::ObsListener m_filter_apply_lstnr;
+  obs::Listener m_filter_list_lstnr;
+  obs::Listener m_filter_update_lstnr;
+  obs::Listener m_filter_apply_lstnr;
   std::string m_current_filter;
 };
 

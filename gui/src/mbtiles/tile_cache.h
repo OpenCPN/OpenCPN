@@ -25,7 +25,7 @@ private:
   const int m_max_zoom;
   const int m_nb_zoom;
   const std::vector<ZoomDescriptor> zoom_table;
-  obs::ObsListener delete_listener;
+  obs::Listener delete_listener;
 
 public:
   TileCache(int min_zoom, int max_zoom, float Lon_min, float Lat_min,

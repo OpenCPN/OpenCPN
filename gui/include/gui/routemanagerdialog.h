@@ -238,7 +238,7 @@ private:
   int m_charWidth;
   int m_listIconSize;
 
-  obs::ObsListener routes_update_listener;
+  obs::Listener routes_update_listener;
 };
 
 #endif  // _RouteManagerDialog_h_

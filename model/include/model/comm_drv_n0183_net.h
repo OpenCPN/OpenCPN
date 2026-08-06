@@ -137,7 +137,7 @@ private:
   bool m_ok;
   bool m_is_conn_err_reported;
 
-  obs::ObsListener resume_listener;
+  obs::Listener resume_listener;
 };
 
 #endif  // COMMDRIVERN0183NET_H_

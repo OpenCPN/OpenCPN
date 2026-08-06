@@ -50,7 +50,7 @@ public:
   const wxBitmap& GetBitmap();
 
 private:
-  obs::ObsListener m_color_change_lstnr;
+  obs::Listener m_color_change_lstnr;
   obs::EventVar& m_color_change_evt;
   bool m_is_night;
   wxBitmap m_day_bitmap;

@@ -53,7 +53,7 @@
 class ObservableListener;
 
 namespace  obs {
-class ObsListener;   // forward
+class Listener;   // forward
 
 /** Return address as printable string. */
 std::string PtrKey(const void* ptr);
@@ -155,11 +155,17 @@ private:
   mutable std::mutex m_mutex;
 };
 }   // namespace
+
 /**
  *  Keeps listening over its lifespan, removes itself on destruction.
+ *  Old legacy code kept in place because it is visible in the
+ *  plugin interface. For the same reason it is not in the obs
+ *  namespace.
+ *
+ *  Use obs::Listener in new code.
  */
 class DECL_EXP ObservableListener final {
-  friend class obs::ObsListener;
+  friend class obs::Listener;
 
 public:
   /** Default constructor, does not listen to anything. */
@@ -216,6 +222,7 @@ private:
 };
 
 namespace obs {
+
 /**
  * Define an action to be performed when a KeyProvider is notified.
  * Convenience container hiding the Bind(), wxEVENT_TYPE and listening details.
@@ -234,7 +241,7 @@ namespace obs {
  *         {}
  *
  *       private:
- *         EvtVarListener change_listener;
+ *         obs::Listener change_listener;
  *       }
  * \endcode
  *
@@ -251,7 +258,7 @@ namespace obs {
  *
  * \endcode
  *
- * ObsListener is non-copyable, but can be created and assigned using
+ * Listener is non-copyable, but can be created and assigned using
  * std::move like in
  * \code
  *
@@ -261,13 +268,13 @@ namespace obs {
  *
  * \endcode
  */
-class ObsListener : public wxEvtHandler {
+class Listener : public wxEvtHandler {
 public:
   /** Create an object which does not listen until Init(); */
-  ObsListener() : m_obs_evt(wxNewEventType()) {}
+  Listener() : m_obs_evt(wxNewEventType()) {}
 
   /** ObsListener can only be assigned using std::move */
-  ObsListener(ObsListener&& other) noexcept: m_obs_evt(wxNewEventType()) {
+  Listener(Listener&& other) noexcept: m_obs_evt(wxNewEventType()) {
     m_listener.Unlisten();
     Unbind(other.m_obs_evt, other.m_action);
     m_action = other.m_action;
@@ -275,7 +282,7 @@ public:
     m_listener.Listen(other.m_listener.m_key, this, m_obs_evt);
   }
 
-  ObsListener& operator=(ObsListener&& other) noexcept {
+  Listener& operator=(Listener&& other) noexcept {
     m_listener.Unlisten();
     Unbind(other.m_obs_evt, other.m_action);
     m_action = other.m_action;
@@ -284,19 +291,19 @@ public:
     return *this;
   }
 
-  ObsListener(const ObsListener&) = delete;
-  ObsListener& operator=(ObsListener&) = delete;
+  Listener(const Listener&) = delete;
+  Listener& operator=(Listener&) = delete;
 
   /** Create object which invokes action when kp is notified. */
-  ObsListener(const KeyProvider& kp,
+  Listener(const KeyProvider& kp,
              const  std::function<void(ObservedEvt& ev)>& action)
       : m_obs_evt(wxNewEventType()) {
     Init(kp, action);
   }
 
   /** Create object which invokes action when kp is notified. */
-  ObsListener(const KeyProvider& kp, const std::function<void()>& action)
-      : ObsListener(kp, [&](ObservedEvt&) { action(); }) {}
+  Listener(const KeyProvider& kp, const std::function<void()>& action)
+      : Listener(kp, [&](ObservedEvt&) { action(); }) {}
 
   /** Initiate an object yet not listening. */
   void Init(const KeyProvider& kp,

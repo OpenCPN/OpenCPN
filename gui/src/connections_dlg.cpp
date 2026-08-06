@@ -796,7 +796,7 @@ private:
     }
   }
 
-  obs::ObsListener conn_change_lstnr;
+  obs::Listener conn_change_lstnr;
   std::vector<std::vector<std::string>> m_tooltips;
   ConnStates m_conn_states;
   const std::vector<ConnectionParams*>& m_connections;
@@ -1142,7 +1142,7 @@ public:
 
 private:
   const std::vector<ConnectionParams*>& m_connections;
-  obs::ObsListener m_add_connection_lstnr;
+  obs::Listener m_add_connection_lstnr;
   Connections* m_conn_grid;
   GeneralPanel* m_general_panel;
   AdvancedPanel* m_advanced_panel;

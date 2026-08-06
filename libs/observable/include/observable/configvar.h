@@ -27,7 +27,6 @@
 #ifndef OBSERVABLE_CONFVAR_H
 #define OBSERVABLE_CONFVAR_H
 
-#include <memory>
 #include <string>
 
 #include <wx/config.h>

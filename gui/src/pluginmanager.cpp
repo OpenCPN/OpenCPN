@@ -959,7 +959,7 @@ void PlugInManager::OnNewMessageType() {
     auto key_parts = ocpn::split(msg_key, "::");
     if (key_parts.size() < 2) continue;
     if (NavMsg::GetBusByKey(msg_key) == NavAddr::Bus::N0183) {
-      obs::ObsListener ol(RawKey(key_parts[1]), [&](ObservedEvt& ev) {
+      obs::Listener ol(RawKey(key_parts[1]), [&](ObservedEvt& ev) {
         HandleN0183(obs::UnpackEvtPointer<Nmea0183Msg>(ev));
       });
       m_0183_listeners[msg_key] = std::move(ol);
