@@ -12,14 +12,15 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
+
 /**
  * \file
+ *
  * \implements \ref pi_ocpndc.h
  */
+
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
@@ -30,7 +31,7 @@
 
 #include "pi_gl.h"
 
-#ifndef __OCPN__ANDROID__
+#ifndef __ANDROID__
 // #include <GL/glew.h>
 // #include <GL/gl.h>
 // #include <GL/glu.h>
@@ -59,7 +60,7 @@
 #include <GLES2/gl2.h>
 #endif
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "qdebug.h"
 #endif
 
@@ -170,7 +171,7 @@ pi_ocpnDC::~pi_ocpnDC() {
 }
 
 void pi_ocpnDC::SetVP(PlugIn_ViewPort *vp) {
-  // #ifdef __OCPN__ANDROID__
+  // #ifdef __ANDROID__
   if (m_buseGL) {
     configureShaders(vp->pix_width, vp->pix_height);
   }

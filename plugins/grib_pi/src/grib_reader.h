@@ -1,0 +1,161 @@
+/**********************************************************************
+zyGrib: meteorological GRIB file viewer
+Copyright (C) 2008 - Jacques Zaninetti - http://www.zygrib.org
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+***********************************************************************/
+
+/**
+ * \file
+ *
+ * GRIB (GRIdded Binary) file reader and parser.
+ *
+ * This header defines the low-level GRIB file parsing infrastructure. GRIB is a
+ * standardized binary format used by meteorological centers worldwide to store
+ * and distribute weather forecast data.
+ *
+ * Key Features:
+ * - Supports both GRIB1 and GRIB2 file formats
+ * - Handles multiple meteorological parameters (wind, pressure, waves, etc.)
+ * - Provides temporal interpolation between forecast times
+ * - Manages cumulative parameters like precipitation and cloud cover
+ * - Supports compressed files (bzip2, gzip)
+ */
+
+#ifndef GRIBREADER_H
+#define GRIBREADER_H
+
+#include <cmath>
+#include <iostream>
+#include <map>
+#include <set>
+#include <vector>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+#include <wx/wxprec.h>
+
+#include "grib_record.h"
+#include "zu_file.h"
+
+//===============================================================
+class GribReader {
+public:
+  GribReader();
+  GribReader(const wxString fname);
+  ~GribReader();
+
+  void OpenFile(const wxString fname);
+  bool IsOk() const { return ok; }
+  long GetFileSize() const { return fileSize; }
+  wxString GetFileName() const { return fileName; }
+
+  int GetNumberOfGribRecords(int dataType, int levelType, int levelValue);
+  int GetTotalNumberOfGribRecords();
+
+  GribRecord *GetGribRecord(int dataType, int levelType, int levelValue,
+                            time_t date);
+
+  GribRecord *GetFirstGribRecord();
+  GribRecord *GetFirstGribRecord(int dataType, int levelType, int levelValue);
+
+  std::vector<GribRecord *> *getListOfGribRecords(int dataType, int levelType,
+                                                  int levelValue);
+
+  //      double       getHoursBeetweenGribRecords()  {return
+  //      hoursBetweenRecords;}
+  std::set<time_t> GetListDates() { return SetAllDates; }
+  int GetNumberOfDates() { return SetAllDates.size(); }
+  time_t GetRefDate() {
+    return !SetAllDates.empty() > 0 ? *SetAllDates.begin() : 0;
+  }
+
+  // Valeur pour un point et une date quelconques
+  double GetTimeInterpolatedValue(int dataType, int levelType, int levelValue,
+                                  double px, double py, time_t date);
+
+  // Crée un GribRecord interpolé
+  GribRecord *GetTimeInterpolatedGribRecord(int dataType, int levelType,
+                                            int levelValue, time_t date);
+
+  double ComputeDewPoint(double lon, double lat, time_t date);
+
+  int GetDewpointDataStatus(int levelType, int levelValue);
+
+  enum GribFileDataStatus { DATA_IN_FILE, NO_DATA_IN_FILE, COMPUTED_DATA };
+
+  /**
+   * Initializes cumulative meteorological parameters by copying their first
+   * record values.
+   *
+   * This establishes a proper baseline for accumulation parameters like total
+   * precipitation and cloud cover, preventing artificial zero-value periods.
+   */
+  void CopyFirstCumulativeRecord();
+  // void  removeFirstCumulativeRecord ();
+  /**
+   * Fills gaps in wave-related data fields by propagating known values across
+   * missing time periods.
+   *
+   * This function handles multiple wave parameters including significant
+   * height, direction and period, ensuring continuous visualization of marine
+   * conditions.
+   */
+  void CopyMissingWaveRecords();
+  void CopyFirstCumulativeRecord(int dataType, int levelType, int levelValue);
+  // void  removeFirstCumulativeRecord (int data_type,int level_type,int
+  // level_value);
+  void CopyMissingWaveRecords(int dataType, int levelType, int levelValue);
+
+  void ComputeAccumulationRecords(int dataType, int levelType, int levelValue);
+
+  std::map<std::string, std::vector<GribRecord *> *> *GetGribMap() {
+    return &mapGribRecords;
+  }  // dsr
+
+private:
+  bool ok;
+  wxString fileName;
+  ZUFILE *file;
+  long fileSize;
+  //        double    hoursBetweenRecords;
+  int dewpointDataStatus;
+
+  std::map<std::string, std::vector<GribRecord *> *> mapGribRecords;
+
+  void storeRecordInMap(GribRecord *rec);
+
+  void ReadGribFileContent();
+  void ReadAllGribRecords();
+  void CreateListDates();
+  double ComputeHoursBeetweenGribRecords();
+  std::set<time_t> SetAllDates;
+
+  void CleanVector(std::vector<GribRecord *> &ls);
+  void CleanAllVectors();
+  std::vector<GribRecord *> *GetFirstNonEmptyList();
+
+  // Interpolation between 2 GribRecord
+  double Get2GribsInterpolatedValueByDate(double px, double py, time_t date,
+                                          GribRecord *before,
+                                          GribRecord *after);
+
+  // Détermine les GribRecord qui encadrent une date
+  void FindGribsAroundDate(int dataType, int levelType, int levelValue,
+                           time_t date, GribRecord **before,
+                           GribRecord **after);
+};
+
+#endif

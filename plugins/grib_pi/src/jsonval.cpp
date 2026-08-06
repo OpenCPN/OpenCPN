@@ -7,10 +7,13 @@
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
+
 /**
  * \file
+ *
  * \implements \ref jsonval.h
  */
+
 #ifdef NDEBUG
 // make wxLogTrace a noop if no debug set, it's really slow
 // must be defined before including debug.h
@@ -28,7 +31,7 @@
 #include <wx/debug.h>
 #include <wx/arrimpl.cpp>
 
-#include <wx/jsonval.h>
+#include "jsonval.h"
 
 WX_DEFINE_OBJARRAY(wxJSONInternalArray);
 

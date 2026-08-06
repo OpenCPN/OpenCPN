@@ -73,7 +73,7 @@ msgstr "新しいファイルを開く"
 
 #: src/GribUIDialog.cpp:1012 src/GribUIDialogBase.cpp:118
 #: src/GribUIDialogBase.cpp:244 src/GribUIDialogBase.cpp:1835
-#: src/GribUIDialogBase.h:412
+#: src/grib_ui_dlg_base.h:412
 msgid "Settings"
 msgstr "設定"
 
@@ -102,7 +102,7 @@ msgid " can't be read!"
 msgstr " 読み取ることができません!"
 
 #: src/GribUIDialog.cpp:2388 src/GribUIDialog.cpp:2392
-#: src/GribUIDialogBase.h:241
+#: src/grib_ui_dlg_base.h:241
 msgid "GRIB Display Control"
 msgstr "GRIB 表示コントロール"
 
@@ -307,7 +307,7 @@ msgstr "このオプションの意味は補間を承認するものです\n"
 "表示されたデータは実際のものではなく計算されたものであることを忘れないでください\n"
 "これは精度の低下を招きます"
 
-#: src/GribUIDialog.h:289 src/GribUIDialogBase.cpp:2374
+#: src/grib_ui_dlg.h:289 src/GribUIDialogBase.cpp:2374
 msgid "Choose GRIB File Directory"
 msgstr ""
 
@@ -947,15 +947,15 @@ msgstr ""
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr "メール エラー: MAPI32。DLL がインストールされてない、またはこのコンピューターで無効です!"
 
-#: src/GribUIDialogBase.h:447
+#: src/grib_ui_dlg_base.h:447
 msgid "Preferences"
 msgstr "設定"
 
-#: src/GribUIDialogBase.h:603
+#: src/grib_ui_dlg_base.h:603
 msgid "Get forecast..."
 msgstr ""
 
-#: src/GribUIDialogBase.h:631
+#: src/grib_ui_dlg_base.h:631
 msgid "Grib Data Table"
 msgstr "Grib データ テーブル"
 

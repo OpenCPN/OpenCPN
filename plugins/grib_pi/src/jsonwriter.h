@@ -3,20 +3,15 @@
 // Purpose:     the generator of JSON text from a JSON value
 // Author:      Luciano Cattani
 // Created:     2007/09/15
-// RCS-ID:      $Id: jsonwriter.h,v 1.4 2008/03/03 19:05:45 luccat Exp $
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-#if !defined(_WX_JSONWRITER_H)
-#define _WX_JSONWRITER_H
+#ifndef WX_JSONWRITER_H
+#define WX_JSONWRITER_H
 
 // For compilers that support precompilation, includes "wx/wx.h".
-#include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
+#include <wx/wxprec.h>
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -108,4 +103,4 @@ private:
   char* m_fmt;
 };
 
-#endif  // not defined _WX_JSONWRITER_H
+#endif  // WX_JSONWRITER_H

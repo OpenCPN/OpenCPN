@@ -12,12 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
 /**
  * \file
+ *
  * OpenGL Shader Program Management.
  *
  * Provides an interface for managing OpenGL/GLES2 shader programs used in GRIB
@@ -37,13 +37,15 @@
  * - Program caching
  * - Uniform parameter management
  */
-#ifndef __PISHADERS_H__
-#define __PISHADERS_H__
 
-#include "wx/wxprec.h"
+#ifndef PISHADERS_H__
+#define PISHADERS_H__
+
+#include <wx/wxprec.h>
+
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
 
 #include "pi_gl.h"
 
@@ -141,7 +143,7 @@ public:
     return *this;
   }
 
-  ~PI_GLShaderProgram() {}
+  ~PI_GLShaderProgram() = default;
 
   GLuint programId() const { return programId_; }
 
@@ -153,4 +155,4 @@ private:
   GLuint programId_;
 };
 
-#endif
+#endif  //      PISHADERS_H__

@@ -12,12 +12,12 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  ***************************************************************************/
+
 /**
  * \file
+ *
  * Linear Algebra Math Library.
  *
  * Provides optimized vector and matrix operations for 3D graphics:
@@ -39,6 +39,7 @@
  * Used throughout the GRIB plugin for coordinate transforms, viewports,
  * and weather data visualization operations requiring 3D mathematics.
  */
+
 #ifndef LINMATH_H
 #define LINMATH_H
 
