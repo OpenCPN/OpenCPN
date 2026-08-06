@@ -39,7 +39,7 @@
 
 #include <wx/cmdline.h>
 
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 
 using LocalApiResult = std::pair<bool, std::string>;
 

@@ -29,11 +29,11 @@
 #include <string>
 #include <vector>
 
+#include "observable/evtvar.h"
+
 #include "model/route.h"
 #include "model/track.h"
 #include "model/semantic_vers.h"
-
-#include "observable_evtvar.h"
 
 enum class PeerDlgResult { Ok, Cancel, HasPincode };
 

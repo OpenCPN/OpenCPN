@@ -33,6 +33,8 @@
 #include <wx/image.h>
 #include <wx/jsonval.h>
 
+#include "observable/global_var.h"
+
 #include "model/ais_decoder.h"
 #include "model/autopilot_output.h"
 #include "model/base_platform.h"
@@ -48,8 +50,6 @@
 #include "model/route.h"
 #include "model/routeman.h"
 #include "model/track.h"
-
-#include "observable_globvar.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

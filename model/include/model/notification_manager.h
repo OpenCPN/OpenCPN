@@ -26,9 +26,10 @@
 
 #include <wx/timer.h>
 
+#include "observable/evtvar.h"
+
 #include "notification.h"
 #include "comm_appmsg.h"
-#include "observable_evtvar.h"
 
 class NotificationMsg : public AppMsg {
 public:

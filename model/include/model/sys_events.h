@@ -23,7 +23,7 @@
 
 #ifndef SYS__EVENTS_H_
 #define SYS__EVENTS_H_
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 
 class SystemEvents {
 public:

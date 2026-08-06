@@ -28,7 +28,7 @@
 #include <wx/string.h>
 #include <wx/config.h>
 
-#include "observable_confvar.h"
+#include "observable/configvar.h"
 
 /**
  * Add >> support for wxString, for some reason missing in wxWidgets 3.0,

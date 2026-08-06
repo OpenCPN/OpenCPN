@@ -20,6 +20,8 @@
 
 #include <gtest/gtest.h>
 
+#include "observable/configvar.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_defs.h"
 #include "model/ais_state_vars.h"
@@ -45,7 +47,6 @@
 #include "model/select.h"
 #include "model/semantic_vers.h"
 #include "model/std_instance_chk.h"
-#include "observable_confvar.h"
 #include "ocpn_plugin.h"
 
 #include "test_config.h"
@@ -1080,20 +1081,19 @@ public:
   static std::string GetSocketPath() {
     wxFileName path;
     try {
-    if (getenv("OCPN_TEST_HOMEDIR"))
-      path = wxFileName(getenv("OCPN_TEST_HOMEDIR"), "opencpn-ipc");
-    else
-      path = wxFileName("~/.opencpn", "opencpn-ipc");
-    path.Normalize(wxPATH_NORM_TILDE);
-    auto dirpath = path.GetPath();
-    if (!wxFileName::DirExists(dirpath)) wxFileName::Mkdir(dirpath);
-    return path.GetFullPath().ToStdString();
+      if (getenv("OCPN_TEST_HOMEDIR"))
+        path = wxFileName(getenv("OCPN_TEST_HOMEDIR"), "opencpn-ipc");
+      else
+        path = wxFileName("~/.opencpn", "opencpn-ipc");
+      path.Normalize(wxPATH_NORM_TILDE);
+      auto dirpath = path.GetPath();
+      if (!wxFileName::DirExists(dirpath)) wxFileName::Mkdir(dirpath);
+      return path.GetFullPath().ToStdString();
     } catch (std::exception& e) {
-        std::string what = e.what();
-        what += ", using path: " + path.GetFullPath().ToStdString();
-        throw std::runtime_error(what);
+      std::string what = e.what();
+      what += ", using path: " + path.GetFullPath().ToStdString();
+      throw std::runtime_error(what);
     }
-
   }
 
 protected:

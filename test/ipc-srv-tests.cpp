@@ -42,9 +42,9 @@
 
 #include <gtest/gtest.h>
 
-#include "model/base_platform.h"
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 
+#include "model/base_platform.h"
 #include "model/ipc_api.h"
 #include "model/local_api.h"
 #include "model/logger.h"

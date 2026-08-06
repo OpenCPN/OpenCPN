@@ -24,13 +24,14 @@
 #include <wx/checkbox.h>
 #include <wx/string.h>
 
+#include "observable/evtvar.h"
+
 #include "model/route.h"
 #include "model/route_point.h"
 #include "model/track.h"
 
 #include "pugixml.hpp"
 #include "bbox.h"
-#include "observable_evtvar.h"
 
 //      Bitfield definition controlling the GPX nodes output for point objects
 #define OUT_TYPE 1 << 1        //  Output point type

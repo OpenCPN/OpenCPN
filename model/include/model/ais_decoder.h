@@ -34,6 +34,9 @@
 #include <wx/string.h>
 
 #include "rapidjson/fwd.h"
+
+#include "observable/evtvar.h"
+
 #include "model/ais_bitstring.h"
 #include "model/ais_defs.h"
 #include "model/ais_target_data.h"
@@ -41,7 +44,6 @@
 #include "model/ocpn_types.h"
 #include "model/select.h"
 #include "model/track.h"
-#include "observable_evtvar.h"
 
 using N0183MsgPtr = std::shared_ptr<const Nmea0183Msg>;
 using N2000MsgPtr = std::shared_ptr<const Nmea2000Msg>;

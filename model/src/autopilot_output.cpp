@@ -27,6 +27,8 @@
 
 #include <wx/wxprec.h>
 
+#include "observable/global_var.h"
+
 #include "model/autopilot_output.h"
 #include "model/comm_drv_n2k_serial.h"
 #include "model/comm_drv_registry.h"
@@ -41,8 +43,6 @@
 #include "model/routeman.h"
 #include "N2kMsg.h"
 #include "N2kMessages.h"
-
-#include "observable_globvar.h"
 
 #ifdef __ANDROID__
 #include "androidUTIL.h"

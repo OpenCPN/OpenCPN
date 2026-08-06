@@ -3,8 +3,9 @@
 
 #include <mutex>
 
+#include "observable/evtvar.h"
+
 #include "tile_descr.h"
-#include "observable_evtvar.h"
 
 /** Manage the tiles of a mbtiles file. */
 class TileCache {

@@ -7,9 +7,10 @@
 #include <cstdint>
 #include <memory>
 
+#include "observable/evtvar.h"
+
 #include "chartbase.h"
 #include "gl_chart_canvas.h"
-#include "observable_evtvar.h"
 
 class MbTileDescriptor;  // forward
 

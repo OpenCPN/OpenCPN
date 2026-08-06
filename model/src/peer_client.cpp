@@ -35,13 +35,14 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
+#include "observable/configvar.h"
+
 #include "model/config_vars.h"
 #include "model/nav_object_database.h"
 #include "model/peer_client.h"
 #include "model/ocpn_utils.h"
 #include "model/rest_server.h"
 #include "model/semantic_vers.h"
-#include "observable_confvar.h"
 
 struct MemoryStruct {
   char* memory;

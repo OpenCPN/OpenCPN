@@ -29,8 +29,9 @@
 #include <wx/panel.h>
 #include <wx/scrolwin.h>
 
+#include "observable/evtvar.h"
+
 #include "model/conn_params.h"
-#include "observable_evtvar.h"
 #include "color_types.h"
 
 /**

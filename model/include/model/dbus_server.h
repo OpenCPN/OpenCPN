@@ -29,9 +29,10 @@
 
 #include <gio/gio.h>
 
+#include "observable/evtvar.h"
+
 #include "model/instance_check.h"
 #include "model/local_api.h"
-#include "observable_evtvar.h"
 
 /** The name registered on the session bus. */
 static const char* const kDbusName = "org.opencpn.OpenCPN";

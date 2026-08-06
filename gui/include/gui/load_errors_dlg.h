@@ -21,7 +21,7 @@
 #include <wx/event.h>
 #include <wx/window.h>
 
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
 
 /**
  * Run a dialog if there are load errors encountered in plugin_loader

@@ -35,6 +35,9 @@
 #include <wx/glcanvas.h>
 #endif
 
+#include "observable/evtvar.h"
+#include "observable/observable.h"
+
 #include "model/route.h"
 #include "model/route_point.h"
 #include "model/select_item.h"
@@ -53,8 +56,6 @@
 #include "idx_entry.h"
 #include "mui_bar.h"
 #include "notification_manager_gui.h"
-#include "observable_evtvar.h"
-#include "observable.h"
 #include "ocp_cursor.h"
 #include "ocpn_pixel.h"
 #include "ocpn_plugin.h"

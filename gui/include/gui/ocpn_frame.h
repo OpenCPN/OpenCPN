@@ -39,6 +39,8 @@
 
 #include "ocpn_plugin.h"
 
+#include "observable/evtvar.h"
+
 #include "model/ais_target_data.h"
 #include "model/gui.h"
 #include "model/idents.h"
@@ -58,7 +60,6 @@
 #include "displays.h"
 #include "gui_lib.h"
 #include "load_errors_dlg.h"
-#include "observable_evtvar.h"
 #include "options.h"
 #include "pluginmanager.h"
 #include "s52_plib_utils.h"

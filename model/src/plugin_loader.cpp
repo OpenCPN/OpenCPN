@@ -66,6 +66,8 @@
 #include <wx/window.h>
 #include <wx/process.h>
 
+#include "observable/configvar.h"
+
 #include "model/base_platform.h"
 #include "model/catalog_handler.h"
 #include "model/catalog_parser.h"
@@ -82,7 +84,6 @@
 #include "model/safe_mode.h"
 #include "model/semantic_vers.h"
 
-#include "observable_confvar.h"
 #include "std_filesystem.h"
 
 #ifdef __ANDROID__

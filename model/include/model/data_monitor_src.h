@@ -34,11 +34,11 @@
 
 #include <wx/event.h>
 
+#include "observable/observable.h"
+
 #include "model/comm_navmsg.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/ocpn_utils.h"
-
-#include "observable.h"
 
 /**
  * Create a stream of input messages.  The

@@ -43,7 +43,8 @@
 #include "time_textbox.h"
 #endif
 
-#include "observable_evtvar.h"
+#include "observable/evtvar.h"
+
 #include "model/routeman.h"
 
 #ifdef __WXOSX__

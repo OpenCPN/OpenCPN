@@ -24,8 +24,9 @@
 #define _AIS_INFO_GUI_H
 
 #include "o_sound/o_sound.h"
+#include "observable/observable.h"
+
 #include "model/ais_target_data.h"
-#include "observable.h"
 
 class AisInfoGui;             // forward
 extern AisInfoGui* g_pAISGUI; /**< Global instance */

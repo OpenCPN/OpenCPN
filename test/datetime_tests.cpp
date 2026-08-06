@@ -21,6 +21,8 @@
 
 #include <gtest/gtest.h>
 
+#include "observable/configvar.h"
+
 #include "model/ais_decoder.h"
 #include "model/ais_defs.h"
 #include "model/ais_state_vars.h"
@@ -44,7 +46,6 @@
 #include "model/select.h"
 #include "model/semantic_vers.h"
 #include "model/std_instance_chk.h"
-#include "observable_confvar.h"
 #include "ocpn_plugin.h"
 
 #if wxCHECK_VERSION(3, 1, 6)
