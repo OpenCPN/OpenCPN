@@ -74,13 +74,13 @@ public:
 
   void Set(const T& arg);
 
-  const T Get(const T& default_val);
+  T Get(const T& default_val);
 
 private:
 
-  const std::string section;
-  const std::string key;
-  wxConfigBase* const config;
+  const std::string m_section;
+  const std::string m_key;
+  wxConfigBase* const m_config;
 };
 
 #endif  // OBSERVABLE_CONFVAR_H
