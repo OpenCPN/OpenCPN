@@ -1108,6 +1108,7 @@ target_link_libraries(_opencpn INTERFACE ${PACKAGE_NAME})
 target_include_directories(
   _opencpn BEFORE
   INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/model/include
+            ${CMAKE_CURRENT_SOURCE_DIR}/gui/include
             ${CMAKE_CURRENT_SOURCE_DIR}/include
             ${CMAKE_CURRENT_SOURCE_DIR}/resources
             ${CMAKE_CURRENT_SOURCE_DIR}/gui/src/mbtiles
