@@ -1,11 +1,5 @@
-/******************************************************************************
- * $Id: instrument.cpp, v1.0 2010/08/30 SethDart Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- *
- ***************************************************************************
+/**************************************************************************
+ *   Copyright (C) 2010 by Jean-Eudes Onfray                               *
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,22 +13,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard instrument implementation
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
+
+#include <cmath>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-#include <cmath>
+#include <wx/wx.h>
+#endif
 
 #include "instrument.h"
 
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include "qdebug.h"
 #endif
 
@@ -138,12 +136,14 @@ DashboardInstrument::DashboardInstrument(wxWindow* pparent, wxWindowID id,
   m_cap_flag.set(cap_flag);
   m_popupWanted = false;
 
-  SetBackgroundStyle(wxBG_STYLE_CUSTOM);
+  wxWindow::SetBackgroundStyle(wxBG_STYLE_CUSTOM);
   SetDrawSoloInPane(false);
   InitTitleSize();
-  Connect(wxEVT_ERASE_BACKGROUND,
-          wxEraseEventHandler(DashboardInstrument::OnEraseBackground));
-  Connect(wxEVT_PAINT, wxPaintEventHandler(DashboardInstrument::OnPaint));
+  wxWindow::Connect(
+      wxEVT_ERASE_BACKGROUND,
+      wxEraseEventHandler(DashboardInstrument::OnEraseBackground));
+  wxWindow::Connect(wxEVT_PAINT,
+                    wxPaintEventHandler(DashboardInstrument::OnPaint));
 
   //  On OSX, there is an orphan mouse event that comes from the automatic
   //  exEVT_CONTEXT_MENU synthesis on the main wxWindow mouse handler.
@@ -215,14 +215,14 @@ void DashboardInstrument::InitDataTextHeight(const wxString& sampleText,
                                              int& sampleWidth) {
   wxClientDC dc(this);
   wxFont f;
-  int w;
 
   if (m_Properties) {
     f = m_Properties->m_DataFont.GetChosenFont();
   } else {
     f = g_pFontData->GetChosenFont();
   }
-  dc.GetTextExtent(sampleText, &sampleWidth, &m_DataTextHeight, 0, 0, &f);
+  dc.GetTextExtent(sampleText, &sampleWidth, &m_DataTextHeight, nullptr,
+                   nullptr, &f);
 }
 
 void DashboardInstrument::InitTitleSize() {
@@ -238,7 +238,8 @@ void DashboardInstrument::InitTitleSize() {
   } else {
     f = g_pFontTitle->GetChosenFont();
   }
-  dc.GetTextExtent(m_title, &m_TitleWidth, &m_TitleHeight, 0, 0, &f);
+  dc.GetTextExtent(m_title, &m_TitleWidth, &m_TitleHeight, nullptr, nullptr,
+                   &f);
 }
 
 void DashboardInstrument::InitTitleAndDataPosition(int drawHeight) {
@@ -253,7 +254,7 @@ void DashboardInstrument::InitTitleAndDataPosition(int drawHeight) {
   }
 
   m_TitleRightAlign = (g_TitleAlignment & wxALIGN_RIGHT) != 0;
-  m_TitleTop = m_DataTextHeight * g_TitleVerticalOffset;
+  m_TitleTop = static_cast<int>(m_DataTextHeight * g_TitleVerticalOffset);
   m_DataTop = m_TitleHeight;
   if ((g_TitleAlignment & wxALIGN_BOTTOM) != 0) {
     m_TitleTop = drawHeight + (m_DataTextHeight * g_TitleVerticalOffset);
@@ -361,7 +362,7 @@ void DashboardInstrument::OnPaint(wxPaintEvent& WXUNUSED(event)) {
       GetGlobalColor("DASHL", &cl);
       dc.SetTextBackground(cl);
     }
-    // GetGlobalColor(_T("DASHF"), &cl);
+    // GetGlobalColor("DASHF", &cl);
     // dc.SetTextForeground(cl);
     if (m_TitleRightAlign) {
       dc.DrawText(m_title,
@@ -392,7 +393,8 @@ wxSize DashboardInstrument_Single::GetSize(int orient, wxSize hint) {
   int w;
   InitDataTextHeight("000", w);
 
-  int drawHeight = m_DataTextHeight * (1 + g_TitleVerticalOffset);
+  int drawHeight =
+      static_cast<int>(m_DataTextHeight * (1 + g_TitleVerticalOffset));
   InitTitleAndDataPosition(drawHeight);
   int h = GetFullHeight(drawHeight);
 
@@ -413,7 +415,7 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc) {
 
   if (m_DataRightAlign) {
     int w, h;
-    dc->GetTextExtent(m_data, &w, &h, 0, 0);
+    dc->GetTextExtent(m_data, &w, &h, nullptr, nullptr);
     x1 = GetClientSize().GetWidth() - w - m_DataMargin;
   }
 
@@ -449,10 +451,10 @@ void DashboardInstrument_Single::SetData(DASH_CAP st, double data,
       else if (unit == "N")  // Knots
         m_data = wxString::Format(format, data) + (showUnit ? " Kts" : "");
       /* maybe in the future ...
-                      else if (unit == _T("M")) // m/s
-                        m_data = wxString::Format(m_format, data)+_T(" m/s");
-                      else if (unit == _T("K")) // km/h
-                        m_data = wxString::Format(m_format, data)+_T(" km/h");
+                      else if (unit == "M") // m/s
+                        m_data = wxString::Format(m_format, data)+" m/s";
+                      else if (unit == "K") // km/h
+                        m_data = wxString::Format(m_format, data)+" km/h";
        ... to be completed
        */
       else
@@ -487,8 +489,8 @@ wxSize DashboardInstrument_Position::GetSize(int orient, wxSize hint) {
   int w;
   InitDataTextHeight("000  00.0000 W", w);
 
-  int drawHeight =
-      m_DataTextHeight * 2 + m_DataTextHeight * g_TitleVerticalOffset;
+  int drawHeight = static_cast<int>(m_DataTextHeight * 2 +
+                                    m_DataTextHeight * g_TitleVerticalOffset);
   InitTitleAndDataPosition(drawHeight);
   int h = GetFullHeight(drawHeight);
 
@@ -507,9 +509,9 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc) {
 
   if (m_DataRightAlign) {
     int w, h;
-    dc->GetTextExtent(m_data1, &w, &h, 0, 0);
+    dc->GetTextExtent(m_data1, &w, &h, nullptr, nullptr);
     x1 = GetClientSize().GetWidth() - w - m_DataMargin;
-    dc->GetTextExtent(m_data2, &w, &h, 0, 0);
+    dc->GetTextExtent(m_data2, &w, &h, nullptr, nullptr);
     x2 = GetClientSize().GetWidth() - w - m_DataMargin;
   }
 
@@ -551,7 +553,7 @@ wxString toSDMM(int NEflag, double a) {
   wxString s;
 
   if (!NEflag)
-    s.Printf(_T ( "%d %02ld.%03ld'" ), d, m / 1000, m % 1000);
+    s.Printf("%d %02ld.%03ld'", d, m / 1000, m % 1000);
   else {
     if (NEflag == 1) {
       char c = 'N';
@@ -561,7 +563,7 @@ wxString toSDMM(int NEflag, double a) {
         c = 'S';
       }
 
-      s.Printf(_T ( "%03d %02ld.%03ld %c" ), d, m / 1000, (m % 1000), c);
+      s.Printf("%03d %02ld.%03ld %c", d, m / 1000, (m % 1000), c);
     } else if (NEflag == 2) {
       char c = 'E';
 
@@ -569,7 +571,7 @@ wxString toSDMM(int NEflag, double a) {
         d = -d;
         c = 'W';
       }
-      s.Printf(_T ( "%03d %02ld.%03ld %c" ), d, m / 1000, (m % 1000), c);
+      s.Printf("%03d %02ld.%03ld %c", d, m / 1000, (m % 1000), c);
     }
   }
   return s;

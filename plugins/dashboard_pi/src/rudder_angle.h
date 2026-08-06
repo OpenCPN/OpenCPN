@@ -1,12 +1,6 @@
-/******************************************************************************
- * $Id: rudder_angle.h, v1.0 2010/08/26 SethDart Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by Jean-Eudes Onfray                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,24 +13,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard rudder angle instrument
  */
 
-#ifndef __RudderAngle_H__
-#define __RudderAngle_H__
+#ifndef RudderAngle_H_
+#define RudderAngle_H_
 
-// For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -48,15 +38,15 @@ public:
   DashboardInstrument_RudderAngle(wxWindow* parent, wxWindowID id,
                                   wxString title,
                                   InstrumentProperties* Properties);
-  ~DashboardInstrument_RudderAngle(void) {}
+  ~DashboardInstrument_RudderAngle() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP, double, wxString) override;
 
 private:
 protected:
-  void DrawFrame(wxGCDC* dc);
-  void DrawBackground(wxGCDC* dc);
+  void DrawFrame(wxGCDC* dc) override;
+  void DrawBackground(wxGCDC* dc) override;
 };
 
-#endif  // __RudderAngle_H__
+#endif  // RudderAngle_H_

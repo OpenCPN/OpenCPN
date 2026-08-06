@@ -1,12 +1,6 @@
-/******************************************************************************
- * $Id: depth.h, v1.0 2010/08/30 SethDart Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by Jean-Eudes Onfray                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,56 +13,52 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard depth instrument
  */
 
-#ifndef __DEPTH_H__
-#define __DEPTH_H__
+#ifndef DEPTH_H_
+#define DEPTH_H_
 
-// For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
 
+#include "instrument.h"
+
 // Warn: div by 0 if count == 1
 #define DEPTH_RECORD_COUNT 30
-
-#include "instrument.h"
 
 class DashboardInstrument_Depth : public DashboardInstrument {
 public:
   DashboardInstrument_Depth(wxWindow* parent, wxWindowID id, wxString title,
                             InstrumentProperties* Properties);
 
-  ~DashboardInstrument_Depth(void) {}
+  ~DashboardInstrument_Depth() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP, double, wxString) override;
 
 private:
   int w_label, h_label, m_plotdown, m_plotup, m_plotheight;
 
 protected:
-  double m_ArrayDepth[DEPTH_RECORD_COUNT];
-  double m_MaxDepth;
-  double m_Depth;
-  wxString m_DepthUnit;
-  wxString m_Temp;
+  double m_array_depth[DEPTH_RECORD_COUNT];
+  double m_max_depth;
+  double m_depth;
+  wxString m_depth_unit;
+  wxString m_temp;
 
-  void Draw(wxGCDC* dc);
+  void Draw(wxGCDC* dc) override;
   void DrawBackground(wxGCDC* dc);
   void DrawForeground(wxGCDC* dc);
 };
 
-#endif  // __DEPTH_H__
+#endif  // DEPTH_H_

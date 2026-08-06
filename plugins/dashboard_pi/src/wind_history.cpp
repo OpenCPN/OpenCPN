@@ -1,12 +1,6 @@
-/******************************************************************************
- * $Id: wind_history.cpp, v1.0 2010/08/30 tom-r Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Thomas Rauch
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by Thomas Rauch                                    *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,23 +13,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard wind history instrument implementation.
  */
 
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include "wind_history.h"
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 //************************************************************************************************************************
 // History of wind direction
@@ -44,7 +37,8 @@
 DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory(
     wxWindow* parent, wxWindowID id, wxString title,
     InstrumentProperties* Properties)
-    : DashboardInstrument(parent, id, title, OCPN_DBP_STC_TWD, Properties) {
+    : DashboardInstrument(parent, id, std::move(title), OCPN_DBP_STC_TWD,
+                          Properties) {
   m_cap_flag.set(OCPN_DBP_STC_TWS);
   SetDrawSoloInPane(true);
   m_MaxWindDir = -1;
@@ -62,7 +56,7 @@ DashboardInstrument_WindDirHistory::DashboardInstrument_WindDirHistory(
     f = m_Properties->m_DataFont.GetChosenFont();
   else
     f = g_pFontData->GetChosenFont();
-  dc.GetTextExtent("TWS----", &w, &h, 0, 0, &f);
+  dc.GetTextExtent("TWS----", &w, &h, nullptr, nullptr, &f);
   m_TopLineHeight = wxMax(30, h);
   m_SpdRecCnt = 0;
   m_DirRecCnt = 0;
@@ -98,7 +92,7 @@ wxSize DashboardInstrument_WindDirHistory::GetSize(int orient, wxSize hint) {
     f = g_pFontTitle->GetChosenFont();
   // Use a dummy for default min width instead of m_title
   wxString widthdummy = "Left Space TWS 25.5 kn TWD 320 right s";
-  dc.GetTextExtent(widthdummy, &w, &m_TitleHeight, 0, 0, &f);
+  dc.GetTextExtent(widthdummy, &w, &m_TitleHeight, nullptr, nullptr, &f);
   if (orient == wxHORIZONTAL) {
     return wxSize(DefaultWidth, wxMax(m_TitleHeight + 140, hint.y));
   } else {
@@ -118,7 +112,7 @@ void DashboardInstrument_WindDirHistory::SetData(DASH_CAP st, double data,
         } else {
           m_WindDir = data;
           if (m_DirRecCnt <= 5) {
-            m_DirStartVal += data;
+            m_DirStartVal += static_cast<int>(data);
             m_DirRecCnt++;
           }
         }
@@ -131,13 +125,13 @@ void DashboardInstrument_WindDirHistory::SetData(DASH_CAP st, double data,
         }
         m_WindSpeedUnit = unit;
         if (m_SpdRecCnt <= 5) {
-          m_SpdStartVal += data;
+          m_SpdStartVal += static_cast<int>(data);
           m_SpdRecCnt++;
         }
       }
       if (m_SpdRecCnt == 5 && m_DirRecCnt == 5) {
-        m_WindSpd = m_SpdStartVal / 5;
-        m_WindDir = m_DirStartVal / 5;
+        m_WindSpd = static_cast<int>(m_SpdStartVal / 5);
+        m_WindDir = static_cast<int>(m_DirStartVal / 5);
         m_oldDirVal = m_WindDir;  // make sure we don't get a diff > or <180 in
         // the initial run
       }
@@ -246,15 +240,15 @@ void DashboardInstrument_WindDirHistory::SetMinMaxWindScale() {
   // value recorded example : max wind dir. = 45 degr  ==> max = 90 degr
   //           min wind dir. = 45 degr  ==> min = 0 degr
   // first calculate the max wind direction
-  int fulldeg = m_MaxWindDir / 90;  // we explicitly chop off the decimals by
-                                    // type conversion from double to int !
+  // chop off the decimals bytype conversion from double to int !
+  int fulldeg = static_cast<int>(m_MaxWindDir / 90);
   if (fulldeg == 0)
     fulldeg = m_MaxWindDir < 0 ? 0 : 1;
   else if (m_MaxWindDir > 0)
     fulldeg += 1;
   m_MaxWindDir = fulldeg * 90;
   // now calculate the min wind direction
-  fulldeg = m_MinWindDir / 90;
+  fulldeg = static_cast<int>(m_MinWindDir / 90);
   if (fulldeg == 0)
     fulldeg = m_MinWindDir < 0 ? -1 : 0;
   else
@@ -265,10 +259,10 @@ void DashboardInstrument_WindDirHistory::SetMinMaxWindScale() {
   // opposite side of the current wind dir value
   m_WindDirRange = m_MaxWindDir - m_MinWindDir;
   if (m_WindDirRange > 360) {
-    int diff2min =
-        m_WindDir - m_MinWindDir;  // diff between min value and current value
-    int diff2max =
-        m_MaxWindDir - m_WindDir;  // diff between max value and current value
+    int diff2min = static_cast<int>(m_WindDir - m_MinWindDir);
+    // diff between min value and current value
+    int diff2max = static_cast<int>(m_MaxWindDir - m_WindDir);
+    // diff between max value and current value
     if (diff2min > diff2max) {
       while (m_WindDirRange > 360) {
         m_MinWindDir += 90;
@@ -288,10 +282,8 @@ void DashboardInstrument_WindDirHistory::SetMinMaxWindScale() {
 //*********************************************************************************
 void DashboardInstrument_WindDirHistory::DrawWindDirScale(wxGCDC* dc) {
   wxString label1, label2, label3, label4, label5;
-  wxColour cl;
   wxPen pen;
   int width, height;
-  cl = wxColour(204, 41, 41, 255);  // red, opague
   if (m_Properties) {
     dc->SetTextForeground(
         GetColourSchemeFont(m_Properties->m_SmallFont.GetColour()));
@@ -339,27 +331,27 @@ void DashboardInstrument_WindDirHistory::DrawWindDirScale(wxGCDC* dc) {
   wxFont f;
   if (m_Properties) {
     f = m_Properties->m_SmallFont.GetChosenFont();
-    dc->GetTextExtent(label5, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label5, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = width;
-    dc->GetTextExtent(label4, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label4, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = wxMax(width, m_RightLegend);
-    dc->GetTextExtent(label3, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label3, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = wxMax(width, m_RightLegend);
-    dc->GetTextExtent(label2, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label2, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = wxMax(width, m_RightLegend);
-    dc->GetTextExtent(label1, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label1, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = wxMax(width, m_RightLegend);
   } else {
     f = g_pFontSmall->GetChosenFont();
-    dc->GetTextExtent(label5, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label5, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = width;
-    dc->GetTextExtent(label4, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label4, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = wxMax(width, m_RightLegend);
-    dc->GetTextExtent(label3, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label3, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = wxMax(width, m_RightLegend);
-    dc->GetTextExtent(label2, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label2, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = wxMax(width, m_RightLegend);
-    dc->GetTextExtent(label1, &width, &height, 0, 0, &f);
+    dc->GetTextExtent(label1, &width, &height, nullptr, nullptr, &f);
     m_RightLegend = wxMax(width, m_RightLegend);
   }
   m_RightLegend += 4;  // leave some space to the edge
@@ -449,13 +441,13 @@ void DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc) {
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  dc->GetTextExtent(label1, &m_LeftLegend, &height, 0, 0, &f);
+  dc->GetTextExtent(label1, &m_LeftLegend, &height, nullptr, nullptr, &f);
   dc->DrawText(label1, 4, (int)(m_TopLineHeight - height / 2));
   if (m_Properties)
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  dc->GetTextExtent(label2, &width, &height, 0, 0, &f);
+  dc->GetTextExtent(label2, &width, &height, nullptr, nullptr, &f);
   dc->DrawText(label2, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height / 4 - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
@@ -463,7 +455,7 @@ void DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc) {
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  dc->GetTextExtent(label3, &width, &height, 0, 0, &f);
+  dc->GetTextExtent(label3, &width, &height, nullptr, nullptr, &f);
   dc->DrawText(label3, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height / 2 - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
@@ -471,7 +463,7 @@ void DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc) {
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  dc->GetTextExtent(label4, &width, &height, 0, 0, &f);
+  dc->GetTextExtent(label4, &width, &height, nullptr, nullptr, &f);
   dc->DrawText(
       label4, 4,
       (int)(m_TopLineHeight + m_DrawAreaRect.height * 0.75 - height / 2));
@@ -480,7 +472,7 @@ void DashboardInstrument_WindDirHistory::DrawWindSpeedScale(wxGCDC* dc) {
     f = m_Properties->m_SmallFont.GetChosenFont();
   else
     f = g_pFontSmall->GetChosenFont();
-  dc->GetTextExtent(label5, &width, &height, 0, 0, &f);
+  dc->GetTextExtent(label5, &width, &height, nullptr, nullptr, &f);
   dc->DrawText(label5, 4,
                (int)(m_TopLineHeight + m_DrawAreaRect.height - height / 2));
   m_LeftLegend = wxMax(width, m_LeftLegend);
@@ -620,7 +612,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   else
     f = g_pFontLabel->GetChosenFont();
 
-  dc->GetTextExtent(WindAngle, &degw, &degh, 0, 0, &f);
+  dc->GetTextExtent(WindAngle, &degw, &degh, nullptr, nullptr, &f);
   dc->DrawText(WindAngle, m_WindowRect.width - m_RightLegend - degw, 3);
 
   pen.SetStyle(wxPENSTYLE_SOLID);
@@ -672,14 +664,16 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   wxPoint points[WIND_RECORD_COUNT + 2];
   wxPoint wdDraw[WIND_RECORD_COUNT + 2];
   int ld = 0;
-  wdDraw[ld].x = m_ratioW + 3 + m_LeftLegend;
-  wdDraw[ld].y = m_TopLineHeight + m_DrawAreaRect.height -
-                 (m_ArrayWindDirHistory[1] - m_MinWindDir) * ratioH;
+  wdDraw[ld].x = static_cast<int>(m_ratioW + 3 + m_LeftLegend);
+  wdDraw[ld].y =
+      static_cast<int>(m_TopLineHeight + m_DrawAreaRect.height -
+                       (m_ArrayWindDirHistory[1] - m_MinWindDir) * ratioH);
 
   for (int idx = 1; idx < WIND_RECORD_COUNT; idx++) {
-    points[idx].x = idx * m_ratioW + 3 + m_LeftLegend;
-    points[idx].y = m_TopLineHeight + m_DrawAreaRect.height -
-                    (m_ArrayWindDirHistory[idx] - m_MinWindDir) * ratioH;
+    points[idx].x = static_cast<int>(idx * m_ratioW + 3 + m_LeftLegend);
+    points[idx].y =
+        static_cast<int>(m_TopLineHeight + m_DrawAreaRect.height -
+                         (m_ArrayWindDirHistory[idx] - m_MinWindDir) * ratioH);
     if (WIND_RECORD_COUNT - m_SampleCount <= idx &&
         points[idx].y > m_TopLineHeight &&
         points[idx].y <= m_TopLineHeight + m_DrawAreaRect.height) {
@@ -707,14 +701,16 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   dc->SetPen(pen);
 
   ld = 0;
-  wdDraw[ld].x = m_ratioW + 3 + m_LeftLegend;
-  wdDraw[ld].y = m_TopLineHeight + m_DrawAreaRect.height -
-                 (m_ExpSmoothArrayWindDir[ld] - m_MinWindDir) * ratioH;
+  wdDraw[ld].x = static_cast<int>(m_ratioW + 3 + m_LeftLegend);
+  wdDraw[ld].y =
+      static_cast<int>(m_TopLineHeight + m_DrawAreaRect.height -
+                       (m_ExpSmoothArrayWindDir[ld] - m_MinWindDir) * ratioH);
 
   for (int idx = 1; idx < WIND_RECORD_COUNT; idx++) {
-    points[idx].x = idx * m_ratioW + 3 + m_LeftLegend;
-    points[idx].y = m_TopLineHeight + m_DrawAreaRect.height -
-                    (m_ExpSmoothArrayWindDir[idx] - m_MinWindDir) * ratioH;
+    points[idx].x = static_cast<int>(idx * m_ratioW + 3 + m_LeftLegend);
+    points[idx].y = static_cast<int>(
+        m_TopLineHeight + m_DrawAreaRect.height -
+        (m_ExpSmoothArrayWindDir[idx] - m_MinWindDir) * ratioH);
     if (WIND_RECORD_COUNT - m_SampleCount <= idx &&
         points[idx].y > m_TopLineHeight &&
         points[idx].y <= m_TopLineHeight + m_DrawAreaRect.height) {
@@ -747,10 +743,10 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
     WindSpeed = wxString::Format("TWS --- %s ", m_WindSpeedUnit.c_str());
   if (m_Properties) {
     f = m_Properties->m_LabelFont.GetChosenFont();
-    dc->GetTextExtent(WindSpeed, &speedw, &degh, 0, 0, &f);
+    dc->GetTextExtent(WindSpeed, &speedw, &degh, nullptr, nullptr, &f);
   } else {
     f = g_pFontSmall->GetChosenFont();
-    dc->GetTextExtent(WindSpeed, &speedw, &degh, 0, 0, &f);
+    dc->GetTextExtent(WindSpeed, &speedw, &degh, nullptr, nullptr, &f);
   }
   dc->DrawText(WindSpeed, m_LeftLegend, 3);
 
@@ -758,13 +754,13 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   int labelw, labelh;
   if (m_Properties) {
     f = m_Properties->m_SmallFont.GetChosenFont();
-    dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, &f);
+    dc->GetTextExtent(WindSpeed, &labelw, &labelh, nullptr, nullptr, &f);
     dc->SetFont(m_Properties->m_SmallFont.GetChosenFont());
     dc->SetTextForeground(
         GetColourSchemeFont(m_Properties->m_SmallFont.GetColour()));
   } else {
     f = g_pFontSmall->GetChosenFont();
-    dc->GetTextExtent(WindSpeed, &labelw, &labelh, 0, 0, &f);
+    dc->GetTextExtent(WindSpeed, &labelw, &labelh, nullptr, nullptr, &f);
     dc->SetFont(g_pFontSmall->GetChosenFont());
     dc->SetTextForeground(GetColourSchemeFont(g_pFontSmall->GetColour()));
   }
@@ -785,13 +781,14 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
                        m_MaxWindSpd, m_WindSpeedUnit.c_str(), hour, min,
                        m_TotalMaxWindSpd, m_WindSpeedUnit.c_str());
   int statw, stath;
-  dc->GetTextExtent(statistics, &statw, &stath, 0, 0, &f);
+  dc->GetTextExtent(statistics, &statw, &stath, nullptr, nullptr, &f);
   int dispw =
       (m_WindowRect.width - m_LeftLegend - speedw - degw - m_RightLegend);
   if (statw < dispw) {
     dc->DrawText(statistics, speedw + m_LeftLegend, 3);
   } else {  // Try a shorter text
-    dc->GetTextExtent(statistics.Left(12), &statw, &stath, 0, 0, &f);
+    dc->GetTextExtent(statistics.Left(12), &statw, &stath, nullptr, nullptr,
+                      &f);
     if (statw < dispw)
       dc->DrawText(statistics.Left(12), speedw + m_LeftLegend, 3);
   }
@@ -844,14 +841,15 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   //---------------------------------------------------------------------------------
 
   int ls = 0;
-  spdDraw[ls].x = 1 * m_ratioW + 3 + m_LeftLegend;
-  spdDraw[ls].y = m_TopLineHeight + m_DrawAreaRect.height -
-                  m_ArrayWindSpdHistory[1] * ratioH;
+  spdDraw[ls].x = static_cast<int>(1 * m_ratioW + 3 + m_LeftLegend);
+  spdDraw[ls].y = static_cast<int>(m_TopLineHeight + m_DrawAreaRect.height -
+                                   m_ArrayWindSpdHistory[1] * ratioH);
 
   for (int idx = 1; idx < WIND_RECORD_COUNT; idx++) {
-    pointsSpd[idx].x = idx * m_ratioW + 3 + m_LeftLegend;
-    pointsSpd[idx].y = m_TopLineHeight + m_DrawAreaRect.height -
-                       m_ArrayWindSpdHistory[idx] * ratioH;
+    pointsSpd[idx].x = static_cast<int>(idx * m_ratioW + 3 + m_LeftLegend);
+    pointsSpd[idx].y =
+        static_cast<int>(m_TopLineHeight + m_DrawAreaRect.height -
+                         m_ArrayWindSpdHistory[idx] * ratioH);
     if (WIND_RECORD_COUNT - m_SampleCount <= idx &&
         pointsSpd[idx].y > m_TopLineHeight &&
         pointsSpd[idx].y <= m_TopLineHeight + m_DrawAreaRect.height) {
@@ -878,14 +876,15 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
   pen.SetWidth(2);
   dc->SetPen(pen);
   ls = 0;
-  spdDraw[ls].x = 1 * m_ratioW + 3 + m_LeftLegend;
-  spdDraw[ls].y = m_TopLineHeight + m_DrawAreaRect.height -
-                  m_ExpSmoothArrayWindSpd[1] * ratioH;
+  spdDraw[ls].x = static_cast<int>(1 * m_ratioW + 3 + m_LeftLegend);
+  spdDraw[ls].y = static_cast<int>(m_TopLineHeight + m_DrawAreaRect.height -
+                                   m_ExpSmoothArrayWindSpd[1] * ratioH);
 
   for (int idx = 1; idx < WIND_RECORD_COUNT; idx++) {
-    pointsSpd[idx].x = idx * m_ratioW + 3 + m_LeftLegend;
-    pointsSpd[idx].y = m_TopLineHeight + m_DrawAreaRect.height -
-                       m_ExpSmoothArrayWindSpd[idx] * ratioH;
+    pointsSpd[idx].x = static_cast<int>(idx * m_ratioW + 3 + m_LeftLegend);
+    pointsSpd[idx].y =
+        static_cast<int>(m_TopLineHeight + m_DrawAreaRect.height -
+                         m_ExpSmoothArrayWindSpd[idx] * ratioH);
     if (WIND_RECORD_COUNT - m_SampleCount <= idx &&
         pointsSpd[idx].y > m_TopLineHeight &&
         pointsSpd[idx].y <= m_TopLineHeight + m_DrawAreaRect.height) {
@@ -912,12 +911,12 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc) {
       hour = localTime.GetHour();
       min = localTime.GetMinute();
       if ((hour * 100 + min) != done && (min % 15 == 0)) {
-        pointTime.x = idx * m_ratioW + 3 + m_LeftLegend;
+        pointTime.x = static_cast<int>(idx * m_ratioW + 3 + m_LeftLegend);
         dc->DrawLine(pointTime.x, m_TopLineHeight + 1, pointTime.x,
                      (m_TopLineHeight + m_DrawAreaRect.height + 1));
         label.Printf("%02d:%02d", hour, min);
         f = g_pFontSmall->GetChosenFont();
-        dc->GetTextExtent(label, &width, &height, 0, 0, &f);
+        dc->GetTextExtent(label, &width, &height, nullptr, nullptr, &f);
         dc->DrawText(label, pointTime.x - width / 2,
                      m_WindowRect.height - height);
         done = hour * 100 + min;

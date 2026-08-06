@@ -1,41 +1,31 @@
-/******************************************************************************
- * $Id: rudder_angle.cpp, v1.0 2010/08/26 SethDart Exp $
+/*************************************************************************
+ *  Copyright (C) 2010 by Jean-Eudes Onfray                               *
+ *  Copyright (C) 2010 by David S. Register                               *
+ *                                                                        *
+ *  This program is free software; you can redistribute it and/or modify  *
+ *  it under the terms of the GNU General Public License as published by  *
+ *  the Free Software Foundation; either version 2 of the License, or     *
+ *  (at your option) any later version.                                   *
+ *                                                                        *
+ *  This program is distributed in the hope that it will be useful,       *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *  GNU General Public License for more details.                          *
+ *                                                                        *
+ *  You should have received a copy of the GNU General Public License     *
+ *  along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ *************************************************************************/
+
+/**
+ * \file
  *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ * Dashboard rudder angle instrument implementation.
  */
 
 #include "rudder_angle.h"
 
-// For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -46,14 +36,14 @@ DashboardInstrument_RudderAngle::DashboardInstrument_RudderAngle(
     : DashboardInstrument_Dial(parent, id, title, Properties, OCPN_DBP_STC_RSA,
                                100, 160, -40, +40) {
   // Default Rudder position is centered
-  m_MainValue = 0;
+  m_main_value = 0;
 
-  // SetOptionMainValue(_T("%3.0f Deg"), DIAL_POSITION_BOTTOMLEFT);
+  // SetOptionMainValue("%3.0f Deg", DIAL_POSITION_BOTTOMLEFT);
   SetOptionMarker(5, DIAL_MARKER_REDGREEN, 2);
   // Labels are set static because we've no logic to display them this way
   wxString labels[] = {"40", "30", "20", "10", "0", "10", "20", "30", "40"};
   SetOptionLabel(10, DIAL_LABEL_HORIZONTAL, wxArrayString(9, labels));
-  //      SetOptionExtraValue(_T("%02.0f"), DIAL_POSITION_INSIDE);
+  //      SetOptionExtraValue("%02.0f", DIAL_POSITION_INSIDE);
 }
 
 wxSize DashboardInstrument_RudderAngle::GetSize(int orient, wxSize hint) {
@@ -70,21 +60,21 @@ wxSize DashboardInstrument_RudderAngle::GetSize(int orient, wxSize hint) {
 
 void DashboardInstrument_RudderAngle::SetData(DASH_CAP st, double data,
                                               wxString unit) {
-  if (st == m_MainValueCap) {
+  if (st == m_main_value_cap) {
     // Dial works clockwise but Rudder has negative values for left
     // and positive for right so we must inverse it.
     data = -data;
 
-    if (data < m_MainValueMin)
-      m_MainValue = m_MainValueMin;
-    else if (data > m_MainValueMax)
-      m_MainValue = m_MainValueMax;
+    if (data < m_main_value_min)
+      m_main_value = m_main_value_min;
+    else if (data > m_main_value_max)
+      m_main_value = m_main_value_max;
     else
-      m_MainValue = data;
-    m_MainValueUnit = unit;
-  } else if (st == m_ExtraValueCap) {
-    m_ExtraValue = data;
-    m_ExtraValueUnit = unit;
+      m_main_value = data;
+    m_main_value_unit = unit;
+  } else if (st == m_extra_value_cap) {
+    m_extra_value = data;
+    m_extra_value_unit = unit;
   } else
     return;
 }

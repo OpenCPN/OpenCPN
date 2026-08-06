@@ -1,12 +1,6 @@
-/******************************************************************************
- * $Id: clock.cpp, v1.0 2011/05/15 nohal Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Pavel Kalian
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010 by Pavel Kalian                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,23 +13,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard clock
  */
 
 #include "clock.h"
 
-// For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -47,9 +37,9 @@ DashboardInstrument_Clock::DashboardInstrument_Clock(
                                  format) {
   // if format contains the string "LCL" then display time in local TZ
   if (format.Contains("LCL"))
-    setUTC(false);
+    SetUtc(false);
   else
-    setUTC(true);
+    SetUtc(true);
   m_Properties = Properties;
 }
 
@@ -65,7 +55,7 @@ void DashboardInstrument_Clock::SetUtcTime(wxDateTime data) {
 wxString DashboardInstrument_Clock::GetDisplayTime(wxDateTime UTCtime) {
   wxString result("---");
   if (UTCtime.IsValid()) {
-    if (getUTC()) {
+    if (GetUtc()) {
       result = UTCtime.FormatISOTime().Append(" UTC");
       return result;
     }

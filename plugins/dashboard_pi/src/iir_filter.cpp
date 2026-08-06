@@ -1,24 +1,24 @@
+#include <wx/wxprec.h>
 
-#include "wx/wxprec.h"
+#include <cmath>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include "iirfilter.h"
-#include <cmath>
+#include <wx/wx.h>
+#endif
 
 #include <wx/math.h>
 
-iirfilter::iirfilter(double fc, int tp) {
+#include "iir_filter.h"
+
+IirFilter::IirFilter(double fc, int tp) {
   wxASSERT(tp == IIRFILTER_TYPE_DEG || tp == IIRFILTER_TYPE_LINEAR ||
            tp == IIRFILTER_TYPE_RAD);
-  setFC(fc);
+  SetFc(fc);
   type = tp;
   reset();
 }
 
-double iirfilter::filter(double data) {
+double IirFilter::Filter(double data) {
   if (!std::isnan(data) && !std::isnan(b1)) {
     if (std::isnan(accum)) accum = 0.0;
     switch (type) {
@@ -27,12 +27,12 @@ double iirfilter::filter(double data) {
         break;
 
       case IIRFILTER_TYPE_DEG:
-        unwrapDeg(data);
+        UnwrapDeg(data);
         accum = accum * b1 + a0 * (oldDeg + 360.0 * wraps);
         break;
 
       case IIRFILTER_TYPE_RAD:
-        unwrapRad(data);
+        UnwrapRad(data);
         accum = accum * b1 + a0 * (oldRad + 2.0 * M_PI * wraps);
         break;
 
@@ -44,14 +44,14 @@ double iirfilter::filter(double data) {
   return get();
 }
 
-void iirfilter::reset(double a) {
+void IirFilter::reset(double a) {
   accum = a;
   oldDeg = NAN;
   oldRad = NAN;
   wraps = 0;
 }
 
-void iirfilter::setFC(double fc) {
+void IirFilter::SetFc(double fc) {
   if (std::isnan(fc) || fc <= 0.0)
     a0 = b1 = NAN;  // NAN means no filtering will be done
   else {
@@ -61,21 +61,21 @@ void iirfilter::setFC(double fc) {
   }
 }
 
-void iirfilter::setType(int tp) {
+void IirFilter::SetType(int tp) {
   wxASSERT(tp == IIRFILTER_TYPE_DEG || tp == IIRFILTER_TYPE_LINEAR ||
            tp == IIRFILTER_TYPE_RAD);
   type = tp;
 }
 
-double iirfilter::getFc(void) {
+double IirFilter::GetFc() const {
   if (std::isnan(b1)) return 0.0;
   double fc = log(b1) / (-2.0 * 3.1415926535897932384626433832795);
   return fc;
 }
 
-int iirfilter::getType(void) { return type; }
+int IirFilter::GetType() const { return type; }
 
-double iirfilter::get(void) {
+double IirFilter::get() const {
   if (std::isnan(accum)) return accum;
   double res = accum;
   switch (type) {
@@ -92,7 +92,7 @@ double iirfilter::get(void) {
   return res;
 }
 
-void iirfilter::unwrapDeg(double deg) {
+void IirFilter::UnwrapDeg(double deg) {
   if (deg - oldDeg > 180) {
     wraps--;
   } else if (deg - oldDeg < -180) {
@@ -101,7 +101,7 @@ void iirfilter::unwrapDeg(double deg) {
   oldDeg = deg;
 }
 
-void iirfilter::unwrapRad(double rad) {
+void IirFilter::UnwrapRad(double rad) {
   if (rad - oldRad > M_PI) {
     wraps--;
   } else if (rad - oldRad < M_PI) {

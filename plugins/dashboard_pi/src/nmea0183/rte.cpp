@@ -133,7 +133,7 @@ bool RTE::Write(SENTENCE& sentence) {
   switch (TypeOfRoute) {
     case CompleteRoute:
 
-      //            sentence += _T("C");             // uppercase required for
+      //            sentence += "C";             // uppercase required for
       //            GPS MLR FFX312
       sentence += "c";  // trying lowercase for generic NMEA device
       break;

@@ -1,13 +1,6 @@
-/******************************************************************************
- * $Id: dial.h, v1.0 2010/08/05 SethDart Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- *           (Inspired by original work from Andreas Heiming)
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by Jean-Eudes Onfray                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,21 +13,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard dial instrument.
+ *
+ * Inspired by original work from Andreas Heiming
  */
 
-#ifndef __Dial_H__
-#define __Dial_H__
+#ifndef Dial_H_
+#define Dial_H_
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -87,56 +81,56 @@ public:
                            InstrumentProperties* Properties, DASH_CAP cap_flag,
                            int s_angle, int r_angle, int s_value, int e_value);
 
-  ~DashboardInstrument_Dial(void) {}
+  ~DashboardInstrument_Dial() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP, double, wxString);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP, double, wxString) override;
   void SetOptionMarker(double step, DialMarkerOption option, int offset) {
-    m_MarkerStep = step;
-    m_MarkerOption = option;
-    m_MarkerOffset = offset;
+    m_marker_step = step;
+    m_marker_option = option;
+    m_marker_offset = offset;
   }
   void SetOptionLabel(double step, DialLabelOption option,
                       wxArrayString labels = wxArrayString()) {
-    m_LabelStep = step;
-    m_LabelOption = option;
-    m_LabelArray = labels;
+    m_label_step = step;
+    m_label_option = option;
+    m_label_array = labels;
   }
   void SetOptionMainValue(wxString format, DialPositionOption option) {
-    m_MainValueFormat = format;
-    m_MainValueOption = option;
+    m_main_value_format = format;
+    m_main_value_option = option;
   }
   void SetOptionExtraValue(DASH_CAP cap, wxString format,
                            DialPositionOption option) {
-    m_ExtraValueCap = cap;
+    m_extra_value_cap = cap;
     m_cap_flag.set(cap);
-    m_ExtraValueFormat = format;
-    m_ExtraValueOption = option;
+    m_extra_value_format = format;
+    m_extra_value_option = option;
   }
 
 private:
 protected:
   int m_cx, m_cy, m_radius;
-  int m_AngleStart, m_AngleRange;
-  bool m_gpsWD;
-  double m_MainValue;
-  DASH_CAP m_MainValueCap;
-  double m_MainValueMin, m_MainValueMax;
-  wxString m_MainValueFormat;
-  wxString m_MainValueUnit;
-  DialPositionOption m_MainValueOption;
-  double m_ExtraValue;
-  DASH_CAP m_ExtraValueCap;
-  wxString m_ExtraValueFormat;
-  wxString m_ExtraValueUnit;
-  DialPositionOption m_ExtraValueOption;
-  DialMarkerOption m_MarkerOption;
-  int m_MarkerOffset;
-  double m_MarkerStep, m_LabelStep;
-  DialLabelOption m_LabelOption;
-  wxArrayString m_LabelArray;
+  int m_angle_start, m_angle_range;
+  bool m_gps_wd;
+  double m_main_value;
+  DASH_CAP m_main_value_cap;
+  double m_main_value_min, m_main_value_max;
+  wxString m_main_value_format;
+  wxString m_main_value_unit;
+  DialPositionOption m_main_value_option;
+  double m_extra_value;
+  DASH_CAP m_extra_value_cap;
+  wxString m_extra_value_format;
+  wxString m_extra_value_unit;
+  DialPositionOption m_extra_value_option;
+  DialMarkerOption m_marker_option;
+  int m_marker_offset;
+  double m_marker_step, m_label_step;
+  DialLabelOption m_label_option;
+  wxArrayString m_label_array;
 
-  virtual void Draw(wxGCDC* dc);
+  void Draw(wxGCDC* dc) override;
   virtual void DrawFrame(wxGCDC* dc);
   virtual void DrawMarkers(wxGCDC* dc);
   virtual void DrawLabels(wxGCDC* dc);
@@ -151,4 +145,4 @@ void DrawCompassRose(wxGCDC* dc, int cx, int cy, int radius, int startangle,
                      bool showlabels, InstrumentProperties* Properties);
 void DrawBoat(wxGCDC* dc, int cx, int cy, int radius);
 
-#endif  // __Dial_H__
+#endif  // Dial_H_

@@ -1,13 +1,6 @@
-/******************************************************************************
- * $Id: compass.cpp, v1.0 2010/08/05 SethDart Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- *           (Inspired by original work from Andreas Heiming)
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2010 by Jean-Eudes Onfray                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,23 +13,19 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard compass
  */
 
 #include "compass.h"
 
-// For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
@@ -53,28 +42,27 @@ DashboardInstrument_Compass::DashboardInstrument_Compass(
 
 void DashboardInstrument_Compass::SetData(DASH_CAP st, double data,
                                           wxString unit) {
-  double cdata = data;
-  m_gpsWD = false;
-  if (std::isnan(data)) m_gpsWD = true;
+  m_gps_wd = false;
+  if (std::isnan(data)) m_gps_wd = true;
 
-  if (st == m_MainValueCap) {
+  if (st == m_main_value_cap) {
     // Rotate the rose
-    m_AngleStart = -data;
+    m_angle_start = static_cast<int>(-data);
     // Required to display data
-    m_MainValue = data;
-    m_MainValueUnit = unit;
-  } else if (st == m_ExtraValueCap) {
-    m_ExtraValue = data;
-    m_ExtraValueUnit = unit;
+    m_main_value = data;
+    m_main_value_unit = unit;
+  } else if (st == m_extra_value_cap) {
+    m_extra_value = data;
+    m_extra_value_unit = unit;
   }
   Refresh();
 }
 
 void DashboardInstrument_Compass::DrawBackground(wxGCDC* dc) {
   DrawBoat(dc, m_cx, m_cy, m_radius);
-  if (!m_gpsWD)  // Don't draw if no GPS
-    DrawCompassRose(dc, m_cx, m_cy, 0.7 * m_radius, m_AngleStart, true,
-                    m_Properties);
+  if (!m_gps_wd)  // Don't draw if no GPS
+    DrawCompassRose(dc, m_cx, m_cy, static_cast<int>(0.7 * m_radius),
+                    m_angle_start, true, m_Properties);
 }
 
 void DashboardInstrument_Compass::DrawForeground(wxGCDC* dc) {
