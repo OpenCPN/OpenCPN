@@ -5,7 +5,7 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#include "WmmUIDialog.h"
+#include "wmm_ui_dialog.h"
 #include "manual.h"
 #include "ocpn_plugin.h"
 
@@ -279,35 +279,35 @@ WmmUIDialogBase::WmmUIDialogBase(wxWindow* parent, wxWindowID id,
   // sbPlot->Add( fgSizer5, 1, wxEXPAND, 5 );
   fgSizer6->Add(sbPlot, 1, wxEXPAND /*|wxFIXED_MINSIZE*/, 0);
 
-  wxStdDialogButtonSizer* m_sdbSizerBtns = new wxStdDialogButtonSizer();
-  wxButton* m_sdbSizerBtnsOK = new wxButton(this, wxID_OK);
+  auto* m_sdbSizerBtns = new wxStdDialogButtonSizer();
+  auto* m_sdbSizerBtnsOK = new wxButton(this, wxID_OK);
   m_sdbSizerBtns->AddButton(m_sdbSizerBtnsOK);
   m_sdbSizerBtns->Realize();
 
   fgSizer6->Add(m_sdbSizerBtns, 0, wxALL | wxEXPAND, 5);
 
   this->SetSizer(fgSizer6);
-  this->Layout();
+  wxFrame::Layout();
 
   this->Centre(wxBOTH);
 
   // Connect Events
   m_cbEnablePlot->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(WmmUIDialogBase::EnablePlotChanged), NULL, this);
+      wxCommandEventHandler(WmmUIDialogBase::EnablePlotChanged), nullptr, this);
   m_bPlotSettings->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                            wxCommandEventHandler(WmmUIDialogBase::PlotSettings),
-                           NULL, this);
+                           nullptr, this);
 }
 
 WmmUIDialogBase::~WmmUIDialogBase() {
   // Disconnect Events
   m_cbEnablePlot->Disconnect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(WmmUIDialogBase::EnablePlotChanged), NULL, this);
+      wxCommandEventHandler(WmmUIDialogBase::EnablePlotChanged), nullptr, this);
   m_bPlotSettings->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(WmmUIDialogBase::PlotSettings), NULL, this);
+      wxCommandEventHandler(WmmUIDialogBase::PlotSettings), nullptr, this);
 }
 void WmmUIDialogBase::OnKey(wxKeyEvent& ke) {
   if (ke.GetKeyCode() == WXK_ESCAPE) {
@@ -381,7 +381,7 @@ WmmPrefsDialog::WmmPrefsDialog(wxWindow* parent, wxWindowID id,
   m_sdbSizer1Cancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
   m_sdbSizer1->AddButton(m_sdbSizer1Cancel);
   auto* help_btn = new wxButton(this, wxID_HELP);
-  help_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent) {
+  help_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
     wxString datadir = GetPluginDataDir("manual_pi");
     Manual(this, datadir.ToStdString()).Launch("Wmm");
   });
@@ -392,13 +392,13 @@ WmmPrefsDialog::WmmPrefsDialog(wxWindow* parent, wxWindowID id,
   bSizer2->Add(m_sdbSizer1, 0, wxBOTTOM | wxEXPAND | wxTOP, 5);
 
   this->SetSizer(bSizer2);
-  this->Layout();
+  wxDialog::Layout();
   bSizer2->Fit(this);
 
   this->Centre(wxBOTH);
 }
 
-WmmPrefsDialog::~WmmPrefsDialog() {}
+WmmPrefsDialog::~WmmPrefsDialog() = default;
 
 WmmPlotSettingsDialogBase::WmmPlotSettingsDialogBase(
     wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos,
@@ -492,31 +492,31 @@ WmmPlotSettingsDialogBase::WmmPlotSettingsDialogBase(
   gSizer2->Add(m_bCancel, 0, wxALL, 5);
 
   this->SetSizer(gSizer2);
-  this->Layout();
+  wxDialog::Layout();
 
   this->Centre(wxBOTH);
 
   // Connect Events
   m_bAbout->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                     wxCommandEventHandler(WmmPlotSettingsDialogBase::About),
-                    NULL, this);
+                    nullptr, this);
   m_bSave->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                   wxCommandEventHandler(WmmPlotSettingsDialogBase::Save), NULL,
-                   this);
+                   wxCommandEventHandler(WmmPlotSettingsDialogBase::Save),
+                   nullptr, this);
   m_bCancel->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                      wxCommandEventHandler(WmmPlotSettingsDialogBase::Cancel),
-                     NULL, this);
+                     nullptr, this);
 }
 
 WmmPlotSettingsDialogBase::~WmmPlotSettingsDialogBase() {
   // Disconnect Events
   m_bAbout->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(WmmPlotSettingsDialogBase::About),
-                       NULL, this);
+                       nullptr, this);
   m_bSave->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
                       wxCommandEventHandler(WmmPlotSettingsDialogBase::Save),
-                      NULL, this);
+                      nullptr, this);
   m_bCancel->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(WmmPlotSettingsDialogBase::Cancel), NULL, this);
+      wxCommandEventHandler(WmmPlotSettingsDialogBase::Cancel), nullptr, this);
 }

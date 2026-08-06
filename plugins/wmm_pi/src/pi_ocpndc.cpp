@@ -1,10 +1,4 @@
-/******************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  Layer to perform wxDC drawing using wxDC or opengl
- * Author:   Sean D'Epagnier
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2011 by Sean D'Epagnier                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,24 +12,30 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
  *
+ * Implement pi_ocpndc.h
  */
 
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
-
-#include "ocpn_plugin.h"
-#include "linmath.h"
+#include "pi_ocpndc.h"
 
 #ifdef __MSVC__
 #include <windows.h>
+#endif
+
+#ifdef __ANDROID__
+#include "qdebug.h"
+#endif
+
+#include <vector>
+
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
 #endif
 
 #ifdef ocpnUSE_GL
@@ -45,11 +45,7 @@
 #include <wx/graphics.h>
 #include <wx/dcclient.h>
 
-#include <vector>
-
-#include "pi_ocpndc.h"
-
-#ifdef __OCPN__ANDROID__
+#ifdef __ANDROID__
 #include <qopengl.h>
 #include "GL/gl_private.h"
 #else
@@ -62,9 +58,8 @@
 #include <GLES2/gl2.h>
 #endif
 
-#ifdef __OCPN__ANDROID__
-#include "qdebug.h"
-#endif
+#include "ocpn_plugin.h"
+#include "linmath.h"
 
 extern float g_piGLMinSymbolLineWidth;
 wxArrayPtrVoid pi_gTesselatorVertices;
@@ -95,7 +90,7 @@ pi_ocpnDC::pi_ocpnDC(wxGLCanvas &canvas)
 #ifdef ocpnUSE_GL
   m_textforegroundcolour = wxColour(0, 0, 0);
 #endif
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = GetLocaleCanonicalName().IsSameAs("en_US");
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
@@ -126,7 +121,7 @@ pi_ocpnDC::pi_ocpnDC(wxDC &pdc)
   }
 #endif
   m_textforegroundcolour = wxColour(0, 0, 0);
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = GetLocaleCanonicalName().IsSameAs("en_US");
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
@@ -137,7 +132,7 @@ pi_ocpnDC::pi_ocpnDC()
 #if wxUSE_GRAPHICS_CONTEXT
   pgc = NULL;
 #endif
-  m_buseTex = GetLocaleCanonicalName().IsSameAs(_T("en_US"));
+  m_buseTex = GetLocaleCanonicalName().IsSameAs("en_US");
   workBuf = NULL;
   workBufSize = 0;
   s_odc_tess_work_buf = NULL;
@@ -1552,7 +1547,7 @@ void APIENTRY ocpnDCvertexCallback(GLvoid *arg) {
 void APIENTRY ocpnDCerrorCallback(GLenum errorCode) {
   const GLubyte *estring;
   estring = gluErrorString(errorCode);
-  // wxLogMessage( _T("OpenGL Tessellation Error: %s"), (char *)estring );
+  // wxLogMessage( "OpenGL Tessellation Error: %s", (char *)estring );
 }
 
 void APIENTRY ocpnDCbeginCallback(GLenum type) { glBegin(type); }

@@ -3,13 +3,12 @@
 // Purpose:     shared build defines
 // Author:      Luciano Cattani
 // Created:     2007/10/20
-// RCS-ID:      $Id: json_defs.h,v 1.6 2008/03/12 10:48:19 luccat Exp $
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WX_JSON_DEFS_H_
-#define _WX_JSON_DEFS_H_
+#ifndef WX_json_DEFS_H__
+#define WX_json_DEFS_H__
 
 // Defines for component version.
 // The following symbols should be updated for each new component release
@@ -153,11 +152,13 @@
 // define the wxJSON_ASSERT() macro to expand to wxASSERT()
 // unless the wxJSON_NOABORT_ASSERT is defined
 // #define wxJSON_NOABORT_ASSERT
+#ifndef wxJSON_ASSERT
 #if defined(wxJSON_NOABORT_ASSERT)
 #define wxJSON_ASSERT(cond)
 #else
 #define wxJSON_ASSERT(cond) wxASSERT(cond);
 #endif
+#endif  // wxJSON_ASSERT
 
 //
 // the following macros are used by the wxJSONWriter::WriteStringValues()
@@ -195,4 +196,4 @@
 #define MAX(a, b) a > b ? a : b
 #endif
 
-#endif  // _WX_JSON_DEFS_H_
+#endif  // WX_json_DEFS_H__

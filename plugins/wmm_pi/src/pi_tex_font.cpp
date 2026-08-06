@@ -18,17 +18,22 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * Implement pi_tex_font.h
+ */
+
 #include <wx/wx.h>
 
-#ifdef __OCPN__ANDROID__
-#include "qdebug.h"
+#ifdef __ANDROID__
+#include <qdebug.h>
 #endif
 
-#include "pi_TexFont.h"
+#include "pi_tex_font.h"
 
 #ifdef USE_ANDROID_GLES2
 #include <GLES2/gl2.h>
@@ -64,9 +69,9 @@ void TexFont::Build(wxFont &font, bool blur) {
     wxCoord gw, gh;
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
+      text = wxString::Format("%c", 0x00B0);  //"°";
     else
-      text = wxString::Format(_T("%c"), i);
+      text = wxString::Format("%c", i);
     wxCoord descent, exlead;
     sdc.GetTextExtent(text, &gw, &gh, &descent, &exlead,
                       &font);  // measure the text
@@ -123,9 +128,9 @@ void TexFont::Build(wxFont &font, bool blur) {
 
     wxString text;
     if (i == DEGREE_GLYPH)
-      text = wxString::Format(_T("%c"), 0x00B0);  //_T("°");
+      text = wxString::Format("%c", 0x00B0);  //"°";
     else
-      text = wxString::Format(_T("%c"), i);
+      text = wxString::Format("%c", i);
 
     dc.DrawText(text, tgi[i].x, tgi[i].y);
 

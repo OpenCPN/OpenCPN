@@ -3,7 +3,6 @@
 // Purpose:     the wxJSON class that holds a JSON value
 // Author:      Luciano Cattani
 // Created:     2007/10/01
-// RCS-ID:      $Id: jsonval.cpp,v 1.12 2008/03/06 10:25:18 luccat Exp $
 // Copyright:   (c) 2007 Luciano Cattani
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
@@ -18,8 +17,7 @@
 #define wxDEBUG_LEVEL 0
 #endif
 
-// For compilers that support precompilation, includes "wx.h".
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 
 #ifdef __BORLANDC__
 #pragma hdrstop
