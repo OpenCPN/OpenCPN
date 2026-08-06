@@ -82,14 +82,16 @@ SET(SRC_DASHBOARD
     src/dashboard_pi.cpp
     src/instrument.cpp
     src/instrument.h
-    src/iirfilter.h
-    src/iirfilter.cpp
+    src/iir_filter.h
+    src/iir_filter.cpp
     src/compass.cpp
     src/compass.h
     src/dial.cpp
     src/dial.h
     src/gps.cpp
     src/gps.h
+    src/iir_filter.h
+    src/iir_filter.cpp
     src/rudder_angle.cpp
     src/rudder_angle.h
     src/speedometer.cpp

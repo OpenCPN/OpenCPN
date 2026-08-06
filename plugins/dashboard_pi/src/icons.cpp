@@ -13,7 +13,7 @@ wxBitmap *_img_instrument;
 wxBitmap *_img_minus;
 wxBitmap *_img_plus;
 
-void initialize_images(void) {
+void initialize_images() {
   {
     wxMemoryInputStream sm(
         "\211PNG\r\n\032\n\000\000\000\rIHDR\000\000\000 \000\000\000 "
@@ -468,5 +468,4 @@ void initialize_images(void) {
         460);
     _img_plus = new wxBitmap(wxImage(sm));
   }
-  return;
 }

@@ -1,13 +1,6 @@
-/******************************************************************************
- * $Id: compass.h, v1.0 2010/08/05 SethDart Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- *           (Inspired by original work from Andreas Heiming)
- *
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by Jean-Eudes Onfray                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,53 +13,43 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard compass instrument
+ *
+ * Inspired by original work from Andreas Heiming
  */
 
-#ifndef __Compass_H__
-#define __Compass_H__
+#ifndef Compass_H_
+#define Compass_H_
 
-// For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-// for all others, include the necessary headers (this file is usually all you
-// need because it includes almost all "standard" wxWidgets headers)
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
 
 #include "dial.h"
 
-//+------------------------------------------------------------------------------
-//|
-//| CLASS:
-//|    DashboardInstrument_Compass
-//|
-//| DESCRIPTION:
-//|    This class creates a compass style control
-//|
-//+------------------------------------------------------------------------------
+/** A compass style control */
 class DashboardInstrument_Compass : public DashboardInstrument_Dial {
 public:
   DashboardInstrument_Compass(wxWindow* parent, wxWindowID id, wxString title,
                               InstrumentProperties* Properties,
                               DASH_CAP cap_flag);
 
-  ~DashboardInstrument_Compass(void) {}
+  ~DashboardInstrument_Compass() override = default;
 
-  void SetData(DASH_CAP, double, wxString);
+  void SetData(DASH_CAP, double, wxString) override;
 
 private:
 protected:
-  void DrawBackground(wxGCDC* dc);
-  void DrawForeground(wxGCDC* dc);
+  void DrawBackground(wxGCDC* dc) override;
+  void DrawForeground(wxGCDC* dc) override;
 };
 
-#endif  // __Compass_H__
+#endif  // Compass_H_

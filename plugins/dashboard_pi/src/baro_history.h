@@ -1,12 +1,7 @@
-/******************************************************************************
- * $Id: baro_history.h, v1.0 2014/02/10 tom-r Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   stedy
- * Based on code from  Thomas Rauch
- ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+/**************************************************************************
+ *   Copyright (C) 2010 by Thomas Rauch                                    *
+ *   Copyright (C) 2010 by stedy                                           *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,21 +14,20 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard barometer history instrument.
  */
 
-#ifndef __BARO_HISTORY_H__
-#define __BARO_HISTORY_H__
+#ifndef BARO_HISTORY_H__
+#define BARO_HISTORY_H__
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
 
 // for all others, include the necessary headers (this file is usually all you
 // need because it includes almost all "standard" wxWidgets headers)
@@ -41,11 +35,11 @@
 #include <wx/wx.h>
 #endif
 
-// Warn: div by 0 if count == 1
-#define BARO_RECORD_COUNT 2000
-
 #include "instrument.h"
 #include "dial.h"
+
+// Warn: div by 0 if count == 1
+#define BARO_RECORD_COUNT 2000
 
 class DashboardInstrument_BaroHistory : public DashboardInstrument {
 public:
@@ -59,37 +53,37 @@ public:
   wxSize GetSize(int orient, wxSize hint);
 
 private:
-  int m_soloInPane;
-  int m_SpdRecCnt, m_DirRecCnt, m_SpdStartVal, m_DirStartVal;
-  int m_isNULL;
-  int m_WindDirShift;
+  int m_solo_in_pane;
+  int m_spd_rec_cnt, m_dir_rec_cnt, m_spd_start_val, m_dir_start_val;
+  int m_is_null;
+  int m_wind_dir_shift;
 
 protected:
   double alpha;
-  double m_ArrayBaroHistory[BARO_RECORD_COUNT];
-  double m_ArrayPressHistory[BARO_RECORD_COUNT];
-  double m_ExpSmoothArrayPressure[BARO_RECORD_COUNT];
+  double m_array_baro_history[BARO_RECORD_COUNT];
+  double m_array_press_history[BARO_RECORD_COUNT];
+  double m_exp_smooth_array_pressure[BARO_RECORD_COUNT];
 
-  wxDateTime::Tm m_ArrayRecTime[BARO_RECORD_COUNT];
+  wxDateTime::Tm m_array_rec_time[BARO_RECORD_COUNT];
 
-  double m_MaxPress;       //...in array
-  double m_MinPress;       //...in array
-  double m_TotalMaxPress;  // since O is started
-  double m_TotalMinPress;
-  double m_Press;
-  double m_MaxPressScale;
-  double m_ratioW;
+  double m_max_press;        //...in array
+  double m_min_press;        //...in array
+  double m_total_max_press;  // since O is started
+  double m_total_min_press;
+  double m_press;
+  double m_max_press_scale;
+  double m_ratio_w;
 
-  bool m_IsRunning;
-  int m_SampleCount;
-  int m_SetNewData;
-  wxRect m_WindowRect;
-  wxRect m_DrawAreaRect;  // the coordinates of the real darwing area
-  int m_DrawingWidth, m_TopLineHeight, m_DrawingHeight;
+  bool m_is_running;
+  int m_sample_count;
+  int m_set_new_data;
+  wxRect m_window_rect;
+  wxRect m_draw_area_rect;  // the coordinates of the real darwing area
+  int m_drawing_width, m_top_line_height, m_drawing_height;
   int m_width, m_height;
-  int m_LeftLegend, m_RightLegend;
-  int m_currSec, m_lastSec, m_SpdCntperSec;
-  double m_cntSpd, m_cntDir, m_avgSpd, m_avgDir;
+  int m_left_legend, m_right_legend;
+  int m_curr_sec, m_last_sec, m_spd_cntper_sec;
+  double m_cnt_spd, m_cnt_dir, m_avg_spd, m_avg_dir;
 
   void Draw(wxGCDC* dc);
   void DrawBackground(wxGCDC* dc);
@@ -100,4 +94,4 @@ protected:
   // wxString GetWindDirStr(wxString WindDir);
 };
 
-#endif  // __BARO_HISTORY_H__
+#endif  // BARO_HISTORY_H__

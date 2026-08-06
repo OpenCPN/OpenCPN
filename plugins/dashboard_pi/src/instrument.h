@@ -1,11 +1,5 @@
-/***************************************************************************
- * $Id: instrument.h, v1.0 2010/08/30 SethDart Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Jean-Eudes Onfray
- *
- ***************************************************************************
+/**************************************************************************
+ *   Copyright (C) 2010 by Jean-Eudes Onfray                               *
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,37 +13,41 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard instrument base class
  */
 
-#ifndef _INSTRUMENT_H_
-#define _INSTRUMENT_H_
+#ifndef InSTRUMENT_H_
+#define InSTRUMENT_H_
 
-#include "wx/wxprec.h"
+#include <bitset>
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
 
 #if !wxUSE_GRAPHICS_CONTEXT
 #define wxGCDC wxDC
 #endif
 
 // Required GetGlobalColor
-#include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>
 #include <wx/dcgraph.h>  // supplemental, for Mac
-
-#include <bitset>
 #include <wx/fontdata.h>
 
-const wxString DEGREE_SIGN = wxString::Format(
-    "%c", 0x00B0);  // This is the degree sign in UTF8. It should be
-                    // correctly handled on both Win & Unix
+#include "ocpn_plugin.h"
+
 #define DefaultWidth 150
+
+// The degree sign in UTF8, should be correctly handled on both Win & Unix.
+const wxString DEGREE_SIGN = wxString::Format("%c", 0x00B0);
 
 extern wxFontData *g_pFontTitle;
 extern wxFontData *g_pFontData;
@@ -121,6 +119,7 @@ enum DASH_CAP {
 
 #define N_INSTRUMENTS \
   ((int)OCPN_DBP_STC_LAST)  // Number of instrument capability flags
+
 using CapType = std::bitset<N_INSTRUMENTS>;
 
 wxColour GetColourSchemeBackgroundColour(wxColour co);
@@ -151,7 +150,9 @@ public:
     GetGlobalColor("DASHN", &m_Arrow_First_Colour);
     GetGlobalColor("BLUE3", &m_Arrow_Second_Colour);
   }
-  ~InstrumentProperties() {}
+
+  ~InstrumentProperties() = default;
+
   void SetDefault() {
     m_aInstrument = -1;
     m_Listplace = -1;
@@ -200,8 +201,8 @@ class DashboardInstrument : public wxControl {
 public:
   DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title,
                       DASH_CAP cap_flag,
-                      InstrumentProperties *Properties = NULL);
-  ~DashboardInstrument() {}
+                      InstrumentProperties *Properties = nullptr);
+  ~DashboardInstrument() override = default;
 
   CapType GetCapacity();
   void OnEraseBackground(wxEraseEvent &WXUNUSED(evt));
@@ -249,10 +250,10 @@ public:
   DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title,
                              InstrumentProperties *Properties, DASH_CAP cap,
                              wxString format);
-  ~DashboardInstrument_Single() {}
+  ~DashboardInstrument_Single() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP st, double data, wxString unit);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP st, double data, wxString unit) override;
 
 protected:
   wxString m_data;
@@ -260,19 +261,19 @@ protected:
   //  int m_DataHeight;
   //  InstrumentProperties* m_Properties;
 
-  void Draw(wxGCDC *dc);
+  void Draw(wxGCDC *dc) override;
 };
 
 class DashboardInstrument_Position : public DashboardInstrument {
 public:
   DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title,
-                               InstrumentProperties *Properties = NULL,
+                               InstrumentProperties *Properties = nullptr,
                                DASH_CAP cap_flag1 = OCPN_DBP_STC_LAT,
                                DASH_CAP cap_flag2 = OCPN_DBP_STC_LON);
-  ~DashboardInstrument_Position() {}
+  ~DashboardInstrument_Position() override = default;
 
-  wxSize GetSize(int orient, wxSize hint);
-  void SetData(DASH_CAP st, double data, wxString unit);
+  wxSize GetSize(int orient, wxSize hint) override;
+  void SetData(DASH_CAP st, double data, wxString unit) override;
 
 protected:
   wxString m_data1;
@@ -281,7 +282,7 @@ protected:
   DASH_CAP m_cap_flag2;
   //  int m_DataHeight;
 
-  void Draw(wxGCDC *dc);
+  void Draw(wxGCDC *dc) override;
 };
 
-#endif
+#endif  // InSTRUMENT_H_

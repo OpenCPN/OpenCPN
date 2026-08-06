@@ -223,12 +223,12 @@ bool NMEA0183::IsGood(void) const {
   /*  This seems too harsh for cross platform work
    *
   if ( sentence.Sentence.Mid( sentence.Sentence.Len() - 2, 1 ) !=
-  wxString(_T("\r")) )
+  wxString("\r") )
   {
      return( FALSE );
   }
 
-  if ( sentence.Sentence.Right( 1 ) != _T("\n") )
+  if ( sentence.Sentence.Right( 1 ) != "\n" )
   {
      return( FALSE );
   }

@@ -1,11 +1,5 @@
-/******************************************************************************
- * $Id: from_ownship.cpp
- *
- * Project:  OpenCPN
- * Purpose:  Dashboard Plugin
- * Author:   Pavel Kalian
- *
- ***************************************************************************
+/**************************************************************************
+ *   Copyright (C) 2010 by Pavel Kalian                                    *
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,10 +13,13 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Dashboard ownship data implementation.
  */
 
 #include "from_ownship.h"
@@ -50,6 +47,8 @@ DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(
   m_cap_flag4 = cap_flag4;
   s_lat = 99999999;
   s_lon = 99999999;
+  c_lat = 0;
+  c_lon = 0;
 }
 
 void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc) {
@@ -60,9 +59,9 @@ void DashboardInstrument_FromOwnship::Draw(wxGCDC* dc) {
 
   if (m_DataRightAlign) {
     int w, h;
-    dc->GetTextExtent(m_data1, &w, &h, 0, 0);
+    dc->GetTextExtent(m_data1, &w, &h, nullptr, nullptr);
     x1 = GetClientSize().GetWidth() - w - m_DataMargin;
-    dc->GetTextExtent(m_data2, &w, &h, 0, 0);
+    dc->GetTextExtent(m_data2, &w, &h, nullptr, nullptr);
     x2 = GetClientSize().GetWidth() - w - m_DataMargin;
   }
 
@@ -114,8 +113,8 @@ wxSize DashboardInstrument_FromOwnship::GetSize(int orient, wxSize hint) {
   }
   InitDataTextHeight(sampleText, w);
 
-  int drawHeight =
-      m_DataTextHeight * 2 + m_DataTextHeight * g_TitleVerticalOffset;
+  int drawHeight = static_cast<int>(m_DataTextHeight * 2 +
+                                    m_DataTextHeight * g_TitleVerticalOffset);
   InitTitleAndDataPosition(drawHeight);
   int h = GetFullHeight(drawHeight);
 

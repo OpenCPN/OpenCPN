@@ -119,7 +119,7 @@ bool RMB::Parse(const SENTENCE& sentence) {
   /*
      if ( check == Unknown0183 )
      {
-         SetErrorMessage( _T("Missing Checksum") );
+         SetErrorMessage( "Missing Checksum" );
         return( FALSE );
      }
   */
