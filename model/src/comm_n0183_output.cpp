@@ -63,7 +63,7 @@ void LogBroadcastOutputMessageColor(const std::shared_ptr<const NavMsg>& msg,
 }
 
 void BroadcastNMEA0183Message(const wxString& msg, NmeaLog* nmea_log,
-                              EventVar& on_msg_sent) {
+                              obs::EventVar& on_msg_sent) {
   auto& registry = CommDriverRegistry::GetInstance();
   const std::vector<std::unique_ptr<AbstractCommDriver>>& drivers =
       registry.GetDrivers();

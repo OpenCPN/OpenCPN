@@ -59,7 +59,7 @@ public:
   fs::path GetDefaultLogfile();
 
   /** Notified with new path on filename change. */
-  EventVar OnNewLogfile;
+  obs::EventVar OnNewLogfile;
 
 private:
   wxWindow* m_parent;
@@ -91,9 +91,9 @@ private:
   DataMonitorSrc m_monitor_src;
   wxWindow* m_quick_filter;
   DataLogger m_logger;
-  ObsListener m_filter_list_lstnr;
-  ObsListener m_filter_update_lstnr;
-  ObsListener m_filter_apply_lstnr;
+  obs::ObsListener m_filter_list_lstnr;
+  obs::ObsListener m_filter_update_lstnr;
+  obs::ObsListener m_filter_apply_lstnr;
   std::string m_current_filter;
 };
 

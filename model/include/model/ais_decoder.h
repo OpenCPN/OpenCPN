@@ -138,22 +138,22 @@ public:
    * Notified when AIS user dialogs should update. Event contains an
    * AIS_Target_data pointer.
    */
-  EventVar info_update;
+  obs::EventVar info_update;
 
   /** Notified when gFrame->TouchAISActive() should be invoked */
-  EventVar touch_state;
+  obs::EventVar touch_state;
 
   /** Notified when new AIS wp is created. Contains a RoutePoint* pointer. */
-  EventVar new_ais_wp;
+  obs::EventVar new_ais_wp;
 
   /** Notified on new track creation. Contains a Track* pointer. */
-  EventVar new_track;
+  obs::EventVar new_track;
 
   /** Notified when about to delete track. Contains a MmsiProperties* ptr */
-  EventVar delete_track;
+  obs::EventVar delete_track;
 
   /** A JSON message should be sent. Contains a AisTargetData* pointer. */
-  EventVar plugin_msg;
+  obs::EventVar plugin_msg;
 
 private:
   void OnTimerAIS(wxTimerEvent &event);

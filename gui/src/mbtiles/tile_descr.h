@@ -44,9 +44,9 @@ public:
   std::atomic<bool> m_is_available;
 
   /** Notified on delete. */
-  EventVar& m_on_delete;
+  obs::EventVar& m_on_delete;
 
-  MbTileDescriptor(int zoom_level, int x, int y, EventVar& on_delete)
+  MbTileDescriptor(int zoom_level, int x, int y, obs::EventVar& on_delete)
       : m_tile_x(x),
         m_tile_y(y),
         m_zoom_level(zoom_level),

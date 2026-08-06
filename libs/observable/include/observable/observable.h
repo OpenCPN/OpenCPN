@@ -50,11 +50,15 @@
 #endif
 #endif  // DECL_EXP
 
+class ObservableListener;
+
+namespace  obs {
+class ObsListener;   // forward
+
 /** Return address as printable string. */
 std::string PtrKey(const void* ptr);
 
 class Observable;
-class ObservableListener;
 
 /**
  * Interface implemented by classes which listens.
@@ -98,7 +102,7 @@ private:
 
 /**  The observable notify/listen basic nuts and bolts.  */
 class Observable : public KeyProvider {
-  friend class ObservableListener;
+  friend class ::ObservableListener;
 
 public:
   explicit Observable(const std::string& _key)
@@ -150,12 +154,12 @@ private:
 
   mutable std::mutex m_mutex;
 };
-
+}   // namespace
 /**
  *  Keeps listening over its lifespan, removes itself on destruction.
  */
 class DECL_EXP ObservableListener final {
-  friend class ObsListener;
+  friend class obs::ObsListener;
 
 public:
   /** Default constructor, does not listen to anything. */
@@ -167,7 +171,7 @@ public:
     Listen();
   }
 
-  ObservableListener(const KeyProvider& kp, wxEvtHandler* l, wxEventType e)
+  ObservableListener(const obs::KeyProvider& kp, wxEvtHandler* l, wxEventType e)
       : ObservableListener(kp.GetKey(), l, e) {}
 
   /** A listener can only be transferred using std::move(). */
@@ -198,7 +202,7 @@ public:
   void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);
 
   /** Set object to send wxEventType ev to listener on changes in key. */
-  void Listen(const KeyProvider& kp, wxEvtHandler* l, wxEventType evt) {
+  void Listen(const obs::KeyProvider& kp, wxEvtHandler* l, wxEventType evt) {
     Listen(kp.GetKey(), l, evt);
   }
 
@@ -211,6 +215,7 @@ private:
   wxEventType m_ev_type;
 };
 
+namespace obs {
 /**
  * Define an action to be performed when a KeyProvider is notified.
  * Convenience container hiding the Bind(), wxEVENT_TYPE and listening details.
@@ -304,7 +309,7 @@ public:
   }
 
 private:
-  ObservableListener m_listener;
+  ::ObservableListener m_listener;
   std::function<void(ObservedEvt& ev)> m_action;
   const wxEventTypeTag<ObservedEvt> m_obs_evt;
 };
@@ -314,5 +319,5 @@ template <typename T>
 std::shared_ptr<const T> UnpackEvtPointer(const ObservedEvt& ev) {
   return std::static_pointer_cast<const T>(ev.GetSharedPtr());
 }
-
+}
 #endif  // OBSERVABLE_H

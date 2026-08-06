@@ -82,8 +82,8 @@ public:
 private:
   MuxLogCallbacks m_log_callbacks;
   bool& m_legacy_input_filter_behaviour;
-  std::unordered_map<std::string, ObsListener> m_listeners;
-  ObsListener m_new_msgtype_lstnr;
+  std::unordered_map<std::string, obs::ObsListener> m_listeners;
+  obs::ObsListener m_new_msgtype_lstnr;
   int m_n2k_repeat_count;
   unsigned int m_last_pgn_logged;
 

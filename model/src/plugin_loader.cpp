@@ -616,7 +616,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
   // only loading enabled plugins.
   // Make the check late enough to pick up incompatible plugins anyway
   const auto path = std::string("/PlugIns/") + plugin_file.ToStdString();
-  ConfigVar<bool> enabled(path, "bEnabled", TheBaseConfig());
+  obs::ConfigVar<bool> enabled(path, "bEnabled", TheBaseConfig());
   if (pic && load_enabled && !enabled.Get(true)) {
     pic->m_destroy_fn(pic->m_pplugin);
     delete pic;

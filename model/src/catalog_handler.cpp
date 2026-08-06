@@ -234,7 +234,7 @@ std::vector<std::string> CatalogHandler::GetChannels() { return channels; }
 bool CatalogHandler::SetActiveChannel(const char* channel) {
   for (auto c : channels) {
     if (c == channel) {
-      GlobalVar<wxString> catalog_channel(&g_catalog_channel);
+      obs::GlobalVar<wxString> catalog_channel(&g_catalog_channel);
       catalog_channel.Set(channel);
       return true;
     }

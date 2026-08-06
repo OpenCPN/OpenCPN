@@ -88,7 +88,7 @@ public:
   void ScrubNotificationDirectory(int days_to_retain);
 
   /** Notified without data when a notification is added or removed. */
-  EventVar evt_notificationlist_change;
+  obs::EventVar evt_notificationlist_change;
 
 private:
   NotificationManager();

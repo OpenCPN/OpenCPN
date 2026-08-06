@@ -56,7 +56,7 @@ struct MemoryStruct {
 
 using PeerDlgPair = std::pair<PeerDlgResult, std::string>;
 
-PeerData::PeerData(EventVar& p)
+PeerData::PeerData(obs::EventVar& p)
     : overwrite(false),
       activate(false),
       progress(p),
@@ -163,8 +163,8 @@ static int ApiGet(const std::string& url, const MemoryStruct* chunk,
 }
 
 static std::string GetClientKey(std::string& server_name) {
-  ConfigVar<std::string> server_keys("/Settings/RESTClient", "ServerKeys",
-                                     TheBaseConfig());
+  obs::ConfigVar<std::string> server_keys("/Settings/RESTClient", "ServerKeys",
+                                          TheBaseConfig());
   auto key_string = server_keys.Get("");
   auto entries = ocpn::split(key_string.c_str(), ";");
   for (const auto& entry : entries) {
@@ -176,8 +176,8 @@ static std::string GetClientKey(std::string& server_name) {
 }
 
 static void SaveClientKey(std::string& server_name, std::string key) {
-  ConfigVar<std::string> server_keys("/Settings/RESTClient", "ServerKeys",
-                                     TheBaseConfig());
+  obs::ConfigVar<std::string> server_keys("/Settings/RESTClient", "ServerKeys",
+                                          TheBaseConfig());
   auto config_server_keys = server_keys.Get("");
 
   auto server_keys_list = ocpn::split(config_server_keys.c_str(), ";");

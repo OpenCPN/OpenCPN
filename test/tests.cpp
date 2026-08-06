@@ -180,7 +180,7 @@ public:
 
   public:
     Sink() {
-      Observable observable("1234");
+      obs::Observable observable("1234");
       listener.Listen(observable, this, EVT_BAR);
       Bind(EVT_BAR, [&](ObservedEvt ev) {
         auto msg = ev.GetSharedPtr();
@@ -200,7 +200,7 @@ public:
       auto id = static_cast<uint64_t>(1234);
       auto n2k_msg = std::make_shared<const Nmea2000Msg>(
           id, payload, shared_navaddr_none2000);
-      Observable observable("1234");
+      obs::Observable observable("1234");
       observable.Notify(n2k_msg);
     }
   };
@@ -664,7 +664,7 @@ public:
       listener.Listen(n2k_msg, this, EVT_FOO);
       listeners.push_back(std::move(listener));
       Bind(EVT_FOO, [&](ObservedEvt ev) {
-        auto n2k_msg = UnpackEvtPointer<Nmea2000Msg>(ev);
+        auto n2k_msg = obs::UnpackEvtPointer<Nmea2000Msg>(ev);
         std::string s(n2k_msg->payload.begin(), n2k_msg->payload.end());
         s_result = s;
         s_bus = n2k_msg->bus;
@@ -702,7 +702,7 @@ public:
     Sink() {
       listener.Listen(AppMsg(AppMsg::Type::GnssFix), this, EVT_FOO);
       Bind(EVT_FOO, [&](ObservedEvt ev) {
-        auto msg = UnpackEvtPointer<const AppMsg>(ev);
+        auto msg = obs::UnpackEvtPointer<const AppMsg>(ev);
         auto fix = std::static_pointer_cast<const GnssFix>(msg);
         if (fix == 0) {
           std::cerr << "Cannot cast pointer\n" << std::flush;
@@ -999,7 +999,7 @@ public:
 
   private:
     void OnNotify(ObservedEvt& o) {
-      auto s = UnpackEvtPointer<std::string>(o);
+      auto s = obs::UnpackEvtPointer<std::string>(o);
       EXPECT_TRUE(*s == "arg1");
       int_result0++;
     }
@@ -1009,7 +1009,7 @@ public:
 
   ObsTorture() {
     ObsListener l1;
-    Observable o("key1");
+    obs::Observable o("key1");
     std::vector<std::thread> threads;
     for (int i = 0; i < 10; i += 1) {
       threads.push_back(std::thread([&] {

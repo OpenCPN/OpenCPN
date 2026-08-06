@@ -29,9 +29,9 @@ void NavMsgBus::Notify(std::shared_ptr<const NavMsg> msg) {
   std::string key = NavAddr::BusToString(msg->bus) + "::" + msg->GetKey();
   if (RegisterKey(key))
     // Leave some time for listeners to register before message is sent.
-    CallAfter([msg] { Observable(*msg).Notify(msg); });
+    CallAfter([msg] { obs::Observable(*msg).Notify(msg); });
   else
-    Observable(*msg).Notify(msg);
+    obs::Observable(*msg).Notify(msg);
 }
 
 bool NavMsgBus::RegisterKey(const std::string& key) {

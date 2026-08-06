@@ -65,7 +65,7 @@ private:
   wxStaticText* m_selected;
 
   void OnChoice(wxCommandEvent&) {
-    GlobalVar<wxString> compat_os(&g_compatOS);
+    obs::GlobalVar<wxString> compat_os(&g_compatOS);
     if (GetSelection() == 0) {
       // "Select new flavour"
       return;
@@ -140,7 +140,7 @@ private:
     } else {
       m_custom_ctrl->Hide();
     }
-    GlobalVar<wxString> catalog(&g_catalog_channel);
+    obs::GlobalVar<wxString> catalog(&g_catalog_channel);
     catalog.Set(selected);
     Layout();
   }

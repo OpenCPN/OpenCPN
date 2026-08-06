@@ -299,11 +299,11 @@ private:
 
   ObservableListener m_listener_SignalK;
 
-  ObsListener m_new_msgtype_lstnr;
+  obs::ObsListener m_new_msgtype_lstnr;
 
-  ObsListener m_on_msg_sent_listener;
+  obs::ObsListener m_on_msg_sent_listener;
 
-  std::unordered_map<std::string, ObsListener> m_0183_listeners;
+  std::unordered_map<std::string, obs::ObsListener> m_0183_listeners;
 
   wxBitmap* BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
                                   unsigned char dim_ratio);

@@ -104,6 +104,6 @@ void ConnStates::OnDriverListChange(const ObservedEvt&) {
 }
 
 void ConnStates::OnDriverStats(const ObservedEvt& ev) {
-  auto stats_ptr = UnpackEvtPointer<DriverStats>(ev);
+  auto stats_ptr = obs::UnpackEvtPointer<DriverStats>(ev);
   if (stats_ptr) HandleDriverStats(*stats_ptr);
 }

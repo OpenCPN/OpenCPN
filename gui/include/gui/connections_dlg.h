@@ -74,7 +74,7 @@ private:
   const std::vector<ConnectionParams*>& m_connections;
 
   /** Notified without data when a new connection is added. */
-  EventVar m_evt_add_connection;
+  obs::EventVar m_evt_add_connection;
 };
 
 #endif  //  CONNECT_NEW_DLG_

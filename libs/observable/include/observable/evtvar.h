@@ -25,7 +25,6 @@
  * Listen() and Notify().
  */
 
-
 #ifndef Observable_EVTVAR_H
 #define Observable_EVTVAR_H
 
@@ -35,6 +34,7 @@
 
 #include "observable.h"
 
+namespace obs {
 /**
  * Generic event handling between MVC Model and Controller based on a
  * shared EventVar variable
@@ -81,8 +81,7 @@ public:
   EventVar() : Observable(Autokey()) {}
 
   /** Notify all listeners, no data supplied. */
-  void Notify() override { Observable::Notify("", nullptr)
-    ; }
+  void Notify() override { Observable::Notify("", nullptr); }
 
   /** Notify all listeners about variable change with ClientData. */
   void Notify(void* data) { Observable::Notify("", data); }
@@ -91,7 +90,9 @@ public:
   void Notify(const std::string& s) { Observable::Notify(s, nullptr); }
 
   /** Notify all listeners about variable change with a string and an int */
-  void Notify(int n, const std::string& s) { Observable::Notify(nullptr, s, n, nullptr); }
+  void Notify(int n, const std::string& s) {
+    Observable::Notify(nullptr, s, n, nullptr);
+  }
 
   /** Notify all listeners about variable change with an int and ClientData */
   void Notify(int n, void* p) { Observable::Notify(nullptr, "", n, p); }
@@ -105,7 +106,7 @@ public:
   }
 
   /** Notify all listeners about variable change with const* shared_ptr, */
-  void Notify(const std::shared_ptr<const void>& p) override  {
+  void Notify(const std::shared_ptr<const void>& p) override {
     Observable::Notify(p, "", 0, nullptr);
   }
 
@@ -115,5 +116,7 @@ private:
     return std::string("!@%/+") + std::to_string(last_ix++);
   }
 };
+
+}  // namespace obs
 
 #endif  // Observable_EVTVAR_H

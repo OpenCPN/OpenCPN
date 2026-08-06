@@ -896,7 +896,7 @@ public:
    * Notified with message targeting all plugins. Contains a message type
    * string and a wxJSONValue shared_ptr.
    */
-  EventVar json_msg;
+  obs::EventVar json_msg;
 
   bool m_inPinch;
 

@@ -67,14 +67,14 @@ public:
   ConnStates(const ConnStates&) = delete;
 
   /** Notified with a shared_ptr<ConnData> when the state is changed. */
-  EventVar evt_conn_status_change;
+  obs::EventVar evt_conn_status_change;
 
   void HandleDriverStats(const struct DriverStats& stats);
   ConnState GetDriverState(NavAddr::Bus bus, const std::string& iface);
 
 private:
-  ObsListener m_driverlist_lstnr;
-  ObsListener m_driverstat_lstnr;
+  obs::ObsListener m_driverlist_lstnr;
+  obs::ObsListener m_driverstat_lstnr;
   std::vector<ConnData> m_states;
 
   /** Remove ghost stats referring to non-existent drivers. */
