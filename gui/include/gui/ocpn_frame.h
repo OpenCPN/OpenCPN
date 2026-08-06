@@ -584,13 +584,13 @@ private:
 private:
   ObservableListener listener_basic_navdata;
   ObservableListener listener_gps_watchdog;
-  obs::ObsListener m_on_raise_listener;
-  obs::ObsListener m_on_quit_listener;
-  obs::ObsListener m_routes_update_listener;
-  obs::ObsListener m_evt_drv_msg_listener;
-  obs::ObsListener m_update_statusbar_listener;
-  obs::ObsListener m_center_aistarget_listener;
-  obs::ObsListener m_reload_charts_listener;
+  obs::Listener m_on_raise_listener;
+  obs::Listener m_on_quit_listener;
+  obs::Listener m_routes_update_listener;
+  obs::Listener m_evt_drv_msg_listener;
+  obs::Listener m_update_statusbar_listener;
+  obs::Listener m_center_aistarget_listener;
+  obs::Listener m_reload_charts_listener;
   ToolbarDlgCallbacks m_toolbar_callbacks;
 
   wxStatusBar* m_pStatusBar;

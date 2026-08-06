@@ -639,7 +639,7 @@ public:
 
   /** Notified with a OCPN_Sound* pointer when sound has completed. */
   obs::EventVar m_on_sound_done;
-  obs::ObsListener m_sound_done_listener;
+  obs::Listener m_sound_done_listener;
   wxGenericProgressDialog *m_pCBDSprog;
   void DoDBSUpdate(bool force_full);
   bool m_bTextureCacheingSave;
@@ -716,7 +716,7 @@ private:
 
   wxSize m_sliderSize;
   bool m_bneedNew;
-  obs::ObsListener m_OnChartDb_finalize_listener;
+  obs::Listener m_OnChartDb_finalize_listener;
   std::shared_ptr<ConnectionsDlg> comm_dialog;
 
   DECLARE_EVENT_TABLE()

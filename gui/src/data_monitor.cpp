@@ -558,7 +558,7 @@ public:
     SetFormatFunc m_set_logtype;
     DataLogger& m_logger;
     const int kFilenameLabelId;
-    obs::ObsListener FilenameLstnr;
+    obs::Listener FilenameLstnr;
   };  // ThePanel
 
   LoggingSetup(wxWindow* parent, SetFormatFunc set_logtype, DataLogger& logger)
@@ -585,7 +585,7 @@ public:
     wxWindow::Fit();
     wxDialog::Show();
   }
-  obs::ObsListener FilenameLstnr;
+  obs::Listener FilenameLstnr;
 };
 
 /** The monitor popup menu. */

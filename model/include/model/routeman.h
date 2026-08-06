@@ -297,8 +297,8 @@ private:
   struct RoutePropDlgCtx m_prop_dlg_ctx;
   struct RoutemanDlgCtx m_route_dlg_ctx;
 
-  obs::ObsListener msg_sent_listener;
-  obs::ObsListener active_route_listener;
+  obs::Listener msg_sent_listener;
+  obs::Listener active_route_listener;
   std::vector<DriverHandle> m_output_drivers;
   bool m_have_n0183_out;
   bool m_have_n2000_out;

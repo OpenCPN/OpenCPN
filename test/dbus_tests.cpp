@@ -14,6 +14,8 @@
 
 #include <gio/gio.h>
 
+#include "observable/observable.h"
+
 #include "model/base_platform.h"
 #include "model/dbus_client.h"
 #include "model/logger.h"

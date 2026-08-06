@@ -59,9 +59,9 @@ public:
 
 private:
   SinkFunc m_sink_func;
-  std::unordered_map<std::string, obs::ObsListener> m_listeners;
-  obs::ObsListener new_msg_lstnr;
-  obs::ObsListener undelivered_msg_lstnr;
+  std::unordered_map<std::string, obs::Listener> m_listeners;
+  obs::Listener new_msg_lstnr;
+  obs::Listener undelivered_msg_lstnr;
 
   /** Handle new message type detected. */
   void OnNewMessage();

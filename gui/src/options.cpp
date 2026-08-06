@@ -4817,7 +4817,7 @@ public:
   /** Notified with a OCPN_Sound* pointer when sound has completed. */
   obs::EventVar m_on_sp_sound_done;
 
-  obs::ObsListener m_sound_sp_done_listener;
+  obs::Listener m_sound_sp_done_listener;
   bool m_soundPlaying;
 
   DECLARE_EVENT_TABLE()

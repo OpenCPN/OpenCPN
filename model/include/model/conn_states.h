@@ -73,8 +73,8 @@ public:
   ConnState GetDriverState(NavAddr::Bus bus, const std::string& iface);
 
 private:
-  obs::ObsListener m_driverlist_lstnr;
-  obs::ObsListener m_driverstat_lstnr;
+  obs::Listener m_driverlist_lstnr;
+  obs::Listener m_driverstat_lstnr;
   std::vector<ConnData> m_states;
 
   /** Remove ghost stats referring to non-existent drivers. */
