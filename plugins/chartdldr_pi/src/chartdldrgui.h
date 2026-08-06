@@ -5,58 +5,47 @@
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __CHARTDLDRGUI_H__
-#define __CHARTDLDRGUI_H__
+#ifndef CHARTDLDRGUI_H_
+#define CHARTDLDRGUI_H_
 
 #include <wx/artprov.h>
-#include <wx/xrc/xmlres.h>
-#include <wx/intl.h>
-#include <wx/treectrl.h>
-#include <wx/gdicmn.h>
-#include <wx/font.h>
-#include <wx/colour.h>
-#include <wx/settings.h>
-#include <wx/string.h>
-#include <wx/sizer.h>
-#include <wx/panel.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
-#include <wx/notebook.h>
-#include <wx/statbox.h>
-#include <wx/filepicker.h>
 #include <wx/button.h>
-#include <wx/dialog.h>
-#include <wx/listctrl.h>
-#include <wx/combobox.h>
 #include <wx/checkbox.h>
+#include <wx/colour.h>
+#include <wx/combobox.h>
+#include <wx/dialog.h>
+#include <wx/gdicmn.h>
+#include <wx/intl.h>
+#include <wx/listctrl.h>
+#include <wx/notebook.h>
+#include <wx/panel.h>
+#include <wx/sizer.h>
 #include <wx/statline.h>
-#include <wx/dcmemory.h>
+#include <wx/stattext.h>
+#include <wx/string.h>
+#include <wx/textctrl.h>
+#include <wx/treectrl.h>
+#include <wx/xrc/xmlres.h>
+
 #include "ocpn_plugin.h"
 
-#if defined(CHART_LIST)
-#include <wx/dataview.h>
-#endif /* CHART_LIST */
-///////////////////////////////////////////////////////////////////////////
-
 #if defined(CHART_LIST)  // Are we building using wxDataViewListCtrl?
+#include <wx/dataview.h>
 // We don't use ArrayOfChartPanels when using wxDataViewListCtrl
 #else
-class ChartPanel;
-class ChartDldrPanelImpl;
-#endif /* CHART_LIST */
+class ChartPanel;          // forward
+class ChartDldrPanelImpl;  // Extern in chartdlgr_pi.h
+#endif
 
 class DLDR_OCPNChartDirPanel : public wxPanel {
 public:
   DLDR_OCPNChartDirPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
                          const wxSize& size);
-  ~DLDR_OCPNChartDirPanel();
+  ~DLDR_OCPNChartDirPanel() override;
 
   void OnPaint(wxPaintEvent& event);
-  int GetUnselectedHeight() { return m_unselectedHeight; }
-  int GetRefHeight() { return m_refHeight; }
+  [[nodiscard]] int GetUnselectedHeight() const { return m_unselectedHeight; }
+  [[nodiscard]] int GetRefHeight() const { return m_refHeight; }
   void SetText(wxString text);
 
 private:
@@ -108,7 +97,7 @@ public:
                const wxPoint& pos = wxDefaultPosition,
                const wxSize& size = wxDefaultSize,
                long style = wxDEFAULT_DIALOG_STYLE);
-  ~AddSourceDlg();
+  ~AddSourceDlg() override;
   void OnNbPage(wxNotebookEvent& event);
 };
 
@@ -188,7 +177,7 @@ public:
                  const wxPoint& pos = wxDefaultPosition,
                  const wxSize& size = wxSize(-1, -1),
                  long style = wxTAB_TRAVERSAL);
-  ~ChartDldrPanel();
+  ~ChartDldrPanel() override;
   // ChartDldrPanel() { }
 
   virtual void OnContextMenu(wxMouseEvent& event) { event.Skip(); }
@@ -228,7 +217,7 @@ public:
                     const wxPoint& pos = wxDefaultPosition,
                     const wxSize& size = wxSize(462, 331),
                     long style = wxDEFAULT_DIALOG_STYLE);
-  ~ChartDldrPrefsDlg();
+  ~ChartDldrPrefsDlg() override;
 };
 
 // We only use this object type in "old-style" chart listing
@@ -238,11 +227,11 @@ public:
   ChartPanel(wxWindow* parent, wxWindowID id, const wxPoint& pos,
              const wxSize& size, wxString Name, wxString stat, wxString latest,
              ChartDldrPanel* DldrPanel, bool bcheck);
-  ~ChartPanel();
+  ~ChartPanel() override;
 
   void OnContextMenu(wxMouseEvent& event);
-  wxCheckBox* GetCB() { return m_cb; }
-  bool isNew() { return (m_stat == _("New")); }
+  [[nodiscard]] wxCheckBox* GetCB() const { return m_cb; }
+  [[nodiscard]] bool isNew() const { return (m_stat == _("New")); }
   bool isUpdated() { return (m_stat == _("Out of date")); }
   void OnLeftUp(wxMouseEvent& event);
 #ifdef HAVE_WX_GESTURE_EVENTS
@@ -260,4 +249,4 @@ private:
 };
 #endif /* CHART_PANEL */
 
-#endif  //__CHARTDLDRGUI_H__
+#endif  //  CHARTDLDRGUI_H_

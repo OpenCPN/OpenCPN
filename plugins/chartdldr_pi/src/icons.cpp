@@ -9,7 +9,7 @@
 wxBitmap *_img_chartdldr;
 wxBitmap *_img_chartdldr_pi;
 
-void initialize_images(void) {
+void initialize_images() {
   {
     wxMemoryInputStream sm(
         "\211PNG\r\n\032\n\000\000\000\rIHDR\000\000\000 \000\000\000 "
@@ -319,5 +319,4 @@ void initialize_images(void) {
         2559);
     _img_chartdldr_pi = new wxBitmap(wxImage(sm));
   }
-  return;
 }

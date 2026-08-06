@@ -1,11 +1,4 @@
-
-/***************************************************************************
- *
- * Project:  OpenCPN
- * Purpose:  OpenCPN Android support utilities
- * Author:   David Register
- *
- ***************************************************************************
+/**************************************************************************
  *   Copyright (C) 2015 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,23 +12,27 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
+
+/**
+ * \file
+ *
+ * OpenCPN Android support utilities
+ */
 
 #ifndef ANDROIDSUPPORT_H
 #define ANDROIDSUPPORT_H
 
-#include "wx/wxprec.h"
+#include <QString>
+
+#include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
+#include <wx/wx.h>
+#endif
 
 class ArrayOfCDI;
-
-#include <QString>
 
 bool AndroidUnzip(wxString zipFile, wxString destDir, int nStrip,
                   bool bRemoveZip);

@@ -60,8 +60,8 @@ set(SRC_CHARTDLDR
 )
 
 if (QT_ANDROID)
-  set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.h)
-  set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/androidSupport.cpp)
+  set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/android_support.h)
+  set(SRC_CHARTDLDR ${SRC_CHARTDLDR} src/android_support.cpp)
 endif (QT_ANDROID)
 
 set(SRC_UNARR

@@ -1,13 +1,5 @@
-/******************************************************************************
- * $Id: chartcatalog.h,v 1.0 2011/02/26 01:54:37 nohal Exp $
- *
- * Project:  OpenCPN
- * Purpose:  Chart downloader Plugin
- * Author:   Pavel Kalian
- *
- ***************************************************************************
- *   Copyright (C) 2011 by Pavel Kalian   *
- *   $EMAIL$   *
+/**************************************************************************
+ *   Copyright (C) 2011 by Pavel Kalian                                    *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,44 +12,48 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ **************************************************************************/
+
+/**
+ * \file
+ *
+ * Chart Downloader Plugin  chart classes
+ *
  */
 
-#ifndef _CHARTCATALOG_H_
-#define _CHARTCATALOG_H_
+#ifndef CHARTCATALOG_H_
+#define CHARTCATALOG_H_
 
-#include "wx/wxprec.h"
-
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif  // precompiled headers
-
-#include "pugixml.hpp"
 #include <memory>
 #include <vector>
 
-// Forward declarations
-class NoticeToMariners;
-class Vertex;
-class Panel;
-class Chart;
-class Location;
-class RiverMiles;
-class Area;
-class ChartFile;
+#include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+#include "pugixml.hpp"
+
+class NoticeToMariners;  // forward
+class Vertex;            // forward
+class Panel;             // forward
+class Chart;             // forward
+class Location;          // forward
+class RiverMiles;        // forward
+class Area;              // Forward
+class ChartFile;         // Forward
 
 // Declarations
 class ChartCatalog {
 public:
-  ChartCatalog();
-  ~ChartCatalog();
+  ChartCatalog() = default;
+  ~ChartCatalog() = default;
   // public methods
-  bool LoadFromFile(wxString path, bool headerOnly = false);
+  bool LoadFromFile(const wxString &path, bool headerOnly = false);
   bool LoadFromXml(pugi::xml_document *doc, bool headerOnly);
-  wxDateTime GetReleaseDate(void);
+  wxDateTime GetReleaseDate();
   // public properties
   wxString title;
   wxDateTime date_created;
@@ -81,11 +77,9 @@ public:
   // public methods
   virtual wxString GetChartTitle() { return title; }
   virtual wxString GetDownloadLocation() { return zipfile_location; }
-  virtual bool NeedsManualDownload() {
-    return manual_download_url != wxEmptyString;
-  }
+  virtual bool NeedsManualDownload() { return manual_download_url != ""; }
   virtual wxString GetManualDownloadUrl() { return manual_download_url; }
-  virtual wxString GetChartFilename(bool to_check = false);
+  virtual wxString GetChartFilename(bool to_check);
   virtual wxDateTime GetUpdateDatetime() { return zipfile_datetime_iso8601; }
 
   // public properties
@@ -112,13 +106,10 @@ public:
   std::vector<std::unique_ptr<Panel>> coverage;
 };
 
-class RasterChart : public Chart  //<chart>
-{
+class RasterChart : public Chart {
 public:
   RasterChart(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   int source_edition;
   int raster_edition;
   int ntm_edition;
@@ -133,10 +124,7 @@ class EncCell : public Chart  //<cell>
 {
 public:
   EncCell(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
-  // wxString name;  use wxString number in class Chart .Paul.
   wxString src_chart;
   int cscale;
   wxString status;
@@ -150,14 +138,13 @@ class IEncCell : public Chart  //<Cell>
 {
 public:
   IEncCell(pugi::xml_node &xmldata);
-  ~IEncCell();
+  ~IEncCell() override;
   // public methods
-  wxString GetChartTitle();
-  wxString GetDownloadLocation();
-  wxDateTime GetUpdateDatetime();
+  wxString GetChartTitle() override;
+  wxString GetDownloadLocation() override;
+  wxDateTime GetUpdateDatetime() override;
 
   // public properties
-  // wxString name;  use wxString number in class Chart .Paul.
   Location *location;
   wxString river_name;
   RiverMiles *river_miles;
@@ -171,9 +158,7 @@ public:
 class ChartFile {
 public:
   ChartFile(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   wxString location;
   wxDateTime date_posted;
   wxDateTime time_posted;
@@ -193,9 +178,7 @@ public:
 class RiverMiles {
 public:
   RiverMiles(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   double begin;
   double end;
 };
@@ -203,9 +186,7 @@ public:
 class Area {
 public:
   Area(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   double north;
   double south;
   double east;
@@ -216,9 +197,7 @@ class NoticeToMariners  // for <nm> and <lnm>
 {
 public:
   NoticeToMariners(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   wxString agency;  //<nm_agency> or <lnm_agency>
   wxString doc;
   wxDateTime date;
@@ -227,10 +206,8 @@ public:
 class Vertex {
 public:
   Vertex(pugi::xml_node &xmldata);
-  virtual ~Vertex() {};
-  // public methods
+  virtual ~Vertex() = default;
 
-  // public properties
   double lat;
   double lon;
 };
@@ -238,10 +215,8 @@ public:
 class Panel {
 public:
   Panel(pugi::xml_node &xmldata);
-  virtual ~Panel();
-  // public methods
+  virtual ~Panel() = default;
 
-  // public properties
   int panel_no;
   std::vector<Vertex> vertexes;
 };
@@ -249,9 +224,7 @@ public:
 class RncPanel : public Panel {
 public:
   RncPanel(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   wxString panel_title;
   wxString file_name;
   int scale;
@@ -260,10 +233,8 @@ public:
 class EncPanel : public Panel {
 public:
   EncPanel(pugi::xml_node &xmldata);
-  // public methods
 
-  // public properties
   wxString type;
 };
 
-#endif  //_CHARTCATALOG_H_
+#endif  // CHARTCATALOG_H_
