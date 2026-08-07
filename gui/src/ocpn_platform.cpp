@@ -22,6 +22,7 @@
  */
 
 #include <cstdlib>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -52,10 +53,9 @@
 #include <wx/filename.h>
 #include <wx/tokenzr.h>
 #include <wx/textfile.h>
-#include <wx/jsonval.h>
-#include <wx/jsonreader.h>
 
 #include "config.h"
+#include "nlohmann/json.hpp"
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
@@ -610,12 +610,12 @@ void OCPNPlatform::OnExit_2() {
 
 #ifdef ocpnUSE_GL
 
-bool HasGLExt(wxJSONValue &glinfo, const std::string ext) {
-  if (!glinfo.HasMember("GL_EXTENSIONS")) {
+static bool HasGLExt(const nlohmann::json &glinfo, const std::string &ext) {
+  if (glinfo.count("GL_EXTENSIONS") <= 0) {
     return false;
   }
-  for (int i = 0; i < glinfo["GL_EXTENSIONS"].Size(); i++) {
-    if (glinfo["GL_EXTENSIONS"][i].AsString() == ext) {
+  for (const auto &extension : glinfo["GL_EXTENSIONS"]) {
+    if (extension.get<std::string>() == ext) {
       return true;
     }
   }
@@ -660,41 +660,43 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     }
     return false;
   }
-
-  wxFileInputStream fis(gl_json);
-  wxJSONReader reader;
-  wxJSONValue root;
-  reader.Parse(fis, &root);
-  if (reader.GetErrorCount() > 0) {
+  nlohmann::json root;
+  std::ifstream f(gl_json);
+  try {
+    root = nlohmann::json::parse(f);
+  } catch (nlohmann::json::exception &e) {
     wxLogMessage("Failed to parse JSON output from OpenGL test utility.");
-    for (const auto &l : reader.GetErrors()) {
-      wxLogMessage(l);
-    }
+    wxLogMessage(e.what());
     return false;
   }
 
-  OCPN_GLCaps *pcaps = (OCPN_GLCaps *)pbuf;
-
-  if (root.HasMember("GL_RENDERER")) {
-    pcaps->Renderer = root["GL_RENDERER"].AsString();
+  auto *pcaps = static_cast<OCPN_GLCaps *>(pbuf);
+  if (root.contains("GL_RENDERER")) {
+    pcaps->Renderer = root["GL_RENDERER"].get<std::string>();
   } else {
     wxLogMessage("GL_RENDERER not found.");
     return false;
   }
-  if (root.HasMember("GL_VERSION")) {
-    pcaps->Version = root["GL_VERSION"].AsString();
+  if (root.contains("GL_VERSION")) {
+    pcaps->Version = root["GL_VERSION"].get<std::string>();
   } else {
     wxLogMessage("GL_VERSION not found.");
     return false;
   }
-  if (root.HasMember("GL_SHADING_LANGUAGE_VERSION")) {
-    pcaps->GLSL_Version = root["GL_SHADING_LANGUAGE_VERSION"].AsString();
+  if (root.contains("GL_SHADING_LANGUAGE_VERSION")) {
+    pcaps->GLSL_Version =
+        root["GL_SHADING_LANGUAGE_VERSION"].get<std::string>();
   } else {
     wxLogMessage("GL_SHADING_LANGUAGE_VERSION not found.");
     return false;
   }
-  if (root.HasMember("GL_USABLE")) {
-    if (!root["GL_USABLE"].AsBool()) {
+  if (root.contains("GL_USABLE")) {
+    if (!root["GL_USABLE"].get<bool>()) {
+      wxLogMessage("OpenGL test utility reports that OpenGL is not usable.");
+      return false;
+    }
+  } else if (root.contains("\"GL_USABLE\"")) {
+    if (!root["\"GL_USABLE\""].get<bool>()) {
       wxLogMessage("OpenGL test utility reports that OpenGL is not usable.");
       return false;
     }
@@ -729,10 +731,10 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
     pcaps->bCanDoFBO = false;
   }
 
-  pcaps->bCanDoVBO = HasGLExt(
-      root, "GL_ARB_vertex_buffer_object");  // TODO: Or the old way where we
-                                             // enable it without querying the
-                                             // extension is right?
+  pcaps->bCanDoVBO = HasGLExt(root, "GL_ARB_vertex_buffer_object");
+  // TODO: Or the old way where we enable it without querying the
+  // extension is right?
+
   top_frame::Get()->Show();
   return true;
 #else
