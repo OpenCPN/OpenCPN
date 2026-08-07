@@ -14,16 +14,18 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
+ * along with this program; if not, see <https://www.gnu.org/licenses/>.
  **************************************************************************/
 
  /**
   * \file
-  * General observable implementation with several specializations.
   *
-  * A Notify() / Listen() library built on top of wxWidget's event handling.
+  * General observable pattern implementation built on top of wxWidgets
+  * event handling.
+  *
+  * Based on Notify() / Listen() with several specializations with a
+  * general EventVar and more specific solutions for configuration variables
+  * and globals. Easily extended for other use cases.
   */
 
 #ifndef OBSERVABLE_H
@@ -50,7 +52,7 @@
 #endif
 #endif  // DECL_EXP
 
-class ObservableListener;
+class ObservableListener;   // forward
 
 namespace  obs {
 class Listener;   // forward
@@ -58,25 +60,19 @@ class Listener;   // forward
 /** Return address as printable string. */
 std::string PtrKey(const void* ptr);
 
-class Observable;
+class Observable;   // forward
 
 /**
- * Interface implemented by classes which listens.
+ * Interface implemented by classes which listens. The string returned must
+ * be stable and unique.
  *
  * @interface KeyProvider observable.h "observable.h"
  */
 class KeyProvider {
 public:
-  /**
-   * Destroy the Key Provider object.
-   */
   virtual ~KeyProvider() = default;
 
-  /**
-   * Get the Key object from the Key Provider.
-   *
-   * @return std::string Key Object.
-   */
+  /** Return string used by Notify() and Listen(). */
   [[nodiscard]] virtual std::string GetKey() const = 0;
 };
 
@@ -105,19 +101,24 @@ class Observable : public KeyProvider {
   friend class ::ObservableListener;
 
 public:
+  /** Initiate an object which can apply Notify() and Listen() to given key */
   explicit Observable(const std::string& _key)
       : key(_key), m_list(ListenersByKey::GetInstance(_key)) {}
 
+  /** Initiate an object which can apply Notify() and Listen() to given key */
   explicit Observable(const KeyProvider& kp) : Observable(kp.GetKey()) {}
 
-  /**
-   * Destroy the Observable object.
-   */
   ~Observable() override = default;
 
-  /** Notify all listeners about variable change. */
+  /** Notify all listeners to configured key about variable change. */
   virtual void Notify();
 
+  /**
+  * Notify all listeners to configured key about variable change. Send them
+  * a 'type'  ObservedEvt message as defined by Listen() with a
+  * shared_ptr<const whatever> available to listeners using
+  * event.GetSharedPtr().
+  */
   virtual void Notify(const std::shared_ptr<const void>& p) {
     Notify(p, "", 0, nullptr);
   }
@@ -128,6 +129,7 @@ public:
    */
   bool Unlisten(wxEvtHandler* listener, wxEventType ev);
 
+  /** Return the key  given to the constructor. */
   std::string GetKey() const override { return key; }
 
   /** The key used to create and clone. */
@@ -136,13 +138,18 @@ public:
 protected:
   /**
    * Notify all listeners: send them a 'type' ObservedEvt message
-   * as defined by listen() with optional data available using GetString()
-   * and/or GetClientData().
+   * as defined by Listen() with optional data available using GetString(),
+   * GetClientData(), GetInt() and/or GetSharedPtr()
    */
   void Notify(const std::shared_ptr<const void>& ptr, const std::string& s,
                     int num, void* client_data);
 
-  void Notify(const std::string& s, void* client_data) {
+  /**
+   * Notify all listeners: send them a 'type' ObservedEvt message
+   * as defined by Listen() with optional data available using GetString(),
+   * and/or GetClientData().
+   */
+  void Notify(const std::string& s, void* client_data){
     Notify(nullptr, s, 0, client_data);
   }
 
@@ -154,13 +161,14 @@ private:
 
   mutable std::mutex m_mutex;
 };
+
 }   // namespace
 
 /**
- *  Keeps listening over its lifespan, removes itself on destruction.
- *  Old legacy code kept in place because it is visible in the
- *  plugin interface. For the same reason it is not in the obs
- *  namespace.
+ *  Manages listening to an Observable instance.  Keeps listening over its
+ *  lifespan, removes itself on destruction. Old legacy code kept in place
+ *  because it is visible in the plugin interface. For the same reason it
+ *  is not in the obs namespace.
  *
  *  Use obs::Listener in new code.
  */
@@ -171,16 +179,29 @@ public:
   /** Default constructor, does not listen to anything. */
   ObservableListener() : m_listener(nullptr), m_ev_type(wxEVT_NULL) {}
 
-  /** Construct a listening object. */
+  /**
+   * Construct a listening object.
+   * @param  k  String used to coordinate Notify() and Listen().
+   * @param  l  EventHandler which will be receiving messages on Notify()
+   * @param  e  EventType forwarded by Notify() to listeners.
+   */
   ObservableListener (std::string k, wxEvtHandler* l, wxEventType e)
       : m_key(std::move(k)), m_listener(l), m_ev_type(e) {
     Listen();
   }
 
+  /**
+   * Construct a listening object.
+   * @param  kp  Provides string used to coordinate Notify() and Listen().
+   * @param  l  EventHandler which will be receiving messages on Notify()
+   * @param  e  EventType forwarded by Notify()  to listeners.
+   */
   ObservableListener(const obs::KeyProvider& kp, wxEvtHandler* l, wxEventType e)
       : ObservableListener(kp.GetKey(), l, e) {}
 
-  /** A listener can only be transferred using std::move(). */
+  ~ObservableListener() { Unlisten(); }
+
+  /** std::move() support. */
   ObservableListener(ObservableListener&& other) noexcept {
     m_key = other.m_key;
     m_listener = other.m_listener;
@@ -189,7 +210,7 @@ public:
     Listen();
   }
 
-  /** A listener can only be transferred using std::move(). */
+  /** std::move() support. */
   ObservableListener& operator=(ObservableListener&& other) noexcept {
     m_key = other.m_key;
     m_listener = other.m_listener;
@@ -199,15 +220,16 @@ public:
     return *this;
   }
 
+  /** A listener is non copyable, can only be transferred using std::move(). */
   ObservableListener(const ObservableListener& other) = delete;
+
+  /** A listener is non copyable, can only be transferred using std::move(). */
   ObservableListener& operator=(ObservableListener&) = delete;
 
-  ~ObservableListener() { Unlisten(); }
-
-  /** Set object to send wxEventType ev to listener on changes in key. */
+  /** Set object to send wxEventType ev to listeners on changes in key. */
   void Listen(const std::string& key, wxEvtHandler* listener, wxEventType evt);
 
-  /** Set object to send wxEventType ev to listener on changes in key. */
+  /** Set object to send wxEventType ev to listeners on changes in key. */
   void Listen(const obs::KeyProvider& kp, wxEvtHandler* l, wxEventType evt) {
     Listen(kp.GetKey(), l, evt);
   }
@@ -226,7 +248,7 @@ namespace obs {
 /**
  * Define an action to be performed when a KeyProvider is notified.
  * Convenience container hiding the Bind(), wxEVENT_TYPE and listening details.
- * The action function is in most use cases a lambda expression.
+ * The action function is usually a lambda expression.
  *
  * Controller/GUI example usage, listening to the EventVar model.change:
  * \code
@@ -273,7 +295,7 @@ public:
   /** Create an object which does not listen until Init(); */
   Listener() : m_obs_evt(wxNewEventType()) {}
 
-  /** ObsListener can only be assigned using std::move */
+  /** std::move support */
   Listener(Listener&& other) noexcept: m_obs_evt(wxNewEventType()) {
     m_listener.Unlisten();
     Unbind(other.m_obs_evt, other.m_action);
@@ -282,6 +304,7 @@ public:
     m_listener.Listen(other.m_listener.m_key, this, m_obs_evt);
   }
 
+  /** std::move support */
   Listener& operator=(Listener&& other) noexcept {
     m_listener.Unlisten();
     Unbind(other.m_obs_evt, other.m_action);
@@ -291,21 +314,27 @@ public:
     return *this;
   }
 
+  /** ObsListener is non-copyable and can only be assigned using std::move */
   Listener(const Listener&) = delete;
+
+  /** ObsListener is non-copyable and can only be assigned using std::move */
   Listener& operator=(Listener&) = delete;
 
-  /** Create object which invokes action when kp is notified. */
+  /** Create object which invokes action when the kp key is notified. */
   Listener(const KeyProvider& kp,
-             const  std::function<void(ObservedEvt& ev)>& action)
+           const std::function<void(ObservedEvt& ev)>& action)
       : m_obs_evt(wxNewEventType()) {
     Init(kp, action);
   }
 
-  /** Create object which invokes action when kp is notified. */
+  /** Create object which invokes action when the kp key is notified. */
   Listener(const KeyProvider& kp, const std::function<void()>& action)
       : Listener(kp, [&](ObservedEvt&) { action(); }) {}
 
-  /** Initiate an object yet not listening. */
+  /**
+   * Initiate an object yet not listening so it invokes action when the kp
+   * key is notified.
+   */
   void Init(const KeyProvider& kp,
             const std::function<void(ObservedEvt& ev)>& action) {
     m_action = action;
@@ -326,5 +355,6 @@ template <typename T>
 std::shared_ptr<const T> UnpackEvtPointer(const ObservedEvt& ev) {
   return std::static_pointer_cast<const T>(ev.GetSharedPtr());
 }
-}
+
+}  // namespace
 #endif  // OBSERVABLE_H

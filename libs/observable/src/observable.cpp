@@ -1,6 +1,5 @@
 /*************************************************************************
  *
- *
  * Copyright (C) 2022 - 2025 Alec Leamas
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,9 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
+ * along with this program; if not, see <https://www.gnu.org/licenses/>.
  **************************************************************************/
 
 /**
@@ -35,6 +32,7 @@
 #include "observable.h"
 
 namespace obs {
+
 std::string PtrKey(const void* ptr) {
   std::ostringstream oss;
   oss << ptr;
@@ -96,6 +94,7 @@ void Observable::Notify(const std::shared_ptr<const void>& ptr,
 
 void Observable::Notify() { Notify("", nullptr); }
 /* ObservableListener implementation. */
+
 }  // namespace obs
 
 void ObservableListener::Listen(const std::string& k, wxEvtHandler* l,
