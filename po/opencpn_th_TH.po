@@ -2516,8 +2516,7 @@ msgstr "แจ้งเตือน OpenCPN AIS"
 #: gui/include/gui/s57_query_dlg.h:57 gui/src/canvas_menu.cpp:448
 #: gui/src/canvas_menu.cpp:456 gui/src/chcanv.cpp:10684
 msgid "Object Query"
-msgstr "\n"
-""
+msgstr ""
 
 #: gui/include/gui/go_to_position_dlg.h:47 gui/src/ais_target_list_dlg.cpp:703
 #: gui/src/canvas_menu.cpp:491
