@@ -32,8 +32,8 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
+#include "nlohmann/json.hpp"
 #include "observable/observable.h"
-#include "wx/jsonreader.h"
 
 #include "config.h"
 #include "model/comm_drv_internal.h"
@@ -57,12 +57,12 @@ bool CommDriverInternal::SendMessage(std::shared_ptr<const NavMsg> msg,
     WARNING_LOG << "SendMessage(): Illegal message type";
     return false;
   }
-  wxJSONValue root;
-  wxJSONReader json_reader;
-  int num_errors = json_reader.Parse(plugin_msg->message, &root);
-  if (num_errors > 0) {
+  nlohmann::json root;
+  try {
+    root = nlohmann::json::parse(plugin_msg->message);
+  } catch (nlohmann::json::exception& e) {
     WARNING_LOG << "SendMessage(): cannot parse json: "
-                << plugin_msg->message.substr(0, 30);
+                << std::string(e.what()).substr(0, 30);
     return false;
   }
   m_listener.Notify(plugin_msg);
