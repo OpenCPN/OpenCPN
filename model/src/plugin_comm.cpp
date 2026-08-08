@@ -157,6 +157,15 @@ void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v) {
   LogMessage(msg, "Json message ");
 }
 
+void SendJsonMessageToAllPlugins(const std::string& message_id,
+                                 const nlohmann::json& v) {
+  std::string out = v.dump();
+  auto msg = std::make_shared<PluginMsg>(message_id, out);
+  SendMessageToAllPlugins(message_id, out);
+  wxLogDebug(wxString(message_id) + " " + out);
+  LogMessage(msg, "Json message ");
+}
+
 void SendAISSentenceToAllPlugIns(const wxString& sentence) {
   // decouple 'const wxString &' to keep interface.
   wxString decouple_sentence(sentence);
