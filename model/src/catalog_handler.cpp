@@ -29,9 +29,9 @@
 #include <sstream>
 
 #include <wx/filename.h>
-#include <wx/jsonreader.h>
 #include <wx/log.h>
 
+#include "nlohmann/json.hpp"
 #include "observable/evtvar.h"
 #include "observable/global_var.h"
 
@@ -337,22 +337,21 @@ catalog_status CatalogHandler::LoadChannels(std::ostream* stream) {
 }
 
 catalog_status CatalogHandler::LoadChannels(const std::string& json) {
-  wxJSONValue node;
-  wxJSONReader parser;
-  parser.Parse(json.c_str(), &node);
-  if (!node.IsArray()) {
+  nlohmann::json branches;
+  try {
+    branches = nlohmann::json::parse(json);
+  } catch (nlohmann::json::exception&) {
+  }
+  if (!branches.is_array()) {
     wxLogMessage("Cannot parse json (toplevel)");
-    error_msg = parser.GetErrors().Item(0).ToStdString();
     return ServerStatus::JSON_ERROR;
   }
-  auto branches = node.AsArray();
-  wxLogMessage("Got %d branches", branches->Count());
+  wxLogMessage("Got %d branches", branches.size());
   channels.clear();
-  for (size_t i = 0; i < branches->Count(); i += 1) {
-    auto branch = branches->Item(i);
-    channels.push_back(branch["name"].AsString().ToStdString());
+  for (const auto& branch : branches) {
+    channels.push_back(branch["name"].get<std::string>());
   }
-  if (branches->Count() > 0) {
+  if (branches.size() > 0) {
     wxLogMessage("First branch: %s", channels[0].c_str());
   }
   return ServerStatus::OK;
