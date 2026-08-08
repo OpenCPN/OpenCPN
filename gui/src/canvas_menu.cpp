@@ -37,6 +37,8 @@
 #include <wx/listbook.h>
 #include <wx/menu.h>
 
+#include "nlohmann/json.hpp"
+
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"
 #include "model/ais_target_data.h"
@@ -1367,10 +1369,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         g_AW2GUID.Clear();
       }
       if (!guid.IsEmpty()) {
-        wxJSONValue v;
+        nlohmann::json v;
         v["GUID"] = guid;
-        wxString msg_id("OCPN_ANCHOR_WATCH_CLEARED");
-        SendJSONMessageToAllPlugins(msg_id, v);
+        SendJsonMessageToAllPlugins("OCPN_ANCHOR_WATCH_CLEARED", v);
       }
       break;
     }
@@ -1399,10 +1400,9 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
         }
       }
       if (!guid.IsEmpty()) {
-        wxJSONValue v;
+        nlohmann::json v;
         v["GUID"] = guid;
-        wxString msg_id("OCPN_ANCHOR_WATCH_SET");
-        SendJSONMessageToAllPlugins(msg_id, v);
+        SendJsonMessageToAllPlugins("OCPN_ANCHOR_WATCH_SET", v);
       }
       break;
     }

@@ -200,36 +200,36 @@ static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
   if (!GetJSONMessageTargetCount()) return;
 
   // Do JSON message to all Plugin to inform of target
-  wxJSONValue jMsg;
+  nlohmann::json jMsg;
 
   wxLongLong t = ::wxGetLocalTimeMillis();
 
-  jMsg[wxS("Source")] = wxS("AisDecoder");
+  jMsg["Source"] = "AisDecoder";
   jMsg["Type"] = "Information";
-  jMsg["Msg"] = wxS("AIS Target");
+  jMsg["Msg"] = "AIS Target";
   jMsg["MsgId"] = t.GetValue();
-  jMsg[wxS("lat")] = pTarget->Lat;
-  jMsg[wxS("lon")] = pTarget->Lon;
-  jMsg[wxS("sog")] = pTarget->SOG;
-  jMsg[wxS("cog")] = pTarget->COG;
-  jMsg[wxS("hdg")] = pTarget->HDG;
-  jMsg[wxS("mmsi")] = pTarget->MMSI;
-  jMsg[wxS("class")] = pTarget->Class;
-  jMsg[wxS("ownship")] = pTarget->b_OwnShip;
-  jMsg[wxS("active")] = pTarget->b_active;
-  jMsg[wxS("lost")] = pTarget->b_lost;
+  jMsg["lat"] = pTarget->Lat;
+  jMsg["lon"] = pTarget->Lon;
+  jMsg["sog"] = pTarget->SOG;
+  jMsg["cog"] = pTarget->COG;
+  jMsg["hdg"] = pTarget->HDG;
+  jMsg["mmsi"] = pTarget->MMSI;
+  jMsg["class"] = pTarget->Class;
+  jMsg["ownship"] = pTarget->b_OwnShip;
+  jMsg["active"] = pTarget->b_active;
+  jMsg["lost"] = pTarget->b_lost;
   wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
   for (size_t i = 0; i < l_ShipName.Len(); i++) {
     if (l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
   }
-  jMsg[wxS("shipname")] = l_ShipName;
+  jMsg["shipname"] = l_ShipName.ToStdString();
   wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
   for (size_t i = 0; i < l_CallSign.Len(); i++) {
     if (l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
   }
-  jMsg[wxS("callsign")] = l_CallSign;
-  jMsg[wxS("removed")] = pTarget->b_removed;
-  SendJSONMessageToAllPlugins("AIS", jMsg);
+  jMsg["callsign"] = l_CallSign.ToStdString();
+  jMsg["removed"] = pTarget->b_removed;
+  SendJsonMessageToAllPlugins("AIS", jMsg);
 }
 
 static bool ReloadLocale() {
@@ -910,8 +910,8 @@ PlugInManager::PlugInManager(AbstractTopFrame* parent) {
   evt_json_to_all_plugins_listener.Listen(g_pRouteMan->json_msg, this,
                                           EVT_JSON_TO_ALL_PLUGINS);
   Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
-    auto json = std::static_pointer_cast<const wxJSONValue>(ev.GetSharedPtr());
-    SendJSONMessageToAllPlugins(ev.GetString(), *json);
+    auto json = std::static_pointer_cast<const nlohmann::json>(ev.GetSharedPtr());
+    SendJsonMessageToAllPlugins(ev.GetString().ToStdString(), *json);
   });
 
   wxDEFINE_EVENT(EVT_LEGINFO_TO_ALL_PLUGINS, ObservedEvt);
@@ -992,14 +992,16 @@ void PlugInManager::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
   g_ownshipMMSI_SK = sK_msg->context_self;
 
-  wxJSONReader jsonReader;
-  wxJSONValue root;
+  nlohmann::json root;
 
   std::string msgTerminated = sK_msg->raw_message;
-  ;
-
-  int errors = jsonReader.Parse(msgTerminated, &root);
-  if (errors == 0) SendJSONMessageToAllPlugins("OCPN_CORE_SIGNALK", root);
+  bool failed = false;
+  try {
+    root = nlohmann::json::parse(msgTerminated);
+  } catch (nlohmann::json::exception&) {
+    failed = true;
+  }
+  if (!failed) SendJsonMessageToAllPlugins("OCPN_CORE_SIGNALK", root);
 }
 
 /**
