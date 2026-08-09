@@ -3099,10 +3099,9 @@ void MyFrame::ActivateMOB() {
     if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
     g_pRouteMan->ActivateRoute(temp_route, pWP_MOB);
 
-    wxJSONValue v;
+    nlohmann::json v;
     v["GUID"] = temp_route->m_GUID;
-    wxString msg_id("OCPN_MAN_OVERBOARD");
-    SendJSONMessageToAllPlugins(msg_id, v);
+    SendJsonMessageToAllPlugins("OCPN_MAN_OVERBOARD", v);
   }
 
   if (RouteManagerDialog::getInstanceFlag()) {
@@ -3150,7 +3149,7 @@ void MyFrame::TrackOn() {
     }
   }
 
-  wxJSONValue v;
+  nlohmann::json v;
   wxString name = g_pActiveTrack->GetName();
   if (name.IsEmpty()) {
     TrackPoint *tp = g_pActiveTrack->GetPoint(0);
@@ -3162,20 +3161,18 @@ void MyFrame::TrackOn() {
   }
   v["Name"] = name;
   v["GUID"] = g_pActiveTrack->m_GUID;
-  wxString msg_id("OCPN_TRK_ACTIVATED");
-  SendJSONMessageToAllPlugins(msg_id, v);
-  g_FlushNavobjChangesTimeout =
-      30;  // Every thirty seconds, consider flushing navob changes
+  SendJsonMessageToAllPlugins("OCPN_TRK_ACTIVATED", v);
+  // Every thirty seconds, consider flushing navob changes
+  g_FlushNavobjChangesTimeout = 30;
 }
 
 Track *MyFrame::TrackOff(bool do_add_point) {
   Track *return_val = g_pActiveTrack;
 
   if (g_pActiveTrack) {
-    wxJSONValue v;
-    wxString msg_id("OCPN_TRK_DEACTIVATED");
+    nlohmann::json v;
     v["GUID"] = g_pActiveTrack->m_GUID;
-    SendJSONMessageToAllPlugins(msg_id, v);
+    SendJsonMessageToAllPlugins("OCPN_TRK_DEACTIVATED", v);
 
     g_pActiveTrack->Stop(do_add_point);
 
@@ -5828,14 +5825,14 @@ double MyFrame::GetMag(double a, double lat, double lon) {
 bool MyFrame::SendJSON_WMM_Var_Request(double lat, double lon,
                                        wxDateTime date) {
   if (g_pi_manager) {
-    wxJSONValue v;
+    nlohmann::json v;
     v["Lat"] = lat;
     v["Lon"] = lon;
     v["Year"] = date.GetYear();
     v["Month"] = date.GetMonth();
     v["Day"] = date.GetDay();
 
-    SendJSONMessageToAllPlugins("WMM_VARIATION_REQUEST", v);
+    SendJsonMessageToAllPlugins("WMM_VARIATION_REQUEST", v);
     return true;
   } else
     return false;
@@ -6253,16 +6250,17 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
     }
   }
   if (message_ID == "OCPN_TRACK_REQUEST") {
-    wxJSONValue root;
-    wxJSONReader reader;
-    wxString trk_id = wxEmptyString;
+    nlohmann::json root;
+    wxString trk_id = "";
 
-    int numErrors = reader.Parse(message_JSONText, &root);
-    if (numErrors > 0) return;
+    try {
+      root = nlohmann::json::parse(message_JSONText);
+    } catch (nlohmann::json::exception &) {
+      return;
+    }
+    if (root.contains("Track_ID")) trk_id = root["Track_ID"].get<std::string>();
 
-    if (root.HasMember("Track_ID")) trk_id = root["Track_ID"].AsString();
-
-    wxJSONValue v;
+    nlohmann::json v;
     v["Track_ID"] = trk_id;
     for (Track *ptrack : g_TrackList) {
       wxString name = wxEmptyString;
@@ -6288,15 +6286,12 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           v["lon"] = tp->m_lon;
           v["NodeNr"] = i;
           i++;
-          wxString msg_id("OCPN_TRACKPOINTS_COORDS");
-          SendJSONMessageToAllPlugins(msg_id, v);
+          SendJsonMessageToAllPlugins("OCPN_TRACKPOINTS_COORDS", v);
         }
         return;
       }
       v["error"] = true;
-
-      wxString msg_id("OCPN_TRACKPOINTS_COORDS");
-      SendJSONMessageToAllPlugins(msg_id, v);
+      SendJsonMessageToAllPlugins("OCPN_TRACKPOINTS_COORDS", v);
     }
   } else if (message_ID == "OCPN_ROUTE_REQUEST") {
     wxJSONValue root;
@@ -6310,7 +6305,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
 
     if (root.HasMember("GUID")) guid = root["GUID"].AsString();
 
-    wxJSONValue v;
+    nlohmann::json v;
     v["GUID"] = guid;
     for (auto it = pRouteList->begin(); it != pRouteList->end(); ++it) {
       wxString name = wxEmptyString;
@@ -6321,7 +6316,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
 
         v["Name"] = name;
         v["error"] = false;
-        wxJSONValue w;
+        nlohmann::json w;
         int i = 0;
         for (RoutePointList::iterator itp = (*it)->pRoutePointList->begin();
              itp != (*it)->pRoutePointList->end(); itp++) {
@@ -6346,29 +6341,25 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           i++;
         }
         v["waypoints"] = w;
-        wxString msg_id("OCPN_ROUTE_RESPONSE");
-        SendJSONMessageToAllPlugins(msg_id, v);
+        SendJsonMessageToAllPlugins("OCPN_ROUTE_RESPONSE", v);
         return;
       }
     }
 
     v["error"] = true;
-
-    wxString msg_id("OCPN_ROUTE_RESPONSE");
-    SendJSONMessageToAllPlugins(msg_id, v);
+    SendJsonMessageToAllPlugins("OCPN_ROUTE_RESPONSE", v);
   } else if (message_ID == "OCPN_ROUTELIST_REQUEST") {
-    wxJSONValue root;
-    wxJSONReader reader;
+    nlohmann::json root;
     bool route = true;
+    try {
+      root = nlohmann::json::parse(message_JSONText);
+    } catch (nlohmann::json::exception &) {
+      return;
+    }
+    if (root.contains("mode")) {
+      if (root["mode"].get<std::string>() == "Track") route = false;
 
-    int numErrors = reader.Parse(message_JSONText, &root);
-    if (numErrors > 0) return;
-
-    if (root.HasMember("mode")) {
-      wxString str = root["mode"].AsString();
-      if (str == "Track") route = false;
-
-      wxJSONValue v;
+      nlohmann::json v;
       int i = 1;
       if (route) {
         for (RouteList::iterator it = pRouteList->begin();
@@ -6400,16 +6391,14 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
           i++;
         }
       }
-      wxString msg_id("OCPN_ROUTELIST_RESPONSE");
-      SendJSONMessageToAllPlugins(msg_id, v);
+      SendJsonMessageToAllPlugins("OCPN_ROUTELIST_RESPONSE", v);
     } else {
-      wxJSONValue v;
+      nlohmann::json v;
       v[0]["error"] = true;
-      wxString msg_id("OCPN_ROUTELIST_RESPONSE");
-      SendJSONMessageToAllPlugins(msg_id, v);
+      SendJsonMessageToAllPlugins("OCPN_ROUTELIST_RESPONSE", v);
     }
   } else if (message_ID == "OCPN_ACTIVE_ROUTELEG_REQUEST") {
-    wxJSONValue v;
+    nlohmann::json v;
     v[0]["error"] = true;
     if (g_pRouteMan->GetpActiveRoute()) {
       if (g_pRouteMan->m_bDataValid) {
@@ -6424,8 +6413,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
             g_pRouteMan->GetpActiveRoute()->m_pRouteActivePoint->GetLongitude();
       }
     }
-    wxString msg_id("OCPN_ACTIVE_ROUTELEG_RESPONSE");
-    SendJSONMessageToAllPlugins(msg_id, v);
+    SendJsonMessageToAllPlugins("OCPN_ACTIVE_ROUTELEG_RESPONSE", v);
   }
 }
 
@@ -6579,10 +6567,9 @@ void MyFrame::ActivateAISMOBRoute(const AisTargetData *ptarget) {
   if (g_pRouteMan->GetpActiveRoute()) g_pRouteMan->DeactivateRoute();
   //       g_pRouteMan->ActivateRoute( pAISMOBRoute, pWP_MOB );
 
-  wxJSONValue v;
+  nlohmann::json v;
   v["GUID"] = pAISMOBRoute->m_GUID;
-  wxString msg_id("OCPN_MAN_OVERBOARD");
-  SendJSONMessageToAllPlugins(msg_id, v);
+  SendJsonMessageToAllPlugins("OCPN_MAN_OVERBOARD", v);
   //}
 
   if (RouteManagerDialog::getInstanceFlag()) {

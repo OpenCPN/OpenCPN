@@ -152,8 +152,8 @@ public:
   /** Notified when about to delete track. Contains a MmsiProperties* ptr */
   obs::EventVar delete_track;
 
-  /** A JSON message should be sent. Contains a AisTargetData* pointer. */
-  obs::EventVar plugin_msg;
+  /** A JSON message should be sent. Contains an AisTargetData* pointer. */
+  obs::EventVar plugin_msg_evt;
 
 private:
   void OnTimerAIS(wxTimerEvent &event);
