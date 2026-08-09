@@ -31,7 +31,6 @@
 
 #include <wx/wxprec.h>
 #include <wx/image.h>
-#include <wx/jsonval.h>
 
 #include "nlohmann/json.hpp"
 #include "observable/global_var.h"

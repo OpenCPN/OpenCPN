@@ -2093,13 +2093,7 @@ void AisDecoder::HandleSignalK(const SignalKMsgPtr &sK_msg) {
   if (mmsi == g_OwnShipmmsi) return;
 
 #if 0
-    wxString dbg;
-    wxJSONWriter writer;
-    writer.Write(root, dbg);
-
-    wxString msg( "AisDecoder::OnEvtSignalK: " );
-    msg.append(dbg);
-    wxLogMessage(msg);
+    wxLogDebug( "AisDecoder::OnEvtSignalK: %s", root.dump().c_str(); );
 #endif
   std::shared_ptr<AisTargetData> pTargetData = nullptr;
   std::shared_ptr<AisTargetData> pStaleTarget = nullptr;

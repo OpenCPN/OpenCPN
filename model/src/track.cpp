@@ -74,13 +74,14 @@ millions of points.
 #include <wx/colour.h>
 #include <wx/datetime.h>
 #include <wx/event.h>
-#include <wx/jsonval.h>
 #include <wx/pen.h>
 #include <wx/progdlg.h>
 #include <wx/string.h>
 #include <wx/utils.h>
 
 #include "model/track.h"
+
+#include "nlohmann/json.hpp"
 
 #include "model/config_vars.h"
 #include "model/georef.h"
@@ -684,12 +685,12 @@ TrackPoint *Track::AddNewPoint(vector2D point, wxDateTime time) {
   NavObj_dB::GetInstance().AddTrackPoint(this, tPoint);
 
   // send a wxJson message to all plugins
-  wxJSONValue v;
+  nlohmann::json v;
   v["lat"] = tPoint->m_lat;
   v["lon"] = tPoint->m_lon;
   v["Track_ID"] = m_GUID;
-  std::string msg_id("OCPN_TRK_POINT_ADDED");
-  JsonEvent::getInstance().Notify(msg_id, std::make_shared<wxJSONValue>(v));
+  JsonEvent::getInstance().Notify("OCPN_TRK_POINT_ADDED",
+                                  std::make_shared<nlohmann::json>(v));
 
   return tPoint;
 }

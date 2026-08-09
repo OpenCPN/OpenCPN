@@ -11936,7 +11936,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
   }
 
   if (bSendPlibState) {
-    wxJSONValue v;
+    nlohmann::json v;
     v["OpenCPN Version Major"] = VERSION_MAJOR;
     v["OpenCPN Version Minor"] = VERSION_MINOR;
     v["OpenCPN Version Patch"] = VERSION_PATCH;
@@ -11977,12 +11977,10 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
         g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
     v["OpenCPN Display Width"] = (int)g_display_size_mm;
 
-    wxJSONWriter w;
-    wxString out;
-    w.Write(v, out);
+    const std::string out = v.dump();
 
     if (!g_lastS52PLIBPluginMessage.IsSameAs(out)) {
-      SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
+      SendMessageToAllPlugins("OpenCPN Config", out);
       g_lastS52PLIBPluginMessage = out;
     }
   }
