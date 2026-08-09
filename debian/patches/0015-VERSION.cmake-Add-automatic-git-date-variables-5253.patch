@@ -17,6 +17,9 @@ If a checkout is done without filters the %git_date% and %git_stamp%
 are not expanded in VERSION.cmake.
 
 Add a new tool tools/configure-git-filters which sets up filtering.
+
+Bug: https://github.com/OpenCPN/OpenCPN/issues/5253
+Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/0652db756
 ---
  .gitattributes              |  3 +++
  CMakeLists.txt              | 25 +++++++++++++++++++++++--
