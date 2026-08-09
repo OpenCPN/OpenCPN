@@ -32,13 +32,11 @@
 
 #include "model/ocpn_types.h"
 
-void SendMessageToAllPlugins(const wxString& message_id,
-                             const wxString& message_body);
+void SendMessageToAllPlugins(const std::string& message_id,
+                             const std::string& message_body);
 
 void SendJsonMessageToAllPlugins(const std::string& message_id,
                                  const nlohmann::json& v);
-
-void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v);
 
 void SendAISSentenceToAllPlugIns(const wxString& sentence);
 

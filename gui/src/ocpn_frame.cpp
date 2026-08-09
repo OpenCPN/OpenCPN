@@ -2721,15 +2721,14 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     case ID_CMD_POST_JSON_TO_PLUGINS: {
       // Extract the Message ID which is embedded in the JSON string passed in
       // the event
-      wxJSONValue root;
-      wxJSONReader reader;
-
-      int numErrors = reader.Parse(event.GetString(), &root);
-      if (numErrors == 0) {
-        if (root["MessageID"].IsString()) {
-          wxString MsgID = root["MessageID"].AsString();
-          SendPluginMessage(MsgID, event.GetString());  // Send to all PlugIns
+      nlohmann::json root;
+      try {
+        root = nlohmann::json::parse(event.GetString().ToStdString());
+        if (root["MessageID"].is_string()) {
+          std::string msg_id = root["MessageID"].get<std::string>();
+          SendPluginMessage(msg_id, event.GetString());  // Send to all PlugIns
         }
+      } catch (nlohmann::json::exception &) {
       }
 
       break;
@@ -6167,44 +6166,29 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   //  present, active, and we have no other source of Variation
   if (!g_bVAR_Rx) {
     if (message_ID == "WMM_VARIATION_BOAT") {
-      // construct the JSON root object
-      wxJSONValue root;
-      // construct a JSON parser
-      wxJSONReader reader;
-
-      // now read the JSON text and store it in the 'root' structure
-      // check for errors before retreiving values...
-      int numErrors = reader.Parse(message_JSONText, &root);
-      if (numErrors > 0) {
-        //              const wxArrayString& errors = reader.GetErrors();
+      nlohmann::json root;
+      try {
+        root = nlohmann::json::parse(message_JSONText);
+      } catch (nlohmann::json::exception &) {
         return;
       }
-
       // get the DECL value from the JSON message
-      wxString decl = root["Decl"].AsString();
-      double decl_val;
-      decl.ToDouble(&decl_val);
-
-      gVar = decl_val;
+      try {
+        gVar = root["Decl"].get<double>();
+      } catch (nlohmann::json::exception &) {
+        return;
+      }
     }
   }
 
   if (message_ID == "WMM_VARIATION") {
-    // construct the JSON root object
-    wxJSONValue root;
-    // construct a JSON parser
-    wxJSONReader reader;
-
-    // now read the JSON text and store it in the 'root' structure
-    // check for errors before retreiving values...
-    int numErrors = reader.Parse(message_JSONText, &root);
-    if (numErrors > 0) {
-      //              const wxArrayString& errors = reader.GetErrors();
+    nlohmann::json root;
+    try {
+      root = nlohmann::json::parse(message_JSONText);
+    } catch (nlohmann::json::exception &) {
       return;
     }
-
-    // get the DECL value from the JSON message
-    wxString decl = root["Decl"].AsString();
+    wxString decl = root["Decl"].get<std::string>();
     double decl_val;
     decl.ToDouble(&decl_val);
 
@@ -6212,25 +6196,23 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
   }
 
   if (message_ID == "GRIB_TIMELINE") {
-    wxJSONReader r;
-    wxJSONValue v;
-    int numErrors = r.Parse(message_JSONText, &v);
-
-    if (numErrors > 0) {
+    nlohmann::json v;
+    try {
+      v = nlohmann::json::parse(message_JSONText);
+    } catch (nlohmann::json::exception &) {
       wxLogMessage("GRIB_TIMELINE: JSON parse error");
       return;
     }
-
-    // Store old time source for comparison
     wxDateTime oldTimeSource = gTimeSource;
 
-    if (v["Day"].AsInt() == -1) {
+    if (v["Day"].get<int>() == -1) {
       gTimeSource = wxInvalidDateTime;
       wxLogMessage("GRIB_TIMELINE: Reset to system time");
     } else {
-      gTimeSource.Set(v["Day"].AsInt(), (wxDateTime::Month)v["Month"].AsInt(),
-                      v["Year"].AsInt(), v["Hour"].AsInt(), v["Minute"].AsInt(),
-                      v["Second"].AsInt());
+      gTimeSource.Set(v["Day"].get<int>(),
+                      (wxDateTime::Month)v["Month"].get<int>(),
+                      v["Year"].get<int>(), v["Hour"].get<int>(),
+                      v["Minute"].get<int>(), v["Second"].get<int>());
     }
 
     // Refresh tide displays if time source changed
@@ -6294,16 +6276,15 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
       SendJsonMessageToAllPlugins("OCPN_TRACKPOINTS_COORDS", v);
     }
   } else if (message_ID == "OCPN_ROUTE_REQUEST") {
-    wxJSONValue root;
-    wxJSONReader reader;
-    wxString guid = wxEmptyString;
-
-    int numErrors = reader.Parse(message_JSONText, &root);
-    if (numErrors > 0) {
+    nlohmann::json root;
+    wxString guid = "";
+    try {
+      root = nlohmann::json::parse(message_JSONText);
+    } catch (nlohmann::json::exception &) {
       return;
     }
 
-    if (root.HasMember("GUID")) guid = root["GUID"].AsString();
+    if (root.contains("GUID")) guid = root["GUID"].get<std::string>();
 
     nlohmann::json v;
     v["GUID"] = guid;

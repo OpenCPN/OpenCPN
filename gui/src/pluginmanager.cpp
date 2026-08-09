@@ -72,8 +72,6 @@
 #include <wx/filename.h>
 #include <wx/hashmap.h>
 #include <wx/hashset.h>
-#include <wx/jsonreader.h>
-#include <wx/jsonval.h>
 #include <wx/listimpl.cpp>
 #include <wx/platinfo.h>
 #include <wx/popupwin.h>
@@ -1739,17 +1737,15 @@ void PlugInManager::PrepareAllPluginContextMenus() {
 
 void PlugInManager::SendSKConfigToAllPlugIns() {
   // Send the current ownship MMSI, encoded as sK,  to all PlugIns
-  wxJSONValue v;
+  nlohmann::json v;
   v["self"] = g_ownshipMMSI_SK;
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OCPN_CORE_SIGNALK"), out);
+  std::string out = v.dump();
+  SendMessageToAllPlugins("OCPN_CORE_SIGNALK", out);
 }
 
 void PlugInManager::SendBaseConfigToAllPlugIns() {
   // Send the current run-time configuration to all PlugIns
-  wxJSONValue v;
+  nlohmann::json v;
   v["OpenCPN Version Major"] = VERSION_MAJOR;
   v["OpenCPN Version Minor"] = VERSION_MINOR;
   v["OpenCPN Version Patch"] = VERSION_PATCH;
@@ -1773,15 +1769,13 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
   v["OpenCPN Content Scale Factor"] = OCPN_GetDisplayContentScaleFactor();
   v["OpenCPN Display DIP Scale Factor"] = OCPN_GetWinDIPScaleFactor();
 
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
+  std::string out = v.dump();
+  SendMessageToAllPlugins("OpenCPN Config", out);
 }
 
 void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
   // Send the current run-time configuration to all PlugIns
-  wxJSONValue v;
+  nlohmann::json v;
   v["OpenCPN Version Major"] = VERSION_MAJOR;
   v["OpenCPN Version Minor"] = VERSION_MINOR;
   v["OpenCPN Version Patch"] = VERSION_PATCH;
@@ -1821,10 +1815,8 @@ void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
   // Notify plugins that S52PLIB may have reconfigured global options
   v["OpenCPN S52PLIB GlobalReconfig"] = bReconfig;
 
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
+  const std::string out = v.dump();
+  SendMessageToAllPlugins("OpenCPN Config", out);
 }
 
 void PlugInManager::NotifyAuiPlugIns() {
