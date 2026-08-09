@@ -6,4 +6,5 @@
          "nmea2000"
       ],
       "description" : "All NMEA data"
+   }
 }
