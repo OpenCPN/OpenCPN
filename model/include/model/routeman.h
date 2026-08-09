@@ -252,9 +252,9 @@ public:
 
   /**
    * Notified with message targeting all plugins. Contains a message type
-   * string and a wxJSONValue shared_ptr.
+   * string and a nlohmann::json shared_ptr.
    */
-  obs::EventVar json_msg;
+  obs::EventVar json_msg_evt;
 
   /** Notified with a shared_ptr<ActiveLegDat>, leg info to all plugins.  */
   obs::EventVar json_leg_info;

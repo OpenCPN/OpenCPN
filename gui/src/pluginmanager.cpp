@@ -195,41 +195,41 @@ private:
   std::string m_key;
 };
 
-static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
+static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> target) {
   //  Only send messages if someone is listening...
   if (!GetJSONMessageTargetCount()) return;
 
   // Do JSON message to all Plugin to inform of target
-  nlohmann::json jMsg;
+  nlohmann::json json_msg;
 
   wxLongLong t = ::wxGetLocalTimeMillis();
 
-  jMsg["Source"] = "AisDecoder";
-  jMsg["Type"] = "Information";
-  jMsg["Msg"] = "AIS Target";
-  jMsg["MsgId"] = t.GetValue();
-  jMsg["lat"] = pTarget->Lat;
-  jMsg["lon"] = pTarget->Lon;
-  jMsg["sog"] = pTarget->SOG;
-  jMsg["cog"] = pTarget->COG;
-  jMsg["hdg"] = pTarget->HDG;
-  jMsg["mmsi"] = pTarget->MMSI;
-  jMsg["class"] = pTarget->Class;
-  jMsg["ownship"] = pTarget->b_OwnShip;
-  jMsg["active"] = pTarget->b_active;
-  jMsg["lost"] = pTarget->b_lost;
-  wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
+  json_msg["Source"] = "AisDecoder";
+  json_msg["Type"] = "Information";
+  json_msg["Msg"] = "AIS Target";
+  json_msg["MsgId"] = t.GetValue();
+  json_msg["lat"] = target->Lat;
+  json_msg["lon"] = target->Lon;
+  json_msg["sog"] = target->SOG;
+  json_msg["cog"] = target->COG;
+  json_msg["hdg"] = target->HDG;
+  json_msg["mmsi"] = target->MMSI;
+  json_msg["class"] = target->Class;
+  json_msg["ownship"] = target->b_OwnShip;
+  json_msg["active"] = target->b_active;
+  json_msg["lost"] = target->b_lost;
+  wxString l_ShipName = wxString::FromUTF8(target->ShipName);
   for (size_t i = 0; i < l_ShipName.Len(); i++) {
     if (l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
   }
-  jMsg["shipname"] = l_ShipName.ToStdString();
-  wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
+  json_msg["shipname"] = l_ShipName.ToStdString();
+  wxString l_CallSign = wxString::FromUTF8(target->CallSign);
   for (size_t i = 0; i < l_CallSign.Len(); i++) {
     if (l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
   }
-  jMsg["callsign"] = l_CallSign.ToStdString();
-  jMsg["removed"] = pTarget->b_removed;
-  SendJsonMessageToAllPlugins("AIS", jMsg);
+  json_msg["callsign"] = l_CallSign.ToStdString();
+  json_msg["removed"] = target->b_removed;
+  SendJsonMessageToAllPlugins("AIS", json_msg);
 }
 
 static bool ReloadLocale() {
@@ -907,10 +907,11 @@ PlugInManager::PlugInManager(AbstractTopFrame* parent) {
   m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI());
 
   wxDEFINE_EVENT(EVT_JSON_TO_ALL_PLUGINS, ObservedEvt);
-  evt_json_to_all_plugins_listener.Listen(g_pRouteMan->json_msg, this,
+  evt_json_to_all_plugins_listener.Listen(g_pRouteMan->json_msg_evt, this,
                                           EVT_JSON_TO_ALL_PLUGINS);
   Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
-    auto json = std::static_pointer_cast<const nlohmann::json>(ev.GetSharedPtr());
+    auto json =
+        std::static_pointer_cast<const nlohmann::json>(ev.GetSharedPtr());
     SendJsonMessageToAllPlugins(ev.GetString().ToStdString(), *json);
   });
 
@@ -1058,16 +1059,17 @@ void PlugInManager::HandlePluginLoaderEvents() {
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
        [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
 
-  evt_ais_json_listener.Listen(g_pAIS->plugin_msg, this, EVT_PLUGMGR_AIS_MSG);
-  evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this,
+  evt_ais_json_listener.Listen(g_pAIS->plugin_msg_evt, this,
+                               EVT_PLUGMGR_AIS_MSG);
+  evt_routeman_json_listener.Listen(g_pRouteMan->json_msg_evt, this,
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG, [&](ObservedEvt& ev) {
-    auto pTarget = obs::UnpackEvtPointer<AisTargetData>(ev);
-    SendAisJsonMessage(pTarget);
+    auto target = obs::UnpackEvtPointer<AisTargetData>(ev);
+    SendAisJsonMessage(target);
   });
   Bind(EVT_PLUGMGR_ROUTEMAN_MSG, [&](ObservedEvt& ev) {
-    auto msg = obs::UnpackEvtPointer<wxJSONValue>(ev);
-    SendJSONMessageToAllPlugins(ev.GetString(), *msg);
+    auto msg = obs::UnpackEvtPointer<nlohmann::json>(ev);
+    SendJsonMessageToAllPlugins(ev.GetString().ToStdString(), *msg);
   });
 }
 
