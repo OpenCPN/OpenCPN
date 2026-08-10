@@ -16,5 +16,5 @@ add_library(_NLOHMANN_JSON_ INTERFACE)
 add_library(nlohmann::json ALIAS _NLOHMANN_JSON_)
 
 target_include_directories(
-  _NLOHMANN_JSON_ INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/json/single_include
+  _NLOHMANN_JSON_ INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
