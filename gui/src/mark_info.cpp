@@ -1433,7 +1433,7 @@ bool MarkInfoDlg::UpdateProperties(bool positionOnly) {
                toUsrDistance(m_pRoutePoint->GetWaypointRangeRingsStep(), -1));
     m_textWaypointRangeRingsStep->SetValue(buf);
     m_staticTextArrivalUnits->SetLabel(getUsrDistanceUnit());
-    buf.Printf("%.3f",
+    buf.Printf("%.4f",
                toUsrDistance(m_pRoutePoint->GetWaypointArrivalRadius(), -1));
     m_textArrivalRadius->SetValue(buf);
 

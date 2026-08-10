@@ -468,7 +468,6 @@ void Route::UpdateSegmentDistance(RoutePoint *prp0, RoutePoint *prp,
   double br;
   // why are we using mercator rather than great circle here?? [sean 8-11-2015]
   DistanceBearingMercator(slat2, slon2, slat1, slon1, &br, &dd);
-
   prp->SetCourse(br);
   prp->SetDistance(dd);
 
@@ -536,6 +535,38 @@ void Route::UpdateSegmentDistances(double planspeed) {
       UpdateSegmentDistance(prp0, prp, planspeed);
 
       prp0 = prp;
+    }
+  }
+}
+
+/*
+ Update the arrival radius for all points in the route which have not been
+ edited manually
+ */
+void Route::UpdateWaypointsArrivalRadius(double arr_radius) {
+  auto it = pRoutePointList->begin();
+
+  if (it != pRoutePointList->end()) {
+    //  Route start point
+
+    double default = GetRouteArrivalRadius();
+    RoutePoint *prp = *it;
+    for (; it != pRoutePointList->end(); it++) {
+      RoutePoint *prp = *it;
+      double arr_rad = arr_radius;
+      if (arr_rad == 0.) {
+        if (it != pRoutePointList->begin() && prp) {
+          double dist = prp->GetDistance();
+          if (dist * 0.2 < default) {
+            arr_rad = dist * 0.2;
+            if (arr_rad < 0.005) arr_rad = 0.005;
+          }
+        }
+      }
+      if (arr_rad == 0.) {
+        arr_rad = default;
+      }
+      prp->SetWaypointArrivalRadius(arr_rad);
     }
   }
 }

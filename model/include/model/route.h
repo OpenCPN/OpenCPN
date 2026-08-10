@@ -149,6 +149,7 @@ public:
   void UpdateSegmentDistance(RoutePoint *prp0, RoutePoint *prp,
                              double planspeed = -1.0);
   void UpdateSegmentDistances(double planspeed = -1.0);
+  void UpdateWaypointsArrivalRadius(double arr_radius);
   LLBBox &GetBBox();
   void SetHiLite(int width) { m_hiliteWidth = width; }
   void Reverse(bool bRenamePoints = false);
@@ -359,6 +360,7 @@ public:
    * Can contain URLs to external resources or documentation.
    */
   HyperlinkList *m_HyperlinkList;
+  
 
 private:
   LLBBox RBBox;
@@ -380,7 +382,7 @@ private:
   bool m_bListed;
   /**
    * Arrival radius in nautical miles for waypoints in this route.
-   * Defines the distance at which a waypoint is considered reached.
+   * Defines the default distance at which a waypoint is considered reached.
    */
   double m_ArrivalRadius;
   /**
