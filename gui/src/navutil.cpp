@@ -3143,9 +3143,10 @@ void DimeControl(wxWindow *ctrl) {
   if (wxPlatformInfo::Get().CheckOSVersion(10, 14)) {
     return;
   }
-#endif
-#ifdef __WXQT__
+#elif defined(__WXQT__)
   return;  // this is seriously broken on wxqt
+#elif defined(__WXGTK__)
+  return;  // trust the native Dark/Light setting
 #endif
 
   if (wxSystemSettings::GetColour(wxSystemColour::wxSYS_COLOUR_WINDOW).Red() <
