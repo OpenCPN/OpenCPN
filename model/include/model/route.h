@@ -360,7 +360,6 @@ public:
    * Can contain URLs to external resources or documentation.
    */
   HyperlinkList *m_HyperlinkList;
-  
 
 private:
   LLBBox RBBox;
