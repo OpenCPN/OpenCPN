@@ -101,12 +101,12 @@ static wxArrayString GetAvailableSocketCANInterfaces() {
 
   can_if_candidates.clear();
 
-  if ((intf = intf_open()) == NULL) {
+  if ((intf = intf_open()) == nullptr) {
     wxLogWarning("Error opening interface list");
     return rv;
   }
 
-  if (intf_loop(intf, print_intf, NULL) < 0) {
+  if (intf_loop(intf, print_intf, nullptr) < 0) {
     wxLogWarning("Error looping over interface list");
   }
   intf_close(intf);
@@ -118,14 +118,14 @@ static wxArrayString GetAvailableSocketCANInterfaces() {
     }
 
     // Get the interface index
-    struct ifreq if_request;
+    struct ifreq if_request = {{0}};
     strcpy(if_request.ifr_name, iface.c_str());
     if (ioctl(sock, SIOCGIFINDEX, &if_request) < 0) {
       continue;
     }
 
     // Check if interface is UP
-    struct sockaddr_can can_address;
+    struct sockaddr_can can_address = {0};
     can_address.can_family = AF_CAN;
     can_address.can_ifindex = if_request.ifr_ifindex;
     if (ioctl(sock, SIOCGIFFLAGS, &if_request) < 0) {
@@ -145,7 +145,7 @@ static void LoadSerialPorts(wxComboBox* box) {
   /** Sort all links to same device as equals. */
   class PortSorter {
   private:
-    std::string GetKey(const std::string& s) const {
+    [[nodiscard]] std::string GetKey(const std::string& s) const {
       if (s.find("->") == std::string::npos) return s;
       return ocpn::trim(ocpn::split(s, "->")[1]) + " link";
     }
@@ -172,7 +172,7 @@ static void LoadSerialPorts(wxComboBox* box) {
 //------------------------------------------------------------------------------
 
 // Define constructors
-ConnectionEditDialog::ConnectionEditDialog() {}
+ConnectionEditDialog::ConnectionEditDialog() = default;
 
 ConnectionEditDialog::ConnectionEditDialog(
     wxWindow* parent,
@@ -186,7 +186,7 @@ ConnectionEditDialog::ConnectionEditDialog(
   Init();
 }
 
-ConnectionEditDialog::~ConnectionEditDialog() {}
+ConnectionEditDialog::~ConnectionEditDialog() = default;
 
 void ConnectionEditDialog::SetInitialSettings() {
   LoadSerialPorts(m_comboPort);
@@ -239,9 +239,9 @@ void ConnectionEditDialog::Init() {
   m_btnOK = nullptr;
 
   // Setup some initial values
-  m_buttonScanBT = 0;
-  m_stBTPairs = 0;
-  m_choiceBTDataSources = 0;
+  m_buttonScanBT = nullptr;
+  m_stBTPairs = nullptr;
+  m_choiceBTDataSources = nullptr;
 
   m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
   m_BTscanning = 0;
@@ -249,7 +249,7 @@ void ConnectionEditDialog::Init() {
 
   // Create the UI
 
-  wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+  auto* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
 
 #if 0
@@ -321,7 +321,7 @@ void ConnectionEditDialog::Init() {
   m_rbTypeCAN->Hide();
 #endif
 
-  wxBoxSizer* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
+  auto* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
   sbSizerConnectionProps->Add(bSizer15a, 0, wxEXPAND, 5);
 
   if (OCPNPlatform::hasInternalGPS()) {
@@ -329,7 +329,7 @@ void ConnectionEditDialog::Init() {
         this, wxID_ANY, _("Built-in GPS"), wxDefaultPosition, wxDefaultSize, 0);
     bSizer15a->Add(m_rbTypeInternalGPS, 0, wxALL, 5);
   } else
-    m_rbTypeInternalGPS = NULL;
+    m_rbTypeInternalGPS = nullptr;
 
   // has built-in Bluetooth
   if (OCPNPlatform::hasInternalBT()) {
@@ -362,7 +362,7 @@ void ConnectionEditDialog::Init() {
     sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, wxEXPAND | wxTOP, 25);
 
   } else
-    m_rbTypeInternalBT = NULL;
+    m_rbTypeInternalBT = nullptr;
 
   gSizerNetProps = new wxFlexGridSizer(0, 2, 0, 0);
 
@@ -514,7 +514,7 @@ void ConnectionEditDialog::Init() {
   fgSizer1->Add(m_stSerPort, 0, wxALL, 5);
 
   m_comboPort = new wxComboBox(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                               wxDefaultSize, 0, NULL, 0);
+                               wxDefaultSize, 0, nullptr, 0);
 
   m_comboPort->SetMaxSize(wxSize(column2width, -1));
   m_comboPort->SetMinSize(wxSize(column2width, -1));
@@ -568,7 +568,7 @@ void ConnectionEditDialog::Init() {
 
   //  User Comments
 
-  wxFlexGridSizer* commentSizer = new wxFlexGridSizer(0, 2, 0, 0);
+  auto* commentSizer = new wxFlexGridSizer(0, 2, 0, 0);
   // sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
   //  Net User Comments

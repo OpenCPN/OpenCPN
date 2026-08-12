@@ -21,8 +21,8 @@
  * Dialog and support code for editing a connection
  */
 
-#ifndef _CONNECT_EDIT_H
-#define _CONNECT_EDIT_H
+#ifndef COnnect_EDIT_H
+#define COnnect_EDIT_H
 
 #include <functional>
 
@@ -61,10 +61,10 @@ public:
       std::function<void(ConnectionParams *p, bool editing, bool ok_cancel)>
           on_edit_click);
 
-  ~ConnectionEditDialog();
+  ~ConnectionEditDialog() override;
 
-  void Init(void);
-  void SetInitialSettings(void);
+  void Init();
+  void SetInitialSettings();
   void PreloadControls(ConnectionParams *cp);
   ConnectionParams *GetParamsFromControls();
   void SetPropsLabel(wxString label);
@@ -75,8 +75,8 @@ public:
       ConnectionParams *pConnectionParams);
   void SetSelectedConnectionPanel(ConnectionParamsPanel *panel);
   void OnSelectDatasource(wxListEvent &event);
-  void OnAddDatasourceClick(wxCommandEvent &event);
-  void OnRemoveDatasourceClick(wxCommandEvent &event);
+  // void OnAddDatasourceClick(wxCommandEvent &event);
+  // void OnRemoveDatasourceClick(wxCommandEvent &event);
 
   void OnTypeSerialSelected(wxCommandEvent &event);
   void OnTypeNetSelected(wxCommandEvent &event);
@@ -94,7 +94,7 @@ public:
   void OnCbOutput(wxCommandEvent &event);
   void OnCbMultiCast(wxCommandEvent &event);
   void OnCbAdvanced(wxCommandEvent &event);
-  void OnClickMore(wxMouseEvent &event);
+  // void OnClickMore(wxMouseEvent &event);
   void OnRbOutput(wxCommandEvent &event);
   void OnBtnOStcs(wxCommandEvent &event);
   void OnConnValChange(wxCommandEvent &event);
@@ -108,23 +108,23 @@ public:
   void OnPriorityDialog(wxCommandEvent &event);
 
   void SetConnectionParams(ConnectionParams *cp);
-  void SetDefaultConnectionParams(void);
+  void SetDefaultConnectionParams();
   void SetDSFormRWStates();
   void SetDSFormOptionVizStates();
-  void FillSourceList();
+  // void FillSourceList();
   void UpdateSourceList(bool bResort);
-  bool SortSourceList(void);
-  void SetUDPNetAddressVisiblity(void);
+  // bool SortSourceList(void);
+  void SetUDPNetAddressVisiblity();
   bool IsAddressMultiCast(wxString ip);
   bool IsAddressBroadcast(wxString ip);
   bool IsDefaultPort(wxString address);
 
-  void ClearNMEAForm(void);
-  void SetNMEAFormToSerial(void);
-  void SetNMEAFormToNet(void);
-  void SetNMEAFormToGPS(void);
-  void SetNMEAFormToBT(void);
-  void SetNMEAFormToCAN(void);
+  void ClearNMEAForm();
+  void SetNMEAFormToSerial();
+  void SetNMEAFormToNet();
+  void SetNMEAFormToGPS();
+  void SetNMEAFormToBT();
+  void SetNMEAFormToCAN();
   void SetNMEAFormForSerialProtocol();
   void SetNMEAFormForNetProtocol();
 
@@ -138,15 +138,15 @@ public:
 
   void OnScanBTClick(wxCommandEvent &event);
   void onBTScanTimer(wxTimerEvent &event);
-  void StopBTScan(void);
+  void StopBTScan();
 
-  void OnWheelChoice(wxMouseEvent &event);
+  // void OnWheelChoice(wxMouseEvent &event);
 
   void ShowInFilter(bool bshow = true);
   void ShowOutFilter(bool bshow = true);
   void LayoutDialog();
 
-  void CreateControls();
+  // void CreateControls();
   void ConnectControls();
 
   void SetNewMode(bool mode) { new_mode = mode; }
@@ -166,38 +166,78 @@ public:
   wxWindow *m_parent;
   // wxScrolledWindow *m_scrolledwin;
 
-  wxGridSizer *gSizerNetProps, *gSizerSerProps, *gSizerCanProps;
-  wxTextCtrl *m_tNetAddress, *m_tNetPort, *m_tFilterSec, *m_tcInputStc;
+  wxGridSizer *gSizerNetProps;
+  wxGridSizer *gSizerSerProps;
+  wxGridSizer *gSizerCanProps;
+  wxTextCtrl *m_tNetAddress;
+  wxTextCtrl *m_tNetPort;
+  wxTextCtrl *m_tFilterSec;
+  wxTextCtrl *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc;
-  wxCheckBox *m_cbGarminHost, *m_cbGarminUploadHost, *m_cbCheckSKDiscover;
-  wxCheckBox *m_cbFurunoGP3X, *m_cbNMEADebug, *m_cbFilterSogCog, *m_cbInput;
-  wxCheckBox *m_cbMultiCast, *m_cbAdvanced;
-  wxCheckBox *m_cbOutput, *m_cbAPBMagnetic;
+  wxCheckBox *m_cbGarminHost;
+  wxCheckBox *m_cbGarminUploadHost;
+  wxCheckBox *m_cbCheckSKDiscover;
+  wxCheckBox *m_cbFurunoGP3X;
+  wxCheckBox *m_cbNMEADebug;
+  wxCheckBox *m_cbFilterSogCog;
+  wxCheckBox *m_cbInput;
+  wxCheckBox *m_cbMultiCast;
+  wxCheckBox *m_cbAdvanced;
+  wxCheckBox *m_cbOutput;
+  wxCheckBox *m_cbAPBMagnetic;
   wxComboBox *m_comboPort;
   wxStdDialogButtonSizer *m_sdbSizerDlgButtons;
-  wxButton *m_ButtonSKDiscover, *m_ButtonPriorityDialog;
+  wxButton *m_ButtonSKDiscover;
+  wxButton *m_ButtonPriorityDialog;
   wxStaticText *m_StaticTextSKServerStatus;
 
-  wxButton *m_buttonAdd, *m_buttonRemove, *m_buttonScanBT, *m_btnInputStcList;
-  wxButton *m_btnOutputStcList, *m_sdbSizerDlgButtonsOK;
-  wxButton *m_sdbSizerDlgButtonsApply, *m_sdbSizerDlgButtonsCancel;
-  wxStaticBoxSizer *sbSizerConnectionProps, *sbSizerInFilter;
+  wxButton *m_buttonAdd;
+  wxButton *m_buttonRemove;
+  wxButton *m_buttonScanBT;
+  wxButton *m_btnInputStcList;
+  wxButton *m_btnOutputStcList;
+  wxButton *m_sdbSizerDlgButtonsOK;
+  wxButton *m_sdbSizerDlgButtonsApply;
+  wxButton *m_sdbSizerDlgButtonsCancel;
+  wxStaticBoxSizer *sbSizerConnectionProps;
+  wxStaticBoxSizer *sbSizerInFilter;
   wxStaticBoxSizer *sbSizerOutFilter;
-  wxRadioButton *m_rbTypeSerial, *m_rbTypeNet, *m_rbTypeInternalGPS;
-  wxRadioButton *m_rbTypeInternalBT, *m_rbNetProtoTCP, *m_rbNetProtoUDP;
-  wxRadioButton *m_rbNetProtoGPSD, *m_rbIAccept, *m_rbIIgnore, *m_rbOAccept;
+  wxRadioButton *m_rbTypeSerial;
+  wxRadioButton *m_rbTypeNet;
+  wxRadioButton *m_rbTypeInternalGPS;
+  wxRadioButton *m_rbTypeInternalBT;
+  wxRadioButton *m_rbNetProtoTCP;
+  wxRadioButton *m_rbNetProtoUDP;
+  wxRadioButton *m_rbNetProtoGPSD;
+  wxRadioButton *m_rbIAccept;
+  wxRadioButton *m_rbIIgnore;
+  wxRadioButton *m_rbOAccept;
   wxRadioButton *m_rbNetProtoSignalK;
   wxRadioButton *m_rbOIgnore, *m_rbTypeCAN;
-  wxStaticText *m_stBTPairs, *m_stNetProto, *m_stNetAddr, *m_stNetPort;
-  wxStaticText *m_stSerPort, *m_stSerBaudrate, *m_stSerProtocol;
-  wxStaticText *m_stFilterSec, *m_stPrecision;
+  wxStaticText *m_stBTPairs;
+  wxStaticText *m_stNetProto;
+  wxStaticText *m_stNetAddr;
+  wxStaticText *m_stNetPort;
+  wxStaticText *m_stSerPort;
+  wxStaticText *m_stSerBaudrate;
+  wxStaticText *m_stSerProtocol;
+  wxStaticText *m_stFilterSec;
+  wxStaticText *m_stPrecision;
   wxStaticText *m_stTalkerIdText;
-  wxStaticText *m_stNetComment, *m_stSerialComment, *m_stCANSource,
-      *m_stAuthToken;
-  wxTextCtrl *m_tNetComment, *m_tSerialComment, *m_tAuthToken;
+  wxStaticText *m_stNetComment;
+  wxStaticText *m_stSerialComment;
+  wxStaticText *m_stCANSource;
+  wxStaticText *m_stAuthToken;
+  wxTextCtrl *m_tNetComment;
+  wxTextCtrl *m_tSerialComment;
+  wxTextCtrl *m_tAuthToken;
   wxStaticBox *m_sbConnEdit;
-  wxChoice *m_choiceBTDataSources, *m_choiceBaudRate, *m_choiceSerialProtocol;
-  wxChoice *m_choicePriority, *m_choicePrecision, *m_choiceCANSource;
+  wxChoice *m_choiceBTDataSources;
+  wxChoice *m_choiceBaudRate;
+  wxChoice *m_choiceSerialProtocol;
+  wxChoice *m_choicePriority;
+  wxChoice *m_choicePrecision;
+  wxChoice *m_choiceCANSource;
   wxChoice *m_choiceNetDataProtocol;
 
   wxBoxSizer *boxSizerConnections;
@@ -215,7 +255,9 @@ public:
   bool m_advanced = false;
   bool m_connection_enabled;
   bool m_bNMEAParams_shown;
-  int m_btNoChangeCounter, m_btlastResultCount, m_BTscanning;
+  int m_btNoChangeCounter;
+  int m_btlastResultCount;
+  int m_BTscanning;
   wxArrayString m_BTscan_results;
   wxTimer m_BTScanTimer;
   wxArrayString m_choice_CANSource_choices;
@@ -233,7 +275,7 @@ class SentenceListDlg : public wxDialog {
 public:
   explicit SentenceListDlg(wxWindow *parent, FilterDirection dir, ListType type,
                            const wxArrayString &list);
-  wxString GetSentences(void);
+  wxString GetSentences();
 
 private:
   void OnAddClick(wxCommandEvent &event);
@@ -243,7 +285,7 @@ private:
   void OnClearAllClick(wxCommandEvent &event);
 
   void Populate(const wxArrayString &list);
-  wxString GetBoxLabel(void) const;
+  [[nodiscard]] wxString GetBoxLabel() const;
 
   wxCheckListBox *m_clbSentences;
   wxButton *m_btnDel;
@@ -253,4 +295,4 @@ private:
   wxArrayString m_sentences;
 };
 
-#endif  //_CONNECT_DIALOG_H
+#endif  // COnnect_EDIT_H
