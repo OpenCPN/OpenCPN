@@ -82,6 +82,7 @@ public:
   NetworkProtocol NetProtocol;
   wxString NetworkAddress;
   int NetworkPort;
+  bool is_server;
 
   wxString LastNetworkAddress;
   int LastNetworkPort;
