@@ -62,12 +62,16 @@ public:
           on_edit_click);
 
   ~ConnectionEditDialog() override;
+  void SetPropsLabel(wxString label);
+  void SetDefaultConnectionParams();
+  void SetNewMode(bool mode) { new_mode = mode; }
+  void AddOKCancelButtons();
+  ConnectionParams *GetParamsFromControls();
+  void PreloadControls(ConnectionParams *cp);
 
+private:
   void Init();
   void SetInitialSettings();
-  void PreloadControls(ConnectionParams *cp);
-  ConnectionParams *GetParamsFromControls();
-  void SetPropsLabel(wxString label);
 
   void ApplySettings();
   ConnectionParams *CreateConnectionParamsFromSelectedItem();
@@ -108,7 +112,6 @@ public:
   void OnPriorityDialog(wxCommandEvent &event);
 
   void SetConnectionParams(ConnectionParams *cp);
-  void SetDefaultConnectionParams();
   void SetDSFormRWStates();
   void SetDSFormOptionVizStates();
   // void FillSourceList();
@@ -149,9 +152,6 @@ public:
   // void CreateControls();
   void ConnectControls();
 
-  void SetNewMode(bool mode) { new_mode = mode; }
-
-  void AddOKCancelButtons();
   wxStdDialogButtonSizer *m_btnSizer;
   wxBoxSizer *m_btnSizerBox;
 
@@ -241,7 +241,6 @@ public:
 
   wxBoxSizer *boxSizerConnections;
   wxStaticText *m_stNetDataProtocol;
-
   ConnectionParams *mSelectedConnection;
 
 #ifdef __ANDROID__
@@ -266,10 +265,7 @@ public:
 
   std::function<void(ConnectionParams *, bool, bool)> m_on_edit_click;
 
-protected:
   wxSizer *m_collapse_box;
-
-private:
   void OnConnectionTypeChange();
   void OnAdvancedModeChange();
   void OnAddressChange(wxFocusEvent &ev);
