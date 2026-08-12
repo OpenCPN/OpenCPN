@@ -54,7 +54,7 @@ std::vector<ConnectionParams*>& TheConnectionParams() {
 }
 
 ConnectionParams::ConnectionParams(const wxString& configStr) {
-  m_optionsPanel = NULL;
+  m_optionsPanel = nullptr;
   Deserialize(configStr);
 }
 
@@ -167,6 +167,7 @@ ConnectionParams::ConnectionParams() {
   NoDataReconnect = false;
   DisableEcho = false;
   AuthToken = "";
+  is_server = false;
 }
 
 ConnectionParams::~ConnectionParams() {
