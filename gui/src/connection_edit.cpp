@@ -79,13 +79,25 @@
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
 
+static const std::string kUdpDevice = _("TCP device");
+static const std::string kTcpDevice = _("UDP device");
+static const std::string kGpsdDevice = _("Gpsd");
+static const std::string kSignalkDevice = _("SignalK server");
+static const std::string kTcpClient = _("TCP client");
+static const std::string kUdpClient = _("UDP client");
+static const std::string kGpsdClient = _("Gpsd client");
+static const std::string kSignalkClient = _("SignalK client");
+static const std::string kTcpServer = _("TCP Server");
+static const std::string kUdpServer = _("UDP Server");
+static const std::string kMulticastServer = _("Multicast Server");
+static const std::string kMulticastClient = _("Multicast Client");
+
 static const std::vector<std::string> kBasicNetTypes = {
-    _("TCP device"), _("UDP device"), "Gpsd", _("SignalK server")};
+    kTcpDevice, kUdpDevice, kGpsdDevice, kSignalkDevice};
 
 static const std::vector<std::string> kAdvancedNetTypes = {
-    _("TCP client"),      _("UDP client"), _("Gpsd Client"),
-    _("SignalK client"),  _("TCP server"), _("Multicast Client"),
-    _("Multicast server")};
+    kTcpClient, kUdpClient, kGpsdClient,      kSignalkClient,
+    kTcpServer, kUdpServer, kMulticastClient, kMulticastServer};
 
 static wxString StringArrayToString(const wxArrayString& arr) {
   wxString ret = wxEmptyString;
@@ -244,6 +256,71 @@ void ConnectionEditDialog::OnOKClick() {
 
 void ConnectionEditDialog::OnCancelClick() {
   m_on_edit_click(nullptr, false, false);
+}
+
+void ConnectionEditDialog::OnAdvancedModeChange() {
+  bool advanced = m_advanced_net_box->GetValue();
+  m_net_type_choice->Clear();
+  if (advanced) {
+    for (const auto& choice : kAdvancedNetTypes)
+      m_net_type_choice->Append(choice);
+    m_net_type_choice_label->SetLabel(_("Connection type"));
+  } else {
+    for (const auto& choice : kBasicNetTypes) m_net_type_choice->Append(choice);
+    m_net_type_choice_label->SetLabel(_("Data Source"));
+  }
+  m_net_type_choice->SetSelection(0);
+}
+
+void ConnectionEditDialog::OnAddressChange(wxFocusEvent& ev) {
+  int selection = m_net_type_choice->GetSelection();
+  if (selection == wxNOT_FOUND) return;
+  std::string type = m_net_type_choice->GetString(selection).ToStdString();
+  if (type != kMulticastClient && type != kMulticastServer) return;
+  std::string address = m_tNetAddress->GetValue().ToStdString();
+  if (!IsAddressMultiCast(address)) {
+    auto dlg = wxMessageDialog(this, _("Illegal multicast address"),
+                               _("OpenCPN warning"), wxOK | wxICON_WARNING);
+    dlg.ShowModal();
+  }
+  ev.Skip();
+}
+
+void ConnectionEditDialog::OnConnectionTypeChange() {
+  int selection = m_net_type_choice->GetSelection();
+  if (selection == wxNOT_FOUND) return;
+  std::string type = m_net_type_choice->GetString(selection).ToStdString();
+  m_tNetAddress->Enable();
+  m_tNetAddress->SetValue("");
+  m_tNetPort->SetValue("");
+  m_cbOutput->Enable();
+  m_cbInput->Enable();
+  m_choiceNetDataProtocol->Clear();
+  m_choiceNetDataProtocol->Append("NMEA 0183");
+  m_choiceNetDataProtocol->Append("NMEA 2000");
+  m_choiceNetDataProtocol->SetSelection(0);
+  m_choiceNetDataProtocol->Enable();
+  if (type == kGpsdClient || type == kGpsdDevice) {
+    m_choiceNetDataProtocol->Clear();
+    m_choiceNetDataProtocol->Append("gpsd");
+    m_choiceNetDataProtocol->SetSelection(0);
+    m_choiceNetDataProtocol->Disable();
+    m_cbOutput->Disable();
+    m_cbInput->Disable();
+    m_tNetPort->SetValue(kDefaultGpsdPort);
+  } else if (type == kSignalkClient || type == kSignalkDevice) {
+    m_choiceNetDataProtocol->Clear();
+    m_choiceNetDataProtocol->Append("SignalK");
+    m_choiceNetDataProtocol->SetSelection(0);
+    m_choiceNetDataProtocol->Disable();
+    m_cbInput->Disable();
+    m_cbOutput->Disable();
+    m_tNetPort->SetValue(kDefaultSignalkPort);
+  } else if (type == kTcpServer || type == kUdpServer) {
+    m_tNetAddress->SetValue("0.0.0.0");
+    m_tNetAddress->Disable();
+    m_tNetPort->SetValue(kDefaultTcpPort);
+  }
 }
 
 void ConnectionEditDialog::Init() {
@@ -413,13 +490,16 @@ void ConnectionEditDialog::Init() {
   gSizerNetProps->Add(m_net_adv_box_label, 0, wxALL, 5);
   m_advanced_net_box = new wxCheckBox(this, wxID_ANY, "");
   gSizerNetProps->Add(m_advanced_net_box, 0, wxALL, 5);
+  m_advanced_net_box->Bind(
+      wxEVT_CHECKBOX, [&](const wxCommandEvent&) { OnAdvancedModeChange(); });
 
   m_net_type_choice_label =
       new wxStaticText(this, wxID_ANY, _("Connection type"));
   gSizerNetProps->Add(m_net_type_choice_label, 0, wxALL, 5);
   m_net_type_choice = new wxChoice(this, wxID_ANY);
-  for (const auto& choice : kBasicNetTypes) m_net_type_choice->Append(choice);
-  m_net_type_choice->SetSelection(0);
+  m_net_type_choice->Bind(wxEVT_CHOICE,
+                          [&](wxCommandEvent&) { OnConnectionTypeChange(); });
+  OnAdvancedModeChange();
   gSizerNetProps->Add(m_net_type_choice, 0, wxALL, 5);
   m_stNetDataProtocol = new wxStaticText(this, wxID_ANY, _("Data Protocol"),
                                          wxDefaultPosition, wxDefaultSize, 0);
@@ -454,6 +534,8 @@ void ConnectionEditDialog::Init() {
   int column2width = 40 * this->GetCharWidth();
   m_tNetAddress->SetMaxSize(wxSize(column2width, -1));
   m_tNetAddress->SetMinSize(wxSize(column2width, -1));
+  m_tNetAddress->Bind(wxEVT_KILL_FOCUS,
+                      [&](wxFocusEvent& ev) { OnAddressChange(ev); });
 
   gSizerNetProps->Add(m_tNetAddress, 0, wxEXPAND | wxTOP, 5);
   gSizerNetProps->AddSpacer(1);
@@ -1546,7 +1628,7 @@ void ConnectionEditDialog::SetDefaultConnectionParams() {
   m_choiceBaudRate->Select(m_choiceBaudRate->FindString("4800"));
   //    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
 
-  m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
+  m_tNetAddress->SetValue(kDefaultIpAddress);
 
   m_tNetComment->SetValue(wxEmptyString);
   m_tSerialComment->SetValue(wxEmptyString);
@@ -1788,9 +1870,9 @@ void ConnectionEditDialog::OnCbMultiCast(wxCommandEvent& event) {
       m_tNetAddress->SetValue("224.0.2.21");
     }
   } else if (m_cbOutput->IsChecked()) {
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for output
+    m_tNetAddress->SetValue(kDefaultIpAddress);  // IP address for output
   } else {
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for input
+    m_tNetAddress->SetValue(kDefaultIpAddress);  // IP address for input
   }
 
   SetUDPNetAddressVisiblity();
@@ -2371,8 +2453,8 @@ bool ConnectionEditDialog::IsAddressMultiCast(wxString ip) {
 }
 
 bool ConnectionEditDialog::IsDefaultPort(wxString address) {
-  return (address == DEFAULT_TCP_PORT) || (address == DEFAULT_UDP_PORT) ||
-         (address == DEFAULT_SIGNALK_PORT) || (address == DEFAULT_GPSD_PORT);
+  return (address == kDefaultTcpPort) || (address == kDefaultUdpPort) ||
+         (address == kDefaultSignalkPort) || (address == kDefaultGpsdPort);
 }
 
 bool ConnectionEditDialog::IsAddressBroadcast(wxString ip) {

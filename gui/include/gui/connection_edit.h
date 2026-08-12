@@ -46,11 +46,11 @@
  */
 class ConnectionEditDialog : public wxPanel {
 public:
-  const wxString DEFAULT_TCP_PORT = "10110";
-  const wxString DEFAULT_UDP_PORT = "10110";
-  const wxString DEFAULT_GPSD_PORT = "2947";
-  const wxString DEFAULT_SIGNALK_PORT = "3000";
-  const wxString DEFAULT_IP_ADDRESS = "localhost";
+  const std::string kDefaultTcpPort = "10110";
+  const std::string kDefaultUdpPort = "10110";
+  const std::string kDefaultGpsdPort = "2947";
+  const std::string kDefaultSignalkPort = "3000";
+  const std::string kDefaultIpAddress = "localhost";
   // "LIMITED BROADCAST" address
   //  Deprecated, but still useful on simple mobile networks.
   const wxString DEFAULT_UDP_OUT_ADDRESS = "255.255.255.255";
@@ -268,6 +268,11 @@ public:
 
 protected:
   wxSizer *m_collapse_box;
+
+private:
+  void OnConnectionTypeChange();
+  void OnAdvancedModeChange();
+  void OnAddressChange(wxFocusEvent &ev);
 };
 
 class SentenceListDlg : public wxDialog {
