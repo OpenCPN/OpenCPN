@@ -51,6 +51,7 @@ public:
   const std::string kDefaultGpsdPort = "2947";
   const std::string kDefaultSignalkPort = "3000";
   const std::string kDefaultIpAddress = "localhost";
+  const std::string kDefaultMulticastAddr = "224.0.2.21";
   // "LIMITED BROADCAST" address
   //  Deprecated, but still useful on simple mobile networks.
   const wxString DEFAULT_UDP_OUT_ADDRESS = "255.255.255.255";
@@ -96,7 +97,6 @@ private:
   void OnBtnIStcs(wxCommandEvent &event);
   void OnCbInput(wxCommandEvent &event);
   void OnCbOutput(wxCommandEvent &event);
-  void OnCbMultiCast(wxCommandEvent &event);
   void OnCbAdvanced(wxCommandEvent &event);
   // void OnClickMore(wxMouseEvent &event);
   void OnRbOutput(wxCommandEvent &event);
@@ -118,7 +118,6 @@ private:
   void UpdateSourceList(bool bResort);
   // bool SortSourceList(void);
   void SetUDPNetAddressVisiblity();
-  bool IsDefaultPort(const wxString &address);
 
   void ClearNMEAForm();
   void SetNMEAFormToSerial();
@@ -180,7 +179,6 @@ private:
   wxCheckBox *m_cbNMEADebug;
   wxCheckBox *m_cbFilterSogCog;
   wxCheckBox *m_cbInput;
-  wxCheckBox *m_cbMultiCast;
   wxCheckBox *m_cbAdvanced;
   wxCheckBox *m_cbOutput;
   wxCheckBox *m_cbAPBMagnetic;

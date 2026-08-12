@@ -338,6 +338,8 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
     m_tNetAddress->SetValue("0.0.0.0");
     m_tNetAddress->Disable();
     m_tNetPort->SetValue(kDefaultTcpPort);
+  } else if (type == kMulticastClient || type == kMulticastServer) {
+    m_tNetAddress->SetValue(kDefaultMulticastAddr);
   }
 }
 
@@ -540,7 +542,7 @@ void ConnectionEditDialog::Init() {
   m_stNetAddr = new wxStaticText(this, wxID_ANY, _("Address"),
                                  wxDefaultPosition, wxDefaultSize, 0);
   m_stNetAddr->Wrap(-1);
-  int column1width = 16 * GetCharWidth();
+  int column1width = 10 * GetCharWidth();
   m_stNetAddr->SetMinSize(wxSize(column1width, -1));
   gSizerNetProps->Add(m_stNetAddr, 0, wxALL, 5);
 
@@ -643,8 +645,7 @@ void ConnectionEditDialog::Init() {
   fgSizer1->AddSpacer(1);
   fgSizer1->AddSpacer(1);
 
-  m_stSerProtocol = new wxStaticText(this, wxID_ANY, _("Protocol"),
-                                     wxDefaultPosition, wxDefaultSize, 0);
+  m_stSerProtocol = new wxStaticText(this, wxID_ANY, _("Protocol"));
   m_stSerProtocol->Wrap(-1);
   fgSizer1->Add(m_stSerProtocol, 0, wxALL, 5);
 
@@ -669,34 +670,30 @@ void ConnectionEditDialog::Init() {
   // sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
   //  Net User Comments
-  m_stNetComment = new wxStaticText(this, wxID_ANY, _("Description"),
-                                    wxDefaultPosition, wxDefaultSize, 0);
+  m_stNetComment = new wxStaticText(this, wxID_ANY, _("User Comment"));
   m_stNetComment->Wrap(-1);
-  m_stNetComment->SetMinSize(wxSize(column1width, -1));
+  m_stNetComment->SetMinSize(wxSize(column1width * 4 / 3, -1));
   commentSizer->Add(m_stNetComment, 0, wxALL, 5);
 
-  m_tNetComment = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_tNetComment = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
   m_tNetComment->SetMaxSize(wxSize(column2width, -1));
   m_tNetComment->SetMinSize(wxSize(column2width, -1));
 
   commentSizer->Add(m_tNetComment, 1, wxEXPAND | wxTOP, 5);
 
   //  Serial User Comments
-  m_stSerialComment = new wxStaticText(this, wxID_ANY, _("User Comment"),
-                                       wxDefaultPosition, wxDefaultSize, 0);
+  m_stSerialComment = new wxStaticText(this, wxID_ANY, _("User Comment"));
   m_stSerialComment->Wrap(-1);
   m_stSerialComment->SetMinSize(wxSize(column1width, -1));
   commentSizer->Add(m_stSerialComment, 0, wxALL, 5);
 
-  m_tSerialComment = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                    wxDefaultPosition, wxDefaultSize, 0);
+  m_tSerialComment = new wxTextCtrl(this, wxID_ANY, "");
   m_tSerialComment->SetMaxSize(wxSize(column2width, -1));
   m_tSerialComment->SetMinSize(wxSize(column2width, -1));
 
   commentSizer->Add(m_tSerialComment, 1, wxTOP, 5);
 
-  sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
+  sbSizerConnectionProps->Add(commentSizer, 0, wxALL, 5);
 
   wxFlexGridSizer* fgSizer5;
   fgSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
@@ -704,16 +701,14 @@ void ConnectionEditDialog::Init() {
   fgSizer5->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
   sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
 
-  m_cbInput = new wxCheckBox(this, wxID_ANY, _("Receive Input on this Port"),
-                             wxDefaultPosition, wxDefaultSize, 0);
+  m_cbInput = new wxCheckBox(this, wxID_ANY, _("Receive Input on this Port"));
   fgSizer5->Add(m_cbInput, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
 
   m_cbOutput =
       new wxCheckBox(this, wxID_ANY,
                      wxString::Format("%s (%s)", _("Output on this port"),
-                                      _("as autopilot or NMEA repeater")),
-                     wxDefaultPosition, wxDefaultSize, 0);
+                                      _("as autopilot or NMEA repeater")));
   fgSizer5->Add(m_cbOutput, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
 
@@ -730,43 +725,29 @@ void ConnectionEditDialog::Init() {
   fgSizer5->Add(m_collapse_box, wxSizerFlags());
   fgSizer5->Add(new wxStaticText(this, wxID_ANY, ""));
 
-  m_stAuthToken = new wxStaticText(this, wxID_ANY, _("Auth Token"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
+#ifndef USE_GARMINHOST
+  m_cbGarminHost->Hide();
+#endif
+
+  m_stAuthToken = new wxStaticText(this, wxID_ANY, _("Auth Token"));
   m_stAuthToken->SetMinSize(wxSize(column1width, -1));
   m_stAuthToken->Wrap(-1);
+  m_stAuthToken->SetMinSize(wxSize(column1width, -1));
   fgSizer5->Add(m_stAuthToken, 0, wxALL, 5);
   m_stAuthToken->Hide();
 
-  m_tAuthToken = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition, wxDefaultSize, 0);
+  m_tAuthToken = new wxTextCtrl(this, wxID_ANY, "");
   m_tAuthToken->SetMinSize(wxSize(column2width, -1));
   fgSizer5->Add(m_tAuthToken, 1, wxEXPAND | wxTOP, 5);
 
   m_tAuthToken->Hide();
 
-  m_cbGarminHost =
-      new wxCheckBox(this, wxID_ANY, _("Use Garmin (GRMN) mode for input"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  m_cbGarminHost->SetValue(FALSE);
-  fgSizer5->Add(m_cbGarminHost, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
+  fgSizer5->Add(new wxStaticText(this, wxID_ANY, ""), 0, wxALL, 2);
 
-#ifndef USE_GARMINHOST
-  m_cbGarminHost->Hide();
-#endif
-
-  m_cbMultiCast = new wxCheckBox(this, wxID_ANY, _(" UDP Multicast"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
-  m_cbMultiCast->SetValue(FALSE);
-  // m_cbMultiCast->SetToolTip(_("Advanced Use Only. Enable UDP Multicast."));
-
-  fgSizer5->Add(m_cbMultiCast, 0, wxALL, 2);
-  fgSizer5->AddSpacer(1);
-
-  m_stPrecision = new wxStaticText(this, wxID_ANY, _("APB bearing precision"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
-
+  m_stPrecision = new wxStaticText(this, wxID_ANY, _("APB bearing precision"));
   m_stPrecision->Wrap(-1);
+  m_stPrecision->SetMinSize(wxSize(column1width, -1));
   fgSizer5->Add(m_stPrecision, 0, wxALL, 2);
 
   wxString m_choicePrecisionChoices[] = {_("x"), _("x.x"), _("x.xx"),
@@ -782,10 +763,15 @@ void ConnectionEditDialog::Init() {
   m_choicePrecision->SetSelection(g_NMEAAPBPrecision);
   fgSizer5->Add(m_choicePrecision, 0, wxALL, 2);
 
+  m_cbGarminHost =
+      new wxCheckBox(this, wxID_ANY, _("Use Garmin (GRMN) mode for input"));
+  m_cbGarminHost->SetValue(FALSE);
+  fgSizer5->Add(m_cbGarminHost, 0, wxALL, 2);
+  fgSizer5->AddSpacer(1);
+
   // signalK discovery enable
   m_cbCheckSKDiscover =
-      new wxCheckBox(this, wxID_ANY, _("Automatic server discovery"),
-                     wxDefaultPosition, wxDefaultSize, 0);
+      new wxCheckBox(this, wxID_ANY, _("Automatic server discovery"));
   m_cbCheckSKDiscover->SetValue(TRUE);
   m_cbCheckSKDiscover->SetToolTip(
       _("If checked, signal K server will be discovered automatically"));
@@ -793,14 +779,12 @@ void ConnectionEditDialog::Init() {
   fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 2);
 
   // signal K "Discover now" button
-  m_ButtonSKDiscover = new wxButton(this, wxID_ANY, _("Discover now..."),
-                                    wxDefaultPosition, wxDefaultSize, 0);
+  m_ButtonSKDiscover = new wxButton(this, wxID_ANY, _("Discover now..."));
   m_ButtonSKDiscover->Hide();
   fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 2);
 
   // signalK Server Status
-  m_StaticTextSKServerStatus =
-      new wxStaticText(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
+  m_StaticTextSKServerStatus = new wxStaticText(this, wxID_ANY, "");
   fgSizer5->Add(m_StaticTextSKServerStatus, 0, wxALL, 2);
 
   sbSizerInFilter = new wxStaticBoxSizer(
@@ -811,12 +795,10 @@ void ConnectionEditDialog::Init() {
   wxBoxSizer* bSizer9;
   bSizer9 = new wxBoxSizer(wxHORIZONTAL);
 
-  m_rbIAccept = new wxRadioButton(this, wxID_ANY, _("Accept only sentences"),
-                                  wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+  m_rbIAccept = new wxRadioButton(this, wxID_ANY, _("Accept only sentences"));
   bSizer9->Add(m_rbIAccept, 0, wxALL, 5);
 
-  m_rbIIgnore = new wxRadioButton(this, wxID_ANY, _("Ignore sentences"),
-                                  wxDefaultPosition, wxDefaultSize, 0);
+  m_rbIIgnore = new wxRadioButton(this, wxID_ANY, _("Ignore sentences"));
   bSizer9->Add(m_rbIIgnore, 0, wxALL, 5);
 
   sbSizerInFilter->Add(bSizer9, 0, wxEXPAND, 5);
@@ -1274,7 +1256,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
   m_StaticTextSKServerStatus->Show(advanced);
 
   if (m_rbTypeSerial->GetValue()) {
-    m_cbMultiCast->Hide();
     m_cbCheckSKDiscover->Hide();
     m_stAuthToken->Hide();
     m_tAuthToken->Hide();
@@ -1321,7 +1302,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
   }
 
   if (m_rbTypeInternalGPS && m_rbTypeInternalGPS->GetValue()) {
-    m_cbMultiCast->Hide();
     m_cbCheckSKDiscover->Hide();
     m_stAuthToken->Hide();
     m_tAuthToken->Hide();
@@ -1338,7 +1318,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
   }
 
   if (m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue()) {
-    m_cbMultiCast->Hide();
     m_cbCheckSKDiscover->Hide();
     m_stAuthToken->Hide();
     m_tAuthToken->Hide();
@@ -1353,7 +1332,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
   }
 
   if (m_rbTypeCAN->GetValue()) {
-    m_cbMultiCast->Hide();
     m_cbCheckSKDiscover->Hide();
     m_stAuthToken->Hide();
     m_tAuthToken->Hide();
@@ -1381,7 +1359,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
   if (m_rbTypeNet->GetValue()) {
     /*
     if (m_rbNetProtoGPSD->GetValue()) {
-      m_cbMultiCast->Hide();
       m_cbCheckSKDiscover->Hide();
       m_cbInput->Hide();
       m_cbOutput->Hide();
@@ -1399,7 +1376,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
       m_collapse_box->Show(false);
 
     } else if (m_rbNetProtoSignalK->GetValue()) {
-      m_cbMultiCast->Hide();
       m_cbInput->Hide();
       m_cbOutput->Hide();
       ShowInFilter(false);
@@ -1420,7 +1396,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
       m_choiceNetDataProtocol->Show();
       m_cbGarminHost->Hide();
 
-      //     if (m_rbNetProtoUDP->GetValue()) m_cbMultiCast->Show(advanced);
 */
     if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
         DataProtocol::PROTO_NMEA2000) {
@@ -1542,8 +1517,6 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
 
   m_choiceNetDataProtocol->Select(cp->Protocol);  // TODO
 
-  m_cbMultiCast->SetValue(IsAddressMultiCast(m_tNetAddress->GetValue()));
-
   if (cp->NetworkPort == 0)
     m_tNetPort->SetValue(wxEmptyString);
   else
@@ -1619,7 +1592,6 @@ void ConnectionEditDialog::SetUDPNetAddressVisiblity() {
     if (m_rbNetProtoUDP->GetValue() && m_advanced) {
       // m_cbMultiCast->Show();
     } else
-      m_cbMultiCast->Hide();
   */
 }
 
@@ -1870,22 +1842,6 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
   */
   if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
-  LayoutDialog();
-}
-
-void ConnectionEditDialog::OnCbMultiCast(wxCommandEvent& event) {
-  const bool checked = m_cbMultiCast->IsChecked();
-  if (checked) {
-    if (!IsAddressMultiCast(m_tNetAddress->GetValue())) {
-      m_tNetAddress->SetValue("224.0.2.21");
-    }
-  } else if (m_cbOutput->IsChecked()) {
-    m_tNetAddress->SetValue(kDefaultIpAddress);  // IP address for output
-  } else {
-    m_tNetAddress->SetValue(kDefaultIpAddress);  // IP address for input
-  }
-
-  SetUDPNetAddressVisiblity();
   LayoutDialog();
 }
 
@@ -2319,10 +2275,6 @@ void ConnectionEditDialog::ConnectControls() {
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), nullptr,
       this);
-  m_cbMultiCast->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnCbMultiCast), nullptr,
-      this);
 
   // input/output control
   m_cbInput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
@@ -2450,11 +2402,6 @@ void ConnectionEditDialog::ConnectControls() {
         wxEVT_COMMAND_BUTTON_CLICKED,
         wxCommandEventHandler(ConnectionEditDialog::OnScanBTClick), NULL, this);
 #endif
-}
-
-bool ConnectionEditDialog::IsDefaultPort(const wxString& address) {
-  return (address == kDefaultTcpPort) || (address == kDefaultUdpPort) ||
-         (address == kDefaultSignalkPort) || (address == kDefaultGpsdPort);
 }
 
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
