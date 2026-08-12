@@ -239,6 +239,7 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
     m_socket_server->SetNotify(wxSOCKET_CONNECTION_FLAG);
     m_socket_server->Notify(TRUE);
     m_socket_server->SetTimeout(1);  // Short timeout
+    m_driver_stats.available = m_socket_server->IsOk();
   } else {
     MESSAGE_LOG << "Opening TCP connection to " << m_params.NetworkAddress
                 << ":" << m_params.NetworkPort;
@@ -255,8 +256,8 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
 
     m_rx_connect_event = false;
     m_socket_timer.Start(100, wxTIMER_ONE_SHOT);  // schedule a connection
+    m_driver_stats.available = m_sock->IsOk();
   }
-
   // In case the connection is lost before acquired....
   m_connect_time = std::chrono::steady_clock::now();
 }
@@ -324,7 +325,8 @@ void CommDriverN0183Net::OnTimerSocket() {
         m_is_conn_err_reported = true;
         m_driver_stats.error_count++;
       }
-    }
+    };
+    m_driver_stats.available = tcp_socket->IsOk();
   }
 }
 
@@ -387,7 +389,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_LOST: {
-      m_driver_stats.available = false;
+      m_driver_stats.available = GetSock()->IsOk();
       using namespace std::chrono;
       if (m_params.NetProtocol == TCP || m_params.NetProtocol == GPSD) {
         if (m_rx_connect_event) {
@@ -509,9 +511,10 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
           ret = false;
         }
 
-      } else
+      } else {
         ret = false;
-      m_driver_stats.available = ret;
+      }
+      // m_driver_stats.available = GetSock() && GetSock()->IsOk();
 
       break;
     case UDP:
