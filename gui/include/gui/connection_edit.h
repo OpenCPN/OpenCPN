@@ -62,7 +62,7 @@ public:
           on_edit_click);
 
   ~ConnectionEditDialog() override;
-  void SetPropsLabel(wxString label);
+  void SetPropsLabel(const wxString &label);
   void SetDefaultConnectionParams();
   void SetNewMode(bool mode) { new_mode = mode; }
   void AddOKCancelButtons();
@@ -108,7 +108,7 @@ private:
   void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
-  void UpdateDiscoverStatus(wxString stat);
+  void UpdateDiscoverStatus(const wxString &stat);
   void OnPriorityDialog(wxCommandEvent &event);
 
   void SetConnectionParams(ConnectionParams *cp);
@@ -118,9 +118,7 @@ private:
   void UpdateSourceList(bool bResort);
   // bool SortSourceList(void);
   void SetUDPNetAddressVisiblity();
-  bool IsAddressMultiCast(wxString ip);
-  bool IsAddressBroadcast(wxString ip);
-  bool IsDefaultPort(wxString address);
+  bool IsDefaultPort(const wxString &address);
 
   void ClearNMEAForm();
   void SetNMEAFormToSerial();

@@ -121,12 +121,30 @@ static int print_intf(const struct intf_entry* entry, void* arg) {
 }
 #endif
 
+static bool IsAddressMultiCast(const wxString& ip) {
+  wxArrayString bytes = wxSplit(ip, '.');
+  if (bytes.size() != 4) {
+    return false;
+  }
+  unsigned long ipNum = (wxAtoi(bytes[0]) << 24) + (wxAtoi(bytes[1]) << 16) +
+                        (wxAtoi(bytes[2]) << 8) + wxAtoi(bytes[3]);
+  unsigned long multicastStart = (224 << 24);
+  unsigned long multicastEnd = (239 << 24) + (255 << 16) + (255 << 8) + 255;
+  return ipNum >= multicastStart && ipNum <= multicastEnd;
+}
+
+static bool IsAddressBroadcast(const wxString& ip) {
+  wxArrayString bytes = wxSplit(ip, '.');
+  if (bytes.size() != 4) {
+    std::cerr << "Invalid IP format." << std::endl;
+    return false;
+  }
+  return wxAtoi(bytes[3]) == 255;
+}
 static wxArrayString GetAvailableSocketCANInterfaces() {
   wxArrayString rv;
 
 #if defined(__linux__) && !defined(__ANDROID__)
-  struct intf_entry* entry;
-
   can_if_candidates.clear();
 
   if ((intf = intf_open()) == nullptr) {
@@ -208,7 +226,7 @@ ConnectionEditDialog::ConnectionEditDialog(
         _on_edit_click)
     : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), 0,
               "conn_edit"),
-      m_on_edit_click(_on_edit_click) {
+      m_on_edit_click(std::move(_on_edit_click)) {
   m_parent = parent;
 
   Init();
@@ -371,12 +389,11 @@ void ConnectionEditDialog::Init() {
   boxSizerSWin->SetSizeHints(m_scrolledwin);
 #endif
 
-  int group_item_spacing = 2;
-
   wxFont* dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
   double font_size = dFont->GetPointSize() * 17 / 16;
   wxFont* bFont = wxTheFontList->FindOrCreateFont(
-      font_size, dFont->GetFamily(), dFont->GetStyle(), wxFONTWEIGHT_BOLD);
+      static_cast<int>(font_size), dFont->GetFamily(), dFont->GetStyle(),
+      wxFONTWEIGHT_BOLD);
 
   //
   //   m_stEditCon = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Edit Selected
@@ -461,8 +478,6 @@ void ConnectionEditDialog::Init() {
 
   sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
 
-  wxBoxSizer* bSizer16;
-  bSizer16 = new wxBoxSizer(wxHORIZONTAL);
   //  gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
   //  gSizerNetProps->AddSpacer(1);
   //  gSizerNetProps->AddSpacer(1);
@@ -895,7 +910,7 @@ void ConnectionEditDialog::SetSelectedConnectionPanel(
     m_sbConnEdit->SetLabel(_("Edit Selected Connection"));
 
   } else {
-    mSelectedConnection = NULL;
+    mSelectedConnection = nullptr;
     m_buttonRemove->Disable();
     m_buttonAdd->Enable();
     m_buttonAdd->Show();
@@ -909,7 +924,7 @@ void ConnectionEditDialog::SetSelectedConnectionPanel(
   // this->Scroll(-1, buttonPosition.y / m_parent->GetScrollRate());
 }
 
-void ConnectionEditDialog::SetPropsLabel(wxString label) {
+void ConnectionEditDialog::SetPropsLabel(const wxString& label) {
   m_sbConnEdit->SetLabel(label);
 }
 
@@ -973,7 +988,7 @@ void ConnectionEditDialog::onBTScanTimer(wxTimerEvent& event) {
     else
       m_btNoChangeCounter = 0;
 
-    m_btlastResultCount = m_BTscan_results.GetCount();
+    m_btlastResultCount = static_cast<int>(m_BTscan_results.GetCount());
 
     // Absolute fallback
     if (m_BTscanning >= 15) {
@@ -981,7 +996,6 @@ void ConnectionEditDialog::onBTScanTimer(wxTimerEvent& event) {
     }
   } else {
   }
-  return;
 }
 
 void ConnectionEditDialog::StopBTScan() {
@@ -1080,7 +1094,6 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
 }
 
 void ConnectionEditDialog::ShowNMEANet(bool visible) {
-  bool advanced = m_advanced;
   if (m_btnOK) m_btnOK->Enable();
 
   m_stNetAddr->Show(visible);
@@ -1160,7 +1173,6 @@ void ConnectionEditDialog::ShowNMEABT(bool visible) {
 }
 
 void ConnectionEditDialog::SetNMEAFormToSerial() {
-  bool advanced = m_advanced;
   if (m_btnOK) m_btnOK->Enable();
 
   ShowNMEACommon(TRUE);
@@ -1174,7 +1186,6 @@ void ConnectionEditDialog::SetNMEAFormToSerial() {
 }
 
 void ConnectionEditDialog::SetNMEAFormToNet() {
-  bool advanced = m_advanced;
   if (m_btnOK) m_btnOK->Enable();
 
   ShowNMEACommon(TRUE);
@@ -1190,7 +1201,6 @@ void ConnectionEditDialog::SetNMEAFormToNet() {
 }
 
 void ConnectionEditDialog::SetNMEAFormToCAN() {
-  bool advanced = m_advanced;
   if (m_btnOK) m_btnOK->Enable();
 
   ShowNMEACommon(FALSE);
@@ -1712,7 +1722,7 @@ void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
   event.Skip();
 }
 
-void ConnectionEditDialog::UpdateDiscoverStatus(wxString stat) {
+void ConnectionEditDialog::UpdateDiscoverStatus(const wxString& stat) {
   m_StaticTextSKServerStatus->SetLabel(stat);
 }
 
@@ -2116,11 +2126,11 @@ ConnectionEditDialog::CreateConnectionParamsFromSelectedItem() {
 
   return pConnectionParams;
 #endif
-  return NULL;
+  return nullptr;
 }
 
 ConnectionParams* ConnectionEditDialog::GetParamsFromControls() {
-  ConnectionParams* pConnectionParams = new ConnectionParams();
+  auto* pConnectionParams = new ConnectionParams();
   UpdateConnectionParamsFromControls(pConnectionParams);
   return pConnectionParams;
 }
@@ -2253,7 +2263,7 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
 }
 
 void ConnectionEditDialog::OnPriorityDialog(wxCommandEvent& event) {
-  PriorityDlg* pdlg = new PriorityDlg(m_parent);
+  auto* pdlg = new PriorityDlg(m_parent);
   pdlg->ShowModal();
   delete pdlg;
 }
@@ -2261,27 +2271,27 @@ void ConnectionEditDialog::ConnectControls() {
   // Connect controls
   m_rbTypeSerial->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnTypeSerialSelected), NULL,
-      this);
+      wxCommandEventHandler(ConnectionEditDialog::OnTypeSerialSelected),
+      nullptr, this);
   m_rbTypeNet->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnTypeNetSelected), NULL,
+      wxCommandEventHandler(ConnectionEditDialog::OnTypeNetSelected), nullptr,
       this);
 
   m_rbTypeCAN->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnTypeCANSelected), NULL,
+      wxCommandEventHandler(ConnectionEditDialog::OnTypeCANSelected), nullptr,
       this);
 
   if (m_rbTypeInternalGPS)
     m_rbTypeInternalGPS->Connect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-        wxCommandEventHandler(ConnectionEditDialog::OnTypeGPSSelected), NULL,
+        wxCommandEventHandler(ConnectionEditDialog::OnTypeGPSSelected), nullptr,
         this);
   if (m_rbTypeInternalBT)
     m_rbTypeInternalBT->Connect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-        wxCommandEventHandler(ConnectionEditDialog::OnTypeBTSelected), NULL,
+        wxCommandEventHandler(ConnectionEditDialog::OnTypeBTSelected), nullptr,
         this);
 
   // Network connection
@@ -2303,28 +2313,30 @@ void ConnectionEditDialog::ConnectControls() {
   //    NULL, this);
   m_choiceNetDataProtocol->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), NULL,
+      wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), nullptr,
       this);
   m_choiceSerialProtocol->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), NULL,
+      wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), nullptr,
       this);
   m_cbMultiCast->Connect(
       wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnCbMultiCast), NULL, this);
+      wxCommandEventHandler(ConnectionEditDialog::OnCbMultiCast), nullptr,
+      this);
 
   // input/output control
   m_cbInput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                      wxCommandEventHandler(ConnectionEditDialog::OnCbInput),
-                     NULL, this);
+                     nullptr, this);
   m_cbOutput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
                       wxCommandEventHandler(ConnectionEditDialog::OnCbOutput),
-                      NULL, this);
+                      nullptr, this);
 
   if (m_buttonScanBT)
     m_buttonScanBT->Connect(
         wxEVT_COMMAND_BUTTON_CLICKED,
-        wxCommandEventHandler(ConnectionEditDialog::OnScanBTClick), NULL, this);
+        wxCommandEventHandler(ConnectionEditDialog::OnScanBTClick), nullptr,
+        this);
 
   // Input filtering
   // m_rbIAccept->Connect(
@@ -2341,12 +2353,12 @@ void ConnectionEditDialog::ConnectControls() {
   //    this);
   m_btnInputStcList->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnBtnIStcs), NULL, this);
+      wxCommandEventHandler(ConnectionEditDialog::OnBtnIStcs), nullptr, this);
 
   // output filtering
   m_btnOutputStcList->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnBtnOStcs), NULL, this);
+      wxCommandEventHandler(ConnectionEditDialog::OnBtnOStcs), nullptr, this);
 
 #if 0
     m_tNetAddress->Connect(
@@ -2440,30 +2452,9 @@ void ConnectionEditDialog::ConnectControls() {
 #endif
 }
 
-bool ConnectionEditDialog::IsAddressMultiCast(wxString ip) {
-  wxArrayString bytes = wxSplit(ip, '.');
-  if (bytes.size() != 4) {
-    return false;
-  }
-  unsigned long ipNum = (wxAtoi(bytes[0]) << 24) + (wxAtoi(bytes[1]) << 16) +
-                        (wxAtoi(bytes[2]) << 8) + wxAtoi(bytes[3]);
-  unsigned long multicastStart = (224 << 24);
-  unsigned long multicastEnd = (239 << 24) + (255 << 16) + (255 << 8) + 255;
-  return ipNum >= multicastStart && ipNum <= multicastEnd;
-}
-
-bool ConnectionEditDialog::IsDefaultPort(wxString address) {
+bool ConnectionEditDialog::IsDefaultPort(const wxString& address) {
   return (address == kDefaultTcpPort) || (address == kDefaultUdpPort) ||
          (address == kDefaultSignalkPort) || (address == kDefaultGpsdPort);
-}
-
-bool ConnectionEditDialog::IsAddressBroadcast(wxString ip) {
-  wxArrayString bytes = wxSplit(ip, '.');
-  if (bytes.size() != 4) {
-    std::cerr << "Invalid IP format." << std::endl;
-    return false;
-  }
-  return wxAtoi(bytes[3]) == 255;
 }
 
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
@@ -2474,21 +2465,21 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
       m_dir(dir),
       m_sentences(NMEA0183().GetRecognizedArray()) {
   m_sentences.Sort();
-  wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
-  wxBoxSizer* secondSizer = new wxBoxSizer(wxHORIZONTAL);
-  wxStaticBox* pclbBox = new wxStaticBox(this, wxID_ANY, GetBoxLabel());
-  wxStaticBoxSizer* stcSizer = new wxStaticBoxSizer(pclbBox, wxVERTICAL);
+  auto* mainSizer = new wxBoxSizer(wxVERTICAL);
+  auto* secondSizer = new wxBoxSizer(wxHORIZONTAL);
+  auto* pclbBox = new wxStaticBox(this, wxID_ANY, GetBoxLabel());
+  auto* stcSizer = new wxStaticBoxSizer(pclbBox, wxVERTICAL);
   m_clbSentences = new wxCheckListBox(this, wxID_ANY, wxDefaultPosition,
                                       wxDefaultSize, m_sentences);
-  wxBoxSizer* btnEntrySizer = new wxBoxSizer(wxVERTICAL);
-  wxButton* btnCheckAll = new wxButton(this, wxID_ANY, _("Select All"));
-  wxButton* btnClearAll = new wxButton(this, wxID_ANY, _("Clear All"));
-  wxButton* btnAdd = new wxButton(this, wxID_ANY, _("Add"));
+  auto* btnEntrySizer = new wxBoxSizer(wxVERTICAL);
+  auto* btnCheckAll = new wxButton(this, wxID_ANY, _("Select All"));
+  auto* btnClearAll = new wxButton(this, wxID_ANY, _("Clear All"));
+  auto* btnAdd = new wxButton(this, wxID_ANY, _("Add"));
   m_btnDel = new wxButton(this, wxID_ANY, _("Delete"));
   m_btnDel->Disable();
-  wxStdDialogButtonSizer* btnSizer = new wxStdDialogButtonSizer();
-  wxButton* btnOK = new wxButton(this, wxID_OK);
-  wxButton* btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
+  auto* btnSizer = new wxStdDialogButtonSizer();
+  auto* btnOK = new wxButton(this, wxID_OK);
+  auto* btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
 
   secondSizer->Add(stcSizer, 1, wxALL | wxEXPAND, 5);
   stcSizer->Add(m_clbSentences, 1, wxALL | wxEXPAND, 5);
@@ -2510,20 +2501,20 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
 
   // Connect Events
   btnAdd->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                  wxCommandEventHandler(SentenceListDlg::OnAddClick), NULL,
+                  wxCommandEventHandler(SentenceListDlg::OnAddClick), nullptr,
                   this);
   m_btnDel->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                    wxCommandEventHandler(SentenceListDlg::OnDeleteClick), NULL,
-                    this);
+                    wxCommandEventHandler(SentenceListDlg::OnDeleteClick),
+                    nullptr, this);
   m_clbSentences->Connect(wxEVT_COMMAND_LISTBOX_SELECTED,
                           wxCommandEventHandler(SentenceListDlg::OnCLBSelect),
-                          NULL, this);
+                          nullptr, this);
   btnCheckAll->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(SentenceListDlg::OnCheckAllClick),
-                       NULL, this);
+                       nullptr, this);
   btnClearAll->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(SentenceListDlg::OnClearAllClick),
-                       NULL, this);
+                       nullptr, this);
 
   Populate(list);
 }
