@@ -71,6 +71,22 @@
 #include "priority_gui.h"
 #include "udev_rule_mgr.h"
 
+// Make _() return std::string instead of wxString;
+#undef _
+#if wxCHECK_VERSION(3, 2, 0)
+#define _(s) wxGetTranslation(wxASCII_STR(s)).ToStdString()
+#else
+#define _(s) wxGetTranslation((s)).ToStdString()
+#endif
+
+static const std::vector<std::string> kBasicNetTypes = {
+    _("TCP device"), _("UDP device"), "Gpsd", _("SignalK server")};
+
+static const std::vector<std::string> kAdvancedNetTypes = {
+    _("TCP client"),      _("UDP client"), _("Gpsd Client"),
+    _("SignalK client"),  _("TCP server"), _("Multicast Client"),
+    _("Multicast server")};
+
 static wxString StringArrayToString(const wxArrayString& arr) {
   wxString ret = wxEmptyString;
   for (size_t i = 0; i < arr.Count(); i++) {
@@ -368,29 +384,11 @@ void ConnectionEditDialog::Init() {
 
   sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
 
-  m_stNetProto = new wxStaticText(this, wxID_ANY, _("Network Protocol"),
-                                  wxDefaultPosition, wxDefaultSize, 0);
-  m_stNetProto->Wrap(-1);
-  gSizerNetProps->Add(m_stNetProto, 0, wxALL, 5);
-
   wxBoxSizer* bSizer16;
   bSizer16 = new wxBoxSizer(wxHORIZONTAL);
-  gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
-  gSizerNetProps->AddSpacer(1);
-  gSizerNetProps->AddSpacer(1);
-
-  m_rbNetProtoTCP = new wxRadioButton(
-      this, wxID_ANY, _("TCP"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-  m_rbNetProtoTCP->Enable(TRUE);
-  m_rbNetProtoTCP->SetValue(TRUE);
-
-  bSizer16->Add(m_rbNetProtoTCP, 0, wxALL, 5);
-
-  m_rbNetProtoUDP = new wxRadioButton(this, wxID_ANY, _("UDP"),
-                                      wxDefaultPosition, wxDefaultSize, 0);
-  m_rbNetProtoUDP->Enable(TRUE);
-
-  bSizer16->Add(m_rbNetProtoUDP, 0, wxALL, 5);
+  //  gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
+  //  gSizerNetProps->AddSpacer(1);
+  //  gSizerNetProps->AddSpacer(1);
 
   // Optimize for Portrait mode handheld devices
   if (displaySize.x < displaySize.y) {
@@ -400,27 +398,29 @@ void ConnectionEditDialog::Init() {
     gSizerNetProps->Add(bSizer16a, 1, wxEXPAND, 5);
     gSizerNetProps->AddSpacer(1);
     gSizerNetProps->AddSpacer(1);
-    m_rbNetProtoGPSD = new wxRadioButton(this, wxID_ANY, _("GPSD"),
-                                         wxDefaultPosition, wxDefaultSize, 0);
-    m_rbNetProtoGPSD->Enable(TRUE);
-    bSizer16a->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
 
-    m_rbNetProtoSignalK = new wxRadioButton(
-        this, wxID_ANY, _("Signal K"), wxDefaultPosition, wxDefaultSize, 0);
-    m_rbNetProtoSignalK->Enable(TRUE);
-    bSizer16a->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
+    // m_rbNetProtoSignalK = new wxRadioButton(
+    //     this, wxID_ANY, _("Signal K"), wxDefaultPosition, wxDefaultSize, 0);
+    // m_rbNetProtoSignalK->Enable(TRUE);
+    // bSizer16a->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
   } else {
-    m_rbNetProtoGPSD = new wxRadioButton(this, wxID_ANY, _("GPSD"),
-                                         wxDefaultPosition, wxDefaultSize, 0);
-    m_rbNetProtoGPSD->Enable(TRUE);
-    bSizer16->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
-
-    m_rbNetProtoSignalK = new wxRadioButton(
-        this, wxID_ANY, _("Signal K"), wxDefaultPosition, wxDefaultSize, 0);
-    m_rbNetProtoSignalK->Enable(TRUE);
-    bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
+    //  m_rbNetProtoSignalK = new wxRadioButton(
+    //      this, wxID_ANY, _("Signal K"), wxDefaultPosition, wxDefaultSize, 0);
+    //  m_rbNetProtoSignalK->Enable(TRUE);
+    //  bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
   }
+  m_net_adv_box_label = new wxStaticText(this, wxID_ANY, _("Advanced mode"));
+  gSizerNetProps->Add(m_net_adv_box_label, 0, wxALL, 5);
+  m_advanced_net_box = new wxCheckBox(this, wxID_ANY, "");
+  gSizerNetProps->Add(m_advanced_net_box, 0, wxALL, 5);
 
+  m_net_type_choice_label =
+      new wxStaticText(this, wxID_ANY, _("Connection type"));
+  gSizerNetProps->Add(m_net_type_choice_label, 0, wxALL, 5);
+  m_net_type_choice = new wxChoice(this, wxID_ANY);
+  for (const auto& choice : kBasicNetTypes) m_net_type_choice->Append(choice);
+  m_net_type_choice->SetSelection(0);
+  gSizerNetProps->Add(m_net_type_choice, 0, wxALL, 5);
   m_stNetDataProtocol = new wxStaticText(this, wxID_ANY, _("Data Protocol"),
                                          wxDefaultPosition, wxDefaultSize, 0);
   m_stNetDataProtocol->Wrap(-1);
@@ -445,7 +445,7 @@ void ConnectionEditDialog::Init() {
   m_stNetAddr = new wxStaticText(this, wxID_ANY, _("Address"),
                                  wxDefaultPosition, wxDefaultSize, 0);
   m_stNetAddr->Wrap(-1);
-  int column1width = 16 * m_stNetProto->GetCharWidth();
+  int column1width = 16 * GetCharWidth();
   m_stNetAddr->SetMinSize(wxSize(column1width, -1));
   gSizerNetProps->Add(m_stNetAddr, 0, wxALL, 5);
 
@@ -1007,15 +1007,14 @@ void ConnectionEditDialog::ShowNMEANet(bool visible) {
   m_stNetPort->Show(visible);
   m_choiceNetDataProtocol->Show(visible);
   m_tNetPort->Show(visible);
-  m_stNetProto->Show(visible);
-  m_rbNetProtoSignalK->Show(visible);
-  m_rbNetProtoGPSD->Show(visible);
-  m_rbNetProtoTCP->Show(visible);
-  m_rbNetProtoUDP->Show(visible);
   m_stNetComment->Show(visible);
   m_tNetComment->Show(visible);
   m_stAuthToken->Show(visible);
   m_tAuthToken->Show(visible);
+  m_advanced_net_box->Show(visible);
+  m_net_adv_box_label->Show(visible);
+  m_net_type_choice_label->Show(visible);
+  m_net_type_choice->Show(visible);
   m_cbGarminHost->Hide();
 }
 
@@ -1140,7 +1139,6 @@ void ConnectionEditDialog::SetNMEAFormToGPS() {
 }
 
 void ConnectionEditDialog::SetNMEAFormToBT() {
-  m_rbNetProtoUDP->SetValue(true);
   ShowNMEACommon(TRUE);
   ShowNMEANet(FALSE);
   ShowNMEAGPS(FALSE);
@@ -1209,6 +1207,13 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
       m_choicePrecision->Hide();
       m_stNetDataProtocol->Hide();
       m_choiceNetDataProtocol->Hide();
+      m_advanced_net_box->Hide();
+      m_net_type_choice_label->Hide();
+      m_net_type_choice->Hide();
+      m_advanced_net_box->Hide();
+      m_net_type_choice_label->Hide();
+      m_net_adv_box_label->Hide();
+      m_net_type_choice->Hide();
     } else {
       m_cbInput->Show();
       m_cbInput->Enable();
@@ -1274,10 +1279,15 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
 
     m_stNetDataProtocol->Hide();
     m_choiceNetDataProtocol->Hide();
+    m_advanced_net_box->Hide();
+    m_net_type_choice_label->Hide();
+    m_net_adv_box_label->Hide();
+    m_net_type_choice->Hide();
     m_collapse_box->Show(false);
   }
 
   if (m_rbTypeNet->GetValue()) {
+    /*
     if (m_rbNetProtoGPSD->GetValue()) {
       m_cbMultiCast->Hide();
       m_cbCheckSKDiscover->Hide();
@@ -1319,26 +1329,24 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
       m_cbGarminHost->Hide();
 
       //     if (m_rbNetProtoUDP->GetValue()) m_cbMultiCast->Show(advanced);
+*/
+    if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
+        DataProtocol::PROTO_NMEA2000) {
+      m_stPrecision->Hide();
+      m_choicePrecision->Hide();
 
-      if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
-          DataProtocol::PROTO_NMEA2000) {
-        m_stPrecision->Hide();
-        m_choicePrecision->Hide();
+      ShowInFilter(false);
+      ShowOutFilter(false);
+    }
+    if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
+        DataProtocol::PROTO_NMEA0183) {
+      m_stPrecision->Show(advanced);
+      m_choicePrecision->Show(advanced);
+      m_stPrecision->Enable(m_cbOutput->IsChecked() && advanced);
+      m_choicePrecision->Enable(m_cbOutput->IsChecked() && advanced);
 
-        ShowInFilter(false);
-        ShowOutFilter(false);
-        if (m_rbNetProtoTCP->GetValue()) m_collapse_box->ShowItems(false);
-      }
-      if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
-          DataProtocol::PROTO_NMEA0183) {
-        m_stPrecision->Show(advanced);
-        m_choicePrecision->Show(advanced);
-        m_stPrecision->Enable(m_cbOutput->IsChecked() && advanced);
-        m_choicePrecision->Enable(m_cbOutput->IsChecked() && advanced);
-
-        ShowInFilter(m_cbInput->IsChecked() && advanced);
-        ShowOutFilter(m_cbOutput->IsChecked() && advanced);
-      }
+      ShowInFilter(m_cbInput->IsChecked() && advanced);
+      ShowOutFilter(m_cbOutput->IsChecked() && advanced);
     }
   }
 }
@@ -1349,7 +1357,8 @@ void ConnectionEditDialog::SetDSFormRWStates() {
     m_cbOutput->Enable(TRUE);
     ShowInFilter();
     ShowOutFilter(m_cbOutput->IsChecked());
-  } else if (m_rbNetProtoGPSD->GetValue()) {
+  } /*
+  else if (m_rbNetProtoGPSD->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
       m_tNetPort->SetValue(DEFAULT_GPSD_PORT);
     m_cbInput->SetValue(TRUE);
@@ -1359,7 +1368,8 @@ void ConnectionEditDialog::SetDSFormRWStates() {
     m_rbOAccept->Enable(FALSE);
     m_rbOIgnore->Enable(FALSE);
     m_btnOutputStcList->Enable(FALSE);
-  } else if (m_rbNetProtoSignalK->GetValue()) {
+  }
+else if (m_rbNetProtoSignalK->GetValue()) {
     if (m_tNetPort->GetValue() == wxEmptyString)
       m_tNetPort->SetValue(DEFAULT_SIGNALK_PORT);
     m_cbInput->SetValue(TRUE);
@@ -1369,13 +1379,16 @@ void ConnectionEditDialog::SetDSFormRWStates() {
     m_rbOAccept->Enable(FALSE);
     m_rbOIgnore->Enable(FALSE);
     UpdateDiscoverStatus(wxEmptyString);
-  } else {
+  } */
+  else {
     if (m_tNetPort->GetValue() == wxEmptyString) {
+      /*
       if (m_rbNetProtoTCP->GetValue()) {
         m_tNetPort->SetValue(DEFAULT_TCP_PORT);
       } else {
         m_tNetPort->SetValue(DEFAULT_UDP_PORT);
       }
+      */
     }
     m_cbInput->Enable(TRUE);
     m_cbOutput->Enable(TRUE);
@@ -1443,18 +1456,18 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
     m_tNetPort->SetValue(wxEmptyString);
   else
     m_tNetPort->SetValue(wxString::Format("%i", cp->NetworkPort));
-
-  if (cp->NetProtocol == TCP)
-    m_rbNetProtoTCP->SetValue(TRUE);
-  else if (cp->NetProtocol == UDP)
-    m_rbNetProtoUDP->SetValue(TRUE);
-  else if (cp->NetProtocol == GPSD)
-    m_rbNetProtoGPSD->SetValue(TRUE);
-  else if (cp->NetProtocol == SIGNALK)
-    m_rbNetProtoSignalK->SetValue(TRUE);
-  else
-    m_rbNetProtoGPSD->SetValue(TRUE);
-
+  /*
+    if (cp->NetProtocol == TCP)
+      m_rbNetProtoTCP->SetValue(TRUE);
+    else if (cp->NetProtocol == UDP)
+      m_rbNetProtoUDP->SetValue(TRUE);
+    else if (cp->NetProtocol == GPSD)
+      m_rbNetProtoGPSD->SetValue(TRUE);
+    else if (cp->NetProtocol == SIGNALK)
+      m_rbNetProtoSignalK->SetValue(TRUE);
+    else
+      m_rbNetProtoGPSD->SetValue(TRUE);
+  */
   if (cp->Type == SERIAL) {
     m_rbTypeSerial->SetValue(TRUE);
     SetNMEAFormToSerial();
@@ -1495,25 +1508,27 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
 }
 
 void ConnectionEditDialog::SetUDPNetAddressVisiblity() {
-  if (m_rbNetProtoUDP->GetValue() && !m_cbMultiCast->IsChecked() &&
-      !m_cbOutput->IsChecked()) {
-    //    m_stNetAddr->Show(FALSE);
-    //    m_tNetAddress->Show(FALSE);
-    m_tNetAddress->Enable(TRUE);
-  } else {
-    m_stNetAddr->Show(TRUE);
-    m_tNetAddress->Show(TRUE);
-    m_tNetAddress->Enable(TRUE);
-  }
-  if (!m_rbNetProtoUDP->GetValue()) {
-    m_stNetAddr->Show(TRUE);
-    m_tNetAddress->Show(TRUE);
-    m_tNetAddress->Enable(TRUE);
-  }
-  if (m_rbNetProtoUDP->GetValue() && m_advanced) {
-    // m_cbMultiCast->Show();
-  } else
-    m_cbMultiCast->Hide();
+  /*
+    if (m_rbNetProtoUDP->GetValue() && !m_cbMultiCast->IsChecked() &&
+        !m_cbOutput->IsChecked()) {
+      //    m_stNetAddr->Show(FALSE);
+      //    m_tNetAddress->Show(FALSE);
+      m_tNetAddress->Enable(TRUE);
+    } else {
+      m_stNetAddr->Show(TRUE);
+      m_tNetAddress->Show(TRUE);
+      m_tNetAddress->Enable(TRUE);
+    }
+    if (!m_rbNetProtoUDP->GetValue()) {
+      m_stNetAddr->Show(TRUE);
+      m_tNetAddress->Show(TRUE);
+      m_tNetAddress->Enable(TRUE);
+    }
+    if (m_rbNetProtoUDP->GetValue() && m_advanced) {
+      // m_cbMultiCast->Show();
+    } else
+      m_cbMultiCast->Hide();
+  */
 }
 
 void ConnectionEditDialog::SetDefaultConnectionParams() {
@@ -1636,6 +1651,7 @@ void ConnectionEditDialog::OnBtnOStcs(wxCommandEvent& event) {
 }
 
 void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
+  /*
   if (m_rbNetProtoGPSD->GetValue()) {
     if (IsDefaultPort(m_tNetPort->GetValue())) {
       m_tNetPort->SetValue(DEFAULT_GPSD_PORT);
@@ -1666,7 +1682,7 @@ void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
     }
     m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
   }
-
+*/
   SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
   LayoutDialog();
@@ -1687,6 +1703,7 @@ void ConnectionEditDialog::OnRbOutput(wxCommandEvent& event) {
 void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
   const bool checked = m_cbInput->IsChecked();
   ShowInFilter(checked);
+  /*
   if (checked && m_rbNetProtoUDP->GetValue() && m_rbTypeNet->GetValue()) {
     m_cbOutput->SetValue(FALSE);
 
@@ -1696,6 +1713,7 @@ void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
   LayoutDialog();
   if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
   OnConnValChange(event);
+  */
 }
 
 void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
@@ -1704,60 +1722,60 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
   m_stPrecision->Enable(checked);
   m_choicePrecision->Enable(checked);
   ShowOutFilter(checked);
+  /*
+    if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
+      if (checked) {
+        m_tNetAddress->SetValue(
+            DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
+        // Check for a UDP input connection on the same port
+        NetworkProtocol proto = UDP;
+        for (auto* cp : TheConnectionParams()) {
+          if (cp->NetProtocol == proto &&
+              cp->NetworkPort == wxAtoi(m_tNetPort->GetValue()) &&
+              cp->IOSelect == DS_TYPE_INPUT) {
+            //  More: View the filter handler
+            m_advanced = true;
+            SetNMEAFormForNetProtocol();
+            LayoutDialog();
 
-  if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
-    if (checked) {
-      m_tNetAddress->SetValue(
-          DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
-      // Check for a UDP input connection on the same port
-      NetworkProtocol proto = UDP;
-      for (auto* cp : TheConnectionParams()) {
-        if (cp->NetProtocol == proto &&
-            cp->NetworkPort == wxAtoi(m_tNetPort->GetValue()) &&
-            cp->IOSelect == DS_TYPE_INPUT) {
-          //  More: View the filter handler
-          m_advanced = true;
-          SetNMEAFormForNetProtocol();
-          LayoutDialog();
-
-          wxString mes;
-          bool warn = false;
-          if (cp->bEnabled) {
-            mes =
-                _("There is an enabled UDP input connection that uses the "
-                  "same data port.");
+            wxString mes;
+            bool warn = false;
+            if (cp->bEnabled) {
+              mes =
+                  _("There is an enabled UDP input connection that uses the "
+                    "same data port.");
+              mes << "\n"
+                  << _("Please apply a filter on both connections to avoid a "
+                       "feedback loop.");
+              warn = true;
+            } else {
+              mes =
+                  _("There is a disabled UDP Input connection that uses the "
+                    "same Dataport.");
+              mes << "\n"
+                  << _("If you enable that input please apply a filter on both "
+                       "connections to avoid a  feedback loop.");
+            }
             mes << "\n"
-                << _("Please apply a filter on both connections to avoid a "
-                     "feedback loop.");
-            warn = true;
-          } else {
-            mes =
-                _("There is a disabled UDP Input connection that uses the "
-                  "same Dataport.");
-            mes << "\n"
-                << _("If you enable that input please apply a filter on both "
-                     "connections to avoid a  feedback loop.");
+                << _("Or consider using a different data port for one of them");
+            if (warn)
+              OCPNMessageBox(this, mes, _("OpenCPN Warning"),
+                             wxOK | wxICON_EXCLAMATION, 60);
+            else
+              OCPNMessageBox(this, mes, _("OpenCPN info"),
+                             wxOK | wxICON_INFORMATION, 60);
+            break;
           }
-          mes << "\n"
-              << _("Or consider using a different data port for one of them");
-          if (warn)
-            OCPNMessageBox(this, mes, _("OpenCPN Warning"),
-                           wxOK | wxICON_EXCLAMATION, 60);
-          else
-            OCPNMessageBox(this, mes, _("OpenCPN info"),
-                           wxOK | wxICON_INFORMATION, 60);
-          break;
         }
+      } else {
+        m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for input
       }
-    } else {
-      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for input
     }
-  }
 
-  if (checked && m_rbNetProtoUDP->GetValue()) {
-    m_cbInput->SetValue(FALSE);
-  }
-
+    if (checked && m_rbNetProtoUDP->GetValue()) {
+      m_cbInput->SetValue(FALSE);
+    }
+  */
   if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
   LayoutDialog();
@@ -2050,6 +2068,7 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
         m_tNetAddress->GetValue().Trim(false).Trim(true);
     pConnectionParams->NetworkPort =
         wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
+    /*
     if (m_rbNetProtoTCP->GetValue()) {
       pConnectionParams->NetProtocol = TCP;
       pConnectionParams->Protocol =
@@ -2063,7 +2082,7 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     else if (m_rbNetProtoSignalK->GetValue())
       pConnectionParams->NetProtocol = SIGNALK;
     else
-      pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+      pConnectionParams->NetProtocol = PROTO_UNDEFINED; */
   }
 
   if (m_rbTypeSerial->GetValue())
@@ -2184,22 +2203,22 @@ void ConnectionEditDialog::ConnectControls() {
         this);
 
   // Network connection
-  m_rbNetProtoTCP->Connect(
-      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected), NULL,
-      this);
-  m_rbNetProtoUDP->Connect(
-      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected), NULL,
-      this);
-  m_rbNetProtoGPSD->Connect(
-      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected), NULL,
-      this);
-  m_rbNetProtoSignalK->Connect(
-      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected), NULL,
-      this);
+  // m_rbNetProtoTCP->Connect(
+  //    wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+  //    wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected),
+  //    NULL, this);
+  // m_rbNetProtoUDP->Connect(
+  //    wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+  //    wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected),
+  //    NULL, this);
+  // m_rbNetProtoGPSD->Connect(
+  //    wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+  //    wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected),
+  //    NULL, this);
+  // m_rbNetProtoSignalK->Connect(
+  //    wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+  //    wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected),
+  //    NULL, this);
   m_choiceNetDataProtocol->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
       wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), NULL,

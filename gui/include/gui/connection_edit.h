@@ -174,6 +174,7 @@ public:
   wxTextCtrl *m_tFilterSec;
   wxTextCtrl *m_tcInputStc;
   wxTextCtrl *m_tcOutputStc;
+  wxCheckBox *m_advanced_net_box;
   wxCheckBox *m_cbGarminHost;
   wxCheckBox *m_cbGarminUploadHost;
   wxCheckBox *m_cbCheckSKDiscover;
@@ -206,16 +207,12 @@ public:
   wxRadioButton *m_rbTypeNet;
   wxRadioButton *m_rbTypeInternalGPS;
   wxRadioButton *m_rbTypeInternalBT;
-  wxRadioButton *m_rbNetProtoTCP;
-  wxRadioButton *m_rbNetProtoUDP;
-  wxRadioButton *m_rbNetProtoGPSD;
   wxRadioButton *m_rbIAccept;
   wxRadioButton *m_rbIIgnore;
   wxRadioButton *m_rbOAccept;
-  wxRadioButton *m_rbNetProtoSignalK;
   wxRadioButton *m_rbOIgnore, *m_rbTypeCAN;
   wxStaticText *m_stBTPairs;
-  wxStaticText *m_stNetProto;
+  wxStaticText *m_net_type_choice_label;
   wxStaticText *m_stNetAddr;
   wxStaticText *m_stNetPort;
   wxStaticText *m_stSerPort;
@@ -228,6 +225,7 @@ public:
   wxStaticText *m_stSerialComment;
   wxStaticText *m_stCANSource;
   wxStaticText *m_stAuthToken;
+  wxStaticText *m_net_adv_box_label;
   wxTextCtrl *m_tNetComment;
   wxTextCtrl *m_tSerialComment;
   wxTextCtrl *m_tAuthToken;
@@ -239,6 +237,7 @@ public:
   wxChoice *m_choicePrecision;
   wxChoice *m_choiceCANSource;
   wxChoice *m_choiceNetDataProtocol;
+  wxChoice *m_net_type_choice;
 
   wxBoxSizer *boxSizerConnections;
   wxStaticText *m_stNetDataProtocol;
