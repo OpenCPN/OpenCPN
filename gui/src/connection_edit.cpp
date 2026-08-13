@@ -79,8 +79,8 @@
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
 
-static const std::string kUdpDevice = _("TCP device");
-static const std::string kTcpDevice = _("UDP device");
+static const std::string kTcpDevice = _("TCP device");
+static const std::string kUdpDevice = _("UDP device");
 static const std::string kGpsdDevice = _("Gpsd");
 static const std::string kSignalkDevice = _("SignalK server");
 static const std::string kTcpClient = _("TCP client");
@@ -311,6 +311,7 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
   m_tNetAddress->Enable();
   m_tNetAddress->SetValue("");
   m_tNetPort->SetValue("");
+  m_stNetAddr->SetLabel(_("Server address"));
   m_cbOutput->Enable();
   m_cbInput->Enable();
   m_choiceNetDataProtocol->Clear();
@@ -335,11 +336,17 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
     m_cbOutput->Disable();
     m_tNetPort->SetValue(kDefaultSignalkPort);
   } else if (type == kTcpServer || type == kUdpServer) {
+    m_stNetAddr->SetLabel(_("Interface"));
     m_tNetAddress->SetValue("0.0.0.0");
     m_tNetAddress->Disable();
     m_tNetPort->SetValue(kDefaultTcpPort);
   } else if (type == kMulticastClient || type == kMulticastServer) {
     m_tNetAddress->SetValue(kDefaultMulticastAddr);
+    m_stNetAddr->SetLabel(_("Multicast group"));
+  }
+  if (type == kMulticastClient || type == kUdpClient || type == kUdpDevice) {
+    m_cbInput->SetValue(false);
+    m_cbInput->Disable();
   }
 }
 
@@ -1176,7 +1183,6 @@ void ConnectionEditDialog::SetNMEAFormToNet() {
   ShowNMEABT(FALSE);
   ShowNMEASerial(FALSE);
   ShowNMEACAN(FALSE);
-  SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
 
   LayoutDialog();
@@ -1572,29 +1578,6 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   connectionsaved = true;
 }
 
-void ConnectionEditDialog::SetUDPNetAddressVisiblity() {
-  /*
-    if (m_rbNetProtoUDP->GetValue() && !m_cbMultiCast->IsChecked() &&
-        !m_cbOutput->IsChecked()) {
-      //    m_stNetAddr->Show(FALSE);
-      //    m_tNetAddress->Show(FALSE);
-      m_tNetAddress->Enable(TRUE);
-    } else {
-      m_stNetAddr->Show(TRUE);
-      m_tNetAddress->Show(TRUE);
-      m_tNetAddress->Enable(TRUE);
-    }
-    if (!m_rbNetProtoUDP->GetValue()) {
-      m_stNetAddr->Show(TRUE);
-      m_tNetAddress->Show(TRUE);
-      m_tNetAddress->Enable(TRUE);
-    }
-    if (m_rbNetProtoUDP->GetValue() && m_advanced) {
-      // m_cbMultiCast->Show();
-    } else
-  */
-}
-
 void ConnectionEditDialog::SetDefaultConnectionParams() {
   if (m_comboPort && !m_comboPort->IsListEmpty()) {
     m_comboPort->Select(0);
@@ -1680,6 +1663,8 @@ void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
 
   g_Platform->ShowBusySpinner();
 
+                  << _("Please apply a filter on both connections to avoid a"
+                       "loop");
   if (SignalKDataStream::DiscoverSKServer(serviceIdent, ip, port,
                                           1))  // 1 second scan
   {
@@ -1715,39 +1700,6 @@ void ConnectionEditDialog::OnBtnOStcs(wxCommandEvent& event) {
 }
 
 void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
-  /*
-  if (m_rbNetProtoGPSD->GetValue()) {
-    if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DEFAULT_GPSD_PORT);
-    }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-  } else if (m_rbNetProtoUDP->GetValue()) {
-    if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DEFAULT_UDP_PORT);
-    }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-    if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() &&
-        m_rbNetProtoUDP->GetValue())
-      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-    else if (m_cbOutput->GetValue() && !m_cbMultiCast->GetValue())
-      m_tNetPort->SetValue(DEFAULT_UDP_OUT_ADDRESS);
-
-    if (m_cbInput->GetValue() && m_cbOutput->GetValue())
-      m_cbOutput->SetValue(false);
-
-  } else if (m_rbNetProtoSignalK->GetValue()) {
-    if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DEFAULT_SIGNALK_PORT);
-    }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-  } else if (m_rbNetProtoTCP->GetValue()) {
-    if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DEFAULT_TCP_PORT);
-    }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-  }
-*/
-  SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
   LayoutDialog();
   OnConnValChange(event);
@@ -1767,80 +1719,62 @@ void ConnectionEditDialog::OnRbOutput(wxCommandEvent& event) {
 void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
   const bool checked = m_cbInput->IsChecked();
   ShowInFilter(checked);
-  /*
-  if (checked && m_rbNetProtoUDP->GetValue() && m_rbTypeNet->GetValue()) {
-    m_cbOutput->SetValue(FALSE);
-
-    if (!m_cbMultiCast->GetValue()) m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-  }
   SetDSFormRWStates();
   LayoutDialog();
-  if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
   OnConnValChange(event);
-  */
 }
 
 void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
   OnConnValChange(event);
-  const bool checked = m_cbOutput->IsChecked();
-  m_stPrecision->Enable(checked);
-  m_choicePrecision->Enable(checked);
-  ShowOutFilter(checked);
-  /*
-    if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
-      if (checked) {
-        m_tNetAddress->SetValue(
-            DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
-        // Check for a UDP input connection on the same port
-        NetworkProtocol proto = UDP;
-        for (auto* cp : TheConnectionParams()) {
-          if (cp->NetProtocol == proto &&
-              cp->NetworkPort == wxAtoi(m_tNetPort->GetValue()) &&
-              cp->IOSelect == DS_TYPE_INPUT) {
-            //  More: View the filter handler
-            m_advanced = true;
-            SetNMEAFormForNetProtocol();
-            LayoutDialog();
+  const bool is_output_enabled = m_cbOutput->IsChecked();
+  m_stPrecision->Enable(is_output_enabled);
+  m_choicePrecision->Enable(is_output_enabled);
+  ShowOutFilter(is_output_enabled);
 
-            wxString mes;
-            bool warn = false;
-            if (cp->bEnabled) {
-              mes =
-                  _("There is an enabled UDP input connection that uses the "
-                    "same data port.");
-              mes << "\n"
-                  << _("Please apply a filter on both connections to avoid a "
-                       "feedback loop.");
-              warn = true;
-            } else {
-              mes =
-                  _("There is a disabled UDP Input connection that uses the "
-                    "same Dataport.");
-              mes << "\n"
-                  << _("If you enable that input please apply a filter on both "
-                       "connections to avoid a  feedback loop.");
-            }
+  int selection = m_net_type_choice->GetSelection();
+  std::string type;
+  if (selection != wxNOT_FOUND)
+    type = m_net_type_choice->GetString(selection).ToStdString();
+  if (type == kUdpServer || type == kMulticastServer) {
+    if (is_output_enabled) {
+      m_tNetAddress->SetValue(DEFAULT_UDP_OUT_ADDRESS);
+      // Check for a UDP input connection on the same port
+      NetworkProtocol proto = UDP;
+      for (auto* cp : TheConnectionParams()) {
+        if (cp->NetProtocol == proto &&
+            cp->NetworkPort == wxAtoi(m_tNetPort->GetValue()) &&
+            cp->IOSelect == DS_TYPE_INPUT) {
+          wxString mes;
+          bool warn = false;
+          if (cp->bEnabled) {
+            mes =
+                _("There is an enabled UDP input connection that uses the "
+                  "same data port.");
             mes << "\n"
-                << _("Or consider using a different data port for one of them");
-            if (warn)
-              OCPNMessageBox(this, mes, _("OpenCPN Warning"),
-                             wxOK | wxICON_EXCLAMATION, 60);
-            else
-              OCPNMessageBox(this, mes, _("OpenCPN info"),
-                             wxOK | wxICON_INFORMATION, 60);
-            break;
+                << _("Please apply a filter on both connections to avoid a "
+                     "feedback loop.");
+            warn = true;
+          } else {
+            mes =
+                _("There is a disabled UDP Input connection that uses the "
+                  "same Dataport.");
+            mes << "\n"
+                << _("If you enable that input please apply a filter on both "
+                     "connections to avoid a  feedback loop.");
           }
+          mes << "\n"
+              << _("Or consider using a different data port for one of them");
+          if (warn)
+            OCPNMessageBox(this, mes, _("OpenCPN Warning"),
+                           wxOK | wxICON_EXCLAMATION, 60);
+          else
+            OCPNMessageBox(this, mes, _("OpenCPN info"),
+                           wxOK | wxICON_INFORMATION, 60);
+          break;
         }
-      } else {
-        m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for input
       }
     }
-
-    if (checked && m_rbNetProtoUDP->GetValue()) {
-      m_cbInput->SetValue(FALSE);
-    }
-  */
-  if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
+  }
   SetDSFormRWStates();
   LayoutDialog();
 }
@@ -2137,6 +2071,9 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     } else {
       pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     };
+    pConnectionParams->is_server = net_type == kTcpServer ||
+                                   net_type == kUdpServer ||
+                                   net_type == kMulticastServer;
   }
   if (m_rbTypeSerial->GetValue())
     pConnectionParams->Protocol =

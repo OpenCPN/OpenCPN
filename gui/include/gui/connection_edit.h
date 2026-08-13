@@ -117,8 +117,6 @@ private:
   void SetDSFormOptionVizStates();
   // void FillSourceList();
   void UpdateSourceList(bool bResort);
-  // bool SortSourceList(void);
-  void SetUDPNetAddressVisiblity();
 
   void ClearNMEAForm();
   void SetNMEAFormToSerial();
