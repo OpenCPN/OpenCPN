@@ -1253,7 +1253,8 @@ public:
     }
     //  OK from NEW mode
     else {
-      if (ConnectionParams* cp = m_edit_panel->GetParamsFromControls()) {
+      ConnectionParams* cp = m_edit_panel->GetParamsFromControls();
+      if (cp) {
         if (FindConnectionByIface(cp)) {
           wxMessageDialog dialog(this, kInterfaceExistsMessage,
                                  _("Driver creation warning"),
@@ -1261,7 +1262,9 @@ public:
           dialog.ShowModal();
         }
         if (cp->GetValidPort()) {
-          cp->b_IsSetup = false;  // Trigger new stream
+          // Trigger new stream
+          cp->b_IsSetup = false;
+          // transfer ownership FIXME use smart pointers
           TheConnectionParams().push_back(cp);
         } else {
           wxString msg =
@@ -1270,6 +1273,7 @@ public:
           auto& noteman = NotificationManager::GetInstance();
           noteman.AddNotification(NotificationSeverity::kWarning,
                                   msg.ToStdString(), 60);
+          delete cp;
         }
       }
       UpdateDatastreams();
