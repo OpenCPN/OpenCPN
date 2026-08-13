@@ -548,7 +548,7 @@ void Route::UpdateWaypointsArrivalRadius(double arr_radius) {
 
   if (it != pRoutePointList->end()) {
     //  Route start point
-    
+
     double default = GetRouteArrivalRadius();
     RoutePoint *prp = *it;
     for (; it != pRoutePointList->end(); it++) {
