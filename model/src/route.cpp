@@ -548,7 +548,7 @@ void Route::UpdateWaypointsArrivalRadius(double arr_radius) {
 
   if (it != pRoutePointList->end()) {
     //  Route start point
-
+    
     double default = GetRouteArrivalRadius();
     RoutePoint *prp = *it;
     for (; it != pRoutePointList->end(); it++) {
@@ -557,9 +557,10 @@ void Route::UpdateWaypointsArrivalRadius(double arr_radius) {
       if (arr_rad == 0.) {
         if (it != pRoutePointList->begin() && prp) {
           double dist = prp->GetDistance();
-          if (dist * 0.2 < default) {
-            arr_rad = dist * 0.2;
-            if (arr_rad < 0.005) arr_rad = 0.005;
+          if (dist * g_n_arrival_circle_factor < default) {
+            arr_rad = dist * g_n_arrival_circle_factor;
+            if (arr_rad < g_n_arrival_circle_minimum)
+              arr_rad = g_n_arrival_circle_minimum;
           }
         }
       }
