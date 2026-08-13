@@ -67,7 +67,7 @@ static wxString UtfArrowDown() { return wxString::FromUTF8(u8"\u25bc"); }
 static wxString UtfArrowRight() { return wxString::FromUTF8(u8"\u25ba"); }
 static wxString UtfFilledCircle() { return wxString::FromUTF8(u8"\u2b24"); }
 
-static const auto TopScrollWindowName = "TopScroll";
+static constexpr auto TopScrollWindowName = "TopScroll";
 
 static const char* kInfoHeader = _("OpenCPN help").c_str();
 static const char* kInfo = _(R"---(
@@ -113,7 +113,7 @@ static std::string BitsToDottedMask(const unsigned bits) {
   return ss.str();
 }
 
-static ConnectionParams* FindConnectionByIface(ConnectionParams* new_cp) {
+static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
   for (const auto& cp : TheConnectionParams()) {
     if (cp->Type != new_cp->Type) continue;
     switch (cp->Type) {

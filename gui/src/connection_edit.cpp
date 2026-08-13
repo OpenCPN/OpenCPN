@@ -2116,23 +2116,28 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
         m_tNetAddress->GetValue().Trim(false).Trim(true);
     pConnectionParams->NetworkPort =
         wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
-    /*
-    if (m_rbNetProtoTCP->GetValue()) {
+    int net_select = m_net_type_choice->GetSelection();
+    std::string net_type;
+    if (net_select != wxNOT_FOUND)
+      net_type = m_net_type_choice->GetString(net_select).ToStdString();
+    if (net_type == kTcpClient || net_type == kTcpServer ||
+        net_type == kTcpDevice) {
       pConnectionParams->NetProtocol = TCP;
       pConnectionParams->Protocol =
-          (DataProtocol)m_choiceNetDataProtocol->GetSelection();
-    } else if (m_rbNetProtoUDP->GetValue()) {
+          static_cast<DataProtocol>(m_choiceNetDataProtocol->GetSelection());
+    } else if (net_type == kUdpClient || net_type == kUdpServer ||
+               net_type == kMulticastClient || net_type == kMulticastServer) {
       pConnectionParams->NetProtocol = UDP;
       pConnectionParams->Protocol =
-          (DataProtocol)m_choiceNetDataProtocol->GetSelection();
-    } else if (m_rbNetProtoGPSD->GetValue())
+          static_cast<DataProtocol>(m_choiceNetDataProtocol->GetSelection());
+    } else if (net_type == kGpsdClient || net_type == kGpsdDevice) {
       pConnectionParams->NetProtocol = GPSD;
-    else if (m_rbNetProtoSignalK->GetValue())
+    } else if (net_type == kSignalkClient || net_type == kSignalkDevice) {
       pConnectionParams->NetProtocol = SIGNALK;
-    else
-      pConnectionParams->NetProtocol = PROTO_UNDEFINED; */
+    } else {
+      pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+    };
   }
-
   if (m_rbTypeSerial->GetValue())
     pConnectionParams->Protocol =
         (DataProtocol)m_choiceSerialProtocol->GetSelection();
