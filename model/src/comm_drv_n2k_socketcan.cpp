@@ -41,6 +41,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 #include <wx/log.h>
 #include <wx/string.h>
@@ -480,6 +481,7 @@ int Worker::InitSocket(const std::string port_name) {
   strcpy(if_request.ifr_name, port_name.c_str());
   if (ioctl(sock, SIOCGIFINDEX, &if_request) < 0) {
     SocketMessage("SocketCAN ioctl (SIOCGIFINDEX) failed: ", port_name);
+    close(sock);
     return -1;
   }
 
@@ -489,12 +491,14 @@ int Worker::InitSocket(const std::string port_name) {
   can_address.can_ifindex = if_request.ifr_ifindex;
   if (ioctl(sock, SIOCGIFFLAGS, &if_request) < 0) {
     SocketMessage("SocketCAN socket IOCTL (SIOCGIFFLAGS) failed: ", port_name);
+    close(sock);
     return -1;
   }
   if (if_request.ifr_flags & IFF_UP) {
     ThreadMessage("socketCan interface is UP");
   } else {
     ThreadMessage("socketCan interface is NOT UP");
+    close(sock);
     return -1;
   }
 
@@ -507,11 +511,13 @@ int Worker::InitSocket(const std::string port_name) {
   if (r < 0) {
     SocketMessage("SocketCAN setsockopt SO_RCVTIMEO failed on device: ",
                   port_name);
+    close(sock);
     return -1;
   }
   r = bind(sock, (struct sockaddr*)&can_address, sizeof(can_address));
   if (r < 0) {
     SocketMessage("SocketCAN socket bind() failed: ", port_name);
+    close(sock);
     return -1;
   }
   DriverStats stats = m_parent_driver->GetDriverStats();
@@ -651,6 +657,13 @@ void Worker::Entry() {
     }
     HandleInput(frame);
   }
+
+  // Release the socket on both exit paths, normal stop and fatal read error.
+  // Without this each driver teardown strands an open CAN descriptor, and its
+  // kernel receive buffer, for the life of the process.
+  close(socket);
+  m_socket = -1;
+
   m_run_flag = -1;
   return;
 }
