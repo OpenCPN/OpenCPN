@@ -235,8 +235,14 @@ public:
 
   void RestoreHelp() {
     SetFont(m_font.Italic());
-    ChangeValue(m_help);
+    wxTextEntry::ChangeValue(m_help);
     m_is_inited = false;
+  }
+
+  void ChangeValue(const wxString& value) override {
+    SetFont(m_font);
+    m_is_inited = true;
+    wxTextCtrl::ChangeValue(value);
   }
 
 private:
@@ -277,7 +283,6 @@ ConnectionEditDialog::ConnectionEditDialog(
               "conn_edit"),
       m_on_edit_click(std::move(_on_edit_click)) {
   m_parent = parent;
-
   Init();
 }
 
@@ -334,15 +339,20 @@ void ConnectionEditDialog::OnAdvancedModeChange() {
     m_net_type_choice_label->SetLabel(_("Connection type"));
     m_tNetAddress->ChangeValue("");
     m_tNetPort->ChangeValue("");
+    if (m_stNetComment) m_stNetComment->Show();
+    if (m_tNetComment) m_tNetComment->Show();
   } else {
     for (const auto& choice : kBasicNetTypes) m_net_type_choice->Append(choice);
     m_net_type_choice_label->SetLabel(_("Data Source"));
+    if (m_stNetComment) m_stNetComment->Hide();
+    if (m_tNetComment) m_tNetComment->Hide();
     auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_tNetAddress);
     if (net_address) net_address->RestoreHelp();
     auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_tNetPort);
     if (net_port) net_port->RestoreHelp();
   }
   m_net_type_choice->SetSelection(0);
+  Layout();
 }
 
 void ConnectionEditDialog::OnAddressChange(wxFocusEvent& ev) {
@@ -364,7 +374,9 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
   if (selection == wxNOT_FOUND) return;
   std::string type = m_net_type_choice->GetString(selection).ToStdString();
   m_tNetAddress->Enable();
-  m_tNetAddress->SetValue("");
+  auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_tNetAddress);
+  if (net_address) net_address->RestoreHelp();
+  m_tNetAddress->ChangeValue("");
   m_tNetPort->SetValue("");
   m_stNetAddr->SetLabel(_("Server address"));
   m_cbOutput->Enable();
@@ -396,7 +408,7 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
     m_tNetAddress->Disable();
     m_tNetPort->SetValue(kDefaultTcpPort);
   } else if (type == kMulticastClient || type == kMulticastServer) {
-    m_tNetAddress->SetValue(kDefaultMulticastAddr);
+    m_tNetAddress->ChangeValue(kDefaultMulticastAddr);
     m_stNetAddr->SetLabel(_("Multicast group"));
   }
   if (type == kMulticastClient || type == kUdpClient || type == kUdpDevice) {
@@ -458,12 +470,6 @@ void ConnectionEditDialog::Init() {
   wxFont* bFont = wxTheFontList->FindOrCreateFont(
       static_cast<int>(font_size), dFont->GetFamily(), dFont->GetStyle(),
       wxFONTWEIGHT_BOLD);
-
-  //
-  //   m_stEditCon = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Edit Selected
-  //   Connection")); m_stEditCon->SetFont(*bFont); bSizer19->Add(m_stEditCon,
-  //   0, wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL, 5);
-  //
 
   //  Connections Properties
   m_sbConnEdit = new wxStaticBox(this, wxID_ANY, _("Edit Selected Connection"));
@@ -542,10 +548,6 @@ void ConnectionEditDialog::Init() {
 
   sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
 
-  //  gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
-  //  gSizerNetProps->AddSpacer(1);
-  //  gSizerNetProps->AddSpacer(1);
-
   // Optimize for Portrait mode handheld devices
   if (displaySize.x < displaySize.y) {
     wxBoxSizer* bSizer16a;
@@ -554,16 +556,6 @@ void ConnectionEditDialog::Init() {
     gSizerNetProps->Add(bSizer16a, 1, wxEXPAND, 5);
     gSizerNetProps->AddSpacer(1);
     gSizerNetProps->AddSpacer(1);
-
-    // m_rbNetProtoSignalK = new wxRadioButton(
-    //     this, wxID_ANY, _("Signal K"), wxDefaultPosition, wxDefaultSize, 0);
-    // m_rbNetProtoSignalK->Enable(TRUE);
-    // bSizer16a->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
-  } else {
-    //  m_rbNetProtoSignalK = new wxRadioButton(
-    //      this, wxID_ANY, _("Signal K"), wxDefaultPosition, wxDefaultSize, 0);
-    //  m_rbNetProtoSignalK->Enable(TRUE);
-    //  bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
   }
   m_net_adv_box_label = new wxStaticText(this, wxID_ANY, _("Advanced mode"));
   gSizerNetProps->Add(m_net_adv_box_label, 0, wxALL, 5);
@@ -595,12 +587,12 @@ void ConnectionEditDialog::Init() {
 
   m_stNetAddr = new wxStaticText(this, wxID_ANY, _("Address"));
   m_stNetAddr->Wrap(-1);
-  int column1width = 10 * GetCharWidth();
+  int column1width = 15 * GetCharWidth();
   m_stNetAddr->SetMinSize(wxSize(column1width, -1));
   gSizerNetProps->Add(m_stNetAddr, 0, wxALL, 5);
 
   m_tNetAddress =
-      new TextCtrlWithHelp(this, _("Enter device IP address or name"));
+      new TextCtrlWithHelp(this, _("Enter data source IP address or hostname"));
   int column2width = 40 * this->GetCharWidth();
   m_tNetAddress->SetMaxSize(wxSize(column2width, -1));
   m_tNetAddress->SetMinSize(wxSize(column2width, -1));
@@ -615,7 +607,7 @@ void ConnectionEditDialog::Init() {
   m_stNetPort->Wrap(-1);
   gSizerNetProps->Add(m_stNetPort, 0, wxALL, 5);
 
-  m_tNetPort = new TextCtrlWithHelp(this, "Enter device port");
+  m_tNetPort = new TextCtrlWithHelp(this, "Enter data source port");
   gSizerNetProps->Add(m_tNetPort, 1, wxEXPAND | wxTOP, 5);
   gSizerNetProps->AddSpacer(1);
   gSizerNetProps->AddSpacer(1);
@@ -723,12 +715,14 @@ void ConnectionEditDialog::Init() {
   m_stNetComment->Wrap(-1);
   m_stNetComment->SetMinSize(wxSize(column1width * 4 / 3, -1));
   commentSizer->Add(m_stNetComment, 0, wxALL, 5);
+  m_stNetComment->Hide();
 
   m_tNetComment = new wxTextCtrl(this, wxID_ANY, wxEmptyString);
   m_tNetComment->SetMaxSize(wxSize(column2width, -1));
   m_tNetComment->SetMinSize(wxSize(column2width, -1));
 
   commentSizer->Add(m_tNetComment, 1, wxEXPAND | wxTOP, 5);
+  m_tNetComment->Hide();
 
   //  Serial User Comments
   m_stSerialComment = new wxStaticText(this, wxID_ANY, _("User Comment"));
@@ -1133,11 +1127,13 @@ void ConnectionEditDialog::ShowNMEANet(bool visible) {
   m_stNetPort->Show(visible);
   m_choiceNetDataProtocol->Show(visible);
   m_tNetPort->Show(visible);
-  m_stNetComment->Show(visible);
-  m_tNetComment->Show(visible);
   m_stAuthToken->Show(visible);
   m_tAuthToken->Show(visible);
   m_advanced_net_box->Show(visible);
+  if (m_advanced_net_box->GetValue()) {
+    m_stNetComment->Show(visible);
+    m_tNetComment->Show(visible);
+  }
   m_net_adv_box_label->Show(visible);
   m_net_type_choice_label->Show(visible);
   m_net_type_choice->Show(visible);
@@ -1521,14 +1517,17 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   m_choiceBaudRate->Select(
       m_choiceBaudRate->FindString(wxString::Format("%d", cp->Baudrate)));
   m_choiceSerialProtocol->Select(cp->Protocol);  // TODO
-  m_tNetAddress->SetValue(cp->NetworkAddress);
+  auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_tNetAddress);
+  if (net_address) m_tNetAddress->ChangeValue(cp->NetworkAddress);
 
   m_choiceNetDataProtocol->Select(cp->Protocol);  // TODO
 
+  auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_tNetPort);
+
   if (cp->NetworkPort == 0)
-    m_tNetPort->SetValue(wxEmptyString);
+    m_tNetPort->ChangeValue("");
   else
-    m_tNetPort->SetValue(wxString::Format("%i", cp->NetworkPort));
+    m_tNetPort->ChangeValue(std::to_string(cp->NetworkPort));
 
   if (cp->Type == SERIAL) {
     m_rbTypeSerial->SetValue(TRUE);
@@ -1584,12 +1583,13 @@ void ConnectionEditDialog::SetDefaultConnectionParams() {
   m_choiceBaudRate->Select(m_choiceBaudRate->FindString("4800"));
   //    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
 
-  m_tNetAddress->SetValue(kDefaultIpAddress);
-
   m_tNetComment->SetValue(wxEmptyString);
   m_tSerialComment->SetValue(wxEmptyString);
   m_tAuthToken->SetValue(wxEmptyString);
-
+  auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_tNetAddress);
+  if (net_address) net_address->RestoreHelp();
+  auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_tNetPort);
+  if (net_port) net_port->RestoreHelp();
   bool bserial = TRUE;
 #ifdef __WXGTK__
   bserial = FALSE;
@@ -1728,7 +1728,6 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
     type = m_net_type_choice->GetString(selection).ToStdString();
   if (type == kUdpServer || type == kMulticastServer) {
     if (is_output_enabled) {
-      m_tNetAddress->SetValue(DEFAULT_UDP_OUT_ADDRESS);
       // Check for a UDP input connection on the same port
       NetworkProtocol proto = UDP;
       for (auto* cp : TheConnectionParams()) {

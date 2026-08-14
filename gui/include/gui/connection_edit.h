@@ -245,6 +245,7 @@ private:
 #endif
 
   bool connectionsaved;
+  bool m_is_editing;
   bool m_advanced = false;
   bool m_connection_enabled;
   bool m_bNMEAParams_shown;
