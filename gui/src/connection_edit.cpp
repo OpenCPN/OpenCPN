@@ -79,7 +79,7 @@
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
 
-static const std::string kTcpDevice = _("TCP device");
+static const std::string kTcpDevice = _("Network TCP device");
 static const std::string kUdpDevice = _("UDP device");
 static const std::string kGpsdDevice = _("Gpsd");
 static const std::string kSignalkDevice = _("SignalK server");
@@ -92,8 +92,8 @@ static const std::string kUdpServer = _("UDP Server");
 static const std::string kMulticastServer = _("Multicast Server");
 static const std::string kMulticastClient = _("Multicast Client");
 
-static const std::vector<std::string> kBasicNetTypes = {
-    kTcpDevice, kUdpDevice, kGpsdDevice, kSignalkDevice};
+static const std::vector<std::string> kBasicNetTypes = {kTcpDevice, kGpsdDevice,
+                                                        kSignalkDevice};
 
 static const std::vector<std::string> kAdvancedNetTypes = {
     kTcpClient, kUdpClient, kGpsdClient,      kSignalkClient,
@@ -411,7 +411,7 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
     m_tNetAddress->ChangeValue(kDefaultMulticastAddr);
     m_stNetAddr->SetLabel(_("Multicast group"));
   }
-  if (type == kMulticastClient || type == kUdpClient || type == kUdpDevice) {
+  if (type == kMulticastClient || type == kUdpClient) {
     m_cbInput->SetValue(false);
     m_cbInput->Disable();
   }
