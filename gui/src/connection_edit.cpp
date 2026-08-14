@@ -213,6 +213,55 @@ static void LoadSerialPorts(wxComboBox* box) {
   if (!value.empty()) box->SetValue(value);
 }
 
+/**
+ * A wxTextCtrl with an initial help text removed when user starts typing.
+ */
+class TextCtrlWithHelp : public wxTextCtrl {
+public:
+  TextCtrlWithHelp(wxWindow* parent, const std::string& help_text)
+      : wxTextCtrl(parent, wxID_ANY, ""),
+        m_font(GetFont()),
+        m_is_inited(false),
+        m_help(help_text) {
+    wxTextCtrl::SetFont(m_font.Italic());
+    wxTextCtrl::AppendText(help_text);
+    Bind(wxEVT_TEXT, [&](wxCommandEvent& ev) { OnKeypress(ev); });
+  }
+
+  void SetValue(const wxString& value) override {
+    if (!m_is_inited) return;
+    wxTextCtrl::SetValue(value);
+  }
+
+  void RestoreHelp() {
+    SetFont(m_font.Italic());
+    ChangeValue(m_help);
+    m_is_inited = false;
+  }
+
+private:
+  const wxFont m_font;
+  bool m_is_inited;
+  const std::string m_help;
+
+  void OnKeypress(wxCommandEvent& ev) {
+    if (!m_is_inited) {
+      // User has pressed a key which has modified the help text
+      // Find the char which differ and re-insert in the  control.
+      std::string value = GetValue().ToStdString();
+      unsigned ix;
+      for (ix = 0; ix < m_help.size(); ++ix) {
+        if (m_help[ix] != value[ix]) break;
+      }
+      ChangeValue(value[ix]);
+      SetInsertionPointEnd();
+
+      SetFont(m_font);
+      m_is_inited = true;
+    }
+  }
+};
+
 //------------------------------------------------------------------------------
 //          ConnectionEditDialog Implementation
 //------------------------------------------------------------------------------
@@ -283,9 +332,15 @@ void ConnectionEditDialog::OnAdvancedModeChange() {
     for (const auto& choice : kAdvancedNetTypes)
       m_net_type_choice->Append(choice);
     m_net_type_choice_label->SetLabel(_("Connection type"));
+    m_tNetAddress->ChangeValue("");
+    m_tNetPort->ChangeValue("");
   } else {
     for (const auto& choice : kBasicNetTypes) m_net_type_choice->Append(choice);
     m_net_type_choice_label->SetLabel(_("Data Source"));
+    auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_tNetAddress);
+    if (net_address) net_address->RestoreHelp();
+    auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_tNetPort);
+    if (net_port) net_port->RestoreHelp();
   }
   m_net_type_choice->SetSelection(0);
 }
@@ -525,36 +580,27 @@ void ConnectionEditDialog::Init() {
                           [&](wxCommandEvent&) { OnConnectionTypeChange(); });
   OnAdvancedModeChange();
   gSizerNetProps->Add(m_net_type_choice, 0, wxALL, 5);
-  m_stNetDataProtocol = new wxStaticText(this, wxID_ANY, _("Data Protocol"),
-                                         wxDefaultPosition, wxDefaultSize, 0);
+  m_stNetDataProtocol = new wxStaticText(this, wxID_ANY, _("Data Protocol"));
   m_stNetDataProtocol->Wrap(-1);
-
   gSizerNetProps->Add(m_stNetDataProtocol, 0, wxALL, 5);
 
-  wxString m_choiceNetProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000")};
-  int m_choiceNetProtocolNChoices =
-      sizeof(m_choiceNetProtocolChoices) / sizeof(wxString);
-  m_choiceNetDataProtocol =
-      new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                   m_choiceNetProtocolNChoices, m_choiceNetProtocolChoices, 0);
-  // m_choiceNetDataProtocol->Bind(wxEVT_MOUSEWHEEL,
-  // &ConnectionEditDialog::OnWheelChoice, this);
+  m_choiceNetDataProtocol = new wxChoice(this, wxID_ANY);
+  m_choiceNetDataProtocol->Append(_("NMEA 0183"));
+  m_choiceNetDataProtocol->Append(_("NMEA 2000"));
   m_choiceNetDataProtocol->SetSelection(0);
   m_choiceNetDataProtocol->Enable(TRUE);
-
   gSizerNetProps->Add(m_choiceNetDataProtocol, 1, wxEXPAND | wxTOP, 5);
   gSizerNetProps->AddSpacer(1);
   gSizerNetProps->AddSpacer(1);
 
-  m_stNetAddr = new wxStaticText(this, wxID_ANY, _("Address"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_stNetAddr = new wxStaticText(this, wxID_ANY, _("Address"));
   m_stNetAddr->Wrap(-1);
   int column1width = 10 * GetCharWidth();
   m_stNetAddr->SetMinSize(wxSize(column1width, -1));
   gSizerNetProps->Add(m_stNetAddr, 0, wxALL, 5);
 
-  m_tNetAddress = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_tNetAddress =
+      new TextCtrlWithHelp(this, _("Enter device IP address or name"));
   int column2width = 40 * this->GetCharWidth();
   m_tNetAddress->SetMaxSize(wxSize(column2width, -1));
   m_tNetAddress->SetMinSize(wxSize(column2width, -1));
@@ -565,13 +611,11 @@ void ConnectionEditDialog::Init() {
   gSizerNetProps->AddSpacer(1);
   gSizerNetProps->AddSpacer(1);
 
-  m_stNetPort = new wxStaticText(this, wxID_ANY, _("DataPort"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
+  m_stNetPort = new wxStaticText(this, wxID_ANY, _("DataPort"));
   m_stNetPort->Wrap(-1);
   gSizerNetProps->Add(m_stNetPort, 0, wxALL, 5);
 
-  m_tNetPort = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                              wxDefaultSize, 0);
+  m_tNetPort = new TextCtrlWithHelp(this, "Enter device port");
   gSizerNetProps->Add(m_tNetPort, 1, wxEXPAND | wxTOP, 5);
   gSizerNetProps->AddSpacer(1);
   gSizerNetProps->AddSpacer(1);
@@ -580,8 +624,6 @@ void ConnectionEditDialog::Init() {
 
   wxFlexGridSizer* fgSizer1C;
   fgSizer1C = new wxFlexGridSizer(0, 2, 0, 0);
-  // fgSizer1C->SetFlexibleDirection(wxBOTH);
-  // fgSizer1C->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
   m_stCANSource = new wxStaticText(this, wxID_ANY, _("socketCAN Source"),
                                    wxDefaultPosition, wxDefaultSize, 0);
@@ -1363,46 +1405,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
   }
 
   if (m_rbTypeNet->GetValue()) {
-    /*
-    if (m_rbNetProtoGPSD->GetValue()) {
-      m_cbCheckSKDiscover->Hide();
-      m_cbInput->Hide();
-      m_cbOutput->Hide();
-      ShowInFilter(true);
-      ShowOutFilter(false);
-      m_stPrecision->Hide();
-      m_choicePrecision->Hide();
-      m_ButtonSKDiscover->Hide();
-      m_StaticTextSKServerStatus->Hide();
-      m_stAuthToken->Hide();
-      m_tAuthToken->Hide();
-      m_stNetDataProtocol->Hide();
-      m_choiceNetDataProtocol->Hide();
-      m_cbGarminHost->Hide();
-      m_collapse_box->Show(false);
-
-    } else if (m_rbNetProtoSignalK->GetValue()) {
-      m_cbInput->Hide();
-      m_cbOutput->Hide();
-      ShowInFilter(false);
-      ShowOutFilter(false);
-      m_stPrecision->Hide();
-      m_choicePrecision->Hide();
-      m_stNetDataProtocol->Hide();
-      m_choiceNetDataProtocol->Hide();
-      m_cbGarminHost->Hide();
-
-    } else {  // tcp or udp
-      m_stAuthToken->Hide();
-      m_tAuthToken->Hide();
-      m_cbCheckSKDiscover->Hide();
-      m_ButtonSKDiscover->Hide();
-      m_StaticTextSKServerStatus->Hide();
-      m_stNetDataProtocol->Show();
-      m_choiceNetDataProtocol->Show();
-      m_cbGarminHost->Hide();
-
-*/
     if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
         DataProtocol::PROTO_NMEA2000) {
       m_stPrecision->Hide();
@@ -1527,18 +1529,7 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
     m_tNetPort->SetValue(wxEmptyString);
   else
     m_tNetPort->SetValue(wxString::Format("%i", cp->NetworkPort));
-  /*
-    if (cp->NetProtocol == TCP)
-      m_rbNetProtoTCP->SetValue(TRUE);
-    else if (cp->NetProtocol == UDP)
-      m_rbNetProtoUDP->SetValue(TRUE);
-    else if (cp->NetProtocol == GPSD)
-      m_rbNetProtoGPSD->SetValue(TRUE);
-    else if (cp->NetProtocol == SIGNALK)
-      m_rbNetProtoSignalK->SetValue(TRUE);
-    else
-      m_rbNetProtoGPSD->SetValue(TRUE);
-  */
+
   if (cp->Type == SERIAL) {
     m_rbTypeSerial->SetValue(TRUE);
     SetNMEAFormToSerial();
@@ -1663,7 +1654,7 @@ void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
 
   g_Platform->ShowBusySpinner();
 
-                  << _("Please apply a filter on both connections to avoid a"
+              << _("Please apply a filter on both connections to avoid a"
                        "loop");
   if (SignalKDataStream::DiscoverSKServer(serviceIdent, ip, port,
                                           1))  // 1 second scan
