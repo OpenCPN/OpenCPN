@@ -108,6 +108,7 @@ public:
   bool bEnabled;
   wxString UserComment;
   wxString AuthToken;
+  unsigned ui_conn_view;
 
   /** Return string unique for each instance. */
   std::string GetKey() const;

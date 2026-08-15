@@ -111,6 +111,9 @@ void ConnectionParams::Deserialize(const wxString& configStr) {
   if (prms.Count() >= 25) {
     is_server = wxAtoi(prms[24]);
   }
+  if (prms.Count() >= 26) {
+    ui_conn_view = wxAtoi(prms[25]);
+  }
 }
 
 wxString ConnectionParams::Serialize() const {
@@ -126,13 +129,13 @@ wxString ConnectionParams::Serialize() const {
   }
   wxString ret = wxString::Format(
       "%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d;%s;"
-      "%d",
+      "%d;%d",
       Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol,
       Port.c_str(), Baudrate, ChecksumCheck, IOSelect, InputSentenceListType,
       istcs.c_str(), OutputSentenceListType, ostcs.c_str(), 0 /* Priority */,
       Garmin, GarminUpload, FurunoGP3X, bEnabled, UserComment.c_str(),
       AutoSKDiscover, socketCAN_port.c_str(), NoDataReconnect, DisableEcho,
-      AuthToken.c_str(), is_server);
+      AuthToken.c_str(), is_server, ui_conn_view);
 
   return ret;
 }

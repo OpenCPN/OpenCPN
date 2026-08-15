@@ -311,7 +311,8 @@ private:
   ColorScheme m_cs;
 };
 
-/** std::sort support: Compare two ConnectionParams w r t given column */
+/** std::sort support: Compare twSetInitialSettingso ConnectionParams w r t
+ * given column */
 class ConnCompare {
 public:
   explicit ConnCompare(int col) : m_col(col) {}
@@ -1212,6 +1213,7 @@ public:
     m_edit_panel->SetDefaultConnectionParams();
     m_edit_panel->SetNewMode(true);
     m_edit_panel->AddOKCancelButtons();
+    m_edit_panel->InitiateNewConnection();
     SwitchToEditor();
   }
 

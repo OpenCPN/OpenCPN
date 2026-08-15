@@ -70,6 +70,8 @@ public:
   /** Return parameters instance populated from UI elements owned by caller */
   ConnectionParams *GetParamsFromControls();
   void PreloadControls(ConnectionParams *cp);
+  void InitiateNewConnection();
+  void OnConnectionTypeChange();
 
 private:
   void Init();
@@ -262,7 +264,6 @@ private:
   std::function<void(ConnectionParams *, bool, bool)> m_on_edit_click;
 
   wxSizer *m_collapse_box;
-  void OnConnectionTypeChange();
   void OnAdvancedModeChange();
   void OnAddressChange(wxFocusEvent &ev);
 };
