@@ -71,7 +71,12 @@ public:
   ConnectionParams *GetParamsFromControls();
   void PreloadControls(ConnectionParams *cp);
   void InitiateNewConnection();
+
+  /** Initiate a network connection view with new data */
   void OnConnectionTypeChange();
+
+  /** Refresh visible states in a network connection view */
+  void RefreshAdvancedDetails();
 
 private:
   void Init();
@@ -239,6 +244,7 @@ private:
   wxBoxSizer *boxSizerConnections;
   wxStaticText *m_stNetDataProtocol;
   ConnectionParams *mSelectedConnection;
+  std::string m_net_view;
 
 #ifdef __ANDROID__
   wxPanel *m_scrollWinConnections;

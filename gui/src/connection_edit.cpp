@@ -133,15 +133,6 @@ static bool IsAddressMultiCast(const wxString& ip) {
   return ipNum >= multicastStart && ipNum <= multicastEnd;
 }
 
-static bool IsAddressBroadcast(const wxString& ip) {
-  wxArrayString bytes = wxSplit(ip, '.');
-  if (bytes.size() != 4) {
-    std::cerr << "Invalid IP format." << std::endl;
-    return false;
-  }
-  return wxAtoi(bytes[3]) == 255;
-}
-
 static bool IsAddressListener(const std::string& address) {
   return address.empty() || address == "0.0.0.0";
 }
@@ -433,8 +424,9 @@ void ConnectionEditDialog::OnAddressChange(wxFocusEvent& ev) {
 void ConnectionEditDialog::OnConnectionTypeChange() {
   int selection = m_net_type_choice->GetSelection();
   if (selection == wxNOT_FOUND) return;
-  std::string type = m_net_type_choice->GetString(selection).ToStdString();
-  auto found = std::find(kBasicNetTypes.begin(), kBasicNetTypes.end(), type);
+  m_net_view = m_net_type_choice->GetString(selection).ToStdString();
+  auto found =
+      std::find(kBasicNetTypes.begin(), kBasicNetTypes.end(), m_net_view);
   m_advanced_net_box->SetValue(found == kBasicNetTypes.end());
   m_tNetAddress->Enable();
   auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_tNetAddress);
@@ -451,7 +443,8 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
   m_choiceNetDataProtocol->Enable();
   m_stNetAddr->Show();
   m_tNetAddress->Show();
-  if (type == kUdpDevice) {
+  auto& view = m_net_view;
+  if (view == kUdpDevice) {
     m_cbOutput->Disable();
     m_stNetAddr->Hide();
     m_tNetAddress->Hide();
@@ -459,33 +452,50 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
     m_cbInput->Disable();
     m_cbOutput->SetValue(false);
     m_cbInput->Disable();
-  } else if (type == kGpsdClient || type == kGpsdDevice) {
+  } else if (view == kGpsdClient || view == kGpsdDevice) {
     m_choiceNetDataProtocol->Clear();
     m_choiceNetDataProtocol->Append("gpsd");
     m_choiceNetDataProtocol->SetSelection(0);
     m_choiceNetDataProtocol->Disable();
+    m_cbOutput->SetValue(false);
     m_cbOutput->Disable();
+    m_cbInput->SetValue(true);
     m_cbInput->Disable();
     m_tNetPort->ChangeValue(kDefaultGpsdPort);
-  } else if (type == kSignalkClient || type == kSignalkDevice) {
+  } else if (view == kSignalkClient || view == kSignalkDevice) {
     m_choiceNetDataProtocol->Clear();
     m_choiceNetDataProtocol->Append("SignalK");
     m_choiceNetDataProtocol->SetSelection(0);
     m_choiceNetDataProtocol->Enable();
-  } else if (type == kTcpServer || type == kUdpServer) {
+  } else if (view == kTcpServer || view == kUdpServer) {
     m_stNetAddr->SetLabel(_("Interface"));
     m_tNetAddress->ChangeValue("0.0.0.0");
     m_tNetAddress->Disable();
     m_tNetPort->ChangeValue(kDefaultTcpPort);
-  } else if (type == kMulticastClient || type == kMulticastServer) {
+  } else if (view == kMulticastClient || view == kMulticastServer) {
     m_tNetAddress->ChangeValue(kDefaultMulticastAddr);
     m_stNetAddr->SetLabel(_("Multicast group"));
   }
-  if (type == kMulticastClient || type == kUdpClient) {
+  if (view == kMulticastClient || view == kUdpClient) {
     m_cbInput->SetValue(false);
     m_cbInput->Disable();
   }
-  GetGrandParent()->Layout();
+  RefreshAdvancedDetails();
+}
+
+void ConnectionEditDialog::RefreshAdvancedDetails() {
+  if (!m_rbTypeNet->GetValue()) return;
+  if (m_net_view.empty()) {
+    int selected = m_net_type_choice->GetSelection();
+    m_net_view = m_net_type_choice->GetString(selected).ToStdString();
+  }
+  bool show_auth = m_net_view == kSignalkDevice || m_net_view == kSignalkClient;
+  m_tAuthToken->Show(show_auth && m_advanced);
+  m_stAuthToken->Show(show_auth && m_advanced);
+  bool show_apb_precision = m_cbOutput->IsChecked();
+  m_stPrecision->Show(show_apb_precision && m_advanced);
+  m_choicePrecision->Show(show_apb_precision && m_advanced);
+  Layout();
 }
 
 void ConnectionEditDialog::Init() {
@@ -857,7 +867,7 @@ void ConnectionEditDialog::Init() {
   m_tAuthToken = new wxTextCtrl(this, wxID_ANY, "");
   m_tAuthToken->SetMinSize(wxSize(column2width, -1));
   fgSizer5->Add(m_tAuthToken, 1, wxEXPAND | wxTOP, 5);
-
+  m_tAuthToken->SetValue("orvar");
   m_tAuthToken->Hide();
 
   fgSizer5->AddSpacer(1);
@@ -867,6 +877,7 @@ void ConnectionEditDialog::Init() {
   m_stPrecision->Wrap(-1);
   m_stPrecision->SetMinSize(wxSize(column1width, -1));
   fgSizer5->Add(m_stPrecision, 0, wxALL, 2);
+  m_stPrecision->Hide();
 
   wxString m_choicePrecisionChoices[] = {_("x"), _("x.x"), _("x.xx"),
                                          _("x.xxx"), _("x.xxxx")};
@@ -880,6 +891,7 @@ void ConnectionEditDialog::Init() {
 
   m_choicePrecision->SetSelection(g_NMEAAPBPrecision);
   fgSizer5->Add(m_choicePrecision, 0, wxALL, 2);
+  m_choicePrecision->Hide();
 
   m_cbGarminHost =
       new wxCheckBox(this, wxID_ANY, _("Use Garmin (GRMN) mode for input"));
@@ -1167,15 +1179,8 @@ void ConnectionEditDialog::ShowNMEACommon(bool visible) {
   bool advanced = m_advanced;
   m_cbInput->Show(visible);
   m_cbOutput->Show(visible);
-  m_stPrecision->Show(visible && advanced);
-  m_choicePrecision->Show(visible && advanced);
-  m_stPrecision->Show(visible && advanced);
-  m_stAuthToken->Show(visible && advanced);
-  m_tAuthToken->Show(visible && advanced);
   if (visible) {
     const bool bout_enable = (m_cbOutput->IsChecked() && advanced);
-    m_stPrecision->Enable(bout_enable);
-    m_choicePrecision->Enable(bout_enable);
   } else {
     sbSizerOutFilter->SetDimension(0, 0, 0, 0);
     sbSizerInFilter->SetDimension(0, 0, 0, 0);
@@ -1203,8 +1208,6 @@ void ConnectionEditDialog::ShowNMEANet(bool visible) {
   m_stNetPort->Show(visible);
   m_choiceNetDataProtocol->Show(visible);
   m_tNetPort->Show(visible);
-  m_stAuthToken->Show(visible);
-  m_tAuthToken->Show(visible);
   m_advanced_net_box->Show(visible);
   if (m_advanced_net_box->GetValue()) {
     m_stNetComment->Show(visible);
@@ -1236,8 +1239,6 @@ void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
 
   m_cbCheckSKDiscover->Hide();
   m_ButtonSKDiscover->Hide();
-  m_stAuthToken->Hide();
-  m_tAuthToken->Hide();
   m_cbOutput->Hide();
 }
 
@@ -1266,8 +1267,6 @@ void ConnectionEditDialog::ShowNMEABT(bool visible) {
     if (m_choiceBTDataSources) m_choiceBTDataSources->Hide();
   }
   m_cbCheckSKDiscover->Hide();
-  m_stAuthToken->Hide();
-  m_tAuthToken->Hide();
   m_cbCheckSKDiscover->Hide();  // Provisional
   m_ButtonSKDiscover->Hide();
   m_tcOutputStc->Show(visible);
@@ -1363,22 +1362,16 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
   m_collapse_box->ShowItems(true);
   m_cbInput->Show();
   m_cbOutput->Show();
-  m_stPrecision->Show(true);
-  m_choicePrecision->Show(true);
 
   ShowInFilter(advanced);
   ShowOutFilter(advanced);
   // Discovery hidden until it works.
   // m_cbCheckSKDiscover->Show();
-  m_stAuthToken->Show(advanced);
-  m_tAuthToken->Show(advanced);
   // m_ButtonSKDiscover->Show();
   m_StaticTextSKServerStatus->Show(advanced);
 
   if (m_rbTypeSerial->GetValue()) {
     m_cbCheckSKDiscover->Hide();
-    m_stAuthToken->Hide();
-    m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
     bool n0183ctlenabled =
@@ -1396,8 +1389,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
       }
       ShowOutFilter(false);
       ShowInFilter(false);
-      m_stPrecision->Hide();
-      m_choicePrecision->Hide();
       m_stNetDataProtocol->Hide();
       m_choiceNetDataProtocol->Hide();
       m_advanced_net_box->Hide();
@@ -1414,47 +1405,33 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
       ShowInFilter(m_cbInput->IsChecked() && advanced);
       ShowOutFilter(m_cbOutput->IsChecked() && advanced);
 
-      m_stPrecision->Show(m_cbOutput->IsChecked() && advanced);
-      m_choicePrecision->Show(m_cbOutput->IsChecked() && advanced);
-
       m_cbGarminHost->Show(m_cbInput->IsChecked() && advanced);
     }
   }
 
   if (m_rbTypeInternalGPS && m_rbTypeInternalGPS->GetValue()) {
     m_cbCheckSKDiscover->Hide();
-    m_stAuthToken->Hide();
-    m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
     m_cbOutput->Hide();
     m_cbInput->Hide();
     ShowOutFilter(false);
     ShowInFilter(false);
-    m_stPrecision->Hide();
-    m_choicePrecision->Hide();
     m_cbGarminHost->Hide();
     m_collapse_box->ShowItems(false);
   }
 
   if (m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue()) {
     m_cbCheckSKDiscover->Hide();
-    m_stAuthToken->Hide();
-    m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
 
     ShowInFilter(m_cbInput->IsChecked() && advanced);
     ShowOutFilter(m_cbOutput->IsChecked() && advanced);
-
-    m_stPrecision->Show(m_cbOutput->IsChecked() && advanced);
-    m_choicePrecision->Show(m_cbOutput->IsChecked() && advanced);
   }
 
   if (m_rbTypeCAN->GetValue()) {
     m_cbCheckSKDiscover->Hide();
-    m_stAuthToken->Hide();
-    m_tAuthToken->Hide();
     m_ButtonSKDiscover->Hide();
     m_StaticTextSKServerStatus->Hide();
     m_cbGarminHost->Hide();
@@ -1463,9 +1440,6 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
 
     ShowInFilter(false);
     ShowOutFilter(false);
-
-    m_stPrecision->Hide();
-    m_choicePrecision->Hide();
 
     m_stNetDataProtocol->Hide();
     m_choiceNetDataProtocol->Hide();
@@ -1479,19 +1453,11 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
   if (m_rbTypeNet->GetValue()) {
     if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
         DataProtocol::PROTO_NMEA2000) {
-      m_stPrecision->Hide();
-      m_choicePrecision->Hide();
-
       ShowInFilter(false);
       ShowOutFilter(false);
     }
     if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
         DataProtocol::PROTO_NMEA0183) {
-      m_stPrecision->Show(advanced);
-      m_choicePrecision->Show(advanced);
-      m_stPrecision->Enable(m_cbOutput->IsChecked() && advanced);
-      m_choicePrecision->Enable(m_cbOutput->IsChecked() && advanced);
-
       ShowInFilter(m_cbInput->IsChecked() && advanced);
       ShowOutFilter(m_cbOutput->IsChecked() && advanced);
     }
@@ -1570,8 +1536,9 @@ void ConnectionEditDialog::PreloadControls(ConnectionParams* cp) {
 }
 
 void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
-  std::string ui_type = NetViewByConnection(cp);
-  auto found = std::find(kBasicNetTypes.begin(), kBasicNetTypes.end(), ui_type);
+  m_net_view = NetViewByConnection(cp);
+  auto found =
+      std::find(kBasicNetTypes.begin(), kBasicNetTypes.end(), m_net_view);
   m_advanced_net_box->SetValue(found == kBasicNetTypes.end());
   m_net_type_choice->Clear();
   if (found == kBasicNetTypes.end())
@@ -1580,7 +1547,7 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
     for (const auto& view : kBasicNetTypes) m_net_type_choice->Append(view);
   std::vector<std::string> all_views = kBasicNetTypes;
   for (const auto& view : kAdvancedNetTypes) all_views.push_back(view);
-  found = std::find(all_views.begin(), all_views.end(), ui_type);
+  found = std::find(all_views.begin(), all_views.end(), m_net_view);
   if (found != all_views.end()) {
     int select_ix = m_net_type_choice->FindString(*found);
     if (select_ix != wxNOT_FOUND) m_net_type_choice->SetSelection(select_ix);
@@ -1612,8 +1579,6 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   if (net_address) m_tNetAddress->ChangeValue(cp->NetworkAddress);
 
   m_choiceNetDataProtocol->Select(cp->Protocol);  // TODO
-
-  auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_tNetPort);
 
   if (cp->NetworkPort == 0)
     m_tNetPort->ChangeValue("");
@@ -1807,8 +1772,6 @@ void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
 void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
   OnConnValChange(event);
   const bool is_output_enabled = m_cbOutput->IsChecked();
-  m_stPrecision->Enable(is_output_enabled);
-  m_choicePrecision->Enable(is_output_enabled);
   ShowOutFilter(is_output_enabled);
 
   int selection = m_net_type_choice->GetSelection();
@@ -1855,6 +1818,7 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
     }
   }
   SetDSFormRWStates();
+  RefreshAdvancedDetails();
   LayoutDialog();
 }
 
@@ -1864,6 +1828,7 @@ void ConnectionEditDialog::OnCollapsedToggle(bool collapsed) {
     SetNMEAFormForNetProtocol();
   else
     SetNMEAFormForSerialProtocol();
+  RefreshAdvancedDetails();
   LayoutDialog();
 }
 
