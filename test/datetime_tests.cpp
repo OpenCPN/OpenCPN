@@ -12,7 +12,6 @@
 #include <wx/event.h>
 #include <wx/evtloop.h>
 #include <wx/fileconf.h>
-#include <wx/jsonval.h>
 #include <wx/timer.h>
 
 #if wxCHECK_VERSION(3, 2, 0)

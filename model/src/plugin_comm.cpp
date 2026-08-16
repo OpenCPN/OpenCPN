@@ -92,10 +92,9 @@ static void LogMessage(const std::shared_ptr<const NavMsg>& message,
   }
 }
 
-void SendMessageToAllPlugins(const wxString& message_id,
-                             const wxString& message_body) {
-  auto msg = std::make_shared<PluginMsg>(
-      PluginMsg(message_id.ToStdString(), message_body.ToStdString()));
+void SendMessageToAllPlugins(const std::string& message_id,
+                             const std::string& message_body) {
+  auto msg = std::make_shared<PluginMsg>(PluginMsg(message_id, message_body));
   NavMsgBus::GetInstance().Notify(msg);
 
   // decouple 'const wxString &' and 'wxString &' to keep API
@@ -145,15 +144,12 @@ void SendMessageToAllPlugins(const wxString& message_id,
   }
 }
 
-void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v) {
-  wxJSONWriter w(wxJSONWRITER_NO_LINEFEEDS | wxJSONWRITER_STYLED);
-  wxString out;
-  w.Write(v, out);
-  auto msg =
-      std::make_shared<PluginMsg>(message_id.ToStdString(), out.ToStdString());
+void SendJsonMessageToAllPlugins(const std::string& message_id,
+                                 const nlohmann::json& v) {
+  std::string out = v.dump();
+  auto msg = std::make_shared<PluginMsg>(message_id, out);
   SendMessageToAllPlugins(message_id, out);
-  wxLogDebug(message_id);
-  wxLogDebug(out);
+  wxLogDebug(wxString(message_id) + " " + out);
   LogMessage(msg, "Json message ");
 }
 

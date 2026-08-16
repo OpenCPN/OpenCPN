@@ -290,6 +290,7 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("App. Wind Angle & Speed");
     case ID_DBP_D_AWA_TWA:
       return _("App & True Wind Angle");
+    case ID_DBP_I_AWS:
     case ID_DBP_D_AWS:
       return _("App. Wind Speed");
     case ID_DBP_D_TW:
@@ -298,9 +299,11 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("Altitude");
     case ID_DBP_D_ALTI:
       return _("Altitude Trace");
+    case ID_DBP_I_DPT:
     case ID_DBP_D_DPT:
       return _("Depth");
     case ID_DBP_I_MDA:
+    case ID_DBP_D_MDA:
       return _("Barometric pressure");
     case ID_DBP_I_TMP:
       return _("Water Temp.");
@@ -316,10 +319,12 @@ wxString getInstrumentCaption(unsigned int id) {
       return _("True Wind Speed");
     case ID_DBP_D_TWD:
       return _("True Wind Dir. & Speed");
+    case ID_DBP_I_VMG:
     case ID_DBP_D_VMG:
       return _("VMG");
     case ID_DBP_I_VMGW:
       return _("VMG Wind");
+    case ID_DBP_I_RSA:
     case ID_DBP_D_RSA:
       return _("Rudder Angle");
     case ID_DBP_I_SAT:

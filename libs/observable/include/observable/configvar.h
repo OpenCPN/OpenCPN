@@ -13,10 +13,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.
- **************************************************************************/
+ * along with this program; if not, see <https://www.gnu.org/licenses/>.
+ ************************************************************************/
 
 /**
  * \file
@@ -52,14 +50,13 @@ namespace obs {
  *
  *    class Foo: public wxEventHandler {
  *    public:
- *      Foo(...) {
- *        ConfigVar<bool> expert("/PlugIns", "CatalogExpert", &g_pConfig);
+ *      Foo(...)  {
  *        auto action = [](wxCommandEvent&) { cout << "value has changed"; });
- *        expert_listener.Init(expert, action);
+ *        m_expert_listener.Init(expert, action);
  *        ...
  *      }
  *    private:
- *      ObsListener expert_listener;
+ *      obs::Listener m_expert_listener;
  *      ...
  *    }
  *

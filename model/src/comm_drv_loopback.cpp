@@ -34,9 +34,10 @@
 #include <string>
 #include <vector>
 
-#include <wx/jsonreader.h>
 #include <wx/log.h>
 #include <wx/string.h>
+
+#include "nlohmann/json.hpp"
 
 #include "model/comm_drv_loopback.h"
 #include "model/comm_navmsg.h"
@@ -94,12 +95,11 @@ static NavMsgPtr Parse0183(const string& iface, const string& type,
 
 static NavMsgPtr ParseSignalk(const string& iface, const string& type,
                               const string& msg) {
-  wxJSONValue root;
-  wxJSONReader reader;
-  int err_count = reader.Parse(msg, &root);
   std::string context;
-  if (err_count == 0) {
-    if (root.HasMember("context")) context = root["context"].AsString();
+  try {
+    nlohmann::json root = nlohmann::json::parse(msg);
+    if (root.contains("context")) context = root["context"].get<std::string>();
+  } catch (nlohmann::json::exception&) {
   }
   return make_shared<SignalkMsg>(type, context, msg, iface);
 }

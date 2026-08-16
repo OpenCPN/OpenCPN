@@ -14,12 +14,12 @@
 #include <wx/evtloop.h>
 #include <wx/fileconf.h>
 #include <wx/jsonval.h>
-#include <wx/jsonreader.h>
 
 #include <wx/timer.h>
 
 #include <gtest/gtest.h>
 
+#include "nlohmann/json.hpp"
 #include "observable/configvar.h"
 
 #include "model/ais_decoder.h"
@@ -1344,10 +1344,13 @@ TEST(Loopback, SignalK) {
   EXPECT_TRUE(s_result == "vessels.urn:mrn:imo:mmsi:265599691");
   EXPECT_TRUE(s_result3 == "signalk.stupan.se:3000");
   EXPECT_TRUE(s_bus == NavAddr::Bus::Signalk);
-  wxJSONReader reader;
-  wxJSONValue root;
-  int err_count = reader.Parse(s_result2, &root);
-  EXPECT_EQ(err_count, 0);
+  bool failed = false;
+  try {
+    nlohmann::json root = nlohmann::json::parse(s_result2);
+  } catch (nlohmann::json::exception&) {
+    failed = true;
+  }
+  EXPECT_FALSE(failed);
 }
 
 TEST(Loopback, BadInput) {

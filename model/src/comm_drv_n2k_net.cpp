@@ -1258,7 +1258,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
         }
       }
       // Only invoke DetectFormat() on every tenth message:
-      m_detect_count = ++m_detect_count % 10;
+      m_detect_count = (m_detect_count + 1) % 10;
       if (m_detect_count <= 0) m_n2k_format = DetectFormat(data);
 
       switch (m_n2k_format) {

@@ -72,8 +72,6 @@
 #include <wx/filename.h>
 #include <wx/hashmap.h>
 #include <wx/hashset.h>
-#include <wx/jsonreader.h>
-#include <wx/jsonval.h>
 #include <wx/listimpl.cpp>
 #include <wx/platinfo.h>
 #include <wx/popupwin.h>
@@ -195,41 +193,41 @@ private:
   std::string m_key;
 };
 
-static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> pTarget) {
+static void SendAisJsonMessage(std::shared_ptr<const AisTargetData> target) {
   //  Only send messages if someone is listening...
   if (!GetJSONMessageTargetCount()) return;
 
   // Do JSON message to all Plugin to inform of target
-  wxJSONValue jMsg;
+  nlohmann::json json_msg;
 
   wxLongLong t = ::wxGetLocalTimeMillis();
 
-  jMsg[wxS("Source")] = wxS("AisDecoder");
-  jMsg["Type"] = "Information";
-  jMsg["Msg"] = wxS("AIS Target");
-  jMsg["MsgId"] = t.GetValue();
-  jMsg[wxS("lat")] = pTarget->Lat;
-  jMsg[wxS("lon")] = pTarget->Lon;
-  jMsg[wxS("sog")] = pTarget->SOG;
-  jMsg[wxS("cog")] = pTarget->COG;
-  jMsg[wxS("hdg")] = pTarget->HDG;
-  jMsg[wxS("mmsi")] = pTarget->MMSI;
-  jMsg[wxS("class")] = pTarget->Class;
-  jMsg[wxS("ownship")] = pTarget->b_OwnShip;
-  jMsg[wxS("active")] = pTarget->b_active;
-  jMsg[wxS("lost")] = pTarget->b_lost;
-  wxString l_ShipName = wxString::FromUTF8(pTarget->ShipName);
+  json_msg["Source"] = "AisDecoder";
+  json_msg["Type"] = "Information";
+  json_msg["Msg"] = "AIS Target";
+  json_msg["MsgId"] = t.GetValue();
+  json_msg["lat"] = target->Lat;
+  json_msg["lon"] = target->Lon;
+  json_msg["sog"] = target->SOG;
+  json_msg["cog"] = target->COG;
+  json_msg["hdg"] = target->HDG;
+  json_msg["mmsi"] = target->MMSI;
+  json_msg["class"] = target->Class;
+  json_msg["ownship"] = target->b_OwnShip;
+  json_msg["active"] = target->b_active;
+  json_msg["lost"] = target->b_lost;
+  wxString l_ShipName = wxString::FromUTF8(target->ShipName);
   for (size_t i = 0; i < l_ShipName.Len(); i++) {
     if (l_ShipName.GetChar(i) == '@') l_ShipName.SetChar(i, '\n');
   }
-  jMsg[wxS("shipname")] = l_ShipName;
-  wxString l_CallSign = wxString::FromUTF8(pTarget->CallSign);
+  json_msg["shipname"] = l_ShipName.ToStdString();
+  wxString l_CallSign = wxString::FromUTF8(target->CallSign);
   for (size_t i = 0; i < l_CallSign.Len(); i++) {
     if (l_CallSign.GetChar(i) == '@') l_CallSign.SetChar(i, '\n');
   }
-  jMsg[wxS("callsign")] = l_CallSign;
-  jMsg[wxS("removed")] = pTarget->b_removed;
-  SendJSONMessageToAllPlugins("AIS", jMsg);
+  json_msg["callsign"] = l_CallSign.ToStdString();
+  json_msg["removed"] = target->b_removed;
+  SendJsonMessageToAllPlugins("AIS", json_msg);
 }
 
 static bool ReloadLocale() {
@@ -907,11 +905,12 @@ PlugInManager::PlugInManager(AbstractTopFrame* parent) {
   m_blacklist_ui = std::unique_ptr<BlacklistUI>(new BlacklistUI());
 
   wxDEFINE_EVENT(EVT_JSON_TO_ALL_PLUGINS, ObservedEvt);
-  evt_json_to_all_plugins_listener.Listen(g_pRouteMan->json_msg, this,
+  evt_json_to_all_plugins_listener.Listen(g_pRouteMan->json_msg_evt, this,
                                           EVT_JSON_TO_ALL_PLUGINS);
   Bind(EVT_JSON_TO_ALL_PLUGINS, [&](ObservedEvt& ev) {
-    auto json = std::static_pointer_cast<const wxJSONValue>(ev.GetSharedPtr());
-    SendJSONMessageToAllPlugins(ev.GetString(), *json);
+    auto json =
+        std::static_pointer_cast<const nlohmann::json>(ev.GetSharedPtr());
+    SendJsonMessageToAllPlugins(ev.GetString().ToStdString(), *json);
   });
 
   wxDEFINE_EVENT(EVT_LEGINFO_TO_ALL_PLUGINS, ObservedEvt);
@@ -992,14 +991,16 @@ void PlugInManager::HandleN0183(std::shared_ptr<const Nmea0183Msg> n0183_msg) {
 void PlugInManager::HandleSignalK(std::shared_ptr<const SignalkMsg> sK_msg) {
   g_ownshipMMSI_SK = sK_msg->context_self;
 
-  wxJSONReader jsonReader;
-  wxJSONValue root;
+  nlohmann::json root;
 
   std::string msgTerminated = sK_msg->raw_message;
-  ;
-
-  int errors = jsonReader.Parse(msgTerminated, &root);
-  if (errors == 0) SendJSONMessageToAllPlugins("OCPN_CORE_SIGNALK", root);
+  bool failed = false;
+  try {
+    root = nlohmann::json::parse(msgTerminated);
+  } catch (nlohmann::json::exception&) {
+    failed = true;
+  }
+  if (!failed) SendJsonMessageToAllPlugins("OCPN_CORE_SIGNALK", root);
 }
 
 /**
@@ -1056,16 +1057,17 @@ void PlugInManager::HandlePluginLoaderEvents() {
   Bind(EVT_PLUGIN_LOADALL_FINALIZE,
        [&](wxCommandEvent& ev) { FinalizePluginLoadall(); });
 
-  evt_ais_json_listener.Listen(g_pAIS->plugin_msg, this, EVT_PLUGMGR_AIS_MSG);
-  evt_routeman_json_listener.Listen(g_pRouteMan->json_msg, this,
+  evt_ais_json_listener.Listen(g_pAIS->plugin_msg_evt, this,
+                               EVT_PLUGMGR_AIS_MSG);
+  evt_routeman_json_listener.Listen(g_pRouteMan->json_msg_evt, this,
                                     EVT_PLUGMGR_ROUTEMAN_MSG);
   Bind(EVT_PLUGMGR_AIS_MSG, [&](ObservedEvt& ev) {
-    auto pTarget = obs::UnpackEvtPointer<AisTargetData>(ev);
-    SendAisJsonMessage(pTarget);
+    auto target = obs::UnpackEvtPointer<AisTargetData>(ev);
+    SendAisJsonMessage(target);
   });
   Bind(EVT_PLUGMGR_ROUTEMAN_MSG, [&](ObservedEvt& ev) {
-    auto msg = obs::UnpackEvtPointer<wxJSONValue>(ev);
-    SendJSONMessageToAllPlugins(ev.GetString(), *msg);
+    auto msg = obs::UnpackEvtPointer<nlohmann::json>(ev);
+    SendJsonMessageToAllPlugins(ev.GetString().ToStdString(), *msg);
   });
 }
 
@@ -1735,17 +1737,15 @@ void PlugInManager::PrepareAllPluginContextMenus() {
 
 void PlugInManager::SendSKConfigToAllPlugIns() {
   // Send the current ownship MMSI, encoded as sK,  to all PlugIns
-  wxJSONValue v;
+  nlohmann::json v;
   v["self"] = g_ownshipMMSI_SK;
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OCPN_CORE_SIGNALK"), out);
+  std::string out = v.dump();
+  SendMessageToAllPlugins("OCPN_CORE_SIGNALK", out);
 }
 
 void PlugInManager::SendBaseConfigToAllPlugIns() {
   // Send the current run-time configuration to all PlugIns
-  wxJSONValue v;
+  nlohmann::json v;
   v["OpenCPN Version Major"] = VERSION_MAJOR;
   v["OpenCPN Version Minor"] = VERSION_MINOR;
   v["OpenCPN Version Patch"] = VERSION_PATCH;
@@ -1769,15 +1769,13 @@ void PlugInManager::SendBaseConfigToAllPlugIns() {
   v["OpenCPN Content Scale Factor"] = OCPN_GetDisplayContentScaleFactor();
   v["OpenCPN Display DIP Scale Factor"] = OCPN_GetWinDIPScaleFactor();
 
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
+  std::string out = v.dump();
+  SendMessageToAllPlugins("OpenCPN Config", out);
 }
 
 void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
   // Send the current run-time configuration to all PlugIns
-  wxJSONValue v;
+  nlohmann::json v;
   v["OpenCPN Version Major"] = VERSION_MAJOR;
   v["OpenCPN Version Minor"] = VERSION_MINOR;
   v["OpenCPN Version Patch"] = VERSION_PATCH;
@@ -1817,10 +1815,8 @@ void PlugInManager::SendS52ConfigToAllPlugIns(bool bReconfig) {
   // Notify plugins that S52PLIB may have reconfigured global options
   v["OpenCPN S52PLIB GlobalReconfig"] = bReconfig;
 
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
-  SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
+  const std::string out = v.dump();
+  SendMessageToAllPlugins("OpenCPN Config", out);
 }
 
 void PlugInManager::NotifyAuiPlugIns() {

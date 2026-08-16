@@ -31,8 +31,8 @@
 
 #include <wx/wxprec.h>
 #include <wx/image.h>
-#include <wx/jsonval.h>
 
+#include "nlohmann/json.hpp"
 #include "observable/global_var.h"
 
 #include "model/ais_decoder.h"
@@ -221,10 +221,11 @@ RoutePoint *Routeman::FindBestActivatePoint(Route *pR, double lat, double lon,
 
 bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
   g_bAllowShipToActive = false;
-  wxJSONValue v;
+  nlohmann::json v;
   v["Route_activated"] = pRouteToActivate->m_RouteNameString;
   v["GUID"] = pRouteToActivate->m_GUID;
-  json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ACTIVATED");
+  json_msg_evt.Notify(std::make_shared<nlohmann::json>(v),
+                      "OCPN_RTE_ACTIVATED");
   if (g_bPluginHandleAutopilotRoute) return true;
 
   // Capture and maintain a list of data connections configured as "output"
@@ -285,11 +286,12 @@ bool Routeman::ActivateRoute(Route *pRouteToActivate, RoutePoint *pStartPoint) {
 
 bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
   g_bAllowShipToActive = false;
-  wxJSONValue v;
+  nlohmann::json v;
   v["GUID"] = pRP_target->m_GUID;
   v["WP_activated"] = pRP_target->GetName();
 
-  json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ACTIVATED");
+  json_msg_evt.Notify(std::make_shared<nlohmann::json>(v),
+                      "OCPN_WPT_ACTIVATED");
 
   if (g_bPluginHandleAutopilotRoute) return true;
 
@@ -356,7 +358,7 @@ bool Routeman::ActivateRoutePoint(Route *pA, RoutePoint *pRP_target) {
 
 bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
   g_bAllowShipToActive = false;
-  wxJSONValue v;
+  nlohmann::json v;
   bool result = false;
   if (pActivePoint) {
     pActivePoint->m_bBlink = false;
@@ -404,7 +406,8 @@ bool Routeman::ActivateNextPoint(Route *pr, bool skipped) {
     /// }
     m_prop_dlg_ctx.set_enroute_point(pr, pActivePoint);
 
-    json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_WPT_ARRIVED");
+    json_msg_evt.Notify(std::make_shared<nlohmann::json>(v),
+                        "OCPN_WPT_ARRIVED");
   }
   return result;
 }
@@ -420,15 +423,17 @@ bool Routeman::DeactivateRoute(bool b_arrival) {
     pActiveRoute->m_pRouteActivePoint = NULL;
     g_active_route.Clear();
 
-    wxJSONValue v;
+    nlohmann::json v;
     if (!b_arrival) {
       v["Route_deactivated"] = pActiveRoute->m_RouteNameString;
       v["GUID"] = pActiveRoute->m_GUID;
-      json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_DEACTIVATED");
+      json_msg_evt.Notify(std::make_shared<nlohmann::json>(v),
+                          "OCPN_RTE_DEACTIVATED");
     } else {
       v["GUID"] = pActiveRoute->m_GUID;
       v["Route_ended"] = pActiveRoute->m_RouteNameString;
-      json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_RTE_ENDED");
+      json_msg_evt.Notify(std::make_shared<nlohmann::json>(v),
+                          "OCPN_RTE_ENDED");
     }
   }
 

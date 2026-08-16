@@ -2093,13 +2093,7 @@ void AisDecoder::HandleSignalK(const SignalKMsgPtr &sK_msg) {
   if (mmsi == g_OwnShipmmsi) return;
 
 #if 0
-    wxString dbg;
-    wxJSONWriter writer;
-    writer.Write(root, dbg);
-
-    wxString msg( "AisDecoder::OnEvtSignalK: " );
-    msg.append(dbg);
-    wxLogMessage(msg);
+    wxLogDebug( "AisDecoder::OnEvtSignalK: %s", root.dump().c_str(); );
 #endif
   std::shared_ptr<AisTargetData> pTargetData = nullptr;
   std::shared_ptr<AisTargetData> pStaleTarget = nullptr;
@@ -3385,7 +3379,7 @@ void AisDecoder::CommitAISTarget(
       if (pTargetData->b_show_track) UpdateOneTrack(pTargetData.get());
     }
     // TODO add ais message call
-    plugin_msg.Notify(std::make_shared<AisTargetData>(*pTargetData), "");
+    plugin_msg_evt.Notify(std::make_shared<AisTargetData>(*pTargetData), "");
   } else {
     //             printf("Unrecognised AIS message ID: %d\n",
     //             pTargetData->MID);
@@ -4246,7 +4240,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         xtd->HDG = 511.0;
         xtd->ROTAIS = -128;
 
-        plugin_msg.Notify(xtd, "");
+        plugin_msg_evt.Notify(xtd, "");
 
         long mmsi_long = xtd->MMSI;
         pSelectAIS->DeleteSelectablePoint((void *)mmsi_long, SELTYPE_AISTARGET);
@@ -4256,7 +4250,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         //      or a lost ARPA target.
         if (target_static_age > removelost_Mins * 60 * 3 || b_arpalost) {
           xtd->b_removed = true;
-          plugin_msg.Notify(xtd, "");
+          plugin_msg_evt.Notify(xtd, "");
           remove_array.push_back(xtd->MMSI);  // Add this target to removal list
         }
       }
@@ -4270,7 +4264,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
         if (props->m_bignore) {
           remove_array.push_back(xtd->MMSI);  // Add this target to removal list
           xtd->b_removed = true;
-          plugin_msg.Notify(xtd, "");
+          plugin_msg_evt.Notify(xtd, "");
         }
         break;
       }
@@ -4280,7 +4274,7 @@ void AisDecoder::OnTimerAIS(wxTimerEvent &event) {
     if (static_cast<unsigned>(xtd->MMSI) == g_OwnShipmmsi) {
       remove_array.push_back(xtd->MMSI);  // Add this target to removal list
       xtd->b_removed = true;
-      plugin_msg.Notify(xtd, "");
+      plugin_msg_evt.Notify(xtd, "");
     }
 
     ++it;

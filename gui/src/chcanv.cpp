@@ -11247,7 +11247,7 @@ void pupHandler_PasteTrack() {
 }
 
 bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
-  wxJSONValue v;
+  nlohmann::json v;
   v["CanvasIndex"] = GetCanvasIndexUnderMouse();
   v["CursorPosition_x"] = x;
   v["CursorPosition_y"] = y;
@@ -11257,12 +11257,10 @@ bool ChartCanvas::InvokeCanvasMenu(int x, int y, int seltype) {
   if (seltype & SELTYPE_ROUTEPOINT) v["SelectionType"] = "RoutePoint";
   if (seltype & SELTYPE_AISTARGET) v["SelectionType"] = "AISTarget";
 
-  wxJSONWriter w;
-  wxString out;
-  w.Write(v, out);
+  std::string out = v.dump();
   SendMessageToAllPlugins("OCPN_CONTEXT_CLICK", out);
 
-  json_msg.Notify(std::make_shared<wxJSONValue>(v), "OCPN_CONTEXT_CLICK");
+  json_msg.Notify(std::make_shared<nlohmann::json>(v), "OCPN_CONTEXT_CLICK");
 
 #if 0
 #define SELTYPE_UNKNOWN 0x0001
@@ -11938,7 +11936,7 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
   }
 
   if (bSendPlibState) {
-    wxJSONValue v;
+    nlohmann::json v;
     v["OpenCPN Version Major"] = VERSION_MAJOR;
     v["OpenCPN Version Minor"] = VERSION_MINOR;
     v["OpenCPN Version Patch"] = VERSION_PATCH;
@@ -11979,12 +11977,10 @@ void ChartCanvas::UpdateCanvasS52PLIBConfig() {
         g_Platform->GetChartScaleFactorExp(g_ChartScaleFactor);
     v["OpenCPN Display Width"] = (int)g_display_size_mm;
 
-    wxJSONWriter w;
-    wxString out;
-    w.Write(v, out);
+    const std::string out = v.dump();
 
     if (!g_lastS52PLIBPluginMessage.IsSameAs(out)) {
-      SendMessageToAllPlugins(wxString("OpenCPN Config"), out);
+      SendMessageToAllPlugins("OpenCPN Config", out);
       g_lastS52PLIBPluginMessage = out;
     }
   }

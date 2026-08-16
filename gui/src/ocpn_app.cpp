@@ -100,7 +100,6 @@ void gdk_window_set_override_redirect(GdkWindow *window,
 #include <wx/image.h>
 #include <wx/intl.h>
 #include <wx/ipc.h>
-#include <wx/jsonreader.h>
 #include <wx/listctrl.h>
 #include <wx/power.h>
 #include <wx/printdlg.h>

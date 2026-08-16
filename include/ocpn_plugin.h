@@ -7421,6 +7421,20 @@ public:
    */
   const std::set<std::string> &GetActiveMessages();
 
+  /**
+   *  Get SignalK payload after receiving a message.
+   *  @return json text data. Typical usage:
+   *
+   *      std::string json_payload = GetSignalkPayload(ev);
+   *      ... parse and use json_payload
+   *
+   *  json_payload is a map containing the following entries:
+   *  - "Data": the raw json message
+   *  - "Context": string, message context
+   *  - "ContextSelf": string, own ship context.
+   */
+  std::string GetSignalkPayload(ObservedEvt ev);
+
 private:
   Api122Impl *m_api_impl;  // Raw ptr to app object managed by wxWidgets
 };

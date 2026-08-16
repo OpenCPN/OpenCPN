@@ -17,11 +17,11 @@
 #include <wx/app.h>
 #include <wx/event.h>
 #include <wx/fileconf.h>
-#include <wx/jsonreader.h>
 #include <wx/log.h>
 
 #include <gtest/gtest.h>
 
+#include "nlohmann/json.hpp"
 #include "observable/configvar.h"
 
 #include "ocpn_plugin.h"
@@ -283,12 +283,15 @@ protected:
     std::ifstream f(path.string());
     std::stringstream ss;
     ss << f.rdbuf();
-    wxJSONValue root;
-    wxJSONReader reader;
-    std::string reply = ss.str();
-    int errors = reader.Parse(reply, &root);
-    EXPECT_EQ(errors, 0);
-    wxString version = root["version"].AsString();
+    bool failed = false;
+    nlohmann::json root;
+    try {
+      root = nlohmann::json::parse(ss.str());
+    } catch (nlohmann::json::exception& e) {
+      failed = true;
+    }
+    EXPECT_FALSE(failed);
+    std::string version = root["version"].get<std::string>();
     EXPECT_EQ(version, PACKAGE_VERSION);
   }
 };

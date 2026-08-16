@@ -22,13 +22,12 @@
  */
 
 #include <fstream>
+#include <wx/log.h>
+
+#include "nlohmann/json.hpp"
 
 #include "model/base_platform.h"
 #include "model/navmsg_filter.h"
-
-#include "wx/jsonreader.h"
-#include "wx/jsonwriter.h"
-#include "wx/log.h"
 
 #include "std_filesystem.h"
 
@@ -121,65 +120,67 @@ static std::string StateToString(State state) {
   return "";  // for the compiler
 }
 
-static void ParseBuses(NavmsgFilter& filter, wxJSONValue json_val) {
-  for (int i = 0; i < json_val.Size(); i++) {
-    auto str = json_val[i].AsString().ToStdString();
+static void ParseBuses(NavmsgFilter& filter, const nlohmann::json& json_val) {
+  for (const auto& value : json_val) {
+    auto str = value.get<std::string>();
     filter.buses.insert(NavAddr::StringToBus(str));
   }
 }
 
-static void ParseDirections(NavmsgFilter& filter, wxJSONValue json_val) {
-  for (int i = 0; i < json_val.Size(); i++) {
-    auto str = json_val[i].AsString().ToStdString();
+static void ParseDirections(NavmsgFilter& filter,
+                            const nlohmann::json& json_val) {
+  for (const auto& value : json_val) {
+    auto str = value.get<std::string>();
     filter.directions.insert(StringToDirection(str));
   }
 }
 
-static void ParseAccepted(NavmsgFilter& filter, wxJSONValue json_val) {
-  for (int i = 0; i < json_val.Size(); i++) {
-    auto str = json_val[i].AsString().ToStdString();
+static void ParseAccepted(NavmsgFilter& filter, nlohmann::json json_val) {
+  for (const auto& value : json_val) {
+    auto str = value.get<std::string>();
     filter.accepted.insert(StringToAccepted(str));
   }
 }
 
-static void ParseStatus(NavmsgFilter& filter, wxJSONValue json_val) {
-  for (int i = 0; i < json_val.Size(); i++) {
-    auto str = json_val[i].AsString().ToStdString();
+static void ParseStatus(NavmsgFilter& filter, nlohmann::json json_val) {
+  for (const auto& value : json_val) {
+    auto str = value.get<std::string>();
     filter.status.insert(StringToState(str));
   }
 }
 
-static void ParseMsgFilter(NavmsgFilter& filter, wxJSONValue json_val) {
-  if (json_val.HasMember("blockedMsg")) {
-    auto val = json_val["blockedMsg"];
-    for (int i = 0; i < val.Size(); i++)
-      filter.exclude_msg.insert(val[i].AsString().ToStdString());
-  } else if (json_val.HasMember("allowedMsg")) {
-    auto val = json_val["allowedMsg"];
-    for (int i = 0; i < val.Size(); i++)
-      filter.include_msg.insert(val[i].AsString().ToStdString());
+static void ParseMsgFilter(NavmsgFilter& filter, nlohmann::json json_val) {
+  if (json_val.contains("blockedMsg")) {
+    auto values = json_val["blockedMsg"];
+    for (const auto& val : values)
+      filter.exclude_msg.insert(val.get<std::string>());
+  } else if (json_val.contains("allowedMsg")) {
+    auto values = json_val["allowedMsg"];
+    for (const auto& val : values)
+      filter.include_msg.insert(val.get<std::string>());
   }
 }
 
-static void ParseInterfaces(NavmsgFilter& filter, wxJSONValue json_val) {
-  for (int i = 0; i < json_val.Size(); i++)
-    filter.interfaces.insert(json_val[i].AsString().ToStdString());
+static void ParseInterfaces(NavmsgFilter& filter, nlohmann::json json_val) {
+  for (const auto& value : json_val)
+    filter.interfaces.insert(value.get<std::string>());
 }
 
-static void ParsePgn(NavmsgFilter& filter, wxJSONValue json_val) {
+static void ParsePgn(NavmsgFilter& filter, nlohmann::json json_val) {
   try {
-    for (int i = 0; i < json_val.Size(); i++)
-      filter.pgns.insert(std::stoi(json_val[i].AsString().ToStdString()));
+    for (const auto& value : json_val)
+      filter.pgns.insert(std::stoi(value.get<std::string>()));
   } catch (...) {
     return;
   }
 }
 
-static void ParseSource(NavmsgFilter& filter, wxJSONValue json_val) {
+static void ParseSource(NavmsgFilter& filter, nlohmann::json json_val) {
   try {
-    for (int i = 0; i < json_val.Size(); i++) {
-      filter.src_pgns.insert(std::stoi(json_val[i].AsString().ToStdString()));
-    }
+    for (const auto& value : json_val)
+      for (unsigned i = 0; i < json_val.size(); i++) {
+        filter.src_pgns.insert(std::stoi(value.get<std::string>()));
+      }
   } catch (...) {
     return;
   }
@@ -264,71 +265,71 @@ NavmsgFilter NavmsgFilter::Parse(const fs::path& path) {
 }
 
 NavmsgFilter NavmsgFilter::Parse(const std::string& string) {
-  wxJSONValue root;
-  wxJSONReader reader;
-  int err_count = reader.Parse(string, &root);
-  if (err_count > 0) {
-    wxLogWarning("Error parsing filter XML");
-    for (auto& e : reader.GetErrors())
-      wxLogWarning("Parse error: %s", e.c_str());
+  nlohmann::json root;
+  try {
+    root = nlohmann::json::parse(string);
+  } catch (nlohmann::json::exception& e) {
+    wxLogWarning("Error parsing filter XML: %s", e.what());
     return NavmsgFilter(false);
   }
   NavmsgFilter filter;
-  filter.m_name = root["filter"]["name"].AsString();
-  filter.m_description = root["filter"]["description"].AsString();
-  if (root["filter"].HasMember("buses"))
+  filter.m_name = root["filter"]["name"].get<std::string>();
+  filter.m_description = root["filter"]["description"].get<std::string>();
+  if (root["filter"].contains("buses"))
     ParseBuses(filter, root["filter"]["buses"]);
-  if (root["filter"].HasMember("accepted"))
+  if (root["filter"].contains("accepted"))
     ParseAccepted(filter, root["filter"]["accepted"]);
-  if (root["filter"].HasMember("status"))
+  if (root["filter"].contains("status"))
     ParseStatus(filter, root["filter"]["status"]);
-  if (root["filter"].HasMember("directions"))
+  if (root["filter"].contains("directions"))
     ParseDirections(filter, root["filter"]["directions"]);
-  if (root["filter"].HasMember("msgFilter"))
+  if (root["filter"].contains("msgFilter"))
     ParseMsgFilter(filter, root["filter"]["msgFilter"]);
-  if (root["filter"].HasMember("interfaces"))
+  if (root["filter"].contains("interfaces"))
     ParseInterfaces(filter, root["filter"]["interfaces"]);
-  if (root["filter"].HasMember("pgns"))
-    ParsePgn(filter, root["filter"]["pgns"]);
-  if (root["filter"].HasMember("src_pgns"))
+  if (root["filter"].contains("pgns")) ParsePgn(filter, root["filter"]["pgns"]);
+  if (root["filter"].contains("src_pgns"))
     ParseSource(filter, root["filter"]["src_pgns"]);
   return filter;
 }
 
 std::string NavmsgFilter::to_string() const {
-  wxJSONValue root;
+  nlohmann::json root;
   root["filter"]["name"] = m_name;
   root["filter"]["description"] = m_description;
-  wxJSONValue& filter = root["filter"];
+  nlohmann::json& filter = root["filter"];
 
   if (!buses.empty()) {
-    for (auto b : buses) filter["buses"].Append(NavAddr::BusToString(b));
+    for (auto b : buses) filter["buses"].push_back(NavAddr::BusToString(b));
   };
   if (!directions.empty()) {
-    for (auto d : directions) filter["directions"].Append(DirectionToString(d));
+    for (auto d : directions)
+      filter["directions"].push_back(DirectionToString(d));
   };
   if (!accepted.empty()) {
-    for (auto a : accepted) filter["accepted"].Append(AcceptedToString(a));
+    for (auto a : accepted) filter["accepted"].push_back(AcceptedToString(a));
   };
   if (!status.empty()) {
-    for (auto s : status) filter["status"].Append(StateToString(s));
+    for (auto s : status) filter["status"].push_back(StateToString(s));
   };
   if (!include_msg.empty()) {
-    for (auto m : include_msg) filter["msgFilter"]["allowedMsg"].Append(m);
+    for (auto m : include_msg) filter["msgFilter"]["allowedMsg"].push_back(m);
   } else if (!exclude_msg.empty()) {
-    for (auto m : exclude_msg) filter["msgFilter"]["blockedMsg"].Append(m);
+    for (auto m : exclude_msg) filter["msgFilter"]["blockedMsg"].push_back(m);
   }
   if (!interfaces.empty()) {
-    for (auto i : interfaces) filter["interfaces"].Append(i);
+    for (auto i : interfaces) filter["interfaces"].push_back(i);
   }
   if (!pgns.empty()) {
-    for (auto p : pgns) filter["pgns"].Append(p.to_string());
+    for (auto p : pgns) filter["pgns"].push_back(p.to_string());
   }
   if (!src_pgns.empty()) {
-    for (auto p : src_pgns) filter["src_pgns"].Append(p.to_string());
+    for (auto p : src_pgns) filter["src_pgns"].push_back(p.to_string());
   }
-  wxJSONWriter writer;
-  wxString ws;
-  writer.Write(root, ws);
-  return ws.ToStdString();
+  try {
+    return root.dump();
+  } catch (nlohmann::json::exception& e) {
+    wxLogWarning("Error serializing filter %s: %s", m_name.c_str(), e.what());
+    return "";
+  }
 }

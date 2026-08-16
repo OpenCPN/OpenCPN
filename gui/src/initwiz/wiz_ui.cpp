@@ -33,6 +33,8 @@
 
 #include "gl_headers.h"  // Must be included before anything using GL stuff
 
+#include <sstream>
+
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -41,17 +43,20 @@
 #include <regex>
 #include <wx/sckaddr.h>
 #include <wx/socket.h>
-#include <wx/jsonval.h>
-#include <wx/jsonreader.h>
+
+#include "nlohmann/json.hpp"
+
 #include "wiz_ui.h"
-#include "ocpn_platform.h"
+
 #include "model/comm_drv_signalk_net.h"
 #include "model/comm_drv_n2k_net.h"
 #include "model/conn_params.h"
 #include "model/logger.h"
 #include "model/mdns_query.h"
-#include "navutil.h"
 #include "model/svg_utils.h"
+
+#include "navutil.h"
+#include "ocpn_platform.h"
 #ifndef __ANDROID__
 #include "serial/serial.h"
 #include "dnet.h"
@@ -563,26 +568,22 @@ void FirstUseWizImpl::EnumerateCAN() {
     return;
   }
 
-  wxString fis;
+  std::stringstream ss;
   for (const auto& l : output) {
-    fis.Append(l);
+    ss << l;
   }
-  wxJSONReader reader;
-  wxJSONValue root;
-  reader.Parse(fis, &root);
-  if (reader.GetErrorCount() > 0) {
-    DEBUG_LOG << "Failed to parse JSON output from ip.";
-    for (const auto& l : reader.GetErrors()) {
-      DEBUG_LOG << " - " << l;
-    }
+  nlohmann::json root;
+  try {
+    root = nlohmann::json::parse(ss.str());
+  } catch (nlohmann::json::exception& e) {
+    DEBUG_LOG << "Failed to parse JSON output from ip: " << e.what();
     return;
   }
-  if (root.IsArray()) {
-    for (int i = 0; i < root.Size(); i++) {
-      const wxJSONValue iface = root[i];
-      if (iface.HasMember("ifname") && iface.HasMember("link_type")) {
-        wxString ifname = iface.Get("ifname", "").AsString();
-        wxString link_type = iface.Get("link_type", "").AsString();
+  if (root.is_array()) {
+    for (const auto& iface : root) {
+      if (iface.contains("ifname") && iface.contains("link_type")) {
+        std::string ifname = iface["ifname"].get<std::string>();
+        std::string link_type = iface["link_type"].get<std::string>();
         if (link_type == "can") {
           DEBUG_LOG << "Found CAN interface: " << ifname;
           ConnectionParams params;

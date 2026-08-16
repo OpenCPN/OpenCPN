@@ -29,9 +29,9 @@
 
 #include <curl/curl.h>
 
+#include "nlohmann/json.hpp"
+
 #include <wx/fileconf.h>
-#include <wx/json_defs.h>
-#include <wx/jsonreader.h>
 #include <wx/log.h>
 #include <wx/string.h>
 
@@ -198,25 +198,22 @@ static void SaveClientKey(std::string& server_name, std::string key) {
 }
 static RestServerResult ParseServerJson(const MemoryStruct& reply,
                                         PeerData& peer_data) {
-  wxString body(reply.memory);
-  wxJSONValue root;
-  wxJSONReader reader;
-  int num_errors = reader.Parse(body, &root);
-  if (num_errors != 0) {
-    for (const auto& error : reader.GetErrors()) {
-      wxLogMessage("Json server reply parse error: %s",
-                   error.ToStdString().c_str());
-    }
-    peer_data.run_status_dlg(PeerDlg::JsonParseError, num_errors);
+  std::string body(reply.memory);
+  nlohmann::json root;
+  try {
+    root = nlohmann::json::parse(body);
+  } catch (nlohmann::json::exception& e) {
+    wxLogMessage("Json server reply parse error: %s", e.what());
+    peer_data.run_status_dlg(PeerDlg::JsonParseError, 1);
     peer_data.api_version = SemanticVersion(-1, -1);
     return RestServerResult::Void;
   }
-  if (root.HasMember("version")) {
-    auto s = root["version"].AsString().ToStdString();
+  if (root.contains("version")) {
+    auto s = root["version"].get<std::string>();
     peer_data.api_version = SemanticVersion::parse(s);
   }
-  if (root.HasMember("result")) {
-    return static_cast<RestServerResult>(root["result"].AsInt());
+  if (root.contains("result")) {
+    return static_cast<RestServerResult>(root["result"].get<int>());
   } else {
     return RestServerResult::Void;
   }
@@ -360,15 +357,15 @@ static void SendObjects(std::string& body, const std::string& api_key,
     struct MemoryStruct chunk;
     long response_code = ApiPost(url.str(), body, peer_data, &chunk);
     if (response_code == 200) {
-      wxString json(chunk.memory);
-      wxJSONValue root;
-      wxJSONReader reader;
-
-      int num_errors = reader.Parse(json, &root);
-      if (num_errors > 0)
-        wxLogDebug("SendObjects, parse errors: %d", num_errors);
+      std::string json(chunk.memory);
+      nlohmann::json root;
+      try {
+        root = nlohmann::json::parse(json);
+      } catch (nlohmann::json::exception& e) {
+        wxLogDebug("SendObjects, parse errors: %s", e.what());
+      }
       // Capture the result
-      int result = root["result"].AsInt();
+      int result = root["result"].get<int>();
       if (result > 0) {
         peer_data.run_status_dlg(PeerDlg::ErrorReturn, result);
       } else {
@@ -384,18 +381,18 @@ static void SendObjects(std::string& body, const std::string& api_key,
 
 /** Parse json message in chunk, return "result" from server. */
 static int CheckChunk(struct MemoryStruct& chunk, const std::string& guid) {
-  wxString body(chunk.memory);
-  wxJSONValue root;
-  wxJSONReader reader;
-  int num_errors = reader.Parse(body, &root);
-  if (num_errors > 0)
-    wxLogDebug("CheckChunk: parsing errors found: %d", num_errors);
-  int result = root["result"].AsInt();
-  if (result != 0) {
-    wxLogDebug("Server rejected guid %s, status: %d", guid.c_str(), result);
-    return result;
+  std::string body(chunk.memory);
+  nlohmann::json root;
+  try {
+    root = nlohmann::json::parse(body);
+  } catch (nlohmann::json::exception& e) {
+    wxLogDebug("CheckChunk: parsing errors found: %s", e.what());
   }
-  return 0;
+  if (!root.contains("result")) return 0;
+  int result = root["result"].get<int>();
+  if (result != 0)
+    wxLogDebug("Server rejected guid %s, status: %d", guid.c_str(), result);
+  return result;
 }
 
 /** Return true if server accepts overwriting all peer_data objects. */

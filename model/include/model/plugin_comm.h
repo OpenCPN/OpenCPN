@@ -28,12 +28,15 @@
 #include <wx/jsonval.h>
 #include <wx/string.h>
 
+#include "nlohmann/json.hpp"
+
 #include "model/ocpn_types.h"
 
-void SendMessageToAllPlugins(const wxString& message_id,
-                             const wxString& message_body);
+void SendMessageToAllPlugins(const std::string& message_id,
+                             const std::string& message_body);
 
-void SendJSONMessageToAllPlugins(const wxString& message_id, wxJSONValue v);
+void SendJsonMessageToAllPlugins(const std::string& message_id,
+                                 const nlohmann::json& v);
 
 void SendAISSentenceToAllPlugIns(const wxString& sentence);
 

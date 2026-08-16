@@ -24,6 +24,8 @@
 
 #include "config.h"
 
+#include "nlohmann/json.hpp"
+
 #include "gl_headers.h"  // Must be included before anything using GL stuff
 
 #include "model/georef.h"
@@ -1729,12 +1731,11 @@ bool TrackPropDlg::SaveChanges() {
   }
 
   if (m_pTrack && m_pTrack->IsRunning()) {
-    wxJSONValue v;
+    nlohmann::json v;
     v["Changed"] = true;
     v["Name"] = m_pTrack->GetName();
     v["GUID"] = m_pTrack->m_GUID;
-    wxString msg_id("OCPN_TRK_ACTIVATED");
-    SendJSONMessageToAllPlugins(msg_id, v);
+    SendJsonMessageToAllPlugins("OCPN_TRK_ACTIVATED", v);
   }
 
   return true;

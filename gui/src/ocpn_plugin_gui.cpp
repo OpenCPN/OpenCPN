@@ -363,7 +363,7 @@ ArrayOfPlugIn_AIS_Targets* GetAISTargetArray() {
 wxAuiManager* GetFrameAuiManager() { return g_pauimgr; }
 
 void SendPluginMessage(wxString message_id, wxString message_body) {
-  SendMessageToAllPlugins(message_id, message_body);
+  SendMessageToAllPlugins(message_id.ToStdString(), message_body.ToStdString());
 
   //  We will send an event to the main application frame (gFrame)
   //  for informational purposes.

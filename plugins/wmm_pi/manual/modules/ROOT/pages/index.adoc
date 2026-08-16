@@ -1,7 +1,7 @@
 = WMM
 
 The *World Magnetic Model PlugIn* for OpenCPN implements and bundles the
-the current NOAA World Magnetic Model, WMM2015, valid until 2020. The
+the current NOAA World Magnetic Model every five years. At the time of writing, WMM2025 model is activated and valid until 2029. The
 WMM plugin is an Internal Plugin, always distributed with OpenCPN, no separate download is required.
 
 https://blogs.agu.org/geospace/2019/02/27/historic-stone-walls-record-history-of-earths-magnetic-wanderings/[Old stone walls record history of Earth’s magnetic wanderings.]
