@@ -92,36 +92,12 @@ static const std::string kUdpServer = _("UDP Server");
 static const std::string kMulticastServer = _("Multicast Server");
 static const std::string kMulticastClient = _("Multicast Client");
 
-static const std::vector<std::string> kBasicNetTypes = {kTcpDevice, kGpsdDevice,
-                                                        kSignalkDevice};
+static const std::vector<std::string> kBasicNetTypes = {
+    kTcpDevice, kGpsdDevice, kUdpDevice, kSignalkDevice};
 
 static const std::vector<std::string> kAdvancedNetTypes = {
     kTcpClient, kUdpClient, kGpsdClient,      kSignalkClient,
     kTcpServer, kUdpServer, kMulticastClient, kMulticastServer};
-
-using NetTypePair = std::pair<unsigned, std::string>;
-
-static const std::vector<NetTypePair> kNetViewsById{
-    {1, kTcpDevice},        {2, kUdpDevice},       {3, kGpsdDevice},
-    {4, kTcpClient},        {5, kUdpClient},       {6, kGpsdClient},
-    {7, kSignalkClient},    {8, kTcpServer},       {9, kUdpServer},
-    {10, kMulticastServer}, {11, kMulticastClient}};
-
-/** return Net view name for given id or "" if not found */
-static std::string NetViewById(unsigned id) {
-  auto found =
-      std::find_if(kNetViewsById.begin(), kNetViewsById.end(),
-                   [id](const NetTypePair& p) { return p.first == id; });
-  return found == kNetViewsById.end() ? "" : found->second;
-}
-
-/** Return net view id for given name or 0 if not found. */
-static unsigned NetViewByName(const std::string& name) {
-  auto found =
-      std::find_if(kNetViewsById.begin(), kNetViewsById.end(),
-                   [name](const NetTypePair& p) { return p.second == name; });
-  return found == kNetViewsById.end() ? 0 : found->first;
-}
 
 static wxString StringArrayToString(const wxArrayString& arr) {
   wxString ret = wxEmptyString;
@@ -165,6 +141,36 @@ static bool IsAddressBroadcast(const wxString& ip) {
   }
   return wxAtoi(bytes[3]) == 255;
 }
+
+static bool IsAddressListener(const std::string& address) {
+  return address.empty() || address == "0.0.0.0";
+}
+
+/**
+ * Return net view name for given ConnectionParams. For ambigious cases
+ * like kTcpDevice (basic view)/kTcpClient (Advanced view) return
+ * the basic view.
+ */
+static std::string NetViewByConnection(const ConnectionParams* cp) {
+  bool is_server = IsAddressListener(cp->NetworkAddress.ToStdString());
+  if (IsAddressMultiCast(cp->NetworkAddress))
+    return is_server ? kMulticastServer : kMulticastClient;
+  switch (cp->NetProtocol) {
+    case NetworkProtocol::GPSD:
+      return kGpsdDevice;
+    case NetworkProtocol::SIGNALK:
+      return kSignalkDevice;
+    case NetworkProtocol::UDP:
+      return is_server ? kUdpClient : kUdpDevice;
+    case NetworkProtocol::TCP:
+      return is_server ? kTcpServer : kTcpDevice;
+    default:
+      wxLogWarning("Cannot deduce connection params view type");
+      return "";
+  }
+  return "";  // for the compiler
+}
+
 static wxArrayString GetAvailableSocketCANInterfaces() {
   wxArrayString rv;
 
@@ -362,7 +368,6 @@ void ConnectionEditDialog::OnOKClick() {
     if (selection != wxNOT_FOUND) {
       std::string selected =
           m_net_type_choice->GetString(selection).ToStdString();
-      m_cp_original->ui_conn_view = NetViewByName(selected);
     }
   }
   auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_tNetAddress);
@@ -444,7 +449,17 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
   m_choiceNetDataProtocol->Append("NMEA 2000");
   m_choiceNetDataProtocol->SetSelection(0);
   m_choiceNetDataProtocol->Enable();
-  if (type == kGpsdClient || type == kGpsdDevice) {
+  m_stNetAddr->Show();
+  m_tNetAddress->Show();
+  if (type == kUdpDevice) {
+    m_cbOutput->Disable();
+    m_stNetAddr->Hide();
+    m_tNetAddress->Hide();
+    m_cbInput->SetValue(true);
+    m_cbInput->Disable();
+    m_cbOutput->SetValue(false);
+    m_cbInput->Disable();
+  } else if (type == kGpsdClient || type == kGpsdDevice) {
     m_choiceNetDataProtocol->Clear();
     m_choiceNetDataProtocol->Append("gpsd");
     m_choiceNetDataProtocol->SetSelection(0);
@@ -461,7 +476,7 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
     m_stNetAddr->SetLabel(_("Interface"));
     m_tNetAddress->ChangeValue("0.0.0.0");
     m_tNetAddress->Disable();
-    m_tNetPort->SetValue(kDefaultTcpPort);
+    m_tNetPort->ChangeValue(kDefaultTcpPort);
   } else if (type == kMulticastClient || type == kMulticastServer) {
     m_tNetAddress->ChangeValue(kDefaultMulticastAddr);
     m_stNetAddr->SetLabel(_("Multicast group"));
@@ -470,6 +485,7 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
     m_cbInput->SetValue(false);
     m_cbInput->Disable();
   }
+  GetGrandParent()->Layout();
 }
 
 void ConnectionEditDialog::Init() {
@@ -647,7 +663,7 @@ void ConnectionEditDialog::Init() {
   gSizerNetProps->Add(m_stNetAddr, 0, wxALL, 5);
   m_tNetAddress =
       new TextCtrlWithHelp(this, _("Enter data source IP address or hostname"));
-  int column2width = 40 * this->GetCharWidth();
+  int column2width = 60 * GetCharWidth();
   m_tNetAddress->SetMaxSize(wxSize(column2width, -1));
   m_tNetAddress->SetMinSize(wxSize(column2width, -1));
   m_tNetAddress->Bind(wxEVT_KILL_FOCUS,
@@ -662,7 +678,12 @@ void ConnectionEditDialog::Init() {
   gSizerNetProps->Add(m_stNetPort, 0, wxALL, 5);
 
   m_tNetPort = new TextCtrlWithHelp(this, "Enter data source port");
+  m_tNetPort->SetMaxSize(wxSize(column2width, -1));
+  m_tNetPort->SetMinSize(wxSize(column2width, -1));
+
   gSizerNetProps->Add(m_tNetPort, 1, wxEXPAND | wxTOP, 5);
+  m_tNetPort->SetMaxSize(wxSize(column2width, -1));
+  m_tNetPort->SetMinSize(wxSize(column2width, -1));
   gSizerNetProps->AddSpacer(1);
   gSizerNetProps->AddSpacer(1);
 
@@ -1549,9 +1570,14 @@ void ConnectionEditDialog::PreloadControls(ConnectionParams* cp) {
 }
 
 void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
-  std::string ui_type = NetViewById(cp->ui_conn_view);
+  std::string ui_type = NetViewByConnection(cp);
   auto found = std::find(kBasicNetTypes.begin(), kBasicNetTypes.end(), ui_type);
   m_advanced_net_box->SetValue(found == kBasicNetTypes.end());
+  m_net_type_choice->Clear();
+  if (found == kBasicNetTypes.end())
+    for (const auto& view : kAdvancedNetTypes) m_net_type_choice->Append(view);
+  else
+    for (const auto& view : kBasicNetTypes) m_net_type_choice->Append(view);
   std::vector<std::string> all_views = kBasicNetTypes;
   for (const auto& view : kAdvancedNetTypes) all_views.push_back(view);
   found = std::find(all_views.begin(), all_views.end(), ui_type);
@@ -2084,7 +2110,6 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
   int selection = m_net_type_choice->GetSelection();
   if (selection != wxNOT_FOUND) {
     std::string s = m_net_type_choice->GetString(selection).ToStdString();
-    pConnectionParams->ui_conn_view = NetViewByName(s);
   }
   if (m_rbTypeSerial->GetValue())
     pConnectionParams->Type = SERIAL;
