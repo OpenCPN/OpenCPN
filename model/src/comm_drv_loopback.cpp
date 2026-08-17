@@ -37,7 +37,7 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 #include "model/comm_drv_loopback.h"
 #include "model/comm_navmsg.h"

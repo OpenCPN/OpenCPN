@@ -55,7 +55,7 @@
 #include <wx/textfile.h>
 
 #include "config.h"
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 #include "model/ais_decoder.h"
 #include "model/ais_state_vars.h"

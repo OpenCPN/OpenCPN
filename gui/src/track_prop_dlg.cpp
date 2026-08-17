@@ -24,7 +24,7 @@
 
 #include "config.h"
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 #include "gl_headers.h"  // Must be included before anything using GL stuff
 

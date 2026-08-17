@@ -21,7 +21,7 @@
 
 #include <gtest/gtest.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 #include "observable/configvar.h"
 
 #include "ocpn_plugin.h"

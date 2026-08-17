@@ -29,7 +29,7 @@
 
 #include <curl/curl.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 #include <wx/fileconf.h>
 #include <wx/log.h>

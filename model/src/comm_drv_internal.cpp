@@ -32,7 +32,7 @@
 #include <wx/log.h>
 #include <wx/string.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 #include "observable/observable.h"
 
 #include "config.h"

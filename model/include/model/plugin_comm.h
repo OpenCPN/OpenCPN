@@ -28,7 +28,7 @@
 #include <wx/jsonval.h>
 #include <wx/string.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 #include "model/ocpn_types.h"
 

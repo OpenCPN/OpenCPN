@@ -26,7 +26,7 @@
 #include <wx/window.h>
 
 #include <string>
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 class Manual {
 public:

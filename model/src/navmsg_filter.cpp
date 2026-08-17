@@ -24,7 +24,7 @@
 #include <fstream>
 #include <wx/log.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 #include "model/base_platform.h"
 #include "model/navmsg_filter.h"

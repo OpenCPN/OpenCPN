@@ -32,7 +32,7 @@
 #include <wx/wxprec.h>
 #include <wx/image.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 #include "observable/global_var.h"
 
 #include "model/ais_decoder.h"
