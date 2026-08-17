@@ -44,7 +44,7 @@
 #include <wx/sckaddr.h>
 #include <wx/socket.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 #include "wiz_ui.h"
 

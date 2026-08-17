@@ -1,6 +1,2 @@
 This is the library wrapper for the header-only json library at
 https://github.com/nlohmann/json.
-
-The upstream library is cloned in to the json/ directory. tests/,
-.github/ and docs/ has been removed to trim the size, all other
-files are present

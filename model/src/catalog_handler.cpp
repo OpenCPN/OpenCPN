@@ -31,7 +31,7 @@
 #include <wx/filename.h>
 #include <wx/log.h>
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 #include "observable/evtvar.h"
 #include "observable/global_var.h"
 

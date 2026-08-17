@@ -26,7 +26,7 @@
 
 #include "ocpn_plugin.h"
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 #include "observable/observable.h"
 
 #include "model/comm_navmsg.h"

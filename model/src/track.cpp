@@ -81,7 +81,7 @@ millions of points.
 
 #include "model/track.h"
 
-#include "nlohmann/json.hpp"
+#include "ocpn-nlohmann/json.hpp"
 
 #include "model/config_vars.h"
 #include "model/georef.h"
