@@ -82,10 +82,8 @@ private:
   void Init();
   void SetInitialSettings();
 
-  void ApplySettings();
-  ConnectionParams *CreateConnectionParamsFromSelectedItem();
-  ConnectionParams *UpdateConnectionParamsFromControls(
-      ConnectionParams *pConnectionParams);
+  // void ApplySettings();
+  ConnectionParams *UpdateConnectionParamsFromControls(ConnectionParams *cp);
   void SetSelectedConnectionPanel(ConnectionParamsPanel *panel);
   void OnSelectDatasource(wxListEvent &event);
   // void OnAddDatasourceClick(wxCommandEvent &event);
@@ -113,7 +111,7 @@ private:
   void OnValChange(wxCommandEvent &event);
   void OnUploadFormatChange(wxCommandEvent &event);
   void OnCollapsedToggle(bool collapsed);
-  void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
+  // void OnShowGpsWindowCheckboxClick(wxCommandEvent &event);
   void EnableConnection(ConnectionParams *conn, bool value);
   void OnDiscoverButton(wxCommandEvent &event);
   void UpdateDiscoverStatus(const wxString &stat);
