@@ -1,3 +1,9 @@
+opencpn (1:5.14.1+dfsg-3~bpo26.04~3) resolute; urgency=medium
+
+  *  Rebuild
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Tue, 18 Aug 2026 19:47:20 +0200
+
 opencpn (1:5.14.1+dfsg-3~bpo26.04~2) resolute; urgency=medium
 
   [ Dave Register ]
