@@ -32,6 +32,7 @@ Build-Depends: debhelper-compat (= 13),
  libwxgtk3.2-dev | libwxgtk3.0-gtk3-dev,
  libwxgtk-webview3.2-dev | libwxgtk-webview3.0-gtk3-dev,
  lsb-release,
+ nlohmann-json3-dev,
  portaudio19-dev,
  rapidjson-dev
 Standards-Version: 4.6.2
