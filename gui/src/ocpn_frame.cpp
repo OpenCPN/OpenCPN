@@ -20,6 +20,9 @@
  *
  * OpenCPN top window
  */
+
+#include <string>
+
 #include "config.h"
 #include "gl_headers.h"  // Must be included before anything using GL stuff
 
@@ -6313,8 +6316,8 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
             int n = 1;
             while (node != (*itp)->m_HyperlinkList->end()) {
               Hyperlink *httpLink = *node;
-              v[i]["WPLink" + wxString::Format("%d", n)] = httpLink->Link;
-              v[i]["WPLinkDesciption" + wxString::Format("%d", n++)] =
+              v[i]["WPLink" + std::to_string(n)] = httpLink->Link;
+              v[i]["WPLinkDesciption" + std::to_string(n++)] =
                   httpLink->DescrText;
               ++node;
             }
