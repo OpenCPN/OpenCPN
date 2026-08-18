@@ -24,7 +24,9 @@ along with this program; if not, see <https://www.gnu.org/licenses/>.
 #endif
 
 // See "Implicit Conversions" in https://github.com/nlohmann/json/README.md
+#ifndef JSON_USE_IMPLICIT_CONVERSIONS
 #define JSON_USE_IMPLICIT_CONVERSIONS 0
+#endif
 
 #include "nlohmann/json.hpp"
 
