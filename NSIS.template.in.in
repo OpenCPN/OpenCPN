@@ -33,7 +33,7 @@ CMake variables
 ----------------------------------------------------------------------------------------------------------*/
 ; Enabled on MINGW builds:
 ;!define NSIS_PACKEDVERSION true
- 
+
 ;# Set compression
 	SetCompressor /FINAL lzma
 !ifdef NSIS_PACKEDVERSION
@@ -956,8 +956,8 @@ SectionEnd
 ;##################################################################################################
 ;#  .onInit Function
 Function .onInit
-	;# Check if Windows version is at least Win7 (not XP, 98, Win 2000 or older)
-	${IfNot} ${AtLeastWin7}
+	;# Require Windows 8 or later (block Windows 7 and older)
+	${IfNot} ${AtLeastWin8}
 		MessageBox MB_OK|MB_ICONEXCLAMATION "$(Installer_Unsupported_Windows_Version)"
 		Abort
 	${EndIf}
