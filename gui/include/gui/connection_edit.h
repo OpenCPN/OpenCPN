@@ -67,6 +67,7 @@ public:
   void SetDefaultConnectionParams();
   void SetNewMode(bool mode) { m_new_mode = mode; }
   void AddOKCancelButtons();
+
   /** Return parameters instance populated from UI elements owned by caller */
   ConnectionParams* GetParamsFromControls();
   void PreloadControls(ConnectionParams* cp);

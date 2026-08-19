@@ -82,7 +82,7 @@ public:
   NetworkProtocol NetProtocol;
   wxString NetworkAddress;
   int NetworkPort;
-  bool is_server;  // Currently used for multicast
+  bool is_server;
 
   wxString LastNetworkAddress;
   int LastNetworkPort;

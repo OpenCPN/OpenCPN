@@ -83,20 +83,20 @@ static const std::string kUdpDevice = _("UDP device");
 static const std::string kGpsdDevice = _("Gpsd");
 static const std::string kSignalkDevice = _("SignalK server");
 static const std::string kTcpClient = _("TCP client");
-static const std::string kUdpClient = _("UDP client");
+static const std::string kUdpOutput = _("UDP output");
 static const std::string kGpsdClient = _("Gpsd client");
 static const std::string kSignalkClient = _("SignalK client");
 static const std::string kTcpServer = _("TCP Server");
-static const std::string kUdpServer = _("UDP Server");
-static const std::string kMulticastServer = _("Multicast Server");
-static const std::string kMulticastClient = _("Multicast Client");
+static const std::string kUdpInput = _("UDP Input");
+static const std::string kMulticastServer = _("Multicast Server (in/out)");
+static const std::string kMulticastClient = _("Multicast output (client)");
 
 static const std::vector<std::string> kBasicNetViews = {
     kTcpDevice, kGpsdDevice, kUdpDevice, kSignalkDevice};
 
 static const std::vector<std::string> kAdvancedNetViews = {
-    kTcpClient, kUdpClient, kGpsdClient,      kSignalkClient,
-    kTcpServer, kUdpServer, kMulticastClient, kMulticastServer};
+    kTcpClient, kUdpOutput, kGpsdClient,      kSignalkClient,
+    kTcpServer, kUdpInput,  kMulticastClient, kMulticastServer};
 
 static wxString StringArrayToString(const wxArrayString& arr) {
   wxString ret = wxEmptyString;
@@ -157,7 +157,7 @@ static std::string NetViewByConnection(const ConnectionParams* cp) {
     case NetworkProtocol::SIGNALK:
       return kSignalkDevice;
     case NetworkProtocol::UDP:
-      return is_server ? kUdpClient : kUdpDevice;
+      return is_server ? kUdpDevice : kUdpOutput;
     case NetworkProtocol::TCP:
       return is_server ? kTcpServer : kTcpDevice;
     default:
@@ -382,14 +382,14 @@ void ConnectionEditDialog::AddOKCancelButtons() {
     m_std_dialog_btn_sizer->Show(true);
   }
 #else
-  if (!m_btn_sizer) {
-    m_btn_sizer = new wxStdDialogButtonSizer();
-    m_btn_ok = new wxButton(this, wxID_OK);
-    m_btn_cancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
-    m_btn_sizer->AddSpacer(wxWindow::GetCharWidth());
-    m_btn_sizer->Add(m_btn_ok, 0, wxALL, 5);
-    m_btn_sizer->Add(m_btn_cancel, 0, wxALL, 5);
-    GetSizer()->Add(m_btn_sizer, 0, wxALL | wxEXPAND, 5);
+  if (!m_std_dialog_btn_sizer) {
+    m_std_dialog_btn_sizer = new wxStdDialogButtonSizer();
+    m_dlg_ok_btn = new wxButton(this, wxID_OK);
+    m_dlg_cancel_btn = new wxButton(this, wxID_CANCEL, _("Cancel"));
+    m_std_dialog_btn_sizer->AddSpacer(wxWindow::GetCharWidth());
+    m_std_dialog_btn_sizer->Add(m_dlg_ok_btn, 0, wxALL, 5);
+    m_std_dialog_btn_sizer->Add(m_dlg_cancel_btn, 0, wxALL, 5);
+    GetSizer()->Add(m_std_dialog_btn_sizer, 0, wxALL | wxEXPAND, 5);
   }
 #endif
 
@@ -502,18 +502,26 @@ void ConnectionEditDialog::OnConnectionTypeChange() {
     m_net_data_protocol_choice->Append("SignalK");
     m_net_data_protocol_choice->SetSelection(0);
     m_net_data_protocol_choice->Enable();
-  } else if (view == kTcpServer || view == kUdpServer) {
+  } else if (view == kTcpServer || view == kUdpInput) {
     m_net_addr_text->SetLabel(_("Interface"));
     m_net_address_tc->ChangeValue("0.0.0.0");
     m_net_address_tc->Disable();
     m_net_port_tc->ChangeValue(kDefaultTcpPort);
+    m_input_cb->SetValue(true);
+    m_input_cb->Disable();
   } else if (view == kMulticastClient || view == kMulticastServer) {
     m_net_address_tc->ChangeValue(kDefaultMulticastAddr);
     m_net_addr_text->SetLabel(_("Multicast group"));
   }
-  if (view == kMulticastClient || view == kUdpClient) {
+  if (view == kMulticastClient || view == kUdpOutput) {
     m_input_cb->SetValue(false);
     m_input_cb->Disable();
+    m_output_cb->SetValue(true);
+  } else if (view == kMulticastServer) {
+    m_input_cb->SetValue(true);
+    m_input_cb->Disable();
+    m_output_cb->SetValue(false);
+    m_output_cb->Enable();
   }
   RefreshAdvancedDetails();
 }
@@ -1768,7 +1776,7 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
   std::string type;
   if (selection != wxNOT_FOUND)
     type = m_net_type_choice->GetString(selection).ToStdString();
-  if (type == kUdpServer || type == kMulticastServer) {
+  if (type == kUdpInput || type == kMulticastServer) {
     if (is_output_enabled) {
       // Check for a UDP input connection on the same port
       NetworkProtocol proto = UDP;
@@ -1908,8 +1916,9 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
       pConnectionParams->NetProtocol = TCP;
       pConnectionParams->Protocol =
           static_cast<DataProtocol>(m_net_data_protocol_choice->GetSelection());
-    } else if (net_type == kUdpClient || net_type == kUdpServer ||
-               net_type == kMulticastClient || net_type == kMulticastServer) {
+    } else if (net_type == kUdpOutput || net_type == kUdpInput ||
+               net_type == kUdpDevice || net_type == kMulticastClient ||
+               net_type == kMulticastServer) {
       pConnectionParams->NetProtocol = UDP;
       pConnectionParams->Protocol =
           static_cast<DataProtocol>(m_net_data_protocol_choice->GetSelection());
@@ -1921,7 +1930,7 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
       pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     };
     pConnectionParams->is_server = net_type == kTcpServer ||
-                                   net_type == kUdpServer ||
+                                   net_type == kUdpInput ||
                                    net_type == kMulticastServer;
   }
   if (m_type_serial_radiobtn->GetValue())
