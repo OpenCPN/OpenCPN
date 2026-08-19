@@ -13,8 +13,8 @@ LangString Installer_Running ${LANG_DUTCH} "Bezig met installeren"
 #LangString Uninstaller_Running ${LANG_ENGLISH} "The uninstaller is already running."
 LangString Uninstaller_Running ${LANG_DUTCH} "Bezig met verwijderen"
 
-#LangString LangDialog_Title ${LANG_ENGLISH} "OpenCPN 5.15.100 Installation"
-LangString LangDialog_Title ${LANG_DUTCH} "OpenCPN 5.15.100 installatie"
+#LangString LangDialog_Title ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
+LangString LangDialog_Title ${LANG_DUTCH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ installatie"
 
 #LangString LangDialog_Text ${LANG_ENGLISH} "Please select a language:"
 LangString LangDialog_Text ${LANG_DUTCH} "Kies een taal:"
@@ -220,8 +220,8 @@ LangString SecSetConfig_Desc ${LANG_DUTCH} "Instellen van taal en kaartmappen vo
 #LangString UnSecDeleteConfigFolder_Desc ${LANG_ENGLISH} "Deletes the config folder and all its files and subdirectories."
 LangString UnSecDeleteConfigFolder_Desc ${LANG_DUTCH} "Verwijderen van de configuratiemap en van alle hierin aanwezige bestanden en mappen"
 
-#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall OpenCPN 5.15.100"
-LangString Uninstall_Link ${LANG_DUTCH} "Verwijder OpenCPN 5.15.100"
+#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
+LangString Uninstall_Link ${LANG_DUTCH} "Verwijder @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
 
 #LangString Page_TypeInst_Title ${LANG_ENGLISH} "Previous Installations"
 LangString Page_TypeInst_Title ${LANG_DUTCH} "Vorige installaties"
@@ -238,11 +238,11 @@ LangString Page_TypeInst_Subtitle_1 ${LANG_DUTCH} "Reeds geïnstalleerde versie 
 #LangString Page_TypeInst_Title_Exists ${LANG_ENGLISH} "Version Already Installed"
 LangString Page_TypeInst_Title_Exists ${LANG_DUTCH} "Versie is al geïnstalleerd"
 
-#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle_Exists ${LANG_DUTCH} "OpenCPN 5.15.100 is al geïnstalleerd.$\r$\nKies hoe u OpenCPN wilt installeren."
+#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed.$\r$\nChoose how you want to install OpenCPN."
+LangString Page_TypeInst_Subtitle_Exists ${LANG_DUTCH} "OpenCPN @CPACK_PACKAGE_VERSION@ is al geïnstalleerd.$\r$\nKies hoe u OpenCPN wilt installeren."
 
-#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
-LangString Label_TypeInst_Reinstall_Text ${LANG_DUTCH} "OpenCPN 5.15.100 is al geïnstalleerd op uw systeem. U kunt herinstalleren met gebruik van uw vorige instellingen. Als u wilt installeren met andere instellingen, stop dan de installatie en verwijder eerst de huidige versie. Klik op 'Volgende' om door te gaan."
+#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
+LangString Label_TypeInst_Reinstall_Text ${LANG_DUTCH} "OpenCPN @CPACK_PACKAGE_VERSION@ is al geïnstalleerd op uw systeem. U kunt herinstalleren met gebruik van uw vorige instellingen. Als u wilt installeren met andere instellingen, stop dan de installatie en verwijder eerst de huidige versie. Klik op 'Volgende' om door te gaan."
 
 #LangString RB_Reinstall_TypeInst_Text ${LANG_ENGLISH} "Reinstall using previous settings"
 LangString RB_Reinstall_TypeInst_Text ${LANG_DUTCH} "Herinstalleren met gebruik van vorige instellingen"
@@ -274,8 +274,8 @@ LangString Show_Readme_Text ${LANG_DUTCH} "Toon installatie-logbestand"
 #LangString Finish_Link_Text ${LANG_ENGLISH} "OpenCPN website (Internet connection required)"
 LangString Finish_Link_Text ${LANG_DUTCH} "OpenCPN website (Internetverbinding nodig)"
 
-#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
-LangString Finish_Link_URL ${LANG_DUTCH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
+#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
+LangString Finish_Link_URL ${LANG_DUTCH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
 
 #LangString Msg_UAC_Admin_Retry ${LANG_ENGLISH} "This $Inst_Or_Uninst requires admin access!$\r$\nPlease log on as an Administrator and try again."
 LangString Msg_UAC_Admin_Retry ${LANG_DUTCH} "Deze $Inst_Or_Uninst vereist administratortoegang!$\r$\nLog in als Administrator en probeer het opnieuw."
@@ -304,11 +304,11 @@ LangString Msg_Uninstall_Old_Versions ${LANG_DUTCH} "Setup heeft ten minste éé
 #LangString Msg_Not_All_Old_Uninstalled ${LANG_ENGLISH} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
 LangString Msg_Not_All_Old_Uninstalled ${LANG_DUTCH} "U heeft niet alle vorige versies verwijderd.$\r$\n$\r$\nWilt u toch doorgaan?"
 
-#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
-LangString Msg_Uninstaller_Param_Help ${LANG_DUTCH} "Verwijder hulp$\r$\n$\r$\nMaak gebruik van de opdrachtprompt of van een snelkoppeling om het verwijderprogramma te starten:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\Dit help-bericht wordt weergegeven$\r$\n/S$\tLaat het verwijderprogramma op de achtergrond draaien$\r$\n$\Een volledige verwijdering wordt uitgevoerd als er geen type-parameter wordt opgegeven$\r$\n/type=X$\tX moet een cijfer zijn tussen 1 en 5$\r$\n$\t1 = Verwijdert alleen de programmabestanden$\r$\n$\t2 = Verwijdert de programmabestanden + preconfig RegKey$\r$\n$\t3 = Verwijdert de programmabestanden + configuratiemap$\r$\n$\tBehoudt preconfig RegKey$\r$\n$\t4 = Verwijdert alleen de configuratiemap$\r$\n$\t5 = Verwijdert alleen preconfig RegKey$\r$\n$\r$\nAls u een ander cijfer of andere waarde invoert, zal het verwijderprogramma stoppen zonder iets te verwijderen."
+#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
+LangString Msg_Uninstaller_Param_Help ${LANG_DUTCH} "Verwijder hulp$\r$\n$\r$\nMaak gebruik van de opdrachtprompt of van een snelkoppeling om het verwijderprogramma te starten:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\Dit help-bericht wordt weergegeven$\r$\n/S$\tLaat het verwijderprogramma op de achtergrond draaien$\r$\n$\Een volledige verwijdering wordt uitgevoerd als er geen type-parameter wordt opgegeven$\r$\n/type=X$\tX moet een cijfer zijn tussen 1 en 5$\r$\n$\t1 = Verwijdert alleen de programmabestanden$\r$\n$\t2 = Verwijdert de programmabestanden + preconfig RegKey$\r$\n$\t3 = Verwijdert de programmabestanden + configuratiemap$\r$\n$\tBehoudt preconfig RegKey$\r$\n$\t4 = Verwijdert alleen de configuratiemap$\r$\n$\t5 = Verwijdert alleen preconfig RegKey$\r$\n$\r$\nAls u een ander cijfer of andere waarde invoert, zal het verwijderprogramma stoppen zonder iets te verwijderen."
 
-#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall 5.15.100.exe /?$\r$\nto see a list of valid values."
-LangString Msg_Unknown_Type_Param ${LANG_DUTCH} "De ingevoerde waarde '$9' voor de type-parameter is niet geldig!$\r$\nGebruik $INSTDIR\Uninstall 5.15.100.exe /?$\r$\nom een lijst van geldige waardes te zien."
+#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\nto see a list of valid values."
+LangString Msg_Unknown_Type_Param ${LANG_DUTCH} "De ingevoerde waarde '$9' voor de type-parameter is niet geldig!$\r$\nGebruik $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\nom een lijst van geldige waardes te zien."
 
 ;added on 2010-10-16
 #LangString SecGrpShortcuts_Text ${LANG_ENGLISH} "Create Shortcuts"
@@ -342,8 +342,8 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_DUTCH} "Verwijderen van configura
 LangString Uninstall_Folder_Name ${LANG_DUTCH} "Uninstall"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "OpenCPN Version 5.15.100"
-LangString ^NameDA ${LANG_DUTCH} "OpenCPN versie 5.15.100"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_DUTCH} "@CPACK_PACKAGE_NAME@ versie @CPACK_PACKAGE_VERSION@"
 
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"

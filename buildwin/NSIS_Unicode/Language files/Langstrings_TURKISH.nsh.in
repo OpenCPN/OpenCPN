@@ -13,8 +13,8 @@ LangString Installer_Running ${LANG_TURKISH} "Kurulum sürüyor"
 #LangString Uninstaller_Running ${LANG_ENGLISH} "The uninstaller is already running."
 LangString Uninstaller_Running ${LANG_TURKISH} "Kaldýrma iþlemi sürüyor"
 
-#LangString LangDialog_Title ${LANG_ENGLISH} "OpenCPN 5.15.100 Installation"
-LangString LangDialog_Title ${LANG_TURKISH} "OpenCPN 5.15.100 Kurulumu"
+#LangString LangDialog_Title ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
+LangString LangDialog_Title ${LANG_TURKISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Kurulumu"
 
 #LangString LangDialog_Text ${LANG_ENGLISH} "Please select a language:"
 LangString LangDialog_Text ${LANG_TURKISH} "Lütfen bir dil seçin"
@@ -220,8 +220,8 @@ LangString SecSetConfig_Desc ${LANG_TURKISH} "OpenCPN'nin dil ayarlarý ve harit
 #LangString UnSecDeleteConfigFolder_Desc ${LANG_ENGLISH} "Deletes the config folder and all its files and subdirectories."
 LangString UnSecDeleteConfigFolder_Desc ${LANG_TURKISH} "Yapýlandýrma klasörünü alt klasörleriyle ve tüm dosyalarýyla birlikte siler."
 
-#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall OpenCPN 5.15.100"
-LangString Uninstall_Link ${LANG_TURKISH} "OpenCPN 5.15.100 kaldýr."
+#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
+LangString Uninstall_Link ${LANG_TURKISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ kaldýr."
 
 #LangString Page_TypeInst_Title ${LANG_ENGLISH} "Previous Installations"
 LangString Page_TypeInst_Title ${LANG_TURKISH} "Önceki kurulumlar"
@@ -238,11 +238,11 @@ LangString Page_TypeInst_Subtitle_1 ${LANG_TURKISH} "Kurulu OpenCPN sürümü bu
 #LangString Page_TypeInst_Title_Exists ${LANG_ENGLISH} "Version Already Installed"
 LangString Page_TypeInst_Title_Exists ${LANG_TURKISH} "Sürüm Kuruldu."
 
-#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle_Exists ${LANG_TURKISH} "OpenCPN 5.15.100 kuruldu.$\r$\nOpenCPN'yi nasýl kurmak istedinizi seçin."
+#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed.$\r$\nChoose how you want to install OpenCPN."
+LangString Page_TypeInst_Subtitle_Exists ${LANG_TURKISH} "OpenCPN @CPACK_PACKAGE_VERSION@ kuruldu.$\r$\nOpenCPN'yi nasýl kurmak istedinizi seçin."
 
-#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
-LangString Label_TypeInst_Reinstall_Text ${LANG_TURKISH} "OpenCPN 5.15.100 bilgisayarýnýza kuruldu. Sürümü önceki ayarlarý kullanarak yeniden kurabilirsiniz. Programý baþka ayarlarla yeniden yüklemek isterseniz, kurulumu iptal edin ve önce varolan sürümü kaldýrýn. Devam etmek 'Sonra'yý týklayýn."
+#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
+LangString Label_TypeInst_Reinstall_Text ${LANG_TURKISH} "OpenCPN @CPACK_PACKAGE_VERSION@ bilgisayarýnýza kuruldu. Sürümü önceki ayarlarý kullanarak yeniden kurabilirsiniz. Programý baþka ayarlarla yeniden yüklemek isterseniz, kurulumu iptal edin ve önce varolan sürümü kaldýrýn. Devam etmek 'Sonra'yý týklayýn."
 
 #LangString RB_Reinstall_TypeInst_Text ${LANG_ENGLISH} "Reinstall using previous settings"
 LangString RB_Reinstall_TypeInst_Text ${LANG_TURKISH} "Önceki ayarlarý kullanarak yeniden kur."
@@ -274,8 +274,8 @@ LangString Show_Readme_Text ${LANG_TURKISH} "Kurulum kütük dosyasýný göster
 #LangString Finish_Link_Text ${LANG_ENGLISH} "OpenCPN website (Internet connection required)"
 LangString Finish_Link_Text ${LANG_TURKISH} "OpenCPN web sayfasý (Ýnternet baðlantýsý gerekir)"
 
-#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
-LangString Finish_Link_URL ${LANG_TURKISH} "http://opencpn.info/?ref=Kuran&Kullanan=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
+#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
+LangString Finish_Link_URL ${LANG_TURKISH} "http://opencpn.info/?ref=Kuran&Kullanan=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
 
 #LangString Msg_UAC_Admin_Retry ${LANG_ENGLISH} "This $Inst_Or_Uninst requires admin access!$\r$\nPlease log on as an Administrator and try again."
 LangString Msg_UAC_Admin_Retry ${LANG_TURKISH} "Bu kurulum ya da kurulumu kaldýrmak yetkili(admin) giriþini gerektiriyor!$\r$\nLütfen yetkili olarak giriþ yapýn ve yeniden deneyin. "
@@ -304,11 +304,11 @@ LangString Msg_Uninstall_Old_Versions ${LANG_TURKISH} "Kurulum yeni sürümle uy
 #LangString Msg_Not_All_Old_Uninstalled ${LANG_ENGLISH} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
 LangString Msg_Not_All_Old_Uninstalled ${LANG_TURKISH} "Önceki kurulumlarý kaldýrmadýnýz.$\r$\n$\r$\nGene de devam etmek istiyor musunuz?"
 
-#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
-LangString Msg_Uninstaller_Param_Help ${LANG_TURKISH} "Kurulumu kaldýrmak için yardým$\r$\nKurulumu çalýþtýrmak için komut çizgisini ya da kýsa yolu kullan:$\r$\n. $INSTDIR\Uninstall 5.15.100.exe [/?] | [/S],[/type=X]$\r$\n$\r$\nDeðiþkenler:$\r$\n/?$\tBu yardým mesaj kutusunu gösterir$\r$\n/S$\tKurulumu kKaldýr'ý sessiz modda çalýþtýrýr$\r$\n$\therhangi bir tip deðiþken belirlenmemesi durumunda tümüyle kaldýracak.$\r$\n/tip=X$\tX Rakamýn 1 ile 5 arasýnda bir rakam olmasý gerekir$\r$\n$\t1 = Sadece program dosyalarýný kaldýrýr$\r$\n$\t2 = Program dosyalarýný + önyapýlandýrma kayýt anahtarýný kaldýrýr$\r$\n$\t3 = Program dosyalarý + yapýlandýrma klasörünü kaldýrýr$\r$\n$\tÖnyapýlandýrma kayýt anahtarýný korur$\r$\n$\t4 = Sadece yapýlandýrma klasörünü siler$\r$\n$\t5 = Önyapýlandýrma kayýt anahtarýný siler$\r$\n$\r$\nBaþka bir rakamýn ya da deðerin girilmesi, herhangi bir þeyi silip kaldýrmadan, 'Kurulumu Kaldýr'ý durdurur. "
+#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
+LangString Msg_Uninstaller_Param_Help ${LANG_TURKISH} "Kurulumu kaldýrmak için yardým$\r$\nKurulumu çalýþtýrmak için komut çizgisini ya da kýsa yolu kullan:$\r$\n. $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S],[/type=X]$\r$\n$\r$\nDeðiþkenler:$\r$\n/?$\tBu yardým mesaj kutusunu gösterir$\r$\n/S$\tKurulumu kKaldýr'ý sessiz modda çalýþtýrýr$\r$\n$\therhangi bir tip deðiþken belirlenmemesi durumunda tümüyle kaldýracak.$\r$\n/tip=X$\tX Rakamýn 1 ile 5 arasýnda bir rakam olmasý gerekir$\r$\n$\t1 = Sadece program dosyalarýný kaldýrýr$\r$\n$\t2 = Program dosyalarýný + önyapýlandýrma kayýt anahtarýný kaldýrýr$\r$\n$\t3 = Program dosyalarý + yapýlandýrma klasörünü kaldýrýr$\r$\n$\tÖnyapýlandýrma kayýt anahtarýný korur$\r$\n$\t4 = Sadece yapýlandýrma klasörünü siler$\r$\n$\t5 = Önyapýlandýrma kayýt anahtarýný siler$\r$\n$\r$\nBaþka bir rakamýn ya da deðerin girilmesi, herhangi bir þeyi silip kaldýrmadan, 'Kurulumu Kaldýr'ý durdurur. "
 
-#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall 5.15.100.exe /?$\r$\nto see a list of valid values."
-LangString Msg_Unknown_Type_Param ${LANG_TURKISH} "Girilen tip deðiþken '$9' deðeri geçerli deðil!$\r$\ngeçerli deðerleri görmek için$\r$\n$INSTDIR\Uninstall 5.15.100.exe kullanýn"
+#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\nto see a list of valid values."
+LangString Msg_Unknown_Type_Param ${LANG_TURKISH} "Girilen tip deðiþken '$9' deðeri geçerli deðil!$\r$\ngeçerli deðerleri görmek için$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe kullanýn"
 
 #LangString SecGrpShortcuts_Text ${LANG_ENGLISH} "Create Shortcuts"
 LangString SecGrpShortcuts_Text ${LANG_TURKISH} "Kýsa yollar oluþtur"
@@ -337,8 +337,8 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_TURKISH} "Yapýlandýrma klasör�
 #LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
 LangString Uninstall_Folder_Name ${LANG_TURKISH} "Kurulumu kaldýr"
 
-#LangString ^NameDA ${LANG_ENGLISH} "OpenCPN Version 5.15.100"
-LangString ^NameDA ${LANG_TURKISH} "OpenCPN Version 5.15.100"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_TURKISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
 
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
 LangString License_Message ${LANG_TURKISH} "openCPN özgür bir programdýr. Kopyalamanýz, yeniden kurmanýz, ayar yapmanýz ve bu programý GPL kurallarýna uygun olarak kendiniz ve arkadaþlarýnýz için çoðaltmanýz yasal olduðu gibi istenen bir þeydir.$\r$\nRüzgar kolayýnýza olsun!"

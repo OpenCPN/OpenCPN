@@ -13,8 +13,8 @@ LangString Installer_Running ${LANG_SWEDISH} "Installationen körs redan."
 #LangString Installer ${LANG_ENGLISH} "installer"
 LangString Uninstaller_Running ${LANG_SWEDISH} "Avinstallationen körs redan."
 
-#LangString LangDialog_Title ${LANG_ENGLISH} "OpenCPN 5.15.100 Installation"
-LangString LangDialog_Title ${LANG_SWEDISH} "OpenCPN 5.15.100 Installation"
+#LangString LangDialog_Title ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
+LangString LangDialog_Title ${LANG_SWEDISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
 
 #LangString LangDialog_Text ${LANG_ENGLISH} "Please select a language:"
 LangString LangDialog_Text ${LANG_SWEDISH} "Välj språk:"
@@ -220,8 +220,8 @@ LangString SecSetConfig_Desc ${LANG_SWEDISH} "Förkonfigurera språkinställning
 #LangString UnSecDeleteConfigFolder_Desc ${LANG_ENGLISH} "Deletes the config folder and all its files and subdirectories."
 LangString UnSecDeleteConfigFolder_Desc ${LANG_SWEDISH} "Raderar konfigurationskatalogen och alla dess underkataloger."
 
-#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall OpenCPN 5.15.100"
-LangString Uninstall_Link ${LANG_SWEDISH} "Avinstallera OpenCPN 5.15.100"
+#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
+LangString Uninstall_Link ${LANG_SWEDISH} "Avinstallera @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
 
 #LangString Page_TypeInst_Title ${LANG_ENGLISH} "Previous Installations"
 LangString Page_TypeInst_Title ${LANG_SWEDISH} "Föregående installationer"
@@ -238,11 +238,11 @@ LangString Page_TypeInst_Subtitle_1 ${LANG_SWEDISH} "Hittade installerad version
 #LangString Page_TypeInst_Title_Exists ${LANG_ENGLISH} "Version Already Installed"
 LangString Page_TypeInst_Title_Exists ${LANG_SWEDISH} "Versionen redan installerad"
 
-#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle_Exists ${LANG_SWEDISH} "OpenCPN 5.15.100 är redan installerat.$\r$\nVälj hur du vill installera OpenCPN."
+#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed.$\r$\nChoose how you want to install OpenCPN."
+LangString Page_TypeInst_Subtitle_Exists ${LANG_SWEDISH} "OpenCPN @CPACK_PACKAGE_VERSION@ är redan installerat.$\r$\nVälj hur du vill installera OpenCPN."
 
-#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
-LangString Label_TypeInst_Reinstall_Text ${LANG_SWEDISH} "OpenCPN 5.15.100 är redan installerat. Du kan ominstallera och använda föregående inställningar. Om du vill ominstallera med andra inställningar, avbryt installationen och avinstallera den gamla versionen. Klicka nästa för att fortsätta."
+#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
+LangString Label_TypeInst_Reinstall_Text ${LANG_SWEDISH} "OpenCPN @CPACK_PACKAGE_VERSION@ är redan installerat. Du kan ominstallera och använda föregående inställningar. Om du vill ominstallera med andra inställningar, avbryt installationen och avinstallera den gamla versionen. Klicka nästa för att fortsätta."
 
 #LangString RB_Reinstall_TypeInst_Text ${LANG_ENGLISH} "Reinstall using previous settings"
 LangString RB_Reinstall_TypeInst_Text ${LANG_SWEDISH} "Ominstallera med föregående inställningar"
@@ -274,8 +274,8 @@ LangString Show_Readme_Text ${LANG_SWEDISH} "Visa installationsloggen"
 #LangString Finish_Link_Text ${LANG_ENGLISH} "OpenCPN website (Internet connection required)"
 LangString Finish_Link_Text ${LANG_SWEDISH} "Webbplatsen för OpenCPN (Internet-anslutning krävs)"
 
-#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
-LangString Finish_Link_URL ${LANG_SWEDISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
+#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
+LangString Finish_Link_URL ${LANG_SWEDISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
 
 #LangString Msg_UAC_Admin_Retry ${LANG_ENGLISH} "This $Inst_Or_Uninst requires admin access!$\r$\nPlease log on as an Administrator and try again."
 LangString Msg_UAC_Admin_Retry ${LANG_SWEDISH} "Denna $Inst_Or_Uninst kräver administrationsrättigheter!$\r$\nLogga in som Administratör och försök igen."
@@ -304,11 +304,11 @@ LangString Msg_Uninstall_Old_Versions ${LANG_SWEDISH} "Installationsprogrammet h
 #LangString Msg_Not_All_Old_Uninstalled ${LANG_ENGLISH} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
 LangString Msg_Not_All_Old_Uninstalled ${LANG_SWEDISH} "Du har inte avinstallerat alla föregående installationer.$\r$\n$\r$\nVill du fortsätta ändå?"
 
-#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
-LangString Msg_Uninstaller_Param_Help ${LANG_SWEDISH} "Hjälp för installationsprogrammet$\r$\n$\r$\nAnvänd kommandoraden eller en genväg för att köra installationsprogrammet:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tvisar denna hjälpruta$\r$\n/S$\tkör avinstallationsprogrammet i tyst läge$\r$\n$\tutför en full avinstallation om ingen parameter anges i anropet$\r$\n/type=X$\tX måste vara en siffra mellan 1 och 5$\r$\n$\t1 = Tar endast bort programfilerna$\r$\n$\t2 = Tar bort programfiler + registernyckeln för förkonfiguration$\r$\n$\t3 = Tar bort programfilerna samt konfigurationskatalogen$\r$\n$\tBevarar registernyckeln för förkonfiguration$\r$\n$\t4 = Raderar endast konfigurationsmappen$\r$\n$\t5 = Raderar endast registernyckeln för förkonfiguration$\r$\n$\r$\nInmatning av ett annat värde avslutar avinstallationen, visar en meddelanderuta och tar inte bort eller raderar något."
+#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
+LangString Msg_Uninstaller_Param_Help ${LANG_SWEDISH} "Hjälp för installationsprogrammet$\r$\n$\r$\nAnvänd kommandoraden eller en genväg för att köra installationsprogrammet:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tvisar denna hjälpruta$\r$\n/S$\tkör avinstallationsprogrammet i tyst läge$\r$\n$\tutför en full avinstallation om ingen parameter anges i anropet$\r$\n/type=X$\tX måste vara en siffra mellan 1 och 5$\r$\n$\t1 = Tar endast bort programfilerna$\r$\n$\t2 = Tar bort programfiler + registernyckeln för förkonfiguration$\r$\n$\t3 = Tar bort programfilerna samt konfigurationskatalogen$\r$\n$\tBevarar registernyckeln för förkonfiguration$\r$\n$\t4 = Raderar endast konfigurationsmappen$\r$\n$\t5 = Raderar endast registernyckeln för förkonfiguration$\r$\n$\r$\nInmatning av ett annat värde avslutar avinstallationen, visar en meddelanderuta och tar inte bort eller raderar något."
 
-#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall 5.15.100.exe /?$\r$\nto see a list of valid values."
-LangString Msg_Unknown_Type_Param ${LANG_SWEDISH} "Det inmatade värdet '$9' för denna typ av parameter är inte giltigt!$\r$\nAnvänd $INSTDIR\Uninstall 5.15.100.exe /?$\r$\nför att se en lista på giltiga värden."
+#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\nto see a list of valid values."
+LangString Msg_Unknown_Type_Param ${LANG_SWEDISH} "Det inmatade värdet '$9' för denna typ av parameter är inte giltigt!$\r$\nAnvänd $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\nför att se en lista på giltiga värden."
 
 ;added on 2010-10-16
 #LangString SecGrpShortcuts_Text ${LANG_ENGLISH} "Create Shortcuts"
@@ -342,8 +342,8 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_SWEDISH} "Radera konfigurationska
 LangString Uninstall_Folder_Name ${LANG_SWEDISH} "Avinstallera"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "OpenCPN Version 5.15.100"
-LangString ^NameDA ${LANG_SWEDISH} "OpenCPN Version 5.15.100"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_SWEDISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
 
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
