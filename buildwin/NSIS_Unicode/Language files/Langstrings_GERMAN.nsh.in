@@ -1,11 +1,11 @@
 ﻿#LangString Installer ${LANG_ENGLISH} "installer"
 LangString Installer ${LANG_GERMAN} "Installationsprogramm"
-	
+
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_GERMAN} "Deinstallationsprogramm"
-	
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
-LangString Installer_Unsupported_Windows_Version ${LANG_GERMAN} "Ihre Windows-Version wird nicht unterstützt (sie ist zu alt)!$\r$\nSie benötigen mindestens eine Version von Windows 7."
+
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 8."
+LangString Installer_Unsupported_Windows_Version ${LANG_GERMAN} "Ihre Windows-Version wird nicht unterstützt (sie ist zu alt)!$\r$\nSie benötigen mindestens eine Version von Windows 8."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_GERMAN} "Das Installationsprogramm wird bereits ausgeführt."
@@ -13,8 +13,8 @@ LangString Installer_Running ${LANG_GERMAN} "Das Installationsprogramm wird bere
 #LangString Uninstaller_Running ${LANG_ENGLISH} "The uninstaller is already running."
 LangString Uninstaller_Running ${LANG_GERMAN} "Das Deinstallationsprogramm wird bereits ausgeführt."
 
-#LangString LangDialog_Title ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
-LangString LangDialog_Title ${LANG_GERMAN} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
+#LangString LangDialog_Title ${LANG_ENGLISH} "OpenCPN 5.15.100 Installation"
+LangString LangDialog_Title ${LANG_GERMAN} "OpenCPN 5.15.100 Installation"
 
 #LangString LangDialog_Text ${LANG_ENGLISH} "Please select a language:"
 LangString LangDialog_Text ${LANG_GERMAN} "Bitte wählen Sie die gewünschte Sprache:"
@@ -220,29 +220,29 @@ LangString SecSetConfig_Desc ${LANG_GERMAN} "Ermöglicht Voreinstellungen für d
 #LangString UnSecDeleteConfigFolder_Desc ${LANG_ENGLISH} "Deletes the config folder and all its files and subdirectories."
 LangString UnSecDeleteConfigFolder_Desc ${LANG_GERMAN} "Löscht den gesamten Konfigurationsordner inklusive aller Dateien und Unterverzeichnisse."
 
-#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
-LangString Uninstall_Link ${LANG_GERMAN} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ deinstallieren"
+#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall OpenCPN 5.15.100"
+LangString Uninstall_Link ${LANG_GERMAN} "OpenCPN 5.15.100 deinstallieren"
 
 #LangString Page_TypeInst_Title ${LANG_ENGLISH} "Previous Installations"
 LangString Page_TypeInst_Title ${LANG_GERMAN} "Vorhandene Installationen"
 
 #LangString Page_TypeInst_Subtitle ${LANG_ENGLISH} "$MULTIPLE_INSTALLS installations of OpenCPN found.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle ${LANG_GERMAN} "$MULTIPLE_INSTALLS Installationen von OpenCPN gefunden.$\r$\nWählen Sie aus, wie Sie OpenCPN installieren möchten."	
+LangString Page_TypeInst_Subtitle ${LANG_GERMAN} "$MULTIPLE_INSTALLS Installationen von OpenCPN gefunden.$\r$\nWählen Sie aus, wie Sie OpenCPN installieren möchten."
 
 #LangString Page_TypeInst_Title_1 ${LANG_ENGLISH} "Already Installed"
 LangString Page_TypeInst_Title_1 ${LANG_GERMAN} "Installation bereits vorhanden"
 
 #LangString Page_TypeInst_Subtitle_1 ${LANG_ENGLISH} "Found installed version of OpenCPN.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle_1 ${LANG_GERMAN} "Installation von OpenCPN gefunden.$\r$\nWählen Sie aus, wie Sie OpenCPN installieren möchten."	
+LangString Page_TypeInst_Subtitle_1 ${LANG_GERMAN} "Installation von OpenCPN gefunden.$\r$\nWählen Sie aus, wie Sie OpenCPN installieren möchten."
 
 #LangString Page_TypeInst_Title_Exists ${LANG_ENGLISH} "Version Already Installed"
 LangString Page_TypeInst_Title_Exists ${LANG_GERMAN} "Version bereits vorhanden"
 
-#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle_Exists ${LANG_GERMAN} "OpenCPN @CPACK_PACKAGE_VERSION@ ist bereits installiert.$\r$\nWählen Sie aus, wie Sie OpenCPN installieren möchten."	
+#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed.$\r$\nChoose how you want to install OpenCPN."
+LangString Page_TypeInst_Subtitle_Exists ${LANG_GERMAN} "OpenCPN 5.15.100 ist bereits installiert.$\r$\nWählen Sie aus, wie Sie OpenCPN installieren möchten."
 
-#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
-LangString Label_TypeInst_Reinstall_Text ${LANG_GERMAN} "OpenCPN @CPACK_PACKAGE_VERSION@ ist bereits auf Ihrem System installiert. Sie können die Version jetzt mit den vorherigen Einstellungen erneut installieren. Wenn Sie das Programm mit anderen Einstellungen neu installieren möchten, brechen Sie die Installation ab und deinstallieren Sie zuerst die vorhandene Version. Klicken Sie auf Weiter, um fortzufahren."
+#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
+LangString Label_TypeInst_Reinstall_Text ${LANG_GERMAN} "OpenCPN 5.15.100 ist bereits auf Ihrem System installiert. Sie können die Version jetzt mit den vorherigen Einstellungen erneut installieren. Wenn Sie das Programm mit anderen Einstellungen neu installieren möchten, brechen Sie die Installation ab und deinstallieren Sie zuerst die vorhandene Version. Klicken Sie auf Weiter, um fortzufahren."
 
 #LangString RB_Reinstall_TypeInst_Text ${LANG_ENGLISH} "Reinstall using previous settings"
 LangString RB_Reinstall_TypeInst_Text ${LANG_GERMAN} "Reinstallation mit den vorherigen Einstellungen"
@@ -274,8 +274,8 @@ LangString Show_Readme_Text ${LANG_GERMAN} "Installations Log-Datei anzeigen"
 #LangString Finish_Link_Text ${LANG_ENGLISH} "OpenCPN website (Internet connection required)"
 LangString Finish_Link_Text ${LANG_GERMAN} "OpenCPN Webseite (Internetverbindung erforderlich)"
 
-#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
-LangString Finish_Link_URL ${LANG_GERMAN} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
+#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
+LangString Finish_Link_URL ${LANG_GERMAN} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
 
 #LangString Msg_UAC_Admin_Retry ${LANG_ENGLISH} "This $Inst_Or_Uninst requires admin access!$\r$\nPlease log on as an Administrator and try again."
 LangString Msg_UAC_Admin_Retry ${LANG_GERMAN} "Dieses $Inst_Or_Uninst benötigt Administratorrechte!$\r$\nBitte melden Sie sich als Administrator an und versuchen es erneut."
@@ -304,11 +304,11 @@ LangString Msg_Uninstall_Old_Versions ${LANG_GERMAN} "Setup hat mindestens eine 
 #LangString Msg_Not_All_Old_Uninstalled ${LANG_ENGLISH} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
 LangString Msg_Not_All_Old_Uninstalled ${LANG_GERMAN} "Sie haben nicht alle alten Installationen deinstalliert.$\r$\n$\r$\nMöchten Sie trotzdem fortfahren?"
 
-#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
-LangString Msg_Uninstaller_Param_Help ${LANG_GERMAN} "Deinstallationsprogramm Hilfe$\r$\n$\r$\nVerwenden Sie die Kommandozeile oder eine Verknüpfung, um das Deinstallationsprogramm zu starten:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameter:$\r$\n/?$\tzeigt diese Dialog-Box an$\r$\n/S$\tführt das Deinstallationsprogramm im 'Silent' Modus aus$\r$\n$\tführt eine komplette Deinstallation aus, wenn kein Parameter 'type' angegeben wird$\r$\n/type=X$\tX muss eine Zahl zwischen 1 und 5 sein$\r$\n$\t1 = Entfernt nur das Programmverzeichnis$\r$\n$\t2 = Entfernt nur das Programmverzeichnis + Vorkonfigurations-RegKey$\r$\n$\t3 = Entfernt nur das Programmverzeichnis + Konfigurationsordner$\r$\n$\tbehält den Vorkonfigurations-RegKey$\r$\n$\t4 = Löscht nur den Konfigurationsordner$\r$\n$\t5 = Löscht nur den Vorkonfigurations-RegKey$\r$\n$\r$\nDie Angabe jeder anderen Zahle oder Wertes veranlasst das Deinstallationsprogramm sich mit einer entsprechenden Dialog-Box zu beenden, ohne irgendetwas zu löschen/ deinstallieren."
+#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
+LangString Msg_Uninstaller_Param_Help ${LANG_GERMAN} "Deinstallationsprogramm Hilfe$\r$\n$\r$\nVerwenden Sie die Kommandozeile oder eine Verknüpfung, um das Deinstallationsprogramm zu starten:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameter:$\r$\n/?$\tzeigt diese Dialog-Box an$\r$\n/S$\tführt das Deinstallationsprogramm im 'Silent' Modus aus$\r$\n$\tführt eine komplette Deinstallation aus, wenn kein Parameter 'type' angegeben wird$\r$\n/type=X$\tX muss eine Zahl zwischen 1 und 5 sein$\r$\n$\t1 = Entfernt nur das Programmverzeichnis$\r$\n$\t2 = Entfernt nur das Programmverzeichnis + Vorkonfigurations-RegKey$\r$\n$\t3 = Entfernt nur das Programmverzeichnis + Konfigurationsordner$\r$\n$\tbehält den Vorkonfigurations-RegKey$\r$\n$\t4 = Löscht nur den Konfigurationsordner$\r$\n$\t5 = Löscht nur den Vorkonfigurations-RegKey$\r$\n$\r$\nDie Angabe jeder anderen Zahle oder Wertes veranlasst das Deinstallationsprogramm sich mit einer entsprechenden Dialog-Box zu beenden, ohne irgendetwas zu löschen/ deinstallieren."
 
-#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\nto see a list of valid values."
-LangString Msg_Unknown_Type_Param ${LANG_GERMAN} "Der angegebene Wert '$9' für den Parameter /type ist ungültig!$\r$\nVerwenden Sie $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\num eine Liste der gültigen Werte angezeigt zu bekommen."
+#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall 5.15.100.exe /?$\r$\nto see a list of valid values."
+LangString Msg_Unknown_Type_Param ${LANG_GERMAN} "Der angegebene Wert '$9' für den Parameter /type ist ungültig!$\r$\nVerwenden Sie $INSTDIR\Uninstall 5.15.100.exe /?$\r$\num eine Liste der gültigen Werte angezeigt zu bekommen."
 
 #LangString SecGrpShortcuts_Text ${LANG_ENGLISH} "Create Shortcuts"
 LangString SecGrpShortcuts_Text ${LANG_GERMAN} "Verknüpfungen erstellen"
@@ -337,8 +337,8 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_GERMAN} "Konfigurations-Ordner l�
 #LangString Uninstall_Folder_Name ${LANG_ENGLISH} "Uninstall"
 LangString Uninstall_Folder_Name ${LANG_GERMAN} "Deinstallation"
 
-#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
-LangString ^NameDA ${LANG_GERMAN} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+#LangString ^NameDA ${LANG_ENGLISH} "OpenCPN Version 5.15.100"
+LangString ^NameDA ${LANG_GERMAN} "OpenCPN Version 5.15.100"
 
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
