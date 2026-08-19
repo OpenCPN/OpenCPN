@@ -4,7 +4,7 @@ LangString Installer ${LANG_CZECH} "instalátor"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_CZECH} "deinstalátor"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 8."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows 7."
 LangString Installer_Unsupported_Windows_Version ${LANG_CZECH} "Vaše verze Windows není podporována (je moc stará)!$\r$\nPotřebujete alespoň Windows 8."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
@@ -13,8 +13,8 @@ LangString Installer_Running ${LANG_CZECH} "Instalátor již je spuštěn."
 #LangString Uninstaller_Running ${LANG_ENGLISH} "The uninstaller is already running."
 LangString Uninstaller_Running ${LANG_CZECH} "Deinstalátor již je spuštěn."
 
-#LangString LangDialog_Title ${LANG_ENGLISH} "OpenCPN 5.15.100 Installation"
-LangString LangDialog_Title ${LANG_CZECH} "Instalace OpenCPN 5.15.100"
+#LangString LangDialog_Title ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@ Installation"
+LangString LangDialog_Title ${LANG_CZECH} "Instalace @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
 
 #LangString LangDialog_Text ${LANG_ENGLISH} "Please select a language:"
 LangString LangDialog_Text ${LANG_CZECH} "Prosím vyberte jazyk:"
@@ -220,8 +220,8 @@ LangString SecSetConfig_Desc ${LANG_CZECH} "Přednastavit jazyk a složky map pr
 #LangString UnSecDeleteConfigFolder_Desc ${LANG_ENGLISH} "Deletes the config folder and all its files and subdirectories."
 LangString UnSecDeleteConfigFolder_Desc ${LANG_CZECH} "Smaže složku s nastavením a všechny její soubory a podsložky."
 
-#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall OpenCPN 5.15.100"
-LangString Uninstall_Link ${LANG_CZECH} "Odinstalovat OpenCPN 5.15.100"
+#LangString Uninstall_Link ${LANG_ENGLISH} "Uninstall @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
+LangString Uninstall_Link ${LANG_CZECH} "Odinstalovat @CPACK_PACKAGE_NAME@ @CPACK_PACKAGE_VERSION@"
 
 #LangString Page_TypeInst_Title ${LANG_ENGLISH} "Previous Installations"
 LangString Page_TypeInst_Title ${LANG_CZECH} "Předchozí instalace"
@@ -238,11 +238,11 @@ LangString Page_TypeInst_Subtitle_1 ${LANG_CZECH} "Nalezena nainstalovaná verze
 #LangString Page_TypeInst_Title_Exists ${LANG_ENGLISH} "Version Already Installed"
 LangString Page_TypeInst_Title_Exists ${LANG_CZECH} "Verze již nainstalována"
 
-#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed.$\r$\nChoose how you want to install OpenCPN."
-LangString Page_TypeInst_Subtitle_Exists ${LANG_CZECH} "OpenCPN 5.15.100 je již nainstalováno.$\r$\nVyberte, jak chcete OpenCPN nainstalovat."
+#LangString Page_TypeInst_Subtitle_Exists ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed.$\r$\nChoose how you want to install OpenCPN."
+LangString Page_TypeInst_Subtitle_Exists ${LANG_CZECH} "OpenCPN @CPACK_PACKAGE_VERSION@ je již nainstalováno.$\r$\nVyberte, jak chcete OpenCPN nainstalovat."
 
-#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN 5.15.100 is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
-LangString Label_TypeInst_Reinstall_Text ${LANG_CZECH} "OpenCPN 5.15.100 je již na Vašem systému nainstalováno. Nyní můžete přeinstalovat verzi s původní nastavením. Pokud chcete nainstalovat program s jiným nastavením, zrušte instalaci a odinstalujte napřed původní verzi. Klikněte na Další pro pokračování."
+#LangString Label_TypeInst_Reinstall_Text ${LANG_ENGLISH} "OpenCPN @CPACK_PACKAGE_VERSION@ is already installed on your system. You can reinstall the version now using the previous settings. If you wish to install the program with different settings, cancel installation and un-install the existing version first. Click Next to continue."
+LangString Label_TypeInst_Reinstall_Text ${LANG_CZECH} "OpenCPN @CPACK_PACKAGE_VERSION@ je již na Vašem systému nainstalováno. Nyní můžete přeinstalovat verzi s původní nastavením. Pokud chcete nainstalovat program s jiným nastavením, zrušte instalaci a odinstalujte napřed původní verzi. Klikněte na Další pro pokračování."
 
 #LangString RB_Reinstall_TypeInst_Text ${LANG_ENGLISH} "Reinstall using previous settings"
 LangString RB_Reinstall_TypeInst_Text ${LANG_CZECH} "Přeinstalovat s původním nastavením"
@@ -274,8 +274,8 @@ LangString Show_Readme_Text ${LANG_CZECH} "Zobraz log instalace"
 #LangString Finish_Link_Text ${LANG_ENGLISH} "OpenCPN website (Internet connection required)"
 LangString Finish_Link_Text ${LANG_CZECH} "Web OpenCPN (Je potřeba připojení k Internetu)"
 
-#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
-LangString Finish_Link_URL ${LANG_CZECH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=5.15.100"
+#LangString Finish_Link_URL ${LANG_ENGLISH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
+LangString Finish_Link_URL ${LANG_CZECH} "http://opencpn.info/?ref=installer&user=$USERS_NAME&lang=$REG_LANG&version=@CPACK_PACKAGE_VERSION@"
 
 #LangString Msg_UAC_Admin_Retry ${LANG_ENGLISH} "This $Inst_Or_Uninst requires admin access!$\r$\nPlease log on as an Administrator and try again."
 LangString Msg_UAC_Admin_Retry ${LANG_CZECH} "Tento $Inst_Or_Uninst vyžaduje přístup administrátora!$\r$\nProsím, přihlaste se jako Administrator a zkuste to znovu."
@@ -304,11 +304,11 @@ LangString Msg_Uninstall_Old_Versions ${LANG_CZECH} "Instalátor detekoval alesp
 #LangString Msg_Not_All_Old_Uninstalled ${LANG_ENGLISH} "You have not uninstalled all previous installations.$\r$\n$\r$\nDo you want to continue anyway?"
 LangString Msg_Not_All_Old_Uninstalled ${LANG_CZECH} "Neodinstaloval jste všechny předchozí instalace.$\r$\n$\r$\nChcete přesto pokračovat?"
 
-#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
-LangString Msg_Uninstaller_Param_Help ${LANG_CZECH} "Nápověda deinstalátoru$\r$\n$\r$\nPoužijte příkazovou řádku nebo zástupce ke spuštění odinstalátoru:$\r$\n$INSTDIR\Uninstall 5.15.100.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParametrys:$\r$\n/?$\tzobrazí tuto nápovědu$\r$\n/S$\tspustí deinstalátor v tichém módu$\r$\n$\tprovede kompletní odinstalaci, pokud je spuštěn bez parametrů$\r$\n/type=X$\tX musí být číslo mezi 1 a 5$\r$\n$\t1 = Odstraní jen programové soubory$\r$\n$\t2 = Odstraní jen programové soibory + přednastavení RegKey$\r$\n$\t3 = Odstraní programové soubory + složku nastavení$\r$\n$\tzachová přednastavení RegKey$\r$\n$\t4 = Smaže jen složku nastavení$\r$\n$\t5 = Smaže jen přednastavení RegKey$\r$\n$\r$\nVložení jakéhokoli jiného čísla ukončí odinstalátor se zprávou bez toho, aby cokoli odstranil nebo smazal."
+#LangString Msg_Uninstaller_Param_Help ${LANG_ENGLISH} "Uninstaller Help$\r$\n$\r$\nUse the command line or a shortcut to run the uninstaller:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParameters:$\r$\n/?$\tshows this help message box$\r$\n/S$\truns the uninstaller in silent mode$\r$\n$\twill do a full uninstall if called without any type parameter$\r$\n/type=X$\tX must be a digit between 1 and 5$\r$\n$\t1 = Removes only the program files$\r$\n$\t2 = Removes only the program files + preconfig RegKey$\r$\n$\t3 = Removes the program files + config folder$\r$\n$\tpreserves the preconfig RegKey$\r$\n$\t4 = Deletes only the config folder$\r$\n$\t5 = Deletes only the preconfig RegKey$\r$\n$\r$\nEntering any other number or value will quit the uninstaller with a message box without removing or deleting anything."
+LangString Msg_Uninstaller_Param_Help ${LANG_CZECH} "Nápověda deinstalátoru$\r$\n$\r$\nPoužijte příkazovou řádku nebo zástupce ke spuštění odinstalátoru:$\r$\n$INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe [/?] | [/S], [/type=X]$\r$\n$\r$\nParametrys:$\r$\n/?$\tzobrazí tuto nápovědu$\r$\n/S$\tspustí deinstalátor v tichém módu$\r$\n$\tprovede kompletní odinstalaci, pokud je spuštěn bez parametrů$\r$\n/type=X$\tX musí být číslo mezi 1 a 5$\r$\n$\t1 = Odstraní jen programové soubory$\r$\n$\t2 = Odstraní jen programové soibory + přednastavení RegKey$\r$\n$\t3 = Odstraní programové soubory + složku nastavení$\r$\n$\tzachová přednastavení RegKey$\r$\n$\t4 = Smaže jen složku nastavení$\r$\n$\t5 = Smaže jen přednastavení RegKey$\r$\n$\r$\nVložení jakéhokoli jiného čísla ukončí odinstalátor se zprávou bez toho, aby cokoli odstranil nebo smazal."
 
-#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall 5.15.100.exe /?$\r$\nto see a list of valid values."
-LangString Msg_Unknown_Type_Param ${LANG_CZECH} "Vložená hodnota '$9' pro parametr typu není platná!$\r$\nPoužijte $INSTDIR\Uninstall 5.15.100.exe /?$\r$\npro zobrazení seznamu povolených hodnot."
+#LangString Msg_Unknown_Type_Param ${LANG_ENGLISH} "The entered value '$9' for the type parameter is not valid!$\r$\nUse $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\nto see a list of valid values."
+LangString Msg_Unknown_Type_Param ${LANG_CZECH} "Vložená hodnota '$9' pro parametr typu není platná!$\r$\nPoužijte $INSTDIR\Uninstall @CPACK_PACKAGE_VERSION@.exe /?$\r$\npro zobrazení seznamu povolených hodnot."
 
 ;added on 2010-10-16
 #LangString SecGrpShortcuts_Text ${LANG_ENGLISH} "Create Shortcuts"
@@ -342,8 +342,8 @@ LangString UnSecDeleteConfigFolder_Text ${LANG_CZECH} "Smazat složku konfigurac
 LangString Uninstall_Folder_Name ${LANG_CZECH} "Odinstalovat"
 
 ;added on 2011-06-13
-#LangString ^NameDA ${LANG_ENGLISH} "OpenCPN Version 5.15.100"
-LangString ^NameDA ${LANG_CZECH} "OpenCPN Verze 5.15.100"
+#LangString ^NameDA ${LANG_ENGLISH} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_VERSION@"
+LangString ^NameDA ${LANG_CZECH} "@CPACK_PACKAGE_NAME@ Verze @CPACK_PACKAGE_VERSION@"
 
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
