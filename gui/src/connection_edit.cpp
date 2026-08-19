@@ -53,6 +53,7 @@
 
 #include "connection_edit.h"
 
+#include "text_ctrl_w_help.h"
 #include "model/comm_drv_factory.h"
 #include "model/config_vars.h"
 #include "model/ocpn_utils.h"
@@ -239,105 +240,45 @@ static void LoadSerialPorts(wxComboBox* box) {
   if (!value.empty()) box->SetValue(value);
 }
 
-/**
- * A wxTextCtrl with an initial help text removed when user starts typing.
- */
-class TextCtrlWithHelp : public wxTextCtrl {
-public:
-  TextCtrlWithHelp(wxWindow* parent, const std::string& help_text)
-      : wxTextCtrl(parent, wxID_ANY, ""),
-        m_font(GetFont()),
-        m_is_inited(false),
-        m_help(help_text) {
-    wxTextCtrl::SetFont(m_font.Italic());
-    wxTextCtrl::AppendText(help_text);
-    Bind(wxEVT_TEXT, [&](wxCommandEvent& ev) { OnKeypress(ev); });
+static bool CheckPort(wxWindow* parent, TextCtrlWithHelp& ctrl) {
+  if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
+    auto dlg = wxMessageDialog(parent, _("Required field port is missing"),
+                               _("OpenCPN error"), wxOK | wxICON_ERROR);
+    dlg.ShowModal();
+    return false;
+  };
+  int port = 0;
+  try {
+    port = std::stoi(ctrl.GetValue().ToStdString());
+  } catch (std::logic_error&) {
+    auto dlg = wxMessageDialog(parent, _("Invalid port number"),
+                               _("OpenCPN error"), wxOK | wxICON_ERROR);
+    dlg.ShowModal();
+    return false;
   }
-
-  /** ignored if not inited, use ChangeValue if need be. */
-  void SetValue(const wxString& value) override {
-    if (!m_is_inited) return;
-    wxTextCtrl::SetValue(value);
-  }
-
-  void RestoreHelp() {
-    SetFont(m_font.Italic());
-    wxTextEntry::ChangeValue(m_help);
-    m_is_inited = false;
-  }
-
-  void ChangeValue(const wxString& value) override {
-    SetFont(m_font);
-    m_is_inited = true;
-    wxTextCtrl::ChangeValue(value);
-  }
-
-  /** Return true if user has not entered anything. */
-  bool IsPristine() const { return !m_is_inited; }
-
-  bool CheckAddress(wxWindow* parent) const {
-    if (IsPristine() || GetValue().empty()) {
-      auto dlg = wxMessageDialog(parent, _("Required field address is missing"),
-                                 _("OpenCPN error"), wxOK | wxICON_ERROR);
-      dlg.ShowModal();
-      return false;
-    };
-    // Checking the address requires using gethostbyname() or so since it
-    // could be a hostname. Not worthwhile in this context.
-    return true;
-  }
-
-  bool CheckPort(wxWindow* parent) const {
-    if (IsPristine() || GetValue().empty()) {
-      auto dlg = wxMessageDialog(parent, _("Required field port is missing"),
-                                 _("OpenCPN error"), wxOK | wxICON_ERROR);
-      dlg.ShowModal();
-      return false;
-    };
-    int port = 0;
-    try {
-      port = std::stoi(GetValue().ToStdString());
-    } catch (std::logic_error&) {
-      auto dlg = wxMessageDialog(parent, _("Invalid port number"),
-                                 _("OpenCPN error"), wxOK | wxICON_ERROR);
-      dlg.ShowModal();
-      return false;
-    }
-    if (port < 1024) {
-      static const std::string kMsg =
-          _(R"(Port numbers smaller than 1024 are reserved for use by the
+  if (port < 1024) {
+    static const std::string kMsg =
+        _(R"(Port numbers smaller than 1024 are reserved for use by the
 operating system and should normally not be used by OpenCPN)");
-      auto dlg = wxMessageDialog(parent, kMsg, _("OpenCPN warning"),
-                                 wxOK | wxICON_WARNING);
-      dlg.ShowModal();
-      return true;
-    }
+    auto dlg = wxMessageDialog(parent, kMsg, _("OpenCPN warning"),
+                               wxOK | wxICON_WARNING);
+    dlg.ShowModal();
     return true;
   }
+  return true;
+}
 
-private:
-  const wxFont m_font;
-  bool m_is_inited;
-  const std::string m_help;
-
-  void OnKeypress(wxCommandEvent& ev) {
-    if (!m_is_inited) {
-      // User has pressed a key which has modified the help text
-      // Find the char which differ and re-insert in the  control.
-      std::string value = GetValue().ToStdString();
-      unsigned ix;
-      for (ix = 0; ix < m_help.size(); ++ix) {
-        if (m_help[ix] != value[ix]) break;
-      }
-      ChangeValue(value[ix]);
-      SetInsertionPointEnd();
-
-      SetFont(m_font);
-      m_is_inited = true;
-    }
-    ev.Skip();
-  }
-};
+bool CheckAddress(wxWindow* parent, TextCtrlWithHelp& ctrl) {
+  if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
+    auto dlg = wxMessageDialog(parent, _("Required field address is missing"),
+                               _("OpenCPN error"), wxOK | wxICON_ERROR);
+    dlg.ShowModal();
+    return false;
+  };
+  // Checking the address requires using gethostbyname() or so since it
+  // could be a hostname. Not worthwhile in this context.
+  return true;
+}
 
 //------------------------------------------------------------------------------
 //          ConnectionEditDialog Implementation
@@ -409,9 +350,9 @@ void ConnectionEditDialog::OnOKClick() {
   }
   auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tc);
   bool ok = false;
-  if (net_address) ok = net_address->CheckAddress(this);
+  if (net_address) ok = CheckAddress(this, *net_address);
   auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tc);
-  if (net_port) ok = ok && net_port->CheckPort(this);
+  if (net_port) ok = ok && CheckPort(this, *net_port);
   if (ok) m_on_edit_click(m_cp_original, m_new_mode, true);
 }
 

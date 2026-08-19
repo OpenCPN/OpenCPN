@@ -41,6 +41,7 @@ set(SRC
     include/svg_button.h
     include/svg_icons.h
     include/text_entry.h
+    include/text_ctrl_w_help.h
     include/ui_utils.h
     src/button_switch.cpp
     src/dialog_alert.cpp
@@ -54,6 +55,7 @@ set(SRC
     src/form_grid.cpp
     src/svg_button.cpp
     src/svg_icons.cpp
+    src/text_ctrl_w_help.cpp
     src/text_entry.cpp
     src/ui_utils.cpp
 )
