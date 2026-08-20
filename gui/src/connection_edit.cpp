@@ -26,8 +26,6 @@
 #include <string>
 #include <vector>
 
-#include "gl_headers.h"  // Must come before anything using GL stuff
-
 #include <wx/wxprec.h>
 
 #ifndef WX_PRECOMP
@@ -41,7 +39,6 @@
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #include <linux/can.h>
-#include <linux/can/raw.h>
 #include <net/if.h>
 #include <serial/serial.h>
 #include <sys/ioctl.h>
@@ -56,6 +53,7 @@
 
 #include "connection_edit.h"
 
+#include "text_ctrl_w_help.h"
 #include "model/comm_drv_factory.h"
 #include "model/config_vars.h"
 #include "model/ocpn_utils.h"
@@ -70,6 +68,36 @@
 #include "options.h"
 #include "priority_gui.h"
 #include "udev_rule_mgr.h"
+
+// Make _() return std::string instead of wxString;
+#undef _
+#if wxCHECK_VERSION(3, 2, 0)
+#define _(s) wxGetTranslation(wxASCII_STR(s)).ToStdString()
+#else
+#define _(s) wxGetTranslation((s)).ToStdString()
+#endif
+
+class TextCtrlWithHelp;  // forward
+
+static const std::string kTcpDevice = _("TCP device");
+static const std::string kUdpDevice = _("UDP device");
+static const std::string kGpsdDevice = _("Gpsd");
+static const std::string kSignalkDevice = _("SignalK server");
+static const std::string kTcpClient = _("TCP client");
+static const std::string kUdpOutput = _("UDP output");
+static const std::string kGpsdClient = _("Gpsd client");
+static const std::string kSignalkClient = _("SignalK client");
+static const std::string kTcpServer = _("TCP Server");
+static const std::string kUdpInput = _("UDP Input");
+static const std::string kMulticastServer = _("Multicast Server (in/out)");
+static const std::string kMulticastClient = _("Multicast output (client)");
+
+static const std::vector<std::string> kBasicNetViews = {
+    kTcpDevice, kGpsdDevice, kUdpDevice, kSignalkDevice};
+
+static const std::vector<std::string> kAdvancedNetViews = {
+    kTcpClient, kUdpOutput, kGpsdClient,      kSignalkClient,
+    kTcpServer, kUdpInput,  kMulticastClient, kMulticastServer};
 
 static wxString StringArrayToString(const wxArrayString& arr) {
   wxString ret = wxEmptyString;
@@ -93,20 +121,65 @@ static int print_intf(const struct intf_entry* entry, void* arg) {
 }
 #endif
 
+static bool IsAddressMultiCast(const wxString& ip) {
+  wxArrayString bytes = wxSplit(ip, '.');
+  if (bytes.size() != 4) {
+    return false;
+  }
+  unsigned long ipNum = (wxAtoi(bytes[0]) << 24) + (wxAtoi(bytes[1]) << 16) +
+                        (wxAtoi(bytes[2]) << 8) + wxAtoi(bytes[3]);
+  unsigned long multicastStart = (224 << 24);
+  unsigned long multicastEnd = (239 << 24) + (255 << 16) + (255 << 8) + 255;
+  return ipNum >= multicastStart && ipNum <= multicastEnd;
+}
+
+static bool IsAddressListener(const std::string& address) {
+  return address.empty() || address == "0.0.0.0";
+}
+
+/** Return  selected option from a wxChoice widget */
+static std::string GetChoiceSelection(const wxChoice* choice) {
+  int selected = choice->GetSelection();
+  return choice->GetString(selected).ToStdString();
+}
+
+/**
+ * Return net view name for given ConnectionParams. For ambigious cases
+ * like kTcpDevice (basic view)/kTcpClient (Advanced view) return
+ * the basic view.
+ */
+static std::string NetViewByConnection(const ConnectionParams* cp) {
+  bool is_server = IsAddressListener(cp->NetworkAddress.ToStdString());
+  if (IsAddressMultiCast(cp->NetworkAddress))
+    return is_server ? kMulticastServer : kMulticastClient;
+  switch (cp->NetProtocol) {
+    case NetworkProtocol::GPSD:
+      return kGpsdDevice;
+    case NetworkProtocol::SIGNALK:
+      return kSignalkDevice;
+    case NetworkProtocol::UDP:
+      return is_server ? kUdpDevice : kUdpOutput;
+    case NetworkProtocol::TCP:
+      return is_server ? kTcpServer : kTcpDevice;
+    default:
+      wxLogWarning("Cannot deduce connection params view type");
+      return "";
+  }
+  return "";  // for the compiler
+}
+
 static wxArrayString GetAvailableSocketCANInterfaces() {
   wxArrayString rv;
 
 #if defined(__linux__) && !defined(__ANDROID__)
-  struct intf_entry* entry;
-
   can_if_candidates.clear();
 
-  if ((intf = intf_open()) == NULL) {
+  if ((intf = intf_open()) == nullptr) {
     wxLogWarning("Error opening interface list");
     return rv;
   }
 
-  if (intf_loop(intf, print_intf, NULL) < 0) {
+  if (intf_loop(intf, print_intf, nullptr) < 0) {
     wxLogWarning("Error looping over interface list");
   }
   intf_close(intf);
@@ -118,14 +191,14 @@ static wxArrayString GetAvailableSocketCANInterfaces() {
     }
 
     // Get the interface index
-    struct ifreq if_request;
+    struct ifreq if_request = {{0}};
     strcpy(if_request.ifr_name, iface.c_str());
     if (ioctl(sock, SIOCGIFINDEX, &if_request) < 0) {
       continue;
     }
 
     // Check if interface is UP
-    struct sockaddr_can can_address;
+    struct sockaddr_can can_address = {0};
     can_address.can_family = AF_CAN;
     can_address.can_ifindex = if_request.ifr_ifindex;
     if (ioctl(sock, SIOCGIFFLAGS, &if_request) < 0) {
@@ -145,7 +218,7 @@ static void LoadSerialPorts(wxComboBox* box) {
   /** Sort all links to same device as equals. */
   class PortSorter {
   private:
-    std::string GetKey(const std::string& s) const {
+    [[nodiscard]] static std::string GetKey(const std::string& s) {
       if (s.find("->") == std::string::npos) return s;
       return ocpn::trim(ocpn::split(s, "->")[1]) + " link";
     }
@@ -167,12 +240,52 @@ static void LoadSerialPorts(wxComboBox* box) {
   if (!value.empty()) box->SetValue(value);
 }
 
+static bool CheckPort(wxWindow* parent, TextCtrlWithHelp& ctrl) {
+  if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
+    auto dlg = wxMessageDialog(parent, _("Required field port is missing"),
+                               _("OpenCPN error"), wxOK | wxICON_ERROR);
+    dlg.ShowModal();
+    return false;
+  };
+  int port = 0;
+  try {
+    port = std::stoi(ctrl.GetValue().ToStdString());
+  } catch (std::logic_error&) {
+    auto dlg = wxMessageDialog(parent, _("Invalid port number"),
+                               _("OpenCPN error"), wxOK | wxICON_ERROR);
+    dlg.ShowModal();
+    return false;
+  }
+  if (port < 1024) {
+    static const std::string kMsg =
+        _(R"(Port numbers smaller than 1024 are reserved for use by the
+operating system and should normally not be used by OpenCPN)");
+    auto dlg = wxMessageDialog(parent, kMsg, _("OpenCPN warning"),
+                               wxOK | wxICON_WARNING);
+    dlg.ShowModal();
+    return true;
+  }
+  return true;
+}
+
+bool CheckAddress(wxWindow* parent, TextCtrlWithHelp& ctrl) {
+  if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
+    auto dlg = wxMessageDialog(parent, _("Required field address is missing"),
+                               _("OpenCPN error"), wxOK | wxICON_ERROR);
+    dlg.ShowModal();
+    return false;
+  };
+  // Checking the address requires using gethostbyname() or so since it
+  // could be a hostname. Not worthwhile in this context.
+  return true;
+}
+
 //------------------------------------------------------------------------------
 //          ConnectionEditDialog Implementation
 //------------------------------------------------------------------------------
 
 // Define constructors
-ConnectionEditDialog::ConnectionEditDialog() {}
+ConnectionEditDialog::ConnectionEditDialog() = default;
 
 ConnectionEditDialog::ConnectionEditDialog(
     wxWindow* parent,
@@ -180,353 +293,439 @@ ConnectionEditDialog::ConnectionEditDialog(
         _on_edit_click)
     : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), 0,
               "conn_edit"),
-      m_on_edit_click(_on_edit_click) {
+      m_on_edit_click(std::move(_on_edit_click)) {
   m_parent = parent;
-
   Init();
 }
 
-ConnectionEditDialog::~ConnectionEditDialog() {}
+ConnectionEditDialog::~ConnectionEditDialog() = default;
 
 void ConnectionEditDialog::SetInitialSettings() {
-  LoadSerialPorts(m_comboPort);
+  LoadSerialPorts(m_port_combo);
+}
+void ConnectionEditDialog::InitiateNewConnection() {
+  m_net_type_choice->SetSelection(0);
+  m_net_expert_cb->SetValue(false);
+  m_net_comment_tc->Hide();
+  m_net_comment_text->Hide();
 }
 
 void ConnectionEditDialog::AddOKCancelButtons() {
 #ifndef ANDROID
-  if (!m_btnSizer) {
-    m_btnSizer = new wxStdDialogButtonSizer();
-    m_btnOK = new wxButton(this, wxID_OK);
-    m_btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
-    m_btnSizer->AddButton(m_btnOK);
-    m_btnSizer->AddButton(m_btnCancel);
-    m_btnSizer->Realize();
-    GetSizer()->Add(m_btnSizer, 0, wxALL | wxEXPAND, 5);
-    m_btnSizer->Show(true);
+  if (!m_std_dialog_btn_sizer) {
+    m_std_dialog_btn_sizer = new wxStdDialogButtonSizer();
+    m_dlg_ok_btn = new wxButton(this, wxID_OK);
+    m_dlg_cancel_btn = new wxButton(this, wxID_CANCEL, _("Cancel"));
+    m_std_dialog_btn_sizer->AddButton(m_dlg_ok_btn);
+    m_std_dialog_btn_sizer->AddButton(m_dlg_cancel_btn);
+    m_std_dialog_btn_sizer->Realize();
+    GetSizer()->Add(m_std_dialog_btn_sizer, 0, wxALL | wxEXPAND, 5);
+    m_std_dialog_btn_sizer->Show(true);
   }
 #else
-  if (!m_btnSizerBox) {
-    m_btnSizerBox = new wxBoxSizer(wxHORIZONTAL);
-    m_btnOK = new wxButton(this, wxID_OK);
-    m_btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
-    m_btnSizerBox->AddSpacer(wxWindow::GetCharWidth());
-    m_btnSizerBox->Add(m_btnOK, 0, wxALL, 5);
-    m_btnSizerBox->Add(m_btnCancel, 0, wxALL, 5);
-    GetSizer()->Add(m_btnSizerBox, 0, wxALL | wxEXPAND, 5);
+  if (!m_std_dialog_btn_sizer) {
+    m_std_dialog_btn_sizer = new wxStdDialogButtonSizer();
+    m_dlg_ok_btn = new wxButton(this, wxID_OK);
+    m_dlg_cancel_btn = new wxButton(this, wxID_CANCEL, _("Cancel"));
+    m_std_dialog_btn_sizer->AddSpacer(wxWindow::GetCharWidth());
+    m_std_dialog_btn_sizer->Add(m_dlg_ok_btn, 0, wxALL, 5);
+    m_std_dialog_btn_sizer->Add(m_dlg_cancel_btn, 0, wxALL, 5);
+    GetSizer()->Add(m_std_dialog_btn_sizer, 0, wxALL | wxEXPAND, 5);
   }
 #endif
 
-  m_btnOK->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                [&](wxCommandEvent& ev) { OnOKClick(); });
-  m_btnCancel->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                    [&](wxCommandEvent& ev) { OnCancelClick(); });
+  m_dlg_ok_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                     [&](wxCommandEvent& ev) { OnOKClick(); });
+  m_dlg_cancel_btn->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                         [&](wxCommandEvent& ev) { OnCancelClick(); });
 }
 
 void ConnectionEditDialog::OnOKClick() {
-  m_on_edit_click(m_cp_original, new_mode, true);
+  if (m_cp_original) {
+    int selection = m_net_type_choice->GetSelection();
+    if (selection != wxNOT_FOUND) {
+      std::string selected =
+          m_net_type_choice->GetString(selection).ToStdString();
+    }
+  }
+  auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tc);
+  bool ok = false;
+  if (net_address) ok = CheckAddress(this, *net_address);
+  auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tc);
+  if (net_port) ok = ok && CheckPort(this, *net_port);
+  if (ok) m_on_edit_click(m_cp_original, m_new_mode, true);
 }
 
 void ConnectionEditDialog::OnCancelClick() {
   m_on_edit_click(nullptr, false, false);
 }
 
+void ConnectionEditDialog::OnAdvancedModeChange() {
+  bool advanced = m_net_expert_cb->GetValue();
+  m_net_type_choice->Clear();
+  if (advanced) {
+    for (const auto& choice : kAdvancedNetViews)
+      m_net_type_choice->Append(choice);
+    m_net_type_choice_text->SetLabel(_("Connection type"));
+    m_net_address_tc->ChangeValue("");
+    m_net_port_tc->ChangeValue("");
+    if (m_net_comment_text) m_net_comment_text->Show();
+    if (m_net_comment_tc) m_net_comment_tc->Show();
+  } else {
+    for (const auto& choice : kBasicNetViews) m_net_type_choice->Append(choice);
+    m_net_type_choice_text->SetLabel(_("Data Source"));
+    if (m_net_comment_text) m_net_comment_text->Hide();
+    if (m_net_comment_tc) m_net_comment_tc->Hide();
+    auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tc);
+    if (net_address) net_address->RestoreHelp();
+    auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tc);
+    if (net_port) net_port->RestoreHelp();
+  }
+  m_net_type_choice->SetSelection(0);
+  Layout();
+}
+
+void ConnectionEditDialog::OnAddressChange(wxFocusEvent& ev) {
+  int selection = m_net_type_choice->GetSelection();
+  if (selection == wxNOT_FOUND) return;
+  std::string type = m_net_type_choice->GetString(selection).ToStdString();
+  if (type != kMulticastClient && type != kMulticastServer) return;
+  std::string address = m_net_address_tc->GetValue().ToStdString();
+  if (!IsAddressMultiCast(address)) {
+    auto dlg = wxMessageDialog(this, _("Illegal multicast address"),
+                               _("OpenCPN warning"), wxOK | wxICON_WARNING);
+    dlg.ShowModal();
+  }
+  ev.Skip();
+}
+
+void ConnectionEditDialog::OnConnectionTypeChange() {
+  int selection = m_net_type_choice->GetSelection();
+  if (selection == wxNOT_FOUND) return;
+  std::string view = GetChoiceSelection(m_net_type_choice);
+  auto found = std::find(kBasicNetViews.begin(), kBasicNetViews.end(), view);
+  m_net_expert_cb->SetValue(found == kBasicNetViews.end());
+  m_net_address_tc->Enable();
+  auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tc);
+  if (net_address) net_address->RestoreHelp();
+  auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tc);
+  if (net_port) net_port->RestoreHelp();
+  m_net_addr_text->SetLabel(_("Server address"));
+  m_output_cb->Enable();
+  m_input_cb->Enable();
+  m_net_data_protocol_choice->Clear();
+  m_net_data_protocol_choice->Append("NMEA 0183");
+  m_net_data_protocol_choice->Append("NMEA 2000");
+  m_net_data_protocol_choice->SetSelection(0);
+  m_net_data_protocol_choice->Enable();
+  m_net_addr_text->Show();
+  m_net_address_tc->Show();
+  if (view == kUdpDevice) {
+    m_output_cb->Disable();
+    m_net_addr_text->Hide();
+    m_net_address_tc->Hide();
+    m_input_cb->SetValue(true);
+    m_input_cb->Disable();
+    m_output_cb->SetValue(false);
+    m_input_cb->Disable();
+  } else if (view == kGpsdClient || view == kGpsdDevice) {
+    m_net_data_protocol_choice->Clear();
+    m_net_data_protocol_choice->Append("gpsd");
+    m_net_data_protocol_choice->SetSelection(0);
+    m_net_data_protocol_choice->Disable();
+    m_output_cb->SetValue(false);
+    m_output_cb->Disable();
+    m_input_cb->SetValue(true);
+    m_input_cb->Disable();
+    m_net_port_tc->ChangeValue(kDefaultGpsdPort);
+  } else if (view == kSignalkClient || view == kSignalkDevice) {
+    m_net_data_protocol_choice->Clear();
+    m_net_data_protocol_choice->Append("SignalK");
+    m_net_data_protocol_choice->SetSelection(0);
+    m_net_data_protocol_choice->Enable();
+  } else if (view == kTcpServer || view == kUdpInput) {
+    m_net_addr_text->SetLabel(_("Interface"));
+    m_net_address_tc->ChangeValue("0.0.0.0");
+    m_net_address_tc->Disable();
+    m_net_port_tc->ChangeValue(kDefaultTcpPort);
+    m_input_cb->SetValue(true);
+    m_input_cb->Disable();
+  } else if (view == kMulticastClient || view == kMulticastServer) {
+    m_net_address_tc->ChangeValue(kDefaultMulticastAddr);
+    m_net_addr_text->SetLabel(_("Multicast group"));
+  }
+  if (view == kMulticastClient || view == kUdpOutput) {
+    m_input_cb->SetValue(false);
+    m_input_cb->Disable();
+    m_output_cb->SetValue(true);
+  } else if (view == kMulticastServer) {
+    m_input_cb->SetValue(true);
+    m_input_cb->Disable();
+    m_output_cb->SetValue(false);
+    m_output_cb->Enable();
+  }
+  RefreshAdvancedDetails();
+}
+
+void ConnectionEditDialog::RefreshAdvancedDetails() {
+  if (!m_type_net_radiobtn->GetValue()) return;
+  if (m_garmin_host_cb) m_garmin_host_cb->Hide();
+  if (m_garmin_upload_host_cb) m_garmin_upload_host_cb->Hide();
+  const std::string view = GetChoiceSelection(m_net_type_choice);
+  bool show_auth = view == kSignalkDevice || view == kSignalkClient;
+  m_auth_token_tc->Show(show_auth && m_advanced);
+  m_auth_token_text->Show(show_auth && m_advanced);
+  bool show_apb_precision = m_output_cb->IsChecked();
+  m_precision_text->Show(show_apb_precision && m_advanced);
+  m_precision_choice->Show(show_apb_precision && m_advanced);
+  Layout();
+}
+
 void ConnectionEditDialog::Init() {
   wxFont* qFont = GetOCPNScaledFont(_("Dialog"));
   SetFont(*qFont);
 
-  m_btnSizer = nullptr;
-  m_btnSizerBox = nullptr;
-  m_btnOK = nullptr;
+  m_std_dialog_btn_sizer = nullptr;
+  m_sizer_box_btn = nullptr;
+  m_dlg_ok_btn = nullptr;
 
   // Setup some initial values
-  m_buttonScanBT = 0;
-  m_stBTPairs = 0;
-  m_choiceBTDataSources = 0;
+  m_scan_bt_btn = nullptr;
+  m_bt_pairs_text = nullptr;
+  m_bt_data_sources_choice = nullptr;
 
-  m_BTScanTimer.SetOwner(this, ID_BT_SCANTIMER);
-  m_BTscanning = 0;
+  m_bt_scan_timer.SetOwner(this, ID_BT_SCANTIMER);
+  m_bt_scanning = 0;
   wxSize displaySize = wxGetDisplaySize();
 
   // Create the UI
 
-  wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+  auto* mainSizer = new wxBoxSizer(wxVERTICAL);
   SetSizer(mainSizer);
-
-#if 0
-  wxBoxSizer* boxSizer02 = new wxBoxSizer(wxVERTICAL);
-  mainSizer->Add(boxSizer02, 1, wxEXPAND | wxALL, 2);
-#endif
-
-#if 0
-  m_scrolledwin =
-      new wxScrolledWindow(this, wxID_ANY, wxDefaultPosition, wxSize(-1, -1),
-                           wxVSCROLL | wxHSCROLL);
-  m_scrolledwin->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
-  m_scrolledwin->SetScrollRate(1, 1);
-#ifdef ANDROID
-  //m_scrolledwin->SetFont(*qFont);
-  //m_scrolledwin->GetHandle()->setStyleSheet(getWideScrollBarsStyleSheet());
-  QString qtStyleSheetFont = "font: bold;background-color: red;font-size: 48px;";
-  //GetHandle()->setStyleSheet(qtStyleSheetFont);
-  //GetHandle()->setStyleSheet(getWideScrollBarsStyleSheet());
-
-#endif
-  boxSizer02->Add(m_scrolledwin, 1, wxALL | wxEXPAND, 3);
-
-  auto boxSizerSWin = new wxBoxSizer(wxVERTICAL);
-  m_scrolledwin->SetSizer(boxSizerSWin);
-  boxSizerSWin->SetSizeHints(m_scrolledwin);
-#endif
-
-  int group_item_spacing = 2;
 
   wxFont* dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
   double font_size = dFont->GetPointSize() * 17 / 16;
   wxFont* bFont = wxTheFontList->FindOrCreateFont(
-      font_size, dFont->GetFamily(), dFont->GetStyle(), wxFONTWEIGHT_BOLD);
-
-  //
-  //   m_stEditCon = new wxStaticText(m_pNMEAForm, wxID_ANY, _("Edit Selected
-  //   Connection")); m_stEditCon->SetFont(*bFont); bSizer19->Add(m_stEditCon,
-  //   0, wxALL | wxEXPAND | wxALIGN_CENTER_HORIZONTAL, 5);
-  //
+      static_cast<int>(font_size), dFont->GetFamily(), dFont->GetStyle(),
+      wxFONTWEIGHT_BOLD);
 
   //  Connections Properties
-  m_sbConnEdit = new wxStaticBox(this, wxID_ANY, _("Edit Selected Connection"));
-  m_sbConnEdit->SetFont(*bFont);
+  m_conn_edit_statbox =
+      new wxStaticBox(this, wxID_ANY, _("Edit Selected Connection"));
+  m_conn_edit_statbox->SetFont(*bFont);
 
-  sbSizerConnectionProps = new wxStaticBoxSizer(m_sbConnEdit, wxVERTICAL);
-  GetSizer()->Add(sbSizerConnectionProps, 1, wxALL | wxEXPAND, 5);
+  m_connection_props_sizer =
+      new wxStaticBoxSizer(m_conn_edit_statbox, wxVERTICAL);
+  GetSizer()->Add(m_connection_props_sizer, 1, wxALL | wxEXPAND, 5);
 
   wxBoxSizer* bSizer15;
   bSizer15 = new wxBoxSizer(wxHORIZONTAL);
 
-  sbSizerConnectionProps->Add(bSizer15, 0, wxTOP | wxEXPAND, 5);
+  m_connection_props_sizer->Add(bSizer15, 0, wxTOP | wxEXPAND, 5);
 
-  m_rbTypeSerial =
+  m_type_serial_radiobtn =
       new wxRadioButton(this, wxID_ANY, _("Serial"), wxDefaultPosition,
                         wxDefaultSize, wxRB_GROUP);
-  m_rbTypeSerial->SetValue(TRUE);
-  bSizer15->Add(m_rbTypeSerial, 0, wxALL, 5);
+  m_type_serial_radiobtn->SetValue(true);
+  bSizer15->Add(m_type_serial_radiobtn, 0, wxALL, 5);
 
-  m_rbTypeNet = new wxRadioButton(this, wxID_ANY, _("Network"),
-                                  wxDefaultPosition, wxDefaultSize, 0);
-  bSizer15->Add(m_rbTypeNet, 0, wxALL, 5);
+  m_type_net_radiobtn = new wxRadioButton(this, wxID_ANY, _("Network"),
+                                          wxDefaultPosition, wxDefaultSize, 0);
+  bSizer15->Add(m_type_net_radiobtn, 0, wxALL, 5);
 
-  m_rbTypeCAN = new wxRadioButton(this, wxID_ANY, "socketCAN",
-                                  wxDefaultPosition, wxDefaultSize, 0);
+  m_type_can_radiobtn = new wxRadioButton(this, wxID_ANY, "socketCAN",
+                                          wxDefaultPosition, wxDefaultSize, 0);
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
-  bSizer15->Add(m_rbTypeCAN, 0, wxALL, 5);
+  bSizer15->Add(m_type_can_radiobtn, 0, wxALL, 5);
 #else
-  m_rbTypeCAN->Hide();
+  m_type_can_radiobtn->Hide();
 #endif
 
-  wxBoxSizer* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
-  sbSizerConnectionProps->Add(bSizer15a, 0, wxEXPAND, 5);
+  auto* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
+  m_connection_props_sizer->Add(bSizer15a, 0, wxEXPAND, 5);
 
   if (OCPNPlatform::hasInternalGPS()) {
-    m_rbTypeInternalGPS = new wxRadioButton(
+    m_type_internal_gps_radiobtn = new wxRadioButton(
         this, wxID_ANY, _("Built-in GPS"), wxDefaultPosition, wxDefaultSize, 0);
-    bSizer15a->Add(m_rbTypeInternalGPS, 0, wxALL, 5);
+    bSizer15a->Add(m_type_internal_gps_radiobtn, 0, wxALL, 5);
   } else
-    m_rbTypeInternalGPS = NULL;
+    m_type_internal_gps_radiobtn = nullptr;
 
   // has built-in Bluetooth
   if (OCPNPlatform::hasInternalBT()) {
-    m_rbTypeInternalBT =
+    m_type_internal_bt_radiobtn =
         new wxRadioButton(this, wxID_ANY, _("Built-in Bluetooth SPP"),
                           wxDefaultPosition, wxDefaultSize, 0);
-    bSizer15a->Add(m_rbTypeInternalBT, 0, wxALL, 5);
+    bSizer15a->Add(m_type_internal_bt_radiobtn, 0, wxALL, 5);
 
-    m_buttonScanBT = new wxButton(this, wxID_ANY, _("BT Scan") + "    ",
-                                  wxDefaultPosition, wxDefaultSize);
-    m_buttonScanBT->Hide();
+    m_scan_bt_btn = new wxButton(this, wxID_ANY, _("BT Scan") + "    ",
+                                 wxDefaultPosition, wxDefaultSize);
+    m_scan_bt_btn->Hide();
 
-    sbSizerConnectionProps->Add(m_buttonScanBT, 0, wxALL, 25);
+    m_connection_props_sizer->Add(m_scan_bt_btn, 0, wxALL, 25);
 
-    m_stBTPairs = new wxStaticText(this, wxID_ANY, _("Bluetooth Data Sources"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
-    m_stBTPairs->Wrap(-1);
-    m_stBTPairs->Hide();
-    sbSizerConnectionProps->Add(m_stBTPairs, 0, wxALL, 5);
+    m_bt_pairs_text =
+        new wxStaticText(this, wxID_ANY, _("Bluetooth Data Sources"),
+                         wxDefaultPosition, wxDefaultSize, 0);
+    m_bt_pairs_text->Wrap(-1);
+    m_bt_pairs_text->Hide();
+    m_connection_props_sizer->Add(m_bt_pairs_text, 0, wxALL, 5);
 
     wxArrayString mt;
     mt.Add("unscanned");
 
     int ref_size = this->GetCharWidth();
-    m_choiceBTDataSources =
+    m_bt_data_sources_choice =
         new wxChoice(this, wxID_ANY, wxDefaultPosition,
                      wxSize(40 * ref_size, 2 * ref_size), mt);
-    m_choiceBTDataSources->SetSelection(0);
-    m_choiceBTDataSources->Hide();
-    sbSizerConnectionProps->Add(m_choiceBTDataSources, 1, wxEXPAND | wxTOP, 25);
+    m_bt_data_sources_choice->SetSelection(0);
+    m_bt_data_sources_choice->Hide();
+    m_connection_props_sizer->Add(m_bt_data_sources_choice, 1, wxEXPAND | wxTOP,
+                                  25);
 
   } else
-    m_rbTypeInternalBT = NULL;
+    m_type_internal_bt_radiobtn = nullptr;
 
-  gSizerNetProps = new wxFlexGridSizer(0, 2, 0, 0);
+  m_net_props_sizer = new wxFlexGridSizer(0, 2, 0, 0);
 
-  sbSizerConnectionProps->Add(gSizerNetProps, 0, wxEXPAND, 5);
-
-  m_stNetProto = new wxStaticText(this, wxID_ANY, _("Network Protocol"),
-                                  wxDefaultPosition, wxDefaultSize, 0);
-  m_stNetProto->Wrap(-1);
-  gSizerNetProps->Add(m_stNetProto, 0, wxALL, 5);
-
-  wxBoxSizer* bSizer16;
-  bSizer16 = new wxBoxSizer(wxHORIZONTAL);
-  gSizerNetProps->Add(bSizer16, 1, wxEXPAND, 5);
-  gSizerNetProps->AddSpacer(1);
-  gSizerNetProps->AddSpacer(1);
-
-  m_rbNetProtoTCP = new wxRadioButton(
-      this, wxID_ANY, _("TCP"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-  m_rbNetProtoTCP->Enable(TRUE);
-  m_rbNetProtoTCP->SetValue(TRUE);
-
-  bSizer16->Add(m_rbNetProtoTCP, 0, wxALL, 5);
-
-  m_rbNetProtoUDP = new wxRadioButton(this, wxID_ANY, _("UDP"),
-                                      wxDefaultPosition, wxDefaultSize, 0);
-  m_rbNetProtoUDP->Enable(TRUE);
-
-  bSizer16->Add(m_rbNetProtoUDP, 0, wxALL, 5);
+  m_connection_props_sizer->Add(m_net_props_sizer, 0, wxEXPAND, 5);
 
   // Optimize for Portrait mode handheld devices
   if (displaySize.x < displaySize.y) {
     wxBoxSizer* bSizer16a;
     bSizer16a = new wxBoxSizer(wxHORIZONTAL);
-    gSizerNetProps->AddSpacer(1);
-    gSizerNetProps->Add(bSizer16a, 1, wxEXPAND, 5);
-    gSizerNetProps->AddSpacer(1);
-    gSizerNetProps->AddSpacer(1);
-    m_rbNetProtoGPSD = new wxRadioButton(this, wxID_ANY, _("GPSD"),
-                                         wxDefaultPosition, wxDefaultSize, 0);
-    m_rbNetProtoGPSD->Enable(TRUE);
-    bSizer16a->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
-
-    m_rbNetProtoSignalK = new wxRadioButton(
-        this, wxID_ANY, _("Signal K"), wxDefaultPosition, wxDefaultSize, 0);
-    m_rbNetProtoSignalK->Enable(TRUE);
-    bSizer16a->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
-  } else {
-    m_rbNetProtoGPSD = new wxRadioButton(this, wxID_ANY, _("GPSD"),
-                                         wxDefaultPosition, wxDefaultSize, 0);
-    m_rbNetProtoGPSD->Enable(TRUE);
-    bSizer16->Add(m_rbNetProtoGPSD, 0, wxALL, 5);
-
-    m_rbNetProtoSignalK = new wxRadioButton(
-        this, wxID_ANY, _("Signal K"), wxDefaultPosition, wxDefaultSize, 0);
-    m_rbNetProtoSignalK->Enable(TRUE);
-    bSizer16->Add(m_rbNetProtoSignalK, 0, wxALL, 5);
+    m_net_props_sizer->AddSpacer(1);
+    m_net_props_sizer->Add(bSizer16a, 1, wxEXPAND, 5);
+    m_net_props_sizer->AddSpacer(1);
+    m_net_props_sizer->AddSpacer(1);
   }
+  m_net_expert_box_text = new wxStaticText(this, wxID_ANY, _("Expert mode"));
+  m_net_props_sizer->Add(m_net_expert_box_text, 0, wxALL, 5);
+  m_net_expert_cb = new wxCheckBox(this, wxID_ANY, "");
+  m_net_props_sizer->Add(m_net_expert_cb, 0, wxALL, 5);
+  m_net_expert_cb->Bind(wxEVT_CHECKBOX,
+                        [&](const wxCommandEvent&) { OnAdvancedModeChange(); });
 
-  m_stNetDataProtocol = new wxStaticText(this, wxID_ANY, _("Data Protocol"),
-                                         wxDefaultPosition, wxDefaultSize, 0);
-  m_stNetDataProtocol->Wrap(-1);
+  m_net_type_choice_text =
+      new wxStaticText(this, wxID_ANY, _("Connection type"));
+  m_net_props_sizer->Add(m_net_type_choice_text, 0, wxALL, 5);
+  m_net_type_choice = new wxChoice(this, wxID_ANY);
+  m_net_type_choice->Bind(wxEVT_CHOICE,
+                          [&](wxCommandEvent&) { OnConnectionTypeChange(); });
+  OnAdvancedModeChange();
+  m_net_props_sizer->Add(m_net_type_choice, 0, wxALL, 5);
+  m_net_data_protocol_text =
+      new wxStaticText(this, wxID_ANY, _("Data Protocol"));
+  m_net_data_protocol_text->Wrap(-1);
+  m_net_props_sizer->Add(m_net_data_protocol_text, 0, wxALL, 5);
 
-  gSizerNetProps->Add(m_stNetDataProtocol, 0, wxALL, 5);
+  m_net_data_protocol_choice = new wxChoice(this, wxID_ANY);
+  m_net_data_protocol_choice->Append(_("NMEA 0183"));
+  m_net_data_protocol_choice->Append(_("NMEA 2000"));
+  m_net_data_protocol_choice->SetSelection(0);
+  m_net_data_protocol_choice->Enable(true);
+  m_net_props_sizer->Add(m_net_data_protocol_choice, 1, wxEXPAND | wxTOP, 5);
+  m_net_props_sizer->AddSpacer(1);
+  m_net_props_sizer->AddSpacer(1);
 
-  wxString m_choiceNetProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000")};
-  int m_choiceNetProtocolNChoices =
-      sizeof(m_choiceNetProtocolChoices) / sizeof(wxString);
-  m_choiceNetDataProtocol =
-      new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                   m_choiceNetProtocolNChoices, m_choiceNetProtocolChoices, 0);
-  // m_choiceNetDataProtocol->Bind(wxEVT_MOUSEWHEEL,
-  // &ConnectionEditDialog::OnWheelChoice, this);
-  m_choiceNetDataProtocol->SetSelection(0);
-  m_choiceNetDataProtocol->Enable(TRUE);
+  m_net_addr_text = new wxStaticText(this, wxID_ANY, _("Address"));
+  m_net_addr_text->Wrap(-1);
+  int column1width = 15 * GetCharWidth();
+  m_net_addr_text->SetMinSize(wxSize(column1width, -1));
+  m_net_props_sizer->Add(m_net_addr_text, 0, wxALL, 5);
+  m_net_address_tc =
+      new TextCtrlWithHelp(this, _("Enter data source IP address or hostname"));
+  int column2width = 60 * GetCharWidth();
+  m_net_address_tc->SetMaxSize(wxSize(column2width, -1));
+  m_net_address_tc->SetMinSize(wxSize(column2width, -1));
+  m_net_address_tc->Bind(wxEVT_KILL_FOCUS,
+                         [&](wxFocusEvent& ev) { OnAddressChange(ev); });
 
-  gSizerNetProps->Add(m_choiceNetDataProtocol, 1, wxEXPAND | wxTOP, 5);
-  gSizerNetProps->AddSpacer(1);
-  gSizerNetProps->AddSpacer(1);
+  m_net_props_sizer->Add(m_net_address_tc, 0, wxEXPAND | wxTOP, 5);
+  m_net_props_sizer->AddSpacer(1);
+  m_net_props_sizer->AddSpacer(1);
 
-  m_stNetAddr = new wxStaticText(this, wxID_ANY, _("Address"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
-  m_stNetAddr->Wrap(-1);
-  int column1width = 16 * m_stNetProto->GetCharWidth();
-  m_stNetAddr->SetMinSize(wxSize(column1width, -1));
-  gSizerNetProps->Add(m_stNetAddr, 0, wxALL, 5);
+  m_net_port_text = new wxStaticText(this, wxID_ANY, _("Data Port"));
+  m_net_port_text->Wrap(-1);
+  m_net_props_sizer->Add(m_net_port_text, 0, wxALL, 5);
 
-  m_tNetAddress = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                 wxDefaultPosition, wxDefaultSize, 0);
-  int column2width = 40 * this->GetCharWidth();
-  m_tNetAddress->SetMaxSize(wxSize(column2width, -1));
-  m_tNetAddress->SetMinSize(wxSize(column2width, -1));
+  m_net_port_tc = new TextCtrlWithHelp(this, "Enter data source port");
+  m_net_port_tc->SetMaxSize(wxSize(column2width, -1));
+  m_net_port_tc->SetMinSize(wxSize(column2width, -1));
+  m_net_props_sizer->Add(m_net_port_tc, 1, wxEXPAND | wxTOP, 5);
+  m_net_port_tc->SetMaxSize(wxSize(column2width, -1));
+  m_net_port_tc->SetMinSize(wxSize(column2width, -1));
 
-  gSizerNetProps->Add(m_tNetAddress, 0, wxEXPAND | wxTOP, 5);
-  gSizerNetProps->AddSpacer(1);
-  gSizerNetProps->AddSpacer(1);
+  m_net_comment_text = new wxStaticText(this, wxID_ANY, _("User Comment"));
+  m_net_comment_text->Wrap(-1);
+  m_net_comment_text->SetMinSize({column1width, -1});
+  m_net_props_sizer->Add(m_net_comment_text, 0, wxALL, 5);
+  m_net_comment_text->Hide();
 
-  m_stNetPort = new wxStaticText(this, wxID_ANY, _("DataPort"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
-  m_stNetPort->Wrap(-1);
-  gSizerNetProps->Add(m_stNetPort, 0, wxALL, 5);
+  m_net_comment_tc = new wxTextCtrl(this, wxID_ANY);
+  m_net_comment_tc->SetMaxSize({column2width, -1});
+  m_net_comment_tc->SetMinSize({column2width, -1});
+  m_net_props_sizer->Add(m_net_comment_tc, 1, wxEXPAND | wxTOP, 5);
+  m_net_comment_tc->Hide();
 
-  m_tNetPort = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                              wxDefaultSize, 0);
-  gSizerNetProps->Add(m_tNetPort, 1, wxEXPAND | wxTOP, 5);
-  gSizerNetProps->AddSpacer(1);
-  gSizerNetProps->AddSpacer(1);
+  m_net_props_sizer->AddSpacer(1);
+  m_net_props_sizer->AddSpacer(1);
 
-  gSizerCanProps = new wxGridSizer(0, 1, 0, 0);
-
+  m_can_props_sizer = new wxGridSizer(0, 1, 0, 0);
   wxFlexGridSizer* fgSizer1C;
   fgSizer1C = new wxFlexGridSizer(0, 2, 0, 0);
-  // fgSizer1C->SetFlexibleDirection(wxBOTH);
-  // fgSizer1C->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-  m_stCANSource = new wxStaticText(this, wxID_ANY, _("socketCAN Source"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
-  m_stCANSource->Wrap(-1);
-  m_stCANSource->SetMinSize(wxSize(column1width, -1));
-  fgSizer1C->Add(m_stCANSource, 0, wxALL, 5);
+  m_can_source_text = new wxStaticText(this, wxID_ANY, _("socketCAN Source"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  m_can_source_text->Wrap(-1);
+  m_can_source_text->SetMinSize(wxSize(column1width, -1));
+  fgSizer1C->Add(m_can_source_text, 0, wxALL, 5);
 
   wxArrayString choices = GetAvailableSocketCANInterfaces();
-  m_choiceCANSource =
+  m_can_source_choice =
       new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
 
-  m_choiceCANSource->SetSelection(0);
-  m_choiceCANSource->Enable(choices.size() > 0);
-  m_choiceCANSource->SetMaxSize(wxSize(column2width, -1));
-  m_choiceCANSource->SetMinSize(wxSize(column2width, -1));
-  fgSizer1C->Add(m_choiceCANSource, 1, wxEXPAND | wxTOP, 5);
+  m_can_source_choice->SetSelection(0);
+  m_can_source_choice->Enable(!choices.empty());
+  m_can_source_choice->SetMaxSize(wxSize(column2width, -1));
+  m_can_source_choice->SetMinSize(wxSize(column2width, -1));
+  fgSizer1C->Add(m_can_source_choice, 1, wxEXPAND | wxTOP, 5);
 
-  gSizerCanProps->Add(fgSizer1C, 0, wxEXPAND, 5);
+  m_can_props_sizer->Add(fgSizer1C, 0, wxEXPAND, 5);
 
-  sbSizerConnectionProps->Add(gSizerCanProps, 0, wxEXPAND, 5);
+  m_connection_props_sizer->Add(m_can_props_sizer, 0, wxEXPAND, 5);
 
-  gSizerSerProps = new wxGridSizer(0, 1, 0, 0);
-  sbSizerConnectionProps->Add(gSizerSerProps, 0, wxEXPAND, 5);
+  m_ser_props_sizer = new wxGridSizer(0, 1, 0, 0);
+  m_connection_props_sizer->Add(m_ser_props_sizer, 0, wxEXPAND, 5);
 
   wxFlexGridSizer* fgSizer1;
   fgSizer1 = new wxFlexGridSizer(0, 4, 0, 0);
   fgSizer1->SetFlexibleDirection(wxBOTH);
   fgSizer1->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
-  m_stSerPort =
+  m_ser_port_text =
       new wxStaticText(this, wxID_ANY, _("Data port"), wxDefaultPosition,
                        wxDefaultSize, wxST_ELLIPSIZE_END);
-  m_stSerPort->SetMinSize(wxSize(column1width, -1));
-  m_stSerPort->Wrap(-1);
+  m_ser_port_text->SetMinSize(wxSize(column1width, -1));
+  m_ser_port_text->Wrap(-1);
 
-  fgSizer1->Add(m_stSerPort, 0, wxALL, 5);
+  fgSizer1->Add(m_ser_port_text, 0, wxALL, 5);
 
-  m_comboPort = new wxComboBox(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
-                               wxDefaultSize, 0, NULL, 0);
+  m_port_combo =
+      new wxComboBox(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxDefaultSize, 0, nullptr, 0);
 
-  m_comboPort->SetMaxSize(wxSize(column2width, -1));
-  m_comboPort->SetMinSize(wxSize(column2width, -1));
+  m_port_combo->SetMaxSize(wxSize(column2width, -1));
+  m_port_combo->SetMinSize(wxSize(column2width, -1));
 
-  fgSizer1->Add(m_comboPort, 0, wxEXPAND | wxTOP, 5);
+  fgSizer1->Add(m_port_combo, 0, wxEXPAND | wxTOP, 5);
 
-  m_stSerBaudrate = new wxStaticText(this, wxID_ANY, _("Baudrate"),
-                                     wxDefaultPosition, wxDefaultSize, 0);
-  m_stSerBaudrate->Wrap(-1);
+  m_ser_baudrate_text = new wxStaticText(this, wxID_ANY, _("Baudrate"),
+                                         wxDefaultPosition, wxDefaultSize, 0);
+  m_ser_baudrate_text->Wrap(-1);
   fgSizer1->AddSpacer(1);
   fgSizer1->AddSpacer(1);
-  fgSizer1->Add(m_stSerBaudrate, 0, wxALL, 5);
+  fgSizer1->Add(m_ser_baudrate_text, 0, wxALL, 5);
 
   wxString m_choiceBaudRateChoices[] = {
       _("150"),    _("300"),    _("600"),    _("1200"),  _("2400"),
@@ -534,90 +733,71 @@ void ConnectionEditDialog::Init() {
       _("115200"), _("230400"), _("460800"), _("921600")};
   int m_choiceBaudRateNChoices =
       sizeof(m_choiceBaudRateChoices) / sizeof(wxString);
-  m_choiceBaudRate =
+  m_baud_rate_choice =
       new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                    m_choiceBaudRateNChoices, m_choiceBaudRateChoices, 0);
   // m_choiceBaudRate->Bind(wxEVT_MOUSEWHEEL,
   // &ConnectionEditDialog::OnWheelChoice, this);
 
-  m_choiceBaudRate->SetSelection(0);
+  m_baud_rate_choice->SetSelection(0);
 
-  fgSizer1->Add(m_choiceBaudRate, 1, wxEXPAND | wxTOP, 5);
+  fgSizer1->Add(m_baud_rate_choice, 1, wxEXPAND | wxTOP, 5);
   fgSizer1->AddSpacer(1);
   fgSizer1->AddSpacer(1);
 
-  m_stSerProtocol = new wxStaticText(this, wxID_ANY, _("Protocol"),
-                                     wxDefaultPosition, wxDefaultSize, 0);
-  m_stSerProtocol->Wrap(-1);
-  fgSizer1->Add(m_stSerProtocol, 0, wxALL, 5);
+  m_ser_protocol_text = new wxStaticText(this, wxID_ANY, _("Protocol"));
+  m_ser_protocol_text->Wrap(-1);
+  fgSizer1->Add(m_ser_protocol_text, 0, wxALL, 5);
 
   wxString m_choiceSerialProtocolChoices[] = {_("NMEA 0183"), _("NMEA 2000")};
   int m_choiceSerialProtocolNChoices =
       sizeof(m_choiceSerialProtocolChoices) / sizeof(wxString);
-  m_choiceSerialProtocol = new wxChoice(
+  m_serial_protocol_choice = new wxChoice(
       this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
       m_choiceSerialProtocolNChoices, m_choiceSerialProtocolChoices, 0);
   // m_choiceSerialProtocol->Bind(wxEVT_MOUSEWHEEL,
   // &ConnectionEditDialog::OnWheelChoice, this);
 
-  m_choiceSerialProtocol->SetSelection(0);
-  m_choiceSerialProtocol->Enable(TRUE);
-  fgSizer1->Add(m_choiceSerialProtocol, 1, wxEXPAND | wxTOP, 5);
+  m_serial_protocol_choice->SetSelection(0);
+  m_serial_protocol_choice->Enable(true);
+  fgSizer1->Add(m_serial_protocol_choice, 1, wxEXPAND | wxTOP, 5);
 
-  gSizerSerProps->Add(fgSizer1, 0, wxEXPAND, 5);
+  m_ser_props_sizer->Add(fgSizer1, 0, wxEXPAND, 5);
 
   //  User Comments
 
-  wxFlexGridSizer* commentSizer = new wxFlexGridSizer(0, 2, 0, 0);
+  auto* commentSizer = new wxFlexGridSizer(0, 2, 0, 0);
   // sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
-  //  Net User Comments
-  m_stNetComment = new wxStaticText(this, wxID_ANY, _("Description"),
-                                    wxDefaultPosition, wxDefaultSize, 0);
-  m_stNetComment->Wrap(-1);
-  m_stNetComment->SetMinSize(wxSize(column1width, -1));
-  commentSizer->Add(m_stNetComment, 0, wxALL, 5);
-
-  m_tNetComment = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                 wxDefaultPosition, wxDefaultSize, 0);
-  m_tNetComment->SetMaxSize(wxSize(column2width, -1));
-  m_tNetComment->SetMinSize(wxSize(column2width, -1));
-
-  commentSizer->Add(m_tNetComment, 1, wxEXPAND | wxTOP, 5);
-
   //  Serial User Comments
-  m_stSerialComment = new wxStaticText(this, wxID_ANY, _("User Comment"),
-                                       wxDefaultPosition, wxDefaultSize, 0);
-  m_stSerialComment->Wrap(-1);
-  m_stSerialComment->SetMinSize(wxSize(column1width, -1));
-  commentSizer->Add(m_stSerialComment, 0, wxALL, 5);
+  m_ser_comment_text = new wxStaticText(this, wxID_ANY, _("User Comment"));
+  m_ser_comment_text->Wrap(-1);
+  m_ser_comment_text->SetMinSize(wxSize(column1width, -1));
+  commentSizer->Add(m_ser_comment_text, 0, wxALL, 5);
 
-  m_tSerialComment = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                    wxDefaultPosition, wxDefaultSize, 0);
-  m_tSerialComment->SetMaxSize(wxSize(column2width, -1));
-  m_tSerialComment->SetMinSize(wxSize(column2width, -1));
+  m_serial_comment_tc = new wxTextCtrl(this, wxID_ANY);
+  m_serial_comment_tc->SetMaxSize(wxSize(column2width, -1));
+  m_serial_comment_tc->SetMinSize(wxSize(column2width, -1));
 
-  commentSizer->Add(m_tSerialComment, 1, wxTOP, 5);
+  commentSizer->Add(m_serial_comment_tc, 1, wxTOP, 5);
 
-  sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
+  m_connection_props_sizer->Add(commentSizer, 0, wxALL, 5);
 
   wxFlexGridSizer* fgSizer5;
   fgSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer5->SetFlexibleDirection(wxBOTH);
   fgSizer5->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-  sbSizerConnectionProps->Add(fgSizer5, 0, wxEXPAND, 5);
+  m_connection_props_sizer->Add(fgSizer5, 0, wxEXPAND, 5);
 
-  m_cbInput = new wxCheckBox(this, wxID_ANY, _("Receive Input on this Port"),
-                             wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer5->Add(m_cbInput, 0, wxALL, 2);
+  m_input_cb = new wxCheckBox(this, wxID_ANY, _("Receive Input on this Port"));
+  fgSizer5->Add(m_input_cb, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
 
-  m_cbOutput =
+  m_output_cb =
       new wxCheckBox(this, wxID_ANY,
                      wxString::Format("%s (%s)", _("Output on this port"),
-                                      _("as autopilot or NMEA repeater")),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer5->Add(m_cbOutput, 0, wxALL, 2);
+                                      _("as autopilot or NMEA repeater")));
+  fgSizer5->Add(m_output_cb, 0, wxALL, 2);
   fgSizer5->AddSpacer(1);
 
   // Authentication token
@@ -633,145 +813,137 @@ void ConnectionEditDialog::Init() {
   fgSizer5->Add(m_collapse_box, wxSizerFlags());
   fgSizer5->Add(new wxStaticText(this, wxID_ANY, ""));
 
-  m_stAuthToken = new wxStaticText(this, wxID_ANY, _("Auth Token"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
-  m_stAuthToken->SetMinSize(wxSize(column1width, -1));
-  m_stAuthToken->Wrap(-1);
-  fgSizer5->Add(m_stAuthToken, 0, wxALL, 5);
-  m_stAuthToken->Hide();
-
-  m_tAuthToken = new wxTextCtrl(this, wxID_ANY, wxEmptyString,
-                                wxDefaultPosition, wxDefaultSize, 0);
-  m_tAuthToken->SetMinSize(wxSize(column2width, -1));
-  fgSizer5->Add(m_tAuthToken, 1, wxEXPAND | wxTOP, 5);
-
-  m_tAuthToken->Hide();
-
-  m_cbGarminHost =
-      new wxCheckBox(this, wxID_ANY, _("Use Garmin (GRMN) mode for input"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  m_cbGarminHost->SetValue(FALSE);
-  fgSizer5->Add(m_cbGarminHost, 0, wxALL, 2);
-  fgSizer5->AddSpacer(1);
-
 #ifndef USE_GARMINHOST
   m_cbGarminHost->Hide();
 #endif
 
-  m_cbMultiCast = new wxCheckBox(this, wxID_ANY, _(" UDP Multicast"),
-                                 wxDefaultPosition, wxDefaultSize, 0);
-  m_cbMultiCast->SetValue(FALSE);
-  // m_cbMultiCast->SetToolTip(_("Advanced Use Only. Enable UDP Multicast."));
+  m_auth_token_text = new wxStaticText(this, wxID_ANY, _("Auth Token"));
+  m_auth_token_text->SetMinSize(wxSize(column1width, -1));
+  m_auth_token_text->Wrap(-1);
+  m_auth_token_text->SetMinSize(wxSize(column1width, -1));
+  fgSizer5->Add(m_auth_token_text, 0, wxALL, 5);
+  m_auth_token_text->Hide();
 
-  fgSizer5->Add(m_cbMultiCast, 0, wxALL, 2);
+  m_auth_token_tc = new wxTextCtrl(this, wxID_ANY, "");
+  m_auth_token_tc->SetMinSize(wxSize(column2width, -1));
+  fgSizer5->Add(m_auth_token_tc, 1, wxEXPAND | wxTOP, 5);
+  m_auth_token_tc->SetValue("orvar");
+  m_auth_token_tc->Hide();
+
   fgSizer5->AddSpacer(1);
+  fgSizer5->Add(new wxStaticText(this, wxID_ANY, ""), 0, wxALL, 2);
 
-  m_stPrecision = new wxStaticText(this, wxID_ANY, _("APB bearing precision"),
-                                   wxDefaultPosition, wxDefaultSize, 0);
-
-  m_stPrecision->Wrap(-1);
-  fgSizer5->Add(m_stPrecision, 0, wxALL, 2);
+  m_precision_text =
+      new wxStaticText(this, wxID_ANY, _("APB bearing precision"));
+  m_precision_text->Wrap(-1);
+  m_precision_text->SetMinSize(wxSize(column1width, -1));
+  fgSizer5->Add(m_precision_text, 0, wxALL, 2);
+  m_precision_text->Hide();
 
   wxString m_choicePrecisionChoices[] = {_("x"), _("x.x"), _("x.xx"),
                                          _("x.xxx"), _("x.xxxx")};
   int m_choicePrecisionNChoices =
       sizeof(m_choicePrecisionChoices) / sizeof(wxString);
-  m_choicePrecision =
+  m_precision_choice =
       new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                    m_choicePrecisionNChoices, m_choicePrecisionChoices, 0);
   // m_choicePrecision->Bind(wxEVT_MOUSEWHEEL,
   // &ConnectionEditDialog::OnWheelChoice, this);
 
-  m_choicePrecision->SetSelection(g_NMEAAPBPrecision);
-  fgSizer5->Add(m_choicePrecision, 0, wxALL, 2);
+  m_precision_choice->SetSelection(g_NMEAAPBPrecision);
+  fgSizer5->Add(m_precision_choice, 0, wxALL, 2);
+  m_precision_choice->Hide();
+
+  m_garmin_host_cb =
+      new wxCheckBox(this, wxID_ANY, _("Use Garmin (GRMN) mode for input"));
+  m_garmin_host_cb->SetValue(false);
+  fgSizer5->Add(m_garmin_host_cb, 0, wxALL, 2);
+  fgSizer5->AddSpacer(1);
 
   // signalK discovery enable
-  m_cbCheckSKDiscover =
-      new wxCheckBox(this, wxID_ANY, _("Automatic server discovery"),
-                     wxDefaultPosition, wxDefaultSize, 0);
-  m_cbCheckSKDiscover->SetValue(TRUE);
-  m_cbCheckSKDiscover->SetToolTip(
+  m_sk_check_discover_cb =
+      new wxCheckBox(this, wxID_ANY, _("Automatic server discovery"));
+  m_sk_check_discover_cb->SetValue(true);
+  m_sk_check_discover_cb->SetToolTip(
       _("If checked, signal K server will be discovered automatically"));
 
-  fgSizer5->Add(m_cbCheckSKDiscover, 0, wxALL, 2);
+  fgSizer5->Add(m_sk_check_discover_cb, 0, wxALL, 2);
 
   // signal K "Discover now" button
-  m_ButtonSKDiscover = new wxButton(this, wxID_ANY, _("Discover now..."),
-                                    wxDefaultPosition, wxDefaultSize, 0);
-  m_ButtonSKDiscover->Hide();
-  fgSizer5->Add(m_ButtonSKDiscover, 0, wxALL, 2);
+  m_sk_discover_btn = new wxButton(this, wxID_ANY, _("Discover now..."));
+  m_sk_discover_btn->Hide();
+  fgSizer5->Add(m_sk_discover_btn, 0, wxALL, 2);
 
   // signalK Server Status
-  m_StaticTextSKServerStatus =
-      new wxStaticText(this, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, 0);
-  fgSizer5->Add(m_StaticTextSKServerStatus, 0, wxALL, 2);
+  m_sk_server_status_text = new wxStaticText(this, wxID_ANY, "");
+  fgSizer5->Add(m_sk_server_status_text, 0, wxALL, 2);
 
-  sbSizerInFilter = new wxStaticBoxSizer(
+  m_in_filter_sizer = new wxStaticBoxSizer(
       new wxStaticBox(this, wxID_ANY, _("Input filtering")), wxVERTICAL);
-  sbSizerConnectionProps->Add(sbSizerInFilter,
-                              wxSizerFlags().Expand().Border());
+  m_connection_props_sizer->Add(m_in_filter_sizer,
+                                wxSizerFlags().Expand().Border());
 
   wxBoxSizer* bSizer9;
   bSizer9 = new wxBoxSizer(wxHORIZONTAL);
 
-  m_rbIAccept = new wxRadioButton(this, wxID_ANY, _("Accept only sentences"),
-                                  wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-  bSizer9->Add(m_rbIAccept, 0, wxALL, 5);
+  m_accept_radiobtn =
+      new wxRadioButton(this, wxID_ANY, _("Accept only sentences"));
+  bSizer9->Add(m_accept_radiobtn, 0, wxALL, 5);
 
-  m_rbIIgnore = new wxRadioButton(this, wxID_ANY, _("Ignore sentences"),
-                                  wxDefaultPosition, wxDefaultSize, 0);
-  bSizer9->Add(m_rbIIgnore, 0, wxALL, 5);
+  m_ignore_radiobtn = new wxRadioButton(this, wxID_ANY, _("Ignore sentences"));
+  bSizer9->Add(m_ignore_radiobtn, 0, wxALL, 5);
 
-  sbSizerInFilter->Add(bSizer9, 0, wxEXPAND, 5);
+  m_in_filter_sizer->Add(bSizer9, 0, wxEXPAND, 5);
 
   wxBoxSizer* bSizer11;
   bSizer11 = new wxBoxSizer(wxHORIZONTAL);
-  sbSizerInFilter->Add(bSizer11, 0, wxEXPAND, 5);
+  m_in_filter_sizer->Add(bSizer11, 0, wxEXPAND, 5);
 
-  m_tcInputStc =
+  m_input_stc_tc =
       new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_READONLY);
-  bSizer11->Add(m_tcInputStc, 1, wxALL | wxEXPAND, 5);
+  bSizer11->Add(m_input_stc_tc, 1, wxALL | wxEXPAND, 5);
 
-  m_btnInputStcList = new wxButton(this, wxID_ANY, "...", wxDefaultPosition,
-                                   wxDefaultSize, wxBU_EXACTFIT);
-  bSizer11->Add(m_btnInputStcList, 0, wxALL, 5);
+  m_input_stc_list_btn = new wxButton(this, wxID_ANY, "...", wxDefaultPosition,
+                                      wxDefaultSize, wxBU_EXACTFIT);
+  bSizer11->Add(m_input_stc_list_btn, 0, wxALL, 5);
 
   bSizer11->AddSpacer(GetCharWidth() * 5);
 
-  sbSizerOutFilter = new wxStaticBoxSizer(
+  m_out_filter_sizer = new wxStaticBoxSizer(
       new wxStaticBox(this, wxID_ANY, _("Output filtering")), wxVERTICAL);
-  sbSizerConnectionProps->Add(sbSizerOutFilter, 0, wxEXPAND, 5);
+  m_connection_props_sizer->Add(m_out_filter_sizer, 0, wxEXPAND, 5);
 
   wxBoxSizer* bSizer10;
   bSizer10 = new wxBoxSizer(wxHORIZONTAL);
 
-  m_rbOAccept = new wxRadioButton(this, wxID_ANY, _("Transmit sentences"),
-                                  wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
-  bSizer10->Add(m_rbOAccept, 0, wxALL, 5);
+  m_o_accept_radiobtn =
+      new wxRadioButton(this, wxID_ANY, _("Transmit sentences"),
+                        wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+  bSizer10->Add(m_o_accept_radiobtn, 0, wxALL, 5);
 
-  m_rbOIgnore = new wxRadioButton(this, wxID_ANY, _("Drop sentences"),
-                                  wxDefaultPosition, wxDefaultSize, 0);
-  bSizer10->Add(m_rbOIgnore, 0, wxALL, 5);
+  m_o_ignore_radiobtn = new wxRadioButton(this, wxID_ANY, _("Drop sentences"),
+                                          wxDefaultPosition, wxDefaultSize, 0);
+  bSizer10->Add(m_o_ignore_radiobtn, 0, wxALL, 5);
 
-  sbSizerOutFilter->Add(bSizer10, 0, wxEXPAND, 5);
+  m_out_filter_sizer->Add(bSizer10, 0, wxEXPAND, 5);
 
   wxBoxSizer* bSizer12;
   bSizer12 = new wxBoxSizer(wxHORIZONTAL);
-  sbSizerOutFilter->Add(bSizer12, 0, wxEXPAND, 5);
+  m_out_filter_sizer->Add(bSizer12, 0, wxEXPAND, 5);
 
-  m_tcOutputStc =
+  m_output_stc_tc =
       new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
                      wxDefaultSize, wxTE_READONLY);
-  bSizer12->Add(m_tcOutputStc, 1, wxALL | wxEXPAND, 5);
+  bSizer12->Add(m_output_stc_tc, 1, wxALL | wxEXPAND, 5);
 
-  m_btnOutputStcList = new wxButton(this, wxID_ANY, "...", wxDefaultPosition,
-                                    wxDefaultSize, wxBU_EXACTFIT);
-  bSizer12->Add(m_btnOutputStcList, 0, wxALL, 5);
+  m_output_stc_list_btn = new wxButton(this, wxID_ANY, "...", wxDefaultPosition,
+                                       wxDefaultSize, wxBU_EXACTFIT);
+  bSizer12->Add(m_output_stc_list_btn, 0, wxALL, 5);
 
   bSizer12->AddSpacer(GetCharWidth() * 5);
 
-  sbSizerConnectionProps->AddSpacer(20);
+  m_connection_props_sizer->AddSpacer(20);
 
   ConnectControls();
 
@@ -783,12 +955,13 @@ void ConnectionEditDialog::Init() {
   ShowNMEASerial(true);
   ShowNMEANet(false);
   ShowNMEACAN(false);
-  connectionsaved = TRUE;
+  m_is_conn_saved = true;
 
   GetSizer()->Fit(this);
 
-  new_device_listener.Init(SystemEvents::GetInstance().evt_dev_change,
-                           [&](ObservedEvt&) { LoadSerialPorts(m_comboPort); });
+  m_new_device_listener.Init(
+      SystemEvents::GetInstance().evt_dev_change,
+      [&](ObservedEvt&) { LoadSerialPorts(m_port_combo); });
 }
 
 // void ConnectionEditDialog::OnWheelChoice(wxMouseEvent& event) {
@@ -800,24 +973,24 @@ void ConnectionEditDialog::SetSelectedConnectionPanel(
   //  Only one panel can be selected at any time
   //  Clear any selections
 
-  if (mSelectedConnection && mSelectedConnection->m_optionsPanel)
-    mSelectedConnection->m_optionsPanel->SetSelected(false);
+  if (m_selected_conn_params && m_selected_conn_params->m_optionsPanel)
+    m_selected_conn_params->m_optionsPanel->SetSelected(false);
 
   if (panel) {
-    mSelectedConnection = panel->m_pConnectionParams;
+    m_selected_conn_params = panel->m_pConnectionParams;
     panel->SetSelected(true);
-    SetConnectionParams(mSelectedConnection);
-    m_buttonRemove->Enable();
-    m_buttonRemove->Show();
-    m_buttonAdd->Disable();
-    m_sbConnEdit->SetLabel(_("Edit Selected Connection"));
+    SetConnectionParams(m_selected_conn_params);
+    m_remove_btn->Enable();
+    m_remove_btn->Show();
+    m_add_btn->Disable();
+    m_conn_edit_statbox->SetLabel(_("Edit Selected Connection"));
 
   } else {
-    mSelectedConnection = NULL;
-    m_buttonRemove->Disable();
-    m_buttonAdd->Enable();
-    m_buttonAdd->Show();
-    m_sbConnEdit->SetLabel("");
+    m_selected_conn_params = nullptr;
+    m_remove_btn->Disable();
+    m_add_btn->Enable();
+    m_add_btn->Show();
+    m_conn_edit_statbox->SetLabel("");
     ClearNMEAForm();
   }
 
@@ -827,96 +1000,96 @@ void ConnectionEditDialog::SetSelectedConnectionPanel(
   // this->Scroll(-1, buttonPosition.y / m_parent->GetScrollRate());
 }
 
-void ConnectionEditDialog::SetPropsLabel(wxString label) {
-  m_sbConnEdit->SetLabel(label);
+void ConnectionEditDialog::SetPropsLabel(const wxString& label) {
+  m_conn_edit_statbox->SetLabel(label);
 }
 
 void ConnectionEditDialog::EnableConnection(ConnectionParams* conn,
                                             bool value) {
   if (conn) {
     // conn->bEnabled = value;
-    conn->b_IsSetup = FALSE;  // trigger a rebuild/takedown of the connection
-    m_connection_enabled = conn->bEnabled;
+    conn->b_IsSetup = false;  // trigger a rebuild/takedown of the connection
+    m_conn_enabled = conn->bEnabled;
   }
 }
 
 #if 1
 void ConnectionEditDialog::OnValChange(wxCommandEvent& event) { event.Skip(); }
 
-void ConnectionEditDialog::OnScanBTClick(wxCommandEvent& event) {
-  if (m_BTscanning)
-    StopBTScan();
+void ConnectionEditDialog::OnScanBtClick(wxCommandEvent& event) {
+  if (m_bt_scanning)
+    StopBtScan();
   else {
-    m_btNoChangeCounter = 0;
-    m_btlastResultCount = 0;
+    m_bt_no_change_counter = 0;
+    m_bt_last_result_count = 0;
 
-    Bind(wxEVT_TIMER, &ConnectionEditDialog::onBTScanTimer, this,
+    Bind(wxEVT_TIMER, &ConnectionEditDialog::OnBtScanTimer, this,
          ID_BT_SCANTIMER);
-    m_BTScanTimer.Start(1000, wxTIMER_CONTINUOUS);
+    m_bt_scan_timer.Start(1000, wxTIMER_CONTINUOUS);
     g_Platform->startBluetoothScan();
-    m_BTscanning = 1;
-    if (m_buttonScanBT) {
-      m_buttonScanBT->SetLabel(_("Stop Scan"));
+    m_bt_scanning = 1;
+    if (m_scan_bt_btn) {
+      m_scan_bt_btn->SetLabel(_("Stop Scan"));
     }
   }
 }
 
-void ConnectionEditDialog::onBTScanTimer(wxTimerEvent& event) {
-  if (m_BTscanning) {
-    m_BTscanning++;
+void ConnectionEditDialog::OnBtScanTimer(wxTimerEvent& event) {
+  if (m_bt_scanning) {
+    m_bt_scanning++;
 
-    m_BTscan_results = g_Platform->getBluetoothScanResults();
+    m_bt_scan_results = g_Platform->getBluetoothScanResults();
 
-    m_choiceBTDataSources->Clear();
-    m_choiceBTDataSources->Append(m_BTscan_results[0]);  // scan status
+    m_bt_data_sources_choice->Clear();
+    m_bt_data_sources_choice->Append(m_bt_scan_results[0]);  // scan status
 
     unsigned int i = 1;
-    while ((i + 1) < m_BTscan_results.GetCount()) {
-      wxString item1 = m_BTscan_results[i] + ";";
-      wxString item2 = m_BTscan_results.Item(i + 1);
-      m_choiceBTDataSources->Append(item1 + item2);
+    while ((i + 1) < m_bt_scan_results.GetCount()) {
+      wxString item1 = m_bt_scan_results[i] + ";";
+      wxString item2 = m_bt_scan_results.Item(i + 1);
+      m_bt_data_sources_choice->Append(item1 + item2);
 
       i += 2;
     }
 
-    if (m_BTscan_results.GetCount() > 1) {
-      m_choiceBTDataSources->SetSelection(1);
+    if (m_bt_scan_results.GetCount() > 1) {
+      m_bt_data_sources_choice->SetSelection(1);
     }
 
-    //  Watch for changes.  When no changes occur after n seconds, stop the scan
-    if (m_btNoChangeCounter > 5) StopBTScan();
+    //  Watch for changes.  When no changes occur after n seconds, stop the
+    //  scan
+    if (m_bt_no_change_counter > 5) StopBtScan();
 
-    if ((int)m_BTscan_results.GetCount() == m_btlastResultCount)
-      m_btNoChangeCounter++;
+    if ((int)m_bt_scan_results.GetCount() == m_bt_last_result_count)
+      m_bt_no_change_counter++;
     else
-      m_btNoChangeCounter = 0;
+      m_bt_no_change_counter = 0;
 
-    m_btlastResultCount = m_BTscan_results.GetCount();
+    m_bt_last_result_count = static_cast<int>(m_bt_scan_results.GetCount());
 
     // Absolute fallback
-    if (m_BTscanning >= 15) {
-      StopBTScan();
+    if (m_bt_scanning >= 15) {
+      StopBtScan();
     }
   } else {
   }
-  return;
 }
 
-void ConnectionEditDialog::StopBTScan() {
-  m_BTScanTimer.Stop();
+void ConnectionEditDialog::StopBtScan() {
+  m_bt_scan_timer.Stop();
 
   g_Platform->stopBluetoothScan();
 
-  m_BTscanning = 0;
+  m_bt_scanning = 0;
 
-  if (m_buttonScanBT) {
-    m_buttonScanBT->SetLabel(_("BT Scan"));
-    m_buttonScanBT->Enable();
+  if (m_scan_bt_btn) {
+    m_scan_bt_btn->SetLabel(_("BT Scan"));
+    m_scan_bt_btn->Enable();
   }
 }
 
 void ConnectionEditDialog::OnConnValChange(wxCommandEvent& event) {
-  connectionsaved = FALSE;
+  m_is_conn_saved = false;
   event.Skip();
 }
 
@@ -946,10 +1119,10 @@ void ConnectionEditDialog::OnTypeBTSelected(wxCommandEvent& event) {
 }
 
 void ConnectionEditDialog::OnUploadFormatChange(wxCommandEvent& event) {
-  if (event.GetEventObject() == m_cbGarminUploadHost && event.IsChecked())
-    m_cbFurunoGP3X->SetValue(FALSE);
-  else if (event.GetEventObject() == m_cbFurunoGP3X && event.IsChecked())
-    m_cbGarminUploadHost->SetValue(FALSE);
+  if (event.GetEventObject() == m_garmin_upload_host_cb && event.IsChecked())
+    m_furuno_gp3x_cb->SetValue(false);
+  else if (event.GetEventObject() == m_furuno_gp3x_cb && event.IsChecked())
+    m_garmin_upload_host_cb->SetValue(false);
 
   OnConnValChange(event);
   event.Skip();
@@ -957,181 +1130,162 @@ void ConnectionEditDialog::OnUploadFormatChange(wxCommandEvent& event) {
 #endif
 
 void ConnectionEditDialog::ShowTypeCommon(bool visible) {
-  m_rbTypeSerial->Show(visible);
-  m_rbTypeNet->Show(visible);
+  m_type_serial_radiobtn->Show(visible);
+  m_type_net_radiobtn->Show(visible);
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
-  m_rbTypeCAN->Show(visible);
+  m_type_can_radiobtn->Show(visible);
 #endif
-  if (m_rbTypeInternalGPS) m_rbTypeInternalGPS->Show(visible);
-  if (m_rbTypeInternalBT) m_rbTypeInternalBT->Show(visible);
+  if (m_type_internal_gps_radiobtn) m_type_internal_gps_radiobtn->Show(visible);
+  if (m_type_internal_bt_radiobtn) m_type_internal_bt_radiobtn->Show(visible);
 }
 
 void ConnectionEditDialog::ShowNMEACommon(bool visible) {
   bool advanced = m_advanced;
-  m_cbInput->Show(visible);
-  m_cbOutput->Show(visible);
-  m_stPrecision->Show(visible && advanced);
-  m_choicePrecision->Show(visible && advanced);
-  m_stPrecision->Show(visible && advanced);
-  m_stAuthToken->Show(visible && advanced);
-  m_tAuthToken->Show(visible && advanced);
-  if (visible) {
-    const bool bout_enable = (m_cbOutput->IsChecked() && advanced);
-    m_stPrecision->Enable(bout_enable);
-    m_choicePrecision->Enable(bout_enable);
-  } else {
-    sbSizerOutFilter->SetDimension(0, 0, 0, 0);
-    sbSizerInFilter->SetDimension(0, 0, 0, 0);
-    sbSizerConnectionProps->SetDimension(0, 0, 0, 0);
-    m_sbConnEdit->SetLabel("");
+  m_input_cb->Show(visible);
+  m_output_cb->Show(visible);
+  if (!visible) {
+    m_out_filter_sizer->SetDimension(0, 0, 0, 0);
+    m_in_filter_sizer->SetDimension(0, 0, 0, 0);
+    m_connection_props_sizer->SetDimension(0, 0, 0, 0);
+    m_conn_edit_statbox->SetLabel("");
   }
 
-  m_cbCheckSKDiscover->Hide();  // Provisional
-  m_ButtonSKDiscover->Hide();
+  m_sk_check_discover_cb->Hide();  // Provisional
+  m_sk_discover_btn->Hide();
 
-  const bool bin_enable = (m_cbInput->IsChecked() && advanced);
+  const bool bin_enable = (m_input_cb->IsChecked() && advanced);
   ShowInFilter(visible && bin_enable);
-  const bool bout_enable = (m_cbOutput->IsChecked() && advanced);
+  const bool bout_enable = (m_output_cb->IsChecked() && advanced);
   ShowOutFilter(visible && bout_enable);
 
-  m_bNMEAParams_shown = visible;
+  m_is_nmea_params_shown = visible;
 }
 
 void ConnectionEditDialog::ShowNMEANet(bool visible) {
-  bool advanced = m_advanced;
-  if (m_btnOK) m_btnOK->Enable();
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
 
-  m_stNetAddr->Show(visible);
-  m_tNetAddress->Show(visible);
-  m_stNetDataProtocol->Show(visible);
-  m_stNetPort->Show(visible);
-  m_choiceNetDataProtocol->Show(visible);
-  m_tNetPort->Show(visible);
-  m_stNetProto->Show(visible);
-  m_rbNetProtoSignalK->Show(visible);
-  m_rbNetProtoGPSD->Show(visible);
-  m_rbNetProtoTCP->Show(visible);
-  m_rbNetProtoUDP->Show(visible);
-  m_stNetComment->Show(visible);
-  m_tNetComment->Show(visible);
-  m_stAuthToken->Show(visible);
-  m_tAuthToken->Show(visible);
-  m_cbGarminHost->Hide();
+  m_net_addr_text->Show(visible);
+  m_net_address_tc->Show(visible);
+  m_net_data_protocol_text->Show(visible);
+  m_net_port_text->Show(visible);
+  m_net_data_protocol_choice->Show(visible);
+  m_net_port_tc->Show(visible);
+  m_net_expert_cb->Show(visible);
+  if (m_net_expert_cb->GetValue()) {
+    m_net_comment_text->Show(visible);
+    m_net_comment_tc->Show(visible);
+  }
+  m_net_expert_box_text->Show(visible);
+  m_net_type_choice_text->Show(visible);
+  m_net_type_choice->Show(visible);
+  m_garmin_host_cb->Hide();
 }
 
 void ConnectionEditDialog::ShowNMEASerial(bool visible) {
   bool advanced = m_advanced;
-  if (m_btnOK) m_btnOK->Enable();
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
 
-  m_stSerBaudrate->Show(visible);
-  m_choiceBaudRate->Show(visible);
-  m_stSerPort->Show(visible);
-  m_comboPort->Show(visible);
-  m_stSerProtocol->Show(visible);
-  m_choiceSerialProtocol->Show(visible);
-  m_cbGarminHost->Show(visible && advanced);
-  m_stSerialComment->Show(visible);
-  m_tSerialComment->Show(visible);
+  m_ser_baudrate_text->Show(visible);
+  m_baud_rate_choice->Show(visible);
+  m_ser_port_text->Show(visible);
+  m_port_combo->Show(visible);
+  m_ser_protocol_text->Show(visible);
+  m_serial_protocol_choice->Show(visible);
+  m_garmin_host_cb->Show(visible && advanced);
+  m_ser_comment_text->Show(visible);
+  m_serial_comment_tc->Show(visible);
 }
 
 void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
-  if (m_btnOK) m_btnOK->Enable();
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
 
-  m_cbCheckSKDiscover->Hide();
-  m_ButtonSKDiscover->Hide();
-  m_stAuthToken->Hide();
-  m_tAuthToken->Hide();
-  m_cbOutput->Hide();
+  m_sk_check_discover_cb->Hide();
+  m_sk_discover_btn->Hide();
+  m_output_cb->Hide();
 }
 
 void ConnectionEditDialog::ShowNMEACAN(bool visible) {
-  if (m_btnOK) m_btnOK->Enable();
-  m_stCANSource->Show(visible);
-  m_choiceCANSource->Show(visible);
-  if (visible && m_btnOK && m_choiceCANSource->IsEmpty())
-    m_btnOK->Enable(false);
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
+  m_can_source_text->Show(visible);
+  m_can_source_choice->Show(visible);
+  if (visible && m_dlg_ok_btn && m_can_source_choice->IsEmpty())
+    m_dlg_ok_btn->Enable(false);
 }
 
 void ConnectionEditDialog::ShowNMEABT(bool visible) {
-  if (m_btnOK) m_btnOK->Enable();
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
 
   if (visible) {
-    if (m_buttonScanBT) m_buttonScanBT->Show();
-    if (m_stBTPairs) m_stBTPairs->Show();
-    if (m_choiceBTDataSources) {
-      if (m_choiceBTDataSources->GetCount() > 1)
-        m_choiceBTDataSources->SetSelection(1);
-      m_choiceBTDataSources->Show();
+    if (m_scan_bt_btn) m_scan_bt_btn->Show();
+    if (m_bt_pairs_text) m_bt_pairs_text->Show();
+    if (m_bt_data_sources_choice) {
+      if (m_bt_data_sources_choice->GetCount() > 1)
+        m_bt_data_sources_choice->SetSelection(1);
+      m_bt_data_sources_choice->Show();
     }
   } else {
-    if (m_buttonScanBT) m_buttonScanBT->Hide();
-    if (m_stBTPairs) m_stBTPairs->Hide();
-    if (m_choiceBTDataSources) m_choiceBTDataSources->Hide();
+    if (m_scan_bt_btn) m_scan_bt_btn->Hide();
+    if (m_bt_pairs_text) m_bt_pairs_text->Hide();
+    if (m_bt_data_sources_choice) m_bt_data_sources_choice->Hide();
   }
-  m_cbCheckSKDiscover->Hide();
-  m_stAuthToken->Hide();
-  m_tAuthToken->Hide();
-  m_cbCheckSKDiscover->Hide();  // Provisional
-  m_ButtonSKDiscover->Hide();
-  m_tcOutputStc->Show(visible);
-  m_btnOutputStcList->Show(visible);
-  m_cbOutput->Show(visible);
+  m_sk_check_discover_cb->Hide();
+  m_sk_check_discover_cb->Hide();  // Provisional
+  m_sk_discover_btn->Hide();
+  m_output_stc_tc->Show(visible);
+  m_output_stc_list_btn->Show(visible);
+  m_output_cb->Show(visible);
 }
 
 void ConnectionEditDialog::SetNMEAFormToSerial() {
-  bool advanced = m_advanced;
-  if (m_btnOK) m_btnOK->Enable();
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
 
-  ShowNMEACommon(TRUE);
-  ShowNMEANet(FALSE);
-  ShowNMEAGPS(FALSE);
-  ShowNMEABT(FALSE);
-  ShowNMEASerial(TRUE);
-  ShowNMEACAN(FALSE);
+  ShowNMEACommon(true);
+  ShowNMEANet(false);
+  ShowNMEAGPS(false);
+  ShowNMEABT(false);
+  ShowNMEASerial(true);
+  ShowNMEACAN(false);
   SetDSFormRWStates();
   LayoutDialog();
 }
 
 void ConnectionEditDialog::SetNMEAFormToNet() {
-  bool advanced = m_advanced;
-  if (m_btnOK) m_btnOK->Enable();
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
 
-  ShowNMEACommon(TRUE);
-  ShowNMEANet(TRUE);
-  ShowNMEAGPS(FALSE);
-  ShowNMEABT(FALSE);
-  ShowNMEASerial(FALSE);
-  ShowNMEACAN(FALSE);
-  SetUDPNetAddressVisiblity();
+  ShowNMEACommon(true);
+  ShowNMEANet(true);
+  ShowNMEAGPS(false);
+  ShowNMEABT(false);
+  ShowNMEASerial(false);
+  ShowNMEACAN(false);
   SetDSFormRWStates();
 
   LayoutDialog();
 }
 
 void ConnectionEditDialog::SetNMEAFormToCAN() {
-  bool advanced = m_advanced;
-  if (m_btnOK) m_btnOK->Enable();
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
 
-  ShowNMEACommon(FALSE);
-  ShowNMEANet(FALSE);
-  ShowNMEAGPS(FALSE);
-  ShowNMEABT(FALSE);
-  ShowNMEASerial(FALSE);
-  ShowNMEACAN(TRUE);
-  sbSizerInFilter->Show(false);
-  sbSizerOutFilter->Show(false);
+  ShowNMEACommon(false);
+  ShowNMEANet(false);
+  ShowNMEAGPS(false);
+  ShowNMEABT(false);
+  ShowNMEASerial(false);
+  ShowNMEACAN(true);
+  m_in_filter_sizer->Show(false);
+  m_out_filter_sizer->Show(false);
   SetDSFormRWStates();
 
   LayoutDialog();
 }
 
 void ConnectionEditDialog::SetNMEAFormToGPS() {
-  ShowNMEACommon(TRUE);
-  ShowNMEANet(FALSE);
-  ShowNMEAGPS(TRUE);
-  ShowNMEABT(FALSE);
-  ShowNMEASerial(FALSE);
-  ShowNMEACAN(FALSE);
+  ShowNMEACommon(true);
+  ShowNMEANet(false);
+  ShowNMEAGPS(true);
+  ShowNMEABT(false);
+  ShowNMEASerial(false);
+  ShowNMEACAN(false);
 
   // m_container->FitInside();
   //  Fit();
@@ -1140,13 +1294,12 @@ void ConnectionEditDialog::SetNMEAFormToGPS() {
 }
 
 void ConnectionEditDialog::SetNMEAFormToBT() {
-  m_rbNetProtoUDP->SetValue(true);
-  ShowNMEACommon(TRUE);
-  ShowNMEANet(FALSE);
-  ShowNMEAGPS(FALSE);
-  ShowNMEABT(TRUE);
-  ShowNMEASerial(FALSE);
-  ShowNMEACAN(FALSE);
+  ShowNMEACommon(true);
+  ShowNMEANet(false);
+  ShowNMEAGPS(false);
+  ShowNMEABT(true);
+  ShowNMEASerial(false);
+  ShowNMEACAN(false);
 
   // m_container->FitInside();
   //  Fit();
@@ -1155,253 +1308,164 @@ void ConnectionEditDialog::SetNMEAFormToBT() {
 }
 
 void ConnectionEditDialog::ClearNMEAForm() {
-  ShowNMEACommon(FALSE);
-  ShowNMEANet(FALSE);
-  ShowNMEAGPS(FALSE);
-  ShowNMEABT(FALSE);
-  ShowNMEASerial(FALSE);
-  ShowNMEACAN(FALSE);
+  ShowNMEACommon(false);
+  ShowNMEANet(false);
+  ShowNMEAGPS(false);
+  ShowNMEABT(false);
+  ShowNMEASerial(false);
+  ShowNMEACAN(false);
 
   // m_container->FitInside();
   //  Fit();
 }
 
+/*
+ * Transitional: The network view is handled by  OnConnectionTypeChange()
+ * and  RefreshAdvancedDetails(), remaining is handled here
+ */
 void ConnectionEditDialog::SetDSFormOptionVizStates() {
   bool advanced = m_advanced;
   m_collapse_box->ShowItems(true);
-  m_cbInput->Show();
-  m_cbOutput->Show();
-  m_stPrecision->Show(true);
-  m_choicePrecision->Show(true);
+  m_input_cb->Show();
+  m_output_cb->Show();
 
   ShowInFilter(advanced);
   ShowOutFilter(advanced);
   // Discovery hidden until it works.
   // m_cbCheckSKDiscover->Show();
-  m_stAuthToken->Show(advanced);
-  m_tAuthToken->Show(advanced);
   // m_ButtonSKDiscover->Show();
-  m_StaticTextSKServerStatus->Show(advanced);
+  m_sk_server_status_text->Show(advanced);
 
-  if (m_rbTypeSerial->GetValue()) {
-    m_cbMultiCast->Hide();
-    m_cbCheckSKDiscover->Hide();
-    m_stAuthToken->Hide();
-    m_tAuthToken->Hide();
-    m_ButtonSKDiscover->Hide();
-    m_StaticTextSKServerStatus->Hide();
+  if (m_type_serial_radiobtn->GetValue()) {
+    m_sk_check_discover_cb->Hide();
+    m_sk_discover_btn->Hide();
+    m_sk_server_status_text->Hide();
     bool n0183ctlenabled =
-        (DataProtocol)m_choiceSerialProtocol->GetSelection() ==
+        (DataProtocol)m_serial_protocol_choice->GetSelection() ==
         DataProtocol::PROTO_NMEA0183;
-    bool n2kctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() ==
-                         DataProtocol::PROTO_NMEA2000;
+    bool n2kctlenabled =
+        (DataProtocol)m_serial_protocol_choice->GetSelection() ==
+        DataProtocol::PROTO_NMEA2000;
     if (!n0183ctlenabled) {
       if (n2kctlenabled) {
-        m_cbInput->Show();
-        m_cbOutput->Show();
+        m_input_cb->Show();
+        m_output_cb->Show();
       } else {
-        m_cbInput->Hide();
-        m_cbOutput->Hide();
+        m_input_cb->Hide();
+        m_output_cb->Hide();
       }
       ShowOutFilter(false);
       ShowInFilter(false);
-      m_stPrecision->Hide();
-      m_choicePrecision->Hide();
-      m_stNetDataProtocol->Hide();
-      m_choiceNetDataProtocol->Hide();
+      m_net_data_protocol_text->Hide();
+      m_net_data_protocol_choice->Hide();
+      m_net_expert_cb->Hide();
+      m_net_type_choice_text->Hide();
+      m_net_type_choice->Hide();
+      m_net_expert_cb->Hide();
+      m_net_type_choice_text->Hide();
+      m_net_expert_box_text->Hide();
+      m_net_type_choice->Hide();
     } else {
-      m_cbInput->Show();
-      m_cbInput->Enable();
+      m_input_cb->Show();
+      m_input_cb->Enable();
 
-      ShowInFilter(m_cbInput->IsChecked() && advanced);
-      ShowOutFilter(m_cbOutput->IsChecked() && advanced);
+      ShowInFilter(m_input_cb->IsChecked() && advanced);
+      ShowOutFilter(m_output_cb->IsChecked() && advanced);
 
-      m_stPrecision->Show(m_cbOutput->IsChecked() && advanced);
-      m_choicePrecision->Show(m_cbOutput->IsChecked() && advanced);
-
-      m_cbGarminHost->Show(m_cbInput->IsChecked() && advanced);
+      m_garmin_host_cb->Show(m_input_cb->IsChecked() && advanced);
     }
   }
 
-  if (m_rbTypeInternalGPS && m_rbTypeInternalGPS->GetValue()) {
-    m_cbMultiCast->Hide();
-    m_cbCheckSKDiscover->Hide();
-    m_stAuthToken->Hide();
-    m_tAuthToken->Hide();
-    m_ButtonSKDiscover->Hide();
-    m_StaticTextSKServerStatus->Hide();
-    m_cbOutput->Hide();
-    m_cbInput->Hide();
+  if (m_type_internal_gps_radiobtn &&
+      m_type_internal_gps_radiobtn->GetValue()) {
+    m_sk_check_discover_cb->Hide();
+    m_sk_discover_btn->Hide();
+    m_sk_server_status_text->Hide();
+    m_output_cb->Hide();
+    m_input_cb->Hide();
     ShowOutFilter(false);
     ShowInFilter(false);
-    m_stPrecision->Hide();
-    m_choicePrecision->Hide();
-    m_cbGarminHost->Hide();
+    m_garmin_host_cb->Hide();
     m_collapse_box->ShowItems(false);
   }
 
-  if (m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue()) {
-    m_cbMultiCast->Hide();
-    m_cbCheckSKDiscover->Hide();
-    m_stAuthToken->Hide();
-    m_tAuthToken->Hide();
-    m_ButtonSKDiscover->Hide();
-    m_StaticTextSKServerStatus->Hide();
+  if (m_type_internal_bt_radiobtn && m_type_internal_bt_radiobtn->GetValue()) {
+    m_sk_check_discover_cb->Hide();
+    m_sk_discover_btn->Hide();
+    m_sk_server_status_text->Hide();
 
-    ShowInFilter(m_cbInput->IsChecked() && advanced);
-    ShowOutFilter(m_cbOutput->IsChecked() && advanced);
-
-    m_stPrecision->Show(m_cbOutput->IsChecked() && advanced);
-    m_choicePrecision->Show(m_cbOutput->IsChecked() && advanced);
+    ShowInFilter(m_input_cb->IsChecked() && advanced);
+    ShowOutFilter(m_output_cb->IsChecked() && advanced);
   }
 
-  if (m_rbTypeCAN->GetValue()) {
-    m_cbMultiCast->Hide();
-    m_cbCheckSKDiscover->Hide();
-    m_stAuthToken->Hide();
-    m_tAuthToken->Hide();
-    m_ButtonSKDiscover->Hide();
-    m_StaticTextSKServerStatus->Hide();
-    m_cbGarminHost->Hide();
-    m_cbInput->Hide();
-    m_cbOutput->Hide();
+  if (m_type_can_radiobtn->GetValue()) {
+    m_sk_check_discover_cb->Hide();
+    m_sk_discover_btn->Hide();
+    m_sk_server_status_text->Hide();
+    m_garmin_host_cb->Hide();
+    m_input_cb->Hide();
+    m_output_cb->Hide();
 
     ShowInFilter(false);
     ShowOutFilter(false);
 
-    m_stPrecision->Hide();
-    m_choicePrecision->Hide();
-
-    m_stNetDataProtocol->Hide();
-    m_choiceNetDataProtocol->Hide();
+    m_net_data_protocol_text->Hide();
+    m_net_data_protocol_choice->Hide();
+    m_net_expert_cb->Hide();
+    m_net_type_choice_text->Hide();
+    m_net_expert_box_text->Hide();
+    m_net_type_choice->Hide();
     m_collapse_box->Show(false);
   }
 
-  if (m_rbTypeNet->GetValue()) {
-    if (m_rbNetProtoGPSD->GetValue()) {
-      m_cbMultiCast->Hide();
-      m_cbCheckSKDiscover->Hide();
-      m_cbInput->Hide();
-      m_cbOutput->Hide();
-      ShowInFilter(true);
-      ShowOutFilter(false);
-      m_stPrecision->Hide();
-      m_choicePrecision->Hide();
-      m_ButtonSKDiscover->Hide();
-      m_StaticTextSKServerStatus->Hide();
-      m_stAuthToken->Hide();
-      m_tAuthToken->Hide();
-      m_stNetDataProtocol->Hide();
-      m_choiceNetDataProtocol->Hide();
-      m_cbGarminHost->Hide();
-      m_collapse_box->Show(false);
-
-    } else if (m_rbNetProtoSignalK->GetValue()) {
-      m_cbMultiCast->Hide();
-      m_cbInput->Hide();
-      m_cbOutput->Hide();
+  if (m_type_net_radiobtn->GetValue()) {
+    if ((DataProtocol)m_net_data_protocol_choice->GetSelection() ==
+        DataProtocol::PROTO_NMEA2000) {
       ShowInFilter(false);
       ShowOutFilter(false);
-      m_stPrecision->Hide();
-      m_choicePrecision->Hide();
-      m_stNetDataProtocol->Hide();
-      m_choiceNetDataProtocol->Hide();
-      m_cbGarminHost->Hide();
-
-    } else {  // tcp or udp
-      m_stAuthToken->Hide();
-      m_tAuthToken->Hide();
-      m_cbCheckSKDiscover->Hide();
-      m_ButtonSKDiscover->Hide();
-      m_StaticTextSKServerStatus->Hide();
-      m_stNetDataProtocol->Show();
-      m_choiceNetDataProtocol->Show();
-      m_cbGarminHost->Hide();
-
-      //     if (m_rbNetProtoUDP->GetValue()) m_cbMultiCast->Show(advanced);
-
-      if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
-          DataProtocol::PROTO_NMEA2000) {
-        m_stPrecision->Hide();
-        m_choicePrecision->Hide();
-
-        ShowInFilter(false);
-        ShowOutFilter(false);
-        if (m_rbNetProtoTCP->GetValue()) m_collapse_box->ShowItems(false);
-      }
-      if ((DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
-          DataProtocol::PROTO_NMEA0183) {
-        m_stPrecision->Show(advanced);
-        m_choicePrecision->Show(advanced);
-        m_stPrecision->Enable(m_cbOutput->IsChecked() && advanced);
-        m_choicePrecision->Enable(m_cbOutput->IsChecked() && advanced);
-
-        ShowInFilter(m_cbInput->IsChecked() && advanced);
-        ShowOutFilter(m_cbOutput->IsChecked() && advanced);
-      }
+    }
+    if ((DataProtocol)m_net_data_protocol_choice->GetSelection() ==
+        DataProtocol::PROTO_NMEA0183) {
+      ShowInFilter(m_input_cb->IsChecked() && advanced);
+      ShowOutFilter(m_output_cb->IsChecked() && advanced);
     }
   }
 }
 
+/*
+ * Transitional: The network view is handled by  OnConnectionTypeChange()
+ * and  RefreshAdvancedDetails(), remaining is handled here
+ */
 void ConnectionEditDialog::SetDSFormRWStates() {
-  if (m_rbTypeSerial->GetValue()) {
-    m_cbInput->Enable(TRUE);
-    m_cbOutput->Enable(TRUE);
+  if (m_type_serial_radiobtn->GetValue()) {
+    m_input_cb->Enable(true);
+    m_output_cb->Enable(true);
     ShowInFilter();
-    ShowOutFilter(m_cbOutput->IsChecked());
-  } else if (m_rbNetProtoGPSD->GetValue()) {
-    if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(DEFAULT_GPSD_PORT);
-    m_cbInput->SetValue(TRUE);
-    m_cbInput->Enable(FALSE);
-    //    m_cbOutput->SetValue(FALSE);
-    m_cbOutput->Enable(FALSE);
-    m_rbOAccept->Enable(FALSE);
-    m_rbOIgnore->Enable(FALSE);
-    m_btnOutputStcList->Enable(FALSE);
-  } else if (m_rbNetProtoSignalK->GetValue()) {
-    if (m_tNetPort->GetValue() == wxEmptyString)
-      m_tNetPort->SetValue(DEFAULT_SIGNALK_PORT);
-    m_cbInput->SetValue(TRUE);
-    m_cbInput->Enable(FALSE);
-    //   m_cbOutput->SetValue(FALSE);
-    m_cbOutput->Enable(FALSE);
-    m_rbOAccept->Enable(FALSE);
-    m_rbOIgnore->Enable(FALSE);
-    UpdateDiscoverStatus(wxEmptyString);
+    ShowOutFilter(m_output_cb->IsChecked());
   } else {
-    if (m_tNetPort->GetValue() == wxEmptyString) {
-      if (m_rbNetProtoTCP->GetValue()) {
-        m_tNetPort->SetValue(DEFAULT_TCP_PORT);
-      } else {
-        m_tNetPort->SetValue(DEFAULT_UDP_PORT);
-      }
-    }
-    m_cbInput->Enable(TRUE);
-    m_cbOutput->Enable(TRUE);
-    m_rbOAccept->Enable(TRUE);
-    m_rbOIgnore->Enable(TRUE);
-    m_btnOutputStcList->Enable(TRUE);
+    m_input_cb->Enable(true);
+    m_output_cb->Enable(true);
+    m_o_accept_radiobtn->Enable(true);
+    m_o_ignore_radiobtn->Enable(true);
+    m_output_stc_list_btn->Enable(true);
   }
-
   SetDSFormOptionVizStates();
-  // m_container->FitInside();
 }
 
 void ConnectionEditDialog::ShowInFilter(bool bshow) {
-  sbSizerInFilter->GetStaticBox()->Show(bshow);
-  m_rbIAccept->Show(bshow);
-  m_rbIIgnore->Show(bshow);
-  m_tcInputStc->Show(bshow);
-  m_btnInputStcList->Show(bshow);
+  m_in_filter_sizer->GetStaticBox()->Show(bshow);
+  m_accept_radiobtn->Show(bshow);
+  m_ignore_radiobtn->Show(bshow);
+  m_input_stc_tc->Show(bshow);
+  m_input_stc_list_btn->Show(bshow);
 }
 
 void ConnectionEditDialog::ShowOutFilter(bool bshow) {
-  sbSizerOutFilter->GetStaticBox()->Show(bshow);
-  m_rbOAccept->Show(bshow);
-  m_rbOIgnore->Show(bshow);
-  m_tcOutputStc->Show(bshow);
-  m_btnOutputStcList->Show(bshow);
+  m_out_filter_sizer->GetStaticBox()->Show(bshow);
+  m_o_accept_radiobtn->Show(bshow);
+  m_o_ignore_radiobtn->Show(bshow);
+  m_output_stc_tc->Show(bshow);
+  m_output_stc_list_btn->Show(bshow);
 }
 
 void ConnectionEditDialog::PreloadControls(ConnectionParams* cp) {
@@ -1410,167 +1474,151 @@ void ConnectionEditDialog::PreloadControls(ConnectionParams* cp) {
 }
 
 void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
-  if (wxNOT_FOUND == m_comboPort->FindString(cp->Port))
-    m_comboPort->Append(cp->Port);
+  const std::string view = NetViewByConnection(cp);
+  auto found = std::find(kBasicNetViews.begin(), kBasicNetViews.end(), view);
+  m_net_expert_cb->SetValue(found == kBasicNetViews.end());
+  m_net_type_choice->Clear();
+  if (found == kBasicNetViews.end())
+    for (const auto& v : kAdvancedNetViews) m_net_type_choice->Append(v);
+  else
+    for (const auto& v : kBasicNetViews) m_net_type_choice->Append(v);
+  std::vector<std::string> all_views = kBasicNetViews;
+  for (const auto& v : kAdvancedNetViews) all_views.push_back(v);
+  found = std::find(all_views.begin(), all_views.end(), view);
+  if (found != all_views.end()) {
+    int select_ix = m_net_type_choice->FindString(*found);
+    if (select_ix != wxNOT_FOUND) m_net_type_choice->SetSelection(select_ix);
+  }
+  if (wxNOT_FOUND == m_port_combo->FindString(cp->Port))
+    m_port_combo->Append(cp->Port);
 
-  m_comboPort->Select(m_comboPort->FindString(cp->Port));
+  m_port_combo->Select(m_port_combo->FindString(cp->Port));
 
-  m_cbGarminHost->SetValue(cp->Garmin);
-  m_cbInput->SetValue(cp->IOSelect != DS_TYPE_OUTPUT);
-  m_cbOutput->SetValue(cp->IOSelect != DS_TYPE_INPUT);
-  m_cbCheckSKDiscover->SetValue(cp->AutoSKDiscover);
+  m_garmin_host_cb->SetValue(cp->Garmin);
+  m_input_cb->SetValue(cp->IOSelect != DS_TYPE_OUTPUT);
+  m_output_cb->SetValue(cp->IOSelect != DS_TYPE_INPUT);
+  m_sk_check_discover_cb->SetValue(cp->AutoSKDiscover);
 
   if (cp->InputSentenceListType == WHITELIST)
-    m_rbIAccept->SetValue(TRUE);
+    m_accept_radiobtn->SetValue(true);
   else
-    m_rbIIgnore->SetValue(TRUE);
+    m_ignore_radiobtn->SetValue(true);
   if (cp->OutputSentenceListType == WHITELIST)
-    m_rbOAccept->SetValue(TRUE);
+    m_o_accept_radiobtn->SetValue(true);
   else
-    m_rbOIgnore->SetValue(TRUE);
-  m_tcInputStc->SetValue(StringArrayToString(cp->InputSentenceList));
-  m_tcOutputStc->SetValue(StringArrayToString(cp->OutputSentenceList));
-  m_choiceBaudRate->Select(
-      m_choiceBaudRate->FindString(wxString::Format("%d", cp->Baudrate)));
-  m_choiceSerialProtocol->Select(cp->Protocol);  // TODO
-  m_tNetAddress->SetValue(cp->NetworkAddress);
+    m_o_ignore_radiobtn->SetValue(true);
+  m_input_stc_tc->SetValue(StringArrayToString(cp->InputSentenceList));
+  m_output_stc_tc->SetValue(StringArrayToString(cp->OutputSentenceList));
+  m_baud_rate_choice->Select(
+      m_baud_rate_choice->FindString(wxString::Format("%d", cp->Baudrate)));
+  m_serial_protocol_choice->Select(cp->Protocol);  // TODO
+  auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tc);
+  if (net_address) m_net_address_tc->ChangeValue(cp->NetworkAddress);
 
-  m_choiceNetDataProtocol->Select(cp->Protocol);  // TODO
-
-  m_cbMultiCast->SetValue(IsAddressMultiCast(m_tNetAddress->GetValue()));
+  m_net_data_protocol_choice->Select(cp->Protocol);  // TODO
 
   if (cp->NetworkPort == 0)
-    m_tNetPort->SetValue(wxEmptyString);
+    m_net_port_tc->ChangeValue("");
   else
-    m_tNetPort->SetValue(wxString::Format("%i", cp->NetworkPort));
-
-  if (cp->NetProtocol == TCP)
-    m_rbNetProtoTCP->SetValue(TRUE);
-  else if (cp->NetProtocol == UDP)
-    m_rbNetProtoUDP->SetValue(TRUE);
-  else if (cp->NetProtocol == GPSD)
-    m_rbNetProtoGPSD->SetValue(TRUE);
-  else if (cp->NetProtocol == SIGNALK)
-    m_rbNetProtoSignalK->SetValue(TRUE);
-  else
-    m_rbNetProtoGPSD->SetValue(TRUE);
+    m_net_port_tc->ChangeValue(std::to_string(cp->NetworkPort));
 
   if (cp->Type == SERIAL) {
-    m_rbTypeSerial->SetValue(TRUE);
+    m_type_serial_radiobtn->SetValue(true);
     SetNMEAFormToSerial();
     SetNMEAFormForSerialProtocol();
   } else if (cp->Type == NETWORK) {
-    m_rbTypeNet->SetValue(TRUE);
+    m_type_net_radiobtn->SetValue(true);
     SetNMEAFormToNet();
   } else if (cp->Type == SOCKETCAN) {
-    m_rbTypeCAN->SetValue(TRUE);
+    m_type_can_radiobtn->SetValue(true);
     SetNMEAFormToCAN();
 
   } else if (cp->Type == INTERNAL_GPS) {
-    if (m_rbTypeInternalGPS) m_rbTypeInternalGPS->SetValue(TRUE);
+    if (m_type_internal_gps_radiobtn)
+      m_type_internal_gps_radiobtn->SetValue(true);
     SetNMEAFormToGPS();
   } else if (cp->Type == INTERNAL_BT) {
-    if (m_rbTypeInternalBT) m_rbTypeInternalBT->SetValue(TRUE);
+    if (m_type_internal_bt_radiobtn)
+      m_type_internal_bt_radiobtn->SetValue(true);
     SetNMEAFormToBT();
 
     // Preset the source selector
     wxString bts = cp->NetworkAddress + ";" + cp->GetPortStr();
-    m_choiceBTDataSources->Clear();
-    m_choiceBTDataSources->Append(bts);
-    m_choiceBTDataSources->SetSelection(0);
-  } else
+    m_bt_data_sources_choice->Clear();
+    m_bt_data_sources_choice->Append(bts);
+    m_bt_data_sources_choice->SetSelection(0);
+  } else {
     ClearNMEAForm();
+  }
 
   if (cp->Type == SERIAL)
-    m_tSerialComment->SetValue(cp->UserComment);
+    m_serial_comment_tc->SetValue(cp->UserComment);
   else if (cp->Type == NETWORK)
-    m_tNetComment->SetValue(cp->UserComment);
+    m_net_comment_tc->SetValue(cp->UserComment);
 
-  m_tAuthToken->SetValue(cp->AuthToken);
+  m_auth_token_tc->SetValue(cp->AuthToken);
 
-  m_connection_enabled = cp->bEnabled;
+  m_conn_enabled = cp->bEnabled;
 
   // Reset touch flag
-  connectionsaved = true;
-}
-
-void ConnectionEditDialog::SetUDPNetAddressVisiblity() {
-  if (m_rbNetProtoUDP->GetValue() && !m_cbMultiCast->IsChecked() &&
-      !m_cbOutput->IsChecked()) {
-    //    m_stNetAddr->Show(FALSE);
-    //    m_tNetAddress->Show(FALSE);
-    m_tNetAddress->Enable(TRUE);
-  } else {
-    m_stNetAddr->Show(TRUE);
-    m_tNetAddress->Show(TRUE);
-    m_tNetAddress->Enable(TRUE);
-  }
-  if (!m_rbNetProtoUDP->GetValue()) {
-    m_stNetAddr->Show(TRUE);
-    m_tNetAddress->Show(TRUE);
-    m_tNetAddress->Enable(TRUE);
-  }
-  if (m_rbNetProtoUDP->GetValue() && m_advanced) {
-    // m_cbMultiCast->Show();
-  } else
-    m_cbMultiCast->Hide();
+  m_is_conn_saved = true;
 }
 
 void ConnectionEditDialog::SetDefaultConnectionParams() {
-  if (m_comboPort && !m_comboPort->IsListEmpty()) {
-    m_comboPort->Select(0);
-    m_comboPort->SetValue(wxEmptyString);  // These two broke it
+  if (m_port_combo && !m_port_combo->IsListEmpty()) {
+    m_port_combo->Select(0);
+    m_port_combo->SetValue(wxEmptyString);  // These two broke it
   }
-  m_cbGarminHost->SetValue(FALSE);
-  m_cbInput->SetValue(TRUE);
-  m_cbOutput->SetValue(FALSE);
-  m_rbIAccept->SetValue(TRUE);
-  m_rbOAccept->SetValue(TRUE);
-  m_tcInputStc->SetValue(wxEmptyString);
-  m_tcOutputStc->SetValue(wxEmptyString);
-  m_choiceBaudRate->Select(m_choiceBaudRate->FindString("4800"));
+  m_garmin_host_cb->SetValue(false);
+  m_input_cb->SetValue(true);
+  m_output_cb->SetValue(false);
+  m_accept_radiobtn->SetValue(true);
+  m_o_accept_radiobtn->SetValue(true);
+  m_input_stc_tc->SetValue(wxEmptyString);
+  m_output_stc_tc->SetValue(wxEmptyString);
+  m_baud_rate_choice->Select(m_baud_rate_choice->FindString("4800"));
   //    m_choiceSerialProtocol->Select( cp->Protocol ); // TODO
 
-  m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-
-  m_tNetComment->SetValue(wxEmptyString);
-  m_tSerialComment->SetValue(wxEmptyString);
-  m_tAuthToken->SetValue(wxEmptyString);
-
-  bool bserial = TRUE;
+  m_net_comment_tc->SetValue(wxEmptyString);
+  m_serial_comment_tc->SetValue(wxEmptyString);
+  m_auth_token_tc->SetValue(wxEmptyString);
+  auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tc);
+  if (net_address) net_address->RestoreHelp();
+  auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tc);
+  if (net_port) net_port->RestoreHelp();
+  bool bserial = true;
 #ifdef __WXGTK__
-  bserial = FALSE;
+  bserial = false;
 #endif
 
 #ifdef __WXOSX__
-  bserial = FALSE;
+  bserial = false;
 #endif
 
 #ifdef __ANDROID__
-  if (m_rbTypeInternalGPS) {
-    m_rbTypeInternalGPS->SetValue(true);
+  if (m_type_internal_gps_radiobtn) {
+    m_type_internal_gps_radiobtn->SetValue(true);
     SetNMEAFormToGPS();
   } else {
-    m_rbTypeNet->SetValue(true);
+    m_type_net_radiobtn->SetValue(true);
     SetNMEAFormToNet();
   }
-
 #else
-  m_rbTypeSerial->SetValue(bserial);
-  m_rbTypeNet->SetValue(!bserial);
+  m_type_serial_radiobtn->SetValue(bserial);
+  m_type_net_radiobtn->SetValue(!bserial);
   bserial ? SetNMEAFormToSerial() : SetNMEAFormToNet();
-  m_rbTypeCAN->SetValue(FALSE);
+  m_type_can_radiobtn->SetValue(false);
 #endif
 
-  m_connection_enabled = TRUE;
+  m_conn_enabled = true;
 
   // Reset touch flag
-  connectionsaved = false;
+  m_is_conn_saved = false;
 }
 
 void ConnectionEditDialog::LayoutDialog() {
-  gSizerNetProps->Layout();
-  gSizerSerProps->Layout();
+  m_net_props_sizer->Layout();
+  m_ser_props_sizer->Layout();
   this->Layout();
   this->Fit();
   GetSizer()->Layout();
@@ -1582,92 +1630,60 @@ void ConnectionEditDialog::UpdateSourceList(bool bResort) {
     if (panel) panel->Update(cp);
   }
 
-  m_scrollWinConnections->Layout();
+  m_scroll_win_connections->Layout();
 }
 
 void ConnectionEditDialog::OnSelectDatasource(wxListEvent& event) {
   SetConnectionParams(TheConnectionParams()[event.GetData()]);
-  m_buttonRemove->Enable();
-  m_buttonRemove->Show();
+  m_remove_btn->Enable();
+  m_remove_btn->Show();
   event.Skip();
 }
 
 void ConnectionEditDialog::OnDiscoverButton(wxCommandEvent& event) {
 #if 0  // FIXME (dave)
-  wxString ip;
-  int port;
-  std::string serviceIdent =
-      std::string("_signalk-ws._tcp.local.");  // Works for node.js server
+    wxString ip;
+    int port;
+    std::string serviceIdent =
+        std::string("_signalk-ws._tcp.local.");  // Works for node.js server
 
-  g_Platform->ShowBusySpinner();
+    g_Platform->ShowBusySpinner();
 
-  if (SignalKDataStream::DiscoverSKServer(serviceIdent, ip, port,
-                                          1))  // 1 second scan
-  {
-    m_tNetAddress->SetValue(ip);
-    m_tNetPort->SetValue(wxString::Format("%i", port));
-    UpdateDiscoverStatus(_("Signal K server available."));
-  } else {
-    UpdateDiscoverStatus(_("Signal K server not found."));
-  }
-  g_Platform->HideBusySpinner();
+    if (SignalKDataStream::DiscoverSKServer(serviceIdent, ip, port,
+                                            1))  // 1 second scan
+    {
+      m_tNetAddress->SetValue(ip);
+      m_tNetPort->SetValue(wxString::Format("%i", port));
+      UpdateDiscoverStatus(_("Signal K server available."));
+    } else {
+      UpdateDiscoverStatus(_("Signal K server not found."));
+    }
+    g_Platform->HideBusySpinner();
 #endif
   event.Skip();
 }
 
-void ConnectionEditDialog::UpdateDiscoverStatus(wxString stat) {
-  m_StaticTextSKServerStatus->SetLabel(stat);
+void ConnectionEditDialog::UpdateDiscoverStatus(const wxString& stat) {
+  m_sk_server_status_text->SetLabel(stat);
 }
 
 void ConnectionEditDialog::OnBtnIStcs(wxCommandEvent& event) {
-  const ListType type = m_rbIAccept->GetValue() ? WHITELIST : BLACKLIST;
-  const wxArrayString list = wxStringTokenize(m_tcInputStc->GetValue(), ",");
+  const ListType type = m_accept_radiobtn->GetValue() ? WHITELIST : BLACKLIST;
+  const wxArrayString list = wxStringTokenize(m_input_stc_tc->GetValue(), ",");
   SentenceListDlg dlg(m_parent, FILTER_INPUT, type, list);
 
-  if (dlg.ShowModal() == wxID_OK) m_tcInputStc->SetValue(dlg.GetSentences());
+  if (dlg.ShowModal() == wxID_OK) m_input_stc_tc->SetValue(dlg.GetSentences());
 }
 
 void ConnectionEditDialog::OnBtnOStcs(wxCommandEvent& event) {
-  const ListType type = m_rbOAccept->GetValue() ? WHITELIST : BLACKLIST;
-  const wxArrayString list = wxStringTokenize(m_tcOutputStc->GetValue(), ",");
+  const ListType type = m_o_accept_radiobtn->GetValue() ? WHITELIST : BLACKLIST;
+  const wxArrayString list = wxStringTokenize(m_output_stc_tc->GetValue(), ",");
   SentenceListDlg dlg(m_parent, FILTER_OUTPUT, type, list);
 
-  if (dlg.ShowModal() == wxID_OK) m_tcOutputStc->SetValue(dlg.GetSentences());
+  if (dlg.ShowModal() == wxID_OK) m_output_stc_tc->SetValue(dlg.GetSentences());
 }
 
 void ConnectionEditDialog::OnNetProtocolSelected(wxCommandEvent& event) {
-  if (m_rbNetProtoGPSD->GetValue()) {
-    if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DEFAULT_GPSD_PORT);
-    }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-  } else if (m_rbNetProtoUDP->GetValue()) {
-    if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DEFAULT_UDP_PORT);
-    }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-    if (m_cbInput->GetValue() && !m_cbMultiCast->GetValue() &&
-        m_rbNetProtoUDP->GetValue())
-      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-    else if (m_cbOutput->GetValue() && !m_cbMultiCast->GetValue())
-      m_tNetPort->SetValue(DEFAULT_UDP_OUT_ADDRESS);
-
-    if (m_cbInput->GetValue() && m_cbOutput->GetValue())
-      m_cbOutput->SetValue(false);
-
-  } else if (m_rbNetProtoSignalK->GetValue()) {
-    if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DEFAULT_SIGNALK_PORT);
-    }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-  } else if (m_rbNetProtoTCP->GetValue()) {
-    if (IsDefaultPort(m_tNetPort->GetValue())) {
-      m_tNetPort->SetValue(DEFAULT_TCP_PORT);
-    }
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-  }
-
-  SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
   LayoutDialog();
   OnConnValChange(event);
@@ -1685,41 +1701,30 @@ void ConnectionEditDialog::OnRbOutput(wxCommandEvent& event) {
 }
 
 void ConnectionEditDialog::OnCbInput(wxCommandEvent& event) {
-  const bool checked = m_cbInput->IsChecked();
+  const bool checked = m_input_cb->IsChecked();
   ShowInFilter(checked);
-  if (checked && m_rbNetProtoUDP->GetValue() && m_rbTypeNet->GetValue()) {
-    m_cbOutput->SetValue(FALSE);
-
-    if (!m_cbMultiCast->GetValue()) m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);
-  }
   SetDSFormRWStates();
   LayoutDialog();
-  if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
   OnConnValChange(event);
 }
 
 void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
   OnConnValChange(event);
-  const bool checked = m_cbOutput->IsChecked();
-  m_stPrecision->Enable(checked);
-  m_choicePrecision->Enable(checked);
-  ShowOutFilter(checked);
+  const bool is_output_enabled = m_output_cb->IsChecked();
+  ShowOutFilter(is_output_enabled);
 
-  if (!m_cbMultiCast->IsChecked() && m_rbNetProtoUDP->GetValue()) {
-    if (checked) {
-      m_tNetAddress->SetValue(
-          DEFAULT_UDP_OUT_ADDRESS);  // IP address for output
+  int selection = m_net_type_choice->GetSelection();
+  std::string type;
+  if (selection != wxNOT_FOUND)
+    type = m_net_type_choice->GetString(selection).ToStdString();
+  if (type == kUdpInput || type == kMulticastServer) {
+    if (is_output_enabled) {
       // Check for a UDP input connection on the same port
       NetworkProtocol proto = UDP;
       for (auto* cp : TheConnectionParams()) {
         if (cp->NetProtocol == proto &&
-            cp->NetworkPort == wxAtoi(m_tNetPort->GetValue()) &&
+            cp->NetworkPort == wxAtoi(m_net_port_tc->GetValue()) &&
             cp->IOSelect == DS_TYPE_INPUT) {
-          //  More: View the filter handler
-          m_advanced = true;
-          SetNMEAFormForNetProtocol();
-          LayoutDialog();
-
           wxString mes;
           bool warn = false;
           if (cp->bEnabled) {
@@ -1749,85 +1754,38 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
           break;
         }
       }
-    } else {
-      m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for input
     }
   }
-
-  if (checked && m_rbNetProtoUDP->GetValue()) {
-    m_cbInput->SetValue(FALSE);
-  }
-
-  if (m_rbTypeNet->GetValue()) SetUDPNetAddressVisiblity();
   SetDSFormRWStates();
-  LayoutDialog();
-}
-
-void ConnectionEditDialog::OnCbMultiCast(wxCommandEvent& event) {
-  const bool checked = m_cbMultiCast->IsChecked();
-  if (checked) {
-    if (!IsAddressMultiCast(m_tNetAddress->GetValue())) {
-      m_tNetAddress->SetValue("224.0.2.21");
-    }
-  } else if (m_cbOutput->IsChecked()) {
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for output
-  } else {
-    m_tNetAddress->SetValue(DEFAULT_IP_ADDRESS);  // IP address for input
-  }
-
-  SetUDPNetAddressVisiblity();
+  RefreshAdvancedDetails();
   LayoutDialog();
 }
 
 void ConnectionEditDialog::OnCollapsedToggle(bool collapsed) {
   m_advanced = !collapsed;
-  if (m_rbTypeNet->GetValue())
+  if (m_type_net_radiobtn->GetValue())
     SetNMEAFormForNetProtocol();
   else
     SetNMEAFormForSerialProtocol();
+  RefreshAdvancedDetails();
   LayoutDialog();
 }
 
 void ConnectionEditDialog::OnCbAdvanced(wxCommandEvent& event) {
-  if (m_rbTypeNet->GetValue())
+  if (m_type_net_radiobtn->GetValue())
     SetNMEAFormForNetProtocol();
   else
     SetNMEAFormForSerialProtocol();
   LayoutDialog();
 }
 
-void ConnectionEditDialog::OnShowGpsWindowCheckboxClick(wxCommandEvent& event) {
-  //  if (!m_cbNMEADebug->GetValue()) {
-  //    NMEALogWindow::GetInstance().DestroyWindow();
-  //  } else {
-  //    NMEALogWindow::GetInstance().Create((wxWindow*)(m_parent->GetParent()),
-  //    35);
-  //
-  //    // Try to ensure that the log window is at least a little bit visible
-  //    wxRect logRect(NMEALogWindow::GetInstance().GetPosX(),
-  //                   NMEALogWindow::GetInstance().GetPosY(),
-  //                   NMEALogWindow::GetInstance().GetSizeW(),
-  //                   NMEALogWindow::GetInstance().GetSizeH());
-  // FIXME (leamas)
-
-#if 0
-    if (m_container->GetRect().Contains(logRect)) {
-      NMEALogWindow::Get().SetPos(
-          m_container->GetRect().x / 2,
-          (m_container->GetRect().y +
-           (m_container->GetRect().height - logRect.height) / 2));
-      NMEALogWindow::Get().Move();
-    }
-#endif
-  m_parent->Raise();
-  //  }
-}
 void ConnectionEditDialog::SetNMEAFormForSerialProtocol() {
-  bool n0183ctlenabled = (DataProtocol)m_choiceSerialProtocol->GetSelection() ==
-                         DataProtocol::PROTO_NMEA0183;
+  bool n0183ctlenabled =
+      (DataProtocol)m_serial_protocol_choice->GetSelection() ==
+      DataProtocol::PROTO_NMEA0183;
   bool advanced = m_advanced;
   ShowNMEACommon(n0183ctlenabled && advanced);
-  m_cbGarminHost->Show(n0183ctlenabled && advanced);
+  m_garmin_host_cb->Show(n0183ctlenabled && advanced);
 
   SetDSFormRWStates();
   LayoutDialog();
@@ -1835,211 +1793,51 @@ void ConnectionEditDialog::SetNMEAFormForSerialProtocol() {
 
 void ConnectionEditDialog::SetNMEAFormForNetProtocol() {
   bool n0183ctlenabled =
-      (DataProtocol)m_choiceNetDataProtocol->GetSelection() ==
+      (DataProtocol)m_net_data_protocol_choice->GetSelection() ==
       DataProtocol::PROTO_NMEA0183;
   bool advanced = m_advanced;
   ShowNMEACommon(n0183ctlenabled && advanced);
-  m_cbGarminHost->Show(n0183ctlenabled && advanced);
+  m_garmin_host_cb->Show(n0183ctlenabled && advanced);
 
   SetDSFormRWStates();
-
   LayoutDialog();
 }
 
 void ConnectionEditDialog::OnProtocolChoice(wxCommandEvent& event) {
-  if (m_rbTypeNet->GetValue())
+  if (m_type_net_radiobtn->GetValue())
     SetNMEAFormForNetProtocol();
   else
     SetNMEAFormForSerialProtocol();
-
   OnConnValChange(event);
 }
 
-void ConnectionEditDialog::ApplySettings() {
-#if 0
-  g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
-
-  long filter_val = 1;
-  m_tFilterSec->GetValue().ToLong(&filter_val);
-  g_COGFilterSec =
-      wxMin(static_cast<int>(filter_val),
-            60 /*kMaxCogsogFilterSeconds*/);  // FIXME (dave)  should be
-  g_COGFilterSec = wxMax(g_COGFilterSec, 1);
-  g_SOGFilterSec = g_COGFilterSec;
-
-  g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
-  g_NMEAAPBPrecision = m_choicePrecision->GetCurrentSelection();
-
-  // NMEA Source
-  //  If the stream selected exists, capture some of its existing parameters
-  //  to facility identification and allow stop and restart of the stream
-  wxString lastAddr;
-  int lastPort = 0;
-  NetworkProtocol lastNetProtocol = PROTO_UNDEFINED;
-  DataProtocol lastDataProtocol = PROTO_NMEA0183;
-
-  if (mSelectedConnection) {
-    ConnectionParams* cpo = mSelectedConnection;
-    lastAddr = cpo->NetworkAddress;
-    lastPort = cpo->NetworkPort;
-    lastNetProtocol = cpo->NetProtocol;
-    lastDataProtocol = cpo->Protocol;
-  }
-
-  if (!connectionsaved) {
-    size_t nCurrentPanelCount = TheConnectionParams()->GetCount();
-    ConnectionParams* cp = NULL;
-    int old_priority = -1;
-    {
-      if (mSelectedConnection) {
-        cp = mSelectedConnection;
-        old_priority = cp->Priority;
-        UpdateConnectionParamsFromControls(cp);
-        cp->b_IsSetup = false;
-        // cp->bEnabled = false;
-        // if (cp->m_optionsPanel)
-        //   cp->m_optionsPanel->SetEnableCheckbox(false);
-
-        // delete TheConnectionParams()->Item(itemIndex)->m_optionsPanel;
-        // old_priority = TheConnectionParams()->Item(itemIndex)->Priority;
-        // TheConnectionParams()->RemoveAt(itemIndex);
-        // TheConnectionParams()->Insert(cp, itemIndex);
-        // mSelectedConnection = cp;
-        // cp->m_optionsPanel->SetSelected( true );
-      } else {
-        cp = CreateConnectionParamsFromSelectedItem();
-        if (cp) TheConnectionParams()->Add(cp);
-      }
-
-      //  Record the previous parameters, if any
-      if (cp) {
-        cp->LastNetProtocol = lastNetProtocol;
-        cp->LastNetworkAddress = lastAddr;
-        cp->LastNetworkPort = lastPort;
-        cp->LastDataProtocol = lastDataProtocol;
-      }
-
-      if (TheConnectionParams()->GetCount() != nCurrentPanelCount)
-        FillSourceList();
-      else if (old_priority >= 0) {
-        if (old_priority != cp->Priority)  // need resort
-          UpdateSourceList(true);
-        else
-          UpdateSourceList(false);
-      }
-
-      connectionsaved = TRUE;
-    }
-    //     else {
-    //       ::wxEndBusyCursor();
-    //       if (m_bNMEAParams_shown) event.SetInt(wxID_STOP);
-    //     }
-
-    SetSelectedConnectionPanel(nullptr);
-  }
-
-  // Recreate datastreams that are new, or have been edited
-  for (size_t i = 0; i < TheConnectionParams()->Count(); i++) {
-    ConnectionParams* cp = TheConnectionParams()->Item(i);
-
-    if (cp->b_IsSetup) continue;
-
-    // Connection is new, or edited, or disabled
-
-    // Terminate and remove any existing driver, if present in registry
-    StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
-
-    // Stop and remove  "previous" port, in case other params have changed.
-    StopAndRemoveCommDriver(cp->GetLastDSPort(), cp->GetLastCommProtocol());
-
-    // Internal BlueTooth driver stacks commonly need a time delay to purge
-    // their buffers, etc. before restating with new parameters...
-    if (cp->Type == INTERNAL_BT) wxSleep(1);
-
-    // Connection has been disabled
-    if (!cp->bEnabled) continue;
-
-    // Make any new or re-enabled drivers
-    MakeCommDriver(cp);
-    cp->b_IsSetup = TRUE;
-  }
-
-  g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
-  g_GPS_Ident =
-      m_cbFurunoGP3X->GetValue() ? "FurunoGP3X" : "Generic";
-#endif
-}
-
-ConnectionParams*
-ConnectionEditDialog::CreateConnectionParamsFromSelectedItem() {
-#if 0
-  // FIXME (dave)  How could this happen?
-  // if (!m_bNMEAParams_shown) return NULL;
-
-  //  Special encoding for deleted connection
-  if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() ==  "Deleted")
-    return NULL;
-
-  //  We check some values here for consistency.
-  //  If necessary, set defaults so user will see some result, however wrong...
-
-  //  DataStreams should be Input, Output, or Both
-  if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
-    m_cbInput->SetValue(true);
-  }
-
-  if (m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString) {
-    m_comboPort->Select(0);
-  }
-  //  TCP, GPSD and UDP require port field to be set.
-  //  TCP clients, GPSD and UDP output sockets require an address
-  else if (m_rbTypeNet->GetValue()) {
-    if (wxAtoi(m_tNetPort->GetValue()) == 0) {
-      m_tNetPort->SetValue("10110");  // reset to default
-    }
-    if (m_tNetAddress->GetValue() == wxEmptyString) {
-      m_tNetAddress->SetValue("0.0.0.0");
-    }
-  } else if (m_rbTypeCAN->GetValue()) {
-  }
-
-  ConnectionParams* pConnectionParams = new ConnectionParams();
-
-  UpdateConnectionParamsFromSelectedItem(pConnectionParams);
-
-  ConnectionParamsPanel* pPanel = new ConnectionParamsPanel(
-      m_scrollWinConnections, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-      pConnectionParams, this);
-  pPanel->SetSelected(false);
-  boxSizerConnections->Add(pPanel, 0, wxEXPAND | wxALL, 0);
-  pConnectionParams->m_optionsPanel = pPanel;
-
-  return pConnectionParams;
-#endif
-  return NULL;
-}
-
 ConnectionParams* ConnectionEditDialog::GetParamsFromControls() {
-  ConnectionParams* pConnectionParams = new ConnectionParams();
+  auto* pConnectionParams = new ConnectionParams();
   UpdateConnectionParamsFromControls(pConnectionParams);
   return pConnectionParams;
 }
 
 ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     ConnectionParams* pConnectionParams) {
-  pConnectionParams->Valid = TRUE;
-  if (m_rbTypeSerial->GetValue())
+  pConnectionParams->Valid = true;
+  int selection = m_net_type_choice->GetSelection();
+  if (selection != wxNOT_FOUND) {
+    std::string s = m_net_type_choice->GetString(selection).ToStdString();
+  }
+  if (m_type_serial_radiobtn->GetValue())
     pConnectionParams->Type = SERIAL;
-  else if (m_rbTypeNet->GetValue())
+  else if (m_type_net_radiobtn->GetValue())
     pConnectionParams->Type = NETWORK;
-  else if (m_rbTypeInternalGPS && m_rbTypeInternalGPS->GetValue())
+  else if (m_type_internal_gps_radiobtn &&
+           m_type_internal_gps_radiobtn->GetValue())
     pConnectionParams->Type = INTERNAL_GPS;
-  else if (m_rbTypeInternalBT && m_rbTypeInternalBT->GetValue())
+  else if (m_type_internal_bt_radiobtn &&
+           m_type_internal_bt_radiobtn->GetValue())
     pConnectionParams->Type = INTERNAL_BT;
-  else if (m_rbTypeCAN && m_rbTypeCAN->GetValue())
+  else if (m_type_can_radiobtn && m_type_can_radiobtn->GetValue())
     pConnectionParams->Type = SOCKETCAN;
 
-  if (m_rbTypeNet->GetValue()) {
+  if (m_type_net_radiobtn->GetValue()) {
     //  Save the existing addr/port to allow closing of existing port
     pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
     pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
@@ -2047,44 +1845,55 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     pConnectionParams->LastDataProtocol = pConnectionParams->Protocol;
 
     pConnectionParams->NetworkAddress =
-        m_tNetAddress->GetValue().Trim(false).Trim(true);
+        m_net_address_tc->GetValue().Trim(false).Trim(true);
     pConnectionParams->NetworkPort =
-        wxAtoi(m_tNetPort->GetValue().Trim(false).Trim(true));
-    if (m_rbNetProtoTCP->GetValue()) {
+        wxAtoi(m_net_port_tc->GetValue().Trim(false).Trim(true));
+    int net_select = m_net_type_choice->GetSelection();
+    std::string net_type;
+    if (net_select != wxNOT_FOUND)
+      net_type = m_net_type_choice->GetString(net_select).ToStdString();
+    if (net_type == kTcpClient || net_type == kTcpServer ||
+        net_type == kTcpDevice) {
       pConnectionParams->NetProtocol = TCP;
       pConnectionParams->Protocol =
-          (DataProtocol)m_choiceNetDataProtocol->GetSelection();
-    } else if (m_rbNetProtoUDP->GetValue()) {
+          static_cast<DataProtocol>(m_net_data_protocol_choice->GetSelection());
+    } else if (net_type == kUdpOutput || net_type == kUdpInput ||
+               net_type == kUdpDevice || net_type == kMulticastClient ||
+               net_type == kMulticastServer) {
       pConnectionParams->NetProtocol = UDP;
       pConnectionParams->Protocol =
-          (DataProtocol)m_choiceNetDataProtocol->GetSelection();
-    } else if (m_rbNetProtoGPSD->GetValue())
+          static_cast<DataProtocol>(m_net_data_protocol_choice->GetSelection());
+    } else if (net_type == kGpsdClient || net_type == kGpsdDevice) {
       pConnectionParams->NetProtocol = GPSD;
-    else if (m_rbNetProtoSignalK->GetValue())
+    } else if (net_type == kSignalkClient || net_type == kSignalkDevice) {
       pConnectionParams->NetProtocol = SIGNALK;
-    else
+    } else {
       pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+    };
+    pConnectionParams->is_server = net_type == kTcpServer ||
+                                   net_type == kUdpInput ||
+                                   net_type == kMulticastServer;
   }
-
-  if (m_rbTypeSerial->GetValue())
+  if (m_type_serial_radiobtn->GetValue())
     pConnectionParams->Protocol =
-        (DataProtocol)m_choiceSerialProtocol->GetSelection();
-  else if (m_rbTypeNet->GetValue())
+        (DataProtocol)m_serial_protocol_choice->GetSelection();
+  else if (m_type_net_radiobtn->GetValue())
     pConnectionParams->Protocol =
-        (DataProtocol)m_choiceNetDataProtocol->GetSelection();
+        (DataProtocol)m_net_data_protocol_choice->GetSelection();
 
-  pConnectionParams->Baudrate = wxAtoi(m_choiceBaudRate->GetStringSelection());
+  pConnectionParams->Baudrate =
+      wxAtoi(m_baud_rate_choice->GetStringSelection());
   pConnectionParams->ChecksumCheck = true;
-  pConnectionParams->AutoSKDiscover = m_cbCheckSKDiscover->GetValue();
-  pConnectionParams->Garmin = m_cbGarminHost->GetValue();
+  pConnectionParams->AutoSKDiscover = m_sk_check_discover_cb->GetValue();
+  pConnectionParams->Garmin = m_garmin_host_cb->GetValue();
   pConnectionParams->InputSentenceList =
-      wxStringTokenize(m_tcInputStc->GetValue(), ",");
-  if (m_rbIAccept->GetValue())
+      wxStringTokenize(m_input_stc_tc->GetValue(), ",");
+  if (m_accept_radiobtn->GetValue())
     pConnectionParams->InputSentenceListType = WHITELIST;
   else
     pConnectionParams->InputSentenceListType = BLACKLIST;
-  if (m_cbInput->GetValue()) {
-    if (m_cbOutput->GetValue()) {
+  if (m_input_cb->GetValue()) {
+    if (m_output_cb->GetValue()) {
       pConnectionParams->IOSelect = DS_TYPE_INPUT_OUTPUT;
     } else {
       pConnectionParams->IOSelect = DS_TYPE_INPUT;
@@ -2093,22 +1902,22 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     pConnectionParams->IOSelect = DS_TYPE_OUTPUT;
 
   pConnectionParams->OutputSentenceList =
-      wxStringTokenize(m_tcOutputStc->GetValue(), ",");
-  if (m_rbOAccept->GetValue())
+      wxStringTokenize(m_output_stc_tc->GetValue(), ",");
+  if (m_o_accept_radiobtn->GetValue())
     pConnectionParams->OutputSentenceListType = WHITELIST;
   else
     pConnectionParams->OutputSentenceListType = BLACKLIST;
-  pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
+  pConnectionParams->Port = m_port_combo->GetValue().BeforeFirst(' ');
 #if defined(__linux__) && !defined(__ANDROID__)
   if (pConnectionParams->Type == SERIAL)
     CheckSerialAccess(m_parent, pConnectionParams->Port.ToStdString());
 #endif
 
-  if (m_rbTypeCAN && m_rbTypeCAN->GetValue())
+  if (m_type_can_radiobtn && m_type_can_radiobtn->GetValue())
     pConnectionParams->Protocol = PROTO_NMEA2000;
 
-  pConnectionParams->bEnabled = m_connection_enabled;
-  pConnectionParams->b_IsSetup = FALSE;
+  pConnectionParams->bEnabled = m_conn_enabled;
+  pConnectionParams->b_IsSetup = false;
 
   if (pConnectionParams->Type == INTERNAL_GPS) {
     pConnectionParams->NetworkAddress = "";
@@ -2119,7 +1928,7 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
   }
 
   if (pConnectionParams->Type == INTERNAL_BT) {
-    wxString parms = m_choiceBTDataSources->GetStringSelection();
+    wxString parms = m_bt_data_sources_choice->GetStringSelection();
     wxStringTokenizer tkz(parms, ";");
     wxString name = tkz.GetNextToken();
     wxString mac = tkz.GetNextToken();
@@ -2138,231 +1947,79 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     pConnectionParams->Baudrate = 0;
     pConnectionParams->socketCAN_port =
-        m_choiceCANSource->GetString(m_choiceCANSource->GetSelection());
+        m_can_source_choice->GetString(m_can_source_choice->GetSelection());
   }
-
   if (pConnectionParams->Type == SERIAL) {
-    pConnectionParams->UserComment = m_tSerialComment->GetValue();
+    pConnectionParams->UserComment = m_serial_comment_tc->GetValue();
   } else if (pConnectionParams->Type == NETWORK) {
-    pConnectionParams->UserComment = m_tNetComment->GetValue();
+    pConnectionParams->UserComment = m_net_comment_tc->GetValue();
   }
-  pConnectionParams->AuthToken = m_tAuthToken->GetValue();
+  pConnectionParams->AuthToken = m_auth_token_tc->GetValue();
 
   return pConnectionParams;
 }
 
 void ConnectionEditDialog::OnPriorityDialog(wxCommandEvent& event) {
-  PriorityDlg* pdlg = new PriorityDlg(m_parent);
+  auto* pdlg = new PriorityDlg(m_parent);
   pdlg->ShowModal();
   delete pdlg;
 }
 void ConnectionEditDialog::ConnectControls() {
   // Connect controls
-  m_rbTypeSerial->Connect(
+  m_type_serial_radiobtn->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnTypeSerialSelected), NULL,
-      this);
-  m_rbTypeNet->Connect(
+      wxCommandEventHandler(ConnectionEditDialog::OnTypeSerialSelected),
+      nullptr, this);
+  m_type_net_radiobtn->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnTypeNetSelected), NULL,
+      wxCommandEventHandler(ConnectionEditDialog::OnTypeNetSelected), nullptr,
       this);
-
-  m_rbTypeCAN->Connect(
+  m_type_can_radiobtn->Connect(
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnTypeCANSelected), NULL,
+      wxCommandEventHandler(ConnectionEditDialog::OnTypeCANSelected), nullptr,
       this);
-
-  if (m_rbTypeInternalGPS)
-    m_rbTypeInternalGPS->Connect(
+  if (m_type_internal_gps_radiobtn)
+    m_type_internal_gps_radiobtn->Connect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-        wxCommandEventHandler(ConnectionEditDialog::OnTypeGPSSelected), NULL,
+        wxCommandEventHandler(ConnectionEditDialog::OnTypeGPSSelected), nullptr,
         this);
-  if (m_rbTypeInternalBT)
-    m_rbTypeInternalBT->Connect(
+  if (m_type_internal_bt_radiobtn)
+    m_type_internal_bt_radiobtn->Connect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-        wxCommandEventHandler(ConnectionEditDialog::OnTypeBTSelected), NULL,
+        wxCommandEventHandler(ConnectionEditDialog::OnTypeBTSelected), nullptr,
         this);
 
-  // Network connection
-  m_rbNetProtoTCP->Connect(
-      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected), NULL,
-      this);
-  m_rbNetProtoUDP->Connect(
-      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected), NULL,
-      this);
-  m_rbNetProtoGPSD->Connect(
-      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected), NULL,
-      this);
-  m_rbNetProtoSignalK->Connect(
-      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnNetProtocolSelected), NULL,
-      this);
-  m_choiceNetDataProtocol->Connect(
+  m_net_data_protocol_choice->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), NULL,
+      wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), nullptr,
       this);
-  m_choiceSerialProtocol->Connect(
+  m_serial_protocol_choice->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), NULL,
+      wxCommandEventHandler(ConnectionEditDialog::OnProtocolChoice), nullptr,
       this);
-  m_cbMultiCast->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnCbMultiCast), NULL, this);
 
   // input/output control
-  m_cbInput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                     wxCommandEventHandler(ConnectionEditDialog::OnCbInput),
-                     NULL, this);
-  m_cbOutput->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                      wxCommandEventHandler(ConnectionEditDialog::OnCbOutput),
-                      NULL, this);
+  m_input_cb->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                      wxCommandEventHandler(ConnectionEditDialog::OnCbInput),
+                      nullptr, this);
+  m_output_cb->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
+                       wxCommandEventHandler(ConnectionEditDialog::OnCbOutput),
+                       nullptr, this);
 
-  if (m_buttonScanBT)
-    m_buttonScanBT->Connect(
+  if (m_scan_bt_btn)
+    m_scan_bt_btn->Connect(
         wxEVT_COMMAND_BUTTON_CLICKED,
-        wxCommandEventHandler(ConnectionEditDialog::OnScanBTClick), NULL, this);
+        wxCommandEventHandler(ConnectionEditDialog::OnScanBtClick), nullptr,
+        this);
 
-  // Input filtering
-  // m_rbIAccept->Connect(
-  //    wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-  //    wxCommandEventHandler(ConnectionEditDialog::OnRbAcceptInput), NULL,
-  //    this);
-  // m_rbIIgnore->Connect(
-  //    wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-  //    wxCommandEventHandler(ConnectionEditDialog::OnRbIgnoreInput), NULL,
-  //    this);
-  // m_tcInputStc->Connect(
-  //    wxEVT_COMMAND_TEXT_UPDATED,
-  //    wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL,
-  //    this);
-  m_btnInputStcList->Connect(
+  m_input_stc_list_btn->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnBtnIStcs), NULL, this);
+      wxCommandEventHandler(ConnectionEditDialog::OnBtnIStcs), nullptr, this);
 
   // output filtering
-  m_btnOutputStcList->Connect(
+  m_output_stc_list_btn->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnBtnOStcs), NULL, this);
-
-#if 0
-    m_tNetAddress->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_tNetPort->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange),
-                      NULL, this);
-  m_comboPort->Connect(
-      wxEVT_COMMAND_COMBOBOX_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_comboPort->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_choiceBaudRate->Connect(
-      wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnBaudrateChoice), NULL, this);
-  m_choicePriority->Connect(
-      wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_choiceCANSource->Connect(
-      wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_cbCheckCRC->Connect(wxEVT_COMMAND_CHECKBOX_CLICKED,
-                        wxCommandEventHandler(ConnectionEditDialog::OnCrcCheck),
-                        NULL, this);
-  m_cbGarminHost->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnUploadFormatChange), NULL,
-      this);
-  m_cbGarminUploadHost->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnUploadFormatChange), NULL,
-      this);
-  m_cbFurunoGP3X->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnUploadFormatChange), NULL,
-      this);
-  m_cbCheckSKDiscover->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_ButtonSKDiscover->Connect(
-      wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnDiscoverButton), NULL, this);
-
-    m_rbOAccept->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                       wxCommandEventHandler(ConnectionEditDialog::OnRbOutput),
-                       NULL, this);
-  m_rbOIgnore->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
-                       wxCommandEventHandler(ConnectionEditDialog::OnRbOutput),
-                       NULL, this);
-  m_tcOutputStc->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-    m_cbCheckCRC->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-
-  m_cbNMEADebug->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnShowGpsWindowCheckboxClick),
-      NULL, this);
-  m_cbFilterSogCog->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnValChange), NULL, this);
-  m_tFilterSec->Connect(wxEVT_COMMAND_TEXT_UPDATED,
-                        wxCommandEventHandler(ConnectionEditDialog::OnValChange),
-                        NULL, this);
-  m_cbAPBMagnetic->Connect(
-      wxEVT_COMMAND_CHECKBOX_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnValChange), NULL, this);
-
-  m_ButtonPriorityDialog->Connect(
-      wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ConnectionEditDialog::OnPriorityDialog), NULL, this);
-
-  m_tNetComment->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_tSerialComment->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-  m_tAuthToken->Connect(
-      wxEVT_COMMAND_TEXT_UPDATED,
-      wxCommandEventHandler(ConnectionEditDialog::OnConnValChange), NULL, this);
-
-  if (m_buttonScanBT)
-    m_buttonScanBT->Connect(
-        wxEVT_COMMAND_BUTTON_CLICKED,
-        wxCommandEventHandler(ConnectionEditDialog::OnScanBTClick), NULL, this);
-#endif
-}
-
-bool ConnectionEditDialog::IsAddressMultiCast(wxString ip) {
-  wxArrayString bytes = wxSplit(ip, '.');
-  if (bytes.size() != 4) {
-    return false;
-  }
-  unsigned long ipNum = (wxAtoi(bytes[0]) << 24) + (wxAtoi(bytes[1]) << 16) +
-                        (wxAtoi(bytes[2]) << 8) + wxAtoi(bytes[3]);
-  unsigned long multicastStart = (224 << 24);
-  unsigned long multicastEnd = (239 << 24) + (255 << 16) + (255 << 8) + 255;
-  return ipNum >= multicastStart && ipNum <= multicastEnd;
-}
-
-bool ConnectionEditDialog::IsDefaultPort(wxString address) {
-  return (address == DEFAULT_TCP_PORT) || (address == DEFAULT_UDP_PORT) ||
-         (address == DEFAULT_SIGNALK_PORT) || (address == DEFAULT_GPSD_PORT);
-}
-
-bool ConnectionEditDialog::IsAddressBroadcast(wxString ip) {
-  wxArrayString bytes = wxSplit(ip, '.');
-  if (bytes.size() != 4) {
-    std::cerr << "Invalid IP format." << std::endl;
-    return false;
-  }
-  return wxAtoi(bytes[3]) == 255;
+      wxCommandEventHandler(ConnectionEditDialog::OnBtnOStcs), nullptr, this);
 }
 
 SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
@@ -2373,29 +2030,29 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
       m_dir(dir),
       m_sentences(NMEA0183().GetRecognizedArray()) {
   m_sentences.Sort();
-  wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
-  wxBoxSizer* secondSizer = new wxBoxSizer(wxHORIZONTAL);
-  wxStaticBox* pclbBox = new wxStaticBox(this, wxID_ANY, GetBoxLabel());
-  wxStaticBoxSizer* stcSizer = new wxStaticBoxSizer(pclbBox, wxVERTICAL);
-  m_clbSentences = new wxCheckListBox(this, wxID_ANY, wxDefaultPosition,
-                                      wxDefaultSize, m_sentences);
-  wxBoxSizer* btnEntrySizer = new wxBoxSizer(wxVERTICAL);
-  wxButton* btnCheckAll = new wxButton(this, wxID_ANY, _("Select All"));
-  wxButton* btnClearAll = new wxButton(this, wxID_ANY, _("Clear All"));
-  wxButton* btnAdd = new wxButton(this, wxID_ANY, _("Add"));
-  m_btnDel = new wxButton(this, wxID_ANY, _("Delete"));
-  m_btnDel->Disable();
-  wxStdDialogButtonSizer* btnSizer = new wxStdDialogButtonSizer();
-  wxButton* btnOK = new wxButton(this, wxID_OK);
-  wxButton* btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
+  auto* mainSizer = new wxBoxSizer(wxVERTICAL);
+  auto* secondSizer = new wxBoxSizer(wxHORIZONTAL);
+  auto* pclbBox = new wxStaticBox(this, wxID_ANY, GetBoxLabel());
+  auto* stcSizer = new wxStaticBoxSizer(pclbBox, wxVERTICAL);
+  m_sentences_clb = new wxCheckListBox(this, wxID_ANY, wxDefaultPosition,
+                                       wxDefaultSize, m_sentences);
+  auto* btnEntrySizer = new wxBoxSizer(wxVERTICAL);
+  auto* btnCheckAll = new wxButton(this, wxID_ANY, _("Select All"));
+  auto* btnClearAll = new wxButton(this, wxID_ANY, _("Clear All"));
+  auto* btnAdd = new wxButton(this, wxID_ANY, _("Add"));
+  m_del_btn = new wxButton(this, wxID_ANY, _("Delete"));
+  m_del_btn->Disable();
+  auto* btnSizer = new wxStdDialogButtonSizer();
+  auto* btnOK = new wxButton(this, wxID_OK);
+  auto* btnCancel = new wxButton(this, wxID_CANCEL, _("Cancel"));
 
   secondSizer->Add(stcSizer, 1, wxALL | wxEXPAND, 5);
-  stcSizer->Add(m_clbSentences, 1, wxALL | wxEXPAND, 5);
+  stcSizer->Add(m_sentences_clb, 1, wxALL | wxEXPAND, 5);
   btnEntrySizer->Add(btnCheckAll, 0, wxALL, 5);
   btnEntrySizer->Add(btnClearAll, 0, wxALL, 5);
   btnEntrySizer->AddSpacer(1);
   btnEntrySizer->Add(btnAdd, 0, wxALL, 5);
-  btnEntrySizer->Add(m_btnDel, 0, wxALL, 5);
+  btnEntrySizer->Add(m_del_btn, 0, wxALL, 5);
   secondSizer->Add(btnEntrySizer, 0, wxALL | wxEXPAND, 5);
   mainSizer->Add(secondSizer, 1, wxEXPAND, 5);
   btnSizer->AddButton(btnOK);
@@ -2407,23 +2064,21 @@ SentenceListDlg::SentenceListDlg(wxWindow* parent, FilterDirection dir,
   mainSizer->SetSizeHints(this);
   Centre();
 
-  // Connect Events
   btnAdd->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                  wxCommandEventHandler(SentenceListDlg::OnAddClick), NULL,
+                  wxCommandEventHandler(SentenceListDlg::OnAddClick), nullptr,
                   this);
-  m_btnDel->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-                    wxCommandEventHandler(SentenceListDlg::OnDeleteClick), NULL,
-                    this);
-  m_clbSentences->Connect(wxEVT_COMMAND_LISTBOX_SELECTED,
-                          wxCommandEventHandler(SentenceListDlg::OnCLBSelect),
-                          NULL, this);
+  m_del_btn->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                     wxCommandEventHandler(SentenceListDlg::OnDeleteClick),
+                     nullptr, this);
+  m_sentences_clb->Connect(wxEVT_COMMAND_LISTBOX_SELECTED,
+                           wxCommandEventHandler(SentenceListDlg::OnCLBSelect),
+                           nullptr, this);
   btnCheckAll->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(SentenceListDlg::OnCheckAllClick),
-                       NULL, this);
+                       nullptr, this);
   btnClearAll->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
                        wxCommandEventHandler(SentenceListDlg::OnClearAllClick),
-                       NULL, this);
-
+                       nullptr, this);
   Populate(list);
 }
 
@@ -2449,27 +2104,26 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
   m_sentences.Add(g_TalkerIdText);
   m_sentences.Add("CD");
   m_sentences.Sort();
-  m_clbSentences->Clear();
-  m_clbSentences->InsertItems(m_sentences, 0);
+  m_sentences_clb->Clear();
+  m_sentences_clb->InsertItems(m_sentences, 0);
 
   wxArrayString new_strings;
-
   if (list.Count() == 0) {
-    for (size_t i = 0; i < m_clbSentences->GetCount(); ++i)
-      m_clbSentences->Check(i, m_type == WHITELIST);
+    for (size_t i = 0; i < m_sentences_clb->GetCount(); ++i)
+      m_sentences_clb->Check(i, m_type == WHITELIST);
   } else {
     for (size_t i = 0; i < list.Count(); ++i) {
-      int item = m_clbSentences->FindString(list[i]);
+      int item = m_sentences_clb->FindString(list[i]);
       if (item != wxNOT_FOUND)
-        m_clbSentences->Check(item);
+        m_sentences_clb->Check(item);
       else
         new_strings.Add(list[i]);
     }
     if (new_strings.GetCount()) {
-      m_clbSentences->InsertItems(new_strings, m_clbSentences->GetCount());
+      m_sentences_clb->InsertItems(new_strings, m_sentences_clb->GetCount());
       for (size_t i = 0; i < new_strings.GetCount(); ++i) {
-        int item = m_clbSentences->FindString(new_strings[i]);
-        if (item != wxNOT_FOUND) m_clbSentences->Check(item);
+        int item = m_sentences_clb->FindString(new_strings[i]);
+        if (item != wxNOT_FOUND) m_sentences_clb->Check(item);
       }
     }
   }
@@ -2477,9 +2131,9 @@ void SentenceListDlg::Populate(const wxArrayString& list) {
 
 wxString SentenceListDlg::GetSentences() {
   wxArrayString retString;
-  for (size_t i = 0; i < m_clbSentences->GetCount(); i++) {
-    if (m_clbSentences->IsChecked(i))
-      retString.Add(m_clbSentences->GetString(i));
+  for (size_t i = 0; i < m_sentences_clb->GetCount(); i++) {
+    if (m_sentences_clb->IsChecked(i))
+      retString.Add(m_sentences_clb->GetString(i));
   }
   return StringArrayToString(retString);
 }
@@ -2487,7 +2141,7 @@ wxString SentenceListDlg::GetSentences() {
 void SentenceListDlg::OnCLBSelect(wxCommandEvent& e) {
   // Only activate the "Delete" button if the selection is not in the standard
   // list
-  m_btnDel->Enable(m_sentences.Index(e.GetString()) == wxNOT_FOUND);
+  m_del_btn->Enable(m_sentences.Index(e.GetString()) == wxNOT_FOUND);
 }
 
 void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
@@ -2512,17 +2166,17 @@ void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
   wxString stc = textdlg.GetValue();
 
   if (stc.Length() == 2 || stc.Length() == 3 || stc.Length() == 5) {
-    m_clbSentences->Append(stc);
-    m_clbSentences->Check(m_clbSentences->FindString(stc));
+    m_sentences_clb->Append(stc);
+    m_sentences_clb->Check(m_sentences_clb->FindString(stc));
     return;
   } else if (stc.Length() < 2) {
     OCPNMessageBox(
         this,
         _("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.)\n \
-          It can also have a two letter prefix identifying the source, or TALKER, of the message.\n \
-          The whole sentences then looks like GPGGA or AITXT.\n \
-          You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n \
-          The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"),
+            It can also have a two letter prefix identifying the source, or TALKER, of the message.\n \
+            The whole sentences then looks like GPGGA or AITXT.\n \
+            You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.).\n \
+            The filter also accepts Regular Expressions (REGEX) with 6 or more characters. \n\n"),
         _("OpenCPN Info"));
     return;
   }
@@ -2531,8 +2185,8 @@ void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
     // Verify that a longer text entry is a valid RegEx
     wxRegEx r(stc);
     if (r.IsValid()) {
-      m_clbSentences->Append(stc);
-      m_clbSentences->Check(m_clbSentences->FindString(stc));
+      m_sentences_clb->Append(stc);
+      m_sentences_clb->Check(m_sentences_clb->FindString(stc));
       return;
     } else {
       OCPNMessageBox(this, _("REGEX syntax error: \n") + stc,
@@ -2543,15 +2197,15 @@ void SentenceListDlg::OnAddClick(wxCommandEvent& event) {
 }
 
 void SentenceListDlg::OnDeleteClick(wxCommandEvent& event) {
-  m_clbSentences->Delete(m_clbSentences->GetSelection());
+  m_sentences_clb->Delete(m_sentences_clb->GetSelection());
 }
 
 void SentenceListDlg::OnClearAllClick(wxCommandEvent& event) {
-  for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
-    m_clbSentences->Check(i, FALSE);
+  for (size_t i = 0; i < m_sentences_clb->GetCount(); i++)
+    m_sentences_clb->Check(i, false);
 }
 
 void SentenceListDlg::OnCheckAllClick(wxCommandEvent& event) {
-  for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
-    m_clbSentences->Check(i, TRUE);
+  for (size_t i = 0; i < m_sentences_clb->GetCount(); i++)
+    m_sentences_clb->Check(i, true);
 }
