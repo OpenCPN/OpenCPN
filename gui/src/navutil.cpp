@@ -676,10 +676,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   wxString racr;
   Read("RouteArrivalCircleRadius", &racr);
   if (racr.Len()) racr.ToDouble(&g_n_arrival_circle_radius);
-  Read("RouteArrivalCircleMinimum", &racr);
-  if (racr.Len()) racr.ToDouble(&g_n_arrival_circle_minimum);
-  Read("RouteArrivalCircleFactor", &racr);
-  if (racr.Len()) racr.ToDouble(&g_n_arrival_circle_factor);
+  Read("RouteArrivalCircleMinimum", &g_n_arrival_circle_minimum);
+  Read("RouteArrivalCircleFactor", &g_n_arrival_circle_factor);
 
   Read("FullScreenQuilt", &g_bFullScreenQuilt);
 
