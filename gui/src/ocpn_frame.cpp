@@ -840,7 +840,7 @@ void MyFrame::OnSENCEvtThread(OCPN_BUILDSENC_ThreadEvent &event) {
   }
 }
 
-void MyFrame::StartRebuildChartDatabase() {
+bool MyFrame::StartRebuildChartDatabase() {
   bool b_SetInitialPoint = false;
 
   //   Build the initial chart dir array
@@ -876,7 +876,9 @@ void MyFrame::StartRebuildChartDatabase() {
 
     LoadS57();
     ChartData->Create(ChartDirArray, pprog);
+    return true;
   }
+  return false;
 }
 
 // play an arbitrary number of bells by using 1 and 2 bell sounds
@@ -2980,6 +2982,11 @@ void MyFrame::DoSettingsNew() {
 }
 
 void MyFrame::DoSettings() {
+  if (!g_bDeferredInitDone) {
+    wxLogWarning("Ignoring settings request while OpenCPN is initializing.");
+    return;
+  }
+
   LoadS57();
   DoOptionsDialog();
 
@@ -3736,6 +3743,7 @@ void MyFrame::RegisterGlobalMenuItems() {
 
   // Set initial values for menu check items and radio items
   UpdateGlobalMenuItems();
+  EnableSettingsTool(g_bDeferredInitDone);
 }
 
 void MyFrame::UpdateGlobalMenuItems() {
@@ -4623,12 +4631,14 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
           }
         }
 
-        // Start an async chart database update
-        // Arrange for init timer to restart at next point in chain
-        m_iInitCount = 1;
-        StartRebuildChartDatabase();
+        // Start an async chart database update, if there are chart directories.
+        // Arrange for init timer to restart at the next point in the chain.
+        const bool update_started = StartRebuildChartDatabase();
         g_NeedDBUpdate = 0;
-        return;
+        if (update_started) {
+          m_iInitCount = 1;
+          return;
+        }
       }
 
       break;
@@ -4858,7 +4868,7 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
 
   RefreshAllCanvas(true);
   UsbWatchDaemon::GetInstance().Start();
-  EnableSettingsTool(true);
+  EnableSettingsTool(g_bDeferredInitDone);
 }
 
 wxDEFINE_EVENT(EVT_BASIC_NAV_DATA, ObservedEvt);

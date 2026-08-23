@@ -310,6 +310,7 @@ public:
   virtual void UpdateAISMOBRoute(const AisTargetData* ptarget) override;
   virtual void ActivateAISMOBRoute(const AisTargetData* ptarget) override;
   void EnableSettingsTool(bool _enable) override {
+    if (m_pMenuBar) m_pMenuBar->Enable(wxID_PREFERENCES, _enable);
     if (g_MainToolbar) {
       g_MainToolbar->EnableTool(ID_SETTINGS, _enable);
       g_MainToolbar->GetToolbar()->SetDirty(true);
@@ -505,7 +506,7 @@ public:
   void UpdateCanvasConfigDescriptors();
   void ScheduleSettingsDialog();
   void ScheduleSettingsDialogNew();
-  static void StartRebuildChartDatabase();
+  static bool StartRebuildChartDatabase();
   void PositionIENCToolbar();
 
   void InitAppMsgBusListener();
