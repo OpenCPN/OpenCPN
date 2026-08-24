@@ -4858,6 +4858,13 @@ void MyFrame::OnInitTimer(wxTimerEvent &event) {
       //      Start up the Ten Hz timer....
       gFrame->FrameTenHzTimer.Start(100, wxTIMER_CONTINUOUS);
 
+      // Report that startup is complete. Delivered through the event
+      // queue, so listeners run after this initialization event has
+      // returned. Suppressed in kiosk startup, which shows no plugin
+      // configuration UI.
+      if (!g_kiosk_startup)
+        evt_startup_complete.Notify(g_bFirstRun ? 1 : 0, "");
+
       break;
     }
   }  // switch

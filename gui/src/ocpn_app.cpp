@@ -351,8 +351,11 @@ static wxString newPrivateFileName(wxString, const char *name,
 }
 
 void MyApp::OnNewMsgTypes() {
-  for (auto it : m_api_events_callbacks)
-    it.second(HostApi122::EventType::kNewMessageType);
+  NotifyApiEventCallbacks(HostApi122::EventType::kNewMessageType);
+}
+
+void MyApp::NotifyApiEventCallbacks(HostApi122::EventType what) {
+  for (auto it : m_api_events_callbacks) it.second(what);
 }
 
 void MyApp::RegisterApiEventCallback(
@@ -1509,6 +1512,15 @@ void MyApp::BuildMainFrame() {
   gFrame = new MyFrame(myframe_window_title, position, new_frame_size,
                        m_rest_server, dockart,
                        [&](const std::string &path) { return OpenFile(path); });
+
+  // Dispatch plugin API startup events when the frame reports that
+  // deferred initialization is complete.
+  startup_complete_listener.Init(
+      gFrame->evt_startup_complete, [&](ObservedEvt &ev) {
+        if (ev.GetInt())
+          NotifyApiEventCallbacks(HostApi122::EventType::kInitialStart);
+        NotifyApiEventCallbacks(HostApi122::EventType::kStart);
+      });
 
   //  Initialize the Plugin Manager
   g_pi_manager = new PlugInManager(gFrame);

@@ -514,6 +514,13 @@ public:
   void ReleaseApiListeners();
   void ConfigureStatusBar();
 
+  /**
+   * Notified when deferred initialization has completed and all plugins
+   * are loaded. Notified with 1 on the first startup after a clean
+   * installation, otherwise with 0. Not notified in kiosk startup.
+   */
+  obs::EventVar evt_startup_complete;
+
 private:
   void ProcessUnitTest();
   bool ProcessQuitFlag();

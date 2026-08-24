@@ -24,6 +24,7 @@
 #ifndef _OCPN_APP_H
 #define _OCPN_APP_H
 
+#include <map>
 #include <string>
 
 #include <wx/wxprec.h>
@@ -44,8 +45,10 @@
 #include "data_monitor.h"
 #include "ocpn_plugin.h"
 
+// Ordered by plugin name so that event callbacks are invoked in a
+// deterministic sequence.
 using CallbacksByPlugin =
-    std::unordered_map<std::string, std::function<void(HostApi122::EventType)>>;
+    std::map<std::string, std::function<void(HostApi122::EventType)>>;
 
 class MyApp : public wxApp, public Api122Impl {
 public:
@@ -72,6 +75,12 @@ public:
   void RegisterApiEventCallback(
       const std::string& plugin_name,
       std::function<void(HostApi122::EventType what)> callback) override;
+
+  /**
+   * Invoke all registered plugin API event callbacks with given event.
+   * Callbacks are invoked serially, ordered by registered plugin name.
+   */
+  void NotifyApiEventCallbacks(HostApi122::EventType what);
 
 #ifdef LINUX_CRASHRPT
   //! fatal exeption handling
@@ -110,6 +119,7 @@ private:
   obs::Listener rest_activate_listener;
   obs::Listener rest_reverse_listener;
   obs::Listener new_msg_type_listener;
+  obs::Listener startup_complete_listener;
 
   CallbacksByPlugin m_api_events_callbacks;
 };
