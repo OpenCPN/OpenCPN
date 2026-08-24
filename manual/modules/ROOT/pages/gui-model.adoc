@@ -68,16 +68,16 @@ This is synchronous, and the Model can get a return value from the Gui
 == Using signals
 
 Sending signals is done using an ```EventVar```.
-This is declared in the _observable_evtvar.h_ header file.
+This is declared in the _observable/evtvar.h_ header file.
 
 The Model part defines and signals to the EventVar. 
 The declaration is done in the header:
    
-    #include "observable_evtvar.h"
+    #include "observable/evtvar.h"
     class ModelClass {
     public:
       /** Notified on SomeChange with a strinng available in GetString(). */
-      EventVar some_change;
+      obs::EventVar some_change;
 
 Note the comment, an ```EventVar``` without a comment is hard to track down. 
 
@@ -104,7 +104,7 @@ First, in the header declare an ObsListener
     class GuiClassn {
       ...
     private:
-      ObsListener some_change_listener;
+      obs::Listener some_change_listener;
     }
 
 
