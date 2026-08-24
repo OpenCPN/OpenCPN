@@ -433,6 +433,31 @@ bool UpdateChartDBInplace(wxArrayString dir_array, bool b_force_update,
   }
   bool b_ret = gFrame->UpdateChartDatabaseInplace(
       ChartDirArray, b_force_update, b_ProgressDialog, ChartListFileName);
+  if (b_ret) {
+    // Persist directories added through this public API. Historically the
+    // update was in-memory only and the directories disappeared after
+    // restart. Merge additively into the configured list: existing
+    // entries, including their magic numbers, are never touched, so
+    // callers passing a partial directory list cannot erase the user's
+    // configuration.
+    ArrayOfCDI config_dirs;
+    pConfig->LoadChartDirArray(config_dirs);
+    bool changed = false;
+    for (unsigned int i = 0; i < ChartDirArray.GetCount(); i++) {
+      bool found = false;
+      for (unsigned int j = 0; j < config_dirs.GetCount(); j++) {
+        if (config_dirs[j].fullpath == ChartDirArray[i].fullpath) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        config_dirs.Add(ChartDirArray[i]);
+        changed = true;
+      }
+    }
+    if (changed) pConfig->UpdateChartDirs(config_dirs);
+  }
   gFrame->RefreshGroupIndices();
   gFrame->ChartsRefresh();
   return b_ret;

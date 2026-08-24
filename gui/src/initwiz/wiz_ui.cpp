@@ -98,8 +98,10 @@ FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, MyConfig* pConfig,
       _("If you already have charts on your system, you may add them here."));
   m_rtChartDirInfo->Newline();
   m_rtChartDirInfo->WriteText(
-      _("Additional charts can be obtained  using the Chart Downloader "
-        "integrated in the application."));
+      _("If no charts are configured, Chart Downloader will offer a current "
+        "free starter chart after setup. More free charts can be found there "
+        "later. Commercial charts can be purchased and installed using "
+        "O-Charts or other compatible providers."));
   m_rtChartDirInfo->Newline();
   m_rtChartDirInfo->Newline();
   m_rtChartDirInfo->WriteText(
@@ -116,6 +118,10 @@ FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, MyConfig* pConfig,
 }
 
 FirstUseWizImpl::~FirstUseWizImpl() = default;
+
+bool FirstUseWizImpl::HasAddedChartDirectories() const {
+  return !m_lbChartsDirs->IsEmpty();
+}
 
 void FirstUseWizImpl::OnWizardFinished(wxWizardEvent& event) {
   auto cfg = m_pConfig;

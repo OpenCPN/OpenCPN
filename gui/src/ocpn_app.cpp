@@ -1174,7 +1174,7 @@ bool MyApp::OnInit() {
     FirstUseWizImpl wiz(gFrame, pConfig);
     auto res = wiz.Run();
     if (res) {
-      g_NeedDBUpdate = 2;
+      if (wiz.HasAddedChartDirectories()) g_NeedDBUpdate = 2;
     }
   }
 #endif

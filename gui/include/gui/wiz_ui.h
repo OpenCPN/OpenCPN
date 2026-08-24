@@ -88,6 +88,9 @@ public:
     return RunWizard(m_pages[0]);
   }
 
+  /** True when this wizard added one or more chart directories. */
+  bool HasAddedChartDirectories() const;
+
   void EnumerateDatasources();
   void EnumerateUSB();
   void EnumerateUDP();
