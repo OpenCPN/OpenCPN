@@ -67,11 +67,22 @@
 extern OCPNPlatform* g_Platform;
 extern std::vector<ocpn_DNS_record_t> g_sk_servers;
 
+#ifdef __WXOSX__
+// On macOS wxSTAY_ON_TOP turns the window into a floating panel which the
+// system hides whenever the application is deactivated. With no other
+// windows shown yet, switching away from OpenCPN during the first-use
+// wizard makes the application disappear entirely while its modal loop
+// keeps running, so it appears hung.
+static long DropStayOnTop(long style) { return style & ~wxSTAY_ON_TOP; }
+#else
+static long DropStayOnTop(long style) { return style; }
+#endif
+
 FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, MyConfig* pConfig,
                                  wxWindowID id, const wxString& title,
                                  const wxBitmap& bitmap, const wxPoint& pos,
                                  long style)
-    : FirstUseWiz(parent, id, title, bitmap, pos, style) {
+    : FirstUseWiz(parent, id, title, bitmap, pos, DropStayOnTop(style)) {
   m_pConfig = pConfig;
 
   wxString svgDir = g_Platform->GetSharedDataDir() + _T("uidata") +

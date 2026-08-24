@@ -32,12 +32,22 @@ static void EnsureBtnSize(wxWindow* btn, int font_height) {
     btn->SetMinSize(wxSize(-1, font_height * 3));
 }
 
+#ifdef __WXOSX__
+// On macOS wxSTAY_ON_TOP turns the dialog into a floating panel which the
+// system hides whenever the application is deactivated. For alerts shown
+// before the main frame exists (e.g. the startup disclaimer) this makes
+// the whole application vanish when the user switches away, while the
+// modal loop keeps running - it appears hung.
+static constexpr long kAlertStyle = wxCAPTION;
+#else
+static constexpr long kAlertStyle = wxSTAY_ON_TOP | wxCAPTION;
+#endif
+
 AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
                          const std::string& action)
-    : BaseDialog(parent, title, wxSTAY_ON_TOP | wxCAPTION),
+    : BaseDialog(parent, title, kAlertStyle),
       m_action(action),
       m_listener(nullptr) {
-
   if (!parent) {
     wxFont *myFont = wxTheFontList->FindOrCreateFont(12, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
                   wxFONTWEIGHT_NORMAL);
