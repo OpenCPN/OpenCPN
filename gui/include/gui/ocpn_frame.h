@@ -490,8 +490,6 @@ public:
                                   const wxString& ChartListFileName);
   void FinalizeChartDBUpdate();
 
-  bool m_bdefer_resize;
-  wxSize m_defer_size;
   double COGTable[kMaxCogAverageSeconds];
 
   void CreateCanvasLayout(bool b_useStoredSize = false);

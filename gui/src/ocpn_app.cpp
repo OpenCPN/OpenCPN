@@ -1675,43 +1675,6 @@ void MyApp::BuildMainFrame() {
   g_pi_manager->ShowDeferredBlacklistMessages();
   // g_pi_manager->CallLateInit();
 
-  return;
-
-  //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
-  //  We need a deferred resize to get glDrawPixels() to work right.
-  //  So we set a trigger to generate a resize after 5 seconds....
-  //  See the "UniChrome" hack elsewhere
-#ifdef ocpnUSE_GL
-  if (!g_bdisable_opengl) {
-    glChartCanvas *pgl =
-        (glChartCanvas *)gFrame->GetPrimaryCanvas()->GetglCanvas();
-    if (pgl && (pgl->GetRendererString().Find("UniChrome") != wxNOT_FOUND)) {
-      gFrame->m_defer_size = gFrame->GetSize();
-      gFrame->SetSize(gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y);
-      g_pauimgr->Update();
-      gFrame->m_bdefer_resize = true;
-    }
-  }
-#endif
-
-  // Horrible Hack (tm): Make sure the RoutePoint destructor can invoke
-  // glDeleteTextures. Truly awful.
-#ifdef ocpnUSE_GL
-  if (g_bopengl)
-    RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {
-      glDeleteTextures(n, texts);
-    };
-#else
-  RoutePoint::delete_gl_textures = [](unsigned n, const unsigned *texts) {};
-#endif
-
-#ifdef __ANDROID__
-  //  We need a resize to pick up height adjustment after building android
-  //  ActionBar
-  gFrame->SetSize(getAndroidDisplayDimensions());
-  androidSetFollowTool(gFrame->GetPrimaryCanvas()->m_bFollow ? 1 : 0, true);
-#endif
-
   // Setup Tides/Currents to settings present at last shutdown
   // TODO
   //     gFrame->ShowTides( g_bShowTide );

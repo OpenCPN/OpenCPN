@@ -608,7 +608,6 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size,
 
   //      Set up some assorted member variables
   m_bTimeIsSet = false;
-  m_bdefer_resize = false;
 
   //    Clear the NMEA Filter tables
   for (int i = 0; i < kMaxCogsogFilterSeconds; i++) {
@@ -5791,19 +5790,6 @@ void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
   if (console && console->IsShown()) {
     //            console->Raise();
     console->RefreshConsoleData();
-  }
-
-  //  This little hack fixes a problem seen with some UniChrome OpenGL drivers
-  //  We need a deferred resize to get glDrawPixels() to work right.
-  //  So we set a trigger to generate a resize after 5 seconds....
-  //  See the "UniChrome" hack elsewhere
-  if (m_bdefer_resize) {
-    if (0 == (g_tick % (5))) {
-      printf("___RESIZE\n");
-      SetSize(m_defer_size);
-      g_pauimgr->Update();
-      m_bdefer_resize = false;
-    }
   }
 
   // Reset pending next AppMsgBus notification
