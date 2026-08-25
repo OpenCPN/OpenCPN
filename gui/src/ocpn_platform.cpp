@@ -220,18 +220,14 @@ void catch_signals(int signo) {
       break;
 
     case SIGHUP:
-      if (!s_inhup) {
-        s_inhup++;  // incase SIGHUP is closely followed by SIGTERM
-        top_frame::Get()->FastClose();
-      }
-      break;
-
     case SIGTERM:
       if (!s_inhup) {
         s_inhup++;  // incase SIGHUP is closely followed by SIGTERM
-        top_frame::Get()->FastClose();
+        if (auto *frame = top_frame::Get())
+          frame->FastClose();
+        else
+          std::_Exit(EXIT_SUCCESS);  // Before the frame exists: nothing to save
       }
-
       break;
 
     default:
