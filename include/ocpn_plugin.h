@@ -7409,8 +7409,9 @@ public:
    *     actual event which occurred. Use nullptr to deregister
    *     possibly existing callback
    */
-  void RegisterApiEventCallback(const std::string &plugin_name,
-                                std::function<void(EventType what)> callback);
+  virtual void RegisterApiEventCallback(
+      const std::string &plugin_name,
+      std::function<void(EventType what)> callback);
 
   /**
    * Return currently known messages types flowing through system.
@@ -7419,7 +7420,7 @@ public:
    * bus  ::= "nmea0183" | "nmea2000" | "SignalK" | "Plugin"
    * <key> depends on bus -- TBD
    */
-  const std::set<std::string> &GetActiveMessages();
+  virtual const std::set<std::string> &GetActiveMessages();
 
   /**
    *  Get SignalK payload after receiving a message.
@@ -7433,7 +7434,7 @@ public:
    *  - "Context": string, message context
    *  - "ContextSelf": string, own ship context.
    */
-  std::string GetSignalkPayload(ObservedEvt ev);
+  virtual std::string GetSignalkPayload(ObservedEvt ev);
 
 private:
   Api122Impl *m_api_impl;  // Raw ptr to app object managed by wxWidgets

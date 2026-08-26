@@ -30,6 +30,7 @@
 #include "observable/observable.h"
 
 #include "model/comm_navmsg.h"
+#include "model/comm_navmsg_bus.h"
 
 // FIXME (leamas) find new home.
 std::unique_ptr<HostApi> GetHostApi() {
@@ -52,4 +53,8 @@ std::string HostApi122::GetSignalkPayload(ObservedEvt ev) {
   root["Context"] = msg->context;
   root["ContextSelf"] = msg->context_self;
   return root.dump();
+}
+
+const std::set<std::string>& HostApi122::GetActiveMessages() {
+  return NavMsgBus::GetInstance().GetActiveMessages();
 }
