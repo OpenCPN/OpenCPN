@@ -1,7 +1,7 @@
 ---
 # Buildpack images found at: https://hub.docker.com/_/buildpack-deps/
 
-version: 2
+version: 2.1
 jobs:
   build-bookworm:
     docker:
