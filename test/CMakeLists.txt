@@ -42,6 +42,8 @@ endif ()
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
+  chart_safety_depth_tests.cpp
+  chart_safety_service_tests.cpp
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
   navutil_base_tests.cpp
@@ -65,6 +67,11 @@ if (CURL)
 endif ()
 
 add_executable(tests ${SRC})
+
+target_include_directories(tests PRIVATE
+  ${CMAKE_SOURCE_DIR}/gui/include
+  ${CMAKE_SOURCE_DIR}/gui/include/gui
+)
 
 if (DEFINED ENV{FLATPAK_ID})
   target_compile_definitions(tests PRIVATE OCPN_FLATPAK)

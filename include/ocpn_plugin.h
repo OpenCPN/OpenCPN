@@ -3476,6 +3476,349 @@ extern DECL_EXP wxString GetNewGUID();
  */
 extern "C" DECL_EXP bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1,
                                                   double lat2, double lon2);
+
+enum PlugInSegmentSafetyStatus {
+  PI_SEGMENT_SAFETY_SAFE = 0,
+  PI_SEGMENT_SAFETY_CROSSES_LAND,
+  PI_SEGMENT_SAFETY_WITHIN_LAND_MARGIN,
+  PI_SEGMENT_SAFETY_UNSAFE_AREA,
+  PI_SEGMENT_SAFETY_NO_DATA,
+  PI_SEGMENT_SAFETY_ERROR,
+  PI_SEGMENT_SAFETY_DRYING_AREA,
+  PI_SEGMENT_SAFETY_TOO_SHALLOW,
+  PI_SEGMENT_SAFETY_UNKNOWN_DEPTH,
+  /**
+   * The query is not unsafe, but its chart-derived worker cache entry has not
+   * been built yet.  A worker may enqueue the missing entry; only the main
+   * application thread may service the request and publish it.
+   */
+  PI_SEGMENT_SAFETY_PENDING_DATA
+};
+
+enum PlugInSegmentSafetySource {
+  PI_SEGMENT_SAFETY_SOURCE_NONE = 0,
+  PI_SEGMENT_SAFETY_SOURCE_VECTOR_CHART,
+  PI_SEGMENT_SAFETY_SOURCE_CM93,
+  PI_SEGMENT_SAFETY_SOURCE_GSHHS_FALLBACK,
+  /** A vector chart supplied through the OpenCPN chart plugin API. */
+  PI_SEGMENT_SAFETY_SOURCE_PLUGIN_VECTOR
+};
+
+enum PlugInSegmentSafetyDiagnosticReason {
+  PI_SEGMENT_SAFETY_DIAG_NONE = 0,
+  PI_SEGMENT_SAFETY_DIAG_NO_CHART_DATABASE,
+  PI_SEGMENT_SAFETY_DIAG_NO_CANDIDATE_CHART,
+  PI_SEGMENT_SAFETY_DIAG_RASTER_ONLY,
+  PI_SEGMENT_SAFETY_DIAG_UNSUPPORTED_CHART_TYPE,
+  PI_SEGMENT_SAFETY_DIAG_CHART_LOAD_FAILED,
+  PI_SEGMENT_SAFETY_DIAG_NO_LANDARE_GEOMETRY,
+  PI_SEGMENT_SAFETY_DIAG_CHART_GEOMETRY_CLEAR,
+  PI_SEGMENT_SAFETY_DIAG_CHART_GEOMETRY_HIT,
+  PI_SEGMENT_SAFETY_DIAG_GSHHS_FALLBACK,
+  PI_SEGMENT_SAFETY_DIAG_PENDING_DATA
+};
+
+enum PlugInSegmentSafetyHitCause {
+  PI_SEGMENT_SAFETY_HIT_NONE = 0,
+  PI_SEGMENT_SAFETY_HIT_ENDPOINT_IN_LANDARE,
+  PI_SEGMENT_SAFETY_HIT_SEGMENT_INTERSECTS_LANDARE_EDGE,
+  PI_SEGMENT_SAFETY_HIT_MARGIN_TO_LANDARE_EDGE
+};
+
+struct PlugInSegmentSafetyOptions {
+  int struct_size;
+  double safety_margin_nm;
+  int check_land;
+  int allow_gshhs_fallback;
+  int check_depth;
+  double minimum_depth_m;
+  int force_authoritative_fine_validation;
+};
+
+struct PlugInSegmentSafetyResult {
+  int struct_size;
+  int status;
+  int source;
+  int used_fallback;
+  char message[256];
+  int diagnostic_reason;
+  int chart_stack_entries;
+  int candidate_chart_count;
+  int raster_chart_count;
+  int unsupported_chart_count;
+  int s57_chart_count;
+  int land_ring_count;
+  int bbox_ring_tests;
+  int edge_tests;
+  int cache_build_ms;
+  int chart_select_ms;
+  int geometry_check_ms;
+  int chart_db_index;
+  int hit_cause;
+  double hit_ring_min_lat;
+  double hit_ring_max_lat;
+  double hit_ring_min_lon;
+  double hit_ring_max_lon;
+  int hit_ring_point_count;
+  int hit_edge_index;
+  char chart_path[256];
+  double hit_sample_lat;
+  double hit_sample_lon;
+  int hit_sample_index;
+  int hit_sample_count;
+  int chart_scale;
+  char hit_object[128];
+  int point_cache_hits;
+  int point_cache_misses;
+  int grid_cache_hits;
+  int grid_cache_misses;
+  int grid_build_ms;
+  int grid_cells_total;
+  int grid_cells_land;
+  int grid_cells_water;
+  int grid_cells_drying;
+  int grid_cells_unknown;
+  int grid_lookups;
+  int grid_lookup_ms;
+  int segment_sample_count;
+  int water_tile_shortcuts;
+  int unexpected_tile_builds;
+  int unexpected_lat_tile;
+  int unexpected_lon_tile;
+  double unexpected_tile_min_lat;
+  double unexpected_tile_min_lon;
+  int segment_cache_hits;
+  int segment_cache_misses;
+  int segment_cache_stores;
+  int grid_cache_size;
+  int grid_cache_evictions;
+  int has_depth;
+  double min_depth_m;
+  double required_depth_m;
+  double hit_depth_m;
+  int has_drying;
+  char depth_source_object[128];
+  char depth_source_attribute[32];
+  int prewarm_requested_tiles;
+  int prewarm_base_tiles_built;
+  int prewarm_base_tiles_reused;
+  int prewarm_masks_built;
+  int prewarm_masks_reused;
+  int prewarm_fine_tiles_avoided;
+};
+
+/** Result from servicing chart-safety cache requests on the main thread. */
+struct PlugInSegmentSafetyRequestServiceResult {
+  int struct_size;
+  int pending_before;
+  int requests_serviced;
+  int masks_built;
+  int requests_failed;
+  int pending_after;
+  int elapsed_ms;
+};
+
+/**
+ * Exact authoritative chart-safety base tile exchanged with an optional
+ * plugin-owned cache.
+ *
+ * The caller owns all pointed-to arrays. cell_capacity must be at least
+ * rows*cols. Cache implementations must preserve the complete payload and
+ * return false for malformed, stale or insufficiently deep entries.
+ */
+struct PlugInSegmentSafetyTile {
+  int struct_size;
+  int group_index;
+  long lat_tile;
+  long lon_tile;
+  double resolution;
+  int rows;
+  int cols;
+  int chart_db_index;
+  int chart_scale;
+  int source;
+  unsigned int hazard_summary_flags;
+  int depth_complete;
+  char chart_path[256];
+  /** Fingerprint of every chart-table entry which can affect this tile. */
+  char dependency_identity[80];
+  unsigned short *hazard_flags;
+  unsigned char *has_depth;
+  float *min_depth_m;
+  int cell_capacity;
+};
+
+typedef int (*PlugInSegmentSafetyTileCacheLookupFn)(
+    void *context, long lat_tile, long lon_tile, int require_depth,
+    PlugInSegmentSafetyTile *tile);
+typedef void (*PlugInSegmentSafetyTileCacheStoreFn)(
+    void *context, const PlugInSegmentSafetyTile *tile);
+typedef void (*PlugInSegmentSafetyTileCacheIdentityFn)(
+    void *context, const char *identity);
+typedef void (*PlugInSegmentSafetyTileCacheDependenciesChangedFn)(
+    void *context);
+
+struct PlugInSegmentSafetyTileCacheCallbacks {
+  int struct_size;
+  void *context;
+  PlugInSegmentSafetyTileCacheLookupFn lookup;
+  PlugInSegmentSafetyTileCacheStoreFn store;
+  PlugInSegmentSafetyTileCacheIdentityFn identity_changed;
+  PlugInSegmentSafetyTileCacheDependenciesChangedFn dependencies_changed;
+};
+
+#define PI_SEGMENT_SAFETY_CHART_INFO_ABI_V1 1
+
+/** Lightweight chart-table metadata used to estimate an optional atlas. */
+struct PlugInSegmentSafetyChartInfoV1 {
+  int struct_size;
+  int abi_version;
+  int db_index;
+  int chart_type;
+  int chart_family;
+  int chart_scale;
+  int source;
+  int available;
+  int in_active_group;
+  long long edition_time;
+  long long file_time;
+  double min_lat;
+  double min_lon;
+  double max_lat;
+  double max_lon;
+  char chart_path[512];
+};
+
+/**
+ * Registers a plugin-owned RAM/persistent cache for authoritative base tiles.
+ *
+ * OpenCPN retains chart parsing and classification authority. The plugin owns
+ * cache capacity, persistence and recovery. Pass NULL to unregister before
+ * unloading the plugin.
+ */
+extern "C" DECL_EXP bool PlugIn_RegisterSegmentSafetyTileCache(
+    const PlugInSegmentSafetyTileCacheCallbacks *callbacks);
+
+/** Copies the exact current chart-database identity into caller storage. */
+extern "C" DECL_EXP bool PlugIn_GetSegmentSafetyChartIdentity(
+    char *identity, int identity_size);
+
+/** Number of chart-table ordinals which may be queried for atlas metadata. */
+extern "C" DECL_EXP int PlugIn_GetSegmentSafetyChartInfoCount();
+
+/**
+ * Return lightweight metadata for one supported vector-chart ordinal.
+ *
+ * This does not open or decrypt the chart. False means that the ordinal is
+ * not an applicable supported vector source in the current chart group.
+ */
+extern "C" DECL_EXP bool PlugIn_GetSegmentSafetyChartInfo(
+    int ordinal, PlugInSegmentSafetyChartInfoV1 *chart_info);
+
+extern "C" DECL_EXP bool PlugIn_CheckSegmentSafety(
+    double lat1, double lon1, double lat2, double lon2,
+    const PlugInSegmentSafetyOptions *options,
+    PlugInSegmentSafetyResult *result);
+
+/**
+ * Materializes exact immutable base-classification tiles requested by a
+ * plugin.  OpenCPN performs chart-format-specific extraction on the main
+ * thread and publishes each tile through the registered cache callbacks; all
+ * route geometry, derived masks and worker queries remain plugin-owned.
+ */
+extern "C" DECL_EXP bool PlugIn_PrewarmSegmentSafetyRawTiles(
+    const long *lat_tiles, const long *lon_tiles, int tile_count,
+    int require_depth, PlugInSegmentSafetyResult *result);
+
+/**
+ * Builds an immutable, best-available-chart hazard snapshot for an area.
+ *
+ * Snapshot construction is main-thread only.  Worker segment checks may use
+ * only conservative SAFE certificates; uncertain coverage, depth checks,
+ * unsupported chart formats, chart disagreement and hazard-adjacent geometry
+ * continue through the authoritative grid path.
+ *
+ * enable_fast_path controls whether SAFE certificates may accelerate worker
+ * queries.  shadow_compare records disagreements whenever the authoritative
+ * path is also evaluated; pass enable_fast_path=0 for full shadow validation.
+ */
+extern "C" DECL_EXP bool PlugIn_PrewarmSegmentSafetyHazardSnapshot(
+    double min_lat, double min_lon, double max_lat, double max_lon,
+    int enable_fast_path, int shadow_compare,
+    const PlugInSegmentSafetyOptions *options,
+    PlugInSegmentSafetyResult *result);
+
+/** Return the number of deduplicated chart-safety worker requests pending. */
+extern "C" DECL_EXP int PlugIn_GetPendingSegmentSafetyRequestCount();
+
+/**
+ * Build pending chart-safety worker requests.  This is main-thread only.
+ * max_requests <= 0 means no count limit; max_milliseconds <= 0 means no
+ * elapsed-time limit.  A single chart tile build is never interrupted.
+ */
+extern "C" DECL_EXP bool PlugIn_ServicePendingSegmentSafetyRequests(
+    int max_requests, int max_milliseconds,
+    PlugInSegmentSafetyRequestServiceResult *result);
+
+extern "C" DECL_EXP bool PlugIn_PrewarmSegmentSafetyGrid(
+    double min_lat, double min_lon, double max_lat, double max_lon,
+    PlugInSegmentSafetyResult *result);
+
+extern "C" DECL_EXP bool PlugIn_PrewarmSegmentSafetyGridForSegment(
+    double lat1, double lon1, double lat2, double lon2,
+    double safety_margin_nm, PlugInSegmentSafetyResult *result);
+
+extern "C" DECL_EXP bool PlugIn_PrewarmSegmentSafetyRouteMask(
+    double min_lat, double min_lon, double max_lat, double max_lon,
+    const PlugInSegmentSafetyOptions *options,
+    PlugInSegmentSafetyResult *result);
+
+extern "C" DECL_EXP bool PlugIn_PrewarmSegmentSafetyRouteMaskForSegment(
+    double lat1, double lon1, double lat2, double lon2,
+    double corridor_margin_nm,
+    const PlugInSegmentSafetyOptions *options,
+    PlugInSegmentSafetyResult *result);
+
+/**
+ * Prewarms one deduplicated route-mask tile set around multiple polylines.
+ *
+ * The latitude and longitude arrays contain all points consecutively while
+ * point_counts identifies the number of points in each independent polyline.
+ * No segment is created between adjacent polylines.  The call must run on the
+ * main thread; worker threads may subsequently read the published masks.
+ */
+extern "C" DECL_EXP bool PlugIn_PrewarmSegmentSafetyRouteMaskForPolylines(
+    const double *latitudes, const double *longitudes,
+    const int *point_counts, int polyline_count, double corridor_margin_nm,
+    const PlugInSegmentSafetyOptions *options,
+    PlugInSegmentSafetyResult *result);
+// As above, with a deterministic halo measured in fine route-mask tiles.
+// This is intended for traversal/frontier uncertainty, not passage-width
+// expansion.  A value of one adds exactly the neighbouring tile ring.
+extern "C" DECL_EXP bool
+PlugIn_PrewarmSegmentSafetyRouteMaskForPolylinesWithTileHalo(
+    const double *latitudes, const double *longitudes,
+    const int *point_counts, int polyline_count, double corridor_margin_nm,
+    int fine_tile_halo, const PlugInSegmentSafetyOptions *options,
+    PlugInSegmentSafetyResult *result);
+
+/**
+ * Releases route-mask tiles pinned by chart-safety prewarm calls.
+ *
+ * Prewarm pins keep the complete active routing envelope resident even when it
+ * is larger than the normal inactive cache target.  Call this after all route
+ * workers and authoritative final validations using the envelope have ended.
+ */
+extern "C" DECL_EXP void PlugIn_ReleaseSegmentSafetyRouteMaskPins();
+
+extern "C" DECL_EXP bool PlugIn_SetSegmentSafetyPersistentCacheEnabled(
+    int enabled);
+
+extern "C" DECL_EXP int PlugIn_GetSegmentSafetyPersistentCacheEnabled();
+
+extern "C" DECL_EXP bool PlugIn_SaveSegmentSafetyPersistentCache();
+
+extern "C" DECL_EXP bool PlugIn_ClearSegmentSafetyPersistentCache();
 /**
  * Plays a sound file asynchronously.
  *
