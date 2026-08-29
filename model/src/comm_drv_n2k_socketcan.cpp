@@ -573,7 +573,8 @@ void Worker::HandleInput(CanFrame frame) {
 
 /** Worker thread handles some RX messages. */
 void Worker::ProcessRxMessages(std::shared_ptr<const Nmea2000Msg> n2k_msg) {
-  if (n2k_msg->PGN.pgn == 59904) {
+  if (n2k_msg->PGN.pgn == 59904 && (n2k_msg->payload.at(6) == m_parent_driver->m_source_address
+    || n2k_msg->payload.at(6) == 0xff)) {
     unsigned long RequestedPGN = 0;
     RequestedPGN = n2k_msg->payload.at(15) << 16;
     RequestedPGN += n2k_msg->payload.at(14) << 8;
