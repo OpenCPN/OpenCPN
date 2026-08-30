@@ -6228,6 +6228,7 @@ CachedPointSafetyGridTile BuildSegmentSafetyGridTile(
   int plugin_batch_fallback_cells = 0;
   int plugin_batch_candidate_objects = 0;
   int plugin_batch_hit_objects = 0;
+  bool plugin_point_fallback_without_cache_permission = false;
   long plugin_batch_select_ms = 0;
   long plugin_batch_query_ms = 0;
   if (ChartData && g_pi_manager &&
@@ -6281,6 +6282,75 @@ CachedPointSafetyGridTile BuildSegmentSafetyGridTile(
           // native vector chart therefore supersedes later plugin charts; CM93
           // cannot, because it has the lower provider priority.
           if (!it->cm93) break;
+        }
+      }
+    }
+
+    size_t fast_selected_cells = 0;
+    for (const auto& item : groups)
+      fast_selected_cells += static_cast<size_t>(item.second.active_count);
+    // Match the exact point path for a narrow plugin-coverage edge, where a
+    // small omitted strip would otherwise force many slow point queries.  Do
+    // not perform this chart-opening recovery when the plugin covers less than
+    // half the tile: in that complementary case the established prepared-CM93
+    // or native-vector fallback is both exact and much faster.
+    if (fast_selected_cells * 2 >= grid_cell_count &&
+        fast_selected_cells < grid_cell_count) {
+      std::map<std::vector<int>,
+               std::vector<SegmentSafetyChartCandidate> >
+          stack_candidate_cache;
+      for (int r = 0; r < tile.rows; ++r) {
+        const double cell_lat = ocpn::chart_safety::GlobalGridCoordinate(
+            lat_tile, r, kTileCells, tile.resolution);
+        for (int c = 0; c < tile.cols; ++c) {
+          const double cell_lon = ocpn::chart_safety::GlobalGridCoordinate(
+              lon_tile, c, kTileCells, tile.resolution);
+          const size_t index = static_cast<size_t>(r) * tile.cols + c;
+          if (!plugin_depth_candidates[index].empty()) continue;
+          std::set<int> stack_indexes;
+          SegmentSafetyCandidateChartsAt(cell_lat, cell_lon, stack_indexes,
+                                         stats);
+          const std::vector<int> stack_key(stack_indexes.begin(),
+                                           stack_indexes.end());
+          std::map<std::vector<int>,
+                   std::vector<SegmentSafetyChartCandidate> >::iterator cached =
+              stack_candidate_cache.find(stack_key);
+          if (cached == stack_candidate_cache.end()) {
+            cached = stack_candidate_cache
+                         .insert(std::make_pair(
+                             stack_key,
+                             SegmentSafetySortedChartCandidates(
+                                 cell_lat, cell_lon, stack_indexes)))
+                         .first;
+          }
+          const std::vector<SegmentSafetyChartCandidate>& stack_candidates =
+              cached->second;
+          bool selected_plugin = false;
+          for (std::vector<SegmentSafetyChartCandidate>::const_iterator it =
+                   stack_candidates.begin();
+               it != stack_candidates.end(); ++it) {
+            if (it->plugin_vector) {
+              plugin_depth_candidates[index].push_back(it->db_index);
+              if (!selected_plugin) {
+                std::map<int, SegmentSafetyPluginBatchGroup>::iterator found =
+                    groups.find(it->db_index);
+                if (found == groups.end()) {
+                  found = groups
+                              .insert(std::make_pair(
+                                  it->db_index,
+                                  SegmentSafetyPluginBatchGroup(
+                                      grid_cell_count)))
+                              .first;
+                  found->second.db_index = it->db_index;
+                }
+                found->second.active[index] = 1;
+                ++found->second.active_count;
+                selected_plugin = true;
+              }
+              continue;
+            }
+            if (!it->cm93) break;
+          }
         }
       }
     }
@@ -6609,6 +6679,13 @@ CachedPointSafetyGridTile BuildSegmentSafetyGridTile(
                                                  stats, &cell_result);
         if (prepared_cm93) ++cm93_fallback_cells;
       }
+      // Built-in vector, CM93 and explicit no-chart results are core-owned
+      // derived semantics and may share a persistent tile with provider cells.
+      // A plugin-vector cell reached through the legacy point path has not
+      // supplied the provider's cache-permission flag, so retain the previous
+      // conservative refusal for that case.
+      if (source == PI_SEGMENT_SAFETY_SOURCE_PLUGIN_VECTOR)
+        plugin_point_fallback_without_cache_permission = true;
       if (require_depth && prepared_cm93 &&
           point_class == SEGMENT_SAFETY_POINT_WATER &&
           !cell_result.has_depth) {
@@ -6665,11 +6742,14 @@ CachedPointSafetyGridTile BuildSegmentSafetyGridTile(
   tile.persistent_cache_allowed =
       tile.source != PI_SEGMENT_SAFETY_SOURCE_PLUGIN_VECTOR;
   if (tile.source == PI_SEGMENT_SAFETY_SOURCE_PLUGIN_VECTOR) {
-    tile.persistent_cache_allowed = true;
+    tile.persistent_cache_allowed =
+        !plugin_point_fallback_without_cache_permission;
     for (size_t index = 0; index < grid_cell_count; ++index) {
-      // A mixed/legacy plugin tile is kept in RAM unless every cell came from
-      // a provider which explicitly advertised the derived-cache contract.
-      if (!plugin_batch_classified[index] ||
+      // Every plugin cell classified by the batch provider must explicitly
+      // advertise the derived-cache contract. Unclassified cells are safe to
+      // persist only when the point path above established that they came from
+      // a built-in/core-owned source.
+      if (plugin_batch_classified[index] &&
           !plugin_batch_persistent_cache_allowed[index]) {
         tile.persistent_cache_allowed = false;
         break;
