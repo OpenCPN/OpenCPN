@@ -64,6 +64,16 @@
 
 #define RECEIVE_BUFFER_LENGTH 256
 
+// Connect without blocking longer than timeout_sec so a scan stays
+// interruptible: a blocking connect to a filtered host would otherwise
+// wait out the OS handshake timeout, ignoring the Stop button.
+static bool ConnectWithTimeout(wxSocketClient& client,
+                               const wxIPV4address& addr, int timeout_sec) {
+  client.Connect(addr, false);
+  client.WaitOnConnect(timeout_sec, 0);
+  return client.IsConnected();
+}
+
 extern OCPNPlatform* g_Platform;
 extern std::vector<ocpn_DNS_record_t> g_sk_servers;
 
@@ -73,6 +83,26 @@ FirstUseWizImpl::FirstUseWizImpl(wxWindow* parent, MyConfig* pConfig,
                                  long style)
     : FirstUseWiz(parent, id, title, bitmap, pos, style) {
   m_pConfig = pConfig;
+
+  // Add a Stop button beside Rescan so the scan can be interrupted.
+  m_btnStopScan = new wxButton(m_swConnections, wxID_ANY, _("Stop"));
+  m_btnStopScan->Enable(false);
+  m_btnStopScan->Bind(wxEVT_BUTTON, &FirstUseWizImpl::OnStopScan, this);
+  // Place Rescan and Stop side by side.
+  if (auto* sizer = m_btnRescanSources->GetContainingSizer()) {
+    size_t index = 0;
+    for (size_t i = 0; i < sizer->GetItemCount(); i++) {
+      if (sizer->GetItem(i)->GetWindow() == m_btnRescanSources) {
+        index = i;
+        break;
+      }
+    }
+    sizer->Detach(m_btnRescanSources);
+    auto* row = new wxBoxSizer(wxHORIZONTAL);
+    row->Add(m_btnRescanSources, 0, wxRIGHT, 5);
+    row->Add(m_btnStopScan, 0, 0, 0);
+    sizer->Insert(index, row, 0, wxALL, 5);
+  }
 
   wxString svgDir = g_Platform->GetSharedDataDir() + _T("uidata") +
                     wxFileName::GetPathSeparator() + "MUI_flat" +
@@ -254,10 +284,12 @@ void FirstUseWizImpl::EnumerateUSB() {
     bool known = false;
     DEBUG_LOG << "Found port: " << port.port << ", " << port.description << ", "
               << port.hardware_id;
+    if (m_scan_stop) return;
     for (const auto& device : known_usb_devices) {
       m_rtConnectionInfo->WriteText(".");
       wxTheApp->ProcessPendingEvents();
       wxYield();
+      if (m_scan_stop) return;
       std::stringstream stream_vid;
       std::stringstream stream_pid;
       stream_vid << std::uppercase << std::hex << device.vid;
@@ -284,6 +316,7 @@ void FirstUseWizImpl::EnumerateUSB() {
     }
     if (!known) {
       for (auto sp : Speeds) {
+        if (m_scan_stop) return;
         m_rtConnectionInfo->WriteText(".");
         wxTheApp->ProcessPendingEvents();
         wxYield();
@@ -295,7 +328,7 @@ void FirstUseWizImpl::EnumerateUSB() {
           serial.open();
           serial.setTimeout(500, 500, 0, 500, 0);
           std::string data;
-          for (auto i = 0; i < 4; i++) {
+          for (auto i = 0; i < 4 && !m_scan_stop; i++) {
             try {
               data.append(serial.read(64));
             } catch (std::exception& e) {
@@ -364,6 +397,7 @@ void FirstUseWizImpl::EnumerateUSB() {
 void FirstUseWizImpl::EnumerateUDP() {
   size_t progress = 0;
   for (auto port : UDPPorts) {
+    if (m_scan_stop) return;
     if (++progress % 10 == 0) {
       m_rtConnectionInfo->WriteText(".");
       wxTheApp->ProcessPendingEvents();
@@ -483,6 +517,12 @@ void FirstUseWizImpl::EnumerateTCP() {
   size_t progress = 0;
   for (const auto& ip : ips) {
     for (auto port : TCPPorts) {
+      if (m_scan_stop) {
+        route_close(r);
+        arp_close(arp);
+        m_rtConnectionInfo->Newline();
+        return;
+      }
       if (++progress % 10 == 0) {
         m_rtConnectionInfo->WriteText(".");
         wxTheApp->ProcessPendingEvents();
@@ -494,7 +534,7 @@ void FirstUseWizImpl::EnumerateTCP() {
       conn_addr.Hostname(ip);
       auto client = new wxSocketClient();
       client->SetTimeout(1);
-      if (client->Connect(conn_addr, true)) {
+      if (ConnectWithTimeout(*client, conn_addr, 1)) {
         DEBUG_LOG << "Connected to " << ip << ":" << port;
         size_t len = RECEIVE_BUFFER_LENGTH;
         char buffer[RECEIVE_BUFFER_LENGTH];
@@ -607,9 +647,10 @@ void FirstUseWizImpl::EnumerateGPSD() {
   wxIPV4address conn_addr;
   conn_addr.Service(2947);
   conn_addr.Hostname("127.0.0.1");
+  if (m_scan_stop) return;
   auto client = new wxSocketClient();
   client->SetTimeout(1);
-  if (client->Connect(conn_addr, true)) {
+  if (ConnectWithTimeout(*client, conn_addr, 1)) {
     ConnectionParams params;
     params.Type = ConnectionType::NETWORK;
     params.NetProtocol = NetworkProtocol::GPSD;
@@ -626,8 +667,15 @@ void FirstUseWizImpl::EnumerateGPSD() {
 #endif
 }
 
+void FirstUseWizImpl::OnStopScan(wxCommandEvent& event) {
+  m_scan_stop = true;
+  m_btnStopScan->Enable(false);
+}
+
 void FirstUseWizImpl::EnumerateDatasources() {
+  m_scan_stop = false;
   m_btnRescanSources->Enable(false);
+  m_btnStopScan->Enable(true);
   SetControlEnable(wxID_CANCEL, false);
   SetControlEnable(wxID_FORWARD, false);
   SetControlEnable(wxID_BACKWARD, false);
@@ -640,7 +688,8 @@ void FirstUseWizImpl::EnumerateDatasources() {
   wxTheApp->ProcessPendingEvents();
   wxYield();
   m_rtConnectionInfo->WriteText(
-      _("Looking for navigation data sources, this may take a while..."));
+      _("Looking for navigation data sources, this may take a while. "
+        "Press Stop to skip."));
   m_rtConnectionInfo->Newline();
   m_rtConnectionInfo->WriteText(_("Scanning USB devices..."));
   m_rtConnectionInfo->Newline();
@@ -718,6 +767,7 @@ void FirstUseWizImpl::EnumerateDatasources() {
   m_rtConnectionInfo->WriteText(
       _(" icon in the main Toolbar. In the Toolbox navigate to the Connections "
         "tab."));
+  m_btnStopScan->Enable(false);
   m_btnRescanSources->Enable(true);
   SetControlEnable(wxID_CANCEL, true);
   SetControlEnable(wxID_FORWARD, true);
