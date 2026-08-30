@@ -9,6 +9,8 @@ using ocpn::chart_safety::PlanTileBatchBlocks;
 using ocpn::chart_safety::ExpandCandidateDiscoveryBounds;
 using ocpn::chart_safety::GeographicBounds;
 using ocpn::chart_safety::GlobalGridCoordinate;
+using ocpn::chart_safety::AddCoverageTiles;
+using ocpn::chart_safety::CoverageRing;
 
 TEST(ChartSafetyService, PermitsPrefetchBeforePositiveBudgetExpires) {
   EXPECT_TRUE(MayPrefetchNeighbour(49, 50));
@@ -87,6 +89,37 @@ TEST(ChartSafetyService, CandidateDiscoveryHasOneCellHalo) {
   // The provider raster itself remains exactly unchanged.
   EXPECT_DOUBLE_EQ(raster.max_lat, 54.50);
   EXPECT_DOUBLE_EQ(raster.max_lon, -4.25);
+}
+
+TEST(ChartSafetyService, AtlasUsesPolygonRatherThanItsBoundingRectangle) {
+  const CoverageRing triangle = {
+      {53.00, -5.00}, {53.00, -4.80}, {53.20, -5.00}};
+  std::set<std::pair<long, long>> tiles;
+  ASSERT_TRUE(AddCoverageTiles({triangle}, {}, 0.05, 1000, &tiles));
+
+  EXPECT_TRUE(tiles.count({1060, -100}));
+  EXPECT_FALSE(tiles.count({1063, -97}));
+  EXPECT_LT(tiles.size(), 16u);
+}
+
+TEST(ChartSafetyService, AtlasOmitsTilesWhollyInsideNoCoverageHole) {
+  const CoverageRing coverage = {
+      {53.00, -5.00}, {53.00, -4.80}, {53.20, -4.80}, {53.20, -5.00}};
+  const CoverageRing hole = {
+      {53.04, -4.96}, {53.04, -4.84}, {53.16, -4.84}, {53.16, -4.96}};
+  std::set<std::pair<long, long>> tiles;
+  ASSERT_TRUE(AddCoverageTiles({coverage}, {hole}, 0.05, 1000, &tiles));
+
+  EXPECT_FALSE(tiles.count({1061, -99}));
+  EXPECT_TRUE(tiles.count({1060, -100}));
+}
+
+TEST(ChartSafetyService, AtlasHonoursHardTileCapacity) {
+  const CoverageRing coverage = {
+      {50.0, -10.0}, {50.0, 2.0}, {60.0, 2.0}, {60.0, -10.0}};
+  std::set<std::pair<long, long>> tiles;
+  EXPECT_FALSE(AddCoverageTiles({coverage}, {}, 0.05, 100, &tiles));
+  EXPECT_EQ(tiles.size(), 100u);
 }
 
 }  // namespace

@@ -9793,10 +9793,12 @@ bool PlugIn_GetSegmentSafetyChartInfo(
       static_cast<ChartFamilyEnum>(entry.GetChartFamily());
   const bool plugin_vector =
       type == CHART_TYPE_PLUGIN && family == CHART_FAMILY_VECTOR;
+  const bool cm93 =
+      type == CHART_TYPE_CM93 || type == CHART_TYPE_CM93COMP;
   // A proactive atlas targets bounded official/native and plugin vector
   // charts. CM93 is a global composite fallback and must never turn "all
   // charts" into an accidental whole-world atlas build.
-  if (!plugin_vector && family != CHART_FAMILY_VECTOR) return false;
+  if (cm93 || (!plugin_vector && family != CHART_FAMILY_VECTOR)) return false;
   if (ChartData->IsChartDirectoryExcluded(entry.GetFullPath())) return false;
 
   const int group_index = SegmentSafetyCurrentGroupIndex();
@@ -9828,6 +9830,108 @@ bool PlugIn_GetSegmentSafetyChartInfo(
   CopySegmentSafetyString(result.chart_path, sizeof(result.chart_path),
                           entry.GetFullPath().c_str());
   *chart_info = result;
+  return true;
+}
+
+bool PlugIn_GetSegmentSafetyChartCoverageTiles(
+    const int* chart_db_indices, int chart_count, double tile_degrees,
+    long* lat_tiles, long* lon_tiles, int tile_capacity, int* tile_count,
+    int* complete) {
+  const auto started_at = std::chrono::steady_clock::now();
+  if (tile_count) *tile_count = 0;
+  if (complete) *complete = 0;
+  if (!wxThread::IsMain() || !ChartData || !chart_db_indices ||
+      chart_count <= 0 || chart_count > ChartData->GetChartTableEntries() ||
+      !lat_tiles || !lon_tiles || tile_capacity <= 0 ||
+      tile_capacity > 2000000 || !tile_count || !complete ||
+      std::abs(tile_degrees - kSegmentSafetyGridTileDegrees) > 1e-12)
+    return false;
+
+  std::set<std::pair<long, long>> tiles;
+  bool all_added = true;
+  const int group_index = SegmentSafetyCurrentGroupIndex();
+  for (int selected = 0; selected < chart_count && all_added; ++selected) {
+    const int db_index = chart_db_indices[selected];
+    if (db_index < 0 || db_index >= ChartData->GetChartTableEntries())
+      return false;
+    const ChartTableEntry& entry = ChartData->GetChartTableEntry(db_index);
+    const ChartTypeEnum type =
+        static_cast<ChartTypeEnum>(entry.GetChartType());
+    const ChartFamilyEnum family =
+        static_cast<ChartFamilyEnum>(entry.GetChartFamily());
+    const bool plugin_vector =
+        type == CHART_TYPE_PLUGIN && family == CHART_FAMILY_VECTOR;
+    const bool cm93 =
+        type == CHART_TYPE_CM93 || type == CHART_TYPE_CM93COMP;
+    if (cm93 || (!plugin_vector && family != CHART_FAMILY_VECTOR) ||
+        ChartData->IsChartDirectoryExcluded(entry.GetFullPath()) ||
+        !ChartData->IsChartInGroup(db_index, group_index) ||
+        (type == CHART_TYPE_PLUGIN &&
+         !ChartData->IsChartAvailable(db_index)))
+      continue;
+
+    const auto coverage_ring = [](const float* points, int count) {
+      ocpn::chart_safety::CoverageRing ring;
+      if (!points || count < 3) return ring;
+      ring.reserve(static_cast<std::size_t>(count));
+      for (int point = 0; point < count; ++point)
+        ring.push_back({points[point * 2], points[point * 2 + 1]});
+      return ring;
+    };
+    std::vector<ocpn::chart_safety::CoverageRing> coverage;
+    for (int ring = 0; ring < entry.GetnAuxPlyEntries(); ++ring) {
+      auto points = coverage_ring(entry.GetpAuxPlyTableEntry(ring),
+                                  entry.GetAuxCntTableEntry(ring));
+      if (points.size() >= 3) coverage.push_back(std::move(points));
+    }
+    if (coverage.empty()) {
+      auto points =
+          coverage_ring(entry.GetpPlyTable(), entry.GetnPlyEntries());
+      if (points.size() >= 3) coverage.push_back(std::move(points));
+    }
+    std::vector<ocpn::chart_safety::CoverageRing> no_coverage;
+    for (int ring = 0; ring < entry.GetnNoCovrPlyEntries(); ++ring) {
+      auto points = coverage_ring(entry.GetpNoCovrPlyTableEntry(ring),
+                                  entry.GetNoCovrCntTableEntry(ring));
+      if (points.size() >= 3) no_coverage.push_back(std::move(points));
+    }
+    if (coverage.empty()) continue;
+    all_added = ocpn::chart_safety::AddCoverageTiles(
+        coverage, no_coverage, tile_degrees,
+        static_cast<std::size_t>(tile_capacity), &tiles);
+  }
+
+  int output = 0;
+  for (const auto& tile : tiles) {
+    lat_tiles[output] = tile.first;
+    lon_tiles[output] = tile.second;
+    ++output;
+  }
+  *tile_count = output;
+  *complete = all_added ? 1 : 0;
+  long min_lat_tile = 0;
+  long max_lat_tile = 0;
+  long min_lon_tile = 0;
+  long max_lon_tile = 0;
+  if (!tiles.empty()) {
+    min_lat_tile = max_lat_tile = tiles.begin()->first;
+    min_lon_tile = max_lon_tile = tiles.begin()->second;
+    for (const auto& tile : tiles) {
+      min_lat_tile = std::min(min_lat_tile, tile.first);
+      max_lat_tile = std::max(max_lat_tile, tile.first);
+      min_lon_tile = std::min(min_lon_tile, tile.second);
+      max_lon_tile = std::max(max_lon_tile, tile.second);
+    }
+  }
+  const auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                              std::chrono::steady_clock::now() - started_at)
+                              .count();
+  wxLogMessage(
+      "WR_CHART_ATLAS_COVERAGE charts=%d tiles=%d capacity=%d complete=%d "
+      "tile_bbox=%ld,%ld:%ld,%ld elapsed_ms=%lld",
+      chart_count, output, tile_capacity, all_added ? 1 : 0, min_lat_tile,
+      min_lon_tile, max_lat_tile, max_lon_tile,
+      static_cast<long long>(elapsed_ms));
   return true;
 }
 

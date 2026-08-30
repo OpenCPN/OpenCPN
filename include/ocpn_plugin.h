@@ -3715,6 +3715,23 @@ extern "C" DECL_EXP int PlugIn_GetSegmentSafetyChartInfoCount();
 extern "C" DECL_EXP bool PlugIn_GetSegmentSafetyChartInfo(
     int ordinal, PlugInSegmentSafetyChartInfoV1 *chart_info);
 
+#define PI_SEGMENT_SAFETY_COVERAGE_TILES_ABI_V1 1
+
+/**
+ * Request the deduplicated 0.05-degree tiles touched by actual chart coverage.
+ *
+ * chart_db_indices identifies the selected entries returned by the chart-info
+ * API. OpenCPN uses the chart database's COVR polygons and no-coverage holes;
+ * chart bounding boxes are never treated as semantic coverage.  The caller
+ * supplies output arrays and a hard capacity. complete is false when that cap
+ * would be exceeded, allowing a disk-quota estimator to stop without opening
+ * or decrypting any chart.
+ */
+extern "C" DECL_EXP bool PlugIn_GetSegmentSafetyChartCoverageTiles(
+    const int *chart_db_indices, int chart_count, double tile_degrees,
+    long *lat_tiles, long *lon_tiles, int tile_capacity, int *tile_count,
+    int *complete);
+
 extern "C" DECL_EXP bool PlugIn_CheckSegmentSafety(
     double lat1, double lon1, double lat2, double lon2,
     const PlugInSegmentSafetyOptions *options,
