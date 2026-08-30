@@ -79,6 +79,7 @@ IDX_entry::IDX_entry()
   memset(IDX_zone, 0, sizeof(IDX_zone));
   memset(IDX_station_name, 0, sizeof(IDX_station_name));
   memset(IDX_reference_name, 0, sizeof(IDX_reference_name));
+  memset(IDX_datum, 0, sizeof(IDX_datum));
 }
 
 IDX_entry::~IDX_entry() { free(IDX_tzname); }
