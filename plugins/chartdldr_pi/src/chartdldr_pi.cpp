@@ -27,6 +27,9 @@
 
 #include "chartdldr_pi.h"
 
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 #include <fstream>
 #include <memory>
 
@@ -102,6 +105,198 @@
 #endif  // __WXMAC__
 
 #define CHART_DIR "Charts"
+
+static wxString FormatBytes(long bytes);
+
+namespace {
+
+constexpr double kStarterChartLat = 33.358;
+constexpr double kStarterChartLon = -79.282;
+constexpr double kStarterChartScalePpm = 0.25;
+
+const std::string kStarterCatalogUrl =
+    "https://www.charts.noaa.gov/ENCs/SC_ENCProdCat.xml";
+
+bool PanelContainsPosition(const Panel &panel, double lat, double lon) {
+  const auto &vertices = panel.vertexes;
+  if (vertices.size() < 3) return false;
+
+  bool inside = false;
+  for (size_t i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
+    const Vertex &a = vertices[i];
+    const Vertex &b = vertices[j];
+    const bool crosses_latitude = (a.lat > lat) != (b.lat > lat);
+    if (crosses_latitude &&
+        lon < (b.lon - a.lon) * (lat - a.lat) / (b.lat - a.lat) + a.lon) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+bool ChartContainsPosition(const Chart &chart, double lat, double lon) {
+  return std::any_of(chart.coverage.begin(), chart.coverage.end(),
+                     [lat, lon](const std::unique_ptr<Panel> &panel) {
+                       return panel && PanelContainsPosition(*panel, lat, lon);
+                     });
+}
+
+struct StarterChartChoice {
+  size_t catalog_index;
+  std::string label;
+};
+
+std::vector<StarterChartChoice> FindStarterCharts(const ChartCatalog &catalog) {
+  std::vector<size_t> candidate_indexes;
+  for (size_t i = 0; i < catalog.charts.size(); ++i) {
+    Chart *chart = catalog.charts[i].get();
+    const auto *enc = dynamic_cast<const EncCell *>(chart);
+    if (!enc || enc->cscale <= 0 || enc->status.CmpNoCase("Canceled") == 0 ||
+        chart->NeedsManualDownload() ||
+        chart->GetDownloadLocation().IsEmpty()) {
+      continue;
+    }
+    if (ChartContainsPosition(*chart, kStarterChartLat, kStarterChartLon)) {
+      candidate_indexes.push_back(i);
+    }
+  }
+
+  std::stable_sort(
+      candidate_indexes.begin(), candidate_indexes.end(),
+      [&catalog](size_t left, size_t right) {
+        const auto *left_cell =
+            dynamic_cast<const EncCell *>(catalog.charts[left].get());
+        const auto *right_cell =
+            dynamic_cast<const EncCell *>(catalog.charts[right].get());
+        return left_cell->cscale < right_cell->cscale;
+      });
+
+  std::vector<StarterChartChoice> choices;
+  for (size_t index : candidate_indexes) {
+    const Chart &chart = *catalog.charts[index];
+    const auto &enc = dynamic_cast<const EncCell &>(chart);
+    std::string label =
+        wxString::Format("%s - %s (1:%d, %s)", chart.number.c_str(),
+                         chart.title.c_str(), enc.cscale,
+                         FormatBytes(chart.zipfile_size).c_str())
+            .ToStdString();
+    if (choices.empty()) {
+      label = wxString::Format(_("%s (recommended)"), wxString(label))
+                  .ToStdString();
+    }
+    choices.push_back({index, label});
+  }
+  return choices;
+}
+
+class StarterChartDialog final : public wxDialog {
+public:
+  StarterChartDialog(wxWindow *parent,
+                     const std::vector<StarterChartChoice> &choices)
+      : wxDialog(parent, wxID_ANY, _("Free starter chart"), wxDefaultPosition,
+                 wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+        m_choices(choices),
+        m_catalog_index(choices.front().catalog_index),
+        m_chart_list(nullptr) {
+    // Size from font metrics, capped to the display, instead of fixed
+    // pixels, so the dialog fits small and high-DPI screens alike.
+    const int text_width =
+        std::min(80 * GetCharWidth(), wxGetDisplaySize().GetWidth() * 85 / 100);
+    const int list_height = 10 * GetCharHeight();
+    auto *top_sizer = new wxBoxSizer(wxVERTICAL);
+
+    auto *heading =
+        new wxStaticText(this, wxID_ANY, _("Try OpenCPN with a real chart"));
+    wxFont heading_font = heading->GetFont();
+    heading_font.SetWeight(wxFONTWEIGHT_BOLD);
+    heading_font.SetPointSize(heading_font.GetPointSize() + 2);
+    heading->SetFont(heading_font);
+    top_sizer->Add(heading, 0, wxLEFT | wxRIGHT | wxTOP, 12);
+
+    auto *intro = new wxStaticText(
+        this, wxID_ANY,
+        _("Chart Downloader found current free NOAA charts around OpenCPN's "
+          "sample location in Georgetown, South Carolina. Choose one to "
+          "download and install automatically."));
+    intro->Wrap(text_width);
+    top_sizer->Add(intro, 0, wxEXPAND | wxALL, 12);
+
+    wxArrayString labels;
+    for (const auto &choice : choices) labels.Add(choice.label);
+    m_chart_list = new wxListBox(this, wxID_ANY, wxDefaultPosition,
+                                 wxSize(text_width, list_height), labels);
+    m_chart_list->SetSelection(0);
+    top_sizer->Add(m_chart_list, 1, wxEXPAND | wxLEFT | wxRIGHT, 12);
+
+    auto *more_charts = new wxStaticText(
+        this, wxID_ANY,
+        _("More free charts are available in Options > Charts > Chart "
+          "Downloader. Commercial charts can be purchased and installed "
+          "using O-Charts or other compatible providers."));
+    more_charts->Wrap(text_width);
+    top_sizer->Add(more_charts, 0, wxEXPAND | wxALL, 12);
+
+    auto *buttons = new wxStdDialogButtonSizer();
+    auto *cancel = new wxButton(this, wxID_CANCEL, _("Not now"));
+    auto *download = new wxButton(this, wxID_OK, _("Download chart"));
+    buttons->AddButton(cancel);
+    buttons->AddButton(download);
+    buttons->Realize();
+    top_sizer->Add(buttons, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 12);
+
+    SetAffirmativeId(wxID_OK);
+    SetEscapeId(wxID_CANCEL);
+    SetSizerAndFit(top_sizer);
+    SetMinSize(GetSize());
+    CentreOnParent();
+
+    download->Bind(wxEVT_BUTTON,
+                   [this](wxCommandEvent &) { ConfirmSelection(); });
+    m_chart_list->Bind(wxEVT_LISTBOX_DCLICK,
+                       [this](wxCommandEvent &) { ConfirmSelection(); });
+  }
+
+  size_t GetCatalogIndex() const { return m_catalog_index; }
+
+private:
+  void ConfirmSelection() {
+    int selection = m_chart_list->GetSelection();
+    if (selection == wxNOT_FOUND ||
+        static_cast<size_t>(selection) >= m_choices.size()) {
+      selection = 0;
+    }
+    m_catalog_index = m_choices[selection].catalog_index;
+    EndModal(wxID_OK);
+  }
+
+  const std::vector<StarterChartChoice> m_choices;
+  size_t m_catalog_index;
+  wxListBox *m_chart_list;
+};
+
+bool IsDirectoryCovered(const wxArrayString &chart_dirs,
+                        const wxString &directory) {
+  // wxPATH_NORM_CASE lowercases only on case-insensitive filesystems.
+  const int norm_flags = wxPATH_NORM_DOTS | wxPATH_NORM_ABSOLUTE |
+                         wxPATH_NORM_LONG | wxPATH_NORM_CASE;
+  wxFileName child(directory, wxEmptyString);
+  child.Normalize(norm_flags);
+  const wxString child_path = child.GetPath();
+
+  for (const auto &configured : chart_dirs) {
+    wxFileName parent(configured, wxEmptyString);
+    parent.Normalize(norm_flags);
+    wxString parent_path = parent.GetPath();
+    if (child_path == parent_path) return true;
+    if (!parent_path.EndsWith(wxFileName::GetPathSeparator())) {
+      parent_path += wxFileName::GetPathSeparator();
+    }
+    if (child_path.StartsWith(parent_path)) return true;
+  }
+  return false;
+}
+
+}  // namespace
 
 extern "C" DECL_EXP opencpn_plugin *create_pi(void *ppimgr) {
   return new chartdldr_pi(ppimgr);
@@ -247,6 +442,7 @@ static void SetBackColor(wxWindow *ctrl, const wxColour &col) {
 //---------------------------------------------------------------------------------------------------------
 
 chartdldr_pi::chartdldr_pi(void *ppimgr) : opencpn_plugin_113(ppimgr) {
+  m_alive = std::make_shared<bool>(true);
   // Create the PlugIn icons
   initialize_images();
 
@@ -294,12 +490,209 @@ int chartdldr_pi::Init() {
     if (!s2.IsEmpty())  // scrub empty sources.
       m_ChartSources.push_back(std::make_unique<ChartSource>(s1, s2, s3));
   }
+#ifndef __ANDROID__
+  // Ask the host to report startup events, used for the starter chart
+  // offer on a clean installation.
+  auto host_api = GetHostApi();
+  auto *api = dynamic_cast<HostApi122 *>(host_api.get());
+  assert(api && "HostApi122 not available");
+  api->RegisterApiEventCallback(
+      GetCommonName().ToStdString(),
+      [this](HostApi122::EventType what) { OnHostApiEvent(what); });
+#endif
+
   return (WANTS_PREFERENCES | WANTS_CONFIG | INSTALLS_TOOLBOX_PAGE);
+}
+
+void chartdldr_pi::OnHostApiEvent(HostApi122::EventType what) {
+  if (what != HostApi122::EventType::kInitialStart) return;
+  wxLogMessage("chartdldr_pi: Initial start reported.");
+  // The event callback must return promptly and cannot run a nested event
+  // loop, so present the starter chart offer from the main loop instead.
+  // Guard against the plugin being deactivated before the offer runs.
+  std::weak_ptr<bool> alive = m_alive;
+  wxTheApp->CallAfter([this, alive] {
+    if (alive.expired()) return;
+    OnInitialStart();
+  });
+}
+
+void chartdldr_pi::OnInitialStart() {
+  if (!GetChartDBDirArrayString().IsEmpty()) {
+    wxLogMessage(
+        "chartdldr_pi: Charts are already configured; skipping starter "
+        "chart offer.");
+    return;
+  }
+  // Ask before going online: no network access without user consent.
+  const int answer = OCPNMessageBox_PlugIn(
+      m_parent_window,
+      _("No charts are installed yet.\n\n"
+        "Check charts.noaa.gov for a current free starter chart? The chart "
+        "can be downloaded and installed automatically."),
+      _("Chart Downloader"), wxYES_NO | wxICON_QUESTION);
+  if (answer != wxID_YES) {
+    wxLogMessage("chartdldr_pi: Starter chart offer declined.");
+    return;
+  }
+  OfferStarterChart();
+}
+
+void chartdldr_pi::OfferStarterChart() {
+  const wxString temp_catalog =
+      wxFileName::CreateTempFileName("opencpn-starter-catalog");
+  const long download_style =
+      OCPN_DLDS_ELAPSED_TIME | OCPN_DLDS_ESTIMATED_TIME |
+      OCPN_DLDS_REMAINING_TIME | OCPN_DLDS_SPEED | OCPN_DLDS_SIZE |
+      OCPN_DLDS_URL | OCPN_DLDS_CAN_ABORT | OCPN_DLDS_AUTO_CLOSE;
+  const _OCPN_DLStatus status = OCPN_downloadFile(
+      kStarterCatalogUrl, temp_catalog, _("Looking for starter charts"),
+      _("Retrieving the current list of free charts"), wxNullBitmap,
+      m_parent_window, download_style, 10);
+
+  if (status != OCPN_DL_NO_ERROR ||
+      !m_chart_catalog.LoadFromFile(temp_catalog)) {
+    wxLogMessage(
+        "chartdldr_pi: Starter chart catalog unavailable; skipping offer.");
+    if (wxFileExists(temp_catalog)) wxRemoveFile(temp_catalog);
+    return;
+  }
+
+  const auto choices = FindStarterCharts(m_chart_catalog);
+  if (choices.empty()) {
+    wxLogMessage(
+        "chartdldr_pi: Starter chart catalog contains no suitable charts; "
+        "skipping offer.");
+    wxRemoveFile(temp_catalog);
+    return;
+  }
+
+  StarterChartDialog dialog(m_parent_window, choices);
+  if (dialog.ShowModal() == wxID_OK) {
+    const size_t catalog_index = dialog.GetCatalogIndex();
+    if (catalog_index >= m_chart_catalog.charts.size()) {
+      wxLogWarning("chartdldr_pi: Invalid starter chart selection.");
+    } else {
+      Chart &selected_chart = *m_chart_catalog.charts[catalog_index];
+      wxLogMessage("chartdldr_pi: Installing selected starter chart %s.",
+                   selected_chart.number.c_str());
+      InstallStarterChart(selected_chart, temp_catalog);
+    }
+  }
+  wxRemoveFile(temp_catalog);
+}
+
+bool chartdldr_pi::InstallStarterChart(Chart &chart,
+                                       const wxString &catalog_path) {
+  wxString chart_directory;
+  ChartSource *source = nullptr;
+  size_t source_index = 0;
+  for (size_t i = 0; i < m_ChartSources.size(); ++i) {
+    if (m_ChartSources[i]->GetUrl().ToStdString() == kStarterCatalogUrl) {
+      source = m_ChartSources[i].get();
+      source_index = i;
+      chart_directory = source->GetDir();
+      break;
+    }
+  }
+
+  if (chart_directory.IsEmpty()) {
+    wxFileName directory(m_base_chart_dir, wxEmptyString);
+    directory.AppendDir("ENC");
+    directory.AppendDir("US_SC");
+    chart_directory = directory.GetPath();
+  }
+
+  bool created_directory = false;
+  if (!wxDirExists(chart_directory)) {
+    if (!wxFileName::Mkdir(chart_directory, 0755, wxPATH_MKDIR_FULL)) {
+      OCPNMessageBox_PlugIn(
+          m_parent_window,
+          wxString::Format(_("Directory %s can't be created."),
+                           chart_directory.c_str()),
+          _("Chart Downloader"), wxOK | wxICON_ERROR);
+      return false;
+    }
+    created_directory = true;
+  }
+
+  wxFileName writable_directory(chart_directory, wxEmptyString);
+  if (!IsDLDirWritable(writable_directory)) {
+    OCPNMessageBox_PlugIn(m_parent_window,
+                          wxString::Format(_("Directory %s is not writable."),
+                                           chart_directory.c_str()),
+                          _("Chart Downloader"), wxOK | wxICON_ERROR);
+    return false;
+  }
+
+  wxURI chart_url(chart.GetDownloadLocation());
+  wxFileName archive_name(chart.GetChartFilename(false));
+  if (chart_url.IsReference() || archive_name.GetFullName().IsEmpty()) {
+    wxLogMessage("chartdldr_pi: Invalid starter chart download metadata.");
+    return false;
+  }
+
+  archive_name.SetPath(chart_directory);
+  const wxString archive_path = archive_name.GetFullPath();
+  if (wxFileExists(archive_path)) wxRemoveFile(archive_path);
+
+  const long download_style =
+      OCPN_DLDS_ELAPSED_TIME | OCPN_DLDS_ESTIMATED_TIME |
+      OCPN_DLDS_REMAINING_TIME | OCPN_DLDS_SPEED | OCPN_DLDS_SIZE |
+      OCPN_DLDS_URL | OCPN_DLDS_CAN_PAUSE | OCPN_DLDS_CAN_ABORT |
+      OCPN_DLDS_AUTO_CLOSE;
+  const _OCPN_DLStatus status = OCPN_downloadFile(
+      chart_url.BuildURI(), archive_path, _("Downloading starter chart"),
+      chart.GetChartTitle(), wxNullBitmap, m_parent_window, download_style, 30);
+  if (status != OCPN_DL_NO_ERROR ||
+      !ProcessFile(archive_path, chart_directory, true,
+                   chart.GetUpdateDatetime())) {
+    if (wxFileExists(archive_path)) wxRemoveFile(archive_path);
+    if (created_directory) wxFileName::Rmdir(chart_directory);
+    if (status != OCPN_DL_ABORTED) {
+      OCPNMessageBox_PlugIn(
+          m_parent_window,
+          _("The starter chart could not be downloaded and installed.\n\n"
+            "You can retry later using the Chart Downloader in Options > "
+            "Charts."),
+          _("Chart Downloader"), wxOK | wxICON_ERROR);
+    }
+    return false;
+  }
+
+  wxURI catalog_url(kStarterCatalogUrl);
+  wxFileName local_catalog(catalog_url.GetPath());
+  local_catalog.SetPath(chart_directory);
+  if (!wxCopyFile(catalog_path, local_catalog.GetFullPath(), true)) {
+    wxLogWarning("chartdldr_pi: Could not retain the starter chart catalog.");
+  }
+
+  if (!source) {
+    m_ChartSources.push_back(std::make_unique<ChartSource>(
+        _("SC - South Carolina"), kStarterCatalogUrl, chart_directory));
+    source_index = m_ChartSources.size() - 1;
+    source = m_ChartSources.back().get();
+  } else {
+    source->SetDir(chart_directory);
+  }
+  source->ChartUpdated(chart.number, chart.GetUpdateDatetime().GetTicks());
+  m_selected_source = static_cast<int>(source_index);
+  m_chart_source = source;
+  SaveConfig();
+
+  wxArrayString chart_dirs = GetChartDBDirArrayString();
+  if (!IsDirectoryCovered(chart_dirs, chart_directory)) {
+    chart_dirs.Add(chart_directory);
+  }
+  UpdateChartDBInplace(chart_dirs, false, true);
+  JumpToPosition(kStarterChartLat, kStarterChartLon, kStarterChartScalePpm);
+  return true;
 }
 
 bool chartdldr_pi::DeInit() {
   wxLogMessage("chartdldr_pi: DeInit");
 
+  m_alive.reset();  // drop any pending deferred starter-chart offer
   m_ChartSources.clear();
   // wxDELETE(m_pChartSource);
   /* TODO: Seth */

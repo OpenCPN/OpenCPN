@@ -506,8 +506,7 @@ Panel::Panel(pugi::xml_node &xmldata) {
     if (!strcmp(element.name(), "panel_no")) {
       panel_no = wxAtoi(wxString::FromUTF8(element.first_child().value()));
     } else if (!strcmp(element.name(), "vertex")) {
-      // NOT USED
-      // vertexes.Add(new Vertex(element));
+      vertexes.emplace_back(element);
     }
   }
 }
@@ -547,7 +546,8 @@ Vertex::Vertex(pugi::xml_node &xmldata) {
        element = element.next_sibling()) {
     if (!strcmp(element.name(), "lat")) {
       wxString::FromUTF8(element.first_child().value()).ToDouble(&lat);
-    } else if (!strcmp(element.name(), "lon")) {
+    } else if (!strcmp(element.name(), "lon") ||
+               !strcmp(element.name(), "long")) {
       wxString::FromUTF8(element.first_child().value()).ToDouble(&lon);
     }
   }

@@ -25,6 +25,7 @@
 #define ChartDLdrpI_H_
 
 #include <map>
+#include <memory>
 
 #include <wx/wxprec.h>
 
@@ -121,8 +122,15 @@ private:
   int m_selected_source;
   ChartDldrPanelImpl* m_dldrpanel;
   wxString m_base_chart_dir;
+  // Token whose lifetime bounds a deferred starter-chart offer, so the
+  // offer is dropped if the plugin is deactivated before it runs.
+  std::shared_ptr<bool> m_alive;
 
   bool LoadConfig();
+  void OnHostApiEvent(HostApi122::EventType what);
+  void OnInitialStart();
+  void OfferStarterChart();
+  bool InstallStarterChart(Chart& chart, const wxString& catalog_path);
 };
 
 class ChartSource : public wxTreeItemData {

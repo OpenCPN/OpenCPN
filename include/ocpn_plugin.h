@@ -7398,11 +7398,18 @@ public:
 
   /** Reported events bitmask. */
   enum class EventType {
-    kNewMessageType = 1  // A new message type is detected
+    kNewMessageType = 1,  // A new message type is detected
+    kInitialStart = 2,    // First startup after a clean installation is
+                          // complete. Reported once, before kStart.
+    kStart = 4            // Application startup is complete, all plugins
+                          // are loaded and deferred initialization is done.
   };
 
   /**
    * Register a new callback invoked when an EventType event occurs.
+   *
+   * The callback runs on the main thread and must return promptly without
+   * running a nested event loop; schedule any UI with e.g. CallAfter().
    *
    * @param plugin_name Invoking plugin name as of GetCommonName().
    * @param callback Invoked with an EventType argument defining the
