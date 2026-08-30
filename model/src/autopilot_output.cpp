@@ -403,7 +403,8 @@ bool SendPGN129284(Routeman &routeman, AbstractCommDriver *driver) {
       1,                    //   uint8_t  DestinationWaypointNumber,
       pActivePoint->m_lat,  //   double DestinationLatitude,
       pActivePoint->m_lon,  //    double DestinationLongitude,
-      vmg);                 //    double  WaypointClosingVelocity);
+      KnotsToms(vmg));      //    double  WaypointClosingVelocity, in m/s per
+                            // NMEA2000 spec (vmg is computed in knots)
 
   auto dest_addr = std::make_shared<const NavAddr2000>(driver->iface, 255);
   std::vector<uint8_t> payload;
