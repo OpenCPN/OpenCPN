@@ -531,10 +531,14 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
     m_output_chkbox->Enable();
     m_input_chkbox->Disable();
   }
+
   if (view == kTcpClient || view == kTcpDevice || view == kUdpInput ||
       view == kUdpReceive) {
     if (net_port_w_help->IsPristine())
       net_port_w_help->SetHelp(_("Port number (1025..65535, often 10110)"));
+  }
+  if (view != kGpsdClient && view != kGpsdDevice && view != kSignalkClient &&
+      view != kSignalkDevice) {
     if (m_net_view_choice->GetCount() != 2)
       SetupProtocolChoice(m_net_data_protocol_choice);
   }
