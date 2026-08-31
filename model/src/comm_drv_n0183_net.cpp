@@ -66,7 +66,11 @@ using namespace std::literals::chrono_literals;
 /** Return true iff addr has all host bits set to 1. IPv4 only. */
 static bool IsBroadcastAddr(unsigned addr, unsigned netmask_bits) {
   assert(netmask_bits <= 32);
+#if defined(_MSC_VER) || __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  uint32_t netmask = 0xffffffff >> (32 - netmask_bits);
+#else
   uint32_t netmask = 0xffffffff << (32 - netmask_bits);
+#endif
   uint32_t host_mask = ~netmask;
   return (addr & host_mask) == host_mask;
 }
