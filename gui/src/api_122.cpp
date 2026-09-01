@@ -26,7 +26,7 @@
 
 #include "ocpn_plugin.h"
 
-// #include "observable/observable.h"
+#include "observable.h"
 
 #include "model/comm_navmsg.h"
 #include "model/comm_navmsg_bus.h"
@@ -48,11 +48,11 @@ void HostApi122::RegisterApiEventCallback(
 }
 
 std::string HostApi122::GetSignalkPayload(ObservedEvt ev) {
-  //  auto msg = obs::UnpackEvtPointer<SignalkMsg>(ev);
+  auto msg = UnpackEvtPointer<SignalkMsg>(ev);
   wxJSONValue root;
-  //  root["Data"] = msg->raw_message;
-  //  root["Context"] = msg->context;
-  //  root["ContextSelf"] = msg->context_self;
+  root["Data"] = msg->raw_message;
+  root["Context"] = msg->context;
+  root["ContextSelf"] = msg->context_self;
 
   wxJSONWriter writer;
   wxString out;
