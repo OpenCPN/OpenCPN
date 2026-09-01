@@ -6193,7 +6193,7 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
       }
     }
   }
-  
+
   if (message_ID == "WMM_VARIATION") {
     nlohmann::json root;
     try {
@@ -6201,14 +6201,12 @@ void MyFrame::OnEvtPlugInMessage(OCPN_MsgEvent &event) {
     } catch (nlohmann::json::exception &) {
       return;
     }
+
     double decl_val = 0.0;
-    if (root.contains("Decl")) {
-      if (root["Decl"].is_number()) {
-        decl_val = root["Decl"].get<double>();
-      } else if (root["Decl"].is_string()) {
-        wxString decl = root["Decl"].get<std::string>();
-        decl.ToDouble(&decl_val);
-      }
+    if (root["Decl"].is_number()) {
+      decl_val = root["Decl"].get<double>();
+    } else if (root["Decl"].is_string()) {
+      decl_val = std::stod(root["Decl"].get<std::string>());
     }
 
     gQueryVar = decl_val;
