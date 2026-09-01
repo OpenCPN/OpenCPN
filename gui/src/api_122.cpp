@@ -36,7 +36,7 @@
 std::unique_ptr<HostApi> GetHostApi() {
   auto impl = dynamic_cast<Api122Impl*>(wxTheApp);
   assert(impl && "wxTheApp does not implement Api122Impl");
-  return std::make_unique<HostApi122>(HostApi122(impl));
+  return std::make_unique<HostApi123>(HostApi123(impl));
 }
 
 void HostApi122::RegisterApiEventCallback(
