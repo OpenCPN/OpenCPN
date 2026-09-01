@@ -26,11 +26,12 @@
 
 #include "ocpn_plugin.h"
 
-#include "nlohmann/json.hpp"
-#include "observable/observable.h"
+// #include "observable/observable.h"
 
 #include "model/comm_navmsg.h"
 #include "model/comm_navmsg_bus.h"
+#include "wx/jsonval.h"
+#include "wx/jsonwriter.h"
 
 // FIXME (leamas) find new home.
 std::unique_ptr<HostApi> GetHostApi() {
@@ -47,12 +48,16 @@ void HostApi122::RegisterApiEventCallback(
 }
 
 std::string HostApi122::GetSignalkPayload(ObservedEvt ev) {
-  auto msg = obs::UnpackEvtPointer<SignalkMsg>(ev);
-  nlohmann::json root;
-  root["Data"] = msg->raw_message;
-  root["Context"] = msg->context;
-  root["ContextSelf"] = msg->context_self;
-  return root.dump();
+  //  auto msg = obs::UnpackEvtPointer<SignalkMsg>(ev);
+  wxJSONValue root;
+  //  root["Data"] = msg->raw_message;
+  //  root["Context"] = msg->context;
+  //  root["ContextSelf"] = msg->context_self;
+
+  wxJSONWriter writer;
+  wxString out;
+  writer.Write(root, out);
+  return out.ToStdString();
 }
 
 const std::set<std::string>& HostApi122::GetActiveMessages() {
