@@ -157,7 +157,7 @@ static std::string GetChoiceSelection(const wxChoice* choice) {
 static std::string NetViewByConnection(const ConnectionParams* cp) {
   bool is_server = IsAddressListener(cp->NetworkAddress.ToStdString());
   if (IsAddressMultiCast(cp->NetworkAddress))
-    return is_server ? kMulticastServer : kMulticastClient;
+    return cp->IOSelect == DS_TYPE_OUTPUT ? kMulticastClient : kMulticastServer;
   switch (cp->NetProtocol) {
     case NetworkProtocol::GPSD:
       return kGpsdDevice;
