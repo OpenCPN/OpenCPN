@@ -624,6 +624,16 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
         ptd->DimD = bstr->GetInt(157, 6);
         parse_result = true;
       }
+      if (ptd->Class == AIS_CLASS_A) {
+        // Will occur if this msg 24 is received before
+        // any msg 18/19 for this Class B target
+        if (!ptd->b_isDSCtarget) {
+          if (!isBuoyMmsi(ptd->MMSI))
+            ptd->Class = AIS_CLASS_B;
+          else
+            ptd->Class = AIS_BUOY;
+        }
+      }
       break;
     }
     case 4:  // base station
@@ -3047,6 +3057,9 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     // Ais8_001_31 || ais8_367_33 (class AIS_METEO) test for a new mmsi ID
     int origin_mmsi = 0;
     int messID = strbit.GetInt(1, 6);
+    // No need for a message without a valid mess-ID
+    if (messID < 1 || messID > 63) return AIS_GENERIC_ERROR;
+
     int dac = strbit.GetInt(41, 10);
     int fi = strbit.GetInt(51, 6);
     if (messID == 8) {
