@@ -564,6 +564,9 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
       m_input_chkbox->SetValue(true);
       m_output_chkbox->Enable();
     }
+  } else {
+    wxLogError("Illegal view: %s", view.c_str());
+    assert(false && "Illegal view");
   }
   RefreshAdvancedDetails();
 }
