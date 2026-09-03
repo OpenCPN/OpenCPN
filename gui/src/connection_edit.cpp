@@ -286,6 +286,17 @@ bool CheckAddress(wxWindow* parent, TextCtrlWithHelp& ctrl) {
   return true;
 }
 
+bool CheckIoDirections(wxWindow* parent, const wxCheckBox* input,
+                       const wxCheckBox* output) {
+  if (input->GetValue() || output->GetValue()) return true;
+
+  auto dlg =
+      wxMessageDialog(parent, _("Either input or output must be checked"),
+                      _("OpenCPN error"), wxOK | wxICON_ERROR);
+  dlg.ShowModal();
+  return false;
+}
+
 /** Initiate the nmea protocol 0183/2000 choide */
 static void SetupProtocolChoice(wxChoice* choice) {
   choice->Clear();
@@ -445,6 +456,8 @@ void ConnectionEditDialog::InitiateNewConnection() {
   auto addr_ctrl = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tctrl);
   if (addr_ctrl) addr_ctrl->SetHelp(kAddressDefaultHelp);
   SetupProtocolChoice(m_net_data_protocol_choice);
+  m_output_chkbox->SetValue(false);
+  m_input_chkbox->SetValue(true);
 }
 
 void ConnectionEditDialog::OnConnectionTypeChange() {
@@ -485,8 +498,6 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
       net_addr_w_help->SetHelp(kAddressDefaultHelp);
     if (net_port_w_help->IsPristine())
       net_port_w_help->SetHelp(_("Port number (1025 - 65535, often 10110)"));
-    m_input_chkbox->SetValue(true);
-    m_output_chkbox->SetValue(false);
     m_input_chkbox->Enable();
     m_output_chkbox->Enable();
   } else if (view == kUdpReceive || view == kUdpInput) {
@@ -537,7 +548,6 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
     m_net_addr_text->SetLabel(_("Interface"));
     m_net_address_tctrl->ChangeValue("0.0.0.0");
     m_net_address_tctrl->Disable();
-    m_input_chkbox->SetValue(true);
     m_output_chkbox->Enable();
     m_input_chkbox->Enable();
   } else if (view == kMulticastClient || view == kMulticastServer) {
@@ -552,7 +562,6 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
       m_output_chkbox->SetValue(true);
     } else {
       m_input_chkbox->SetValue(true);
-      m_output_chkbox->SetValue(false);
       m_output_chkbox->Enable();
     }
   }
@@ -1113,6 +1122,7 @@ void ConnectionEditDialog::OnOKClick() {
     auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tctrl);
     if (net_port) ok = ok && CheckPort(this, *net_port);
   }
+  ok = ok && CheckIoDirections(this, m_output_chkbox, m_input_chkbox);
   if (ok) m_on_edit_click(m_cp_original, m_new_mode, true);
 }
 
