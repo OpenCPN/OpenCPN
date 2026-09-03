@@ -1139,7 +1139,7 @@ void ConnectionEditDialog::SetSelectedConnectionPanel(
     m_remove_btn->Enable();
     m_remove_btn->Show();
     m_add_btn->Disable();
-    m_conn_edit_statbox->SetLabel(_("Edit Selected Connection"));
+    m_conn_edit_statbox->SetLabel(_("Edit Connection"));
 
   } else {
     m_selected_conn_params = nullptr;
