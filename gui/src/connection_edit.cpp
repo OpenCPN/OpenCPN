@@ -157,7 +157,8 @@ static std::string GetChoiceSelection(const wxChoice* choice) {
 static std::string NetViewByConnection(const ConnectionParams* cp) {
   bool is_server = IsAddressListener(cp->NetworkAddress.ToStdString());
   if (IsAddressMultiCast(cp->NetworkAddress))
-    return is_server ? kMulticastServer : kMulticastClient;
+    return cp->direction == PortDirection::kOutput ? kMulticastClient
+                                                   : kMulticastServer;
   switch (cp->NetProtocol) {
     case NetworkProtocol::GPSD:
       return kGpsdDevice;
@@ -554,7 +555,7 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
     if (net_addr_w_help->GetValue().empty()) net_addr_w_help->RestoreHelp();
     m_net_addr_text->SetLabel(_("Multicast group"));
     if (net_port_w_help->IsPristine())
-      net_port_w_help->SetHelp("Port number, usually 49152 - 65535");
+      net_port_w_help->SetHelp(_("Port number, usually 49152 - 65535"));
     if (net_addr_w_help->IsPristine())
       net_addr_w_help->SetHelp(kAddressMcastHelp);
     if (view == kMulticastClient) {
