@@ -2963,7 +2963,6 @@ PluginPanel::PluginPanel(wxPanel* parent, wxWindowID id, const wxPoint& pos,
     m_pVersion = new wxStaticText(this, wxID_ANY, "X.YY.ZZ.AA");
     itemBoxSizer03->Add(m_pVersion, 0, /*wxEXPAND|*/ wxALL, 10);
     if (m_plugin.m_status == PluginStatus::ManagedInstallAvailable ||
-        m_plugin.m_status == PluginStatus::System ||
         (m_plugin.m_status == PluginStatus::Unmanaged &&
          !m_plugin.m_managed_metadata.is_orphan)) {
       m_pVersion->Hide();
