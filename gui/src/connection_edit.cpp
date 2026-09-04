@@ -89,7 +89,7 @@ static const std::string kUdpOutput = _("UDP send");
 static const std::string kGpsdDevice = _("Gpsd server");
 static const std::string kSignalkDevice = _("SignalK server");
 static const std::string kTcpClient = _("TCP client");
-static const std::string kUdpSend = _("Devices receiving UDP");
+static const std::string kUdpSend = _("Device(s) receiving UDP");
 static const std::string kGpsdClient = _("Gpsd client");
 static const std::string kSignalkClient = _("SignalK client");
 static const std::string kTcpServer = _("TCP Server");
@@ -157,7 +157,7 @@ static std::string GetChoiceSelection(const wxChoice* choice) {
 static std::string NetViewByConnection(const ConnectionParams* cp) {
   bool is_server = IsAddressListener(cp->NetworkAddress.ToStdString());
   if (IsAddressMultiCast(cp->NetworkAddress))
-    return is_server ? kMulticastServer : kMulticastClient;
+    return cp->IOSelect == DS_TYPE_OUTPUT ? kMulticastClient : kMulticastServer;
   switch (cp->NetProtocol) {
     case NetworkProtocol::GPSD:
       return kGpsdDevice;
@@ -284,6 +284,17 @@ bool CheckAddress(wxWindow* parent, TextCtrlWithHelp& ctrl) {
   // Checking the address requires using gethostbyname() or so since it
   // could be a hostname. Not worthwhile in this context.
   return true;
+}
+
+bool CheckIoDirections(wxWindow* parent, const wxCheckBox* input,
+                       const wxCheckBox* output) {
+  if (input->GetValue() || output->GetValue()) return true;
+
+  auto dlg =
+      wxMessageDialog(parent, _("Either input or output must be checked"),
+                      _("OpenCPN error"), wxOK | wxICON_ERROR);
+  dlg.ShowModal();
+  return false;
 }
 
 /** Initiate the nmea protocol 0183/2000 choide */
@@ -445,6 +456,8 @@ void ConnectionEditDialog::InitiateNewConnection() {
   auto addr_ctrl = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tctrl);
   if (addr_ctrl) addr_ctrl->SetHelp(kAddressDefaultHelp);
   SetupProtocolChoice(m_net_data_protocol_choice);
+  m_output_chkbox->SetValue(false);
+  m_input_chkbox->SetValue(true);
 }
 
 void ConnectionEditDialog::OnConnectionTypeChange() {
@@ -474,11 +487,17 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
   auto port = m_net_port_tctrl->GetValue();
   if (port == kDefaultGpsdPort || port == kDefaultSignalkPort || port.empty())
     net_port_w_help->RestoreHelp();
+  if (m_net_view_choice->GetCount() != 2)
+    SetupProtocolChoice(m_net_data_protocol_choice);
   if (view == kTcpDevice || view == kTcpClient) {
-    m_input_chkbox->SetValue(true);
-    m_output_chkbox->SetValue(false);
     m_net_addr_text->Show();
     m_net_address_tctrl->Show();
+    if (m_net_address_tctrl->GetValue() == "0.0.0.0")
+      net_addr_w_help->RestoreHelp();
+    if (net_addr_w_help->IsPristine())
+      net_addr_w_help->SetHelp(kAddressDefaultHelp);
+    if (net_port_w_help->IsPristine())
+      net_port_w_help->SetHelp(_("Port number (1025 - 65535, often 10110)"));
     m_input_chkbox->Enable();
     m_output_chkbox->Enable();
   } else if (view == kUdpReceive || view == kUdpInput) {
@@ -486,74 +505,68 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
     m_net_address_tctrl->ChangeValue("0.0.0.0");
     m_net_address_tctrl->Disable();
     m_net_address_tctrl->Hide();
+    if (net_addr_w_help->IsPristine())
+      net_addr_w_help->SetHelp(kAddressDefaultHelp);
+    if (net_port_w_help->IsPristine())
+      net_port_w_help->SetHelp(_("Port number (1025 - 65535, often 10110)"));
     m_input_chkbox->SetValue(true);
     m_output_chkbox->SetValue(false);
+  } else if (view == kUdpSend || view == kUdpOutput) {
+    if (m_net_address_tctrl->GetValue() == "0.0.0.0")
+      net_addr_w_help->RestoreHelp();
+    if (net_addr_w_help->IsPristine())
+      net_addr_w_help->SetHelp(kAddressUdpHelp);
+    m_input_chkbox->SetValue(false);
+    m_output_chkbox->SetValue(true);
   } else if (view == kGpsdClient || view == kGpsdDevice) {
     m_net_data_protocol_choice->Clear();
     m_net_data_protocol_choice->Append("gpsd");
     m_net_data_protocol_choice->SetSelection(0);
     m_net_data_protocol_choice->Disable();
-    m_output_chkbox->SetValue(false);
-    m_input_chkbox->SetValue(true);
+    if (m_net_address_tctrl->GetValue() == "0.0.0.0")
+      net_addr_w_help->RestoreHelp();
+    if (net_addr_w_help->IsPristine())
+      net_addr_w_help->SetHelp(kAddressDefaultHelp);
     if (net_port_w_help->IsPristine())
       net_port_w_help->ChangeValue(kDefaultGpsdPort);
+    m_output_chkbox->SetValue(false);
+    m_input_chkbox->SetValue(true);
   } else if (view == kSignalkClient || view == kSignalkDevice) {
     m_net_data_protocol_choice->Clear();
     m_net_data_protocol_choice->Append("SignalK");
     m_net_data_protocol_choice->SetSelection(0);
     m_net_data_protocol_choice->Disable();
-    m_input_chkbox->SetValue(true);
-    m_output_chkbox->SetValue(false);
+    if (m_net_address_tctrl->GetValue() == "0.0.0.0")
+      net_addr_w_help->RestoreHelp();
+    if (net_addr_w_help->IsPristine())
+      net_addr_w_help->SetHelp(kAddressDefaultHelp);
     if (net_port_w_help->IsPristine())
       net_port_w_help->ChangeValue(kDefaultSignalkPort);
+    m_input_chkbox->SetValue(true);
+    m_output_chkbox->SetValue(false);
   } else if (view == kTcpServer) {
     m_net_addr_text->SetLabel(_("Interface"));
     m_net_address_tctrl->ChangeValue("0.0.0.0");
     m_net_address_tctrl->Disable();
-    m_input_chkbox->SetValue(true);
     m_output_chkbox->Enable();
     m_input_chkbox->Enable();
   } else if (view == kMulticastClient || view == kMulticastServer) {
-    if (m_net_view_choice->GetCount() != 2)
-      SetupProtocolChoice(m_net_data_protocol_choice);
     if (net_addr_w_help->GetValue().empty()) net_addr_w_help->RestoreHelp();
     m_net_addr_text->SetLabel(_("Multicast group"));
     if (net_port_w_help->IsPristine())
-      net_port_w_help->SetHelp("Port number, usually 49152..65535");
-  }
-
-  if (view == kMulticastClient || view == kUdpSend || view == kUdpOutput) {
-    m_input_chkbox->SetValue(false);
-    m_output_chkbox->SetValue(true);
-  } else if (view == kMulticastServer) {
-    m_input_chkbox->SetValue(true);
-    m_output_chkbox->SetValue(false);
-    m_output_chkbox->Enable();
-    m_input_chkbox->Disable();
-  }
-
-  if (view == kTcpClient || view == kTcpDevice || view == kUdpInput ||
-      view == kUdpReceive) {
-    if (net_port_w_help->IsPristine())
-      net_port_w_help->SetHelp(_("Port number (1025..65535, often 10110)"));
-  }
-  if (view != kGpsdClient && view != kGpsdDevice && view != kSignalkClient &&
-      view != kSignalkDevice) {
-    if (m_net_view_choice->GetCount() != 2)
-      SetupProtocolChoice(m_net_data_protocol_choice);
-  }
-  if (view != kTcpServer && view != kUdpReceive && view != kUdpInput &&
-      view != kMulticastServer) {
-    if (m_net_address_tctrl->GetValue() == "0.0.0.0")
-      net_addr_w_help->RestoreHelp();
-  }
-  if (net_addr_w_help->IsPristine()) {
-    if (view == kUdpSend)
-      net_addr_w_help->SetHelp(kAddressUdpHelp);
-    else if (view == kMulticastClient || view == kMulticastServer)
+      net_port_w_help->SetHelp("Port number, usually 49152 - 65535");
+    if (net_addr_w_help->IsPristine())
       net_addr_w_help->SetHelp(kAddressMcastHelp);
-    else
-      net_addr_w_help->SetHelp(kAddressDefaultHelp);
+    if (view == kMulticastClient) {
+      m_input_chkbox->SetValue(false);
+      m_output_chkbox->SetValue(true);
+    } else {
+      m_input_chkbox->SetValue(true);
+      m_output_chkbox->Enable();
+    }
+  } else {
+    wxLogError("Illegal view: %s", view.c_str());
+    assert(false && "Illegal view");
   }
   RefreshAdvancedDetails();
 }
@@ -1112,6 +1125,7 @@ void ConnectionEditDialog::OnOKClick() {
     auto net_port = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tctrl);
     if (net_port) ok = ok && CheckPort(this, *net_port);
   }
+  ok = ok && CheckIoDirections(this, m_output_chkbox, m_input_chkbox);
   if (ok) m_on_edit_click(m_cp_original, m_new_mode, true);
 }
 
@@ -1138,7 +1152,7 @@ void ConnectionEditDialog::SetSelectedConnectionPanel(
     m_remove_btn->Enable();
     m_remove_btn->Show();
     m_add_btn->Disable();
-    m_conn_edit_statbox->SetLabel(_("Edit Selected Connection"));
+    m_conn_edit_statbox->SetLabel(_("Edit Connection"));
 
   } else {
     m_selected_conn_params = nullptr;
