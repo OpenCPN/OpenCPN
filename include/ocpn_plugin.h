@@ -72,7 +72,7 @@
 //    PlugIns conforming to API Version less than the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR 1
-#define API_VERSION_MINOR 21
+#define API_VERSION_MINOR 22
 
 //  Using the correct #include <wx/glcanvas.h> causes compilation errors
 //  on windows, probably errors in bundled and partly modified GL headers.
@@ -7243,7 +7243,7 @@ public:
 extern DECL_EXP std::unique_ptr<HostApi> GetHostApi();
 
 /**
- *  Locked down interface published in 5.14.1.
+ *  Locked down interface published in 5.14.0.
  *  Usage something like:
  *
  *       std::shared_ptr<HostApi> host_api = std::move(GetHostApi());
@@ -7391,7 +7391,7 @@ public:
 
 class Api122Impl;  // forward
 
-/** Unstable development API */
+/*  Locked down interface published in 5.14.1. */
 class HostApi122 : public HostApi121 {
 public:
   HostApi122(Api122Impl *support) : m_api_impl(support) {}
@@ -7447,4 +7447,9 @@ public:
       const std::string &, std::function<void(HostApi122::EventType what)>) = 0;
 };
 
+/** Unstable development API */
+class HostApi123 : public HostApi122 {
+public:
+  HostApi123(Api122Impl *support) : HostApi122(support) {}
+};
 #endif  //_PLUGIN_H_
