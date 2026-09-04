@@ -5269,32 +5269,6 @@ void MyFrame::OnMemFootTimer(wxTimerEvent &event) {
 
 int ut_index;
 
-void MyFrame::CheckToolbarPosition() {
-#ifdef __WXMAC__
-  // Manage Full Screen mode on Mac Mojave 10.14
-  static bool bMaximized;
-
-  if (IsMaximized() && !bMaximized) {
-    bMaximized = true;
-    if (g_MainToolbar) {
-      g_MainToolbar->SetYAuxOffset(g_MainToolbar->GetToolSize().y * 15 / 10);
-      g_MainToolbar->SetDefaultPosition();
-      g_MainToolbar->Realize();
-    }
-    PositionIENCToolbar();
-  } else if (!IsMaximized() && bMaximized) {
-    bMaximized = false;
-    if (g_MainToolbar) {
-      g_MainToolbar->SetYAuxOffset(0);
-      g_MainToolbar->SetDockY(-1);
-      g_MainToolbar->SetDefaultPosition();
-      g_MainToolbar->Realize();
-    }
-    PositionIENCToolbar();
-  }
-#endif
-}
-
 void MyFrame::ProcessUnitTest() {
   if (!g_bPauseTest && (g_unit_test_1 || g_unit_test_2)) {
     //            if((0 == ut_index) && GetQuiltMode())
@@ -5620,8 +5594,6 @@ void MyFrame::ProcessLogAndBells() {
 }
 
 void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
-  CheckToolbarPosition();
-
   ProcessUnitTest();
   g_tick++;
   if (ProcessQuitFlag()) return;
