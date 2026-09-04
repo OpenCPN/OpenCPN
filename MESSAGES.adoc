@@ -1,2 +1,0 @@
-This file is replaced by manual contents at
-https://opencpn-manuals.github.io/main/opencpn-dev/plugin-messaging.html

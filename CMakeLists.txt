@@ -2018,7 +2018,6 @@ if (NOT APPLE)
   endif ()
   if (LINUX)
     install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-    install(FILES LINUX_DEVICES.md DESTINATION ${PREFIX_DATA}/${PACKAGE_NAME})
   endif ()
 
   install(
@@ -2645,6 +2644,13 @@ if (APPLE)
 
   set(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   set(DIRS "/usr/local/lib")
+  # Homebrew on arm64 lives in /opt/homebrew, and its newer bottles use
+  # @rpath install names (e. g. libwebp's libsharpyuv). fixup_bundle
+  # resolves such items by searching DIRS, so the Homebrew lib directory
+  # must be listed or the install fails with "cannot resolve item".
+  if (EXISTS "/opt/homebrew/lib")
+    list(APPEND DIRS "/opt/homebrew/lib")
+  endif ()
 
   # INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/Plugins")
   install(
