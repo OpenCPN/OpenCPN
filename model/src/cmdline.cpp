@@ -32,5 +32,6 @@ bool g_parse_all_enc = false;
 bool g_bportable = false;
 bool g_bdisable_opengl = false;
 bool g_config_wizard = false;
+bool g_segment_safety_test = false;
 std::string g_configdir;
 std::vector<std::string> g_params;

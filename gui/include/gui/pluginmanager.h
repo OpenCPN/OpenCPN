@@ -61,6 +61,7 @@
 #include "chartimg.h"
 #include "ocpndc.h"
 #include "ocpn_plugin.h"
+#include "ocpn_plugin_chart_safety.h"
 #include "s57chart.h"  // for Object list
 #include "top_frame.h"
 
@@ -266,6 +267,11 @@ public:
                                                 float zlat, float zlon,
                                                 float SelectRadius,
                                                 const ViewPort& vp);
+  int QueryPlugInChartSafetyGrid(
+      ChartPlugInWrapper* target,
+      const OCPN_PluginChartSafetyGridRequestV1& request,
+      OCPN_PluginChartSafetyGridResultV1* result, const ViewPort& vp);
+  bool HasPlugInChartSafetyGrid() const;
   wxString CreateObjDescriptions(ChartPlugInWrapper* target,
                                  ListOfPI_S57Obj* rule_list);
 

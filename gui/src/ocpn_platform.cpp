@@ -630,16 +630,39 @@ bool OCPNPlatform::BuildGLCaps(void *pbuf) {
 #else
   std::string gl_util_exe = "opencpn-glutil.exe";
 #endif
-  fs::path gl_util_path = ep.parent_path().append(gl_util_exe);
+  std::vector<fs::path> gl_util_candidates;
 
-  if (!fs::exists(gl_util_path)) {
-    gl_util_path =
-        ep.parent_path().parent_path().append("libexec").append(gl_util_exe);
+  auto add_glutil_candidates = [&](const fs::path &base) {
+    if (base.empty()) return;
+    gl_util_candidates.push_back(base / gl_util_exe);
+    gl_util_candidates.push_back(base / "glutil" / gl_util_exe);
+    gl_util_candidates.push_back(base.parent_path() / "libexec" / gl_util_exe);
+    gl_util_candidates.push_back(base.parent_path() / "build" / "glutil" /
+                                 gl_util_exe);
+  };
+
+  add_glutil_candidates(ep.parent_path());
+  add_glutil_candidates(
+      fs::path(wxStandardPaths::Get().GetExecutablePath().ToStdString())
+          .parent_path());
+
+  fs::path gl_util_path;
+  for (const auto &candidate : gl_util_candidates) {
+    if (fs::exists(candidate)) {
+      gl_util_path = candidate;
+      break;
+    }
   }
-  if (!fs::exists(gl_util_path)) {
+
+  if (gl_util_path.empty()) {
     // TODO: What to do if the utility is not found (Which it is not for
     // developer builds that are not installed)?
-    wxLogMessage("OpenGL test utility not found at %s.", gl_util_path.c_str());
+    wxString paths_tried;
+    for (const auto &candidate : gl_util_candidates) {
+      if (!paths_tried.empty()) paths_tried += ", ";
+      paths_tried += wxString(candidate.string());
+    }
+    wxLogMessage("OpenGL test utility not found. Tried: %s", paths_tried);
     return false;
   }
 

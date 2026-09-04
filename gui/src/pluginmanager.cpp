@@ -4344,6 +4344,62 @@ ListOfPI_S57Obj* PlugInManager::GetPlugInObjRuleListAtLatLon(
     return list;
 }
 
+int PlugInManager::QueryPlugInChartSafetyGrid(
+    ChartPlugInWrapper* target,
+    const OCPN_PluginChartSafetyGridRequestV1& request,
+    OCPN_PluginChartSafetyGridResultV1* result, const ViewPort& vp) {
+  if (!target || !target->GetPlugInChart() || !result) return 0;
+
+  wxClassInfo* class_info = target->GetPlugInChart()->GetClassInfo();
+  if (!class_info) return 0;
+  const wxString chart_class_name = class_info->GetClassName();
+
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); ++i) {
+    PlugInContainer* pic = plugin_array->Item(i);
+    if (!pic || !pic->m_enabled || !pic->m_init_state) continue;
+    const wxArrayString classes =
+        pic->m_pplugin->GetDynamicChartClassNameArray();
+    bool provides_chart = false;
+    for (unsigned int j = 0; j < classes.GetCount(); ++j) {
+      if (classes[j].IsSameAs(chart_class_name)) {
+        provides_chart = true;
+        break;
+      }
+    }
+    if (!provides_chart) continue;
+
+    {
+      wxLogNull suppress_missing_optional_symbol;
+      if (!pic->m_library.HasSymbol(
+              OCPN_PLUGIN_CHART_SAFETY_GRID_SYMBOL_V1))
+        return 0;
+    }
+    OCPN_PluginChartSafetyGridFnV1 fn =
+        reinterpret_cast<OCPN_PluginChartSafetyGridFnV1>(
+            pic->m_library.GetSymbol(OCPN_PLUGIN_CHART_SAFETY_GRID_SYMBOL_V1));
+    if (!fn) return 0;
+
+    OCPN_PluginChartSafetyGridRequestV1 provider_request = request;
+    PlugIn_ViewPort pi_vp = CreatePlugInViewport(vp);
+    provider_request.plugin_viewport = &pi_vp;
+    return fn(target->GetPlugInChart(), &provider_request, result);
+  }
+  return 0;
+}
+
+bool PlugInManager::HasPlugInChartSafetyGrid() const {
+  wxLogNull suppress_missing_optional_symbols;
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); ++i) {
+    PlugInContainer* pic = plugin_array->Item(i);
+    if (pic && pic->m_enabled && pic->m_init_state &&
+        pic->m_library.HasSymbol(OCPN_PLUGIN_CHART_SAFETY_GRID_SYMBOL_V1))
+      return true;
+  }
+  return false;
+}
+
 wxString PlugInManager::CreateObjDescriptions(ChartPlugInWrapper* target,
                                               ListOfPI_S57Obj* rule_list) {
   wxString ret_str;
