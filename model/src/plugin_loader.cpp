@@ -206,6 +206,7 @@ void PluginLoader::MarkAsLoadable(const std::string& library_path) {
 std::string PluginLoader::GetPluginVersion(
     const PlugInData pd,
     std::function<const PluginMetadata(const std::string&)> get_metadata) {
+  if (IsSystemPluginName(pd.m_common_name.ToStdString())) return VERSION_FULL;
   auto loader = PluginLoader::GetInstance();
   auto pic = GetContainer(pd, *loader->GetPlugInArray());
   if (!pic) {
