@@ -26,20 +26,18 @@
 #include <fstream>
 #include <sstream>
 
+#include <wx/button.h>
 #include <wx/dialog.h>
 #include <wx/filename.h>
 #include <wx/sizer.h>
+#include <wx/timer.h>
+#include <wx/html/htmlwin.h>
 
-#include "model/cmdline.h"
-#include "model/ocpn_utils.h"
+#include "std_filesystem.h"
+
 #include "model/safe_mode.h"
 
-#include "dialog_alert.h"
-#include "gui_lib.h"
-
-namespace safe_mode {
-
-static const char* kLastRunErrorMsg =
+static const char* const kLastRunErrorMsg =
     // clang-format off
   _(R"( <p>The last opencpn run seems to have failed. Do <br/>
         you want to run in safe mode without plugins and <br/>
@@ -49,31 +47,94 @@ static const char* kLastRunErrorMsg =
         <a href="http://repo.opencpn.org/known-issues-5.16.html">
         list of known issues</a>.</p>)");  // clang-format on
 
+namespace safe_mode {
+
+class HtmlWindow : public wxHtmlWindow {
+public:
+  HtmlWindow(wxWindow* parent) : wxHtmlWindow(parent, wxID_ANY) {
+    std::stringstream html;
+    html << "<html><body>" << kLastRunErrorMsg << "</body></html>";
+    SetPage(html.str());
+    Layout();
+  }
+};
+
+class ButtonSizer : public wxStdDialogButtonSizer {
+public:
+  ButtonSizer(wxWindow* parent) : wxStdDialogButtonSizer() {
+    auto ok_btn = new wxButton(parent, wxID_OK);
+    ok_btn->SetLabel(_("Safe restart"));
+    SetAffirmativeButton(ok_btn);
+    auto cancel_btn = new wxButton(parent, wxID_CANCEL);
+    cancel_btn->SetLabel(_("Normal start"));
+    SetCancelButton(cancel_btn);
+    Realize();
+  }
+};
+
+/** Close a modal dialog when timeout is reached. */
+class EndModalTimer : public wxTimer {
+public:
+  /**
+   * Create a timer closing a modal dialog using EndModal() on timeout.
+   * @param dialog Client dialog to be closed
+   * @param seconds Timeout (seconds)
+   * @exit_value Used as argument to EndModal(exit_value) when closing dialog.
+   */
+  EndModalTimer(wxDialog* dialog, unsigned seconds, int exit_value)
+      : wxTimer(dialog), m_dialog(dialog), m_exit_value(exit_value) {
+    StartOnce(seconds * 1000);
+  }
+
+  void Notify() override { m_dialog->EndModal(m_exit_value); }
+
+private:
+  wxDialog* const m_dialog;
+  const int m_exit_value;
+};
+
+class SafeModeDialog : public wxDialog {
+public:
+  SafeModeDialog(wxWindow* parent, unsigned timeout)
+      : wxDialog(parent, wxID_ANY, _("Safe Restart")),
+        m_timer(new EndModalTimer(this, 15, wxID_CANCEL)) {
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    vbox->Add(new HtmlWindow(this), wxSizerFlags(1).Expand());
+    vbox->Add(new ButtonSizer(this), wxSizerFlags().Expand().Border());
+    SetSizer(vbox);
+    Layout();
+    Show();
+
+    Bind(wxEVT_CHAR_HOOK, [&](wxKeyEvent& ev) { OnKeyPressed(ev); });
+  }
+
+  void StopTimer() { m_timer->Stop(); }
+
+private:
+  wxTimer* m_timer;
+
+  void OnKeyPressed(wxKeyEvent& ev) {
+    if (ev.GetKeyCode() == WXK_RETURN) EndModal(wxID_CANCEL);
+    ev.DoAllowNextEvent();
+    ev.Skip();
+  };
+};
+
 /**
  * Check if the last start failed, possibly invoke user dialog and set
  * global safe mode state.
  */
 void CheckLastStart() {
   std::string path = CheckFilePath();
-  if (!ocpn::exists(path)) {
+  if (fs::exists(path)) {
+    auto dlg = new SafeModeDialog(nullptr, 15);
+    int result = dlg->ShowModal();
+    dlg->StopTimer();
+    safe_mode = result != wxID_CANCEL;
+  } else {
     std::ofstream dest(path, std::ios::binary);
     dest << "Internal opencpn use\n";
-    return;
   }
-  std::string title = _("Safe Restart").ToStdString();
-  std::string action = _("Safe mode start").ToStdString();
-  AlertDialog dlg(0, title, action);
-  dlg.SetCancelLabel(_("Normal start").ToStdString());
-  dlg.SetDefaultButton(wxID_CANCEL);
-  dlg.SetInitialSize();
-  dlg.SetTimer(15);
-
-  std::stringstream html;
-  html << "<html><body>" << kLastRunErrorMsg << "</body></html>";
-  dlg.AddHtmlContent(html);
-
-  int reply = dlg.ShowModal();
-  safe_mode = reply == wxID_OK;
 }
 
 }  // namespace safe_mode
