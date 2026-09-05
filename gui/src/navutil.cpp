@@ -244,6 +244,8 @@ int MyConfig::LoadMyConfig() {
   g_navobjbackups = 5;
   g_benableAISNameCache = true;
   g_n_arrival_circle_radius = 0.05;
+  g_n_arrival_circle_minimum = 0.005;
+  g_n_arrival_circle_factor = 0.2;
   g_plus_minus_zoom_factor = 2.0;
   g_mouse_zoom_sensitivity = 1.5;
   g_datetime_format = "UTC";
@@ -360,6 +362,8 @@ int MyConfig::LoadMyConfig() {
     if (g_navobjbackups > 99) g_navobjbackups = 99;
     if (g_navobjbackups < 0) g_navobjbackups = 0;
     g_n_arrival_circle_radius = wxClip(g_n_arrival_circle_radius, 0.001, 0.6);
+    g_n_arrival_circle_minimum = wxClip(g_n_arrival_circle_minimum, 0.001, 0.6);
+    g_n_arrival_circle_factor = wxClip(g_n_arrival_circle_factor, 0.1, 1.0);
 
     g_selection_radius_mm = wxMax(g_selection_radius_mm, 0.5);
     g_selection_radius_touch_mm = wxMax(g_selection_radius_touch_mm, 1.0);
@@ -672,6 +676,8 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   wxString racr;
   Read("RouteArrivalCircleRadius", &racr);
   if (racr.Len()) racr.ToDouble(&g_n_arrival_circle_radius);
+  Read("RouteArrivalCircleMinimum", &g_n_arrival_circle_minimum);
+  Read("RouteArrivalCircleFactor", &g_n_arrival_circle_factor);
 
   Read("FullScreenQuilt", &g_bFullScreenQuilt);
 
@@ -1998,6 +2004,10 @@ void MyConfig::UpdateSettings() {
   //   Write( "RouteArrivalCircleRadius", racr );
   Write("RouteArrivalCircleRadius",
         wxString::Format("%.2f", g_n_arrival_circle_radius));
+  Write("RouteArrivalCircleFactor",
+        wxString::Format("%.2f", g_n_arrival_circle_factor));
+  Write("RouteArrivalCircleMinimum",
+        wxString::Format("%.3f", g_n_arrival_circle_minimum));
 
   Write("ChartQuilting", g_bQuiltEnable);
 

@@ -140,6 +140,8 @@ extern double g_defaultBoatSpeed;
 extern double g_display_size_mm;  ///< Physical display width (mm)
 extern double g_mouse_zoom_sensitivity;
 extern double g_n_arrival_circle_radius;
+extern double g_n_arrival_circle_minimum;
+extern double g_n_arrival_circle_factor;
 extern double g_n_gps_antenna_offset_x;
 extern double g_n_gps_antenna_offset_y;
 extern double g_n_ownship_beam_meters;
