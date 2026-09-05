@@ -1655,8 +1655,8 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
     m_output_chkbox->SetValue(false);
     m_output_chkbox->Disable();
   } else {
-    m_input_chkbox->SetValue(cp->IOSelect != DS_TYPE_OUTPUT);
-    m_output_chkbox->SetValue(cp->IOSelect != DS_TYPE_INPUT);
+    m_input_chkbox->SetValue(cp->direction != PortDirection::kOutput);
+    m_output_chkbox->SetValue(cp->direction != PortDirection::kInput);
   }
 
   if (cp->InputSentenceListType == WHITELIST)
@@ -1890,7 +1890,7 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
       for (auto* cp : TheConnectionParams()) {
         if (cp->NetProtocol == proto &&
             cp->NetworkPort == wxAtoi(m_net_port_tctrl->GetValue()) &&
-            cp->IOSelect == DS_TYPE_INPUT) {
+            cp->direction == PortDirection::kInput) {
           wxString mes;
           bool warn = false;
           if (cp->bEnabled) {
@@ -2066,12 +2066,12 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     pConnectionParams->InputSentenceListType = BLACKLIST;
   if (m_input_chkbox->GetValue()) {
     if (m_output_chkbox->GetValue()) {
-      pConnectionParams->IOSelect = DS_TYPE_INPUT_OUTPUT;
+      pConnectionParams->direction = PortDirection::kInOut;
     } else {
-      pConnectionParams->IOSelect = DS_TYPE_INPUT;
+      pConnectionParams->direction = PortDirection::kInput;
     }
   } else
-    pConnectionParams->IOSelect = DS_TYPE_OUTPUT;
+    pConnectionParams->direction = PortDirection::kOutput;
 
   pConnectionParams->OutputSentenceList =
       wxStringTokenize(m_output_stc_tctrl->GetValue(), ",");

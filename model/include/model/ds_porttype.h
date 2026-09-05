@@ -26,10 +26,10 @@
 
 #include <string>
 
-//      Port I/O type
-typedef enum { DS_TYPE_INPUT, DS_TYPE_INPUT_OUTPUT, DS_TYPE_OUTPUT } dsPortType;
+// Port I/O direction
+enum class PortDirection { kInput, kInOut, kOutput, kUpload };
 
 /** Return textual representation for use in driver ioDirection attribute. */
-std::string DsPortTypeToString(dsPortType type);
+std::string PortDirectionToString(PortDirection pd);
 
 #endif

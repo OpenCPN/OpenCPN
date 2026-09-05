@@ -100,7 +100,7 @@ public:
   bool GarminUpload;
   bool FurunoGP3X;
   bool AutoSKDiscover;
-  dsPortType IOSelect;
+  PortDirection direction;
   ListType InputSentenceListType;
   wxArrayString InputSentenceList;
   ListType OutputSentenceListType;
@@ -118,7 +118,7 @@ public:
   wxString GetSourceTypeStr() const;
   wxString GetAddressStr() const;
   wxString GetParametersStr() const;
-  wxString GetIOTypeValueStr() const;
+  wxString GetPortDirectionValueStr() const;
   wxString GetFiltersStr() const;
   wxString GetDSPort() const;
   bool GetValidPort() const;

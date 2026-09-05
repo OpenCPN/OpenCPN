@@ -133,7 +133,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
   this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
   this->attributes["netPort"] = std::to_string(params->NetworkPort);
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+  this->attributes["ioDirection"] = PortDirectionToString(params->direction);
   m_driver_stats.driver_bus = NavAddr::Bus::N0183;
   m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
@@ -213,7 +213,7 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
   }
 
   // Set up another socket for transmit
-  if (m_params.IOSelect != DS_TYPE_INPUT) {
+  if (m_params.direction != PortDirection::kInput) {
     wxIPV4address tconn_addr;
     tconn_addr.Service(0);  // use ephemeral out port
     tconn_addr.AnyAddress();
@@ -250,9 +250,9 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
     m_sock = new wxSocketClient();
     m_sock->SetEventHandler(*this, DS_SOCKET_ID);
     int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
-    if (m_params.IOSelect != DS_TYPE_INPUT)
+    if (m_params.direction != PortDirection::kInput)
       notify_flags |= wxSOCKET_OUTPUT_FLAG;
-    if (m_params.IOSelect != DS_TYPE_OUTPUT)
+    if (m_params.direction != PortDirection::kOutput)
       notify_flags |= wxSOCKET_INPUT_FLAG;
     m_sock->SetNotify(notify_flags);
     m_sock->Notify(true);
@@ -439,13 +439,13 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
                     << m_params.GetDSPort();
 
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
-        if (m_params.IOSelect != DS_TYPE_OUTPUT) {
+        if (m_params.direction != PortDirection::kOutput) {
           // start the DATA watchdog only if NODATA Reconnect is desired
           if (GetParams().NoDataReconnect)
             m_socketread_watchdog_timer.Start(1000);
         }
 
-        if (m_params.IOSelect != DS_TYPE_INPUT && GetSock()->IsOk())
+        if (m_params.direction != PortDirection::kInput && GetSock()->IsOk())
           (void)SetOutputSocketOptions(m_sock);
         m_socket_timer.Stop();
         m_rx_connect_event = true;
@@ -471,11 +471,11 @@ void CommDriverN0183Net::OnServerSocketEvent(wxSocketEvent& event) {
         //        GetSock()->SetFlags(wxSOCKET_BLOCK);
         m_sock->SetEventHandler(*this, DS_SOCKET_ID);
         int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
-        if (m_params.IOSelect != DS_TYPE_INPUT) {
+        if (m_params.direction != PortDirection::kInput) {
           notify_flags |= wxSOCKET_OUTPUT_FLAG;
           (void)SetOutputSocketOptions(m_sock);
         }
-        if (m_params.IOSelect != DS_TYPE_OUTPUT)
+        if (m_params.direction != PortDirection::kOutput)
           notify_flags |= wxSOCKET_INPUT_FLAG;
         m_sock->SetNotify(notify_flags);
         m_sock->Notify(true);

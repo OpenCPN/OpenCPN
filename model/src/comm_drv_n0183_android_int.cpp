@@ -131,7 +131,7 @@ CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(
       m_listener(listener) {
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+  this->attributes["ioDirection"] = PortDirectionToString(params->direction);
   m_driver_stats.driver_bus = NavAddr::Bus::N0183;
   m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
