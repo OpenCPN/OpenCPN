@@ -134,7 +134,7 @@ bool CreateOutputConnection(const wxString& com_name,
     cp.SetPortStr(comx);
     cp.Baudrate = baud;
     cp.Garmin = bGarminIn || bGarmin;
-    cp.direction = PortDirection::kOutput;
+    cp.direction = PortDirection::kUpload;
 
     MakeCommDriver(&cp);
     btempStream = true;
