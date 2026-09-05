@@ -71,8 +71,8 @@ void BroadcastNMEA0183Message(const wxString& msg, NmeaLog* nmea_log,
       assert(drv_n0183);
       ConnectionParams params = drv_n0183->GetParams();
 
-      if (params.IOSelect == DS_TYPE_INPUT_OUTPUT ||
-          params.IOSelect == DS_TYPE_OUTPUT) {
+      if (params.direction == PortDirection::kInOut ||
+          params.direction == PortDirection::kOutput) {
         std::string id = msg.ToStdString().substr(1, 5);
         auto source_addr =
             std::make_shared<NavAddr>(NavAddr0183(params.GetStrippedDSPort()));
@@ -134,7 +134,7 @@ bool CreateOutputConnection(const wxString& com_name,
     cp.SetPortStr(comx);
     cp.Baudrate = baud;
     cp.Garmin = bGarminIn || bGarmin;
-    cp.IOSelect = DS_TYPE_OUTPUT;
+    cp.direction = PortDirection::kOutput;
 
     MakeCommDriver(&cp);
     btempStream = true;
@@ -207,7 +207,7 @@ bool CreateOutputConnection(const wxString& com_name,
       cp.NetProtocol = protocol;
       cp.NetworkAddress = address;
       cp.NetworkPort = port;
-      cp.IOSelect = DS_TYPE_OUTPUT;  // DS_TYPE_INPUT_OUTPUT;
+      cp.direction = PortDirection::kOutput;
 
       MakeCommDriver(&cp);
       auto& me =

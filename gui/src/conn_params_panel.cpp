@@ -164,7 +164,7 @@ void ConnectionParamsPanel::CreateControls() {
     serialGrid->SetFlexibleDirection(wxHORIZONTAL);
     parmSizer->Add(serialGrid, 0, wxALIGN_LEFT);
 
-    wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+    wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
     wxStaticText *t1 = new wxStaticText(this, wxID_ANY, _("Type"));
     serialGrid->Add(t1, 0, wxALIGN_CENTER_HORIZONTAL);
@@ -252,7 +252,7 @@ void ConnectionParamsPanel::CreateControls() {
   }
 
   else if (m_pConnectionParams->Type == NETWORK) {
-    wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+    wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
     wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     netGrid->SetFlexibleDirection(wxHORIZONTAL);
@@ -382,7 +382,7 @@ void ConnectionParamsPanel::CreateControls() {
   }
 
   else if (m_pConnectionParams->Type == INTERNAL_GPS) {
-    wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+    wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
     wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     netGrid->SetFlexibleDirection(wxHORIZONTAL);
@@ -485,7 +485,7 @@ void ConnectionParamsPanel::CreateControls() {
                  this);
 
   } else if (m_pConnectionParams->Type == INTERNAL_BT) {
-    wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+    wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
     wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     netGrid->SetFlexibleDirection(wxHORIZONTAL);
@@ -692,7 +692,7 @@ void ConnectionParamsPanel::CreateControls() {
 void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
   m_pConnectionParams = ConnectionParams;
 
-  wxString ioDir = m_pConnectionParams->GetIOTypeValueStr();
+  wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
   if (m_pConnectionParams->Type == SERIAL) {
     wxString baudRate;

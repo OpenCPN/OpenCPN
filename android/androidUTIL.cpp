@@ -3705,7 +3705,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
       if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
 
       if (cp->bEnabled) {
-        dsPortType port_type = cp->IOSelect;
+        PortDirection direction  = cp->direction;
         DataStream *dstr =
             makeSerialDataStream(g_pMUX, cp->Type, cp->GetDSPort(),
                                  wxString::Format(wxT("%i"), cp->Baudrate),
@@ -3815,7 +3815,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
             if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
 
             if (cp->bEnabled) {
-              dsPortType port_type = cp->IOSelect;
+              PortDirection direction = cp->direction;
 #if 0
                             DataStream *dstr = new DataStream( g_pMUX,
                                                                cp->Type,

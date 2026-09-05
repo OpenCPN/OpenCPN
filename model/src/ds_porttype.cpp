@@ -25,18 +25,14 @@
 
 #include "model/ds_porttype.h"
 
-std::string DsPortTypeToString(dsPortType type) {
-  switch (type) {
-    case DS_TYPE_INPUT_OUTPUT:
-      return "IN/OUT";
-      break;
-    case DS_TYPE_OUTPUT:
-      return "OUT";
-      break;
-    case DS_TYPE_INPUT:
-      return "IN";
-      break;
-  };
-  assert(false && "Compiler error (undefined dsPortType)");
-  return "";  // for the compiler
+#include <unordered_map>
+
+std::string PortDirectionToString(PortDirection pd) {
+  static const std::unordered_map<PortDirection, std::string> kNameByDirection =
+      {{PortDirection::kOutput, "OUT"},
+       {PortDirection::kInput, "IN"},
+       {PortDirection::kInOut, "IN/OUT"},
+       {PortDirection::kUpload, "UPLOAD"}};
+  if (static_cast<size_t>(pd) >= kNameByDirection.size()) return "???";
+  return kNameByDirection.at(pd);
 }

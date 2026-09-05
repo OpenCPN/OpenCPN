@@ -75,7 +75,8 @@ void ConnectionParams::Deserialize(const wxString& configStr) {
   Baudrate = wxAtoi(prms[6]);
   ChecksumCheck = wxAtoi(prms[7]);
   int iotval = wxAtoi(prms[8]);
-  IOSelect = ((iotval <= 2) ? static_cast<dsPortType>(iotval) : DS_TYPE_INPUT);
+  direction =
+      iotval <= 2 ? static_cast<PortDirection>(iotval) : PortDirection::kInput;
   InputSentenceListType = (ListType)wxAtoi(prms[9]);
   InputSentenceList = wxStringTokenize(prms[10], ",");
   OutputSentenceListType = (ListType)wxAtoi(prms[11]);
@@ -124,11 +125,11 @@ wxString ConnectionParams::Serialize() const {
   wxString ret = wxString::Format(
       "%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d;%s",
       Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol,
-      Port.c_str(), Baudrate, ChecksumCheck, IOSelect, InputSentenceListType,
-      istcs.c_str(), OutputSentenceListType, ostcs.c_str(), 0 /* Priority */,
-      Garmin, GarminUpload, FurunoGP3X, bEnabled, UserComment.c_str(),
-      AutoSKDiscover, socketCAN_port.c_str(), NoDataReconnect, DisableEcho,
-      AuthToken.c_str());
+      Port.c_str(), Baudrate, ChecksumCheck, static_cast<int>(direction),
+      InputSentenceListType, istcs.c_str(), OutputSentenceListType,
+      ostcs.c_str(), 0 /* Priority */, Garmin, GarminUpload, FurunoGP3X,
+      bEnabled, UserComment.c_str(), AutoSKDiscover, socketCAN_port.c_str(),
+      NoDataReconnect, DisableEcho, AuthToken.c_str());
 
   return ret;
 }
@@ -136,10 +137,10 @@ wxString ConnectionParams::Serialize() const {
 std::string ConnectionParams::GetKey() const {
   std::stringstream ss;
   ss << Type << NetProtocol << NetworkAddress << NetworkPort << Protocol << Port
-     << Baudrate << ChecksumCheck << IOSelect << InputSentenceListType
-     << OutputSentenceListType << Garmin << GarminUpload << FurunoGP3X
-     << UserComment << AutoSKDiscover << socketCAN_port << NoDataReconnect
-     << DisableEcho << AuthToken;
+     << Baudrate << ChecksumCheck << static_cast<int>(direction)
+     << InputSentenceListType << OutputSentenceListType << Garmin
+     << GarminUpload << FurunoGP3X << UserComment << AutoSKDiscover
+     << socketCAN_port << NoDataReconnect << DisableEcho << AuthToken;
   for (const auto& sentence : OutputSentenceList) ss << sentence;
   for (const auto& sentence : InputSentenceList) ss << sentence;
   return ss.str();
@@ -156,7 +157,7 @@ ConnectionParams::ConnectionParams() {
   ChecksumCheck = true;
   Garmin = false;
   FurunoGP3X = false;
-  IOSelect = DS_TYPE_INPUT;
+  direction = PortDirection::kInput;
   InputSentenceListType = WHITELIST;
   OutputSentenceListType = WHITELIST;
   Valid = true;
@@ -233,13 +234,14 @@ wxString ConnectionParams::GetParametersStr() const {
   }
 }
 
-wxString ConnectionParams::GetIOTypeValueStr() const {
-  if (IOSelect == DS_TYPE_INPUT)
-    return _("Input");
-  else if (IOSelect == DS_TYPE_OUTPUT)
-    return _("Output");
-  else
-    return _("In/Out");
+wxString ConnectionParams::GetPortDirectionValueStr() const {
+  static const std::unordered_map<PortDirection, wxString> StringByDirection = {
+      {PortDirection::kInput, _("Input")},
+      {PortDirection::kOutput, _("Output")},
+      {PortDirection::kInOut, _("InOut")},
+      {PortDirection::kUpload, _("Upload")}};
+  if (static_cast<size_t>(direction) >= StringByDirection.size()) return "???";
+  return StringByDirection.at(direction);
 }
 
 wxString ConnectionParams::FilterTypeToStr(ListType type,
