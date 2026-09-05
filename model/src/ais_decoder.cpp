@@ -627,7 +627,7 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
       if (ptd->Class == AIS_CLASS_A) {
         // Will occur if this msg 24 is received before
         // any msg 18/19 for this Class B target
-        if (!ptd->b_isDSCtarget) {
+        if (!ptd->b_isDSCtarget && !ptd->b_SarAircraftPosnReport) {
           if (!isBuoyMmsi(ptd->MMSI))
             ptd->Class = AIS_CLASS_B;
           else
@@ -710,6 +710,7 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
       ptd->altitude = alt_tent;
 
       ptd->b_SarAircraftPosnReport = true;
+      ptd->Class = AIS_CLASS_A;
 
       parse_result = true;
       b_posn_report = true;
