@@ -42,8 +42,8 @@ void UpdateDatastreams() {
 
   for (auto* cp : TheConnectionParams()) {
     // Connection already setup?
-    if (cp->b_IsSetup) {
-      if (cp->bEnabled) {
+    if (cp->is_setup) {
+      if (cp->is_enabled) {
         enabled_conns.push_back(cp->GetStrippedDSPort());
       }
       continue;
@@ -68,14 +68,14 @@ void UpdateDatastreams() {
 
     // Internal BlueTooth driver stacks commonly need a time delay to purge
     // their buffers, etc. before restating with new parameters...
-    if (cp->Type == INTERNAL_BT) wxSleep(1);
+    if (cp->type == INTERNAL_BT) wxSleep(1);
 
     // Connection has been disabled
-    if (!cp->bEnabled) continue;
+    if (!cp->is_enabled) continue;
 
     // Make any new or re-enabled drivers
     MakeCommDriver(cp);
-    cp->b_IsSetup = TRUE;
+    cp->is_setup = TRUE;
     enabled_conns.push_back(cp->GetStrippedDSPort());
   }
 }

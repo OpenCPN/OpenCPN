@@ -95,7 +95,7 @@ ConnectionParamsPanel::ConnectionParamsPanel(
 }
 
 ConnectionParamsPanel::~ConnectionParamsPanel() {
-  if (m_pConnectionParams) m_pConnectionParams->m_optionsPanel = nullptr;
+  if (m_pConnectionParams) m_pConnectionParams->options_panel = nullptr;
 }
 
 void ConnectionParamsPanel::OnSelected(wxMouseEvent &event) {}
@@ -151,7 +151,7 @@ void ConnectionParamsPanel::CreateControls() {
       wxEVT_COMMAND_CHECKBOX_CLICKED,
       wxCommandEventHandler(ConnectionParamsPanel::OnEnableCBClick), NULL,
       this);
-  m_cbEnable->SetValue(m_pConnectionParams->bEnabled);
+  m_cbEnable->SetValue(m_pConnectionParams->is_enabled);
 
   enableSizer->Add(m_cbEnable, 1, wxLEFT | wxEXPAND, metric);
 
@@ -159,7 +159,7 @@ void ConnectionParamsPanel::CreateControls() {
   wxBoxSizer *parmSizer = new wxBoxSizer(wxVERTICAL);
   panelSizer->Add(parmSizer, 5);
 
-  if (m_pConnectionParams->Type == SERIAL) {
+  if (m_pConnectionParams->type == SERIAL) {
     wxFlexGridSizer *serialGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     serialGrid->SetFlexibleDirection(wxHORIZONTAL);
     parmSizer->Add(serialGrid, 0, wxALIGN_LEFT);
@@ -213,7 +213,7 @@ void ConnectionParamsPanel::CreateControls() {
     serialGrid->Add(t6, 0, wxALIGN_CENTER_HORIZONTAL);
 
     wxString proto;
-    switch (m_pConnectionParams->Protocol) {
+    switch (m_pConnectionParams->data_protocol) {
       case PROTO_NMEA0183:
         proto = "NMEA 0183";
         break;
@@ -228,10 +228,10 @@ void ConnectionParamsPanel::CreateControls() {
     t12 = new ConnBoldLabel(this, proto);
     serialGrid->Add(t12, 0, wxALIGN_CENTER_HORIZONTAL);
 
-    t14 = new ConnBoldLabel(this, m_pConnectionParams->Port);
+    t14 = new ConnBoldLabel(this, m_pConnectionParams->serial_port);
     serialGrid->Add(t14, 0, wxALIGN_CENTER_HORIZONTAL);
 
-    auto baudRate = wxString::Format("%d", m_pConnectionParams->Baudrate);
+    auto baudRate = wxString::Format("%d", m_pConnectionParams->baudrate);
     t16 = new ConnBoldLabel(this, baudRate);
     serialGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL);
 
@@ -243,7 +243,7 @@ void ConnectionParamsPanel::CreateControls() {
                   this);
 
     t21 = new wxStaticText(this, wxID_ANY,
-                           _("Comment: ") + m_pConnectionParams->UserComment);
+                           _("Comment: ") + m_pConnectionParams->user_comment);
     parmSizer->Add(t21, 0);
     t21->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -251,7 +251,7 @@ void ConnectionParamsPanel::CreateControls() {
 
   }
 
-  else if (m_pConnectionParams->Type == NETWORK) {
+  else if (m_pConnectionParams->type == NETWORK) {
     wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
     wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
@@ -316,19 +316,19 @@ void ConnectionParamsPanel::CreateControls() {
                 this);
 
     wxString proto;
-    switch (m_pConnectionParams->NetProtocol) {
+    switch (m_pConnectionParams->net_protocol) {
       case UDP:
         proto = "UDP";
-        if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
+        if (m_pConnectionParams->data_protocol == PROTO_NMEA0183)
           proto << " N0183";
-        else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
+        else if (m_pConnectionParams->data_protocol == PROTO_NMEA2000)
           proto << " N2000";
         break;
       case TCP:
         proto = "TCP";
-        if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
+        if (m_pConnectionParams->data_protocol == PROTO_NMEA0183)
           proto << " N0183";
-        else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
+        else if (m_pConnectionParams->data_protocol == PROTO_NMEA2000)
           proto << " N2000";
         break;
       case GPSD:
@@ -349,7 +349,7 @@ void ConnectionParamsPanel::CreateControls() {
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-    wxString address = m_pConnectionParams->NetworkAddress;
+    wxString address = m_pConnectionParams->network_address;
     t14 = new wxStaticText(this, wxID_ANY, address);
     t14->SetFont(*bFont);
     netGrid->Add(t14, 0, wxALIGN_CENTER_HORIZONTAL);
@@ -358,7 +358,7 @@ void ConnectionParamsPanel::CreateControls() {
                  this);
 
     wxString port;
-    port.Printf("%d", m_pConnectionParams->NetworkPort);
+    port.Printf("%d", m_pConnectionParams->network_port);
     t16 = new wxStaticText(this, wxID_ANY, port);
     t16->SetFont(*bFont);
     netGrid->Add(t16, 0, wxALIGN_CENTER_HORIZONTAL);
@@ -374,14 +374,14 @@ void ConnectionParamsPanel::CreateControls() {
                   this);
 
     t21 = new wxStaticText(this, wxID_ANY,
-                           _("Comment: ") + m_pConnectionParams->UserComment);
+                           _("Comment: ") + m_pConnectionParams->user_comment);
     parmSizer->Add(t21, 0);
     t21->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
   }
 
-  else if (m_pConnectionParams->Type == INTERNAL_GPS) {
+  else if (m_pConnectionParams->type == INTERNAL_GPS) {
     wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
     wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
@@ -478,13 +478,13 @@ void ConnectionParamsPanel::CreateControls() {
                   this);
 
     t21 = new wxStaticText(this, wxID_ANY,
-                           _("Comment: ") + m_pConnectionParams->UserComment);
+                           _("Comment: ") + m_pConnectionParams->user_comment);
     parmSizer->Add(t21, 0);
     t21->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
 
-  } else if (m_pConnectionParams->Type == INTERNAL_BT) {
+  } else if (m_pConnectionParams->type == INTERNAL_BT) {
     wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
     wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
@@ -581,12 +581,12 @@ void ConnectionParamsPanel::CreateControls() {
                   this);
 
     t21 = new wxStaticText(this, wxID_ANY,
-                           _("Comment: ") + m_pConnectionParams->UserComment);
+                           _("Comment: ") + m_pConnectionParams->user_comment);
     parmSizer->Add(t21, 0);
     t21->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                  this);
-  } else if (m_pConnectionParams->Type == SOCKETCAN) {
+  } else if (m_pConnectionParams->type == SOCKETCAN) {
     wxFlexGridSizer *netGrid = new wxFlexGridSizer(2, 6, 0, metric / 2);
     netGrid->SetFlexibleDirection(wxHORIZONTAL);
     parmSizer->Add(netGrid, 0, wxALIGN_LEFT);
@@ -641,7 +641,7 @@ void ConnectionParamsPanel::CreateControls() {
                 wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
                 this);
 
-    t6 = new wxStaticText(this, wxID_ANY, m_pConnectionParams->socketCAN_port);
+    t6 = new wxStaticText(this, wxID_ANY, m_pConnectionParams->socket_can_port);
     t6->SetFont(*bFont);
     netGrid->Add(t6, 0, wxALIGN_CENTER_HORIZONTAL);
     t6->Connect(wxEVT_LEFT_DOWN,
@@ -681,7 +681,7 @@ void ConnectionParamsPanel::CreateControls() {
                   this);
 
     t21 = new wxStaticText(this, wxID_ANY,
-                           _("Comment: ") + m_pConnectionParams->UserComment);
+                           _("Comment: ") + m_pConnectionParams->user_comment);
     parmSizer->Add(t21, 0);
     t21->Connect(wxEVT_LEFT_DOWN,
                  wxMouseEventHandler(ConnectionParamsPanel::OnSelected), NULL,
@@ -694,12 +694,12 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
 
   wxString ioDir = m_pConnectionParams->GetPortDirectionValueStr();
 
-  if (m_pConnectionParams->Type == SERIAL) {
+  if (m_pConnectionParams->type == SERIAL) {
     wxString baudRate;
-    baudRate.Printf("%d", m_pConnectionParams->Baudrate);
+    baudRate.Printf("%d", m_pConnectionParams->baudrate);
 
     wxString proto;
-    switch (m_pConnectionParams->Protocol) {
+    switch (m_pConnectionParams->data_protocol) {
       case PROTO_NMEA0183:
         proto = "NMEA 0183";
         break;
@@ -714,25 +714,25 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
     t2->SetLabel(_("Serial"));
     t6->SetLabel(ioDir);
     t12->SetLabel(proto);
-    t14->SetLabel(m_pConnectionParams->Port);
+    t14->SetLabel(m_pConnectionParams->serial_port);
     t16->SetLabel(baudRate);
 
-    t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
-  } else if (m_pConnectionParams->Type == NETWORK) {
+    t21->SetLabel(_("Comment: ") + m_pConnectionParams->user_comment);
+  } else if (m_pConnectionParams->type == NETWORK) {
     wxString proto;
-    switch (m_pConnectionParams->NetProtocol) {
+    switch (m_pConnectionParams->net_protocol) {
       case UDP:
         proto = "UDP";
-        if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
+        if (m_pConnectionParams->data_protocol == PROTO_NMEA0183)
           proto << " N0183";
-        else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
+        else if (m_pConnectionParams->data_protocol == PROTO_NMEA2000)
           proto << " N2000";
         break;
       case TCP:
         proto = "TCP";
-        if (m_pConnectionParams->Protocol == PROTO_NMEA0183)
+        if (m_pConnectionParams->data_protocol == PROTO_NMEA0183)
           proto << " N0183";
-        else if (m_pConnectionParams->Protocol == PROTO_NMEA2000)
+        else if (m_pConnectionParams->data_protocol == PROTO_NMEA2000)
           proto << " N2000";
         break;
       case GPSD:
@@ -746,26 +746,26 @@ void ConnectionParamsPanel::Update(ConnectionParams *ConnectionParams) {
         break;
     }
     wxString port;
-    port.Printf("%d", m_pConnectionParams->NetworkPort);
+    port.Printf("%d", m_pConnectionParams->network_port);
 
     t2->SetLabel(_("Network"));
     t6->SetLabel(ioDir);
     t12->SetLabel(proto);
-    t14->SetLabel(m_pConnectionParams->NetworkAddress);
+    t14->SetLabel(m_pConnectionParams->network_address);
     t16->SetLabel(port);
 
-    t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
-  } else if (m_pConnectionParams->Type == INTERNAL_GPS) {
-    t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
+    t21->SetLabel(_("Comment: ") + m_pConnectionParams->user_comment);
+  } else if (m_pConnectionParams->type == INTERNAL_GPS) {
+    t21->SetLabel(_("Comment: ") + m_pConnectionParams->user_comment);
   }
 
-  else if (m_pConnectionParams->Type == INTERNAL_BT) {
-    t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
+  else if (m_pConnectionParams->type == INTERNAL_BT) {
+    t21->SetLabel(_("Comment: ") + m_pConnectionParams->user_comment);
   }
 
-  else if (m_pConnectionParams->Type == SOCKETCAN) {
-    t21->SetLabel(_("Comment: ") + m_pConnectionParams->UserComment);
-    t6->SetLabel(m_pConnectionParams->socketCAN_port);
+  else if (m_pConnectionParams->type == SOCKETCAN) {
+    t21->SetLabel(_("Comment: ") + m_pConnectionParams->user_comment);
+    t6->SetLabel(m_pConnectionParams->socket_can_port);
   }
 
   GetSizer()->Layout();

@@ -1289,7 +1289,7 @@ void OCPNPlatform::SetDefaultOptions() {
   wxString sGPS = "2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0";  // 17 parms
   ConnectionParams *new_params = new ConnectionParams(sGPS);
 
-  new_params->bEnabled = true;
+  new_params->is_enabled = true;
   TheConnectionParams().push_back(new_params);
 
   g_default_font_facename = "Roboto";

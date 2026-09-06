@@ -146,8 +146,8 @@ public:
 
     auto& msgbus = NavMsgBus::GetInstance();
     ConnectionParams params;
-    params.socketCAN_port = "vcan0";
-    params.Type = SOCKETCAN;
+    params.socket_can_port = "vcan0";
+    params.type = SOCKETCAN;
     auto driver = CommDriverN2KSocketCAN::Create(&params, msgbus);
     auto raw_driver = driver.get();
     CommDriverRegistry::GetInstance().Activate(std::move(driver));
@@ -178,8 +178,8 @@ public:
     auto& registry = CommDriverRegistry::GetInstance();
     auto& msgbus = NavMsgBus::GetInstance();
     ConnectionParams params;
-    params.socketCAN_port = "vcan0";
-    params.Type = SOCKETCAN;
+    params.socket_can_port = "vcan0";
+    params.type = SOCKETCAN;
     auto driver = CommDriverN2KSocketCAN::Create(&params, msgbus);
     auto& comm_bridge = CommBridge::GetInstance();
     CommDriverRegistry::GetInstance().Activate(std::move(driver));
@@ -207,8 +207,8 @@ public:
     delete g_pAIS;
     g_pAIS = new AisDecoder(AisDecoderCallbacks());
     auto& msgbus = NavMsgBus::GetInstance();
-    params.socketCAN_port = "vcan0";
-    params.Type = SOCKETCAN;
+    params.socket_can_port = "vcan0";
+    params.type = SOCKETCAN;
     driver = CommDriverN2KSocketCAN::Create(&params, msgbus);
     CommBridge::GetInstance();
     CommDriverRegistry::GetInstance().Activate(std::move(driver));

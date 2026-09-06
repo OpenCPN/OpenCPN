@@ -302,7 +302,7 @@ void ReloadConfigConnections() {
       wxArrayString confs = wxStringTokenize(connectionconfigs, "|");
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams* prm = new ConnectionParams(confs[i]);
-        if (!prm->Valid) continue;
+        if (!prm->is_valid) continue;
         TheConnectionParams().push_back(prm);
       }
     }
@@ -310,9 +310,9 @@ void ReloadConfigConnections() {
 
   // Reconnect enabled connections
   for (auto* cp : TheConnectionParams()) {
-    if (cp->bEnabled) {
+    if (cp->is_enabled) {
       MakeCommDriver(cp);
-      cp->b_IsSetup = TRUE;
+      cp->is_setup = TRUE;
     }
   }
 }

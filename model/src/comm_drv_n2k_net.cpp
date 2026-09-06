@@ -139,8 +139,8 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       m_params(*params),
       m_listener(listener),
       m_stats_timer(*this, 2s),
-      m_net_port(wxString::Format("%i", params->NetworkPort)),
-      m_net_protocol(params->NetProtocol),
+      m_net_port(wxString::Format("%i", params->network_port)),
+      m_net_protocol(params->net_protocol),
       m_sock(nullptr),
       m_tsock(nullptr),
       m_socket_server(nullptr),
@@ -148,24 +148,24 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       m_txenter(0),
       m_portstring(params->GetDSPort()),
       m_direction(params->direction),
-      m_connection_type(params->Type),
+      m_connection_type(params->type),
       m_bok(false),
       m_circle(RX_BUFFER_SIZE_NET),
       m_TX_available(false),
       m_detect_count(-1) {
-  m_addr.Hostname(params->NetworkAddress);
-  m_addr.Service(params->NetworkPort);
+  m_addr.Hostname(params->network_address);
+  m_addr.Service(params->network_port);
 
   m_driver_stats.driver_bus = NavAddr::Bus::N2000;
   m_driver_stats.driver_iface = params->GetStrippedDSPort();
 
   m_socket_timer.SetOwner(this, TIMER_SOCKET_N2KNET);
   m_socketread_watchdog_timer.SetOwner(this, TIMER_SOCKET_N2KNET + 1);
-  this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
+  this->attributes["netAddress"] = params->network_address.ToStdString();
   char port_char[10];
-  sprintf(port_char, "%d", params->NetworkPort);
+  sprintf(port_char, "%d", params->network_port);
   this->attributes["netPort"] = std::string(port_char);
-  this->attributes["userComment"] = params->UserComment.ToStdString();
+  this->attributes["userComment"] = params->user_comment.ToStdString();
   this->attributes["ioDirection"] = PortDirectionToString(params->direction);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
@@ -395,7 +395,7 @@ void CommDriverN2KNet::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
   m_dog_value--;
 
   if (m_dog_value <= 0) {  // No receive in n seconds
-    if (GetParams().NoDataReconnect) {
+    if (GetParams().no_data_reconnect) {
       // Reconnect on NO DATA is true, so try to reconnect now.
       if (GetProtocol() == TCP) {
         auto* tcp_socket = dynamic_cast<wxSocketClient*>(GetSock());
@@ -1350,7 +1350,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
         if (GetPortDirection() != PortDirection::kOutput) {
           /// start the DATA watchdog only if NODATA Reconnect is desired
-          if (GetParams().NoDataReconnect)
+          if (GetParams().no_data_reconnect)
             GetSocketThreadWatchdogTimer()->Start(1000);
         }
         if (GetPortDirection() != PortDirection::kInput && GetSock()->IsOk())

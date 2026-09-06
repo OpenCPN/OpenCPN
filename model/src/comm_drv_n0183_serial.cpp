@@ -49,7 +49,7 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
                                              DriverListener& listener)
     : CommDriverN0183(NavAddr::Bus::N0183, params->GetStrippedDSPort()),
       m_portstring(params->GetDSPort()),
-      m_baudrate(params->Baudrate),
+      m_baudrate(params->baudrate),
       m_serial_io(SerialIo::Create(
           [&](const std::vector<unsigned char>& v) { SendMessage(v); },
           m_portstring, m_baudrate)),
@@ -57,8 +57,8 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
       m_listener(listener),
       m_stats_timer(*this, 2s) {
   m_garmin_handler = nullptr;
-  this->attributes["commPort"] = params->Port.ToStdString();
-  this->attributes["userComment"] = params->UserComment.ToStdString();
+  this->attributes["commPort"] = params->serial_port.ToStdString();
+  this->attributes["userComment"] = params->user_comment.ToStdString();
   this->attributes["ioDirection"] = PortDirectionToString(params->direction);
 
   Open();
@@ -77,7 +77,7 @@ bool CommDriverN0183Serial::Open() {
   if ((wxNOT_FOUND != port_uc.Find("USB")) &&
       (wxNOT_FOUND != port_uc.Find("GARMIN"))) {
     m_garmin_handler = new GarminProtocolHandler(comx, send_func, true);
-  } else if (m_params.Garmin) {
+  } else if (m_params.is_garmin) {
     m_garmin_handler = new GarminProtocolHandler(comx, send_func, false);
   } else {
     //    Kick off the  RX thread

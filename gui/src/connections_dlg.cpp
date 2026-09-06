@@ -115,16 +115,16 @@ static std::string BitsToDottedMask(const unsigned bits) {
 
 static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
   for (const auto& cp : TheConnectionParams()) {
-    if (cp->Type != new_cp->Type) continue;
-    switch (cp->Type) {
+    if (cp->type != new_cp->type) continue;
+    switch (cp->type) {
       case SERIAL:
-        if (cp->Port != new_cp->Port) continue;
+        if (cp->serial_port != new_cp->serial_port) continue;
         return cp;
         break;
       case NETWORK:
-        if (cp->NetProtocol != new_cp->NetProtocol) continue;
-        if (cp->NetworkAddress != new_cp->NetworkAddress) continue;
-        if (cp->NetworkPort != new_cp->NetworkPort) continue;
+        if (cp->net_protocol != new_cp->net_protocol) continue;
+        if (cp->network_address != new_cp->network_address) continue;
+        if (cp->network_port != new_cp->network_port) continue;
         return cp;
         break;
       case INTERNAL_GPS:
@@ -134,7 +134,7 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
         return cp;
         break;
       case SOCKETCAN:
-        if (cp->socketCAN_port != new_cp->socketCAN_port) continue;
+        if (cp->socket_can_port != new_cp->socket_can_port) continue;
         return cp;
         break;
       default:
@@ -321,7 +321,8 @@ public:
                   const ConnectionParams* p2) const {
     switch (m_col) {
       case 0:
-        return static_cast<int>(p1->bEnabled) > static_cast<int>(p2->bEnabled);
+        return static_cast<int>(p1->is_enabled) >
+               static_cast<int>(p2->is_enabled);
       case 1:
         return p1->GetCommProtocol() < p2->GetCommProtocol();
       case 2:
@@ -479,8 +480,8 @@ public:
     for (auto it = connections.begin(); it != connections.end(); ++it) {
       const auto row = static_cast<int>(it - connections.begin());
       EnsureRows(row);
-      SetCellValue(row, 0, (*it)->bEnabled ? "1" : "");
-      if ((*it)->bEnabled)
+      SetCellValue(row, 0, (*it)->is_enabled ? "1" : "");
+      if ((*it)->is_enabled)
         m_tooltips[row][0] = _("Enabled, click to disable");
       else
         m_tooltips[row][0] = _("Disabled, click to enable");
@@ -488,7 +489,7 @@ public:
       SetCellValue(row, 1, protocol);
       SetCellValue(row, 2, (*it)->GetPortDirectionValueStr());
       SetCellValue(row, 3, (*it)->GetStrippedDSPort());
-      m_tooltips[row][3] = (*it)->UserComment;
+      m_tooltips[row][3] = (*it)->user_comment;
       SetCellRenderer(row, 5, new BitmapCellRenderer(m_icons.settings, m_cs));
       m_tooltips[row][5] = _("Edit connection");
       SetCellRenderer(row, 6, new BitmapCellRenderer(m_icons.trash_bin, m_cs));
@@ -668,7 +669,7 @@ private:
     for (auto it = connections.begin(); it != connections.end(); ++it) {
       ConnState state = m_conn_states.GetDriverState(
           (*it)->GetCommProtocol(), (*it)->GetStrippedDSPort());
-      if (!(*it)->bEnabled) state = ConnState::Disabled;
+      if (!(*it)->is_enabled) state = ConnState::Disabled;
       auto row = static_cast<int>(it - connections.begin());
       EnsureRows(row);
       if (static_cast<int>(m_renderer_status_vector.size()) < row + 1) continue;
@@ -749,10 +750,10 @@ private:
   void HandleEnable(int row) {
     ConnectionParams* cp = FindRowConnection(row);
     if (!cp) return;
-    cp->bEnabled = !cp->bEnabled;
-    cp->b_IsSetup = FALSE;  // trigger a rebuild/takedown of the connection
-    SetCellValue(row, 0, cp->bEnabled ? "1" : "");
-    if (cp->bEnabled)
+    cp->is_enabled = !cp->is_enabled;
+    cp->is_setup = FALSE;  // trigger a rebuild/takedown of the connection
+    SetCellValue(row, 0, cp->is_enabled ? "1" : "");
+    if (cp->is_enabled)
       m_tooltips[row][0] = _("Enabled, click to disable");
     else
       m_tooltips[row][0] = _("Disabled, click to enable");
@@ -761,9 +762,9 @@ private:
     stats.driver_bus = cp->GetCommProtocol();
     m_conn_states.HandleDriverStats(stats);
     StopAndRemoveCommDriver(cp->GetStrippedDSPort(), cp->GetCommProtocol());
-    if (cp->bEnabled) MakeCommDriver(cp);
-    cp->b_IsSetup = true;
-    if (!cp->bEnabled) {
+    if (cp->is_enabled) MakeCommDriver(cp);
+    cp->is_setup = true;
+    if (!cp->is_enabled) {
       SetCellValue(row, 4, UtfFilledCircle());
       // ForceRefresh() apparently broken, see #4648
       ReloadGrid(TheConnectionParams());
@@ -788,7 +789,7 @@ private:
       int rcode = OCPNMessageBox(this, ss.str(), _("Delete connection?"),
                                  wxOK | wxCANCEL);
       if (rcode != wxID_OK && rcode != wxID_YES) return;
-      delete (*found)->m_optionsPanel;
+      delete (*found)->options_panel;
       StopAndRemoveCommDriver((*found)->GetStrippedDSPort(),
                               (*found)->GetCommProtocol());
       TheConnectionParams().erase(found);
@@ -1245,13 +1246,13 @@ public:
     // OK from EDIT mode
     if (!new_mode) {
       ConnectionParams* cp_edited = m_edit_panel->GetParamsFromControls();
-      delete cp_orig->m_optionsPanel;
+      delete cp_orig->options_panel;
       StopAndRemoveCommDriver(cp_orig->GetStrippedDSPort(),
                               cp_orig->GetCommProtocol());
       int index = top_panel->GetConnectionsGrid()->FindConnectionIndex(cp_orig);
       assert(index != -1 && "Cannot look up connection index");
       TheConnectionParams()[index] = cp_edited;
-      cp_edited->b_IsSetup = false;  // Trigger new stream
+      cp_edited->is_setup = false;  // Trigger new stream
     }
     //  OK from NEW mode
     else {
@@ -1263,9 +1264,9 @@ public:
                                  wxOK | wxCENTRE | wxICON_WARNING);
           dialog.ShowModal();
         }
-        if (cp->GetValidPort()) {
+        if (cp->IsPortValid()) {
           // Trigger new stream
-          cp->b_IsSetup = false;
+          cp->is_setup = false;
           // transfer ownership FIXME use smart pointers
           TheConnectionParams().push_back(cp);
         } else {

@@ -130,7 +130,7 @@ class CommDriverN2KSocketCanImpl : public CommDriverN2KSocketCAN {
 public:
   CommDriverN2KSocketCanImpl(const ConnectionParams* p, DriverListener& l)
       : CommDriverN2KSocketCAN(p, l),
-        m_worker(this, p->socketCAN_port),
+        m_worker(this, p->socket_can_port),
         m_source_address(-1),
         m_last_TX_sequence(0) {
     SetN2K_Name();
@@ -209,7 +209,7 @@ bool CommDriverN2KSocketCanImpl::Open() {
 }
 
 void CommDriverN2KSocketCanImpl::Close() {
-  wxLogMessage("Closing N2K socketCAN: %s", m_params.socketCAN_port.c_str());
+  wxLogMessage("Closing N2K socketCAN: %s", m_params.socket_can_port.c_str());
   m_stats_timer.Stop();
   m_worker.StopThread();
 }
@@ -384,10 +384,10 @@ CommDriverN2KSocketCAN::CommDriverN2KSocketCAN(const ConnectionParams* params,
       m_stats_timer(*this, 2s),
       m_ok(false),
       m_portstring(params->GetDSPort()),
-      m_baudrate(wxString::Format("%i", params->Baudrate)) {
-  this->attributes["canPort"] = params->socketCAN_port.ToStdString();
+      m_baudrate(wxString::Format("%i", params->baudrate)) {
+  this->attributes["canPort"] = params->socket_can_port.ToStdString();
   this->attributes["canAddress"] = std::to_string(DEFAULT_N2K_SOURCE_ADDRESS);
-  this->attributes["userComment"] = params->UserComment.ToStdString();
+  this->attributes["userComment"] = params->user_comment.ToStdString();
   this->attributes["ioDirection"] = std::string("IN/OUT");
 
   m_driver_stats.driver_bus = NavAddr::Bus::N2000;
