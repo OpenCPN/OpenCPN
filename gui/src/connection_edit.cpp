@@ -155,11 +155,10 @@ static std::string GetChoiceSelection(const wxChoice* choice) {
  * the basic view.
  */
 static std::string NetViewByConnection(const ConnectionParams* cp) {
-  bool is_server = IsAddressListener(cp->NetworkAddress.ToStdString());
-  if (IsAddressMultiCast(cp->NetworkAddress))
-    return cp->direction == PortDirection::kOutput ? kMulticastClient
-                                                   : kMulticastServer;
-  switch (cp->NetProtocol) {
+  bool is_server = IsAddressListener(cp->network_address.ToStdString());
+  if (IsAddressMultiCast(cp->network_address))
+    return is_server ? kMulticastServer : kMulticastClient;
+  switch (cp->net_protocol) {
     case NetworkProtocol::GPSD:
       return kGpsdDevice;
     case NetworkProtocol::SIGNALK:
@@ -1146,8 +1145,8 @@ void ConnectionEditDialog::SetSelectedConnectionPanel(
   //  Only one panel can be selected at any time
   //  Clear any selections
 
-  if (m_selected_conn_params && m_selected_conn_params->m_optionsPanel)
-    m_selected_conn_params->m_optionsPanel->SetSelected(false);
+  if (m_selected_conn_params && m_selected_conn_params->options_panel)
+    m_selected_conn_params->options_panel->SetSelected(false);
 
   if (panel) {
     m_selected_conn_params = panel->m_pConnectionParams;
@@ -1181,8 +1180,8 @@ void ConnectionEditDialog::EnableConnection(ConnectionParams* conn,
                                             bool value) {
   if (conn) {
     // conn->bEnabled = value;
-    conn->b_IsSetup = false;  // trigger a rebuild/takedown of the connection
-    m_conn_enabled = conn->bEnabled;
+    conn->is_setup = false;  // trigger a rebuild/takedown of the connection
+    m_conn_enabled = conn->is_enabled;
   }
 }
 
@@ -1647,11 +1646,11 @@ void ConnectionEditDialog::PreloadControls(ConnectionParams* cp) {
 }
 
 void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
-  if (cp->Type == NETWORK && cp->direction == PortDirection::kInput) {
+  if (cp->type == NETWORK && cp->direction == PortDirection::kInput) {
     // work around buggy pre 5.16 configurations which have "localhost" or
     // 127.0.0.1 instead of the correct 0.0.0.0
-    if (cp->NetworkAddress == "127.0.0.1" || cp->NetworkAddress == "localhost")
-      cp->NetworkAddress = "0.0.0.0";
+    auto& address = cp->network_address;
+    if (address == "127.0.0.1" || address == "localhost") address = "0.0.0.0";
   }
   const std::string view = NetViewByConnection(cp);
   auto found = std::find(kBasicNetViews.begin(), kBasicNetViews.end(), view);
@@ -1668,13 +1667,13 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
     int select_ix = m_net_view_choice->FindString(*found);
     if (select_ix != wxNOT_FOUND) m_net_view_choice->SetSelection(select_ix);
   }
-  if (wxNOT_FOUND == m_port_combo->FindString(cp->Port))
-    m_port_combo->Append(cp->Port);
+  if (wxNOT_FOUND == m_port_combo->FindString(cp->serial_port))
+    m_port_combo->Append(cp->serial_port);
 
-  m_port_combo->Select(m_port_combo->FindString(cp->Port));
+  m_port_combo->Select(m_port_combo->FindString(cp->serial_port));
 
-  m_garmin_host_chkbox->SetValue(cp->Garmin);
-  m_sk_check_discover_chkbox->SetValue(cp->AutoSKDiscover);
+  m_garmin_host_chkbox->SetValue(cp->is_garmin);
+  m_sk_check_discover_chkbox->SetValue(cp->auto_sk_discover);
   if (view == kUdpReceive || view == kUdpInput) {
     m_input_chkbox->SetValue(true);
     m_input_chkbox->Disable();
@@ -1685,50 +1684,50 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
     m_output_chkbox->SetValue(cp->direction != PortDirection::kInput);
   }
 
-  if (cp->InputSentenceListType == WHITELIST)
+  if (cp->input_sentence_list_type == WHITELIST)
     m_accept_radiobtn->SetValue(true);
   else
     m_ignore_radiobtn->SetValue(true);
-  if (cp->OutputSentenceListType == WHITELIST)
+  if (cp->output_sentence_list_type == WHITELIST)
     m_o_accept_radiobtn->SetValue(true);
   else
     m_o_ignore_radiobtn->SetValue(true);
-  m_input_stc_tctrl->SetValue(StringArrayToString(cp->InputSentenceList));
-  m_output_stc_tctrl->SetValue(StringArrayToString(cp->OutputSentenceList));
+  m_input_stc_tctrl->SetValue(StringArrayToString(cp->input_sentence_list));
+  m_output_stc_tctrl->SetValue(StringArrayToString(cp->output_sentence_list));
   m_baud_rate_choice->Select(
-      m_baud_rate_choice->FindString(wxString::Format("%d", cp->Baudrate)));
-  m_serial_protocol_choice->Select(cp->Protocol);  // TODO
+      m_baud_rate_choice->FindString(wxString::Format("%d", cp->baudrate)));
+  m_serial_protocol_choice->Select(cp->data_protocol);  // TODO
   auto net_address = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tctrl);
-  if (net_address) m_net_address_tctrl->ChangeValue(cp->NetworkAddress);
+  if (net_address) m_net_address_tctrl->ChangeValue(cp->network_address);
 
-  m_net_data_protocol_choice->Select(cp->Protocol);  // TODO
+  m_net_data_protocol_choice->Select(cp->data_protocol);  // TODO
 
-  if (cp->NetworkPort == 0)
+  if (cp->network_port == 0)
     m_net_port_tctrl->ChangeValue("");
   else
-    m_net_port_tctrl->ChangeValue(std::to_string(cp->NetworkPort));
+    m_net_port_tctrl->ChangeValue(std::to_string(cp->network_port));
 
-  if (cp->Type == SERIAL) {
+  if (cp->type == SERIAL) {
     m_type_serial_radiobtn->SetValue(true);
     SetNMEAFormToSerial();
     SetNMEAFormForSerialProtocol();
-  } else if (cp->Type == NETWORK) {
+  } else if (cp->type == NETWORK) {
     m_type_net_radiobtn->SetValue(true);
     SetNMEAFormToNet();
-  } else if (cp->Type == SOCKETCAN) {
+  } else if (cp->type == SOCKETCAN) {
     m_type_can_radiobtn->SetValue(true);
     SetNMEAFormToCAN();
-  } else if (cp->Type == INTERNAL_GPS) {
+  } else if (cp->type == INTERNAL_GPS) {
     if (m_type_internal_gps_radiobtn)
       m_type_internal_gps_radiobtn->SetValue(true);
     SetNMEAFormToGPS();
-  } else if (cp->Type == INTERNAL_BT) {
+  } else if (cp->type == INTERNAL_BT) {
     if (m_type_internal_bt_radiobtn)
       m_type_internal_bt_radiobtn->SetValue(true);
     SetNMEAFormToBT();
 
     // Preset the source selector
-    wxString bts = cp->NetworkAddress + ";" + cp->GetPortStr();
+    wxString bts = cp->network_address + ";" + cp->serial_port;
     m_bt_data_sources_choice->Clear();
     m_bt_data_sources_choice->Append(bts);
     m_bt_data_sources_choice->SetSelection(0);
@@ -1736,17 +1735,17 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
     ClearNMEAForm();
   }
 
-  if (cp->Type == SERIAL) {
-    m_serial_comment_tctrl->SetValue(cp->UserComment);
-  } else if (cp->Type == NETWORK) {
-    m_net_comment_tctrl->SetValue(cp->UserComment);
+  if (cp->type == SERIAL) {
+    m_serial_comment_tctrl->SetValue(cp->user_comment);
+  } else if (cp->type == NETWORK) {
+    m_net_comment_tctrl->SetValue(cp->user_comment);
     ConfigureControlsForView(view);
     OnExpertModeChange();
   }
 
-  m_auth_token_tctrl->SetValue(cp->AuthToken);
+  m_auth_token_tctrl->SetValue(cp->auth_token);
 
-  m_conn_enabled = cp->bEnabled;
+  m_conn_enabled = cp->is_enabled;
 
   // Reset touch flag
   m_is_conn_saved = true;
@@ -1814,7 +1813,7 @@ void ConnectionEditDialog::LayoutDialog() {
 
 void ConnectionEditDialog::UpdateSourceList(bool bResort) {
   for (auto* cp : TheConnectionParams()) {
-    ConnectionParamsPanel* panel = cp->m_optionsPanel;
+    ConnectionParamsPanel* panel = cp->options_panel;
     if (panel) panel->Update(cp);
   }
 
@@ -1914,12 +1913,12 @@ void ConnectionEditDialog::OnCbOutput(wxCommandEvent& event) {
       // Check for a UDP input connection on the same port
       NetworkProtocol proto = UDP;
       for (auto* cp : TheConnectionParams()) {
-        if (cp->NetProtocol == proto &&
-            cp->NetworkPort == wxAtoi(m_net_port_tctrl->GetValue()) &&
+        if (cp->net_protocol == proto &&
+            cp->network_port == wxAtoi(m_net_port_tctrl->GetValue()) &&
             cp->direction == PortDirection::kInput) {
           wxString mes;
           bool warn = false;
-          if (cp->bEnabled) {
+          if (cp->is_enabled) {
             mes =
                 _("There is an enabled UDP input connection that uses the "
                   "same data port.");
@@ -2017,34 +2016,35 @@ ConnectionParams* ConnectionEditDialog::GetParamsFromControls() {
 
 ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     ConnectionParams* pConnectionParams) {
-  pConnectionParams->Valid = true;
+  pConnectionParams->is_valid = true;
   int selection = m_net_view_choice->GetSelection();
   if (selection != wxNOT_FOUND) {
     std::string s = m_net_view_choice->GetString(selection).ToStdString();
   }
   if (m_type_serial_radiobtn->GetValue())
-    pConnectionParams->Type = SERIAL;
+    pConnectionParams->type = SERIAL;
   else if (m_type_net_radiobtn->GetValue())
-    pConnectionParams->Type = NETWORK;
+    pConnectionParams->type = NETWORK;
   else if (m_type_internal_gps_radiobtn &&
            m_type_internal_gps_radiobtn->GetValue())
-    pConnectionParams->Type = INTERNAL_GPS;
+    pConnectionParams->type = INTERNAL_GPS;
   else if (m_type_internal_bt_radiobtn &&
            m_type_internal_bt_radiobtn->GetValue())
-    pConnectionParams->Type = INTERNAL_BT;
+    pConnectionParams->type = INTERNAL_BT;
   else if (m_type_can_radiobtn && m_type_can_radiobtn->GetValue())
-    pConnectionParams->Type = SOCKETCAN;
+    pConnectionParams->type = SOCKETCAN;
 
   if (m_type_net_radiobtn->GetValue()) {
     //  Save the existing addr/port to allow closing of existing port
-    pConnectionParams->LastNetworkAddress = pConnectionParams->NetworkAddress;
-    pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
-    pConnectionParams->LastNetProtocol = pConnectionParams->NetProtocol;
-    pConnectionParams->LastDataProtocol = pConnectionParams->Protocol;
+    pConnectionParams->last_network_address =
+        pConnectionParams->network_address;
+    pConnectionParams->last_network_port = pConnectionParams->network_port;
+    pConnectionParams->last_net_protocol = pConnectionParams->net_protocol;
+    pConnectionParams->last_data_protocol = pConnectionParams->data_protocol;
 
-    pConnectionParams->NetworkAddress =
+    pConnectionParams->network_address =
         m_net_address_tctrl->GetValue().Trim(false).Trim(true);
-    pConnectionParams->NetworkPort =
+    pConnectionParams->network_port =
         wxAtoi(m_net_port_tctrl->GetValue().Trim(false).Trim(true));
     int net_select = m_net_view_choice->GetSelection();
     std::string net_type;
@@ -2052,41 +2052,41 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
       net_type = m_net_view_choice->GetString(net_select).ToStdString();
     if (net_type == kTcpClient || net_type == kTcpServer ||
         net_type == kTcpDevice) {
-      pConnectionParams->NetProtocol = TCP;
-      pConnectionParams->Protocol =
+      pConnectionParams->net_protocol = TCP;
+      pConnectionParams->data_protocol =
           static_cast<DataProtocol>(m_net_data_protocol_choice->GetSelection());
     } else if (net_type == kUdpSend || net_type == kUdpInput ||
                net_type == kUdpReceive || net_type == kMulticastClient ||
                net_type == kMulticastServer) {
-      pConnectionParams->NetProtocol = UDP;
-      pConnectionParams->Protocol =
+      pConnectionParams->net_protocol = UDP;
+      pConnectionParams->data_protocol =
           static_cast<DataProtocol>(m_net_data_protocol_choice->GetSelection());
     } else if (net_type == kGpsdClient || net_type == kGpsdDevice) {
-      pConnectionParams->NetProtocol = GPSD;
+      pConnectionParams->net_protocol = GPSD;
     } else if (net_type == kSignalkClient || net_type == kSignalkDevice) {
-      pConnectionParams->NetProtocol = SIGNALK;
+      pConnectionParams->net_protocol = SIGNALK;
     } else {
-      pConnectionParams->NetProtocol = PROTO_UNDEFINED;
+      pConnectionParams->net_protocol = PROTO_UNDEFINED;
     };
   }
   if (m_type_serial_radiobtn->GetValue())
-    pConnectionParams->Protocol =
+    pConnectionParams->data_protocol =
         (DataProtocol)m_serial_protocol_choice->GetSelection();
   else if (m_type_net_radiobtn->GetValue())
-    pConnectionParams->Protocol =
+    pConnectionParams->data_protocol =
         (DataProtocol)m_net_data_protocol_choice->GetSelection();
 
-  pConnectionParams->Baudrate =
+  pConnectionParams->baudrate =
       wxAtoi(m_baud_rate_choice->GetStringSelection());
-  pConnectionParams->ChecksumCheck = true;
-  pConnectionParams->AutoSKDiscover = m_sk_check_discover_chkbox->GetValue();
-  pConnectionParams->Garmin = m_garmin_host_chkbox->GetValue();
-  pConnectionParams->InputSentenceList =
+  pConnectionParams->checksum_check = true;
+  pConnectionParams->auto_sk_discover = m_sk_check_discover_chkbox->GetValue();
+  pConnectionParams->is_garmin = m_garmin_host_chkbox->GetValue();
+  pConnectionParams->input_sentence_list =
       wxStringTokenize(m_input_stc_tctrl->GetValue(), ",");
   if (m_accept_radiobtn->GetValue())
-    pConnectionParams->InputSentenceListType = WHITELIST;
+    pConnectionParams->input_sentence_list_type = WHITELIST;
   else
-    pConnectionParams->InputSentenceListType = BLACKLIST;
+    pConnectionParams->input_sentence_list_type = BLACKLIST;
   if (m_input_chkbox->GetValue()) {
     if (m_output_chkbox->GetValue()) {
       pConnectionParams->direction = PortDirection::kInOut;
@@ -2096,60 +2096,60 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
   } else
     pConnectionParams->direction = PortDirection::kOutput;
 
-  pConnectionParams->OutputSentenceList =
+  pConnectionParams->output_sentence_list =
       wxStringTokenize(m_output_stc_tctrl->GetValue(), ",");
   if (m_o_accept_radiobtn->GetValue())
-    pConnectionParams->OutputSentenceListType = WHITELIST;
+    pConnectionParams->output_sentence_list_type = WHITELIST;
   else
-    pConnectionParams->OutputSentenceListType = BLACKLIST;
-  pConnectionParams->Port = m_port_combo->GetValue().BeforeFirst(' ');
+    pConnectionParams->output_sentence_list_type = BLACKLIST;
+  pConnectionParams->serial_port = m_port_combo->GetValue().BeforeFirst(' ');
 #if defined(__linux__) && !defined(__ANDROID__)
-  if (pConnectionParams->Type == SERIAL)
-    CheckSerialAccess(m_parent, pConnectionParams->Port.ToStdString());
+  if (pConnectionParams->type == SERIAL)
+    CheckSerialAccess(m_parent, pConnectionParams->serial_port.ToStdString());
 #endif
 
   if (m_type_can_radiobtn && m_type_can_radiobtn->GetValue())
-    pConnectionParams->Protocol = PROTO_NMEA2000;
+    pConnectionParams->data_protocol = PROTO_NMEA2000;
 
-  pConnectionParams->bEnabled = m_conn_enabled;
-  pConnectionParams->b_IsSetup = false;
+  pConnectionParams->is_enabled = m_conn_enabled;
+  pConnectionParams->is_setup = false;
 
-  if (pConnectionParams->Type == INTERNAL_GPS) {
-    pConnectionParams->NetworkAddress = "";
-    pConnectionParams->NetworkPort = 0;
-    pConnectionParams->NetProtocol = PROTO_UNDEFINED;
-    pConnectionParams->Baudrate = 0;
-    pConnectionParams->Port = "Internal GPS";
+  if (pConnectionParams->type == INTERNAL_GPS) {
+    pConnectionParams->network_address = "";
+    pConnectionParams->network_port = 0;
+    pConnectionParams->net_protocol = PROTO_UNDEFINED;
+    pConnectionParams->baudrate = 0;
+    pConnectionParams->serial_port = "Internal GPS";
   }
 
-  if (pConnectionParams->Type == INTERNAL_BT) {
+  if (pConnectionParams->type == INTERNAL_BT) {
     wxString parms = m_bt_data_sources_choice->GetStringSelection();
     wxStringTokenizer tkz(parms, ";");
     wxString name = tkz.GetNextToken();
     wxString mac = tkz.GetNextToken();
 
-    pConnectionParams->NetworkAddress = name;
-    pConnectionParams->Port = mac;
-    pConnectionParams->NetworkPort = 0;
-    pConnectionParams->NetProtocol = PROTO_UNDEFINED;
-    pConnectionParams->Baudrate = 0;
+    pConnectionParams->network_address = name;
+    pConnectionParams->serial_port = mac;
+    pConnectionParams->network_port = 0;
+    pConnectionParams->net_protocol = PROTO_UNDEFINED;
+    pConnectionParams->baudrate = 0;
     //        pConnectionParams->SetAuxParameterStr(m_choiceBTDataSources->GetStringSelection());
   }
 
-  if (pConnectionParams->Type == SOCKETCAN) {
-    pConnectionParams->NetworkAddress = "";
-    pConnectionParams->NetworkPort = 0;
-    pConnectionParams->NetProtocol = PROTO_UNDEFINED;
-    pConnectionParams->Baudrate = 0;
-    pConnectionParams->socketCAN_port =
+  if (pConnectionParams->type == SOCKETCAN) {
+    pConnectionParams->network_address = "";
+    pConnectionParams->network_port = 0;
+    pConnectionParams->net_protocol = PROTO_UNDEFINED;
+    pConnectionParams->baudrate = 0;
+    pConnectionParams->socket_can_port =
         m_can_source_choice->GetString(m_can_source_choice->GetSelection());
   }
-  if (pConnectionParams->Type == SERIAL) {
-    pConnectionParams->UserComment = m_serial_comment_tctrl->GetValue();
-  } else if (pConnectionParams->Type == NETWORK) {
-    pConnectionParams->UserComment = m_net_comment_tctrl->GetValue();
+  if (pConnectionParams->type == SERIAL) {
+    pConnectionParams->user_comment = m_serial_comment_tctrl->GetValue();
+  } else if (pConnectionParams->type == NETWORK) {
+    pConnectionParams->user_comment = m_net_comment_tctrl->GetValue();
   }
-  pConnectionParams->AuthToken = m_auth_token_tctrl->GetValue();
+  pConnectionParams->auth_token = m_auth_token_tctrl->GetValue();
 
   return pConnectionParams;
 }

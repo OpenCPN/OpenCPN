@@ -122,15 +122,15 @@ void SendToGpsDlg::CreateControls(const wxString& hint) {
   for (auto* cp : TheConnectionParams()) {
     wxString netident;
 
-    if ((cp->direction != PortDirection::kInput) && cp->Type == NETWORK &&
-        (cp->NetProtocol == TCP)) {
-      netident << "TCP:" << cp->NetworkAddress << ":" << cp->NetworkPort;
+    if ((cp->direction != PortDirection::kInput) && cp->type == NETWORK &&
+        (cp->net_protocol == TCP)) {
+      netident << "TCP:" << cp->network_address << ":" << cp->network_port;
       m_itemCommListBox->Append(netident);
       netconns.Add(netident);
     }
-    if ((cp->direction != PortDirection::kInput) && cp->Type == NETWORK &&
-        (cp->NetProtocol == UDP)) {
-      netident << "UDP:" << cp->NetworkAddress << ":" << cp->NetworkPort;
+    if ((cp->direction != PortDirection::kInput) && cp->type == NETWORK &&
+        (cp->net_protocol == UDP)) {
+      netident << "UDP:" << cp->network_address << ":" << cp->network_port;
       m_itemCommListBox->Append(netident);
       netconns.Add(netident);
     }

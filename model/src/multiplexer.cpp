@@ -256,7 +256,7 @@ void Multiplexer::HandleN0183(
         //  or any other NMEA0183 port supporting output
         //  But, do not echo to the source network interface.  This will
         //  likely recurse...
-        if ((!params_.DisableEcho && params_.Type == SERIAL) ||
+        if ((!params_.disable_echo && params_.type == SERIAL) ||
             driver->iface != n0183_msg->source->iface) {
           if (params_.direction == PortDirection::kInOut ||
               params_.direction == PortDirection::kOutput) {
