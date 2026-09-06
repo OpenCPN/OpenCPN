@@ -18,7 +18,7 @@
 /**
  * \file
  *
- * Safe start without plugins dialog.
+ * Safe start without plugins, basic check and dialog
  */
 
 #include <cstdio>
@@ -47,21 +47,21 @@ static const char* const kLastRunErrorMsg =
         <a href="http://repo.opencpn.org/known-issues-5.16.html">
         list of known issues</a>.</p>)");  // clang-format on
 
-namespace safe_mode {
+namespace {
 
 class HtmlWindow : public wxHtmlWindow {
 public:
-  HtmlWindow(wxWindow* parent) : wxHtmlWindow(parent, wxID_ANY) {
+  explicit HtmlWindow(wxWindow* parent) : wxHtmlWindow(parent, wxID_ANY) {
     std::stringstream html;
     html << "<html><body>" << kLastRunErrorMsg << "</body></html>";
-    SetPage(html.str());
-    Layout();
+    wxHtmlWindow::SetPage(html.str());
+    wxHtmlWindow::Layout();
   }
 };
 
 class ButtonSizer : public wxStdDialogButtonSizer {
 public:
-  ButtonSizer(wxWindow* parent) : wxStdDialogButtonSizer() {
+  explicit ButtonSizer(wxWindow* parent) : wxStdDialogButtonSizer() {
     auto ok_btn = new wxButton(parent, wxID_OK);
     ok_btn->SetLabel(_("Safe restart"));
     SetAffirmativeButton(ok_btn);
@@ -73,17 +73,18 @@ public:
 };
 
 /** Close a modal dialog when timeout is reached. */
-class EndModalTimer : public wxTimer {
+class ModalDialogTimer : public wxTimer {
 public:
   /**
    * Create a timer closing a modal dialog using EndModal() on timeout.
    * @param dialog Client dialog to be closed
    * @param seconds Timeout (seconds)
-   * @exit_value Used as argument to EndModal(exit_value) when closing dialog.
+   * @param exit_value Used as argument to EndModal(exit_value) when
+   *     closing dialog.
    */
-  EndModalTimer(wxDialog* dialog, unsigned seconds, int exit_value)
+  ModalDialogTimer(wxDialog* dialog, unsigned seconds, int exit_value)
       : wxTimer(dialog), m_dialog(dialog), m_exit_value(exit_value) {
-    StartOnce(seconds * 1000);
+    StartOnce(static_cast<int>(seconds) * 1000);
   }
 
   void Notify() override { m_dialog->EndModal(m_exit_value); }
@@ -97,18 +98,18 @@ class SafeModeDialog : public wxDialog {
 public:
   SafeModeDialog(wxWindow* parent, unsigned timeout)
       : wxDialog(parent, wxID_ANY, _("Safe Restart")),
-        m_timer(new EndModalTimer(this, 15, wxID_CANCEL)) {
+        m_timer(new ModalDialogTimer(this, 15, wxID_CANCEL)) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(new HtmlWindow(this), wxSizerFlags(1).Expand());
     vbox->Add(new ButtonSizer(this), wxSizerFlags().Expand().Border());
     SetSizer(vbox);
-    Layout();
-    Show();
+    wxDialog::Layout();
+    wxDialog::Show();
 
     Bind(wxEVT_CHAR_HOOK, [&](wxKeyEvent& ev) { OnKeyPressed(ev); });
   }
 
-  void StopTimer() { m_timer->Stop(); }
+  void StopTimer() const { m_timer->Stop(); }
 
 private:
   wxTimer* m_timer;
@@ -120,6 +121,9 @@ private:
   };
 };
 
+}  // namespace
+
+namespace safe_mode {
 /**
  * Check if the last start failed, possibly invoke user dialog and set
  * global safe mode state.
@@ -127,9 +131,9 @@ private:
 void CheckLastStart() {
   std::string path = CheckFilePath();
   if (fs::exists(path)) {
-    auto dlg = new SafeModeDialog(nullptr, 15);
-    int result = dlg->ShowModal();
-    dlg->StopTimer();
+    SafeModeDialog dlg(nullptr, 15);
+    int result = dlg.ShowModal();
+    dlg.StopTimer();
     safe_mode = result != wxID_CANCEL;
   } else {
     std::ofstream dest(path, std::ios::binary);
