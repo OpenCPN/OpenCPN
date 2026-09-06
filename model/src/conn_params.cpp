@@ -21,22 +21,20 @@
  * Implement conn_params.h -- connection parameters
  */
 
-#ifdef __MINGW32__
-#undef IPV6STRICT  // mingw FTBFS fix:  missing struct ip_mreq
-#include <windows.h>
-#endif
+#include <string>
+#include <sstream>
+#include <vector>
+#include <unordered_map>
 
-// For compilers that support precompilation, includes "wx.h".
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
-#include <wx/checklst.h>
-#include <wx/combobox.h>
+#include <wx/arrstr.h>
 #include <wx/intl.h>
 #include <wx/regex.h>
-#include <wx/statline.h>
+#include <wx/string.h>
 #include <wx/tokenzr.h>
 
 #include "model/conn_params.h"
@@ -48,160 +46,6 @@
 #endif
 
 static std::vector<ConnectionParams*> the_connection_params;
-
-std::vector<ConnectionParams*>& TheConnectionParams() {
-  return the_connection_params;
-}
-
-ConnectionParams::ConnectionParams(const wxString& configStr) {
-  m_optionsPanel = nullptr;
-  Deserialize(configStr);
-}
-
-void ConnectionParams::Deserialize(const wxString& configStr) {
-  Valid = true;
-  wxArrayString prms = wxStringTokenize(configStr, ";");
-  if (prms.Count() < 18) {
-    Valid = false;
-    return;
-  }
-
-  Type = (ConnectionType)wxAtoi(prms[0]);
-  NetProtocol = (NetworkProtocol)wxAtoi(prms[1]);
-  NetworkAddress = prms[2];
-  NetworkPort = (ConnectionType)wxAtoi(prms[3]);
-  Protocol = (DataProtocol)wxAtoi(prms[4]);
-  Port = prms[5];
-  Baudrate = wxAtoi(prms[6]);
-  ChecksumCheck = wxAtoi(prms[7]);
-  int iotval = wxAtoi(prms[8]);
-  direction =
-      iotval <= 2 ? static_cast<PortDirection>(iotval) : PortDirection::kInput;
-  InputSentenceListType = (ListType)wxAtoi(prms[9]);
-  InputSentenceList = wxStringTokenize(prms[10], ",");
-  OutputSentenceListType = (ListType)wxAtoi(prms[11]);
-  OutputSentenceList = wxStringTokenize(prms[12], ",");
-  Garmin = !!wxAtoi(prms[14]);
-  GarminUpload = !!wxAtoi(prms[15]);
-  FurunoGP3X = !!wxAtoi(prms[16]);
-
-  bEnabled = true;
-  LastNetworkPort = 0;
-  b_IsSetup = false;
-  if (prms.Count() >= 18) {
-    bEnabled = !!wxAtoi(prms[17]);
-  }
-  if (prms.Count() >= 19) {
-    UserComment = prms[18];
-  }
-  if (prms.Count() >= 20) {
-    AutoSKDiscover = !!wxAtoi(prms[19]);
-  }
-  if (prms.Count() >= 21) {
-    socketCAN_port = prms[20];
-  }
-  if (prms.Count() >= 22) {
-    NoDataReconnect = wxAtoi(prms[21]);
-  }
-  if (prms.Count() >= 23) {
-    DisableEcho = wxAtoi(prms[22]);
-  }
-  if (prms.Count() >= 24) {
-    AuthToken = prms[23];
-  }
-}
-
-wxString ConnectionParams::Serialize() const {
-  wxString istcs;
-  for (size_t i = 0; i < InputSentenceList.Count(); i++) {
-    if (i > 0) istcs.Append(",");
-    istcs.Append(InputSentenceList[i]);
-  }
-  wxString ostcs;
-  for (size_t i = 0; i < OutputSentenceList.Count(); i++) {
-    if (i > 0) ostcs.Append(",");
-    ostcs.Append(OutputSentenceList[i]);
-  }
-  wxString ret = wxString::Format(
-      "%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d;%s",
-      Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol,
-      Port.c_str(), Baudrate, ChecksumCheck, static_cast<int>(direction),
-      InputSentenceListType, istcs.c_str(), OutputSentenceListType,
-      ostcs.c_str(), 0 /* Priority */, Garmin, GarminUpload, FurunoGP3X,
-      bEnabled, UserComment.c_str(), AutoSKDiscover, socketCAN_port.c_str(),
-      NoDataReconnect, DisableEcho, AuthToken.c_str());
-
-  return ret;
-}
-
-std::string ConnectionParams::GetKey() const {
-  std::stringstream ss;
-  ss << Type << NetProtocol << NetworkAddress << NetworkPort << Protocol << Port
-     << Baudrate << ChecksumCheck << static_cast<int>(direction)
-     << InputSentenceListType << OutputSentenceListType << Garmin
-     << GarminUpload << FurunoGP3X << UserComment << AutoSKDiscover
-     << socketCAN_port << NoDataReconnect << DisableEcho << AuthToken;
-  for (const auto& sentence : OutputSentenceList) ss << sentence;
-  for (const auto& sentence : InputSentenceList) ss << sentence;
-  return ss.str();
-}
-
-ConnectionParams::ConnectionParams() {
-  Type = UNKNOWN;
-  NetProtocol = TCP;
-  NetworkAddress = "";
-  NetworkPort = 0;
-  Protocol = PROTO_NMEA0183;
-  Port = "";
-  Baudrate = 4800;
-  ChecksumCheck = true;
-  Garmin = false;
-  FurunoGP3X = false;
-  direction = PortDirection::kInput;
-  InputSentenceListType = WHITELIST;
-  OutputSentenceListType = WHITELIST;
-  Valid = true;
-  bEnabled = true;
-  b_IsSetup = false;
-  m_optionsPanel = NULL;
-  AutoSKDiscover = false;
-  NoDataReconnect = false;
-  DisableEcho = false;
-  AuthToken = "";
-  is_server = false;
-}
-
-ConnectionParams::~ConnectionParams() {
-  // delete m_optionsPanel;
-}
-
-wxString ConnectionParams::GetSourceTypeStr() const {
-  switch (Type) {
-    case SERIAL:
-      return _("Serial");
-    case NETWORK:
-      return _("Network");
-    case INTERNAL_GPS:
-      return _("GPS");
-    case INTERNAL_BT:
-      return _("BT");
-    default:
-      return "";
-  }
-}
-
-wxString ConnectionParams::GetAddressStr() const {
-  if (Type == SERIAL)
-    return wxString::Format("%s", Port.c_str());
-  else if (Type == NETWORK)
-    return wxString::Format("%s:%d", NetworkAddress.c_str(), NetworkPort);
-  else if (Type == INTERNAL_GPS)
-    return _("Internal");
-  else if (Type == INTERNAL_BT)
-    return NetworkAddress;
-  else
-    return "";
-}
 
 // TODO: Make part of NetworkProtocol interface
 static wxString NetworkProtocolToString(NetworkProtocol NetProtocol) {
@@ -219,19 +63,130 @@ static wxString NetworkProtocolToString(NetworkProtocol NetProtocol) {
   }
 }
 
-wxString ConnectionParams::GetParametersStr() const {
-  switch (Type) {
-    case SERIAL:
-      return wxString::Format("%d", Baudrate);
-    case NETWORK:
-      return NetworkProtocolToString(NetProtocol);
-    case INTERNAL_GPS:
-      return "GPS";
-    case INTERNAL_BT:
-      return Port;
-    default:
-      return "";
+std::vector<ConnectionParams*>& TheConnectionParams() {
+  return the_connection_params;
+}
+
+ConnectionParams::ConnectionParams(const wxString& ws) : ConnectionParams() {
+  Deserialize(ws);
+}
+
+ConnectionParams::ConnectionParams()
+    : type(UNKNOWN),
+      net_protocol(TCP),
+      data_protocol(PROTO_NMEA0183),
+      network_port(0),
+      direction(PortDirection::kInput),
+      last_data_protocol(PROTO_NMEA0183),
+      last_net_protocol(TCP),
+      auto_sk_discover(false),
+      checksum_check(true),
+      disable_echo(false),
+      FurunoGP3X(false),
+      GarminUpload(false),
+      is_enabled(true),
+      is_garmin(false),
+      is_server(false),
+      is_setup(false),
+      is_valid(true),
+      no_data_reconnect(false),
+      baudrate(4800),
+      last_network_port(0),
+      input_sentence_list_type(WHITELIST),
+      output_sentence_list_type(WHITELIST),
+      input_sentence_list(WHITELIST),
+      output_sentence_list(WHITELIST),
+      options_panel(nullptr) {}
+
+ConnectionParams::~ConnectionParams() = default;
+
+void ConnectionParams::Deserialize(const wxString& configStr) {
+  is_valid = true;
+  wxArrayString prms = wxStringTokenize(configStr, ";");
+  if (prms.Count() < 18) {
+    is_valid = false;
+    return;
   }
+
+  type = static_cast<ConnectionType>(wxAtoi(prms[0]));
+  net_protocol = static_cast<NetworkProtocol>(wxAtoi(prms[1]));
+  network_address = prms[2];
+  network_port = static_cast<ConnectionType>(wxAtoi(prms[3]));
+  data_protocol = static_cast<DataProtocol>(wxAtoi(prms[4]));
+  serial_port = prms[5];
+  baudrate = wxAtoi(prms[6]);
+  checksum_check = wxAtoi(prms[7]);
+  int iotval = wxAtoi(prms[8]);
+  direction =
+      iotval <= 2 ? static_cast<PortDirection>(iotval) : PortDirection::kInput;
+  input_sentence_list_type = static_cast<ListType>(wxAtoi(prms[9]));
+  input_sentence_list = wxStringTokenize(prms[10], ",");
+  output_sentence_list_type = static_cast<ListType>(wxAtoi(prms[11]));
+  output_sentence_list = wxStringTokenize(prms[12], ",");
+  is_garmin = !!wxAtoi(prms[14]);
+  GarminUpload = !!wxAtoi(prms[15]);
+  FurunoGP3X = !!wxAtoi(prms[16]);
+
+  is_enabled = true;
+  last_network_port = 0;
+  is_setup = false;
+  if (prms.Count() >= 18) {
+    is_enabled = !!wxAtoi(prms[17]);
+  }
+  if (prms.Count() >= 19) {
+    user_comment = prms[18];
+  }
+  if (prms.Count() >= 20) {
+    auto_sk_discover = !!wxAtoi(prms[19]);
+  }
+  if (prms.Count() >= 21) {
+    socket_can_port = prms[20];
+  }
+  if (prms.Count() >= 22) {
+    no_data_reconnect = wxAtoi(prms[21]);
+  }
+  if (prms.Count() >= 23) {
+    disable_echo = wxAtoi(prms[22]);
+  }
+  if (prms.Count() >= 24) {
+    auth_token = prms[23];
+  }
+}
+
+wxString ConnectionParams::Serialize() const {
+  wxString istcs;
+  for (size_t i = 0; i < input_sentence_list.Count(); i++) {
+    if (i > 0) istcs.Append(",");
+    istcs.Append(input_sentence_list[i]);
+  }
+  wxString ostcs;
+  for (size_t i = 0; i < output_sentence_list.Count(); i++) {
+    if (i > 0) ostcs.Append(",");
+    ostcs.Append(output_sentence_list[i]);
+  }
+  wxString ret = wxString::Format(
+      "%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d;%s;%d;%s;%d;%d;%s",
+      type, net_protocol, network_address.c_str(), network_port, data_protocol,
+      serial_port.c_str(), baudrate, checksum_check,
+      static_cast<int>(direction), input_sentence_list_type, istcs.c_str(),
+      output_sentence_list_type, ostcs.c_str(), 0 /* Priority */, is_garmin,
+      GarminUpload, FurunoGP3X, is_enabled, user_comment.c_str(),
+      auto_sk_discover, socket_can_port.c_str(), no_data_reconnect,
+      disable_echo, auth_token.c_str());
+
+  return ret;
+}
+
+std::string ConnectionParams::GetKey() const {
+  std::stringstream ss;
+  ss << type << net_protocol << network_address << network_port << data_protocol
+     << serial_port << baudrate << checksum_check << static_cast<int>(direction)
+     << input_sentence_list_type << output_sentence_list_type << is_garmin
+     << user_comment << auto_sk_discover << socket_can_port << no_data_reconnect
+     << disable_echo << auth_token;
+  for (const auto& sentence : output_sentence_list) ss << sentence;
+  for (const auto& sentence : input_sentence_list) ss << sentence;
+  return ss.str();
 }
 
 wxString ConnectionParams::GetPortDirectionValueStr() const {
@@ -244,109 +199,63 @@ wxString ConnectionParams::GetPortDirectionValueStr() const {
   return StringByDirection.at(direction);
 }
 
-wxString ConnectionParams::FilterTypeToStr(ListType type,
-                                           FilterDirection dir) const {
-  if (dir == FILTER_INPUT) {
-    if (type == BLACKLIST)
-      return _("Reject");
-    else
-      return _("Accept");
-  } else {
-    if (type == BLACKLIST)
-      return _("Drop");
-    else
-      return _("Send");
-  }
-}
-
-wxString ConnectionParams::GetFiltersStr() const {
-  wxString istcs;
-  for (size_t i = 0; i < InputSentenceList.Count(); i++) {
-    if (i > 0) istcs.Append(",");
-    istcs.Append(InputSentenceList[i]);
-  }
-  wxString ostcs;
-  for (size_t i = 0; i < OutputSentenceList.Count(); i++) {
-    if (i > 0) ostcs.Append(",");
-    ostcs.Append(OutputSentenceList[i]);
-  }
-  wxString ret = "";
-  if (istcs.Len() > 0) {
-    ret.Append(_("In"));
-    ret.Append(wxString::Format(
-        ": %s %s", FilterTypeToStr(InputSentenceListType, FILTER_INPUT).c_str(),
-        istcs.c_str()));
-  } else
-    ret.Append(_("In: None"));
-
-  if (ostcs.Len() > 0) {
-    ret.Append(", ");
-    ret.Append(_("Out"));
-    ret.Append(wxString::Format(
-        ": %s %s",
-        FilterTypeToStr(OutputSentenceListType, FILTER_OUTPUT).c_str(),
-        ostcs.c_str()));
-  } else
-    ret.Append(_(", Out: None"));
-  return ret;
-}
-
 wxString ConnectionParams::GetDSPort() const {
-  if (Type == SERIAL)
-    return wxString::Format("Serial:%s", Port.c_str());
-  else if (Type == NETWORK) {
-    wxString proto = NetworkProtocolToString(NetProtocol);
-    return wxString::Format("%s:%s:%d", proto.c_str(), NetworkAddress.c_str(),
-                            NetworkPort);
-  } else if (Type == INTERNAL_BT) {
-    return Port;  // mac
+  if (type == SERIAL)
+    return wxString::Format("Serial:%s", serial_port.c_str());
+  else if (type == NETWORK) {
+    wxString proto = NetworkProtocolToString(net_protocol);
+    return wxString::Format("%s:%s:%d", proto.c_str(), network_address.c_str(),
+                            network_port);
+  } else if (type == INTERNAL_BT) {
+    return serial_port;  // mac
   } else
     return "";
 }
 
-bool ConnectionParams::GetValidPort() const {
-  if (Type == SERIAL && Port == "")
+bool ConnectionParams::IsPortValid() const {
+  if (type == SERIAL && serial_port == "")
     return false;
-  else if (Type == NETWORK && (NetworkAddress == "" || !NetworkPort))
+  else if (type == NETWORK && (network_address == "" || !network_port))
     return false;
-  else if (Type == INTERNAL_BT && Port == "")
+  else if (type == INTERNAL_BT && serial_port == "")
     return false;
   else
     return true;
 }
 
 std::string ConnectionParams::GetStrippedDSPort() const {
-  if (Type == SERIAL) {
-    wxString t = wxString::Format("Serial:%s", Port.c_str());
+  if (type == SERIAL) {
+    wxString t = wxString::Format("Serial:%s", serial_port.c_str());
     wxString comx = t.AfterFirst(':').BeforeFirst(' ');
     return comx.ToStdString();
-  } else if (Type == NETWORK) {
-    wxString proto = NetworkProtocolToString(NetProtocol);
+  } else if (type == NETWORK) {
+    wxString proto = NetworkProtocolToString(net_protocol);
     wxString t = wxString::Format("%s:%s:%d", proto.c_str(),
-                                  NetworkAddress.c_str(), NetworkPort);
+                                  network_address.c_str(), network_port);
     return t.ToStdString();
 
-  } else if (Type == SOCKETCAN) {
+  } else if (type == SOCKETCAN) {
     std::string rv;
-    if (!socketCAN_port.ToStdString().empty())
-      rv += "socketCAN-" + socketCAN_port.ToStdString();
+    if (!socket_can_port.ToStdString().empty())
+      rv += "socketCAN-" + socket_can_port.ToStdString();
     return rv;
-  } else if (Type == INTERNAL_BT) {
-    return Port.ToStdString();
-  } else if (Type == INTERNAL_GPS) {
-    return Port.ToStdString();
+  } else if (type == INTERNAL_BT) {
+    return serial_port.ToStdString();
+  } else if (type == INTERNAL_GPS) {
+    return serial_port.ToStdString();
   } else
     return "";
 }
 
 std::string ConnectionParams::GetLastDSPort() const {
-  if (Type == SERIAL) {
-    wxString sp = wxString::Format("Serial:%s", Port.c_str());
+  if (type == SERIAL) {
+    wxString sp = wxString::Format("Serial:%s", serial_port.c_str());
     return sp.ToStdString();
   } else {
-    wxString proto = NetworkProtocolToString(LastNetProtocol);
-    wxString sp = wxString::Format("%s:%s:%d", proto.c_str(),
-                                   LastNetworkAddress.c_str(), LastNetworkPort);
+    wxString proto = NetworkProtocolToString(last_net_protocol);
+    wxString sp =
+        wxString::Format("%s:%s:%d", proto.c_str(),
+                         last_network_address.c_str(), last_network_port);
     return sp.ToStdString();
   }
 }
@@ -357,18 +266,17 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence,
   bool listype = false;
 
   if (direction == FILTER_INPUT) {
-    filter = InputSentenceList;
-    if (InputSentenceListType == WHITELIST) listype = true;
+    filter = input_sentence_list;
+    if (input_sentence_list_type == WHITELIST) listype = true;
   } else {
-    filter = OutputSentenceList;
-    if (OutputSentenceListType == WHITELIST) listype = true;
+    filter = output_sentence_list;
+    if (output_sentence_list_type == WHITELIST) listype = true;
   }
   if (filter.Count() == 0)  // Empty list means everything passes
     return true;
 
-  wxString fs;
   for (size_t i = 0; i < filter.Count(); i++) {
-    fs = filter[i];
+    wxString fs = filter[i];
     switch (fs.Length()) {
       case 2:
         if (fs == sentence.Mid(1, 2)) return listype;
@@ -382,7 +290,7 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence,
       default:
         // TODO: regex patterns like ".GPZ.." or 6-character patterns
         //       are rejected in the connection settings dialogue currently
-        //       experts simply edit .opencpn/opncpn.config
+        //       experts simply edit .opencpn/opencpn.config
         wxRegEx re(fs);
         if (re.Matches(sentence.Mid(0, 8))) {
           return listype;
@@ -394,14 +302,13 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence,
 }
 
 NavAddr::Bus ConnectionParams::GetCommProtocol() const {
-  if (Type == NETWORK) {
-    if (NetProtocol == SIGNALK)
+  if (type == NETWORK) {
+    if (net_protocol == SIGNALK)
       return NavAddr::Bus::Signalk;
-    else if (NetProtocol == GPSD)
+    else if (net_protocol == GPSD)
       return NavAddr::Bus::N0183;
   }
-
-  switch (Protocol) {
+  switch (data_protocol) {
     case PROTO_NMEA0183:
       return NavAddr::Bus::N0183;
     case PROTO_NMEA2000:
@@ -411,15 +318,14 @@ NavAddr::Bus ConnectionParams::GetCommProtocol() const {
   }
 }
 
-NavAddr::Bus ConnectionParams::GetLastCommProtocol() {
-  if (Type == NETWORK) {
-    if (LastNetProtocol == SIGNALK)
+NavAddr::Bus ConnectionParams::GetLastCommProtocol() const {
+  if (type == NETWORK) {
+    if (last_net_protocol == SIGNALK)
       return NavAddr::Bus::Signalk;
-    else if (LastNetProtocol == GPSD)
+    else if (last_net_protocol == GPSD)
       return NavAddr::Bus::N0183;
   }
-
-  switch (LastDataProtocol) {
+  switch (last_data_protocol) {
     case PROTO_NMEA0183:
       return NavAddr::Bus::N0183;
     case PROTO_NMEA2000:

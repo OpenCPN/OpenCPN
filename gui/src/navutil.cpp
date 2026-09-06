@@ -927,7 +927,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
       wxArrayString confs = wxStringTokenize(connectionconfigs, "|");
       for (size_t i = 0; i < confs.Count(); i++) {
         ConnectionParams *prm = new ConnectionParams(confs[i]);
-        if (!prm->Valid) {
+        if (!prm->is_valid) {
           wxLogMessage("Skipped invalid DataStream config");
           delete prm;
           continue;

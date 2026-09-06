@@ -147,11 +147,11 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
       m_listener(listener),
       m_stats_timer(*this, 2s),
       m_closing(false) {
-  m_BaudRate = wxString::Format("%i", params->Baudrate), SetSecThreadInActive();
+  m_BaudRate = wxString::Format("%i", params->baudrate), SetSecThreadInActive();
   m_manufacturers_code = 0;
   m_got_mfg_code = false;
   this->attributes["canAddress"] = std::string("-1");
-  this->attributes["userComment"] = params->UserComment.ToStdString();
+  this->attributes["userComment"] = params->user_comment.ToStdString();
   this->attributes["ioDirection"] = PortDirectionToString(params->direction);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread

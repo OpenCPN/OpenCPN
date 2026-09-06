@@ -128,11 +128,11 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
       m_socketread_watchdog_timer(*this),
       m_ok(false),
       m_is_conn_err_reported(false) {
-  m_addr.Hostname(params->NetworkAddress);
-  m_addr.Service(params->NetworkPort);
-  this->attributes["netAddress"] = params->NetworkAddress.ToStdString();
-  this->attributes["netPort"] = std::to_string(params->NetworkPort);
-  this->attributes["userComment"] = params->UserComment.ToStdString();
+  m_addr.Hostname(params->network_address);
+  m_addr.Service(params->network_port);
+  this->attributes["netAddress"] = params->network_address.ToStdString();
+  this->attributes["netPort"] = std::to_string(params->network_port);
+  this->attributes["userComment"] = params->user_comment.ToStdString();
   this->attributes["ioDirection"] = PortDirectionToString(params->direction);
   m_driver_stats.driver_bus = NavAddr::Bus::N0183;
   m_driver_stats.driver_iface = params->GetStrippedDSPort();
@@ -165,7 +165,7 @@ void CommDriverN0183Net::Open() {
   unsigned int addr = inet_addr(m_addr.IPAddress().mb_str());
 #endif
   // Create the socket
-  switch (m_params.NetProtocol) {
+  switch (m_params.net_protocol) {
     case GPSD: {
       OpenNetworkGpsd();
       break;
@@ -189,7 +189,7 @@ void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
     // We need a local (bindable) address to create the Datagram receive socket
     // Set up the reception socket
     wxIPV4address conn_addr;
-    conn_addr.Service(std::to_string(m_params.NetworkPort));
+    conn_addr.Service(std::to_string(m_params.network_port));
     conn_addr.AnyAddress();
     conn_addr.AnyAddress();
     m_sock =
@@ -245,8 +245,8 @@ void CommDriverN0183Net::OpenNetworkTcp(unsigned int addr) {
     m_socket_server->SetTimeout(1);  // Short timeout
     m_driver_stats.available = m_socket_server->IsOk();
   } else {
-    MESSAGE_LOG << "Opening TCP connection to " << m_params.NetworkAddress
-                << ":" << m_params.NetworkPort;
+    MESSAGE_LOG << "Opening TCP connection to " << m_params.network_address
+                << ":" << m_params.network_port;
     m_sock = new wxSocketClient();
     m_sock->SetEventHandler(*this, DS_SOCKET_ID);
     int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
@@ -283,9 +283,9 @@ void CommDriverN0183Net::OnSocketReadWatchdogTimer() {
   m_dog_value--;
 
   if (m_dog_value <= 0) {  // No receive in n seconds
-    if (GetParams().NoDataReconnect) {
+    if (GetParams().no_data_reconnect) {
       // Reconnect on NO DATA is true, so try to reconnect now.
-      if (m_params.NetProtocol == TCP) {
+      if (m_params.net_protocol == TCP) {
         auto* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
         if (tcp_socket) tcp_socket->Close();
 
@@ -323,8 +323,8 @@ void CommDriverN0183Net::OnTimerSocket() {
       auto since_connect = steady_clock::now() - m_connect_time;
       if (since_connect > 10s && !m_is_conn_err_reported) {
         std::stringstream ss;
-        ss << _("Cannot connect to remote server ") << m_params.NetworkAddress
-           << ":" << m_params.NetworkPort;
+        ss << _("Cannot connect to remote server ") << m_params.network_address
+           << ":" << m_params.network_port;
         CommDriverRegistry::GetInstance().evt_driver_msg.Notify(ss.str());
         m_is_conn_err_reported = true;
         m_driver_stats.error_count++;
@@ -395,7 +395,7 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     case wxSOCKET_LOST: {
       m_driver_stats.available = GetSock()->IsOk();
       using namespace std::chrono;
-      if (m_params.NetProtocol == TCP || m_params.NetProtocol == GPSD) {
+      if (m_params.net_protocol == TCP || m_params.net_protocol == GPSD) {
         if (m_rx_connect_event) {
           MESSAGE_LOG << "NetworkDataStream connection lost: "
                       << m_params.GetDSPort();
@@ -427,21 +427,21 @@ void CommDriverN0183Net::OnSocketEvent(wxSocketEvent& event) {
     }
 
     case wxSOCKET_CONNECTION: {
-      if (m_params.NetProtocol == GPSD) {
+      if (m_params.net_protocol == GPSD) {
         //      Sign up for watcher mode, Cooked NMEA
         //      Note that SIRF devices will be converted by gpsd into
         //      pseudo-NMEA
 
         char cmd[] = R"--(?WATCH={"class":"WATCH", "nmea":true})--";
         m_sock->Write(cmd, strlen(cmd));
-      } else if (m_params.NetProtocol == TCP) {
+      } else if (m_params.net_protocol == TCP) {
         MESSAGE_LOG << "TCP NetworkDataStream connection established: "
                     << m_params.GetDSPort();
 
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
         if (m_params.direction != PortDirection::kOutput) {
           // start the DATA watchdog only if NODATA Reconnect is desired
-          if (GetParams().NoDataReconnect)
+          if (GetParams().no_data_reconnect)
             m_socketread_watchdog_timer.Start(1000);
         }
 
@@ -495,7 +495,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 
   bool ret = true;
   wxDatagramSocket* udp_socket;
-  switch (m_params.NetProtocol) {
+  switch (m_params.net_protocol) {
     case TCP:
       if (GetSock() && GetSock()->IsOk()) {
         m_sock->Write(payload.mb_str(), strlen(payload.mb_str()));
@@ -542,7 +542,7 @@ bool CommDriverN0183Net::SendSentenceNetwork(const wxString& payload) {
 }
 
 void CommDriverN0183Net::Close() {
-  MESSAGE_LOG << "Closing NMEA NetworkDataStream " << m_params.NetworkPort;
+  MESSAGE_LOG << "Closing NMEA NetworkDataStream " << m_params.network_port;
   m_stats_timer.Stop();
   //    Kill off the TCP Socket if alive
   if (m_sock) {

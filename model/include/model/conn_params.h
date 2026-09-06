@@ -72,73 +72,97 @@ typedef enum {
 
 class ConnectionParamsPanel;
 
+/**
+ * Connection data container close to a POD struct
+ */
 class ConnectionParams {
 public:
   ConnectionParams();
+  ConnectionParams(const wxString &config_str);
   ~ConnectionParams();
-  ConnectionParams(const wxString &configStr);
 
-  ConnectionType Type;
-  NetworkProtocol NetProtocol;
-  wxString NetworkAddress;
-  int NetworkPort;
-  bool is_server;
-
-  wxString LastNetworkAddress;
-  int LastNetworkPort;
-  NetworkProtocol LastNetProtocol;
-  DataProtocol LastDataProtocol;
-
-  DataProtocol Protocol;
-  wxString Port;
-  wxString socketCAN_port;
-  int Baudrate;
-  bool NoDataReconnect;
-  bool DisableEcho;
-  bool ChecksumCheck;
-  bool Garmin;
-  bool GarminUpload;
-  bool FurunoGP3X;
-  bool AutoSKDiscover;
+  ConnectionType type;
+  NetworkProtocol net_protocol;
+  DataProtocol data_protocol;
+  wxString network_address;
+  int network_port;
+  wxString serial_port;
+  wxString socket_can_port;
   PortDirection direction;
-  ListType InputSentenceListType;
-  wxArrayString InputSentenceList;
-  ListType OutputSentenceListType;
-  wxArrayString OutputSentenceList;
-  bool bEnabled;
-  wxString UserComment;
-  wxString AuthToken;
+  DataProtocol last_data_protocol;
+  NetworkProtocol last_net_protocol;
+
+  bool auto_sk_discover;
+  bool checksum_check;
+  bool disable_echo;
+  bool FurunoGP3X;    // Unused placeholder?
+  bool GarminUpload;  // Unused placeholder?
+  bool is_enabled;
+  bool is_garmin;
+  bool is_server;
+  bool is_setup;
+  bool is_valid;
+  bool no_data_reconnect;
+  int baudrate;
+  int last_network_port;
+  ListType input_sentence_list_type;
+  ListType output_sentence_list_type;
+  wxArrayString input_sentence_list;
+  wxArrayString output_sentence_list;
+  wxString auth_token;
+  wxString last_network_address;
+  wxString user_comment;
+
+  ConnectionParamsPanel *options_panel;
 
   /** Return string unique for each instance. */
   std::string GetKey() const;
 
   wxString Serialize() const;
-  void Deserialize(const wxString &configStr);
+  void Deserialize(const wxString &config_str);
 
-  wxString GetSourceTypeStr() const;
-  wxString GetAddressStr() const;
-  wxString GetParametersStr() const;
+  /** Return translated name for direction, like _("Input"). */
   wxString GetPortDirectionValueStr() const;
-  wxString GetFiltersStr() const;
+
+  /**
+   * Return port description including for example serial port or
+   * network address/port, possibly empty.
+   */
   wxString GetDSPort() const;
-  bool GetValidPort() const;
+
+  /** Return true if port data like com port or network address are sane. */
+  bool IsPortValid() const;
+
+  /**
+   * Return Last known network "address:protocol:port" for network connections,
+   *     else "Serial: <port>"
+   */
   std::string GetLastDSPort() const;
-  NavAddr::Bus GetLastCommProtocol();
-  wxString GetPortStr() const { return Port; }
-  void SetPortStr(wxString str) { Port = str; }
-  std::string GetStrippedDSPort() const;
+
+  /**
+   * Return NavAddr::Bus corresponding to network address/port or
+   * serial parameters.
+   */
   NavAddr::Bus GetCommProtocol() const;
 
+  /**
+   * Return NavAddr::Bus corresponding to last known network address/port or
+   *  serial parameters.
+   */
+  NavAddr::Bus GetLastCommProtocol() const;
+
+  /**
+   * Return port string with possible windows extra data removed, in some
+   * cases empty.
+   */
+  std::string GetStrippedDSPort() const;
+
+  /** Return true if given sentence and direction passes connection filters. */
   bool SentencePassesFilter(const wxString &sentence,
                             FilterDirection direction) const;
-  bool Valid;
-  bool b_IsSetup;
-  ConnectionParamsPanel *m_optionsPanel;
-
-private:
-  wxString FilterTypeToStr(ListType type, FilterDirection dir) const;
 };
 
+/** Return global list of connections. */
 std::vector<ConnectionParams *> &TheConnectionParams();
 
 #endif

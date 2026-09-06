@@ -3422,26 +3422,26 @@ wxString BuildAndroidSettingsString(void) {
 
   // Internal GPS.
   for (auto &cp : TheConnectionParams()) {
-    if (INTERNAL_GPS == cp->Type) {
+    if (INTERNAL_GPS == cp->type) {
       result += _T("prefb_internalGPS:");
-      result += cp->bEnabled ? _T("1;") : _T("0;");
+      result += cp->is_enabled ? _T("1;") : _T("0;");
     }
-    if (SERIAL == cp->Type) {
-      if (wxNOT_FOUND != cp->GetPortStr().Find(_T("PL2303"))) {
+    if (SERIAL == cp->type) {
+      if (wxNOT_FOUND != cp->serial_port.Find(_T("PL2303"))) {
         result += _T("prefb_PL2303:");
-        result += cp->bEnabled ? _T("1;") : _T("0;");
-      } else if (wxNOT_FOUND != cp->GetPortStr().Find(_T("dAISy"))) {
+        result += cp->is_enabled ? _T("1;") : _T("0;");
+      } else if (wxNOT_FOUND != cp->serial_port.Find(_T("dAISy"))) {
         result += _T("prefb_dAISy:");
-        result += cp->bEnabled ? _T("1;") : _T("0;");
-      } else if (wxNOT_FOUND != cp->GetPortStr().Find(_T("FT232R"))) {
+        result += cp->is_enabled ? _T("1;") : _T("0;");
+      } else if (wxNOT_FOUND != cp->serial_port.Find(_T("FT232R"))) {
         result += _T("prefb_FT232R:");
-        result += cp->bEnabled ? _T("1;") : _T("0;");
-      } else if (wxNOT_FOUND != cp->GetPortStr().Find(_T("FT231X"))) {
+        result += cp->is_enabled ? _T("1;") : _T("0;");
+      } else if (wxNOT_FOUND != cp->serial_port.Find(_T("FT231X"))) {
         result += _T("prefb_FT231X:");
-        result += cp->bEnabled ? _T("1;") : _T("0;");
-      } else if (wxNOT_FOUND != cp->GetPortStr().Find(_T("USBDP"))) {
+        result += cp->is_enabled ? _T("1;") : _T("0;");
+      } else if (wxNOT_FOUND != cp->serial_port.Find(_T("USBDP"))) {
         result += _T("prefb_USBDP:");
-        result += cp->bEnabled ? _T("1;") : _T("0;");
+        result += cp->is_enabled ? _T("1;") : _T("0;");
       }
     }
   }
@@ -3673,7 +3673,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
     ConnectionParams *cp = NULL;
 
     for (auto &xcp : TheConnectionParams()) {
-      if (INTERNAL_GPS == xcp->Type) {
+      if (INTERNAL_GPS == xcp->type) {
         pExistingParams = xcp;
         cp = xcp;
         break;
@@ -3682,16 +3682,16 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
 
     bool b_action = true;
     if (pExistingParams) {
-      if (pExistingParams->bEnabled == benable_InternalGPS)
+      if (pExistingParams->is_enabled == benable_InternalGPS)
         b_action = false;  // nothing to do...
       else
-        cp->bEnabled = benable_InternalGPS;
+        cp->is_enabled = benable_InternalGPS;
     } else if (benable_InternalGPS) {  //  Need a new Params
       // make a generic config string for InternalGPS.
       wxString sGPS = _T("2;3;;0;0;;0;1;0;0;;0;;1;0;0;0;0");  // 17 parms
       ConnectionParams *new_params = new ConnectionParams(sGPS);
 
-      new_params->bEnabled = benable_InternalGPS;
+      new_params->is_enabled = benable_InternalGPS;
       TheConnectionParams().push_back(new_params);
       cp = new_params;
     }
@@ -3704,16 +3704,16 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
       DataStream *pds_existing = g_pMUX->FindStream(cp->GetDSPort());
       if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
 
-      if (cp->bEnabled) {
+      if (cp->is_enabled) {
         PortDirection direction  = cp->direction;
         DataStream *dstr =
-            makeSerialDataStream(g_pMUX, cp->Type, cp->GetDSPort(),
+            makeSerialDataStream(g_pMUX, cp->type, cp->GetDSPort(),
                                  wxString::Format(wxT("%i"), cp->Baudrate),
                                  port_type, cp->Priority, cp->Garmin);
 
 #if 0
                 DataStream *dstr = new DataStream( g_pMUX,
-                                                   cp->Type,
+                                                   cp->type,
                                                    cp->GetDSPort(),
                                                    wxString::Format(wxT("%i"), cp->Baudrate),
                                                                     port_type,
@@ -3768,7 +3768,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
           wxLogMessage(_T("    Checking: ") + target + " .. " +
                        xcp->GetDSPort());
 
-          if ((SERIAL == xcp->Type) &&
+          if ((SERIAL == xcp->type) &&
               (target.IsSameAs(xcp->GetDSPort().AfterFirst(':')))) {
             pExistingParams = xcp;
             cp = xcp;
@@ -3781,10 +3781,10 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
         if (pExistingParams) {
           wxLogMessage(_T("Using existing connection  ") + target);
 
-          if (pExistingParams->bEnabled == benabled) {
+          if (pExistingParams->is_enabled == benabled) {
             b_action = false;  // nothing to do...
           } else
-            cp->bEnabled = benabled;
+            cp->is_enabled = benabled;
         } else if (val.BeforeFirst(':').IsSameAs(
                        _T("1"))) {  //  Need a new Params
           // make a generic config string.
@@ -3799,7 +3799,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
 
           ConnectionParams *new_params = new ConnectionParams(sSerial);
 
-          new_params->bEnabled = true;
+          new_params->is_enabled = true;
           TheConnectionParams().push_back(new_params);
           cp = new_params;
           rr |= NEED_NEW_OPTIONS;
@@ -3814,11 +3814,11 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
             DataStream *pds_existing = g_pMUX->FindStream(cp->GetDSPort());
             if (pds_existing) g_pMUX->StopAndRemoveStream(pds_existing);
 
-            if (cp->bEnabled) {
+            if (cp->is_enabled) {
               PortDirection direction = cp->direction;
 #if 0
                             DataStream *dstr = new DataStream( g_pMUX,
-                                                               cp->Type,
+                                                               cp->type,
                                                                cp->GetDSPort(),
                                                                wxString::Format(wxT("%i"), cp->Baudrate),
                                                                port_type,
@@ -3826,7 +3826,7 @@ int androidApplySettingsString(wxString settings, ArrayOfCDI *pACDI) {
                                                                cp->Garmin);
 #endif
               DataStream *dstr = makeSerialDataStream(
-                  g_pMUX, cp->Type, cp->GetDSPort(),
+                  g_pMUX, cp->type, cp->GetDSPort(),
                   wxString::Format(wxT("%i"), cp->Baudrate), port_type,
                   cp->Priority, cp->Garmin);
 
