@@ -59,7 +59,8 @@
 #define ID_RCLK_MENU_MOVEDOWN_WP 7027
 
 #define COLUMN_PLANNED_SPEED 9
-#define COLUMN_ETD 13
+#define COLUMN_ARRIVAL_RADIUS 12
+#define COLUMN_ETD 14  // shifted by one due to added arrival-radius column
 
 #ifndef PI
 #define PI (4. * atan(1.0))
@@ -456,6 +457,19 @@ void RoutePropDlgImpl::UpdatePoints() {
     data.push_back(wxVariant(
         MakeTideInfo(tide_station, lat, lon, eta_dt)));  // Next Tide event
     data.push_back(wxVariant(desc));                     // Description
+
+    // Insert Arrival radius column (formatted using existing helpers)
+    RoutePoint* rp_for_arr = m_pRoute->GetPoint(in + 1);
+    if (rp_for_arr) {
+      std::ostringstream arrs;
+      arrs << std::fixed << std::setprecision(3)
+           << toUsrDistance(rp_for_arr->GetWaypointArrivalRadius()) << " "
+           << getUsrDistanceUnit();
+      data.push_back(wxVariant(arrs.str()));
+    } else {
+      data.push_back(wxVariant(""));
+    }
+
     data.push_back(wxVariant(crs));
     data.push_back(wxVariant(etd));
     data.push_back(
@@ -515,10 +529,8 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
     }
 
     m_pRoute = pR;
-
     m_tcPlanSpeed->SetValue(
         wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
-
     if (m_scrolledWindowLinks) {
       wxWindowList kids = m_scrolledWindowLinks->GetChildren();
       for (unsigned int i = 0; i < kids.GetCount(); i++) {
@@ -659,6 +671,43 @@ void RoutePropDlgImpl::PlanSpeedOnTextEnter(wxCommandEvent& event) {
   }
 }
 
+void RoutePropDlgImpl::ArrivalRadiusOnTextEnter(wxCommandEvent& event) {
+  if (!m_pRoute) return;
+
+  wxString sval = m_tcArrivalRadius->GetValue();
+  sval.Trim(true);
+  sval.Trim(false);
+  if (sval.IsEmpty()) {
+    // nothing to do
+    return;
+  }
+
+  // Accept plain number, or tolerant formats ("50", "50 m", "50.0", "1e2")
+  double arr_r_usr = 0.0;
+  bool ok = sval.ToDouble(&arr_r_usr);
+  if (!ok) {
+    wxString num;
+    for (wxChar c : sval) {
+      if (wxIsdigit(c) || c == '.' || c == ',' || c == '-' || c == '+' ||
+          c == 'e' || c == 'E')
+        num.Append(c);
+    }
+    num.Replace(',', '.');
+    ok = num.ToDouble(&arr_r_usr);
+  }
+
+  if (ok) {
+    // Convert from user units to internal units (use same helper as elsewhere).
+    double arr_internal = fromUsrDistance(arr_r_usr, -1);
+    if (arr_internal != 0.) {
+      m_pRoute->SetRouteArrivalRadius(arr_internal);
+    }
+    m_pRoute->UpdateWaypointsArrivalRadius(arr_internal);
+    NavObj_dB::GetInstance().UpdateRoute(m_pRoute);
+    UpdatePoints();
+  }
+}
+
 void RoutePropDlgImpl::PlanSpeedOnKillFocus(wxFocusEvent& event) {
   if (!m_pRoute) return;
   double spd;
@@ -671,6 +720,18 @@ void RoutePropDlgImpl::PlanSpeedOnKillFocus(wxFocusEvent& event) {
     m_tcPlanSpeed->SetValue(
         wxString::FromDouble(toUsrSpeed(m_pRoute->m_PlannedSpeed)));
   }
+  event.Skip();
+}
+
+void RoutePropDlgImpl::ArrivalRadiusOnKillFocus(wxFocusEvent& event) {
+  // Do not commit the control contents on focus loss.
+  // Restore the displayed value to the route's stored arrival radius so
+  // accidental edits are not applied unless the user pressed Enter.
+  if (!m_pRoute) {
+    event.Skip();
+    return;
+  }
+  // allow normal focus handling to continue
   event.Skip();
 }
 
@@ -719,6 +780,34 @@ void RoutePropDlgImpl::WaypointsOnDataViewListCtrlItemValueChanged(
       }
     } else {
       p->SetETD(wxInvalidDateTime);
+    }
+  }
+
+  else if (ev_col == COLUMN_ARRIVAL_RADIUS) {
+    // Parse user input in user units (expects a plain number). Tolerant
+    // parsing.
+    wxString vs = value.GetString();
+    vs.Trim(true);
+    vs.Trim(false);
+    double arr_val = 0.0;
+    bool ok = vs.ToDouble(&arr_val);
+    if (!ok) {
+      // Try to strip any non-numeric chars (allow comma/dot)
+      wxString num;
+      for (wxChar c : vs) {
+        if (wxIsdigit(c) || c == '.' || c == ',' || c == '-' || c == '+' ||
+            c == 'e' || c == 'E')
+          num.Append(c);
+      }
+      num.Replace(',', '.');
+      ok = num.ToDouble(&arr_val);
+    }
+    if (ok) {
+      // convert from user units into internal units (nautical miles)
+      double arr_internal = fromUsrDistance(arr_val, -1);
+      p->SetWaypointArrivalRadius(arr_internal);
+      // Persist change
+      NavObj_dB::GetInstance().UpdateRoutePoint(p);
     }
   }
   UpdatePoints();
@@ -1200,7 +1289,6 @@ wxString RoutePropDlgImpl::MakeTideInfo(wxString stationName, double lat,
 void RoutePropDlgImpl::ItemEditOnMenuSelection(wxCommandEvent& event) {
   wxString findurl = m_pEditedLink->GetURL();
   wxString findlabel = m_pEditedLink->GetLabel();
-
   LinkPropImpl* LinkPropDlg = new LinkPropImpl(this);
   LinkPropDlg->m_textCtrlLinkDescription->SetValue(findlabel);
   LinkPropDlg->m_textCtrlLinkUrl->SetValue(findurl);

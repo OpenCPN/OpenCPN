@@ -179,7 +179,30 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
 
   wSizerParams->Add(bSizerSpeed, 1, wxEXPAND, 0);
 
-  //
+  // start with Arrival Radius box
+
+  wxBoxSizer* bSizerArrivalRadius;
+  bSizerArrivalRadius = new wxBoxSizer(wxVERTICAL);
+
+  m_stArrivalRadius = new wxStaticText(m_pnlBasic, wxID_ANY, _("Arr Radius"),
+                                       wxDefaultPosition, wxDefaultSize, 0);
+  m_stArrivalRadius->Wrap(-1);
+  bSizerArrivalRadius->Add(m_stArrivalRadius, 0, wxALL, 5);
+  m_tcArrivalRadius =
+      new wxTextCtrl(m_pnlBasic, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
+                     wxTE_PROCESS_ENTER);
+  m_tcArrivalRadius->SetToolTip(
+      _("Distance on which the next waypoint will be activated, press enter to "
+        "confirm. Value entered will be default value for all waypoints in the "
+        "route. On entering 0, ArrivalRadius for the waypoint will be reduced "
+        "to max 20% of leg distance with a minimum of 0.005 miles"));
+  m_tcArrivalRadius->SetMaxSize(wxSize(maxFieldSize, -1));
+  m_tcArrivalRadius->SetMinSize(wxSize(maxFieldSize, -1));
+
+  bSizerArrivalRadius->Add(m_tcArrivalRadius, 0, wxALL, 5);
+
+  wSizerParams->Add(bSizerArrivalRadius, 1, wxEXPAND, 0);
+
   wxBoxSizer* bSizerEnroute;
   bSizerEnroute = new wxBoxSizer(wxVERTICAL);
 
@@ -334,8 +357,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
       wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE,
       wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE,
       wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE,
-      wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE,
-      wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE};
+      wxCOL_WIDTH_AUTOSIZE, wxCOL_WIDTH_AUTOSIZE};
   int colFlags = 0;
   toLabel = _("To WP");
 
@@ -353,6 +375,7 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
       60,   // Speed
       100,  // Next tide event
       -1,   // Description
+      90,   // Arrival Radius
       80,   // Course
       120,  // Estimated Time of Departure (ETD)
       -1};
@@ -414,6 +437,11 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
       _("Description"), wxDATAVIEW_CELL_INERT, columWidths[11],
       static_cast<wxAlignment>(wxALIGN_LEFT), colFlags);
   m_dataViewListColumnDesc->GetRenderer()->EnableEllipsize(wxELLIPSIZE_END);
+  m_dataViewListColumnArrivalRadius = m_dvlcWaypoints->AppendTextColumn(
+      _("Arrival Radius"), CELL_EDITABLE, columWidths[12],
+      static_cast<wxAlignment>(wxALIGN_LEFT), colFlags);
+  m_dataViewListColumnArrivalRadius->GetRenderer()->EnableEllipsize(
+      wxELLIPSIZE_END);
   m_dataViewListColumnCourse = m_dvlcWaypoints->AppendTextColumn(
       _("Course"), wxDATAVIEW_CELL_INERT, columWidths[12],
       static_cast<wxAlignment>(wxALIGN_LEFT), colFlags);
@@ -597,6 +625,13 @@ RoutePropDlg::RoutePropDlg(wxWindow* parent, wxWindowID id,
   m_tcPlanSpeed->Connect(
       wxEVT_COMMAND_TEXT_UPDATED,
       wxCommandEventHandler(RoutePropDlg::PlanSpeedOnTextEnter), NULL, this);
+  m_tcArrivalRadius->Connect(
+      wxEVT_KILL_FOCUS,
+      wxFocusEventHandler(RoutePropDlg::ArrivalRadiusOnKillFocus), NULL, this);
+  m_tcArrivalRadius->Connect(
+      wxEVT_COMMAND_TEXT_ENTER,
+      wxCommandEventHandler(RoutePropDlg::ArrivalRadiusOnTextEnter), NULL,
+      this);
   m_dpDepartureDate->Connect(
       wxEVT_DATE_CHANGED,
       wxDateEventHandler(RoutePropDlg::DepartureDateOnDateChanged), NULL, this);
@@ -699,6 +734,17 @@ RoutePropDlg::~RoutePropDlg() {
   m_tcPlanSpeed->Disconnect(
       wxEVT_COMMAND_TEXT_UPDATED,
       wxCommandEventHandler(RoutePropDlg::PlanSpeedOnTextEnter), NULL, this);
+  m_tcArrivalRadius->Disconnect(
+      wxEVT_KILL_FOCUS,
+      wxFocusEventHandler(RoutePropDlg::ArrivalRadiusOnKillFocus), NULL, this);
+  m_tcArrivalRadius->Disconnect(
+      wxEVT_COMMAND_TEXT_ENTER,
+      wxCommandEventHandler(RoutePropDlg::ArrivalRadiusOnTextEnter), NULL,
+      this);
+  m_tcArrivalRadius->Disconnect(
+      wxEVT_COMMAND_TEXT_UPDATED,
+      wxCommandEventHandler(RoutePropDlg::ArrivalRadiusOnTextEnter), NULL,
+      this);
   m_dpDepartureDate->Disconnect(
       wxEVT_DATE_CHANGED,
       wxDateEventHandler(RoutePropDlg::DepartureDateOnDateChanged), NULL, this);

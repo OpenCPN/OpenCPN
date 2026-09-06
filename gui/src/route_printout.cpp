@@ -75,7 +75,6 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
   // Offset text from the edge of the cell (Needed on Linux)
   m_text_offset_x = 5;
   m_text_offset_y = 8;
-
   m_table.StartFillHeader();
 
   m_table << _("Leg");
