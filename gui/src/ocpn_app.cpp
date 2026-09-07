@@ -250,21 +250,6 @@ Arguments:
   GPX  file                     GPX-formatted file with waypoints or routes.
 )";
 
-static const char *const kNavWarning = _(R"(
-OpenCPN is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-OpenCPN must only be used in conjunction with approved
-paper charts and traditional methods of navigation.
-
-DO NOT rely upon OpenCPN for safety of life or property.
-
-Please click "Agree" and proceed, or "Cancel" to quit.)");
-
 //  comm event definitions
 wxDEFINE_EVENT(EVT_N2K_129029, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N2K_129026, wxCommandEvent);
@@ -325,15 +310,6 @@ DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
-
-class NavWarningDlg : public wxMessageDialog {
-public:
-  NavWarningDlg(wxWindow *parent)
-      : wxMessageDialog(parent, kNavWarning, _("Welcome to OpenCPN"),
-                        wxOK | wxCANCEL) {
-    SetOKCancelLabels(_("Agree"), _("Cancel"));
-  }
-};
 
 class WallpaperFrame : public wxFrame {
 public:
@@ -413,14 +389,6 @@ static wxString newPrivateFileName(wxString, const char *name,
   return filePathAndName;
 }
 
-#ifndef __ANDROID__
-static bool ShowNavWarning() {
-  NavWarningDlg dlg(gFrame);
-  int agreed = dlg.ShowModal();
-  return agreed == wxID_OK;
-}
-#endif
-
 static bool DoNavMessage(wxString &new_version_string) {
 #ifdef __ANDROID__
   //  We defer the startup message to here to allow the app frame to be
@@ -431,7 +399,7 @@ static bool DoNavMessage(wxString &new_version_string) {
     // qDebug() << "Showing NavWarning";
     wxMilliSleep(500);
 
-    if (!ShowNavWarning()) {
+    if (!ShowNavWarning(gFrame)) {
       qDebug() << "Closing due to NavWarning Cancel";
       gFrame->Close();
       androidTerminate();
@@ -449,7 +417,7 @@ static bool DoNavMessage(wxString &new_version_string) {
   //  or if the version string has changed at all
   //  We defer until here to allow for localization of the message
   if (!n_NavMessageShown || (new_version_string != g_config_version_string)) {
-    if (!ShowNavWarning()) return false;
+    if (!ShowNavWarning(gFrame)) return false;
     n_NavMessageShown = 1;
     pConfig->Flush();
   }
@@ -524,14 +492,6 @@ static void MyCPLErrorHandler(CPLErr eErrClass, int nError,
   wxString str(msg, wxConvUTF8);
   wxLogMessage(str);
 }
-
-#ifdef __ANDROID__
-bool ShowNavWarning() {
-  wxString vs = wxString::Format(" .. Version %s", VERSION_FULL);
-  androidShowDisclaimer(_("OpenCPN for Android") + vs, kNavWarning);
-  return true;
-}
-#endif
 
 // `Main program` equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------

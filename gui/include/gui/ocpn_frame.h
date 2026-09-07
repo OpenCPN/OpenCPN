@@ -97,9 +97,6 @@ class MyFrame;          // forward
 extern MyFrame* gFrame; /**< Global instance */
 
 // FIXME (leamas) to have utility functions in top window is a really bad idea.
-#ifdef __ANDROID__
-bool ShowNavWarning();
-#endif
 void ApplyLocale(void);
 
 /**
