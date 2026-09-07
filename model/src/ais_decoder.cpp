@@ -606,6 +606,10 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
     }
 
     case 24: {  // Static data report
+      // First, check that we have received the position and thus
+      // a main message that has given the target a relevant class
+      if (!ptd->b_positionOnceValid) break;
+
       int part_number = bstr->GetInt(39, 2);
       if (0 == part_number) {
         bstr->GetStr(41, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
@@ -623,16 +627,6 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
         ptd->DimC = bstr->GetInt(151, 6);
         ptd->DimD = bstr->GetInt(157, 6);
         parse_result = true;
-      }
-      if (ptd->Class == AIS_CLASS_A) {
-        // Will occur if this msg 24 is received before
-        // any msg 18/19 for this Class B target
-        if (!ptd->b_isDSCtarget) {
-          if (!isBuoyMmsi(ptd->MMSI))
-            ptd->Class = AIS_CLASS_B;
-          else
-            ptd->Class = AIS_BUOY;
-        }
       }
       break;
     }
