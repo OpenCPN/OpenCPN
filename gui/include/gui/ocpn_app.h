@@ -43,6 +43,7 @@
 
 #include "data_monitor.h"
 #include "ocpn_plugin.h"
+#include "welcome.h"
 
 using CallbacksByPlugin =
     std::unordered_map<std::string, std::function<void(HostApi122::EventType)>>;

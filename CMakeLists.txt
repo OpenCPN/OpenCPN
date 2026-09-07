@@ -919,6 +919,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/user_colors_dlg.h
     ${GUI_HDR_DIR}/viewport.h
     ${GUI_HDR_DIR}/waypointman_gui.h
+    ${GUI_HDR_DIR}/welcome.h
 )
 
 set(GUI_SRC_DIR ${CMAKE_SOURCE_DIR}/gui/src)
@@ -1046,7 +1047,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/user_colors.cpp
     ${GUI_SRC_DIR}/viewport.cpp
     ${GUI_SRC_DIR}/waypointman_gui.cpp
-
+    ${GUI_SRC_DIR}/welcome.cpp
 )
 
 if (NOT QT_ANDROID)
