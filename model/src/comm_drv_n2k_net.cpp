@@ -387,7 +387,7 @@ void CommDriverN2KNet::OpenNetworkTCP(unsigned int addr) {
 
   // In case the connection is lost before acquired....
   SetConnectTime(wxDateTime::Now());
-  m_driver_stats.available = GetSock()->IsOk();
+  m_driver_stats.available = GetSock() && GetSock()->IsOk();
 }
 
 void CommDriverN2KNet::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
@@ -1303,7 +1303,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 #if 1
 
     case wxSOCKET_LOST: {
-      m_driver_stats.available = GetSock()->IsOk();
+      m_driver_stats.available = GetSock() && GetSock()->IsOk();
       if (GetProtocol() == TCP || GetProtocol() == GPSD) {
         if (GetBrxConnectEvent())
           wxLogMessage(wxString::Format("NetworkDataStream connection lost: %s",
