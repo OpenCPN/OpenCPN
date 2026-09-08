@@ -1364,6 +1364,8 @@ void ConnectionEditDialog::ShowNMEASerial(bool visible) {
   m_garmin_host_chkbox->Show(visible && advanced);
   m_ser_comment_text->Show(visible);
   m_serial_comment_tctrl->Show(visible);
+  m_net_comment_text->Hide();
+  m_net_comment_tctrl->Hide();
 }
 
 void ConnectionEditDialog::ShowNMEAGPS(bool visible) {
@@ -1642,6 +1644,12 @@ void ConnectionEditDialog::PreloadControls(ConnectionParams* cp) {
 }
 
 void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
+  if (cp->Type == NETWORK && cp->direction == PortDirection::kInput) {
+    // work around buggy pre 5.16 configurations which have "localhost" or
+    // 127.0.0.1 instead of the correct 0.0.0.0
+    if (cp->NetworkAddress == "127.0.0.1" || cp->NetworkAddress == "localhost")
+      cp->NetworkAddress = "0.0.0.0";
+  }
   const std::string view = NetViewByConnection(cp);
   auto found = std::find(kBasicNetViews.begin(), kBasicNetViews.end(), view);
   m_net_expert_chkbox->SetValue(found == kBasicNetViews.end());
