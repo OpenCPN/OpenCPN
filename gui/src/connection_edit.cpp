@@ -488,7 +488,7 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
   auto port = m_net_port_tctrl->GetValue();
   if (port == kDefaultGpsdPort || port == kDefaultSignalkPort || port.empty())
     net_port_w_help->RestoreHelp();
-  if (m_net_view_choice->GetCount() != 2)
+  if (m_net_data_protocol_choice->GetCount() != 2)
     SetupProtocolChoice(m_net_data_protocol_choice);
   if (view == kTcpDevice || view == kTcpClient) {
     m_net_addr_text->Show();
