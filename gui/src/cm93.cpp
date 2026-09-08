@@ -4942,6 +4942,80 @@ int cm93compchart::GetNativeScale() {
     return (int)1e8;
 }
 
+size_t cm93compchart::CollectFeatureAreaRings(
+    const char *feature_name,
+    std::vector<std::vector<wxPoint2DDouble> > &rings) {
+  size_t before = rings.size();
+
+  if (m_pcm93chart_current)
+    m_pcm93chart_current->CollectFeatureAreaRings(feature_name, rings);
+
+  return rings.size() - before;
+}
+
+wxString cm93compchart::GetFeatureDebugSummary() {
+  if (m_pcm93chart_current)
+    return wxString::Format("current_cm93_scale=%d %s",
+                            m_pcm93chart_current->GetNativeScale(),
+                            m_pcm93chart_current->GetFeatureDebugSummary());
+
+  return "current_cm93_scale=none";
+}
+
+void cm93compchart::PrepareSafetyTile(const ViewPort &vpt) {
+  // CM93's normal composite selection is deliberately viewport-dependent.
+  // Repeating it for every point in a 41x41 safety tile is both unnecessary
+  // and extremely expensive.  Prepare all eight scales over the complete
+  // tile once; point classification below still selects the highest-detail
+  // scale whose real M_COVR contains that exact point.
+  for (int cmscale = 0; cmscale < 8; ++cmscale) {
+    if (!m_pcm93chart_array[cmscale]) {
+      m_pcm93chart_array[cmscale] = new cm93chart();
+
+      wxChar ext = (wxChar)('A' + cmscale - 1);
+      if (cmscale == 0) ext = 'Z';
+      wxString file_dummy = "CM93.";
+      file_dummy << ext;
+
+      m_pcm93chart_array[cmscale]->SetCM93Dict(m_pDictComposite);
+      m_pcm93chart_array[cmscale]->SetCM93Prefix(m_prefixComposite);
+      m_pcm93chart_array[cmscale]->SetCM93Manager(m_pcm93mgr);
+      m_pcm93chart_array[cmscale]->SetColorScheme(m_global_color_scheme);
+      m_pcm93chart_array[cmscale]->Init(file_dummy, FULL_INIT);
+    }
+    m_pcm93chart_array[cmscale]->SetVPParms(vpt);
+  }
+}
+
+cm93chart *cm93compchart::GetHighestDetailSafetyChartAt(double lat,
+                                                        double lon) {
+  for (int cmscale = 7; cmscale >= 0; --cmscale) {
+    cm93chart *chart = m_pcm93chart_array[cmscale];
+    if (chart && chart->IsPointInLoadedM_COVR(lon, lat)) return chart;
+  }
+  return NULL;
+}
+
+bool cm93compchart::SafetyAreaHazardMayIntersect(double min_lat, double max_lat,
+                                                 double min_lon, double max_lon,
+                                                 int *hazard_objects) {
+  int total_hazard_objects = 0;
+  for (int cmscale = 0; cmscale < 8; ++cmscale) {
+    cm93chart *chart = m_pcm93chart_array[cmscale];
+    if (!chart) continue;
+    int scale_hazard_objects = 0;
+    if (chart->SafetyAreaHazardMayIntersect(min_lat, max_lat, min_lon, max_lon,
+                                            &scale_hazard_objects)) {
+      total_hazard_objects += scale_hazard_objects;
+      if (hazard_objects) *hazard_objects = total_hazard_objects;
+      return true;
+    }
+    total_hazard_objects += scale_hazard_objects;
+  }
+  if (hazard_objects) *hazard_objects = total_hazard_objects;
+  return false;
+}
+
 double cm93compchart::GetNormalScaleMin(double canvas_scale_factor,
                                         bool b_allow_overzoom) {
   double oz_factor;

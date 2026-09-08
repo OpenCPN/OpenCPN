@@ -36,6 +36,7 @@ extern bool g_parse_all_enc;
 extern bool g_bportable;
 extern bool g_config_wizard;
 extern bool g_bdisable_opengl;
+extern bool g_segment_safety_test;
 extern std::string g_configdir;
 extern std::vector<std::string> g_params;
 
