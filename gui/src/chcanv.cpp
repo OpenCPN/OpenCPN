@@ -4999,7 +4999,8 @@ void ChartCanvas::UpdateFollowButtonState() {
     for (auto pic : *PluginLoader::GetInstance()->GetPlugInArray()) {
       if (pic->m_enabled && pic->m_init_state) {
         switch (pic->m_api_version) {
-          case 121: {
+          case 121:
+          case 122: {
             auto *ppi = dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);
             if (ppi) ppi->UpdateFollowState(m_canvasIndex, m_bFollow);
             break;

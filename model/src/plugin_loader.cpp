@@ -394,7 +394,8 @@ void PluginLoader::NotifySetupOptionsPlugin(const PlugInData* pd) {
         case 118:
         case 119:
         case 120:
-        case 121: {
+        case 121:
+        case 122: {
           if (pic->m_pplugin) {
             auto ppi = dynamic_cast<opencpn_plugin_19*>(pic->m_pplugin);
             if (ppi) {
