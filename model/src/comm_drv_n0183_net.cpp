@@ -185,7 +185,8 @@ void CommDriverN0183Net::Open() {
 }
 
 void CommDriverN0183Net::OpenNetworkUdp(unsigned int addr) {
-  if (m_params.is_server) {
+  if (m_params.direction != PortDirection::kOutput &&
+      m_params.direction != PortDirection::kUpload) {
     // We need a local (bindable) address to create the Datagram receive socket
     // Set up the reception socket
     wxIPV4address conn_addr;

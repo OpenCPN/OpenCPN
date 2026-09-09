@@ -305,9 +305,10 @@ void CommDriverN2KNet::Open() {
 }
 
 void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
-  if (m_params.is_server) {
+  if (m_params.direction != PortDirection::kOutput &&
+      m_params.direction != PortDirection::kUpload) {
     //  We need a local (bindable) address to create the Datagram receive socket
-    // Set up the receive socket
+    // Set up the recieve socket
     wxIPV4address conn_addr;
     conn_addr.Service(GetNetPort());
     conn_addr.AnyAddress();

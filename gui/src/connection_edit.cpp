@@ -2065,9 +2065,6 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     } else {
       pConnectionParams->NetProtocol = PROTO_UNDEFINED;
     };
-    pConnectionParams->is_server =
-        net_type == kTcpServer || net_type == kUdpInput ||
-        net_type == kUdpReceive || net_type == kMulticastServer;
   }
   if (m_type_serial_radiobtn->GetValue())
     pConnectionParams->Protocol =
