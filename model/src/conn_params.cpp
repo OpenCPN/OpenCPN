@@ -168,7 +168,6 @@ ConnectionParams::ConnectionParams() {
   NoDataReconnect = false;
   DisableEcho = false;
   AuthToken = "";
-  is_server = false;
 }
 
 ConnectionParams::~ConnectionParams() {
