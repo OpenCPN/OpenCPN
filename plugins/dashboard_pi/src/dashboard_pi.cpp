@@ -2595,6 +2595,7 @@ void dashboard_pi::ParseSignalK(wxString &msg) {
   // wxLogMessage(dmsg);
   // printf("%s\n", dmsg.ToUTF8().data());
 
+  jsonReader.Parse(msg, &root);
   if (root.HasMember("self")) {
     if (root["self"].AsString().StartsWith("vessels."))
       m_self = (root["self"].AsString());  // for java server, and OpenPlotter
