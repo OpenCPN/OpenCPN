@@ -454,8 +454,11 @@ void ConnectionEditDialog::InitiateNewConnection() {
   m_net_comment_text->Hide();
   auto port_ctrl = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tctrl);
   if (port_ctrl) port_ctrl->RestoreHelp();
+  m_net_address_tctrl->Show();
+  m_net_address_tctrl->Enable();
   auto addr_ctrl = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tctrl);
   if (addr_ctrl) addr_ctrl->SetHelp(kAddressDefaultHelp);
+  m_net_addr_text->Show();
   SetupProtocolChoice(m_net_data_protocol_choice);
   m_output_chkbox->SetValue(false);
   m_input_chkbox->SetValue(true);
