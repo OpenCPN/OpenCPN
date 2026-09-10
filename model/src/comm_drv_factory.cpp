@@ -89,9 +89,9 @@ void MakeCommDriver(const ConnectionParams* params) {
 
   auto& msgbus = NavMsgBus::GetInstance();
   auto& registry = CommDriverRegistry::GetInstance();
-  switch (params->Type) {
+  switch (params->type) {
     case SERIAL:
-      switch (params->Protocol) {
+      switch (params->data_protocol) {
         case PROTO_NMEA2000: {
           auto driver = std::make_unique<CommDriverN2KSerial>(params, msgbus);
           registry.Activate(std::move(driver));
@@ -106,14 +106,14 @@ void MakeCommDriver(const ConnectionParams* params) {
       }
       break;
     case NETWORK:
-      switch (params->NetProtocol) {
+      switch (params->net_protocol) {
         case SIGNALK: {
           auto driver = std::make_unique<CommDriverSignalKNet>(params, msgbus);
           registry.Activate(std::move(driver));
           break;
         }
         default: {
-          switch (params->Protocol) {
+          switch (params->data_protocol) {
             case PROTO_NMEA0183: {
               auto driver =
                   std::make_unique<CommDriverN0183Net>(params, listener);

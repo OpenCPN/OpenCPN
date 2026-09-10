@@ -129,8 +129,8 @@ CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(
       m_stats_timer(*this, 2s),
       m_params(*params),
       m_listener(listener) {
-  this->attributes["commPort"] = params->Port.ToStdString();
-  this->attributes["userComment"] = params->UserComment.ToStdString();
+  this->attributes["commPort"] = params->serial_port.ToStdString();
+  this->attributes["userComment"] = params->user_comment.ToStdString();
   this->attributes["ioDirection"] = PortDirectionToString(params->direction);
   m_driver_stats.driver_bus = NavAddr::Bus::N0183;
   m_driver_stats.driver_iface = params->GetStrippedDSPort();

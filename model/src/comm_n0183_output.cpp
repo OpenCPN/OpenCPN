@@ -117,8 +117,8 @@ bool CreateOutputConnection(const wxString& com_name,
           dynamic_cast<CommDriverN0183Serial*>(old_driver.get());
       if (drv_serial_n0183) {
         params_save = drv_serial_n0183->GetParams();
-        baud = params_save.Baudrate;
-        bGarmin = params_save.Garmin;
+        baud = params_save.baudrate;
+        bGarmin = params_save.is_garmin;
         drv_serial_n0183->Close();  // Fast close
       }
       registry.Deactivate(old_driver);
@@ -130,10 +130,10 @@ bool CreateOutputConnection(const wxString& com_name,
   }
   if (com_name.Lower().StartsWith("serial")) {
     ConnectionParams cp;
-    cp.Type = SERIAL;
-    cp.SetPortStr(comx);
-    cp.Baudrate = baud;
-    cp.Garmin = bGarminIn || bGarmin;
+    cp.type = SERIAL;
+    cp.serial_port = comx;
+    cp.baudrate = baud;
+    cp.is_garmin = bGarminIn || bGarmin;
     cp.direction = PortDirection::kUpload;
 
     MakeCommDriver(&cp);
@@ -203,10 +203,10 @@ bool CreateOutputConnection(const wxString& com_name,
       token.ToLong(&port);
 
       ConnectionParams cp;
-      cp.Type = NETWORK;
-      cp.NetProtocol = protocol;
-      cp.NetworkAddress = address;
-      cp.NetworkPort = port;
+      cp.type = NETWORK;
+      cp.net_protocol = protocol;
+      cp.network_address = address;
+      cp.network_port = port;
       cp.direction = PortDirection::kOutput;
 
       MakeCommDriver(&cp);
@@ -276,7 +276,7 @@ int PrepareOutputChannel(const wxString& com_name, N0183DlgCtx dlg_ctx,
       drv_serial_n0183 =
           dynamic_cast<CommDriverN0183Serial*>(existing_driver.get());
       if (drv_serial_n0183) {
-        is_garmin_serial = drv_serial_n0183->GetParams().Garmin;
+        is_garmin_serial = drv_serial_n0183->GetParams().is_garmin;
       }
     }
   }

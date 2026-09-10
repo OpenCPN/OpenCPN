@@ -1339,9 +1339,9 @@ bool MyApp::OnInit() {
   pConfig->UpdateSettings();
 
   for (auto *cp : TheConnectionParams()) {
-    if (cp->bEnabled) {
+    if (cp->is_enabled) {
       if (cp->GetDSPort().Contains("Serial")) {
-        std::string port(cp->Port.ToStdString());
+        std::string port(cp->serial_port.ToStdString());
         /// CheckSerialAccess(gFrame, port);
       }
     }
@@ -1594,9 +1594,9 @@ void MyApp::BuildMainFrame() {
 
   // Load comm connections
   for (auto *cp : TheConnectionParams()) {
-    if (cp->bEnabled) {
+    if (cp->is_enabled) {
       MakeCommDriver(cp);
-      cp->b_IsSetup = TRUE;
+      cp->is_setup = TRUE;
     }
   }
   MakeLoopbackDriver();
