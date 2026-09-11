@@ -121,6 +121,7 @@ public:
            CallBackFunction p_callback = NULL);
   int OpenMin(const char *pszName, int bTestOpen = FALSE);
   int Create(const char *pszName, char **papszOptions);
+  bool IsSencPath(const char *pszPath, const char *pszSuffix = "SENC");
 
   const char *GetName() { return pszName; }
   int GetLayerCount() { return nLayers; }

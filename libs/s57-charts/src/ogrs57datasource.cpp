@@ -86,6 +86,8 @@ OGRS57DataSource::~OGRS57DataSource()
   }
   CPLFree(papoModules);
 
+  if (IsSencPath(pszName)) unlink(pszName);
+
   CPLFree(pszName);
 
   CSLDestroy(papszOptions);
@@ -574,6 +576,27 @@ int OGRS57DataSource::OpenMin(const char *pszFilename, int bTestOpen)
       }
   */
   return TRUE;
+}
+
+/************************************************************************/
+/*                          IsSencPath()                                */
+/*                                                                      */
+/*  OpenCPN copies new cell files into a cache directory named "SENC".  */
+/*  pszPath may be either a directory path ending in a separator or a   */
+/*  full file path; in the latter case the parent directory is checked. */
+/*  If directory component matches pszSuffix, it may be treated as an   */
+/*  OpenCPN SENC cache path and removed after ingesting.                */
+/************************************************************************/
+
+bool OGRS57DataSource::IsSencPath(const char *pszPath, const char *pszSuffix) {
+  if (pszPath == NULL || pszSuffix == NULL) return false;
+  size_t nSuffixLen = strlen(pszSuffix);
+  char *pszDirName = CPLStrdup(CPLGetDirname(pszPath));
+  const char *pszTarget = CPLGetFilename(pszDirName);
+  bool bIsMatch = strlen(pszTarget) == nSuffixLen &&
+                  EQUALN(pszTarget, pszSuffix, nSuffixLen);
+  CPLFree(pszDirName);
+  return bIsMatch;
 }
 
 /************************************************************************/
