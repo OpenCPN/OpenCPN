@@ -1195,8 +1195,6 @@ int Osenc::ingestCell(OGRS57DataSource *poS57DS, const wxString &FullPath000,
   poReader->SetOptions(papszReaderOptions);
   CSLDestroy(papszReaderOptions);
 
-  wxRemoveFile(s0_file);
-
   return 0;
 }
 
