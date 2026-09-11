@@ -122,6 +122,17 @@ public:
   int OpenMin(const char *pszName, int bTestOpen = FALSE);
   int Create(const char *pszName, char **papszOptions);
 
+  /**
+   * OpenCPN copies new cell files into a cache directory named 'SENC'.
+   * Check if the last folder in the "path" is 'SENC' (or any other name specified
+   * by the parent parameter). If so, the cache file may be removed after
+   * ingesting.
+   * @param path points to a C-string file path
+   * @param parent points to a C-string cache folder name
+   * @return true if last folder in "path" matches "parent"
+   */
+  bool IsSencPath(const char *path, const char *parent = "SENC");
+
   const char *GetName() { return pszName; }
   int GetLayerCount() { return nLayers; }
   OGRLayer *GetLayer(int);
