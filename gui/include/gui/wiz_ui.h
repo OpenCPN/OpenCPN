@@ -97,8 +97,12 @@ public:
   void EnumerateGPSD();
 
 private:
+  void OnStopScan(wxCommandEvent& event);
+
   MyConfig* m_pConfig;
   std::vector<ConnectionParams> m_detected_connections;
+  wxButton* m_btnStopScan;
+  bool m_scan_stop = false;
   NMEA0183Flavor SeemsN0183(std::string& data);
   bool SeemsN2000(std::string& data);
 

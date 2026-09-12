@@ -167,7 +167,7 @@ FirstUseWiz::FirstUseWiz(wxWindow* parent, wxWindowID id, const wxString& title,
                                    wxDefaultSize, m_clSourcesChoices, 0);
   bSizerConnections->Add(m_clSources, 1, wxALL | wxEXPAND, 5);
 
-  m_btnRescanSources = new wxButton(m_swConnections, wxID_ANY, _("Rescan..."),
+  m_btnRescanSources = new wxButton(m_swConnections, wxID_ANY, _("Rescan"),
                                     wxDefaultPosition, wxDefaultSize, 0);
   bSizerConnections->Add(m_btnRescanSources, 0, wxALL, 5);
 
