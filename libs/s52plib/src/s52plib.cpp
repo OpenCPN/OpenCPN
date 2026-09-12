@@ -1,4 +1,4 @@
-/***************************************************************************
+  /***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  S52 Presentation Library
@@ -6336,6 +6336,7 @@ int s52plib::BuildLCSymbolTexture(char *str, char *col, wxPoint &r,
   wxMemoryDC mdc;
 
 #if (defined(__WXMSW__) || defined(__WXMAC__) || defined(ANDROID))
+  if (width <= 0 || height <= 0) return -1;
   wxBitmap bmp(width, height, 24);
   mdc.SelectObject(bmp);
   mdc.SetBackground(wxBrush(m_unused_wxColor));
@@ -6433,7 +6434,11 @@ void s52plib::RenderTex(char *str, char *col, wxPoint &r, wxPoint &pivot,
   else {
     symbol_texture = BuildLCSymbolTexture(str, col, r, pivot, origin, scale,
                                           sym_len, sym_height);
-    lc_vector_symbol_cache[key] = symbol_texture;
+    if (symbol_texture >= 0)
+      lc_vector_symbol_cache[key] = symbol_texture;
+    else
+      wxLogWarning("s52plib::RenderTex:  BuildLCSymbolTexture failed for %s",
+                   str);
   }
 
   // Render the texture
