@@ -98,7 +98,6 @@
 #include "model/usb_watch_daemon.h"
 
 #include "ais_info_gui.h"
-#include "dialog_alert.h"
 #include "about_frame_impl.h"
 #include "about.h"
 #include "ais.h"

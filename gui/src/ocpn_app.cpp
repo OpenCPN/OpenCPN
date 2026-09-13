@@ -154,7 +154,6 @@ void gdk_window_set_override_redirect(GdkWindow *window,
 #include "config.h"
 #include "config_mgr.h"
 #include "detail_slider.h"
-#include "dialog_alert.h"
 #include "dychart.h"
 #include "font_mgr.h"
 #include "gdal/cpl_csv.h"
