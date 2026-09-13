@@ -5729,7 +5729,6 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
       }
 
       ls = ls->next;
-      ils++;
     }
 
     free(ptp);
@@ -6533,7 +6532,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 
   wxPoint2DDouble r;
 
-  cw = false;   // Winding is always CCW
+  bool cw = false;   // Winding is always CCW
 
   //    Get a true pixel clipping/bounding box from the vp
   wxPoint pbb = GetPixFromLL(vp_plib.clat, vp_plib.clon);
