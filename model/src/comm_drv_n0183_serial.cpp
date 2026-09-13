@@ -59,7 +59,7 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
   m_garmin_handler = nullptr;
   this->attributes["commPort"] = params->Port.ToStdString();
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+  this->attributes["ioDirection"] = PortDirectionToString(params->direction);
 
   Open();
 }
@@ -153,7 +153,7 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
 void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
   // Is this an output-only port?
   // Commonly used for "Send to GPS" function
-  if (m_params.IOSelect == DS_TYPE_OUTPUT) return;
+  if (m_params.direction == PortDirection::kOutput) return;
 
   SendToListener({msg.begin(), msg.end()}, m_listener, m_params);
 }

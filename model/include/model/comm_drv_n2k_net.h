@@ -135,7 +135,7 @@ private:
   void SetConnectTime(wxDateTime time) { m_connect_time = time; }
   wxDateTime GetConnectTime() { return m_connect_time; }
 
-  dsPortType GetPortType() const { return m_io_select; }
+  PortDirection GetPortDirection() const { return m_direction; }
   wxString GetPort() const { return m_portstring; }
 
   std::vector<unsigned char> PushFastMsgFragment(const CanHeader& header,
@@ -191,7 +191,7 @@ private:
   int m_dog_value;
   std::string m_sock_buffer;
   wxString m_portstring;
-  dsPortType m_io_select;
+  PortDirection m_direction;
   wxDateTime m_connect_time;
   bool m_brx_connect_event;
   bool m_bchecksumCheck;

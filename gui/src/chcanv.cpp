@@ -14020,7 +14020,7 @@ wxString ChartCanvas::FindValidUploadPort() {
     // If there is no persistent upload port recorded (yet)
     // then use the first available serial connection which has output defined.
     for (auto *cp : TheConnectionParams()) {
-      if ((cp->IOSelect != DS_TYPE_INPUT) && cp->Type == SERIAL)
+      if ((cp->direction != PortDirection::kInput) && cp->Type == SERIAL)
         port << "Serial:" << cp->Port;
     }
   }

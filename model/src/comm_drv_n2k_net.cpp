@@ -147,7 +147,7 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
       m_is_multicast(false),
       m_txenter(0),
       m_portstring(params->GetDSPort()),
-      m_io_select(params->IOSelect),
+      m_direction(params->direction),
       m_connection_type(params->Type),
       m_bok(false),
       m_circle(RX_BUFFER_SIZE_NET),
@@ -166,7 +166,7 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
   sprintf(port_char, "%d", params->NetworkPort);
   this->attributes["netPort"] = std::string(port_char);
   this->attributes["userComment"] = params->UserComment.ToStdString();
-  this->attributes["ioDirection"] = DsPortTypeToString(params->IOSelect);
+  this->attributes["ioDirection"] = PortDirectionToString(params->direction);
 
   // Prepare the wxEventHandler to accept events from the actual hardware thread
   Bind(wxEVT_COMMDRIVER_N2K_NET, &CommDriverN2KNet::handle_N2K_MSG, this);
@@ -305,9 +305,10 @@ void CommDriverN2KNet::Open() {
 }
 
 void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
-  if (m_params.is_server) {
+  if (m_params.direction != PortDirection::kOutput &&
+      m_params.direction != PortDirection::kUpload) {
     //  We need a local (bindable) address to create the Datagram receive socket
-    // Set up the receive socket
+    // Set up the recieve socket
     wxIPV4address conn_addr;
     conn_addr.Service(GetNetPort());
     conn_addr.AnyAddress();
@@ -333,7 +334,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
   }
 
   // Set up another socket for transmit
-  if (GetPortType() != DS_TYPE_INPUT) {
+  if (GetPortDirection() != PortDirection::kInput) {
     wxIPV4address tconn_addr;
     tconn_addr.Service(0);  // use ephemeral out port
     tconn_addr.AnyAddress();
@@ -373,8 +374,10 @@ void CommDriverN2KNet::OpenNetworkTCP(unsigned int addr) {
   } else {
     GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
     int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
-    if (GetPortType() != DS_TYPE_INPUT) notify_flags |= wxSOCKET_OUTPUT_FLAG;
-    if (GetPortType() != DS_TYPE_OUTPUT) notify_flags |= wxSOCKET_INPUT_FLAG;
+    if (GetPortDirection() != PortDirection::kInput)
+      notify_flags |= wxSOCKET_OUTPUT_FLAG;
+    if (GetPortDirection() != PortDirection::kOutput)
+      notify_flags |= wxSOCKET_INPUT_FLAG;
     GetSock()->SetNotify(notify_flags);
     GetSock()->Notify(TRUE);
     GetSock()->SetTimeout(1);  // Short timeout
@@ -385,7 +388,7 @@ void CommDriverN2KNet::OpenNetworkTCP(unsigned int addr) {
 
   // In case the connection is lost before acquired....
   SetConnectTime(wxDateTime::Now());
-  m_driver_stats.available = GetSock()->IsOk();
+  m_driver_stats.available = GetSock() && GetSock()->IsOk();
 }
 
 void CommDriverN2KNet::OnSocketReadWatchdogTimer(wxTimerEvent& event) {
@@ -1301,7 +1304,7 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
 #if 1
 
     case wxSOCKET_LOST: {
-      m_driver_stats.available = GetSock()->IsOk();
+      m_driver_stats.available = GetSock() && GetSock()->IsOk();
       if (GetProtocol() == TCP || GetProtocol() == GPSD) {
         if (GetBrxConnectEvent())
           wxLogMessage(wxString::Format("NetworkDataStream connection lost: %s",
@@ -1345,12 +1348,12 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
             wxString::Format("TCP NetworkDataStream connection established: %s",
                              GetPort().c_str()));
         m_dog_value = N_DOG_TIMEOUT;  // feed the dog
-        if (GetPortType() != DS_TYPE_OUTPUT) {
+        if (GetPortDirection() != PortDirection::kOutput) {
           /// start the DATA watchdog only if NODATA Reconnect is desired
           if (GetParams().NoDataReconnect)
             GetSocketThreadWatchdogTimer()->Start(1000);
         }
-        if (GetPortType() != DS_TYPE_INPUT && GetSock()->IsOk())
+        if (GetPortDirection() != PortDirection::kInput && GetSock()->IsOk())
           (void)SetOutputSocketOptions(GetSock());
         GetSocketTimer()->Stop();
         SetBrxConnectEvent(true);
@@ -1376,11 +1379,11 @@ void CommDriverN2KNet::OnServerSocketEvent(wxSocketEvent& event) {
         //        GetSock()->SetFlags(wxSOCKET_BLOCK);
         GetSock()->SetEventHandler(*this, DS_SOCKET_ID);
         int notify_flags = (wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG);
-        if (GetPortType() != DS_TYPE_INPUT) {
+        if (GetPortDirection() != PortDirection::kInput) {
           notify_flags |= wxSOCKET_OUTPUT_FLAG;
           (void)SetOutputSocketOptions(GetSock());
         }
-        if (GetPortType() != DS_TYPE_OUTPUT)
+        if (GetPortDirection() != PortDirection::kOutput)
           notify_flags |= wxSOCKET_INPUT_FLAG;
         GetSock()->SetNotify(notify_flags);
         GetSock()->Notify(true);

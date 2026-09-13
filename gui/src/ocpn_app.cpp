@@ -83,7 +83,7 @@ void gdk_window_set_override_redirect(GdkWindow *window,
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif  // precompiled headers
+#endif
 
 #include <wx/apptrait.h>
 #include <wx/arrimpl.cpp>
@@ -264,15 +264,15 @@ wxDEFINE_EVENT(EVT_N0183_GGA, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N0183_GLL, wxCommandEvent);
 wxDEFINE_EVENT(EVT_N0183_AIVDO, wxCommandEvent);
 
-//------------------------------------------------------------------------------
-//      Fwd Declarations
-//------------------------------------------------------------------------------
+class WallpaperFrame;  // forward
 
 //------------------------------------------------------------------------------
 //      Static variable definition
 //------------------------------------------------------------------------------
 
 WX_DEFINE_OBJARRAY(ArrayOfCDI);
+
+static WallpaperFrame *g_wallpaper;
 
 static int user_user_id;
 static int file_user_id;
@@ -284,6 +284,8 @@ static unsigned int malloc_max;
 static int osMajor, osMinor;
 
 static bool g_bHasHwClock;
+
+static wxStopWatch init_sw;
 
 #if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
 // FIXME (leamas) find a new home
@@ -308,6 +310,43 @@ DEFINE_GUID(GARMIN_DETECT_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81,
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double *)&lNaN)
 #endif
+
+class WallpaperFrame : public wxFrame {
+public:
+  WallpaperFrame()
+      : wxFrame(nullptr, wxID_ANY, "Loading...", wxDefaultPosition,
+                wxSize(2000, 2000), wxSTAY_ON_TOP) {
+    // Customize the wallpaper appearance
+    SetBackgroundColour(wxColour(0, 0, 0));  // Black background
+
+    wxPanel *panel = new wxPanel(this, wxID_ANY);
+
+    // Set the background color of the panel
+    panel->SetBackgroundColour(wxColour(0, 0, 0));  // Example RGB
+
+    // Use a sizer for proper layout
+    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(panel, 1, wxEXPAND);
+    SetSizer(sizer);
+    Layout();
+    Center();  // Center the wallpaper frame
+
+#ifdef __WXGTK__
+    // Bypass the WM: make this an override-redirect window so Openbox cannot
+    // restack it (Openbox was sending WM_TAKE_FOCUS to gFrame after its map,
+    // raising gFrame above the fullscreen wallpaper during plugin LateInit
+    // and exposing the chart canvases mid-load).
+    GtkWidget *widget = reinterpret_cast<GtkWidget *>(GetHandle());
+    if (widget) {
+      gtk_widget_realize(widget);
+      GdkWindow *gdk = gtk_widget_get_window(widget);
+      if (gdk) {
+        gdk_window_set_override_redirect(gdk, 1);
+      }
+    }
+#endif
+  }
+};
 
 //    Some static helpers
 void appendOSDirSlash(wxString *pString);
@@ -350,94 +389,7 @@ static wxString newPrivateFileName(wxString, const char *name,
   return filePathAndName;
 }
 
-void MyApp::OnNewMsgTypes() {
-  for (auto it : m_api_events_callbacks)
-    it.second(HostApi122::EventType::kNewMessageType);
-}
-
-void MyApp::RegisterApiEventCallback(
-    const std::string &plugin_name,
-    std::function<void(HostApi122::EventType what)> callback) {
-  if (callback)
-    m_api_events_callbacks[plugin_name] = std::move(callback);
-  else
-    m_api_events_callbacks.erase(plugin_name);
-}
-
-class WallpaperFrame : public wxFrame {
-public:
-  WallpaperFrame()
-      : wxFrame(nullptr, wxID_ANY, "Loading...", wxDefaultPosition,
-                wxSize(2000, 2000), wxSTAY_ON_TOP) {
-    // Customize the wallpaper appearance
-    SetBackgroundColour(wxColour(0, 0, 0));  // Black background
-
-    wxPanel *panel = new wxPanel(this, wxID_ANY);
-
-    // Set the background color of the panel
-    panel->SetBackgroundColour(wxColour(0, 0, 0));  // Example RGB
-
-    // Use a sizer for proper layout
-    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
-    sizer->Add(panel, 1, wxEXPAND);
-    SetSizer(sizer);
-    Layout();
-    Center();  // Center the wallpaper frame
-
-#ifdef __WXGTK__
-    // Bypass the WM: make this an override-redirect window so Openbox cannot
-    // restack it (Openbox was sending WM_TAKE_FOCUS to gFrame after its map,
-    // raising gFrame above the fullscreen wallpaper during plugin LateInit
-    // and exposing the chart canvases mid-load).
-    GtkWidget *widget = reinterpret_cast<GtkWidget *>(GetHandle());
-    if (widget) {
-      gtk_widget_realize(widget);
-      GdkWindow *gdk = gtk_widget_get_window(widget);
-      if (gdk) {
-        gdk_window_set_override_redirect(gdk, 1);
-      }
-    }
-#endif
-  }
-};
-
-bool ShowNavWarning() {
-  wxString msg(
-      _("\n\
-OpenCPN is distributed in the hope that it will be useful, \
-but WITHOUT ANY WARRANTY; without even the implied \
-warranty of MERCHANTABILITY or FITNESS FOR A \
-PARTICULAR PURPOSE.\n\n\
-See the GNU General Public License for more details.\n\n\
-OpenCPN must only be used in conjunction with approved \
-paper charts and traditional methods of navigation.\n\n\
-DO NOT rely upon OpenCPN for safety of life or property.\n\n\
-Please click \"Agree\" and proceed, or \"Cancel\" to quit.\n"));
-
-  wxString vs = wxString::Format(" .. Version %s", VERSION_FULL);
-
-#ifdef __ANDROID__
-  androidShowDisclaimer(_("OpenCPN for Android") + vs, msg);
-  return true;
-#else
-  msg.Replace("\n", "<br>");
-
-  std::stringstream html;
-  html << "<html><body><p>";
-  html << msg.ToStdString();
-  html << "</p></body></html>";
-
-  std::string title = _("Welcome to OpenCPN").ToStdString();
-  std::string action = _("Agree").ToStdString();
-  AlertDialog info_dlg(gFrame, title, action);
-  info_dlg.SetInitialSize();
-  info_dlg.AddHtmlContent(html);
-  int agreed = info_dlg.ShowModal();
-  return agreed == wxID_OK;
-#endif
-}
-
-bool DoNavMessage(wxString &new_version_string) {
+static bool DoNavMessage(wxString &new_version_string) {
 #ifdef __ANDROID__
   //  We defer the startup message to here to allow the app frame to be
   //  contructed, thus avoiding a dialog with NULL parent which might not work
@@ -447,7 +399,7 @@ bool DoNavMessage(wxString &new_version_string) {
     // qDebug() << "Showing NavWarning";
     wxMilliSleep(500);
 
-    if (!ShowNavWarning()) {
+    if (!ShowNavWarning(gFrame)) {
       qDebug() << "Closing due to NavWarning Cancel";
       gFrame->Close();
       androidTerminate();
@@ -465,23 +417,13 @@ bool DoNavMessage(wxString &new_version_string) {
   //  or if the version string has changed at all
   //  We defer until here to allow for localization of the message
   if (!n_NavMessageShown || (new_version_string != g_config_version_string)) {
-    if (!ShowNavWarning()) return false;
+    if (!ShowNavWarning(gFrame)) return false;
     n_NavMessageShown = 1;
     pConfig->Flush();
   }
 #endif
   return true;
 }
-
-// `Main program` equivalent, creating windows and returning main app frame
-//------------------------------------------------------------------------------
-// MyApp
-//------------------------------------------------------------------------------
-IMPLEMENT_APP(MyApp)
-
-BEGIN_EVENT_TABLE(MyApp, wxApp)
-EVT_ACTIVATE_APP(MyApp::OnActivateApp)
-END_EVENT_TABLE()
 
 static void ActivateRoute(const std::string &guid) {
   Route *route = g_pRouteMan->FindRouteByGUID(guid);
@@ -512,6 +454,73 @@ static void ReverseRoute(const std::string &guid) {
   }
   route->Reverse();
   GuiEvents::GetInstance().on_routes_update.Notify();
+}
+
+/** Parse --loglevel and set up logging, falling back to defaults. */
+#ifdef __ANDROID__
+static void ParseLoglevel(wxCmdLineParser &parser) {
+  wxLog::SetLogLevel(wxLOG_Message);
+}
+#else
+static void ParseLoglevel(wxCmdLineParser &parser) {
+  const char *strLevel = std::getenv("OPENCPN_LOGLEVEL");
+  strLevel = strLevel ? strLevel : "info";
+  wxString wxLevel;
+  if (parser.Found("l", &wxLevel)) {
+    strLevel = wxLevel.c_str();
+  }
+  wxLogLevel level = OcpnLog::str2level(strLevel);
+  if (level == OcpnLog::LOG_BADLEVEL) {
+    fprintf(stderr, "Bad loglevel %s, using \"info\"", strLevel);
+    level = wxLOG_Info;
+  }
+  wxLog::SetLogLevel(level);
+}
+#endif  // __ANDROID__
+
+static void MyCPLErrorHandler(CPLErr eErrClass, int nError,
+                              const char *pszErrorMsg) {
+  char msg[256];
+
+  if (eErrClass == CE_Debug)
+    snprintf(msg, 255, "CPL: %s", pszErrorMsg);
+  else if (eErrClass == CE_Warning)
+    snprintf(msg, 255, "CPL Warning %d: %s", nError, pszErrorMsg);
+  else
+    snprintf(msg, 255, "CPL ERROR %d: %s", nError, pszErrorMsg);
+
+  wxString str(msg, wxConvUTF8);
+  wxLogMessage(str);
+}
+
+// `Main program` equivalent, creating windows and returning main app frame
+//------------------------------------------------------------------------------
+// MyApp
+//------------------------------------------------------------------------------
+IMPLEMENT_APP(MyApp)
+
+BEGIN_EVENT_TABLE(MyApp, wxApp)
+EVT_ACTIVATE_APP(MyApp::OnActivateApp)
+END_EVENT_TABLE()
+
+MyApp::MyApp()
+    : m_checker(InstanceCheck::GetInstance()),
+      m_rest_server(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
+                    g_bportable),
+      m_usb_watcher(UsbWatchDaemon::GetInstance()),
+      m_exitcode(-2) {
+#ifdef __linux__
+  // Handle e. g., wayland default display -- see #1166.
+  if (!wxGetEnv("OCPN_DISABLE_X11_GDK_BACKEND", NULL)) {
+    if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
+      setenv("GDK_BACKEND", "x11", 1);
+    }
+  }
+  setenv(
+      "mesa_glthread", "false",
+      1);  // Explicitly disable glthread. This may have some impact on OpenGL
+           // performance, but we know it is problematic for us. See #2889
+#endif     // __linux__
 }
 
 void MyApp::InitRestListeners() {
@@ -547,6 +556,20 @@ void MyApp::OnUnhandledException() {
   wxMessageOutputBest().Printf(
       "Unhandled %s; terminating %s.\n", what,
       wxIsMainThread() ? "the application" : "the thread in which it happened");
+}
+
+void MyApp::OnNewMsgTypes() {
+  for (auto it : m_api_events_callbacks)
+    it.second(HostApi122::EventType::kNewMessageType);
+}
+
+void MyApp::RegisterApiEventCallback(
+    const std::string &plugin_name,
+    std::function<void(HostApi122::EventType what)> callback) {
+  if (callback)
+    m_api_events_callbacks[plugin_name] = std::move(callback);
+  else
+    m_api_events_callbacks.erase(plugin_name);
 }
 
 bool MyApp::OpenFile(const std::string &path) {
@@ -598,28 +621,6 @@ void MyApp::OnInitCmdLine(wxCmdLineParser &parser) {
   parser.AddSwitch("e", "get_rest_endpoint");
   parser.AddOption("o", "open", "", wxCMD_LINE_VAL_STRING,
                    wxCMD_LINE_PARAM_OPTIONAL | wxCMD_LINE_PARAM_MULTIPLE);
-}
-#endif  // __ANDROID__
-
-/** Parse --loglevel and set up logging, falling back to defaults. */
-#ifdef __ANDROID__
-static void ParseLoglevel(wxCmdLineParser &parser) {
-  wxLog::SetLogLevel(wxLOG_Message);
-}
-#else
-static void ParseLoglevel(wxCmdLineParser &parser) {
-  const char *strLevel = std::getenv("OPENCPN_LOGLEVEL");
-  strLevel = strLevel ? strLevel : "info";
-  wxString wxLevel;
-  if (parser.Found("l", &wxLevel)) {
-    strLevel = wxLevel.c_str();
-  }
-  wxLogLevel level = OcpnLog::str2level(strLevel);
-  if (level == OcpnLog::LOG_BADLEVEL) {
-    fprintf(stderr, "Bad loglevel %s, using \"info\"", strLevel);
-    level = wxLOG_Info;
-  }
-  wxLog::SetLogLevel(level);
 }
 #endif  // __ANDROID__
 
@@ -728,34 +729,10 @@ bool MyApp::OnExceptionInMainLoop() {
 
 void MyApp::OnActivateApp(wxActivateEvent &event) { return; }
 
-static wxStopWatch init_sw;
-
 int MyApp::OnRun() {
   if (m_exitcode != -2) return m_exitcode;
   return wxAppConsole::OnRun();
 }
-
-MyApp::MyApp()
-    : m_checker(InstanceCheck::GetInstance()),
-      m_rest_server(PINCreateDialog::GetDlgCtx(), RouteCtxFactory(),
-                    g_bportable),
-      m_usb_watcher(UsbWatchDaemon::GetInstance()),
-      m_exitcode(-2) {
-#ifdef __linux__
-  // Handle e. g., wayland default display -- see #1166.
-  if (!wxGetEnv("OCPN_DISABLE_X11_GDK_BACKEND", NULL)) {
-    if (wxGetEnv("WAYLAND_DISPLAY", NULL)) {
-      setenv("GDK_BACKEND", "x11", 1);
-    }
-  }
-  setenv(
-      "mesa_glthread", "false",
-      1);  // Explicitly disable glthread. This may have some impact on OpenGL
-           // performance, but we know it is problematic for us. See #2889
-#endif     // __linux__
-}
-
-WallpaperFrame *g_wallpaper;
 
 bool MyApp::OnInit() {
   if (!wxApp::OnInit()) return false;
@@ -1917,22 +1894,3 @@ int MyApp::OnExit() {
 #ifdef LINUX_CRASHRPT
 void MyApp::OnFatalException() { g_crashprint.Report(); }
 #endif
-
-//----------------------------------------------------------------------------------------------------------
-//      Application-wide CPL Error handler
-//----------------------------------------------------------------------------------------------------------
-void MyCPLErrorHandler(CPLErr eErrClass, int nError, const char *pszErrorMsg)
-
-{
-  char msg[256];
-
-  if (eErrClass == CE_Debug)
-    snprintf(msg, 255, "CPL: %s", pszErrorMsg);
-  else if (eErrClass == CE_Warning)
-    snprintf(msg, 255, "CPL Warning %d: %s", nError, pszErrorMsg);
-  else
-    snprintf(msg, 255, "CPL ERROR %d: %s", nError, pszErrorMsg);
-
-  wxString str(msg, wxConvUTF8);
-  wxLogMessage(str);
-}

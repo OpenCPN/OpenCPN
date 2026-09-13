@@ -1,5 +1,7 @@
-/***************************************************************************
- *   Copyright (C) 2014  ALec Leamas                                       *
+/**************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2026 Alec Leamas                                        *
+ *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -13,26 +15,15 @@
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
- ***************************************************************************/
+ **************************************************************************/
 
 /**
- * \file
+ *  \file
  *
- * Implement ds_porttype.h -- port type definition and support
+ *  Welcome to OpenCPN stuff.
  */
 
-#include <cassert>
+#include <wx/window.h>
 
-#include "model/ds_porttype.h"
-
-#include <unordered_map>
-
-std::string PortDirectionToString(PortDirection pd) {
-  static const std::unordered_map<PortDirection, std::string> kNameByDirection =
-      {{PortDirection::kOutput, "OUT"},
-       {PortDirection::kInput, "IN"},
-       {PortDirection::kInOut, "IN/OUT"},
-       {PortDirection::kUpload, "UPLOAD"}};
-  if (static_cast<size_t>(pd) >= kNameByDirection.size()) return "???";
-  return kNameByDirection.at(pd);
-}
+/** Show the "Welcome to OpenCPN" dialog. */
+bool ShowNavWarning([[maybe_unused]] wxWindow* parent);

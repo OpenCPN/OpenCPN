@@ -325,7 +325,7 @@ public:
       case 1:
         return p1->GetCommProtocol() < p2->GetCommProtocol();
       case 2:
-        return p1->GetIOTypeValueStr() < p2->GetIOTypeValueStr();
+        return p1->GetPortDirectionValueStr() < p2->GetPortDirectionValueStr();
       case 3:
         return p1->GetStrippedDSPort() < p2->GetStrippedDSPort();
       default:
@@ -486,7 +486,7 @@ public:
         m_tooltips[row][0] = _("Disabled, click to enable");
       std::string protocol = NavAddr::BusToString((*it)->GetCommProtocol());
       SetCellValue(row, 1, protocol);
-      SetCellValue(row, 2, (*it)->GetIOTypeValueStr());
+      SetCellValue(row, 2, (*it)->GetPortDirectionValueStr());
       SetCellValue(row, 3, (*it)->GetStrippedDSPort());
       m_tooltips[row][3] = (*it)->UserComment;
       SetCellRenderer(row, 5, new BitmapCellRenderer(m_icons.settings, m_cs));
@@ -503,7 +503,8 @@ public:
         wxString sp(protocol);
         unsigned size = sp.Length() * wxWindow::GetCharWidth();
         m_header_column_widths[1] = std::max(m_header_column_widths[1], size);
-        size = (*it)->GetIOTypeValueStr().Length() * wxWindow::GetCharWidth();
+        size = (*it)->GetPortDirectionValueStr().Length() *
+               wxWindow::GetCharWidth();
         m_header_column_widths[2] = std::max(m_header_column_widths[2], size);
         sp = wxString((*it)->GetStrippedDSPort());
         size = sp.Length() * wxWindow::GetCharWidth();

@@ -258,8 +258,8 @@ void Multiplexer::HandleN0183(
         //  likely recurse...
         if ((!params_.DisableEcho && params_.Type == SERIAL) ||
             driver->iface != n0183_msg->source->iface) {
-          if (params_.IOSelect == DS_TYPE_INPUT_OUTPUT ||
-              params_.IOSelect == DS_TYPE_OUTPUT) {
+          if (params_.direction == PortDirection::kInOut ||
+              params_.direction == PortDirection::kOutput) {
             bool bout_filter = true;
             bool bxmit_ok = true;
             std::string id("XXXXX");
