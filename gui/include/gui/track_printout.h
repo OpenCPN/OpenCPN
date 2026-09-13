@@ -25,17 +25,10 @@
 #ifndef TRACKPRINTOUT_H_
 #define TRACKPRINTOUT_H_
 
-#include <wx/cmdline.h>
-#include <wx/datetime.h>
-#include <wx/print.h>
-
 #ifdef __WXMSW__
 #include <wx/msw/private.h>
 #endif
 
-#include "model/ocpn_types.h"
-
-#include "dialog_input.h"
 #include "navutil.h"
 #include "printout_base.h"
 #include "printtable.h"
@@ -53,21 +46,14 @@ enum class TrackPrintOptions {
 /**
  * Input dialog with track print selection.
  */
-class TrackPrintDialog : public InputDialog {
+class TrackPrintDlg : public wxDialog {
 public:
-  TrackPrintDialog(wxWindow* parent, const std::set<int>& options)
-      : InputDialog(parent, _("Print Track").ToStdString()) {
-    AddSelection(options, TrackPrintOptions::kTrackPosition,
-                 _("Print Track Position").ToStdString());
-    AddSelection(options, TrackPrintOptions::kTrackCourse,
-                 _("Print Track Course").ToStdString());
-    AddSelection(options, TrackPrintOptions::kTrackDistance,
-                 _("Print Track Distance").ToStdString());
-    AddSelection(options, TrackPrintOptions::kTrackTime,
-                 _("Print Track Time").ToStdString());
-    AddSelection(options, TrackPrintOptions::kTrackSpeed,
-                 _("Print Track Speed").ToStdString());
-  };
+  explicit TrackPrintDlg(wxWindow* parent);
+
+  bool IsEnabled(TrackPrintOptions option) const;
+
+private:
+  std::unordered_map<TrackPrintOptions, int> IdByOption;
 };
 
 /**
@@ -78,17 +64,16 @@ public:
   /**
    * Create track printout.
    * @param track Track to print.
-   * @param options Selected print options.
+   * @param dlg A TrackPrintDlg initiated by ShowModal().
    */
   TrackPrintout(Track* track, OCPNTrackListCtrl* lcPoints,
-                std::set<int> options);
+                const TrackPrintDlg& dlg);
 
   void OnPreparePrinting() override;
 
 protected:
   PrintTable m_table;
   Track* m_track;
-
   int m_text_offset_x;
   int m_text_offset_y;
 

@@ -74,11 +74,6 @@ AlertDialog::AlertDialog(wxWindow* parent, const std::string& title,
   Bind(wxEVT_TIMER, &AlertDialog::OnTimer, this);
 }
 
-AlertDialog::AlertDialog(wxWindow* parent, const std::string& title)
-    : AlertDialog(parent, title, "") {}
-
-AlertDialog::~AlertDialog() {}
-
 void AlertDialog::SetListener(IAlertConfirmation* listener) {
   m_listener = listener;
 }

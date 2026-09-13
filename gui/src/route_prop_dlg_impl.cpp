@@ -1048,13 +1048,11 @@ void RoutePropDlgImpl::SplitOnButtonClick(wxCommandEvent& event) {
 }
 
 void RoutePropDlgImpl::PrintOnButtonClick(wxCommandEvent& event) {
-  static std::set<int> s_options;  // keep selected options
-  RoutePrintDialog dlg(this, s_options);
+  RoutePrintDlg dlg(this);
   int result = dlg.ShowModal();
 
   if (result == wxID_OK) {
-    dlg.GetSelected(s_options);
-    RoutePrintout printout(m_pRoute, s_options, m_tz_selection);
+    RoutePrintout printout(m_pRoute, dlg, m_tz_selection);
     auto& printer = PrintDialog::GetInstance();
     printer.Initialize(wxPORTRAIT);
     printer.EnablePageNumbers(true);

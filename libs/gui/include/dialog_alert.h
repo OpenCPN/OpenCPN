@@ -42,7 +42,7 @@ public:
    * Handle confirmation response.
    * @param result User response.
    */
-  virtual void OnConfirm(const bool result) = 0;
+  virtual void OnConfirm(bool result) = 0;
 };
 
 /**
@@ -54,13 +54,6 @@ public:
 class AlertDialog : public BaseDialog {
 public:
   /**
-   * Alert dialog with close button.
-   * @param parent Parent window.
-   * @param title Dialog title.
-   */
-  AlertDialog(wxWindow* parent, const std::string& title);
-
-  /**
    * Alert dialog with labelled confirmation button and cancel.
    * @param parent Parent window.
    * @param title Dialog title.
@@ -69,7 +62,7 @@ public:
   AlertDialog(wxWindow* parent, const std::string& title,
               const std::string& action);
 
-  ~AlertDialog();
+  ~AlertDialog() override = default;
 
   /**
    * Listen for response.

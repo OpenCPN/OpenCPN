@@ -21,7 +21,6 @@
 #define BUTTON_SWITCH_H
 
 #include <wx/wx.h>
-#include <wx/tglbtn.h>
 #include <wx/graphics.h>
 
 /**
@@ -35,7 +34,8 @@ public:
    * @param key Key identifier.
    * @param value Initial state.
    */
-  SwitchButton(wxWindow* parent, int key, bool value = true);
+  SwitchButton(wxWindow* parent, int key, bool value = true,
+               int id = wxID_ANY);
 
   // Get the key identifier.
   int GetKey();

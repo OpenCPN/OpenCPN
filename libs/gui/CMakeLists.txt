@@ -28,10 +28,6 @@ endif ()
 # Sources
 set(SRC
     include/button_switch.h
-    include/dialog_alert.h
-    include/dialog_base.h
-    include/dialog_footer.h
-    include/dialog_input.h
     include/field_switch.h
     include/field_text.h
     include/edit_button.h
@@ -44,12 +40,9 @@ set(SRC
     include/text_ctrl_w_help.h
     include/ui_utils.h
     src/button_switch.cpp
-    src/dialog_alert.cpp
-    src/dialog_base.cpp
     src/edit_button.cpp
     src/expand_icon.cpp
     src/expand_panel.cpp
-    src/dialog_input.cpp
     src/field_switch.cpp
     src/field_text.cpp
     src/form_grid.cpp

@@ -1399,12 +1399,11 @@ void TrackPropDlg::OnTrackPropCopyTxtClick(wxCommandEvent& event) {
 
 void TrackPropDlg::OnPrintBtnClick(wxCommandEvent& event) {
   static std::set<int> s_options;  // keep selected options
-  TrackPrintDialog dlg(this, s_options);
+  TrackPrintDlg dlg(this);
   int result = dlg.ShowModal();
 
   if (result == wxID_OK) {
-    dlg.GetSelected(s_options);
-    TrackPrintout printout(m_pTrack, m_lcPoints, s_options);
+    TrackPrintout printout(m_pTrack, m_lcPoints, dlg);
     auto& printer = PrintDialog::GetInstance();
     printer.Initialize(wxPORTRAIT);
     printer.EnablePageNumbers(true);

@@ -42,7 +42,6 @@
 
 #include "chartbase.h"
 #include "color_handler.h"
-#include "dialog_alert.h"
 #include "gl_chart_canvas.h"
 #include "gui_lib.h"
 #include "line_clip.h"
@@ -75,6 +74,27 @@ static void TestLongitude(double lon, double min, double max, bool &lonl,
       lonr = true;
   }
 }
+
+namespace {
+
+class ConfirmDeleteDialog : public wxMessageDialog {
+public:
+  ConfirmDeleteDialog(wxWindow *parent, int count)
+      : wxMessageDialog(parent, GetMessage(count), _("Route Delete"),
+                        wxOK | wxCANCEL | wxICON_QUESTION) {}
+
+private:
+  std::string GetMessage(int count) {
+    std::stringstream ss;
+    if (count > 1)
+      ss << _("Are you sure you want to delete ") << count << _(" routes?");
+    else
+      ss << _("Are you sure you want to delete route?");
+    return ss.str();
+  }
+};
+
+}  // namespace
 
 void RouteGui::Draw(ocpnDC &dc, ChartCanvas *canvas, const LLBBox &box) {
   if (m_route.pRoutePointList->empty()) return;
@@ -638,19 +658,6 @@ int RouteGui::SendToGPS(const wxString &com_name, bool bsend_waypoints,
 
 // Delete the route.
 bool RouteGui::OnDelete(wxWindow *parent, const int count) {
-  std::string title = _("Route Delete").ToStdString();
-  std::string action = _("Delete").ToStdString();
-  std::string msg;
-  if (count > 1) {
-    wxString str = wxString::Format(
-        _("Are you sure you want to delete %d routes?"), count);
-    msg = str.c_str();
-  } else {
-    msg = _("Are you sure you want to delete this route?").ToStdString();
-  }
-
-  AlertDialog dialog(parent, title, action);
-  dialog.SetMessage(msg);
-  dialog.ShowModal();
-  return dialog.GetReturnCode() == wxID_OK;
+  ConfirmDeleteDialog dlg(parent, count);
+  return dlg.ShowModal() == wxID_OK;
 }

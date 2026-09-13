@@ -46,32 +46,99 @@
 // #include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
-#include <wx/artprov.h>
 #include <wx/aui/aui.h>
 #include <wx/brush.h>
 #include <wx/colour.h>
 #include <wx/dialog.h>
 #include <wx/intl.h>
-#include <wx/listctrl.h>
 #include <wx/printdlg.h>
 #include <wx/print.h>
-#include <wx/progdlg.h>
+#include <wx/statline.h>
 #include <wx/stdpaths.h>
+
+#include "button_switch.h"
 
 #include "model/navutil_base.h"
 #include "model/route.h"
-#include "model/track.h"
 #include "navutil.h"
 #include "print_dialog.h"
 #include "printtable.h"
 #include "route_printout.h"
 #include "tcmgr.h"
 
+// Make _() return std::string instead of wxString;
+#undef _
+#if wxCHECK_VERSION(3, 2, 0)
+#define _(s) wxGetTranslation(wxASCII_STR(s)).ToStdString()
+#else
+#define _(s) wxGetTranslation((s)).ToStdString()
+#endif
+
 using namespace std;
 
-RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
+static const std::unordered_map<RoutePrintOptions, std::string> kLabelByOption =
+    {{RoutePrintOptions::kWaypointName, _("Waypoint")},
+     {RoutePrintOptions::kWaypointPosition, _("Position")},
+     {RoutePrintOptions::kWaypointCourse, _("Course")},
+     {RoutePrintOptions::kWaypointDistance, _("Distance")},
+     {RoutePrintOptions::kWaypointDescription, _("Description")},
+     {RoutePrintOptions::kWaypointSpeed, _("Speed")},
+     {RoutePrintOptions::kWaypointETA, _("ETA")},
+     {RoutePrintOptions::kWaypointETD, _("ETD")},
+     {RoutePrintOptions::kWaypointTideEvent, _("Next tide event")}};
+
+namespace {
+
+class ButtonSizer : public wxStdDialogButtonSizer {
+public:
+  explicit ButtonSizer(wxWindow* parent) : wxStdDialogButtonSizer() {
+    auto ok_btn = new wxButton(parent, wxID_OK, _("Print..."));
+    AddButton(ok_btn);
+    AddButton(new wxButton(parent, wxID_CANCEL));
+    SetAffirmativeButton(ok_btn);
+    Realize();
+  }
+};
+
+}  // namespace
+
+RoutePrintDlg::RoutePrintDlg(wxWindow* parent)
+    : wxDialog(parent, wxID_ANY, _("Print route")) {
+  auto flags = wxSizerFlags().Border();
+  auto grid = new wxFlexGridSizer(2);
+  for (auto& [option, label] : kLabelByOption) {
+    grid->Add(new wxStaticText(this, wxID_ANY, label), flags.Expand());
+    int id = wxWindow::NewControlId();
+    grid->Add(new SwitchButton(this, static_cast<int>(option), true, id),
+              flags);
+    IdByOption[option] = id;
+  }
+  auto vbox = new wxBoxSizer(wxVERTICAL);
+  vbox->Add(grid, wxSizerFlags().Expand().Border());
+  vbox->Add(new wxStaticLine(this, wxID_ANY), flags.Expand());
+  vbox->Add(new ButtonSizer(this), flags.Expand());
+  SetSizer(vbox);
+  Fit();
+
+  Bind(wxEVT_CLOSE_WINDOW, [&](wxCloseEvent&) { Destroy(); });
+}
+
+bool RoutePrintDlg::IsEnabled(RoutePrintOptions option) const {
+  auto found = IdByOption.find(option);
+  assert(found != IdByOption.end() && "Illegal option");
+  int id = 0;
+  try {
+    id = IdByOption.at(option);
+  } catch (std::out_of_range&) {
+  }
+  SwitchButton* btn = dynamic_cast<SwitchButton*>(wxWindow::FindWindow(id));
+  assert(btn && "Could not look up button");
+  return btn->IsActive();
+}
+
+RoutePrintout::RoutePrintout(Route* route, const RoutePrintDlg& dlg,
                              const int tz_selection)
-    : BasePrintout(_("Route Print").ToStdString()), m_route(route) {
+    : m_route(route) {
   // Offset text from the edge of the cell (Needed on Linux)
   m_text_offset_x = 5;
   m_text_offset_y = 8;
@@ -80,31 +147,31 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
 
   m_table << _("Leg");
 
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointName)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointName)) {
     m_table << _("Waypoint");
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointPosition)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointPosition)) {
     m_table << _("Position");
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointCourse)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointCourse)) {
     m_table << _("Course");
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointDistance)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointDistance)) {
     m_table << _("Distance");
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointSpeed)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointSpeed)) {
     m_table << _("Speed");
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointETA)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointETA)) {
     m_table << _("ETA");
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointETD)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointETD)) {
     m_table << _("ETD");
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointTideEvent)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointTideEvent)) {
     m_table << _("Next tide event");
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointDescription)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointDescription)) {
     m_table << _("Description");
   }
 
@@ -112,31 +179,31 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
   m_table.StartFillWidths();
   m_table << 20;
 
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointName)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointName)) {
     m_table << 60;
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointPosition)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointPosition)) {
     m_table << 60;
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointCourse)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointCourse)) {
     m_table << 40;
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointDistance)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointDistance)) {
     m_table << 40;
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointSpeed)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointSpeed)) {
     m_table << 40;
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointETA)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointETA)) {
     m_table << 80;
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointETD)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointETD)) {
     m_table << 80;
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointTideEvent)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointTideEvent)) {
     m_table << 120;
   }
-  if (GUI::HasKey(options, RoutePrintOptions::kWaypointDescription)) {
+  if (dlg.IsEnabled(RoutePrintOptions::kWaypointDescription)) {
     m_table << 120;
   }
 
@@ -152,23 +219,23 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
       m_table << "---";
     }
 
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointName)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointName)) {
       m_table << point->GetName();
     }
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointPosition)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointPosition)) {
       std::wostringstream point_position;
       point_position << toSDMM(1, point->m_lat, false) << "\n"
                      << toSDMM(2, point->m_lon, false);
       m_table << point_position.str();
     }
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointCourse)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointCourse)) {
       if (n > 1) {
         m_table << formatAngle(point->GetCourse());
       } else {
         m_table << "---";
       }
     }
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointDistance)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointDistance)) {
       if (n > 1) {
         std::ostringstream point_distance;
         point_distance << std::fixed << std::setprecision(2) << std::setw(6)
@@ -179,7 +246,7 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
         m_table << "---";
       }
     }
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointSpeed)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointSpeed)) {
       std::wostringstream point_speed;
       if (n > 1) {
         point_speed << std::fixed << std::setprecision(1);
@@ -194,11 +261,11 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
         m_table << "---";
       }
     }
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointETA)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointETA)) {
       m_table << toUsrDateTime(point->GetETA(), tz_selection, point->m_lon)
                      .FormatISOCombined(' ');
     }
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointETD)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointETD)) {
       if (point->GetManualETD().IsValid()) {
         m_table << toUsrDateTime(point->GetManualETD(), tz_selection,
                                  point->m_lon)
@@ -207,7 +274,7 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
         m_table << "---";
       }
     }
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointTideEvent)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointTideEvent)) {
       std::wostringstream point_tide;
       if (point->m_TideStation.Len() > 0 && point->GetETA().IsValid()) {
         int station_id = ptcmgr->GetStationIDXbyName(
@@ -225,7 +292,7 @@ RoutePrintout::RoutePrintout(Route* route, const std::set<int>& options,
         m_table << "---";
       }
     }
-    if (GUI::HasKey(options, RoutePrintOptions::kWaypointDescription)) {
+    if (dlg.IsEnabled(RoutePrintOptions::kWaypointDescription)) {
       m_table << point->GetDescription();
     }
     m_table << "\n";
@@ -242,8 +309,8 @@ void RoutePrintout::OnPreparePrinting() {
   int w, h;
   dc->GetSize(&w, &h);
 
-  // We don't know before hand what size the Print DC will be, in pixels. Varies
-  // by host. So, if the dc size is greater than 1000 pixels, we scale
+  // We don't know before hand what size the Print DC will be, in pixels.
+  // Varies by host. So, if the dc size is greater than 1000 pixels, we scale
   // accordinly.
   int max_x = wxMin(w, 1000);
   int max_y = wxMin(h, 1000);
@@ -291,19 +358,16 @@ void RoutePrintout::DrawPage(wxDC* dc, int page) {
     title << m_route->m_RouteNameString.ToStdString();
     title << " (" << distance.str() << ")";
   } else {
-    title << _("Total distance ").ToStdString() << distance.str();
+    title << _("Total distance ") << distance.str();
   }
 
   if (m_route->m_RouteStartString.Trim().Len() > 0) {
-    subtitle << _("From").ToStdString() << " "
-             << m_route->m_RouteStartString.ToStdString();
+    subtitle << _("From") << " " << m_route->m_RouteStartString;
     if (m_route->m_RouteEndString.Trim().Len() > 0) {
-      subtitle << " " << _("To").ToStdString() << " "
-               << m_route->m_RouteEndString.ToStdString();
+      subtitle << " " << _("To") << " " << m_route->m_RouteEndString;
     }
   } else if (m_route->m_RouteEndString.Trim().Len() > 0) {
-    subtitle << _("Destination").ToStdString() << " "
-             << m_route->m_RouteEndString.ToStdString();
+    subtitle << _("Destination") << " " << m_route->m_RouteEndString;
   }
 
   int title_width, title_height;
@@ -347,7 +411,7 @@ void RoutePrintout::DrawPage(wxDC* dc, int page) {
                                wxFONTWEIGHT_NORMAL);
   dc->SetFont(routePrintFont_normal);
 
-  vector<vector<PrintCell> >& cells = m_table.GetContent();
+  vector<vector<PrintCell>>& cells = m_table.GetContent();
   current_y += m_table.GetHeaderHeight() + m_text_offset_y;
   int current_height = 0;
   for (size_t i = 0; i < cells.size(); i++) {
