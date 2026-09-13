@@ -460,6 +460,17 @@ bool ChartDB::IsChartDirectoryExcluded(const std::string &chart_file) {
   return false;
 }
 
+bool ChartDB::ChartCoversPosition(int db_index, float lat, float lon) {
+  if (db_index < 0 || db_index >= GetChartTableEntries()) return false;
+  if (CheckPositionWithinChart(db_index, lat, lon)) return true;
+
+  const ChartTableEntry &cte = GetChartTableEntry(db_index);
+  if (cte.GetLonMax() > 180.0f) {
+    return CheckPositionWithinChart(db_index, lat, lon + 360.0f);
+  }
+  return false;
+}
+
 //      Build a Chart Stack, and add the indicated chart to the stack, even if
 //      the chart does not cover the lat/lon specification
 
