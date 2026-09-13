@@ -28,6 +28,8 @@
 #include <set>
 
 #include <wx/print.h>
+#include <wx/window.h>
+
 #include <wx/dc.h>
 
 #ifdef __WXMSW__
@@ -36,7 +38,6 @@
 
 #include "model/ocpn_types.h"
 
-#include "dialog_input.h"
 #include "navutil.h"
 #include "printout_base.h"
 #include "printtable.h"
@@ -57,29 +58,13 @@ enum class RoutePrintOptions {
 /**
  * Input dialog with route print selection.
  */
-class RoutePrintDialog : public InputDialog {
+class RoutePrintDlg : public wxDialog {
 public:
-  RoutePrintDialog(wxWindow* parent, const std::set<int>& options)
-      : InputDialog(parent, _("Print Route").ToStdString()) {
-    AddSelection(options, RoutePrintOptions::kWaypointName,
-                 _("Print Waypoint Name").ToStdString());
-    AddSelection(options, RoutePrintOptions::kWaypointPosition,
-                 _("Print Waypoint Position").ToStdString());
-    AddSelection(options, RoutePrintOptions::kWaypointCourse,
-                 _("Print Waypoint Course to Next").ToStdString());
-    AddSelection(options, RoutePrintOptions::kWaypointDistance,
-                 _("Print Waypoint Distance to Next").ToStdString());
-    AddSelection(options, RoutePrintOptions::kWaypointSpeed,
-                 _("Waypoint Leg Speed").ToStdString());
-    AddSelection(options, RoutePrintOptions::kWaypointETA,
-                 _("Waypoint Estimated Time Arrival").ToStdString());
-    AddSelection(options, RoutePrintOptions::kWaypointETD,
-                 _("Waypoint Estimated Time Departure").ToStdString());
-    AddSelection(options, RoutePrintOptions::kWaypointTideEvent,
-                 _("Waypoint Next Tide Event").ToStdString());
-    AddSelection(options, RoutePrintOptions::kWaypointDescription,
-                 _("Print Waypoint Description").ToStdString());
-  };
+  RoutePrintDlg(wxWindow* parent);
+  bool IsEnabled(RoutePrintOptions option) const;
+
+private:
+  std::unordered_map<RoutePrintOptions, int> IdByOption;
 };
 
 /**
@@ -91,11 +76,10 @@ public:
   /**
    * Create route prinout.
    * @param route Route to print.
-   * @param options Selected print options.
+   * @param dlg Selected print options after running ShowModal().
    * @param tz_selection Timezone selection.
    */
-  RoutePrintout(Route* route, const std::set<int>& options,
-                const int tz_selection);
+  RoutePrintout(Route* route, const RoutePrintDlg& dlg, const int tz_selection);
 
   void OnPreparePrinting() override;
 

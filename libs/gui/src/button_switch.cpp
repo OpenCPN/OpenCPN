@@ -21,8 +21,8 @@
 #include "button_switch.h"
 #include "ui_utils.h"
 
-SwitchButton::SwitchButton(wxWindow* parent, int key, bool value)
-    : wxControl(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+SwitchButton::SwitchButton(wxWindow* parent, int key, bool value, int id)
+    : wxControl(parent, id, wxDefaultPosition, wxDefaultSize,
                 wxBORDER_NONE),
       m_key(key),
       m_flag(value) {
