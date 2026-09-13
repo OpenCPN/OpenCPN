@@ -4515,6 +4515,7 @@ int s52plib::RenderGLLS(ObjRazRules *rzRules, Rules *rules) {
 
 // Line Simple Style
 int s52plib::RenderLS(ObjRazRules *rzRules, Rules *rules) {
+
   // catch legacy PlugIns (e.g.s63_pi)
   if (rzRules->obj->m_n_lsindex && !rzRules->obj->m_ls_list)
     return RenderLSLegacy(rzRules, rules);
@@ -5303,8 +5304,6 @@ int s52plib::RenderLS_Dash_GLSL(ObjRazRules *rzRules, Rules *rules) {
 
 // Line Complex
 int s52plib::RenderLCTexture(ObjRazRules *rzRules, Rules *rules) {
-  if(rzRules->obj->Index != 2030)
-    return 0;
 
   // catch cm93 and legacy PlugIns (e.g.s63_pi)
   if (rzRules->obj->m_n_lsindex && !rzRules->obj->m_ls_list)
@@ -5520,7 +5519,10 @@ int s52plib::RenderLCTexture(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
-  //ComputeWinding(rzRules, rules);
+  //if(rzRules->obj->Index != 5347)
+    //return 0;
+  //if(strncmp(rzRules->obj->FeatureName, "FAIRWY", 6))
+  //  return 0;
 
 #if !defined(__WXMAC__)
   //return RenderLCTexture(rzRules, rules);
@@ -5529,6 +5531,12 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
   // catch cm93 and legacy PlugIns (e.g.s63_pi)
   if (rzRules->obj->m_n_lsindex && !rzRules->obj->m_ls_list)
     return RenderLCLegacy(rzRules, rules);
+
+  //  It appears that, at least for NOAA ENCs, the assembled feature
+  //  winding direction is always returned as ANTI-CLOCKWISE
+  //  So, proviswionally assume no need to check
+  //  See also fixed winding declaration in draw_lc_poly()
+  //int winding = ComputeWinding(rzRules, rules);
 
   wxPoint r;
 
@@ -5721,6 +5729,7 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
       }
 
       ls = ls->next;
+      ils++;
     }
 
     free(ptp);
@@ -5732,8 +5741,6 @@ int s52plib::RenderLC(ObjRazRules *rzRules, Rules *rules) {
 }
 
 int s52plib::ComputeWinding(ObjRazRules *rzRules, Rules *rules) {
-  // if(rzRules->obj->Index != 1779)
-  // return 0;
   if (rzRules->obj->Primitive_type != GEO_AREA)
     return -1;
 
@@ -5768,6 +5775,10 @@ int s52plib::ComputeWinding(ObjRazRules *rzRules, Rules *rules) {
         ppt = (float *)(vbo_point + ls->pedge->vbo_offset);
         nPoints = ls->pedge->nCount;
         if (ls->ls_type == TYPE_EE_REV) idir = -1;
+      } else {
+        ppt = (float *)(vbo_point + ls->pcs->vbo_offset);
+        nPoints = 2;
+        bcon = true;
       }
 
       int vbo_index = 0;
@@ -5789,6 +5800,7 @@ int s52plib::ComputeWinding(ObjRazRules *rzRules, Rules *rules) {
         vbo_index += vbo_inc;
       }
 
+      /*
       // inspect the next segment to see if it can be connected, or if the chain
       // breaks
       int idira = 1;
@@ -5823,8 +5835,10 @@ int s52plib::ComputeWinding(ObjRazRules *rzRules, Rules *rules) {
             ptest.m_y = ppt[index_last_next];
           }
         }
-        ls = ls->next;
+
       }
+*/
+      ls = ls->next;
     }
   } else return -1;
 
@@ -5839,9 +5853,9 @@ int s52plib::ComputeWinding(ObjRazRules *rzRules, Rules *rules) {
     if (delta > 1)
       points.push_back(start);  // close it.
 
-    //calculate winding direction
+      //calculate winding direction
     double dfSum = 0.0;
-    for (size_t i=0; i < sizeof(points)-1; i++) {
+    for (size_t i=0; i < points.size()-1; i++) {
       wxPoint2DDouble p1 = points[i];
       wxPoint2DDouble p2 = points[i+1];
       dfSum += (p1.m_x * p2.m_y) - (p1.m_y * p2.m_x);
@@ -5922,8 +5936,7 @@ int s52plib::RenderLCLegacy(ObjRazRules *rzRules, Rules *rules) {
   char *tcolptr = rules->razRule->colRef.LCRF;
   S52color *c = getColor(tcolptr + 1);  // +1 skips "n" in HPGL SPn format
   int w = 1;                            // arbitrary width
-  wxColour color(c->R, c->G, c->B);
-
+   wxColour color(c->R, c->G, c->B);
   //  Get the current display priority
   //  Default comes from the LUP, unless overridden
   int priority_current = rzRules->LUP->DPRI - '0';
@@ -6520,17 +6533,7 @@ void s52plib::draw_lc_poly(wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
 
   wxPoint2DDouble r;
 
-  //  We calculate the winding direction of the poly
-  //  in order to know which side to draw symbol on
-  double dfSum = 0.0;
-
-  for (int iseg = 0; iseg < npt - 1; iseg++) {
-    dfSum += ptp[iseg].x * ptp[iseg + 1].y - ptp[iseg].y * ptp[iseg + 1].x;
-  }
-  dfSum += ptp[npt - 1].x * ptp[0].y - ptp[npt - 1].y * ptp[0].x;
-
-  bool cw = dfSum < 0.;
-  cw = true;
+  cw = false;   // Winding is always CCW
 
   //    Get a true pixel clipping/bounding box from the vp
   wxPoint pbb = GetPixFromLL(vp_plib.clat, vp_plib.clon);
