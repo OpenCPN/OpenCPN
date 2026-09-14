@@ -25,6 +25,8 @@
 
 #include "welcome.h"
 
+#include "config.h"
+
 #include <wx/msgdlg.h>
 #include <wx/string.h>
 
@@ -59,7 +61,7 @@ public:
 #ifdef __ANDROID__
 bool ShowNavWarning(wxWindow *parent) {
   wxString vs = wxString::Format(" .. Version %s", VERSION_FULL);
-  androidShowDisclaimer(_("OpenCPN for Android") + vs, kNavWarning);
+  androidShowDisclaimer(_("OpenCPN for Android") + vs, kMessage);
   return true;
 }
 #else

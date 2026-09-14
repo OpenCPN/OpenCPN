@@ -94,6 +94,8 @@
 #include "toolbar.h"
 #include "toolbar.h"
 #include "track_prop_dlg.h"
+#include "welcome.h"
+
 #ifdef HAVE_DIRENT_H
 #include "dirent.h"
 #endif
@@ -1485,7 +1487,7 @@ JNIEXPORT jint JNICALL Java_org_opencpn_OCPNNativeLib_onStart(JNIEnv *env,
   qDebug() << "onStart";
   wxLogMessage(_T("onStart"));
 
-  if (g_bstress1) ShowNavWarning();
+  if (g_bstress1) ShowNavWarning(wxTheApp->GetTopWindow());
 
   g_running = true;
 
