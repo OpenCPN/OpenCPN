@@ -142,7 +142,11 @@ set(OCPN_TARGET_TUPLE "" CACHE STRING
 )
 
 if (MSVC OR MINGW)
-  option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(OCPN_USE_CRASHREPORT FALSE)
+  else ()
+    option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+  endif()
 else ()
   set(OCPN_USE_CRASHREPORT FALSE)
 endif ()
@@ -1550,8 +1554,13 @@ add_subdirectory(libs/gui)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::guilib)
 
 if (MSVC)
-  install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
-  install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
+  if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    install(FILES "cache/buildwin/libssl-3-x64.dll" DESTINATION ".")
+    install(FILES "cache/buildwin/libcrypto-3-x64.dll" DESTINATION ".")
+  else()
+    install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
+    install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
+  endif()
 endif ()
 
 message(STATUS "S57 ENC support: enabled")
@@ -2404,14 +2413,31 @@ if (WIN32 AND NOT UNIX)
       STATUS "MSVC redistributable DLLs bundled into the installer package..."
     )
   endif ()
+
   if (BUNDLE_LIBARCHIVEDLLS)
-    file(
-      GLOB
-      libarchivedll_files
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.dll"
-    )
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      file(
+            GLOB
+            libarchivedll_files
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/z.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/bz2.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/lz4.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zstd.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/libxml2.dll"
+      )
+
+    else ()
+      file(
+        GLOB
+          libarchivedll_files
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.dll"
+      )
+    endif ()
+
     install(FILES ${libarchivedll_files} DESTINATION ".")
     message(STATUS "LibArchive DLLs bundled into the installer package...")
   endif ()
@@ -2480,9 +2506,29 @@ endif ()
 #
 if (WIN32)
   configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
-    ${CMAKE_BINARY_DIR}/NSIS.template.in COPYONLY
+          ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
+          ${CMAKE_BINARY_DIR}/NSIS.template.in
+          COPYONLY
   )
+
+  # Fixup the install directory for x64 build
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    file(READ
+            "${CMAKE_BINARY_DIR}/NSIS.template.in"
+            NSIS_TEMPLATE
+            )
+    string(REPLACE
+            "@NSIS_INSTALL_PROGRAMFILES@"
+            "$PROGRAMFILES64"
+            NSIS_TEMPLATE
+            "${NSIS_TEMPLATE}"
+            )
+    file(WRITE
+            "${CMAKE_BINARY_DIR}/NSIS.template.in"
+            "${NSIS_TEMPLATE}"
+            )
+  endif()
+
 endif ()
 
 #
@@ -2620,6 +2666,7 @@ if (WIN32)
   set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
   set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/resources/bitmaps\\\\opencpn.ico")
   set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_setup")
+
   set(CPACK_RESOURCE_FILE_LICENSE
       "${CMAKE_CURRENT_SOURCE_DIR}/data/license.txt"
   )
