@@ -27,10 +27,14 @@ echo After Bootstrap
 call N:\code\vcpkg\vcpkg install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows --debug
 echo After vcpkg intall...
 
+echo The current working directory is: %CD%
+echo The batch file is located in: %~dp0
+
 :: If needed, download wxWidgets binary build.
 set "CACHE_DIR=%~dp0..\cache"
 if not exist !CACHE_DIR! (mkdir !CACHE_DIR!)
-echo $CACHE_DIR
+
+echo The cache directory is: %CACHE_DIR%
 
 set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
 if not exist cache\wxWidgets-3.2.9 (
@@ -40,7 +44,7 @@ if not exist cache\wxWidgets-3.2.9 (
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  wget -nv %GITHUB_DL%/v3.2.11/wxMSW-3.2.9_vc14x_x64_Dev.7z
+  wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_x64_Dev.7z
   7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_Dev.7z
   wget -nv %GITHUB_DL%/v3.2.9/wxWidgets-3.2.9-headers.7z
   7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxWidgets-3.2.9-headers.7z
