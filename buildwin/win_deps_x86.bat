@@ -22,9 +22,7 @@ wget --version >nul 2>&1 || choco install wget -y --no-progress
 
 git clone https://github.com/microsoft/vcpkg N:\code\vcpkg
 set "VCPKG_DISABLE_METRICS=1"
-echo on
 call N:\code\vcpkg\bootstrap-vcpkg.bat -disableMetrics
-echo off
 echo After Bootstrap
 call N:\code\vcpkg\vcpkg install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows --debug
 echo After vcpkg intall...
@@ -32,6 +30,8 @@ echo After vcpkg intall...
 :: If needed, download wxWidgets binary build.
 set "CACHE_DIR=%~dp0..\cache"
 if not exist !CACHE_DIR! (mkdir !CACHE_DIR!)
+echo $CACHE_DIR
+
 set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
 if not exist cache\wxWidgets-3.2.9 (
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
@@ -40,13 +40,14 @@ if not exist cache\wxWidgets-3.2.9 (
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_Dev.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_Dev.7z
+  wget -nv %GITHUB_DL%/v3.2.11/wxMSW-3.2.9_vc14x_x64_Dev.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_Dev.7z
   wget -nv %GITHUB_DL%/v3.2.9/wxWidgets-3.2.9-headers.7z
   7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxWidgets-3.2.9-headers.7z
-  wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_ReleaseDLL.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_ReleaseDLL.7z
+  wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
 )
+
 :: Create cache\wx-config.bat, paths to downloaded wxWidgets.
 set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.9"
 echo set "wxWidgets_ROOT_DIR=%WXWIN%" > %CACHE_DIR%\wx-config.bat
