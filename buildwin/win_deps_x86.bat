@@ -23,7 +23,9 @@ wget --version >nul 2>&1 || choco install wget -y --no-progress
 git clone https://github.com/microsoft/vcpkg N:\code\vcpkg
 set "VCPKG_DISABLE_METRICS=1"
 N:\code\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+echo After Bootstrap
 N:\code\vcpkg\vcpkg install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows --debug
+echo After vcpkg intall...
 
 :: If needed, download wxWidgets binary build.
 set "CACHE_DIR=%~dp0..\cache"
