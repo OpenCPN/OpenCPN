@@ -28,7 +28,6 @@ endif ()
 # Sources
 set(SRC
     include/button_switch.h
-    include/field_switch.h
     include/field_text.h
     include/edit_button.h
     include/expand_icon.h
@@ -36,20 +35,17 @@ set(SRC
     include/form_grid.h
     include/svg_button.h
     include/svg_icons.h
-    include/text_entry.h
     include/text_ctrl_w_help.h
     include/ui_utils.h
     src/button_switch.cpp
     src/edit_button.cpp
     src/expand_icon.cpp
     src/expand_panel.cpp
-    src/field_switch.cpp
     src/field_text.cpp
     src/form_grid.cpp
     src/svg_button.cpp
     src/svg_icons.cpp
     src/text_ctrl_w_help.cpp
-    src/text_entry.cpp
     src/ui_utils.cpp
 )
 
