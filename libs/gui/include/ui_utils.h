@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 #ifndef UI_UTILS_H
 #define UI_UTILS_H
@@ -34,41 +32,22 @@ wxDECLARE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 /**
  * Organizes constant variables and methods.
  */
-namespace GUI {
-
-// Screen breakpoints.
-enum class Breakpoint : int {
-  kExtraSmall = 1,    // extra small
-  kSmall = 480,       // small
-  kMedium = 767,      // medium
-  kLarge = 1024,      // large
-  kExtraLarge = 1440  // extra large
-};
+namespace gui {
 
 /**
  * UI guideline default spacing in pixels.
  * Use GetSpacing() for DIP.
  */
-static const int kSpacing = 6;
-
-/**
- * Check if a key exists in a set.
- * @param set Set of keys.
- * @param key An enum class key (to be cast to int).
- */
-template <typename T>
-bool HasKey(const std::set<int>& set, T key) {
-  return set.find(static_cast<int>(key)) != set.end();
-}
+static constexpr int kSpacing = 6;
 
 /**
  * Multiply default spacing with a factor,
  * and calculate device independent pixels.
  * @param ctx Window context.
- * @param int Scaling factor.
+ * @param factor Scaling factor.
  * @return Scaling in DIP.
  */
-int GetSpacing(wxWindow* ctx, int factor);
+int GetSpacing(const wxWindow* ctx, int factor);
 
 /**
  * Trigger window layout event.
@@ -76,12 +55,6 @@ int GetSpacing(wxWindow* ctx, int factor);
  */
 void LayoutResizeEvent(wxWindow* ctx);
 
-/**
- * Get screen size breakpoint.
- * @param rect Display geometry.
- * @return Screen size breakpoint.
- */
-Breakpoint GetScreenSize(wxRect* rect);
-}  // namespace GUI
+}  // namespace gui
 
 #endif  // UI_UTILS_H

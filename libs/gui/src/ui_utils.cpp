@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 #include <wx/wx.h>
@@ -25,7 +23,7 @@
 // Define custom events
 wxDEFINE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 
-int GUI::GetSpacing(wxWindow* ctx, int factor) {
+int gui::GetSpacing(const wxWindow* ctx, int factor) {
 #if wxCHECK_VERSION(3, 2, 0)
   return ctx->FromDIP(kSpacing * factor);
 #else
@@ -33,22 +31,7 @@ int GUI::GetSpacing(wxWindow* ctx, int factor) {
 #endif
 }
 
-void GUI::LayoutResizeEvent(wxWindow* ctx) {
+void gui::LayoutResizeEvent(wxWindow* ctx) {
   wxCommandEvent event(EVT_LAYOUT_RESIZE, ctx->GetId());
   wxPostEvent(ctx, event);
-}
-
-GUI::Breakpoint GUI::GetScreenSize(wxRect* rect) {
-  if (rect->GetWidth() <= static_cast<int>(Breakpoint::kSmall) ||
-      rect->GetHeight() <= static_cast<int>(Breakpoint::kSmall)) {
-    return Breakpoint::kExtraSmall;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kMedium)) {
-    return Breakpoint::kSmall;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kLarge)) {
-    return Breakpoint::kMedium;
-  } else if (rect->GetWidth() < static_cast<int>(Breakpoint::kExtraLarge)) {
-    return Breakpoint::kLarge;
-  } else {
-    return Breakpoint::kExtraLarge;
-  }
 }
