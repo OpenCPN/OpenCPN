@@ -1,13 +1,15 @@
 /**
 \page observable wxWidgets Observable Framework
 
+\defgroup Observable
+
 \section Introduction
 
 This is a basic notify-listen framework on top of wxWidgets event handling.
 It requires C++11 and wxWidgets 3.0+.
 
 The listening mechanism makes it possible for a listener to receive an event
-on certain conditions.  The event is based on wxCommandEvent and optionally
+on certain conditions. The event is based on wxCommandEvent and can optionally
  carry a string, a number, a void* and/or a `std::shared_ptr` to the listening
 side.
 
@@ -42,15 +44,15 @@ There are three mechanisms available out of the box:
 
 - The EventVar mechanism depends on a variable which is visible on both
   the listener and notifying side. It is described in the
-  _observable_evtvar.h_ header.
+  _observable/evtvar.h_ header.
 
 - The ConfigVar mechanism allows for listening to configuration
   variable changes, and to notify about such changes. It is described
-  in the _observable_confvar.h_ header
+  in the _observable/configvar.h_ header
 
 - The GlobalVar variable mechanism (sic!) allows for listening to global
   variable changes and to notify about such changes. It is described in
-  the _observable_globvar.h_ header.
+  the _observable/global_var.h_ header.
 
 The EventVar mechanism is the most generic one, usable in most situations.
 Examples includes communication between model and controller in a MVC GUI
@@ -89,4 +91,3 @@ the GPL licence, version 2 or later. See the source files for details.
 [1] https://github.com/opencpn/OpenCPN
 
 **/
-

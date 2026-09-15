@@ -33,6 +33,8 @@
 
 namespace obs {
 /**
+ * \ingroup Observable
+ *
  *  Wrapper for configuration variables which lives in a wxBaseConfig
  *  object. Supports int, bool, double, std::string and wxString. Besides
  *  basic set()/get() also provides notification events when value changes.

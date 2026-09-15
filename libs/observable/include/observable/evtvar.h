@@ -34,6 +34,8 @@
 
 namespace obs {
 /**
+ * \ingroup Observable
+ *
  * Generic event handling between for example MVC Model and Controller based
  * on a shared EventVar variable
  *
