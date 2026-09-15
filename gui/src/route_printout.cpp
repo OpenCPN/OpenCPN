@@ -56,7 +56,7 @@
 #include <wx/statline.h>
 #include <wx/stdpaths.h>
 
-#include "button_switch.h"
+#include "libgui/button_switch.h"
 
 #include "model/navutil_base.h"
 #include "model/route.h"

@@ -27,16 +27,16 @@ endif ()
 
 # Sources
 set(SRC
-    include/button_switch.h
-    include/field_text.h
-    include/edit_button.h
-    include/expand_icon.h
-    include/expand_panel.h
-    include/form_grid.h
-    include/svg_button.h
-    include/svg_icons.h
-    include/text_ctrl_w_help.h
-    include/ui_utils.h
+    include/libgui/button_switch.h
+    include/libgui/field_text.h
+    include/libgui/edit_button.h
+    include/libgui/expand_icon.h
+    include/libgui/expand_panel.h
+    include/libgui/form_grid.h
+    include/libgui/svg_button.h
+    include/libgui/svg_icons.h
+    include/libgui/text_ctrl_w_help.h
+    include/libgui/ui_utils.h
     src/button_switch.cpp
     src/edit_button.cpp
     src/expand_icon.cpp
@@ -68,4 +68,7 @@ endif ()
 
 target_include_directories(
   GUILIB PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_include_directories(
+  GUILIB PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/libgui
 )

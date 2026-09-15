@@ -41,6 +41,8 @@
 
 #include "update_mgr.h"
 
+#include "libgui/expand_icon.h"
+
 #include "model/downloader.h"
 #include "model/plugin_handler.h"
 #include "model/plugin_loader.h"
@@ -48,7 +50,6 @@
 #include "model/svg_utils.h"
 
 #include "catalog_mgr.h"
-#include "expand_icon.h"
 #include "ocpn_platform.h"
 #include "options.h"
 #include "pluginmanager.h"

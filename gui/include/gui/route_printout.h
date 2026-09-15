@@ -36,12 +36,10 @@
 #include <wx/msw/private.h>
 #endif
 
-#include "model/ocpn_types.h"
+#include "libgui/ui_utils.h"
 
-#include "navutil.h"
 #include "printout_base.h"
 #include "printtable.h"
-#include "ui_utils.h"
 
 enum class RoutePrintOptions {
   kWaypointName,

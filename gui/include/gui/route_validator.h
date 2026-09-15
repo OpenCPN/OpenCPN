@@ -27,9 +27,9 @@
 #include <wx/validate.h>
 #include <wx/string.h>
 
-#include "model/route_point.h"
+#include "libgui/field_text.h"
 
-#include "field_text.h"
+#include "model/route_point.h"
 
 /**
  * Route point name validator.

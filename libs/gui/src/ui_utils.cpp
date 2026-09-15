@@ -23,7 +23,7 @@
 // Define custom events
 wxDEFINE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 
-int gui::GetSpacing(const wxWindow* ctx, int factor) {
+int libgui::GetSpacing(const wxWindow* ctx, int factor) {
 #if wxCHECK_VERSION(3, 2, 0)
   return ctx->FromDIP(kSpacing * factor);
 #else
@@ -31,7 +31,7 @@ int gui::GetSpacing(const wxWindow* ctx, int factor) {
 #endif
 }
 
-void gui::LayoutResizeEvent(wxWindow* ctx) {
+void libgui::LayoutResizeEvent(wxWindow* ctx) {
   wxCommandEvent event(EVT_LAYOUT_RESIZE, ctx->GetId());
   wxPostEvent(ctx, event);
 }

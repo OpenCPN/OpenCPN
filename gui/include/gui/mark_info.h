@@ -48,11 +48,12 @@
 #include <wx/tglbtn.h>
 #include <wx/timectrl.h>
 
+#include "libgui/field_text.h"
+#include "libgui/form_grid.h"
+
 #include "model/hyperlink.h"
 #include "model/route.h"
 
-#include "field_text.h"
-#include "form_grid.h"
 #include "link_prop_dlg.h"
 #include "route_validator.h"
 #include "tcmgr.h"

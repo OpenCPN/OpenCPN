@@ -53,7 +53,8 @@
 
 #include "connection_edit.h"
 
-#include "text_ctrl_w_help.h"
+#include "libgui/text_ctrl_w_help.h"
+
 #include "model/comm_drv_factory.h"
 #include "model/config_vars.h"
 #include "model/ocpn_utils.h"

@@ -41,6 +41,8 @@
 #include "androidUTIL.h"
 #endif
 
+#include "libgui/svg_button.h"
+
 #include "model/base_platform.h"
 #include "model/config_vars.h"
 #include "model/data_monitor_src.h"
@@ -52,7 +54,6 @@
 
 #include "data_monitor.h"
 #include "std_filesystem.h"
-#include "svg_button.h"
 #include "svg_icons.h"
 #include "tty_scroll.h"
 #include "user_colors_dlg.h"
