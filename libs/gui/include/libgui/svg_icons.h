@@ -6,6 +6,8 @@
  * https://teams.pages.gitlab.gnome.org/Design/icon-development-kit-www/
  *
  * License: GPL v3 or later.
+ *
+ *  \ingroup UI-tools
  */
 
 namespace gui_icons {

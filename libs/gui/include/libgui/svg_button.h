@@ -40,6 +40,8 @@
  * otherwise falling back to the wxSvg library.
  *
  * Examples:   \image{inline} html ./svg-button.png "Example"
+ *
+ *  \ingroup UI-tools
  */
 class SvgButton : public wxButton {
 protected:

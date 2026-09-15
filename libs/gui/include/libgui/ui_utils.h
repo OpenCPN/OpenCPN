@@ -20,10 +20,10 @@
 /**
  * \file
  * GUI library utils and events.
+ *
+ *  \ingroup UI-tools
  */
-#include <set>
 #include <wx/window.h>
-#include <wx/scrolwin.h>
 #include <wx/event.h>
 
 // Declare custom events
