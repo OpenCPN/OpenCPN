@@ -50,6 +50,9 @@ echo The build directory is: %CD%
 set "PATH=%PATH%;%PROGRAMFILES%\Poedit\Gettexttools\bin"
 
 @echo on
+cmake -A x86 -G "Visual Studio 17 2022" ..
+echo After first cmake
+
 cmake -A x86 -G "Visual Studio 17 2022" ^
     -DCMAKE_GENERATOR_PLATFORM=x86 ^
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
