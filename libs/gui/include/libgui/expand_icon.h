@@ -27,10 +27,13 @@
 #include <wx/statbmp.h>
 
 /**
+ *
  * Simple panel showing either an "expand" or "collapse" icon,
  * state switches when clicked.
  *
  * The panel is small, roughly the size of one or two characters.
+ *
+ *  \ingroup UI-tools
  */
 class ExpandableIcon : public wxPanel {
 public :

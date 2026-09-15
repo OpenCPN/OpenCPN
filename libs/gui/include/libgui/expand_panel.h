@@ -29,6 +29,8 @@
 /**
  * An ExpandIcon together with a child window. The child window is
  * hidden or shown depending ong the ExpandIcon state.
+ *
+ *  \ingroup UI-tools
  */
 class ExpandablePanel : public wxPanel {
 public:

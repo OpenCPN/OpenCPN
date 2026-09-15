@@ -18,6 +18,8 @@
 /**
  * A wxTextCtrl with an initial italics help text, removed when user starts
  * typing.   \image html ./text_entry_help.png
+ *
+ *  \ingroup UI-tools
  */
 class TextCtrlWithHelp : public wxTextCtrl {
 public:

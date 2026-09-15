@@ -23,6 +23,7 @@
 #include <wx/window.h>
 
 /**
+ *  \ingroup UI-tools
  *
  * Two state button showing either an edit
  * \image{inline}  html ./edit-button-2.png "Edit"
@@ -51,3 +52,4 @@ public:
 private:
   std::function<void()> m_on_click;
 };
+/** @} */
