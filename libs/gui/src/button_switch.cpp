@@ -12,11 +12,8 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 
 #include "button_switch.h"
 #include "ui_utils.h"
@@ -25,7 +22,7 @@ SwitchButton::SwitchButton(wxWindow* parent, int id, bool value)
     : wxControl(parent, id, wxDefaultPosition, wxDefaultSize,
                 wxBORDER_NONE),
       m_flag(value) {
-  SetInitialSize(wxSize(GUI::GetSpacing(this, 6), GUI::GetSpacing(this, 3)));
+  SetInitialSize(wxSize(gui::GetSpacing(this, 6), gui::GetSpacing(this, 3)));
   Bind(wxEVT_PAINT, &SwitchButton::OnPaint, this);
   Bind(wxEVT_LEFT_DOWN, &SwitchButton::OnToggle, this);
 }

@@ -58,7 +58,7 @@ void TextField::OnError(const wxString& msg = "") {
 
   // Update layout when error status changed.
   if ((msg.Len() > 0) != has_error) {
-    GUI::LayoutResizeEvent(this);
+    gui::LayoutResizeEvent(this);
   }
 }
 
