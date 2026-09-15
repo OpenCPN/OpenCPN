@@ -29,6 +29,8 @@
 
 namespace obs {
 /**
+ * \ingroup Observable
+ *
  *  Wrapper for global variable, supports notification events when value
  *  changes.
  *
