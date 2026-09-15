@@ -12,11 +12,8 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
+ ***************************************************************************/
 #ifndef BUTTON_SWITCH_H
 #define BUTTON_SWITCH_H
 
@@ -24,27 +21,26 @@
 #include <wx/graphics.h>
 
 /**
- * On/Off switch button.
+ * On/Off switch button. Similar semantics as a wxCheckBox with
+ * a different UI.  \image html ./button_switch.png
  */
 class SwitchButton : public wxControl {
 public:
   /**
-   * Toggle key on/off.
+   * Construct a SwitchButton
    * @param parent Parent window.
-   * @param key Key identifier.
+   * @param id Window identifier, often wxID_ANY
    * @param value Initial state.
    */
-  SwitchButton(wxWindow* parent, int key, bool value = true,
-               int id = wxID_ANY);
+  SwitchButton(wxWindow* parent, int id, bool value = true);
 
-  // Get the key identifier.
-  int GetKey();
+  /** Return on/off state as visible in UI */
+  bool GetValue();
 
-  // Return active flag.
-  bool IsActive();
+  /** Set the internal value. */
+  void SetValue(bool value);
 
 private:
-  int m_key;
   bool m_flag;
 
   void OnToggle(wxMouseEvent& event);

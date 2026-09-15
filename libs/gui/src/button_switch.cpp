@@ -21,19 +21,21 @@
 #include "button_switch.h"
 #include "ui_utils.h"
 
-SwitchButton::SwitchButton(wxWindow* parent, int key, bool value, int id)
+SwitchButton::SwitchButton(wxWindow* parent, int id, bool value)
     : wxControl(parent, id, wxDefaultPosition, wxDefaultSize,
                 wxBORDER_NONE),
-      m_key(key),
       m_flag(value) {
   SetInitialSize(wxSize(GUI::GetSpacing(this, 6), GUI::GetSpacing(this, 3)));
   Bind(wxEVT_PAINT, &SwitchButton::OnPaint, this);
   Bind(wxEVT_LEFT_DOWN, &SwitchButton::OnToggle, this);
 }
 
-int SwitchButton::GetKey() { return m_key; }
+bool SwitchButton::GetValue() { return m_flag; }
 
-bool SwitchButton::IsActive() { return m_flag; }
+void SwitchButton::SetValue(bool value) {
+  m_flag = value;
+  Refresh();
+}
 
 void SwitchButton::OnToggle(wxMouseEvent& event) {
   m_flag = !m_flag;
