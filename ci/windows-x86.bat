@@ -49,6 +49,7 @@ echo The build directory is: %CD%
 :: working since 2024-02-28, so work it around here
 set "PATH=%PATH%;%PROGRAMFILES%\Poedit\Gettexttools\bin"
 
+@echo on
 cmake -A x86 -G "Visual Studio 17 2022" ^
     -DCMAKE_GENERATOR_PLATFORM=x86 ^
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
@@ -65,6 +66,7 @@ cmake -A x86 -G "Visual Studio 17 2022" ^
     ..
 
 cmake --build . --target package --config %CONFIGURATION%
+@echo off
 
 type N:\build\_CPack_Packages\win32\NSIS\NSISOutput.log
 
