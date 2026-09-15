@@ -50,13 +50,14 @@ echo The build directory is: %CD%
 set "PATH=%PATH%;%PROGRAMFILES%\Poedit\Gettexttools\bin"
 
 @echo on
-::cmake -A x64 -G "Visual Studio 17 2022" ..
-::echo After first cmake
+
+echo wxWidgets_LIB_DIR=[!wxWidgets_LIB_DIR!]
+echo wxWidgets_ROOT_DIR=[!wxWidgets_ROOT_DIR!]
 
 cmake -A x64 -G "Visual Studio 17 2022" ^
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
-    -DwxWidgets_LIB_DIR=!wxWidgets_LIB_DIR! ^
-    -DwxWidgets_ROOT_DIR=!wxWidgets_ROOT_DIR! ^
+    -DwxWidgets_LIB_DIR="!wxWidgets_LIB_DIR!" ^
+    -DwxWidgets_ROOT_DIR="!wxWidgets_ROOT_DIR!" ^
     -DwxWidgets_CONFIGURATION=mswu ^
     -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
     -DOCPN_CI_BUILD=ON ^
