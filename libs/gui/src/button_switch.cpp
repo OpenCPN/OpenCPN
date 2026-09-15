@@ -22,7 +22,7 @@ SwitchButton::SwitchButton(wxWindow* parent, int id, bool value)
     : wxControl(parent, id, wxDefaultPosition, wxDefaultSize,
                 wxBORDER_NONE),
       m_flag(value) {
-  SetInitialSize(wxSize(gui::GetSpacing(this, 6), gui::GetSpacing(this, 3)));
+  SetInitialSize(wxSize(libgui::GetSpacing(this, 6), libgui::GetSpacing(this, 3)));
   Bind(wxEVT_PAINT, &SwitchButton::OnPaint, this);
   Bind(wxEVT_LEFT_DOWN, &SwitchButton::OnToggle, this);
 }

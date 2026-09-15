@@ -32,7 +32,7 @@ wxDECLARE_EVENT(EVT_LAYOUT_RESIZE, wxCommandEvent);
 /**
  * Organizes constant variables and methods.
  */
-namespace gui {
+namespace libgui {
 
 /**
  * UI guideline default spacing in pixels.

@@ -42,6 +42,8 @@
 #include <wx/statline.h>
 #include <wx/uri.h>
 
+#include "libgui/expand_icon.h"
+
 #include "model/downloader.h"
 #include "model/plugin_cache.h"
 #include "model/plugin_handler.h"
@@ -49,7 +51,6 @@
 #include "model/svg_utils.h"
 
 #include "catalog_mgr.h"
-#include "expand_icon.h"
 #include "ocpn_platform.h"
 #include "picosha2.h"
 #include "pluginmanager.h"

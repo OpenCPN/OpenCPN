@@ -29,11 +29,12 @@
 #include <wx/msw/private.h>
 #endif
 
+#include "libgui/ui_utils.h"
+
 #include "navutil.h"
 #include "printout_base.h"
 #include "printtable.h"
 #include "track_prop_dlg.h"
-#include "ui_utils.h"
 
 enum class TrackPrintOptions {
   kTrackPosition,

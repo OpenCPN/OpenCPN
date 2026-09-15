@@ -47,13 +47,14 @@
 #include <wxSVG/svg.h>
 #endif
 
+#include "libgui/edit_button.h"
+
 #include "model/comm_drv_registry.h"
 #include "model/comm_navmsg_bus.h"
 #include "model/filters_on_disk.h"
 #include "filter_dlg.h"
 #include "std_filesystem.h"
 #include "svg_icons.h"
-#include "edit_button.h"
 
 // Make _() return const char* instead of wxString;
 #undef _

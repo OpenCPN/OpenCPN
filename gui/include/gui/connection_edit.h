@@ -33,10 +33,10 @@
 #include <wx/timer.h>
 
 #include "observable/observable.h"
+#include "libgui/expand_icon.h"
 
 #include "model/conn_params.h"
 
-#include "expand_icon.h"
 #include "options.h"
 #include "conn_params_panel.h"
 

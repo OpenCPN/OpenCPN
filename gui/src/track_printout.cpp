@@ -50,7 +50,8 @@
 #include <wx/stdpaths.h>
 
 #include "track_printout.h"
-#include "button_switch.h"
+
+#include "libgui/button_switch.h"
 
 #include "model/track.h"
 
