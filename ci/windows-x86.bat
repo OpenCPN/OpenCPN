@@ -42,11 +42,14 @@ if errorlevel 1 (
 if exist build (rmdir /s /q build)
 mkdir build && cd build
 
+echo The build directory is: %CD%
+
+
 :: This id done in win_deps.bat, but for some reason stopped
 :: working since 2024-02-28, so work it around here
 set "PATH=%PATH%;%PROGRAMFILES%\Poedit\Gettexttools\bin"
 
-cmake -A Win32 -G "Visual Studio 17 2022" ^
+cmake -A x86 -G "Visual Studio 17 2022" ^
     -DCMAKE_GENERATOR_PLATFORM=x86 ^
     -DCMAKE_BUILD_TYPE=%CONFIGURATION% ^
     -DwxWidgets_LIB_DIR=!wxWidgets_LIB_DIR! ^
