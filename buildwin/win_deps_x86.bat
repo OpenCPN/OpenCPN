@@ -25,11 +25,11 @@ if not exist C:\ProgramData\chocolatey\lib\nsis (
 :: install wget as required
 wget --version >nul 2>&1 || choco install wget -y --no-progress
 
-git clone https://github.com/microsoft/vcpkg N:\code\vcpkg
+git clone https://github.com/microsoft/vcpkg D:\code\vcpkg
 set "VCPKG_DISABLE_METRICS=1"
-call N:\code\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+call D:\code\vcpkg\bootstrap-vcpkg.bat -disableMetrics
 echo After Bootstrap
-call N:\code\vcpkg\vcpkg install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows --debug
+call D:\code\vcpkg\vcpkg install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows --debug
 echo After vcpkg intall...
 
 echo The current working directory is: %CD%
