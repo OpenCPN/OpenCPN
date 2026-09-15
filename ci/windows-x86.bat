@@ -32,6 +32,17 @@ call %SCRIPTDIR%..\cache\wx-config.bat
 echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
 echo USING wxWidgets_ROOT_DIR: !wxWidgets_ROOT_DIR!
 
+echo === wxWidgets tree ===
+dir "%wxWidgets_ROOT_DIR%"
+echo === include ===
+dir "%wxWidgets_ROOT_DIR%\include"
+echo === lib ===
+dir "%wxWidgets_LIB_DIR%"
+echo === setup.h ===
+dir "%wxWidgets_LIB_DIR%\wx"
+echo === wx libs ===
+dir "%wxWidgets_LIB_DIR%\*.lib"
+
 where wxmsw32u_qa_vc14x.dll >nul 2>&1
 if errorlevel 1 (
   set "PATH=%PATH%;%wxWidgets_LIB_DIR%"

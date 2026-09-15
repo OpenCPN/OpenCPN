@@ -57,12 +57,14 @@ if not exist cache\wxWidgets-3.2.9 (
   7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
 )
 
+
 :: Create cache\wx-config.bat, paths to downloaded wxWidgets.
 set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.9"
 echo set "wxWidgets_ROOT_DIR=%WXWIN%" > %CACHE_DIR%\wx-config.bat
 echo set "wxWidgets_LIB_DIR=%WXWIN%\lib\vc14x_dll" >> %CACHE_DIR%\wx-config.bat
 
-
+@echo on
+type %CACHE_DIR%\wx-config.bat
 
 :: Make sure the pre-compiled libraries are in place
 
