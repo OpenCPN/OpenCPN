@@ -109,8 +109,7 @@ RoutePrintDlg::RoutePrintDlg(wxWindow* parent)
   for (auto& [option, label] : kLabelByOption) {
     grid->Add(new wxStaticText(this, wxID_ANY, label), flags.Expand());
     int id = wxWindow::NewControlId();
-    grid->Add(new SwitchButton(this, static_cast<int>(option), true, id),
-              flags);
+    grid->Add(new SwitchButton(this, id, true), flags);
     IdByOption[option] = id;
   }
   auto vbox = new wxBoxSizer(wxVERTICAL);
@@ -133,7 +132,7 @@ bool RoutePrintDlg::IsEnabled(RoutePrintOptions option) const {
   }
   SwitchButton* btn = dynamic_cast<SwitchButton*>(wxWindow::FindWindow(id));
   assert(btn && "Could not look up button");
-  return btn->IsActive();
+  return btn->GetValue();
 }
 
 RoutePrintout::RoutePrintout(Route* route, const RoutePrintDlg& dlg,
