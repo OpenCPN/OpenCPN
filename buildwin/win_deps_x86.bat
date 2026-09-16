@@ -63,10 +63,32 @@ set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.9"
 echo set "wxWidgets_ROOT_DIR=%WXWIN%" > %CACHE_DIR%\wx-config.bat
 echo set "wxWidgets_LIB_DIR=%WXWIN%\lib\vc14x_x64_dll" >> %CACHE_DIR%\wx-config.bat
 
+:: Verify
 @echo on
 type %CACHE_DIR%\wx-config.bat
 
-:: Make sure the pre-compiled libraries are in place
+:: Make sure the pre-compiled vcpkg libraries are in place
+
+set "vcpkg=D:\code\vcpkg\installed\x64-windows"
+set "dest=%CACHE_DIR%\buildwin"
+
+:: libarchive
+copy "%vcpkg%\lib\archive.lib" "%dest%\"
+copy "%vcpkg%\bin\archive.dll" "%dest%\"
+copy "%vcpkg%\include\archive.h" "%dest%\include\"
+copy "%vcpkg%\include\archive_entry.h" "%dest%\include\"
+
+:: libarchive's own runtime dependencies (it was built with lzma/bz2/zlib/xml2/lz4/zstd support)
+copy "%vcpkg%\bin\liblzma.dll" "%dest%\"
+copy "%vcpkg%\bin\bz2.dll" "%dest%\"
+copy "%vcpkg%\bin\libxml2.dll" "%dest%\"
+copy "%vcpkg%\bin\lz4.dll" "%dest%\"
+copy "%vcpkg%\bin\zstd.dll" "%dest%\"
+
+
+
+
+
 
 ::set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
 ::set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
