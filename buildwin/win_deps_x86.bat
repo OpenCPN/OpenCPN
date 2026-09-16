@@ -95,13 +95,14 @@ copy "%vcpkg%\bin\zstd.dll" "%dest%\"
 : zlib real names, per the Curl.cmake edit above
 copy "%vcpkg%\lib\z.lib" "%dest%\"
 copy "%vcpkg%\bin\z.dll" "%dest%\"
+copy "%vcpkg%\include\zlib.h" "%dest%\include"
 
 :: curl
 copy "%vcpkg%\lib\libcurl.lib" "%dest%\"
 copy "%vcpkg%\bin\libcurl.dll" "%dest%\"
 :: curl headers (model/CMakeLists.txt sets CURL_INCLUDE_DIRS to cache/buildwin/include)
 mkdir "%dest%\include\curl"
-copy "%vcpkg%\include\curl\curl.h" "%dest%\include\curl"
+xcopy "%vcpkg%\include\curl" "%dest%\include\curl"  /I /s /y /q
 
 : openssl
 copy "%vcpkg%\lib\libssl.lib" "%dest%\"
@@ -109,7 +110,7 @@ copy "%vcpkg%\lib\libcrypto.lib" "%dest%\"
 copy "%vcpkg%\bin\libssl-3-x64.dll" "%dest%\"
 copy "%vcpkg%\bin\libcrypto-3-x64.dll" "%dest%\"
 mkdir "%dest%\include\openssl"
-copy "%vcpkg%\include\openssl\ssl.h" "%dest%\include\openssl"
+xcopy "%vcpkg%\include\openssl" "%dest%\include\openssl"  /I /s /y /q
 
 
 :: And while we're here download the curl certificate
