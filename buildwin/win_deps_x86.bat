@@ -71,6 +71,12 @@ type %CACHE_DIR%\wx-config.bat
 
 set "vcpkg=D:\code\vcpkg\installed\x64-windows"
 set "dest=%CACHE_DIR%\buildwin"
+if not exist "%dest%" mkdir "%dest%"
+
+echo vcpkg=[%vcpkg%]
+echo dest=[%dest%]
+dir "%vcpkg%\lib\archive.lib"
+dir "%dest%"
 
 :: libarchive
 copy "%vcpkg%\lib\archive.lib" "%dest%\"
