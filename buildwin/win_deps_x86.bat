@@ -87,11 +87,17 @@ copy "%vcpkg%\include\archive_entry.h" "%dest%\include\"
 copy "%vcpkg%\include\lzma.h" "%dest%\include\"
 
 :: libarchive's own runtime dependencies (it was built with lzma/bz2/zlib/xml2/lz4/zstd support)
-copy "%vcpkg%\bin\liblzma.dll" "%dest%\"
+
 copy "%vcpkg%\bin\bz2.dll" "%dest%\"
 copy "%vcpkg%\bin\libxml2.dll" "%dest%\"
 copy "%vcpkg%\bin\lz4.dll" "%dest%\"
 copy "%vcpkg%\bin\zstd.dll" "%dest%\"
+
+::LZMA
+copy "%vcpkg%\bin\liblzma.dll" "%dest%\"
+copy "%vcpkg%\include\lzma.h" "%dest%\include\"
+if not exist "%dest%\include\lzma" mkdir "%dest%\include\lzma"
+xcopy "%vcpkg%\include\lzma" "%dest%\include\lzma"  /I /s /y /q
 
 : zlib real names, per the Curl.cmake edit above
 copy "%vcpkg%\lib\z.lib" "%dest%\"
