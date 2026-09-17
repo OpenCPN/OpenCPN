@@ -211,11 +211,12 @@ if (WIN32)
       target_link_libraries(
               ${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/cache/buildwin/z.lib"
               "GLU_static"
+      )
     else ()
       target_link_libraries(
-      ${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/cache/buildwin/zlib1.lib"
-                              "GLU_static"
-    )
+              ${PACKAGE_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/cache/buildwin/zlib1.lib"
+              "GLU_static"
+      )
     endif ()
   else (MSVC)
     set(CMAKE_SHARED_LINKER_FLAGS "-L../../")
