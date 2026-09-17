@@ -39,6 +39,7 @@
 #include <GLES2/gl2.h>
 #elif defined(__MSVC__)
 #include "glew.h"
+#include <GL/glu.h>
 #elif defined(__WXOSX__)
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
