@@ -142,7 +142,11 @@ set(OCPN_TARGET_TUPLE "" CACHE STRING
 )
 
 if (MSVC OR MINGW)
-  option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(OCPN_USE_CRASHREPORT FALSE)
+  else ()
+    option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+  endif()
 else ()
   set(OCPN_USE_CRASHREPORT FALSE)
 endif ()
