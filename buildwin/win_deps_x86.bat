@@ -113,8 +113,16 @@ copy "%vcpkg%\bin\libcrypto-3-x64.dll" "%dest%\"
 mkdir "%dest%\include\openssl"
 xcopy "%vcpkg%\include\openssl" "%dest%\include\openssl"  /I /s /y /q
 
+:: GLEW
+mkdir "%dest%\include\glew"
+copy "%vcpkg%\include\GL\glew.h" "%dest%\include\glew\"
+copy "%vcpkg%\include\GL\wglew.h" "%dest%\include\glew\"
+copy "%vcpkg%\include\GL\eglew.h" "%dest%\include\glew\"
+copy "%vcpkg%\lib\glew32.lib" "%dest%\"
+copy "%vcpkg%\bin\glew32.dll" "%dest%\"
 
-:: And while we're here download the curl certificate
+
+:: Download the curl certificate
 :: Invoke-WebRequest https://curl.se/ca/cacert.pem -OutFile $dest\curl-ca-bundle.crt
 
 
