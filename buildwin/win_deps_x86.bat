@@ -96,6 +96,7 @@ copy "%vcpkg%\bin\zstd.dll" "%dest%\"
 copy "%vcpkg%\lib\z.lib" "%dest%\"
 copy "%vcpkg%\bin\z.dll" "%dest%\"
 copy "%vcpkg%\include\zlib.h" "%dest%\include"
+copy "%vcpkg%\include\zconf.h" "%dest%\include"
 
 :: curl
 copy "%vcpkg%\lib\libcurl.lib" "%dest%\"

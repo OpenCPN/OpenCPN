@@ -1519,8 +1519,13 @@ add_subdirectory(libs/gui)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::guilib)
 
 if (MSVC)
-  install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
-  install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
+  if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    install(FILES "cache/buildwin/libssl-3-x64.dll" DESTINATION ".")
+    install(FILES "cache/buildwin/libcrypto-3-x64.dll" DESTINATION ".")
+  else()
+    install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
+    install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
+  endif()
 endif ()
 
 message(STATUS "S57 ENC support: enabled")
@@ -2373,14 +2378,31 @@ if (WIN32 AND NOT UNIX)
       STATUS "MSVC redistributable DLLs bundled into the installer package..."
     )
   endif ()
+
   if (BUNDLE_LIBARCHIVEDLLS)
-    file(
-      GLOB
-      libarchivedll_files
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.dll"
-    )
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      file(
+            GLOB
+            libarchivedll_files
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/z.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/bz2.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/lz4.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zstd.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/libxml2.dll"
+      )
+
+    else ()
+      file(
+        GLOB
+          libarchivedll_files
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.dll"
+      )
+    endif ()
+
     install(FILES ${libarchivedll_files} DESTINATION ".")
     message(STATUS "LibArchive DLLs bundled into the installer package...")
   endif ()
