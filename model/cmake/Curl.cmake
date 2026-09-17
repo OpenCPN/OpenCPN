@@ -27,14 +27,31 @@ if (CMAKE_HOST_WIN32)
       IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/cache/buildwin/libcurl.lib
       IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/cache/buildwin/libcurl.dll
   )
+
   add_library(WIN32_ZLIB1 SHARED IMPORTED)
-  set_target_properties(WIN32_ZLIB1 PROPERTIES
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set_target_properties(WIN32_ZLIB1 PROPERTIES
+          IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/cache/buildwin/z.lib
+          IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/cache/buildwin/z.dll
+          )
+  else ()
+    set_target_properties(WIN32_ZLIB1 PROPERTIES
       IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/cache/buildwin/zlib1.lib
       IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/cache/buildwin/zlib1.dll
-  )
+    )
+  endif ()
+
   set(CURL_LIBRARIES WIN32_LIBCURL WIN32_ZLIB1)
   set(CURL_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/cache/buildwin/include)
   set(CURL_FOUND 1)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    install(
+            FILES
+            "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
+            "${CMAKE_SOURCE_DIR}/cache/buildwin/libcurl.dll"
+            DESTINATION "."
+    )
+  else ()
   install(
     FILES
       "${CMAKE_SOURCE_DIR}/cache/buildwin/curl-ca-bundle.crt"
@@ -42,7 +59,8 @@ if (CMAKE_HOST_WIN32)
       "${CMAKE_SOURCE_DIR}/cache/buildwin/ssleay32.dll"
 	    "${CMAKE_SOURCE_DIR}/cache/buildwin/libcurl.dll"
     DESTINATION "."
-  )
+    )
+  endif()
 
 endif ()
 

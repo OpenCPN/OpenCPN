@@ -22,6 +22,20 @@ typedef int ssize_t;
 #endif
 #endif
 
+#ifdef _WIN32
+#include <basetsd.h>
+#ifdef _MSC_VER
+#if defined(_WIN64)
+typedef SSIZE_T ssize_t;
+#else
+// Nohal - We need to do this instead of the upstream SSIZE_T to have ssize_t compatible with wxWidgets
+typedef int ssize_t;
+#endif
+#endif
+#endif
+
+
+
 #include "IXCancellationRequest.h"
 #include "IXProgressCallback.h"
 #include "IXSelectInterrupt.h"
