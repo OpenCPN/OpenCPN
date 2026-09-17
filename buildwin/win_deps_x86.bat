@@ -130,10 +130,9 @@ copy "%vcpkg%\lib\glew32.lib" "%dest%\"
 copy "%vcpkg%\bin\glew32.dll" "%dest%\"
 
 
-:: Download the curl certificate
-:: Invoke-WebRequest https://curl.se/ca/cacert.pem -OutFile $dest\curl-ca-bundle.crt
-
-
+:: Current Mozilla CA bundle for curl
+curl.exe -fL https://curl.se/ca/cacert.pem -o "%dest%\curl-ca-bundle.crt"
+if errorlevel 1 exit /b 1
 
 
 
