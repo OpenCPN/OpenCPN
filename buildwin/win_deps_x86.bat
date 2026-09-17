@@ -94,6 +94,7 @@ copy "%vcpkg%\bin\lz4.dll" "%dest%\"
 copy "%vcpkg%\bin\zstd.dll" "%dest%\"
 
 ::LZMA
+copy "%vcpkg%\lib\lzma.lib" "%dest%\"
 copy "%vcpkg%\bin\liblzma.dll" "%dest%\"
 copy "%vcpkg%\include\lzma.h" "%dest%\include\"
 if not exist "%dest%\include\lzma" mkdir "%dest%\include\lzma"
