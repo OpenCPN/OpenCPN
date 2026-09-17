@@ -29,7 +29,7 @@ git clone https://github.com/microsoft/vcpkg D:\code\vcpkg
 set "VCPKG_DISABLE_METRICS=1"
 call D:\code\vcpkg\bootstrap-vcpkg.bat -disableMetrics
 echo After Bootstrap
-call D:\code\vcpkg\vcpkg install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows --debug
+call D:\code\vcpkg\vcpkg install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows liblzma:x64-windows --debug
 echo After vcpkg intall...
 
 echo The current working directory is: %CD%
@@ -84,6 +84,7 @@ copy "%vcpkg%\lib\archive.lib" "%dest%\"
 copy "%vcpkg%\bin\archive.dll" "%dest%\"
 copy "%vcpkg%\include\archive.h" "%dest%\include\"
 copy "%vcpkg%\include\archive_entry.h" "%dest%\include\"
+copy "%vcpkg%\include\lzma.h" "%dest%\include\"
 
 :: libarchive's own runtime dependencies (it was built with lzma/bz2/zlib/xml2/lz4/zstd support)
 copy "%vcpkg%\bin\liblzma.dll" "%dest%\"
