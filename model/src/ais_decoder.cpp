@@ -504,7 +504,7 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
       // But do lookup to see if we have seen it as a CLASS B, and adjust.
       if (!ptd->b_isDSCtarget && ptd->Class != AIS_CLASS_B) {
         ptd->Class = AIS_CLASS_A;
-        ptd->NavStatus = bstr->GetInt(39, 4);
+        ptd->NavStatus = bstr->GetInt(41, 4);
       } else {
         ptd->NavStatus = UNDEFINED;  // Class B targets have no status.
       }
