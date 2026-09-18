@@ -2474,18 +2474,29 @@ endif ()
 # Prepare CPACK configuration
 #
 if (WIN32)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(NSIS_INSTALL_PROGRAMFILES "$PROGRAMFILES64")
-  else()
-    set(NSIS_INSTALL_PROGRAMFILES "$PROGRAMFILES")
-  endif()
-
-  # This will substitute the correct install directory for x86 or x64 build
   configure_file(
           ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
           ${CMAKE_BINARY_DIR}/NSIS.template.in
-          @ONLY
+          COPYONLY
   )
+
+  # Fixup the install directory for x64 build
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    file(READ
+            "${CMAKE_BINARY_DIR}/NSIS.template.in"
+            NSIS_TEMPLATE
+            )
+    string(REPLACE
+            "@NSIS_INSTALL_PROGRAMFILES@"
+            "$PROGRAMFILES64"
+            NSIS_TEMPLATE
+            )
+    file(WRITE
+            "${CMAKE_BINARY_DIR}/NSIS.template.in"
+            "${NSIS_TEMPLATE}"
+            )
+  endif()
+
 endif ()
 
 #
