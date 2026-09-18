@@ -80,14 +80,19 @@ cmake -A x64 -G "Visual Studio 17 2022" ^
 
 cmake --build . --target package --config %CONFIGURATION%
 
-dir D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\opencpn_5.14.0-0+beb4502_setup_x64.exe
 dir D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\*.exe
-findstr /n /i "OutFile" D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\project.nsi
+dir D:\a\OpenCPN\OpenCPN\build\*.exe
+
+:: Rename setup.exe artifact before upload
+for %%F in ("D:\a\OpenCPN\OpenCPN\build\opencpn_*_setup.exe") do (
+    echo Renaming %%F
+    ren "%%F" "%%~nF_x64.exe"
+)
 
 echo Build complete.
 
-type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\project.nsi
-type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\NSISOutput.log
+::type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\project.nsi
+::type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\NSISOutput.log
 
 :: Compress pdb and mark with git hash
 "C:\Program Files\Git\bin\bash" -c ^

@@ -2492,13 +2492,6 @@ if (WIN32)
             NSIS_TEMPLATE
             "${NSIS_TEMPLATE}"
             )
-    string(REPLACE
-            "#CPACK_PACKAGE_FILE_NAME \"\${PACKAGE_NAME}_\${VERSION_MAJOR}.\${VERSION_MINOR}.\${VERSION_PATCH}_setup\""
-            "#CPACK_PACKAGE_FILE_NAME \"\${PACKAGE_NAME}_\${VERSION_MAJOR}.\${VERSION_MINOR}.\${VERSION_PATCH}_setup_x64\""
-            NSIS_TEMPLATE
-            "${NSIS_TEMPLATE}"
-            )
-
     file(WRITE
             "${CMAKE_BINARY_DIR}/NSIS.template.in"
             "${NSIS_TEMPLATE}"
