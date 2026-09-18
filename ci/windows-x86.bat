@@ -83,11 +83,12 @@ cmake --build . --target package --config %CONFIGURATION%
 dir D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\*.exe
 dir D:\a\OpenCPN\OpenCPN\build\*.exe
 
-:: Rename setup.exe artifact before upload
-for %%F in ("D:\a\OpenCPN\OpenCPN\build\opencpn_*_setup.exe") do (
-    echo Renaming %%F
-    ren "%%F" "%%~nF_x64.exe"
+:: copy Rename setup.exe artifact before upload
+for %%F in ("_CPack_Packages\win64\NSIS\opencpn_*_setup.exe") do (
+    copy "%%F" ".\%%~nF_x64.exe"
 )
+
+dir D:\a\OpenCPN\OpenCPN\build\*.exe
 
 echo Build complete.
 
