@@ -81,7 +81,8 @@ cmake -A x64 -G "Visual Studio 17 2022" ^
 cmake --build . --target package --config %CONFIGURATION%
 echo Build complete.
 
-type N:\build\_CPack_Packages\win32\NSIS\NSISOutput.log
+::type N:\build\_CPack_Packages\win32\NSIS\NSISOutput.log
+type D:/a/OpenCPN/OpenCPN/build/_CPack_Packages/win64/NSIS/NSISOutput.log
 
 :: Compress pdb and mark with git hash
 "C:\Program Files\Git\bin\bash" -c ^
