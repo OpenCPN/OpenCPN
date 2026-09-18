@@ -375,6 +375,7 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
 
       parse_result = true;  // so far so good
       b_posn_report = true;
+      ptd->b_VDM_secure_Pos = true;
 
       break;
     }
@@ -421,6 +422,7 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
       }
       parse_result = true;  // so far so good
       b_posn_report = true;
+      ptd->b_VDM_secure_Pos = true;
 
       break;
     }
@@ -475,6 +477,7 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
       }
       parse_result = true;  // so far so good
       b_posn_report = true;
+      ptd->b_VDM_secure_Pos = true;
 
       break;
     }
@@ -483,6 +486,10 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
       // Long-range automatic identification system broadcast message
       // This message is used for long-range detection of AIS Class A and Class
       // B vessels (typically by satellite).
+
+      // Message 27 can be receiveed for a target that has already been decoded
+      // by class A message 1/2/3 or class B message 18/19. If so reject this.
+      if (ptd->b_VDM_secure_Pos) break;
 
       // Define the constant to do the covertion from the internal encoded
       // position in message 27. The position is less accuate :  1/10 minute
@@ -500,11 +507,9 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
 #endif
 
       // It can be both a CLASS A and a CLASS B vessel - We have decided for
-      // CLASS A
-      // TODO: Lookup to see if we have seen it as a CLASS B, and adjust.
-      if (!ptd->b_isDSCtarget) ptd->Class = AIS_CLASS_A;
-
-      ptd->NavStatus = bstr->GetInt(39, 4);
+      // CLASS A (Default if not changed by other messages.)
+      ptd->NavStatus =
+          ptd->Class == AIS_CLASS_A ? bstr->GetInt(41, 4) : UNDEFINED;
 
       int lon = bstr->GetInt(45, 18);
       int lat = bstr->GetInt(63, 17);
