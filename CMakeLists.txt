@@ -2490,6 +2490,7 @@ if (WIN32)
             "@NSIS_INSTALL_PROGRAMFILES@"
             "$PROGRAMFILES64"
             NSIS_TEMPLATE
+            "${NSIS_TEMPLATE}"
             )
     file(WRITE
             "${CMAKE_BINARY_DIR}/NSIS.template.in"
