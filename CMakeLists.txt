@@ -2484,6 +2484,7 @@ if (WIN32)
   configure_file(
           ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
           ${CMAKE_BINARY_DIR}/NSIS.template.in
+          @ONLY
   )
 endif ()
 
