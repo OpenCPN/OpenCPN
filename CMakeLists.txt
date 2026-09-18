@@ -2622,7 +2622,13 @@ if (WIN32)
   # that goes with it
   set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
   set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/resources/bitmaps\\\\opencpn.ico")
-  set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_setup")
+
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_setup_x64")
+  else()
+    set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_setup")
+  endif()
+
   set(CPACK_RESOURCE_FILE_LICENSE
       "${CMAKE_CURRENT_SOURCE_DIR}/data/license.txt"
   )
