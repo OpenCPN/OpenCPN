@@ -80,13 +80,17 @@ cmake -A x64 -G "Visual Studio 17 2022" ^
 
 cmake --build . --target package --config %CONFIGURATION%
 
-dir D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\*.exe
+::dir D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\*.exe
 dir D:\a\OpenCPN\OpenCPN\build\*.exe
 
-:: copy Rename setup.exe artifact before upload
-for %%F in ("_CPack_Packages\win64\NSIS\opencpn_*_setup.exe") do (
-    copy "%%F" ".\%%~nF_x64.exe"
-)
+:: Rename setup.exe artifact before upload
+for %%F in ("opencpn_*_setup.exe") do ren "%%F" "%%~nF_x64.exe"
+
+::for %%F in ("_CPack_Packages\win64\NSIS\opencpn_*_setup.exe") do (
+::    copy "%%F" ".\%%~nF_x64.exe"
+::)
+:: remove unnecessary x86-named installer, for upload script later.
+::del *setup.exe
 
 dir D:\a\OpenCPN\OpenCPN\build\*.exe
 
