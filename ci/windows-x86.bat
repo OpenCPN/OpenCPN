@@ -78,6 +78,8 @@ cmake -A x64 -G "Visual Studio 17 2022" ^
     -DOCPN_BUILD_TEST=ON ^
     ..
 
+makensis /VERSION
+
 cmake --build . --target package --config %CONFIGURATION%
 
 dir D:\a\OpenCPN\OpenCPN\build\*.exe
