@@ -7447,9 +7447,4 @@ public:
       const std::string &, std::function<void(HostApi122::EventType what)>) = 0;
 };
 
-/** Unstable development API */
-class HostApi123 : public HostApi122 {
-public:
-  HostApi123(Api122Impl *support) : HostApi122(support) {}
-};
 #endif  //_PLUGIN_H_
