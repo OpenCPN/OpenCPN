@@ -213,6 +213,7 @@ public:
   time_t PositionReportTicks;
   time_t LastPositionReportTicks;
   time_t StaticReportTicks;
+  bool b_VDM_secure_Pos;  // Prevent VDM msg 27 if we have got a proper position
 
   int RecentPeriod;
   bool b_active;

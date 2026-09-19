@@ -262,6 +262,7 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   b_positionDoubtful = false;
   b_positionOnceValid = false;
   b_nameValid = false;
+  b_VDM_secure_Pos = false;
 
   Euro_Length = 0;  // Extensions for European Inland AIS
   Euro_Beam = 0;
