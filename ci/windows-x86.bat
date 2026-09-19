@@ -88,9 +88,15 @@ for %%F in ("opencpn_*_setup.exe") do ren "%%F" "%%~nF_x64.exe"
 :: Verify
 dir D:\a\OpenCPN\OpenCPN\build\*.exe
 
-type D:\a\OpenCPN\OpenCPN\build\NSIS.template.in
+::type D:\a\OpenCPN\OpenCPN\build\NSIS.template.in
 
-type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\project.nsi
+echo ===== NSIS template =====
+findstr /n /i "InstallDir" NSIS.template.in
+
+echo ===== CPack NSIS script =====
+findstr /n /i "InstallDir" _CPack_Packages\win64\NSIS\project.nsi
+
+::type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\project.nsi
 ::type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\NSISOutput.log
 
 echo Build complete.
