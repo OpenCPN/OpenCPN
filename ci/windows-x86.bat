@@ -96,7 +96,7 @@ echo ===== NSIS template =====
 findstr /n /i "InstallDir" NSIS.template.in
 
 echo ===== CPack NSIS script =====
-findstr /n /i "InstallDir" _CPack_Packages\win64\NSIS\project.nsi
+findstr /n /i "InstallDirRegKey InstallDir InstallLocation ReadRegStr INSTDIR" _CPack_Packages\win64\NSIS\project.nsi
 
 ::type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\project.nsi
 ::type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\NSISOutput.log
