@@ -1,6 +1,6 @@
 ---
 
-name: Windows-x86
+name: Windows-x64
 
 'on':
   push:
@@ -53,7 +53,7 @@ jobs:
         shell: cmd
         env:
           VSCMD_DEBUG: 3
-        run: ci\windows-x86.bat
+        run: ci\windows-x64.bat
 
       - name: "Check build results"
         shell: bash

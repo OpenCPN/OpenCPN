@@ -27,7 +27,7 @@ if not defined VCINSTALLDIR (
   ) do call "%%p\Common7\Tools\vsDevCmd.bat"
 )
 
-call %SCRIPTDIR%..\buildwin\win_deps_x86.bat wx32
+call %SCRIPTDIR%..\buildwin\win_deps_x64.bat wx32
 call %SCRIPTDIR%..\cache\wx-config.bat
 echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
 echo USING wxWidgets_ROOT_DIR: !wxWidgets_ROOT_DIR!

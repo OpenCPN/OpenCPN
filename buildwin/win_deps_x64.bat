@@ -109,6 +109,7 @@ copy "%vcpkg%\include\zconf.h" "%dest%\include"
 :: curl
 copy "%vcpkg%\lib\libcurl.lib" "%dest%\"
 copy "%vcpkg%\bin\libcurl.dll" "%dest%\"
+
 :: curl headers (model/CMakeLists.txt sets CURL_INCLUDE_DIRS to cache/buildwin/include)
 mkdir "%dest%\include\curl"
 xcopy "%vcpkg%\include\curl" "%dest%\include\curl"  /I /s /y /q
@@ -134,29 +135,4 @@ copy "%vcpkg%\bin\glew32.dll" "%dest%\"
 curl.exe -fL https://curl.se/ca/cacert.pem -o "%dest%\curl-ca-bundle.crt"
 if errorlevel 1 exit /b 1
 
-
-
-::set "GH_DL_BASE=https://github.com/OpenCPN/OCPNWindowsCoreBuildSupport"
-::set "opencpn_support_base=https://dl.cloudsmith.io/public/alec-leamas"
-::if not exist %CACHE_DIR%\buildwin\libcurl.dll (
-::  wget -nv -O !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
-::      %GH_DL_BASE%/archive/refs/tags/v0.5.zip
-::  7z x -y !CACHE_DIR!\OCPNWindowsCoreBuildSupport.zip ^
-::      -o%CACHE_DIR%\buildwintemp
-::  if not exist !CACHE_DIR!\buildwin (mkdir !CACHE_DIR!\buildwin)
-::  xcopy ^
-::    !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.5\buildwin ^
-::    !CACHE_DIR!\buildwin /s /y /q
-::  if exist !CACHE_DIR!\buildwin\wxWidgets (
-::    del !CACHE_DIR!\buildwin\wxWidgets\*.dll /q
-::  )
-::  wget !opencpn_support_base!/opencpn-support/raw/files/iphlpapi.lib ^
-::   -O %CACHE_DIR%\buildwin\iphlpapi.lib
-::)
-
-::wget -nv -O !CACHE_DIR!\QuickStartGuide.zip ^
-::       https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.4.zip
-::if not exist %CACHE_DIR%\..\data\doc\local (mkdir %CACHE_DIR%\..\data\doc\local)
-::7z x -y !CACHE_DIR!\QuickStartGuide.zip  -o%CACHE_DIR%\..\data\doc\local
-
-echo Leaving win_deps_x86.bat
+echo Leaving win_deps_x64.bat
