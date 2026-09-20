@@ -85,7 +85,6 @@ iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint pos, long orient,
 
   // Realize() the toolbar
   Realize();
-  SetDefaultPosition();
 
   m_state_timer.SetOwner(this, STATE_TIMER);
   m_state_timer.Start(100, wxTIMER_CONTINUOUS);

@@ -365,19 +365,16 @@ void BuildiENCToolbar(bool bnew, ToolbarDlgCallbacks callbacks) {
       }
 
       if ((g_iENCToolbarPosX < 0) || (g_iENCToolbarPosY < 0)) {
-        posn.x = 0;
-        posn.y = 100;
-
-        if (g_MainToolbar)
-          posn =
-              wxPoint(g_maintoolbar_x + g_MainToolbar->GetToolbarSize().x + 4,
-                      g_maintoolbar_y);
+        posn.x = 4;
+        posn.y = 4;
       }
 
       double tool_scale_factor =
           g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
       g_iENCToolbar = new iENCToolbar(gFrame, posn, wxTB_HORIZONTAL,
                                       tool_scale_factor, callbacks);
+      g_iENCToolbar->SetULDockPosition(wxPoint(4, 4));
+
       g_iENCToolbar->SetColorScheme(global_color_scheme);
       g_iENCToolbar->EnableSubmerge(false);
     }
@@ -6775,6 +6772,11 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
 #ifdef __WXOSX__
     toolbarParent = GetPrimaryCanvas();
 #endif
+    if (!g_bInlandEcdis)
+      g_maintoolbar_y = 4;
+    else
+      g_maintoolbar_y = 8 + g_iENCToolbar->GetToolbarRect().height;
+
     g_MainToolbar = new ocpnFloatingToolbarDialog(
         toolbarParent, wxPoint(-1, -1), orient, g_toolbar_scalefactor,
         m_toolbar_callbacks);
@@ -6791,12 +6793,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
 
   if (g_MainToolbar) {
     CreateMasterToolbar();
-    {
-      // g_MainToolbar->RestoreRelativePosition(g_maintoolbar_x,
-      // g_maintoolbar_y);
-      g_MainToolbar->SetColorScheme(global_color_scheme);
-      // g_MainToolbar->Show(b_reshow && g_bshowToolbar);
-    }
+    g_MainToolbar->SetColorScheme(global_color_scheme);
   }
 
   if (btbRebuild && g_MainToolbar) {
