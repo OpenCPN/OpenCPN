@@ -918,7 +918,9 @@ void MyFrame::ReloadAllVP() {
 }
 
 void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
-  int is_day = cs == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
+  bool scheme_day =
+      (cs == GLOBAL_COLOR_SCHEME_DAY) | (cs == GLOBAL_COLOR_SCHEME_DAY_HICON);
+  int is_day = scheme_day ? 1 : 0;
   GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 
   global_color_scheme = cs;
@@ -932,6 +934,12 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
       SchemeName = "NIGHT";
+      break;
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
+      SchemeName = "DAY_HICON";
+      break;
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
+      SchemeName = "NIGHT_HICON";
       break;
     default:
       SchemeName = "DAY";
@@ -3023,17 +3031,26 @@ void MyFrame::ToggleChartBar(ChartCanvas *cc) {
 void MyFrame::ToggleColorScheme() {
   static bool lastIsNight;
   ColorScheme s = user_colors::GetColorScheme();
-  int is = (int)s;
-  is++;
-  if (lastIsNight && is == 3)  // Back from step 3
-  {
-    is = 1;
-    lastIsNight = false;
-  }  //      Goto to Day
-  if (lastIsNight) is = 2;          // Back to Dusk on step 3
-  if (is == 3) lastIsNight = true;  // Step 2 Night
-  s = (ColorScheme)is;
-  if (s == N_COLOR_SCHEMES) s = GLOBAL_COLOR_SCHEME_RGB;
+  if (!g_hicon_colors) {
+    int is = (int)s;
+    is++;
+    if (lastIsNight && is == 3)  // Back from step 3
+    {
+      is = 1;
+      lastIsNight = false;
+    }  //      Goto to Day
+    if (lastIsNight) is = 2;          // Back to Dusk on step 3
+    if (is == 3) lastIsNight = true;  // Step 2 Night
+    s = (ColorScheme)(is);
+    if (s == N_COLOR_SCHEMES) s = GLOBAL_COLOR_SCHEME_RGB;
+  } else {
+    if (s == GLOBAL_COLOR_SCHEME_DAY_HICON)
+      s = GLOBAL_COLOR_SCHEME_NIGHT_HICON;
+    else if (s == GLOBAL_COLOR_SCHEME_NIGHT_HICON)
+      s = GLOBAL_COLOR_SCHEME_DAY_HICON;
+    else
+      s = GLOBAL_COLOR_SCHEME_DAY_HICON;
+  }
 
   SetAndApplyColorScheme(s);
 }
@@ -4312,7 +4329,25 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
 
+  // Process HighContrast Color selection
+  ValidateColorScheme();
+  SetAndApplyColorScheme(global_color_scheme);
+
   return;
+}
+
+void MyFrame::ValidateColorScheme() {
+  // Force to a color in the correct hi/lo contrast family if necessary.
+  if (g_hicon_colors) {
+    if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY_HICON) &&
+        (global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT_HICON))
+      global_color_scheme = GLOBAL_COLOR_SCHEME_DAY_HICON;
+  } else {
+    if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
+        (global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT) &&
+        (global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK))
+      global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+  }
 }
 
 bool MyFrame::CheckGroup(int igroup) {
