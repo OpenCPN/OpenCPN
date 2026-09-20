@@ -5686,6 +5686,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pZoomButtons->Hide();
 #endif
 
+  pHiconColors = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,
+                                _("Use High Contrast Chart Colors"));
+  miscOptions->Add(pHiconColors, 0, wxALL, border_size);
+
   pInlandEcdis =
       new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX, _("Use Inland ECDIS"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
@@ -6284,6 +6288,8 @@ void options::SetInitialSettings() {
   // pOverzoomEmphasis->SetValue(!g_fog_overzoom);
   // pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis);
+  pHiconColors->SetValue(g_hicon_colors);
+
 #ifdef ocpnUSE_GL
   pOpenGL->SetValue(g_bopengl);
   if (auto* w = wxWindow::FindWindowById(ID_OPENGLOPTIONS))
@@ -7737,8 +7743,10 @@ void options::ApplyChanges(wxCommandEvent& event) {
     SwitchInlandEcdisMode(g_bInlandEcdis);
     m_returnChanges |= TOOLBAR_CHANGED;
   }
-  // PlugIn Manager Panel
 
+  if (pHiconColors) g_hicon_colors = pHiconColors->GetValue();
+
+  // PlugIn Manager Panel
   // Pick up any changes to selections
   if (PluginLoader::GetInstance()->UpdatePlugIns())
     m_returnChanges |= TOOLBAR_CHANGED;

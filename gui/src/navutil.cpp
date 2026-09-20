@@ -720,6 +720,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("EnableUDPNullHeader", &g_benableUDPNullHeader);
 
   SetPath("/Settings/GlobalState");
+  Read("EnableHiconColorScheme", &g_hicon_colors, 0);
 
   Read("FrameWinX", &g_nframewin_x);
   Read("FrameWinY", &g_nframewin_y);
@@ -914,8 +915,24 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   SetPath("/Settings/GlobalState");
 
-  if (Read("nColorScheme", &read_int))
+  Read("EnableHiconColorScheme", &g_hicon_colors, false);
+
+  if (Read("nColorScheme", &read_int)) {
     global_color_scheme = (ColorScheme)read_int;
+
+    // Force to a color in the correct hi/lo family
+    // if necessary.
+    if (g_hicon_colors) {
+      if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY_HICON) &&
+          (global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT_HICON))
+        global_color_scheme = GLOBAL_COLOR_SCHEME_DAY_HICON;
+    } else {
+      if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
+          (global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT) &&
+          (global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK))
+        global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+    }
+  }
 
   if (!bAsTemplate) {
     SetPath("/Settings/NMEADataSource");
@@ -2144,6 +2161,8 @@ void MyConfig::UpdateSettings() {
   SetPath("/Settings/GlobalState");
   if (!g_bInlandEcdis)
     Write("nColorScheme", (int)user_colors::GetColorScheme());
+
+  Write("EnableHiconColorScheme", g_hicon_colors);
 
   Write("FrameWinX", g_nframewin_x);
   Write("FrameWinY", g_nframewin_y);

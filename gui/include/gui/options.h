@@ -428,7 +428,7 @@ public:
   wxCheckBox *pCBCM93, *pCBLookAhead, *pSkewComp, *pOpenGL, *pSmoothPanZoom;
   wxCheckBox *pFullScreenQuilt, *pMobile, *pResponsive, *pOverzoomEmphasis;
   wxCheckBox *pOZScaleVector, *pToolbarAutoHideCB, *pInlandEcdis, *pRollover;
-  wxCheckBox *pZoomButtons, *pChartBarEX;
+  wxCheckBox *pZoomButtons, *pChartBarEX, *pHiconColors;
   wxTextCtrl *pCOGUPUpdateSecs, *m_pText_OSCOG_Predictor, *pScreenMM;
   wxTextCtrl *pToolbarHideSecs, *m_pText_OSHDT_Predictor, *m_pTxt_OwnMMSI;
   // Radio buttons to control the date/time format.

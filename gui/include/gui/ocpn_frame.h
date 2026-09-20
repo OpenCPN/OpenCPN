@@ -445,6 +445,7 @@ public:
   DataMonitor* GetDataMonitor() const { return m_data_monitor; }
 
   void SetAndApplyColorScheme(ColorScheme cs);
+  void ValidateColorScheme();
 
   void OnFrameTCTimer(wxTimerEvent& event);
   void OnFrameCOGTimer(wxTimerEvent& event);
