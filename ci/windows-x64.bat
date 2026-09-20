@@ -70,7 +70,7 @@ cmake -A x64 -G "Visual Studio 17 2022" ^
     -DwxWidgets_LIB_DIR="!wxWidgets_LIB_DIR!" ^
     -DwxWidgets_ROOT_DIR="!wxWidgets_ROOT_DIR!" ^
     -DwxWidgets_CONFIGURATION=mswu ^
-    -DOCPN_TARGET_TUPLE=msvc-wx32;10;x86_64 ^
+    -DOCPN_TARGET_TUPLE=msvc-64;10;x86_64 ^
     -DOCPN_CI_BUILD=ON ^
     -DOCPN_BUNDLE_WXDLLS=ON ^
     -DOCPN_RELEASE=0 ^

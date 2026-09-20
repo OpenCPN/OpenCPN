@@ -378,7 +378,7 @@ bool PluginHandler::IsCompatible(const PluginMetadata& metadata, const char* os,
   }
 
   static const std::vector<std::string> simple_abis = {
-      "msvc", "msvc-wx32", "android-armhf", "android-arm64"};
+      "msvc", "msvc-wx32", "msvc-64", "android-armhf", "android-arm64"};
 
   Plugin plugin(metadata);
   if (plugin.abi() == "all") {
