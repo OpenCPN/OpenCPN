@@ -5686,7 +5686,7 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pZoomButtons->Hide();
 #endif
 
-  pHiconColors = new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX,
+  pHiconColors = new wxCheckBox(itemPanelFont, ID_HICONCOLORS,
                                 _("Use High Contrast Chart Colors"));
   miscOptions->Add(pHiconColors, 0, wxALL, border_size);
 
