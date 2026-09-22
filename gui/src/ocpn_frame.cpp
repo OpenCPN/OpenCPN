@@ -1824,6 +1824,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   delete g_glTextureManager;
 #endif
   uninitIXNetSystem();
+
+  g_iENCToolbar = NULL;
+
   this->Destroy();
   gFrame = NULL;
 
