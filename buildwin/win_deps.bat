@@ -68,6 +68,25 @@ if not exist %CACHE_DIR%\buildwin\libcurl.dll (
    -O %CACHE_DIR%\buildwin\iphlpapi.lib
 )
 
+set "DBGRUNTIME_DIR=%VSINSTALLDIR%\\Common7\\IDE\\Remote Debugger\\x86"
+echo DBGRUNTIME_DIR = %DBGRUNTIME_DIR%
+copy "%DBGRUNTIME_DIR%\api-ms-win*.dll" !CACHE_DIR!\buildwin\vc /Y
+
+:: Let's get the latest official MS runtime dlls.
+
+:: For VS2022 builds we need to use the V143 runtime, which is in a different location than the V140 runtime used by VS2017 builds.
+:: The following code finds the correct location of the V143 runtime and copies it to the buildwin directory. It overwrites any
+:: existing files in the buildwin directory, which is fine since we want to ensure we have the correct version of the runtime dlls.
+
+for /d %%F in ("%VSINSTALLDIR%\vc\\Redist\\MSVC\\14.*") do (
+  if exist "%%F\x86\\Microsoft.VC143.CRT" set "VCRUNTIME_DIR=%%F\x86\\Microsoft.VC143.CRT"
+)
+echo VCRUNTIME_DIR = %VCRUNTIME_DIR%
+
+copy "%VCRUNTIME_DIR%\*.dll" !CACHE_DIR!\buildwin\vc /Y
+
+rmdir /s /q !CACHE_DIR!\buildwintemp\OCPNWindowsCoreBuildSupport-0.5
+
 wget -nv -O !CACHE_DIR!\QuickStartGuide.zip ^
        https://dl.cloudsmith.io/public/david-register/opencpn-docs/raw/files/QuickStartGuide-v0.4.zip
 if not exist %CACHE_DIR%\..\data\doc\local (mkdir %CACHE_DIR%\..\data\doc\local)
