@@ -1834,7 +1834,6 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
 #endif
   uninitIXNetSystem();
 
-  delete g_iENCToolbar;
   g_iENCToolbar = NULL;
 
   this->Destroy();
