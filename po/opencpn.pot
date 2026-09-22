@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 5.14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-22 12:48-0400\n"
+"POT-Creation-Date: 2026-09-22 15:26-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -8908,26 +8908,33 @@ msgstr ""
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
 
-#: gui/src/safe_mode_gui.cpp:44
-msgid ""
-" <p>The last opencpn run seems to have failed. Do\n"
-"          <br>you want to run in safe mode without plugins and\n"
-"          <br> other possibly problematic features? </p>\n"
-"       <br/><br/>\n"
-"       <p> You may consider visiting the OpenCPN-5.14.2\n"
-"       <br/> <a href=\"http://repo.opencpn.org/known-issues-5.14.2.html\">\n"
-"       list of known issues</a>.</p>"
+#: gui/src/safe_mode_gui.cpp:45
+msgid " The last opencpn run seems to have failed."
 msgstr ""
 
-#: gui/src/safe_mode_gui.cpp:65
+#: gui/src/safe_mode_gui.cpp:48
+msgid ""
+"Do you want to run in safe mode without plugins and other possibly "
+"problematic features?"
+msgstr ""
+
+#: gui/src/safe_mode_gui.cpp:51
+msgid "You may consider visiting the OpenCPN-5.14.2 list of known issues"
+msgstr ""
+
+#: gui/src/safe_mode_gui.cpp:57
+msgid "list of known issues."
+msgstr ""
+
+#: gui/src/safe_mode_gui.cpp:72
 msgid "Safe Restart"
 msgstr ""
 
-#: gui/src/safe_mode_gui.cpp:66
+#: gui/src/safe_mode_gui.cpp:73
 msgid "Safe mode start"
 msgstr ""
 
-#: gui/src/safe_mode_gui.cpp:68
+#: gui/src/safe_mode_gui.cpp:75
 msgid "Normal start"
 msgstr ""
 
