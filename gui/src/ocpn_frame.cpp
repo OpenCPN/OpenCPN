@@ -1708,6 +1708,8 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   // g_MainToolbar = NULL;
 #endif
 
+  if (g_iENCToolbar) delete g_iENCToolbar;
+
   if (g_pAISTargetList) {
     g_pAISTargetList->Disconnect_decoder();
     g_pAISTargetList->Destroy();

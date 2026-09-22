@@ -95,6 +95,9 @@ iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint pos, long orient,
 iENCToolbar::~iENCToolbar() {
   m_state_timer.Stop();
   delete m_pbmScratch;
+  this->Disconnect(wxEVT_TIMER,
+                   wxTimerEventHandler(iENCToolbar::StateTimerEvent), NULL,
+                   this);
 }
 
 void iENCToolbar::SetColorScheme(ColorScheme cs) {
