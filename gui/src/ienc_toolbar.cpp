@@ -92,7 +92,12 @@ iENCToolbar::iENCToolbar(wxWindow *parent, wxPoint pos, long orient,
                 NULL, this);
 }
 
-iENCToolbar::~iENCToolbar() {}
+iENCToolbar::~iENCToolbar() {
+  m_state_timer.Stop();
+  this->Disconnect(wxEVT_TIMER,
+                   wxTimerEventHandler(iENCToolbar::StateTimerEvent), NULL,
+                   this);
+}
 
 void iENCToolbar::SetColorScheme(ColorScheme cs) {
   m_nDensity = -1;

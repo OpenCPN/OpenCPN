@@ -1691,12 +1691,7 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   // g_MainToolbar = NULL;
 #endif
 
-  if (g_iENCToolbar) {
-    // wxPoint locn = g_iENCToolbar->GetPosition();
-    // g_iENCToolbarPosY = locn.y;
-    // g_iENCToolbarPosX = locn.x;
-    // g_iENCToolbar->Destroy();
-  }
+  if (g_iENCToolbar) delete g_iENCToolbar;
 
   if (g_pAISTargetList) {
     g_pAISTargetList->Disconnect_decoder();
