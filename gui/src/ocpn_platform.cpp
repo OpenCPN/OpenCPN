@@ -222,14 +222,14 @@ void catch_signals(int signo) {
     case SIGHUP:
       if (!s_inhup) {
         s_inhup++;  // incase SIGHUP is closely followed by SIGTERM
-        top_frame::Get()->FastClose();
+        if (top_frame::Get()) top_frame::Get()->FastClose();
       }
       break;
 
     case SIGTERM:
       if (!s_inhup) {
         s_inhup++;  // incase SIGHUP is closely followed by SIGTERM
-        top_frame::Get()->FastClose();
+        if (top_frame::Get()) top_frame::Get()->FastClose();
       }
 
       break;
