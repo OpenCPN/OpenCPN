@@ -335,6 +335,140 @@
             <color name="BKAJ2" r="7" g="8" b="8"/>
         </color-table>
 
+       <color-table name="DAY_HICON">
+            <graphics-file name="rastersymbols-day.png" />
+            <color name="NODTA" r="163" g="180" b="183"/>
+            <color name="CURSR" r="235" g="125" b="54"/>
+            <color name="CHBLK" r="7" g="7" b="7"/>
+            <color name="CHGRD" r="125" g="137" b="140"/>
+            <color name="CHGRF" r="163" g="180" b="183"/>
+            <color name="CHRED" r="241" g="84" b="105"/>
+            <color name="CHGRN" r="104" g="228" b="86"/>
+            <color name="CHYLW" r="244" g="218" b="72"/>
+            <color name="CHMGD" r="197" g="69" b="195"/>
+            <color name="CHMGF" r="211" g="166" b="233"/>
+            <color name="CHBRN" r="247" g="222" b="82"/>
+            <color name="CHWHT" r="212" g="234" b="238"/>
+            <color name="SCLBR" r="235" g="125" b="54"/>
+            <color name="CHCOR" r="235" g="125" b="54"/>
+            <color name="LITRD" r="241" g="84" b="105"/>
+            <color name="LITGN" r="104" g="228" b="86"/>
+            <color name="LITYW" r="244" g="218" b="72"/>
+            <color name="ISDNG" r="197" g="69" b="195"/>
+            <color name="DNGHL" r="241" g="84" b="105"/>
+            <color name="TRFCD" r="197" g="69" b="195"/>
+            <color name="TRFCF" r="211" g="166" b="233"/>
+            <color name="LANDA" r="255" g="239" b="115"/>
+            <color name="LANDF" r="139" g="102" b="31"/>
+            <color name="CSTLN" r="82" g="90" b="92"/>
+            <color name="SNDG1" r="125" g="137" b="140"/>
+            <color name="SNDG2" r="7" g="7" b="7"/>
+            <color name="DEPSC" r="82" g="90" b="92"/>
+            <color name="DEPCN" r="125" g="137" b="140"/>
+            <color name="DEPDW" r="250" g="250" b="250"/>
+            <color name="DEPMD" r="189" g="230" b="255"/>
+            <color name="DEPMS" r="164" g="222" b="255"/>
+            <color name="DEPVS" r="33" g="180" b="253"/>
+            <color name="DEPIT" r="156" g="206" b="0"/>
+            <color name="RADHI" r="104" g="228" b="86"/>
+            <color name="RADLO" r="63" g="138" b="52"/>
+            <color name="ARPAT" r="63" g="165" b="111"/>
+            <color name="NINFO" r="235" g="125" b="54"/>
+            <color name="RESBL" r="58" g="120" b="240"/>
+            <color name="ADINF" r="178" g="159" b="52"/>
+            <color name="RESGR" r="125" g="137" b="140"/>
+            <color name="SHIPS" r="7" g="7" b="7"/>
+            <color name="PSTRK" r="7" g="7" b="7"/>
+            <color name="SYTRK" r="125" g="137" b="140"/>
+            <color name="PLRTE" r="220" g="64" b="37"/>
+            <color name="APLRT" r="235" g="125" b="54"/>
+            <color name="UINFD" r="7" g="7" b="7"/>
+            <color name="UINFF" r="125" g="137" b="140"/>
+            <color name="UIBCK" r="212" g="234" b="238"/>
+            <color name="UIAFD" r="115" g="182" b="239"/>
+            <color name="UINFR" r="241" g="84" b="105"/>
+            <color name="UINFG" r="104" g="228" b="86"/>
+            <color name="UINFO" r="235" g="125" b="54"/>
+            <color name="UINFB" r="58" g="120" b="240"/>
+            <color name="UINFM" r="197" g="69" b="195"/>
+            <color name="UIBDR" r="125" g="137" b="140"/>
+            <color name="UIAFF" r="201" g="185" b="122"/>
+            <color name="OUTLW" r="7" g="7" b="7"/>
+            <color name="OUTLL" r="201" g="185" b="122"/>
+            <color name="RES01" r="163" g="180" b="183"/>
+            <color name="RES02" r="163" g="180" b="183"/>
+            <color name="RES03" r="163" g="180" b="183"/>
+            <color name="BKAJ1" r="7" g="7" b="7"/>
+            <color name="BKAJ2" r="35" g="39" b="40"/>
+        </color-table>
+
+        <color-table name="NIGHT_HICON">
+            <graphics-file name="rastersymbols-day.png" />
+            <color name="NODTA" r="7" g="7" b="7"/>
+            <color name="CURSR" r="52" g="28" b="12"/>
+            <color name="CHBLK" r="31" g="34" b="35"/>
+            <color name="CHGRD" r="31" g="34" b="35"/>
+            <color name="CHGRF" r="16" g="18" b="18"/>
+            <color name="CHRED" r="59" g="17" b="10"/>
+            <color name="CHGRN" r="22" g="34" b="7"/>
+            <color name="CHYLW" r="41" g="33" b="10"/>
+            <color name="CHMGD" r="152" g="104" b="208"/>
+            <color name="CHMGF" r="52" g="18" b="52"/>
+            <color name="CHBRN" r="82" g="49" b="0"/>
+            <color name="CHWHT" r="37" g="41" b="41"/>
+            <color name="SCLBR" r="52" g="28" b="12"/>
+            <color name="CHCOR" r="52" g="28" b="12"/>
+            <color name="LITRD" r="241" g="84" b="105"/>
+            <color name="LITGN" r="104" g="228" b="86"/>
+            <color name="LITYW" r="244" g="218" b="72"/>
+            <color name="ISDNG" r="52" g="18" b="52"/>
+            <color name="DNGHL" r="59" g="17" b="10"/>
+            <color name="TRFCD" r="58" g="20" b="58"/>
+            <color name="TRFCF" r="52" g="18" b="52"/>
+            <color name="LANDA" r="90" g="58" b="0"/>
+            <color name="LANDF" r="23" g="17" b="5"/>
+            <color name="CSTLN" r="37" g="41" b="41"/>
+            <color name="SNDG1" r="31" g="34" b="35"/>
+            <color name="SNDG2" r="43" g="48" b="48"/>
+            <color name="DEPSC" r="14" g="123" b="177"/>
+            <color name="DEPCN" r="18" g="123" b="177"/>
+            <color name="DEPDW" r="7" g="7" b="7"/>
+            <color name="DEPMD" r="0" g="58" b="90"/>
+            <color name="DEPMS" r="0" g="49" b="74"/>
+            <color name="DEPVS" r="0" g="90" b="148"/>
+            <color name="DEPIT" r="33" g="90" b="0"/>
+            <color name="RADHI" r="22" g="34" b="7"/>
+            <color name="RADLO" r="10" g="16" b="3"/>
+            <color name="ARPAT" r="12" g="31" b="21"/>
+            <color name="NINFO" r="52" g="28" b="12"/>
+            <color name="RESBL" r="21" g="29" b="69"/>
+            <color name="ADINF" r="41" g="33" b="10"/>
+            <color name="RESGR" r="16" g="18" b="18"/>
+            <color name="SHIPS" r="37" g="41" b="41"/>
+            <color name="PSTRK" r="37" g="41" b="41"/>
+            <color name="SYTRK" r="31" g="34" b="35"/>
+            <color name="PLRTE" r="66" g="19" b="11"/>
+            <color name="APLRT" r="52" g="28" b="12"/>
+            <color name="UINFD" r="43" g="48" b="48"/>
+            <color name="UINFF" r="31" g="34" b="35"/>
+            <color name="UIBCK" r="7" g="7" b="7"/>
+            <color name="UIAFD" r="3" g="4" b="19"/>
+            <color name="UINFR" r="59" g="17" b="10"/>
+            <color name="UINFG" r="22" g="34" b="7"/>
+            <color name="UINFO" r="52" g="28" b="12"/>
+            <color name="UINFB" r="21" g="29" b="69"/>
+            <color name="UINFM" r="52" g="18" b="52"/>
+            <color name="UIBDR" r="31" g="34" b="35"/>
+            <color name="UIAFF" r="13" g="10" b="8"/>
+            <color name="OUTLW" r="7" g="7" b="7"/>
+            <color name="OUTLL" r="13" g="10" b="8"/>
+            <color name="RES01" r="7" g="7" b="7"/>
+            <color name="RES02" r="7" g="7" b="7"/>
+            <color name="RES03" r="7" g="7" b="7"/>
+            <color name="BKAJ1" r="7" g="7" b="7"/>
+            <color name="BKAJ2" r="7" g="8" b="8"/>
+        </color-table>
+
     </color-tables>
 
     <lookups>

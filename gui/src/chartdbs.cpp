@@ -1117,6 +1117,7 @@ void ChartDatabase::ProcessThreadQueueEmpty() {
     // load the thread pool from the prepared array
     // Enqueue jobs
     for (auto &ticket_d : m_deferred_ticket_vector) {
+      ticket_d->m_ticket_type = 0;
       m_pool_deferred.Push(ticket_d);
       m_jobsRemaining++;
     }

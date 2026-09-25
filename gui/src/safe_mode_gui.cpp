@@ -39,12 +39,22 @@
 
 namespace safe_mode {
 
-static const char* LAST_RUN_ERROR_MSG =
-    _("<p>The last opencpn run seems to have failed. Do you want to run\n"
-      "in safe mode without plugins and other possibly problematic\n"
-      "features?\n</p><br/></br><p>You may consider visiting the <a "
-      "href=\"https://github.com/OpenCPN/OpenCPN/wiki/"
-      "OpenCPN-5.10-known-issues\">list of known issues</a>.</p>");
+// clang-format off
+    static const char* const kLastRunErrorMsg1 =
+    // clang-format off
+  _(R"( The last opencpn run seems to have failed.)");
+
+static const char* const kLastRunErrorMsg2 =
+  _(R"(Do you want to run in safe mode without plugins and other possibly problematic features?)");
+
+static const char* const kLastRunErrorMsg3 =
+  _(R"(You may consider visiting the OpenCPN-5.14.2 list of known issues)");
+
+static const char* const kLastRunErrorMsg4 =
+    R"( <a href="http://repo.opencpn.org/known-issues-5.14.2.html">)";
+
+static const char* const kLastRunErrorMsg5 =
+    _(R"(list of known issues.)");  // clang-format on
 
 /**
  * Check if the last start failed, possibly invoke user dialog and set
@@ -68,9 +78,13 @@ void check_last_start() {
   dlg.SetTimer(15);
 
   std::stringstream html;
-  html << "<html><body>";
-  html << LAST_RUN_ERROR_MSG;
+  html << "<html><body>" << kLastRunErrorMsg1 << "<br/><br/>";
+  html << kLastRunErrorMsg2 << "<br/><br/>";
+  html << kLastRunErrorMsg3 << "<br/>";
+  html << kLastRunErrorMsg4 << "<br/>";
+  html << kLastRunErrorMsg5 << "</a>";
   html << "</body></html>";
+
   dlg.AddHtmlContent(html);
 
   int reply = dlg.ShowModal();

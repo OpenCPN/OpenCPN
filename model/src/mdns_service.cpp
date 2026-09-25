@@ -22,6 +22,7 @@
  * Implement mdns_server.h -- mDNS RESTful server.
  */
 
+#include <chrono>
 #include <string>
 #include <mutex>
 #include <vector>
@@ -339,10 +340,21 @@ void service_mdns(const char* hostname, const char* service_name,
   int sockets[32];
   int num_sockets =
       open_service_sockets(sockets, sizeof(sockets) / sizeof(sockets[0]));
-  if (num_sockets <= 0) {
-    printf("Failed to open any client sockets\n");
-    return;
+
+  // The multicast join (IP_ADD_MEMBERSHIP) in socket setup needs a usable
+  // multicast route, which may not exist yet when we start early at boot (e.g.
+  // kiosk launch racing network bring-up). Rather than giving up permanently,
+  // retry until the network is ready, so the service becomes discoverable once
+  // connectivity comes up.
+  while (num_sockets <= 0 && running_server) {
+    printf("mDNS service: no sockets yet (network not ready?), retrying\n");
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    num_sockets =
+        open_service_sockets(sockets, sizeof(sockets) / sizeof(sockets[0]));
   }
+
+  if (num_sockets <= 0) return;
+
   printf("Opened %d socket%s for mDNS service\n", num_sockets,
          num_sockets ? "s" : "");
 

@@ -363,19 +363,16 @@ void BuildiENCToolbar(bool bnew, ToolbarDlgCallbacks callbacks) {
       }
 
       if ((g_iENCToolbarPosX < 0) || (g_iENCToolbarPosY < 0)) {
-        posn.x = 0;
-        posn.y = 100;
-
-        if (g_MainToolbar)
-          posn =
-              wxPoint(g_maintoolbar_x + g_MainToolbar->GetToolbarSize().x + 4,
-                      g_maintoolbar_y);
+        posn.x = 4;
+        posn.y = 4;
       }
 
       double tool_scale_factor =
           g_Platform->GetToolbarScaleFactor(g_GUIScaleFactor);
       g_iENCToolbar = new iENCToolbar(gFrame, posn, wxTB_HORIZONTAL,
                                       tool_scale_factor, callbacks);
+      g_iENCToolbar->SetULDockPosition(wxPoint(4, 4));
+
       g_iENCToolbar->SetColorScheme(global_color_scheme);
       g_iENCToolbar->EnableSubmerge(false);
     }
@@ -912,7 +909,9 @@ void MyFrame::ReloadAllVP() {
 }
 
 void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
-  int is_day = cs == GLOBAL_COLOR_SCHEME_DAY ? 1 : 0;
+  bool scheme_day =
+      (cs == GLOBAL_COLOR_SCHEME_DAY) | (cs == GLOBAL_COLOR_SCHEME_DAY_HICON);
+  int is_day = scheme_day ? 1 : 0;
   GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 
   global_color_scheme = cs;
@@ -926,6 +925,12 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
       SchemeName = "NIGHT";
+      break;
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
+      SchemeName = "DAY_HICON";
+      break;
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
+      SchemeName = "NIGHT_HICON";
       break;
     default:
       SchemeName = "DAY";
@@ -1694,21 +1699,12 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   // g_MainToolbar = NULL;
 #endif
 
-  if (g_iENCToolbar) {
-    // wxPoint locn = g_iENCToolbar->GetPosition();
-    // g_iENCToolbarPosY = locn.y;
-    // g_iENCToolbarPosX = locn.x;
-    // g_iENCToolbar->Destroy();
-  }
+  if (g_iENCToolbar) delete g_iENCToolbar;
 
   if (g_pAISTargetList) {
     g_pAISTargetList->Disconnect_decoder();
     g_pAISTargetList->Destroy();
   }
-
-#ifndef __WXQT__
-  SetStatusBar(NULL);
-#endif
 
   if (RouteManagerDialog::getInstanceFlag()) {
     if (pRouteManagerDialog) {
@@ -1828,6 +1824,9 @@ void MyFrame::OnCloseWindow(wxCloseEvent &event) {
   delete g_glTextureManager;
 #endif
   uninitIXNetSystem();
+
+  g_iENCToolbar = NULL;
+
   this->Destroy();
   gFrame = NULL;
 
@@ -2339,9 +2338,29 @@ void MyFrame::RefreshGroupIndices() {
   }
 }
 
-void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
-  if (g_MainToolbar) g_MainToolbar->HideTooltip();
+bool MyFrame::DisableTbarTooltips() {
+  if (g_MainToolbar) {
+    g_MainToolbar->HideTooltip();
+    return g_MainToolbar->DisableTooltips();
+  }
+  wxLogWarning("Global g_MainToolbar has not been created.");
+  return false;
+}
 
+void MyFrame::EnableTbarTooltips() {
+  if (g_MainToolbar) {
+    g_MainToolbar->EnableTooltips();
+  }
+}
+
+void MyFrame::HideTbarTooltip() {
+  if (g_MainToolbar) {
+    g_MainToolbar->HideTooltip();
+  }
+}
+
+void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
+  HideTbarTooltip();
   switch (event.GetId()) {
     case ID_MENU_SCALE_OUT:
       DoStackDelta(GetPrimaryCanvas(), 1);
@@ -2497,7 +2516,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 
     case wxID_PREFERENCES:
     case ID_SETTINGS: {
-      g_MainToolbar->HideTooltip();
+      HideTbarTooltip();
       DoSettings();
       break;
     }
@@ -2522,7 +2541,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
     case ID_MENU_SETTINGS_BASIC: {
 #ifdef __ANDROID__
       androidDisableFullScreen();
-      g_MainToolbar->HideTooltip();
+      HideTbarTooltip();
       DoAndroidPreferences();
 #else
       DoSettings();
@@ -2731,7 +2750,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
       //        If found, make the callback.
       //        TODO Modify this to allow multiple tools per plugin
       if (g_pi_manager) {
-        g_MainToolbar->HideTooltip();
+        HideTbarTooltip();
 
         ArrayOfPlugInToolbarTools tool_array =
             g_pi_manager->GetPluginToolbarToolArray();
@@ -2763,7 +2782,7 @@ void MyFrame::OnToolLeftClick(wxCommandEvent &event) {
 bool MyFrame::SetGlobalToolbarViz(bool viz) {
   bool viz_now = g_bmasterToolbarFull;
 
-  g_MainToolbar->HideTooltip();
+  HideTbarTooltip();
   wxString tip = _("Show Toolbar");
   if (viz) {
     tip = _("Hide Toolbar");
@@ -2999,17 +3018,26 @@ void MyFrame::ToggleChartBar(ChartCanvas *cc) {
 void MyFrame::ToggleColorScheme() {
   static bool lastIsNight;
   ColorScheme s = user_colors::GetColorScheme();
-  int is = (int)s;
-  is++;
-  if (lastIsNight && is == 3)  // Back from step 3
-  {
-    is = 1;
-    lastIsNight = false;
-  }  //      Goto to Day
-  if (lastIsNight) is = 2;          // Back to Dusk on step 3
-  if (is == 3) lastIsNight = true;  // Step 2 Night
-  s = (ColorScheme)is;
-  if (s == N_COLOR_SCHEMES) s = GLOBAL_COLOR_SCHEME_RGB;
+  if (!g_hicon_colors) {
+    int is = (int)s;
+    is++;
+    if (lastIsNight && is == 3)  // Back from step 3
+    {
+      is = 1;
+      lastIsNight = false;
+    }  //      Goto to Day
+    if (lastIsNight) is = 2;          // Back to Dusk on step 3
+    if (is == 3) lastIsNight = true;  // Step 2 Night
+    s = (ColorScheme)(is);
+    if (s == N_COLOR_SCHEMES) s = GLOBAL_COLOR_SCHEME_RGB;
+  } else {
+    if (s == GLOBAL_COLOR_SCHEME_DAY_HICON)
+      s = GLOBAL_COLOR_SCHEME_NIGHT_HICON;
+    else if (s == GLOBAL_COLOR_SCHEME_NIGHT_HICON)
+      s = GLOBAL_COLOR_SCHEME_DAY_HICON;
+    else
+      s = GLOBAL_COLOR_SCHEME_DAY_HICON;
+  }
 
   SetAndApplyColorScheme(s);
 }
@@ -4289,7 +4317,25 @@ void MyFrame::ProcessOptionsDialog(int rr, ArrayOfCDI *pNewDirArray) {
   // Reset chart scale factor trigger
   g_last_ChartScaleFactor = g_ChartScaleFactor;
 
+  // Process HighContrast Color selection
+  ValidateColorScheme();
+  SetAndApplyColorScheme(global_color_scheme);
+
   return;
+}
+
+void MyFrame::ValidateColorScheme() {
+  // Force to a color in the correct hi/lo contrast family if necessary.
+  if (g_hicon_colors) {
+    if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY_HICON) &&
+        (global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT_HICON))
+      global_color_scheme = GLOBAL_COLOR_SCHEME_DAY_HICON;
+  } else {
+    if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
+        (global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT) &&
+        (global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK))
+      global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+  }
 }
 
 bool MyFrame::CheckGroup(int igroup) {
@@ -5240,32 +5286,6 @@ void MyFrame::OnMemFootTimer(wxTimerEvent &event) {
 
 int ut_index;
 
-void MyFrame::CheckToolbarPosition() {
-#ifdef __WXMAC__
-  // Manage Full Screen mode on Mac Mojave 10.14
-  static bool bMaximized;
-
-  if (IsMaximized() && !bMaximized) {
-    bMaximized = true;
-    if (g_MainToolbar) {
-      g_MainToolbar->SetYAuxOffset(g_MainToolbar->GetToolSize().y * 15 / 10);
-      g_MainToolbar->SetDefaultPosition();
-      g_MainToolbar->Realize();
-    }
-    PositionIENCToolbar();
-  } else if (!IsMaximized() && bMaximized) {
-    bMaximized = false;
-    if (g_MainToolbar) {
-      g_MainToolbar->SetYAuxOffset(0);
-      g_MainToolbar->SetDockY(-1);
-      g_MainToolbar->SetDefaultPosition();
-      g_MainToolbar->Realize();
-    }
-    PositionIENCToolbar();
-  }
-#endif
-}
-
 void MyFrame::ProcessUnitTest() {
   if (!g_bPauseTest && (g_unit_test_1 || g_unit_test_2)) {
     //            if((0 == ut_index) && GetQuiltMode())
@@ -5591,8 +5611,6 @@ void MyFrame::ProcessLogAndBells() {
 }
 
 void MyFrame::OnFrameTimer1(wxTimerEvent &event) {
-  CheckToolbarPosition();
-
   ProcessUnitTest();
   g_tick++;
   if (ProcessQuitFlag()) return;
@@ -6107,7 +6125,13 @@ void MyFrame::DoPrint(void) {
   auto &printer = PrintDialog::GetInstance();
   printer.Initialize(wxLANDSCAPE);
   printer.EnablePageNumbers(false);
+  // Disable/hide the tooltips during print because they can interfere with the
+  // print dialog
+  bool tooltips_were_enabled = DisableTbarTooltips();
   printer.Print(this, &printout);
+  if (tooltips_were_enabled) {
+    EnableTbarTooltips();
+  }
 
   // Pass two printout objects: for preview, and possible printing.
   /*
@@ -6793,6 +6817,11 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
 #ifdef __WXOSX__
     toolbarParent = GetPrimaryCanvas();
 #endif
+    if (!g_bInlandEcdis)
+      g_maintoolbar_y = 4;
+    else
+      g_maintoolbar_y = 8 + g_iENCToolbar->GetToolbarRect().height;
+
     g_MainToolbar = new ocpnFloatingToolbarDialog(
         toolbarParent, wxPoint(-1, -1), orient, g_toolbar_scalefactor,
         m_toolbar_callbacks);
@@ -6809,12 +6838,7 @@ void MyFrame::RequestNewMasterToolbar(bool bforcenew) {
 
   if (g_MainToolbar) {
     CreateMasterToolbar();
-    {
-      // g_MainToolbar->RestoreRelativePosition(g_maintoolbar_x,
-      // g_maintoolbar_y);
-      g_MainToolbar->SetColorScheme(global_color_scheme);
-      // g_MainToolbar->Show(b_reshow && g_bshowToolbar);
-    }
+    g_MainToolbar->SetColorScheme(global_color_scheme);
   }
 
   if (btbRebuild) {

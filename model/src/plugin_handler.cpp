@@ -366,7 +366,7 @@ PluginHandler::PluginHandler() {}
 bool PluginHandler::IsCompatible(const PluginMetadata& metadata, const char* os,
                                  const char* os_version) {
   static const SemanticVersion kMinApi = SemanticVersion(1, 16);
-  static const SemanticVersion kMaxApi = SemanticVersion(1, 21);
+  static const SemanticVersion kMaxApi = SemanticVersion(1, 22);
   auto plugin_api = SemanticVersion::parse(metadata.api_version);
   if (plugin_api.major == -1) {
     DEBUG_LOG << "Cannot parse API version \"" << metadata.api_version << "\"";
@@ -378,7 +378,7 @@ bool PluginHandler::IsCompatible(const PluginMetadata& metadata, const char* os,
   }
 
   static const std::vector<std::string> simple_abis = {
-      "msvc", "msvc-wx32", "android-armhf", "android-arm64"};
+      "msvc", "msvc-wx32", "msvc-64", "android-armhf", "android-arm64"};
 
   Plugin plugin(metadata);
   if (plugin.abi() == "all") {

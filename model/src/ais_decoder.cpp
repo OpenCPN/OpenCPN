@@ -606,6 +606,10 @@ static bool Parse_VDXBitstring(AisBitstring *bstr,
     }
 
     case 24: {  // Static data report
+      // First, check that we have received the position and thus
+      // a main message that has given the target a relevant class
+      if (!ptd->b_positionOnceValid) break;
+
       int part_number = bstr->GetInt(39, 2);
       if (0 == part_number) {
         bstr->GetStr(41, 120, &ptd->ShipName[0], SHIP_NAME_LEN);
@@ -3053,6 +3057,9 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     // Ais8_001_31 || ais8_367_33 (class AIS_METEO) test for a new mmsi ID
     int origin_mmsi = 0;
     int messID = strbit.GetInt(1, 6);
+    // No need for a message without a valid mess-ID
+    if (messID < 1 || messID > 63) return AIS_GENERIC_ERROR;
+
     int dac = strbit.GetInt(41, 10);
     int fi = strbit.GetInt(51, 6);
     if (messID == 8) {

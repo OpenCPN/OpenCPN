@@ -651,6 +651,6 @@ bool RouteGui::OnDelete(wxWindow *parent, const int count) {
 
   AlertDialog dialog(parent, title, action);
   dialog.SetMessage(msg);
-  int result = dialog.ShowModal();
-  return result == wxID_OK;
+  dialog.ShowModal();
+  return dialog.GetReturnCode() == wxID_OK;
 }
