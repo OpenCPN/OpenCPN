@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 10:26-0500\n"
-"PO-Revision-Date: 2026-03-19 13:52\n"
+"POT-Creation-Date: 2026-09-22 12:48-0400\n"
+"PO-Revision-Date: 2026-09-24 18:08\n"
 "Last-Translator: \n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -74,433 +74,433 @@ msgstr "Näiv tuule nurk ja kiirus"
 msgid "App & True Wind Angle"
 msgstr "Näiva % tegeliku tuule nurk"
 
-#: src/dashboard_pi.cpp:295 src/dashboard_pi.cpp:297
+#: src/dashboard_pi.cpp:296
 msgid "App. Wind Speed"
 msgstr "Näiv tuule kiirus"
 
-#: src/dashboard_pi.cpp:299
+#: src/dashboard_pi.cpp:298
 msgid "True Wind Angle & Speed"
 msgstr "Tõeline tuule nurk ja kiirus"
 
-#: src/dashboard_pi.cpp:301
+#: src/dashboard_pi.cpp:300
 msgid "Altitude"
 msgstr "Kõrgus"
 
-#: src/dashboard_pi.cpp:303
+#: src/dashboard_pi.cpp:302
 msgid "Altitude Trace"
 msgstr "Kõrguse jälg"
 
-#: src/dashboard_pi.cpp:305 src/dashboard_pi.cpp:307
+#: src/dashboard_pi.cpp:305
 msgid "Depth"
 msgstr "Sügavus"
 
-#: src/dashboard_pi.cpp:309 src/dashboard_pi.cpp:311
+#: src/dashboard_pi.cpp:308
 msgid "Barometric pressure"
 msgstr "Õhurõhk"
 
-#: src/dashboard_pi.cpp:313
+#: src/dashboard_pi.cpp:310
 msgid "Water Temp."
 msgstr "Vee temp."
 
-#: src/dashboard_pi.cpp:315
+#: src/dashboard_pi.cpp:312
 msgid "Air Temp."
 msgstr "Õhu temp."
 
-#: src/dashboard_pi.cpp:317
+#: src/dashboard_pi.cpp:314
 msgid "App. Wind Angle"
 msgstr "Näiv tuule nurk"
 
-#: src/dashboard_pi.cpp:319
+#: src/dashboard_pi.cpp:316
 msgid "True Wind Angle"
 msgstr "Tõeline tuule nurk"
 
-#: src/dashboard_pi.cpp:321
+#: src/dashboard_pi.cpp:318
 msgid "True Wind Direction"
 msgstr "Tõeline tuule suund"
 
-#: src/dashboard_pi.cpp:323
+#: src/dashboard_pi.cpp:320
 msgid "True Wind Speed"
 msgstr "Tõeline tuule kiirus"
 
-#: src/dashboard_pi.cpp:325
+#: src/dashboard_pi.cpp:322
 msgid "True Wind Dir. & Speed"
 msgstr "Tõeline tuule suund ja kiirus"
 
-#: src/dashboard_pi.cpp:327 src/dashboard_pi.cpp:329
+#: src/dashboard_pi.cpp:325
 msgid "VMG"
 msgstr "VMG"
 
-#: src/dashboard_pi.cpp:331
+#: src/dashboard_pi.cpp:327
 msgid "VMG Wind"
 msgstr "Tuul VMG"
 
-#: src/dashboard_pi.cpp:333 src/dashboard_pi.cpp:335
+#: src/dashboard_pi.cpp:330
 msgid "Rudder Angle"
 msgstr "Roolinurk"
 
-#: src/dashboard_pi.cpp:337
+#: src/dashboard_pi.cpp:332
 msgid "GNSS in use"
 msgstr "GNSS pole kasutusel"
 
-#: src/dashboard_pi.cpp:339
+#: src/dashboard_pi.cpp:334
 msgid "GNSS Status"
 msgstr "GNSS olek"
 
-#: src/dashboard_pi.cpp:341
+#: src/dashboard_pi.cpp:336
 msgid "Cursor"
 msgstr "Kursor"
 
-#: src/dashboard_pi.cpp:343
+#: src/dashboard_pi.cpp:338
 msgid "GNSS Clock"
 msgstr "GNSS-kell"
 
-#: src/dashboard_pi.cpp:345
+#: src/dashboard_pi.cpp:340
 msgid "Sunrise/Sunset"
 msgstr "Päikesetõus/-loojang"
 
-#: src/dashboard_pi.cpp:347
+#: src/dashboard_pi.cpp:342
 msgid "Moon phase"
 msgstr "Kuufaas"
 
-#: src/dashboard_pi.cpp:349
+#: src/dashboard_pi.cpp:344
 msgid "Wind history"
 msgstr "Tuule logi"
 
-#: src/dashboard_pi.cpp:351
+#: src/dashboard_pi.cpp:346
 msgid "Barometric history"
 msgstr "Õhurõhu logi"
 
-#: src/dashboard_pi.cpp:353
+#: src/dashboard_pi.cpp:348
 msgid "Trip Log"
 msgstr "Reisi logi"
 
-#: src/dashboard_pi.cpp:355
+#: src/dashboard_pi.cpp:350
 msgid "Sum Log"
 msgstr "Kogu logi"
 
-#: src/dashboard_pi.cpp:357
+#: src/dashboard_pi.cpp:352
 msgid "From Ownship"
 msgstr "Omalt laevalt"
 
-#: src/dashboard_pi.cpp:359
+#: src/dashboard_pi.cpp:354
 msgid "Pitch"
 msgstr "Pikiõõtsumine"
 
-#: src/dashboard_pi.cpp:361
+#: src/dashboard_pi.cpp:356
 msgid "Heel"
 msgstr "Kreen"
 
-#: src/dashboard_pi.cpp:363
+#: src/dashboard_pi.cpp:358
 msgid "Local GNSS Clock"
 msgstr "Kohalik GNSS-kell"
 
-#: src/dashboard_pi.cpp:365
+#: src/dashboard_pi.cpp:360
 msgid "Local CPU Clock"
 msgstr "Kohalik CPU-kell"
 
-#: src/dashboard_pi.cpp:367
+#: src/dashboard_pi.cpp:362
 msgid "Local Sunrise/Sunset"
 msgstr "Kohalik päikesetõus/-loojang"
 
-#: src/dashboard_pi.cpp:369
+#: src/dashboard_pi.cpp:364
 msgid "Humidity"
 msgstr "Niiskus"
 
-#: src/dashboard_pi.cpp:371
+#: src/dashboard_pi.cpp:366
 msgid "Windlass"
 msgstr ""
 
-#: src/dashboard_pi.cpp:622 src/dashboard_pi.cpp:968 src/dashboard_pi.cpp:3666
-#: src/dashboard_pi.cpp:3682 src/dashboard_pi.cpp:4215 src/dashboard_pi.cpp:4305
-#: src/dashboard_pi.cpp:5021
+#: src/dashboard_pi.cpp:617 src/dashboard_pi.cpp:963 src/dashboard_pi.cpp:3661
+#: src/dashboard_pi.cpp:3677 src/dashboard_pi.cpp:4210 src/dashboard_pi.cpp:4300
+#: src/dashboard_pi.cpp:5016
 msgid "Dashboard"
 msgstr "Näidikupaneel"
 
-#: src/dashboard_pi.cpp:971
+#: src/dashboard_pi.cpp:966
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Näidikupaneeli plugin OpenCPN'le"
 
-#: src/dashboard_pi.cpp:976
+#: src/dashboard_pi.cpp:971
 msgid "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr "Näidikupaneeli plugin OpenCPN'le\n"
 "Võimaldab navigatsiooniseadme kuvamise NMEA-allikast"
 
-#: src/dashboard_pi.cpp:1847 src/dashboard_pi.cpp:2122 src/dashboard_pi.cpp:3126
-#: src/dashboard_pi.cpp:4439
+#: src/dashboard_pi.cpp:1842 src/dashboard_pi.cpp:2117 src/dashboard_pi.cpp:3121
+#: src/dashboard_pi.cpp:4434
 msgid "Up"
 msgstr "Üles"
 
-#: src/dashboard_pi.cpp:1850 src/dashboard_pi.cpp:2124 src/dashboard_pi.cpp:3128
-#: src/dashboard_pi.cpp:4446
+#: src/dashboard_pi.cpp:1845 src/dashboard_pi.cpp:2119 src/dashboard_pi.cpp:3123
+#: src/dashboard_pi.cpp:4441
 msgid "Down"
 msgstr "Alla"
 
-#: src/dashboard_pi.cpp:1867 src/dashboard_pi.cpp:2133 src/dashboard_pi.cpp:3115
+#: src/dashboard_pi.cpp:1862 src/dashboard_pi.cpp:2128 src/dashboard_pi.cpp:3110
 msgid "Stbd"
 msgstr "p/p"
 
-#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:2135 src/dashboard_pi.cpp:3117
+#: src/dashboard_pi.cpp:1865 src/dashboard_pi.cpp:2130 src/dashboard_pi.cpp:3112
 msgid "Port"
 msgstr "v/p"
 
-#: src/dashboard_pi.cpp:4153
+#: src/dashboard_pi.cpp:4148
 msgid "Dashboard preferences"
 msgstr "Näidikupaneeli eelistused"
 
-#: src/dashboard_pi.cpp:4156 src/dashboard_pi.cpp:5058 src/dashboard_pi.cpp:5357
-#: src/dashboard_pi.cpp:6369
+#: src/dashboard_pi.cpp:4151 src/dashboard_pi.cpp:5053 src/dashboard_pi.cpp:5352
+#: src/dashboard_pi.cpp:6364
 msgid "Dialog"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4314
+#: src/dashboard_pi.cpp:4309
 msgid "show this dashboard"
 msgstr "kuva seda näidikupaneeli"
 
-#: src/dashboard_pi.cpp:4325
+#: src/dashboard_pi.cpp:4320
 msgid "Caption:"
 msgstr "Pealdis:"
 
-#: src/dashboard_pi.cpp:4335
+#: src/dashboard_pi.cpp:4330
 msgid "Orientation:"
 msgstr "Orientatsioon:"
 
-#: src/dashboard_pi.cpp:4341 src/dashboard_pi.cpp:5747
+#: src/dashboard_pi.cpp:4336 src/dashboard_pi.cpp:5742
 msgid "Vertical"
 msgstr "püstine"
 
-#: src/dashboard_pi.cpp:4342 src/dashboard_pi.cpp:5750
+#: src/dashboard_pi.cpp:4337 src/dashboard_pi.cpp:5745
 msgid "Horizontal"
 msgstr "rõhtne"
 
-#: src/dashboard_pi.cpp:4373 src/dashboard_pi.cpp:4393 src/dashboard_pi.cpp:5355
+#: src/dashboard_pi.cpp:4368 src/dashboard_pi.cpp:4388 src/dashboard_pi.cpp:5350
 msgid "Instruments"
 msgstr "Seadmed"
 
-#: src/dashboard_pi.cpp:4406
+#: src/dashboard_pi.cpp:4401
 msgid "Add"
 msgstr "Lisa"
 
-#: src/dashboard_pi.cpp:4415
+#: src/dashboard_pi.cpp:4410
 msgid "Edit"
 msgstr "Muuda"
 
-#: src/dashboard_pi.cpp:4431
+#: src/dashboard_pi.cpp:4426
 msgid "Delete"
 msgstr "Kustuta"
 
-#: src/dashboard_pi.cpp:4459
+#: src/dashboard_pi.cpp:4454
 msgid "Appearance"
 msgstr "Välimus"
 
-#: src/dashboard_pi.cpp:4462
+#: src/dashboard_pi.cpp:4457
 msgid "Fonts"
 msgstr "Kirjamärgid"
 
-#: src/dashboard_pi.cpp:4471 src/dashboard_pi.cpp:6479
+#: src/dashboard_pi.cpp:4466 src/dashboard_pi.cpp:6474
 msgid "Title:"
 msgstr "tiitel:"
 
-#: src/dashboard_pi.cpp:4481 src/dashboard_pi.cpp:6498
+#: src/dashboard_pi.cpp:4476 src/dashboard_pi.cpp:6493
 msgid "Data:"
 msgstr "andmed:"
 
-#: src/dashboard_pi.cpp:4490 src/dashboard_pi.cpp:6517
+#: src/dashboard_pi.cpp:4485 src/dashboard_pi.cpp:6512
 msgid "Label:"
 msgstr "silt:"
 
-#: src/dashboard_pi.cpp:4499 src/dashboard_pi.cpp:6526
+#: src/dashboard_pi.cpp:4494 src/dashboard_pi.cpp:6521
 msgid "Small:"
 msgstr "Väike:"
 
-#: src/dashboard_pi.cpp:4509
+#: src/dashboard_pi.cpp:4504
 msgid "Reset:"
 msgstr "Lähtesta:"
 
-#: src/dashboard_pi.cpp:4514
+#: src/dashboard_pi.cpp:4509
 msgid "Set dashboard default fonts"
 msgstr "Määra juhtpaneeli vaiketähed"
 
-#: src/dashboard_pi.cpp:4523
+#: src/dashboard_pi.cpp:4518
 msgid "Units, Ranges, Formats"
 msgstr "Ühikud, ulatused, formaadid"
 
-#: src/dashboard_pi.cpp:4531
+#: src/dashboard_pi.cpp:4526
 msgid "Speedometer max value:"
 msgstr "spidomeetri max väärtus:"
 
-#: src/dashboard_pi.cpp:4540
+#: src/dashboard_pi.cpp:4535
 msgid "Speed Over Ground Damping Factor:"
 msgstr "Kiiruse põhja suhtes summutamise tegur:"
 
-#: src/dashboard_pi.cpp:4549
+#: src/dashboard_pi.cpp:4544
 msgid "COG Damping Factor:"
 msgstr "COG summutamise tegur:"
 
-#: src/dashboard_pi.cpp:4558
+#: src/dashboard_pi.cpp:4553
 msgid "Wind speed Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4567
+#: src/dashboard_pi.cpp:4562
 msgid "Wind angle Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4576
+#: src/dashboard_pi.cpp:4571
 msgid "Local Time Offset From UTC:"
 msgstr "Kohalik UTC-ajavahe:"
 
-#: src/dashboard_pi.cpp:4601
+#: src/dashboard_pi.cpp:4596
 msgid "Boat speed units:"
 msgstr "kaatri kiiruse ühikud:"
 
-#: src/dashboard_pi.cpp:4604 src/dashboard_pi.cpp:4668
+#: src/dashboard_pi.cpp:4599 src/dashboard_pi.cpp:4663
 msgid "Honor OpenCPN settings"
 msgstr "austa OpenCPN väärtusi"
 
-#: src/dashboard_pi.cpp:4604 src/dashboard_pi.cpp:4691
+#: src/dashboard_pi.cpp:4599 src/dashboard_pi.cpp:4686
 msgid "Kts"
 msgstr "sõlmed"
 
-#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
+#: src/dashboard_pi.cpp:4600 src/dashboard_pi.cpp:4686
 msgid "mph"
 msgstr "mp/h"
 
-#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
+#: src/dashboard_pi.cpp:4600 src/dashboard_pi.cpp:4686
 msgid "km/h"
 msgstr "km/h"
 
-#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
+#: src/dashboard_pi.cpp:4600 src/dashboard_pi.cpp:4686
 msgid "m/s"
 msgstr "m/s"
 
-#: src/dashboard_pi.cpp:4619
+#: src/dashboard_pi.cpp:4614
 msgid "Depth units:"
 msgstr "sügavuse ühikud:"
 
-#: src/dashboard_pi.cpp:4623 src/dashboard_pi.cpp:4670
+#: src/dashboard_pi.cpp:4618 src/dashboard_pi.cpp:4665
 msgid "Meters"
 msgstr "meetrid"
 
-#: src/dashboard_pi.cpp:4623
+#: src/dashboard_pi.cpp:4618
 msgid "Feet"
 msgstr "Jalad"
 
-#: src/dashboard_pi.cpp:4623
+#: src/dashboard_pi.cpp:4618
 msgid "Fathoms"
 msgstr "süllad"
 
-#: src/dashboard_pi.cpp:4624
+#: src/dashboard_pi.cpp:4619
 msgid "Inches"
 msgstr "Tollid"
 
-#: src/dashboard_pi.cpp:4624
+#: src/dashboard_pi.cpp:4619
 msgid "Centimeters"
 msgstr "sentimeetrid"
 
-#: src/dashboard_pi.cpp:4636
+#: src/dashboard_pi.cpp:4631
 #, c-format
 msgid "Depth Offset (%s):"
 msgstr "Sügavuse nihe (%s):"
 
-#: src/dashboard_pi.cpp:4665
+#: src/dashboard_pi.cpp:4660
 msgid "Distance units:"
 msgstr "vahemaa ühikud:"
 
-#: src/dashboard_pi.cpp:4669
+#: src/dashboard_pi.cpp:4664
 msgid "Nautical miles"
 msgstr "meremiilid"
 
-#: src/dashboard_pi.cpp:4669
+#: src/dashboard_pi.cpp:4664
 msgid "Statute miles"
 msgstr "maamiilid"
 
-#: src/dashboard_pi.cpp:4670
+#: src/dashboard_pi.cpp:4665
 msgid "Kilometers"
 msgstr "kilomeetrid"
 
-#: src/dashboard_pi.cpp:4688
+#: src/dashboard_pi.cpp:4683
 msgid "Wind speed units:"
 msgstr "tuulekiiruse ühikud:"
 
-#: src/dashboard_pi.cpp:4705
+#: src/dashboard_pi.cpp:4700
 msgid "Temperature units:"
 msgstr "Temperatuuri ühikud:"
 
-#: src/dashboard_pi.cpp:4708
+#: src/dashboard_pi.cpp:4703
 msgid "Celsius"
 msgstr "Celsius"
 
-#: src/dashboard_pi.cpp:4708
+#: src/dashboard_pi.cpp:4703
 msgid "Fahrenheit"
 msgstr "Fahrenheit"
 
-#: src/dashboard_pi.cpp:4708
+#: src/dashboard_pi.cpp:4703
 msgid "Kelvin"
 msgstr "Kelvin"
 
-#: src/dashboard_pi.cpp:4724 src/dashboard_pi.cpp:4759
+#: src/dashboard_pi.cpp:4719 src/dashboard_pi.cpp:4754
 msgid "Other selections"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4734 src/dashboard_pi.cpp:4769
+#: src/dashboard_pi.cpp:4729 src/dashboard_pi.cpp:4764
 msgid "Use internal Sumlog."
 msgstr ""
 
-#: src/dashboard_pi.cpp:4735 src/dashboard_pi.cpp:4776
+#: src/dashboard_pi.cpp:4730 src/dashboard_pi.cpp:4771
 msgid "Enter new value if desired"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4751 src/dashboard_pi.cpp:4793
+#: src/dashboard_pi.cpp:4746 src/dashboard_pi.cpp:4788
 msgid "Use N2K & SignalK true wind data over ground.\n"
 "(Instead of through water)"
 msgstr "Kasuta N2K & SignalK tegeliku tuule andmeid põhja suhtes.\n"
 "(Vee suhtes asemel)"
 
-#: src/dashboard_pi.cpp:5317
+#: src/dashboard_pi.cpp:5312
 msgid "Add instrument"
 msgstr "Lisa seade"
 
-#: src/dashboard_pi.cpp:5322
+#: src/dashboard_pi.cpp:5317
 msgid "Select instrument to add:"
 msgstr "Vali seade lisamiseks:"
 
-#: src/dashboard_pi.cpp:5727
+#: src/dashboard_pi.cpp:5722
 msgid "Menu"
 msgstr ""
 
-#: src/dashboard_pi.cpp:5731 src/dashboard_pi.cpp:5757
+#: src/dashboard_pi.cpp:5726 src/dashboard_pi.cpp:5752
 msgid "Preferences..."
 msgstr "Eelistused..."
 
-#: src/dashboard_pi.cpp:5736
+#: src/dashboard_pi.cpp:5731
 msgid "Resize..."
 msgstr "Muuda suurust..."
 
-#: src/dashboard_pi.cpp:5744
+#: src/dashboard_pi.cpp:5739
 msgid "Undock"
 msgstr "Vabasta"
 
-#: src/dashboard_pi.cpp:6346
+#: src/dashboard_pi.cpp:6341
 msgid "Choose font"
 msgstr "Vali täht"
 
-#: src/dashboard_pi.cpp:6488
+#: src/dashboard_pi.cpp:6483
 msgid "Title background color:"
 msgstr "Pealkirja taustavärv:"
 
-#: src/dashboard_pi.cpp:6507
+#: src/dashboard_pi.cpp:6502
 msgid "Data background color:"
 msgstr "Andmete taustavärv:"
 
-#: src/dashboard_pi.cpp:6535
+#: src/dashboard_pi.cpp:6530
 msgid "Arrow 1 Color :"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6545
+#: src/dashboard_pi.cpp:6540
 msgid "Arrow 2 Color :"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6572
+#: src/dashboard_pi.cpp:6567
 msgid "Set default"
 msgstr "Määra vaikeseadeks"
 

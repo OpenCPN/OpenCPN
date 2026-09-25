@@ -134,6 +134,7 @@ extern bool g_useMUI;
 extern bool s_bSetSystemTime;
 extern bool g_kiosk_startup;
 extern bool g_disableNotifications;
+extern bool g_hicon_colors;
 
 extern double g_COGAvg;  ///< Debug only usage
 extern double g_defaultBoatSpeed;

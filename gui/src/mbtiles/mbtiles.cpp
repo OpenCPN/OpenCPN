@@ -319,64 +319,8 @@ InitReturn ChartMbTiles::Init(const wxString& name, ChartInitFlag init_flags) {
   m_FullPath = name;
   m_Description = m_FullPath;
 
-  try {
-    // Open the MBTiles database file
-    const char* name_utf8 = "";
-    wxCharBuffer utf8CB = name.ToUTF8();  // the UTF-8 buffer
-    if (utf8CB.data()) name_utf8 = utf8CB.data();
-
-    SQLite::Database db(name_utf8);
-
-    // Compile a SQL query, getting everything from the "metadata" table
-    SQLite::Statement query(db, "SELECT * FROM metadata ");
-
-    // Loop to execute the query step by step, to get rows of result
-    while (query.executeStep()) {
-      const char* col_name = query.getColumn(0);
-      const char* col_value = query.getColumn(1);
-
-      // Get the geometric extent of the data
-      if (!strncmp(col_name, "bounds", 6)) {
-        float lon1, lat1, lon2, lat2;
-        sscanf(col_value, "%g,%g,%g,%g", &lon1, &lat1, &lon2, &lat2);
-
-        // There is some confusion over the layout of this field...
-        m_lat_max = wxMax(lat1, lat2);
-        m_lat_min = wxMin(lat1, lat2);
-        m_lon_max = wxMax(lon1, lon2);
-        m_lon_min = wxMin(lon1, lon2);
-
-      }
-
-      else if (!strncmp(col_name, "format", 6)) {
-        m_format = std::string(col_value);
-      }
-
-      // Get the min and max zoom values present in the db
-      else if (!strncmp(col_name, "minzoom", 7)) {
-        sscanf(col_value, "%i", &m_min_zoom);
-      } else if (!strncmp(col_name, "maxzoom", 7)) {
-        sscanf(col_value, "%i", &m_max_zoom);
-      }
-
-      else if (!strncmp(col_name, "description", 11)) {
-        m_Description = wxString(col_value, wxConvUTF8);
-      } else if (!strncmp(col_name, "name", 11)) {
-        m_Name = wxString(col_value, wxConvUTF8);
-      } else if (!strncmp(col_name, "type", 11)) {
-        m_tile_type =
-            wxString(col_value, wxConvUTF8).Upper().IsSameAs("OVERLAY")
-                ? MbTilesType::OVERLAY
-                : MbTilesType::BASE;
-      } else if (!strncmp(col_name, "scheme", 11)) {
-        m_scheme = wxString(col_value, wxConvUTF8).Upper().IsSameAs("XYZ")
-                       ? MbTilesScheme::XYZ
-                       : MbTilesScheme::TMS;
-      }
-    }
-  } catch (std::exception& e) {
-    const char* t = e.what();
-    wxLogMessage("mbtiles exception: %s", e.what());
+  if (!GetTileBasicProps(name)) {
+    wxLogMessage("Unable to process mbtiles file");
     return INIT_FAIL_REMOVE;
   }
 
@@ -564,6 +508,87 @@ InitReturn ChartMbTiles::PostInit() {
 
   bReadyToRender = true;
   return INIT_OK;
+}
+
+bool ChartMbTiles::GetTileBasicProps(const wxString& name) {
+  //  Android crash reports show failure in SQLiteCpp exception path
+  //  when metadata query preparation fails. Raw SQLite used here
+  //  as a robustness workaround pending root-cause analysis.
+
+  const char* name_utf8 = "";
+  wxCharBuffer utf8CB = name.ToUTF8();  // the UTF-8 buffer
+  if (utf8CB.data()) name_utf8 = utf8CB.data();
+
+  sqlite3* db = nullptr;
+
+  if (sqlite3_open_v2(name_utf8, &db, SQLITE_OPEN_READONLY, nullptr) !=
+      SQLITE_OK) {
+    if (db) sqlite3_close(db);
+    return false;
+  }
+
+  sqlite3_stmt* stmt = nullptr;
+
+  int rc = sqlite3_prepare_v2(db, "SELECT name, value FROM metadata", -1, &stmt,
+                              nullptr);
+
+  if (rc != SQLITE_OK) {
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return false;
+  }
+
+  // Loop to execute the query step by step, to get rows of result
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    std::string col_name =
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+    std::string col_value =
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+
+    // Get the geometric extent of the data
+    if (!strncmp(col_name.c_str(), "bounds", 6)) {
+      float lon1, lat1, lon2, lat2;
+      sscanf(col_value.c_str(), "%g,%g,%g,%g", &lon1, &lat1, &lon2, &lat2);
+
+      // There is some confusion over the layout of this field...
+      m_lat_max = wxMax(lat1, lat2);
+      m_lat_min = wxMin(lat1, lat2);
+      m_lon_max = wxMax(lon1, lon2);
+      m_lon_min = wxMin(lon1, lon2);
+
+    }
+
+    else if (!strncmp(col_name.c_str(), "format", 6)) {
+      m_format = std::string(col_value);
+    }
+
+    // Get the min and max zoom values present in the db
+    else if (!strncmp(col_name.c_str(), "minzoom", 7)) {
+      sscanf(col_value.c_str(), "%i", &m_min_zoom);
+    } else if (!strncmp(col_name.c_str(), "maxzoom", 7)) {
+      sscanf(col_value.c_str(), "%i", &m_max_zoom);
+    }
+
+    else if (!strncmp(col_name.c_str(), "description", 11)) {
+      m_Description = wxString(col_value.c_str(), wxConvUTF8);
+    } else if (!strncmp(col_name.c_str(), "name", 11)) {
+      m_Name = wxString(col_value.c_str(), wxConvUTF8);
+    } else if (!strncmp(col_name.c_str(), "type", 11)) {
+      m_tile_type =
+          wxString(col_value.c_str(), wxConvUTF8).Upper().IsSameAs("OVERLAY")
+              ? MbTilesType::OVERLAY
+              : MbTilesType::BASE;
+    } else if (!strncmp(col_name.c_str(), "scheme", 11)) {
+      m_scheme = wxString(col_value.c_str(), wxConvUTF8).Upper().IsSameAs("XYZ")
+                     ? MbTilesScheme::XYZ
+                     : MbTilesScheme::TMS;
+    }
+  }  // while
+
+  sqlite3_finalize(stmt);
+  sqlite3_close(db);
+
+  return true;
 }
 
 // FIXME : useless now

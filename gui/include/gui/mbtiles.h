@@ -128,6 +128,8 @@ protected:
                      ColorScheme cs);
   InitReturn PostInit();
 
+  bool GetTileBasicProps(const wxString& name);
+
   void PrepareTiles();
   void PrepareTilesForZoom(int zoomFactor, bool bset_geom);
 

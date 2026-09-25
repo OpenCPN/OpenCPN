@@ -1679,8 +1679,8 @@ void CanvasMenuHandler::PopupMenuHandler(wxCommandEvent &event) {
 
       m_pHead = new Route();
       m_pTail = new Route();
-      m_pHead->CloneRoute(m_pSelectedRoute, 1, m_SelectedIdx, _("_A"));
-      m_pTail->CloneRoute(m_pSelectedRoute, m_SelectedIdx + splitMode,
+      m_pHead->CloneRoute(m_pSelectedRoute, 1, m_SelectedIdx + 1, _("_A"));
+      m_pTail->CloneRoute(m_pSelectedRoute, m_SelectedIdx + 1 + splitMode,
                           m_pSelectedRoute->GetnPoints(), _("_B"), dupFirstWpt);
       pRouteList->push_back(m_pHead);
       NavObj_dB::GetInstance().InsertRoute(m_pHead);

@@ -1106,11 +1106,20 @@ void MMSIListCtrl::OnListItemRightClick(wxListEvent& event) {
   m_context_item = GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
   if (m_context_item == wxNOT_FOUND) return;
   wxMenu* menu = new wxMenu(_("MMSI Properties"));
+
   wxMenuItem* item_edit =
       new wxMenuItem(menu, ID_DEF_MENU_MMSI_EDIT, _("Edit") + "...");
+#ifdef __ANDROID__
+  wxFont sFont = GetOCPNGUIScaledFont(_("Menu"));
+  item_edit->SetFont(sFont);
+#endif
   menu->Append(item_edit);
+
   wxMenuItem* item_delete =
       new wxMenuItem(menu, ID_DEF_MENU_MMSI_DELETE, _("Delete"));
+#ifdef __ANDROID__
+  item_delete->SetFont(sFont);
+#endif
   menu->Append(item_delete);
 
 #ifdef __WXMSW__
@@ -1148,11 +1157,15 @@ void MMSIListCtrl::PopupMenuHandler(wxCommandEvent& event) {
         delete props_new;
       }
       pd->Destroy();
+
+      if (g_options->pPropsPanel) g_options->pPropsPanel->UpdateMMSIList();
       break;
     }
     case ID_DEF_MENU_MMSI_DELETE:
       g_MMSI_Props_Array.RemoveAt(context_item);
       delete props;
+
+      if (g_options->pPropsPanel) g_options->pPropsPanel->UpdateMMSIList();
       break;
   }
 }
@@ -1178,7 +1191,7 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
   m_pListCtrlMMSI = new MMSIListCtrl(
       this, ID_MMSI_PROPS_LIST, wxDefaultPosition, wxSize(-1, -1),
       wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_HRULES | wxLC_VRULES |
-          wxBORDER_SUNKEN | wxLC_VIRTUAL);
+          wxBORDER_SUNKEN);
   // wxImageList* imglist = new wxImageList(16, 16, TRUE, 2);
 
   ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
@@ -1187,66 +1200,22 @@ MMSI_Props_Panel::MMSI_Props_Panel(wxWindow* parent)
 
   // m_pListCtrlMMSI->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
   int dx = GetCharWidth();
+#ifdef __ANDROID__
+  GetTextExtent("W", &dx, NULL, NULL, NULL, qFont);
+#endif
 
-  width = dx * 5;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 13);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 12;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 25);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlCLASS, _("Track Mode"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ignore"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("MOB"), wxLIST_FORMAT_CENTER, width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 15);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 30);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Ship name"), wxLIST_FORMAT_CENTER,
-                                width);
-
-  s_width = tkz.GetNextToken();
-  width = dx * 8;
-  if (s_width.ToLong(&lwidth)) {
-    width = wxMax(dx * 2, lwidth);
-    width = wxMin(width, dx * 10);
-  }
-  m_pListCtrlMMSI->InsertColumn(tlTYPE, _("Follower"), wxLIST_FORMAT_CENTER,
-                                width);  // Has
+  m_pListCtrlMMSI->InsertColumn(mlMMSI, _("MMSI"), wxLIST_FORMAT_LEFT, dx * 10);
+  m_pListCtrlMMSI->InsertColumn(mlTrackMode, _("Track Mode"),
+                                wxLIST_FORMAT_CENTER, dx * 20);
+  m_pListCtrlMMSI->InsertColumn(mlIgnore, _("Ignore"), wxLIST_FORMAT_CENTER,
+                                dx * 7);
+  m_pListCtrlMMSI->InsertColumn(mlMOB, _("MOB"), wxLIST_FORMAT_CENTER, dx * 5);
+  m_pListCtrlMMSI->InsertColumn(mlVDM, _("VDM->VDO"), wxLIST_FORMAT_CENTER,
+                                dx * 10);
+  m_pListCtrlMMSI->InsertColumn(mlShipName, _("Ship name"),
+                                wxLIST_FORMAT_CENTER, dx * 20);
+  m_pListCtrlMMSI->InsertColumn(mlFollower, _("Follower"), wxLIST_FORMAT_CENTER,
+                                dx * 9);  // Has
 
   topSizer->Add(m_pListCtrlMMSI, 1, wxEXPAND | wxALL, 0);
 
@@ -1277,14 +1246,12 @@ void MMSI_Props_Panel::OnNewButton(wxCommandEvent& event) {
                          wxDefaultPosition, wxSize(200, 200));
 
   DimeControl(pd);
-  pd->ShowWindowModalThenDo([this, pd, props](int retcode) {
-    if (retcode == wxID_OK) {
-      g_MMSI_Props_Array.Add(props);
-    } else {
-      delete props;
-    }
-    UpdateMMSIList();
-  });
+  if (pd->ShowModal() == wxID_OK) {
+    g_MMSI_Props_Array.Add(props);
+  } else
+    delete props;
+
+  UpdateMMSIList();
 }
 
 void MMSI_Props_Panel::UpdateMMSIList() {
@@ -1296,7 +1263,18 @@ void MMSI_Props_Panel::UpdateMMSIList() {
   int selMMSI = wxNOT_FOUND;
   if (selItemID != wxNOT_FOUND) selMMSI = g_MMSI_Props_Array[selItemID]->MMSI;
 
-  m_pListCtrlMMSI->SetItemCount(g_MMSI_Props_Array.GetCount());
+  m_pListCtrlMMSI->DeleteAllItems();
+
+  for (size_t i = 0; i < g_MMSI_Props_Array.GetCount(); i++) {
+    wxListItem item;
+    item.SetId(i);
+    m_pListCtrlMMSI->InsertItem(item);
+    for (int j = 0; j < mlFollower + 1; j++) {
+      item.SetColumn(j);
+      item.SetText(m_pListCtrlMMSI->OnGetItemText(i, j));
+      m_pListCtrlMMSI->SetItem(item);
+    }
+  }
 
   // Restore selected item
   long item_sel = wxNOT_FOUND;
@@ -3061,6 +3039,7 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
+#ifndef __ANDROID__
     //  Display size/DPI
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
                                          _("Physical Screen Width")),
@@ -3085,11 +3064,11 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     pmmRow->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("mm")),
                 inputFlags);
-
+#endif
     // ChartBar Options
     itemBoxSizerUI->Add(
         new wxStaticText(m_ChartDisplayPage, wxID_ANY, _("Chart Bar")),
-        labelFlags);
+        inputFlags);
     wxBoxSizer* ChartBarSizer = new wxBoxSizer(wxHORIZONTAL);
     itemBoxSizerUI->Add(ChartBarSizer, 0, 0, 0);
 
@@ -3097,13 +3076,14 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
                                  _("Show extended chart bar information."));
     ChartBarSizer->Add(pChartBarEX, inputFlags);
 
+#ifndef __ANDROID__
     pRBSizeAuto->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                          wxCommandEventHandler(options::OnSizeAutoButton), NULL,
                          this);
     pRBSizeManual->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                            wxCommandEventHandler(options::OnSizeManualButton),
                            NULL, this);
-
+#endif
   }
 
   else {
@@ -3252,6 +3232,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
 
+#ifndef __ANDROID__
     //  Display size/DPI
     itemBoxSizerUI->Add(new wxStaticText(m_ChartDisplayPage, wxID_ANY,
                                          _("Physical Screen Width")),
@@ -3280,7 +3261,7 @@ With a higher value, the same zoom level shows a more detailed chart."));
     pRBSizeManual->Connect(wxEVT_COMMAND_RADIOBUTTON_SELECTED,
                            wxCommandEventHandler(options::OnSizeManualButton),
                            NULL, this);
-
+#endif
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -3824,7 +3805,11 @@ void options::CreatePanel_TidesCurrents(size_t parent, int border_size,
     w = w1 > w ? w1 : w;
     ++id;
   }
+
+  // Disturbs Android Layout
+#ifndef __ANDROID__
   tcDataSelected->SetColumnWidth(0, 20 + w);
+#endif
 
   //    Add the "Insert/Remove" buttons
   wxButton* insertButton =
@@ -5158,7 +5143,7 @@ void options::CreatePanel_MMSI(size_t parent, int border_size,
       new wxStaticBoxSizer(itemStaticBoxMMSI, wxVERTICAL);
   MMSISizer->Add(itemStaticBoxSizerMMSI, 0, wxALL | wxEXPAND, border_size);
 
-  MMSI_Props_Panel* pPropsPanel = new MMSI_Props_Panel(panelMMSI);
+  pPropsPanel = new MMSI_Props_Panel(panelMMSI);
 
   pPropsPanel->UpdateMMSIList();
 
@@ -5700,6 +5685,10 @@ void options::CreatePanel_UI(size_t parent, int border_size,
 #ifndef __ANDROID__
   pZoomButtons->Hide();
 #endif
+
+  pHiconColors = new wxCheckBox(itemPanelFont, ID_HICONCOLORS,
+                                _("Use High Contrast Chart Colors"));
+  miscOptions->Add(pHiconColors, 0, wxALL, border_size);
 
   pInlandEcdis =
       new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX, _("Use Inland ECDIS"));
@@ -6299,6 +6288,8 @@ void options::SetInitialSettings() {
   // pOverzoomEmphasis->SetValue(!g_fog_overzoom);
   // pOZScaleVector->SetValue(!g_oz_vector_scale);
   pInlandEcdis->SetValue(g_bInlandEcdis);
+  pHiconColors->SetValue(g_hicon_colors);
+
 #ifdef ocpnUSE_GL
   pOpenGL->SetValue(g_bopengl);
   if (auto* w = wxWindow::FindWindowById(ID_OPENGLOPTIONS))
@@ -6575,6 +6566,7 @@ void options::SetInitialSettings() {
   m_pSlider_Text_Factor->SetValue(g_ENCSoundingScaleFactor);
   m_pSlider_ENCText_Factor->SetValue(g_ENCTextScaleFactor);
   m_pMouse_Zoom_Slider->SetValue(g_mouse_zoom_sensitivity_ui);
+#ifndef __ANDROID__
   wxString screenmm;
   if (!g_config_display_size_manual) {
     pRBSizeAuto->SetValue(TRUE);
@@ -6592,6 +6584,7 @@ void options::SetInitialSettings() {
   }
 
   pScreenMM->SetValue(screenmm);
+#endif
 
   pDepthUnitSelect->SetSelection(g_nDepthUnitDisplay);
   UpdateOptionsUnits();  // sets depth values using the user's unit preference
@@ -7276,7 +7269,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   }
 
   g_bShowChartBar = pShowChartBar->GetValue();
-
+#ifndef __ANDROID__
   wxString screenmm = pScreenMM->GetValue();
   wxStringTokenizer tkz(screenmm, ",");
   g_config_display_size_mm.clear();
@@ -7290,6 +7283,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
     }
   }
   g_config_display_size_manual = pRBSizeManual->GetValue();
+#endif
 
   // Connections page.
   comm_dialog->ApplySettings();
@@ -7749,8 +7743,10 @@ void options::ApplyChanges(wxCommandEvent& event) {
     SwitchInlandEcdisMode(g_bInlandEcdis);
     m_returnChanges |= TOOLBAR_CHANGED;
   }
-  // PlugIn Manager Panel
 
+  if (pHiconColors) g_hicon_colors = pHiconColors->GetValue();
+
+  // PlugIn Manager Panel
   // Pick up any changes to selections
   if (PluginLoader::GetInstance()->UpdatePlugIns())
     m_returnChanges |= TOOLBAR_CHANGED;

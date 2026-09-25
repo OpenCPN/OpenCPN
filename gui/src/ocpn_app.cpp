@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
@@ -45,6 +43,21 @@
 #ifdef OCPN_HAVE_X11
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#endif
+
+#ifdef __WXGTK__
+// Forward-declare the GTK/GDK symbols we need to avoid pulling in <gtk/gtk.h>
+// (build flags do not expose the GTK include paths; libgtk-3 is already linked
+// transitively via libwx_gtk3u_core).
+extern "C" {
+typedef struct _GdkWindow GdkWindow;
+typedef struct _GtkWidget GtkWidget;
+typedef int gboolean;
+void gtk_widget_realize(GtkWidget *widget);
+GdkWindow *gtk_widget_get_window(GtkWidget *widget);
+void gdk_window_set_override_redirect(GdkWindow *window,
+                                      gboolean override_redirect);
+}
 #endif
 
 #include "gl_headers.h"  // Must be included before anything using GL stuff
@@ -319,8 +332,8 @@ static bool LoadAllPlugIns(bool load_enabled) {
 #include "bitmaps/opencpn.xpm"
 #endif
 
-wxString newPrivateFileName(wxString, const char *name,
-                            [[maybe_unused]] const char *windowsName) {
+static wxString newPrivateFileName(wxString, const char *name,
+                                   [[maybe_unused]] const char *windowsName) {
   wxString fname = wxString::FromUTF8(name);
   wxString filePathAndName;
 
@@ -336,6 +349,20 @@ wxString newPrivateFileName(wxString, const char *name,
 #endif
 
   return filePathAndName;
+}
+
+void MyApp::OnNewMsgTypes() {
+  for (auto it : m_api_events_callbacks)
+    it.second(HostApi122::EventType::kNewMessageType);
+}
+
+void MyApp::RegisterApiEventCallback(
+    const std::string &plugin_name,
+    std::function<void(HostApi122::EventType what)> callback) {
+  if (callback)
+    m_api_events_callbacks[plugin_name] = std::move(callback);
+  else
+    m_api_events_callbacks.erase(plugin_name);
 }
 
 class WallpaperFrame : public wxFrame {
@@ -357,6 +384,21 @@ public:
     SetSizer(sizer);
     Layout();
     Center();  // Center the wallpaper frame
+
+#ifdef __WXGTK__
+    // Bypass the WM: make this an override-redirect window so Openbox cannot
+    // restack it (Openbox was sending WM_TAKE_FOCUS to gFrame after its map,
+    // raising gFrame above the fullscreen wallpaper during plugin LateInit
+    // and exposing the chart canvases mid-load).
+    GtkWidget *widget = reinterpret_cast<GtkWidget *>(GetHandle());
+    if (widget) {
+      gtk_widget_realize(widget);
+      GdkWindow *gdk = gtk_widget_get_window(widget);
+      if (gdk) {
+        gdk_window_set_override_redirect(gdk, 1);
+      }
+    }
+#endif
   }
 };
 
@@ -1013,6 +1055,7 @@ bool MyApp::OnInit() {
 
   if (g_kiosk_startup) {
     g_wallpaper = new WallpaperFrame();
+    g_wallpaper->ShowFullScreen(true);
     g_wallpaper->Show();
   }
 
@@ -1204,8 +1247,10 @@ bool MyApp::OnInit() {
   }
 
   InitRestListeners();
+  new_msg_type_listener.Init(NavMsgBus::GetInstance().new_msg_event,
+                             [&](ObservedEvt &) { OnNewMsgTypes(); });
 
-  //      Establish the GSHHS Dataset location
+  //  Establish the GSHHS Dataset location
   gDefaultWorldMapLocation = "gshhs";
   gDefaultWorldMapLocation.Prepend(g_Platform->GetSharedDataDir());
   gDefaultWorldMapLocation.Append(wxFileName::GetPathSeparator());
