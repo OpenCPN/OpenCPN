@@ -1,8 +1,10 @@
-opencpn (1:5.14.2+dfsg-1) UNRELEASED; urgency=medium
+opencpn (1:5.14.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release
+  * d/patches: rebased
+  * Drop LINUX_DEVICES.md from installation, removed in upstream.
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 25 Sep 2026 09:38:48 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 25 Sep 2026 10:19:49 +0200
 
 opencpn (1:5.14.1+dfsg-4) unstable; urgency=medium
 
