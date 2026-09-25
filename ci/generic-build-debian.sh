@@ -40,7 +40,7 @@ if [[ -n "$PACKAGE_BRANCH" && -z "$CIRCLE_PR_NUMBER" ]]; then
     # Create a debian changelog entry
     export DEBEMAIL=opencpn-builds@nowhere.net
     export DEBFULLNAME="OpenCPN nightly builds"
-    version="1:5.11.0~$(date "+%Y%m%d%H%m").$(git rev-parse --short HEAD)-1"
+    version="1:5.15.0~$(date "+%Y%m%d%H%m").$(git rev-parse --short HEAD)-1"
     dch --distribution ${PACKAGE_BRANCH##*/} -v "$version" "Auto build"
     git add debian/changelog
     git commit -m "d/changelog: $version"

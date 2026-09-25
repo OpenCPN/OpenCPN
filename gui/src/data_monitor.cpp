@@ -792,6 +792,7 @@ private:
     m_quick_filter->Show(m_show_filter);
     SetToolTip(_("Open quick filter"));
     GetGrandParent()->Layout();
+    m_quick_filter->SetFocus();
   }
 };
 

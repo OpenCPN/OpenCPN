@@ -720,6 +720,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("EnableUDPNullHeader", &g_benableUDPNullHeader);
 
   SetPath("/Settings/GlobalState");
+  Read("EnableHiconColorScheme", &g_hicon_colors, 0);
 
   Read("FrameWinX", &g_nframewin_x);
   Read("FrameWinY", &g_nframewin_y);
@@ -914,8 +915,24 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
 
   SetPath("/Settings/GlobalState");
 
-  if (Read("nColorScheme", &read_int))
+  Read("EnableHiconColorScheme", &g_hicon_colors, false);
+
+  if (Read("nColorScheme", &read_int)) {
     global_color_scheme = (ColorScheme)read_int;
+
+    // Force to a color in the correct hi/lo family
+    // if necessary.
+    if (g_hicon_colors) {
+      if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY_HICON) &&
+          (global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT_HICON))
+        global_color_scheme = GLOBAL_COLOR_SCHEME_DAY_HICON;
+    } else {
+      if ((global_color_scheme != GLOBAL_COLOR_SCHEME_DAY) &&
+          (global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT) &&
+          (global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK))
+        global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
+    }
+  }
 
   if (!bAsTemplate) {
     SetPath("/Settings/NMEADataSource");
@@ -2145,6 +2162,8 @@ void MyConfig::UpdateSettings() {
   if (!g_bInlandEcdis)
     Write("nColorScheme", (int)user_colors::GetColorScheme());
 
+  Write("EnableHiconColorScheme", g_hicon_colors);
+
   Write("FrameWinX", g_nframewin_x);
   Write("FrameWinY", g_nframewin_y);
   Write("FrameWinPosX", g_nframewin_posx);
@@ -2515,18 +2534,8 @@ bool ExportGPXRoutes(wxWindow *parent, RouteList *pRoutes,
   pgpx->SaveFile(fns);
   delete pgpx;
 
-  // Kick off the Android file chooser activity
-  wxString path;
-  int response = g_Platform->DoFileSelectorDialog(
-      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      "*.gpx");
-
-  if (path.IsEmpty())  // relocation handled by SAF logic in Java
-    return true;
-
-  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
+  AndroidExportSAF(parent, suggestedName + ".gpx");
   return true;
-
 #endif
 
   return false;
@@ -2552,16 +2561,7 @@ bool ExportGPXTracks(wxWindow *parent, std::vector<Track *> *pTracks,
   pgpx->SaveFile(fns);
   delete pgpx;
 
-  // Kick off the Android file chooser activity
-  wxString path;
-  int response = g_Platform->DoFileSelectorDialog(
-      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      "*.gpx");
-
-  if (path.IsEmpty())  // relocation handled by SAF logic in Java
-    return true;
-
-  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
+  AndroidExportSAF(parent, suggestedName + ".gpx");
   return true;
 #endif
 
@@ -2588,18 +2588,8 @@ bool ExportGPXWaypoints(wxWindow *parent, RoutePointList *pRoutePoints,
   pgpx->SaveFile(fns);
   delete pgpx;
 
-  // Kick off the Android file chooser activity
-  wxString path;
-  int response = g_Platform->DoFileSelectorDialog(
-      parent, &path, _("Export GPX file"), g_gpx_path, suggestedName + ".gpx",
-      "*.gpx");
-
-  if (path.IsEmpty())  // relocation handled by SAF logic in Java
-    return true;
-
-  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
+  AndroidExportSAF(parent, suggestedName + ".gpx");
   return true;
-
 #endif
 
   return false;
@@ -2674,17 +2664,10 @@ void ExportGPX(wxWindow *parent, bool bviz_only, bool blayer) {
   pgpx->SaveFile(fns);
 
 #ifdef __ANDROID__
-  // Kick off the Android file chooser activity
-  wxString path;
-  int response =
-      g_Platform->DoFileSelectorDialog(parent, &path, _("Export GPX file"),
-                                       g_gpx_path, "userobjects.gpx", "*.gpx");
-  if (path.IsEmpty())  // relocation handled by SAF logic in Java
-    return;
-
-  wxCopyFile(fns, path);  // known to be safe paths, since SAF is not involved.
+  AndroidExportSAF(parent, "userobjects.gpx");
   return;
 #endif
+
   delete pgpx;
   ::wxEndBusyCursor();
   delete pprog;
@@ -2731,12 +2714,16 @@ void UI_ImportGPX(wxWindow *parent, bool islayer, wxString dirpath,
     }
     delete popenDialog;
 #else  // Android
+    if (!androidCheckSAFPermission("primary:Documents")) {
+      AndroidDoSAFPermissions();
+      return;
+    }
+
     wxString path;
     response = g_Platform->DoFileSelectorDialog(
         NULL, &path, _("Import GPX file"), g_gpx_path, "", "*.gpx");
 
     wxFileName fn(path);
-    g_gpx_path = fn.GetPath();
     if (path.IsEmpty()) {  // Return from SAF processing, expecting callback
       PrepareImportAndroid(islayer, isPersistent);
       return;

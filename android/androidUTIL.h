@@ -175,6 +175,9 @@ bool androidInstallPlaystoreHelp();
 
 void androidLaunchBrowser(wxString URL);
 bool androidCheckOnline();
+bool androidCheckSAFPermission(wxString docID);
+bool AndroidDoSAFPermissions();
+void AndroidExportSAF(wxWindow *parent, wxString export_file_name);
 
 unsigned int androidColorPicker(unsigned int initialColor);
 
@@ -299,11 +302,14 @@ private:
 
 class AndroidFileDialog {
 public:
-  static std::string Show(const std::string &startDir, bool allowCreate);
+  static std::string Show(const std::string &startDir, bool dir_mode,
+                          bool allowCreate);
   static void CallbackFromJava(const std::string &path);
 
 private:
-  static void showDialogJNI(const std::string &startDir, bool allowCreate);
+  static void DismissImeBeforeFileDialog(QAndroidJniObject activity);
+  static void showDialogJNI(const std::string &startDir, bool dir_mode,
+                            bool allowCreate);
 
   static std::atomic<bool> g_done;
   static std::string g_result;

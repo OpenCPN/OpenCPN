@@ -1157,7 +1157,7 @@ void CDI::OnPaint(wxPaintEvent& event) {
   dc.Blit(0, 0, sx, sy, &mdc, 0, 0);
 }
 
-#if defined(__WXMSW__) || defined(__WXMAC__) || defined(__ANDROID__)
+#if defined(__WXMSW__) || defined(__WXMAC__)
 APConsole::APConsole(wxWindow* parent) {
   m_con_frame = new ConsoleCanvasFrame(wxTheApp->GetTopWindow());
 }
@@ -1190,10 +1190,19 @@ void APConsole::UpdateFonts() { m_con_win->UpdateFonts(); }
 void APConsole::RefreshConsoleData() { m_con_win->RefreshConsoleData(); }
 void APConsole::Raise() {}
 void APConsole::ShowWithFreshFonts() { m_con_win->ShowWithFreshFonts(); }
-void APConsole::Show(bool bshow) { m_con_win->Show(bshow); }
 CDI* APConsole::GetCDI() { return m_con_win->pCDI; }
 wxSize APConsole::GetSize() { return m_con_win->GetSize(); }
 void APConsole::ToggleShowHighway() { m_con_win->ToggleShowHighway(); }
 void APConsole::Move(wxPoint p) { m_con_win->Move(p); }
+void APConsole::Show(bool bshow) {
+  m_con_win->Show(bshow);
+#ifdef __ANDROID__
+  // This step works around some bug in wxWidgets management of glCanvas
+  //  Without this (ugly) workaround, the APConsole will remain visible
+  //  on the canvas indefinitely, even while "hidden".
+  wxSize sz = top_frame::Get()->GetSize();
+  top_frame::Get()->SetSize(wxSize(sz.x - 1, sz.y));
+#endif
+}
 
 #endif
