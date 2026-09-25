@@ -645,6 +645,10 @@ bool ConfigMgr::SaveTemplate(wxString fileName) {
 
   conf->Write("RouteArrivalCircleRadius",
               wxString::Format("%.3f", g_n_arrival_circle_radius));
+  conf->Write("RouteArrivalCircleMinimum",
+              wxString::Format("%.4f", g_n_arrival_circle_minimum));
+  conf->Write("RouteArrivalCircleFactor",
+              wxString::Format("%.3f", g_n_arrival_circle_factor));
   conf->Write("ChartQuilting", g_bQuiltEnable);
 
   conf->Write("StartWithTrackActive", g_bTrackCarryOver);
@@ -1129,6 +1133,8 @@ bool ConfigMgr::CheckTemplate(wxString fileName) {
   CHECK_INT("OwnShipMinSize", &g_n_ownship_min_mm);
 
   CHECK_FLT("RouteArrivalCircleRadius", &g_n_arrival_circle_radius, .01);
+  CHECK_FLT("RouteArrivalCircleMinimum", &g_n_arrival_circle_minimum, .01);
+  CHECK_FLT("RouteArrivalCircleFactor", &g_n_arrival_circle_factor, 1.);
 
   CHECK_INT("FullScreenQuilt", &g_bFullScreenQuilt);
 

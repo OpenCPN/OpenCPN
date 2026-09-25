@@ -149,7 +149,6 @@ static RoutePoint* CreateNewPoint(const PlugIn_Waypoint_ExV2* src,
   pWP->SetUseSca(src->b_useScamin);
   pWP->SetNameShown(src->IsNameVisible);
   pWP->SetVisible(src->IsVisible);
-
   pWP->SetWaypointArrivalRadius(src->m_WaypointArrivalRadius);
   pWP->SetShowWaypointRangeRings(src->m_bShowWaypointRangeRings);
   pWP->SetScaMax(src->scamax);
