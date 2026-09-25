@@ -801,6 +801,9 @@ wxString GetNewGUID() { return GpxDocument::GetUUID(); }
 
 bool AddCustomWaypointIcon(wxBitmap* pimage, wxString key,
                            wxString description) {
+  // Avoid calling waypoint manager until after LateInit()
+  if (pWayPointMan == NULL) return false;
+
   wxImage image = pimage->ConvertToImage();
   WayPointmanGui(*pWayPointMan).ProcessIcon(image, key, description);
   return true;
@@ -828,8 +831,9 @@ static void cloneHyperlinkList(RoutePoint* dst, const PlugIn_Waypoint* src) {
 }
 
 bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
-  //  Validate the waypoint parameters a little bit
+  if (!pWayPointMan) return false;
 
+  //  Validate the waypoint parameters a little bit
   //  GUID
   //  Make sure that this GUID is indeed unique in the Routepoint list
   bool b_unique = true;
@@ -873,6 +877,8 @@ bool AddSingleWaypoint(PlugIn_Waypoint* pwaypoint, bool b_permanent) {
 }
 
 bool DeleteSingleWaypoint(wxString& GUID) {
+  if (!pWayPointMan) return false;
+
   //  Find the RoutePoint
   bool b_found = false;
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(GUID);
@@ -889,6 +895,8 @@ bool DeleteSingleWaypoint(wxString& GUID) {
 }
 
 bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
+  if (!pWayPointMan) return false;
+
   //  Find the RoutePoint
   bool b_found = false;
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(pwaypoint->m_GUID);
@@ -1104,6 +1112,8 @@ bool AddPlugInRoute(PlugIn_Route* proute, bool b_permanent) {
 
     RoutePoint* pWP = new RoutePoint(pwp->m_lat, pwp->m_lon, pwp->m_IconName,
                                      pwp->m_MarkName, pwp->m_GUID);
+
+    if (ip == 0) pWP_src = pWP;
 
     //  Transcribe (clone) the html HyperLink List, if present
     cloneHyperlinkList(pWP, pwp);

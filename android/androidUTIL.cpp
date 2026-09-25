@@ -323,6 +323,7 @@ AudioDoneCallback s_soundCallBack;
 void *s_soundData;
 
 bool g_detect_smt590;
+bool g_detect_SMT63x;
 int g_orientation;
 int g_Android_SDK_Version;
 MigrateAssistantDialog *g_migrateDialog;
@@ -2069,6 +2070,95 @@ bool androidShowSimpleYesNoDialog(wxString title, wxString msg) {
   return (return_string == _T("YES"));
 }
 
+bool androidCheckSAFPermission(wxString docID) {
+  if (!java_vm) return true;
+
+  if (CheckPendingJNIException()) return false;
+
+  wxString return_string;
+  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
+      "org/qtproject/qt5/android/QtNative", "activity",
+      "()Landroid/app/Activity;");
+  if (CheckPendingJNIException()) return false;
+
+  if (!activity.isValid()) return false;
+
+  JNIEnv *jenv;
+
+  //  Need a Java environment to decode the resulting string
+  if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) return false;
+
+  wxCharBuffer p1b = docID.ToUTF8();
+  jstring p1 = (jenv)->NewStringUTF(p1b.data());
+
+  QAndroidJniObject data = activity.callObjectMethod(
+      "CheckSAFPermission", "(Ljava/lang/String;)Ljava/lang/String;", p1);
+
+  (jenv)->DeleteLocalRef(p1);
+
+  if (CheckPendingJNIException()) return false;
+
+  jstring s = data.object<jstring>();
+
+  if ((jenv)->GetStringLength(s)) {
+    const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+    return_string = wxString(ret_string, wxConvUTF8);
+  }
+
+  return (return_string == _T("OK"));
+}
+
+bool AndroidDoSAFPermissions() {
+  if (!java_vm) return true;
+
+  if (CheckPendingJNIException()) return false;
+
+  wxString return_string;
+  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
+      "org/qtproject/qt5/android/QtNative", "activity",
+      "()Landroid/app/Activity;");
+  if (CheckPendingJNIException()) return false;
+
+  if (!activity.isValid()) return false;
+
+  JNIEnv *jenv;
+
+  //  Need a Java environment to decode the resulting string
+  if (java_vm->GetEnv((void **)&jenv, JNI_VERSION_1_6) != JNI_OK) return false;
+
+  QAndroidJniObject data = activity.callObjectMethod("DoSAFPermissionDialog",
+                                                     "()Ljava/lang/String;");
+
+  if (CheckPendingJNIException()) return false;
+  return true;
+  /*
+    jstring s = data.object<jstring>();
+
+    if ((jenv)->GetStringLength(s)) {
+      const char *ret_string = (jenv)->GetStringUTFChars(s, NULL);
+      return_string = wxString(ret_string, wxConvUTF8);
+    }
+
+    return (return_string == _T("OK"));
+  */
+}
+
+void AndroidExportSAF(wxWindow *parent, wxString export_file_name) {
+  if (!androidCheckSAFPermission("primary:Documents")) {
+    AndroidDoSAFPermissions();
+    return;
+  }
+
+  // Permission known OK, so...
+  // Kick off the Android file chooser activity
+  // Target export file has been already relocated to Android cache directory
+  // SAF dir chooser dialog result callback copies to selected export location
+  wxString path;
+  int response =
+      g_Platform->DoFileSelectorDialog(parent, &path, _("Export GPX file"),
+                                       g_gpx_path, export_file_name, "*.gpx");
+}
+
 bool androidInstallPlaystoreHelp() {
   qDebug() << "androidInstallPlaystoreHelp";
   //  return false;
@@ -2151,6 +2241,13 @@ wxString androidGetDeviceInfo() {
       if (!strncmp(android_plat_spc.msdk, "29",
                    2))  // Assumes API comes before Model/Product.
         g_detect_smt590 = true;
+    }
+    // (2) Samsung SM-T63x which has physical buttons
+    if (wxNOT_FOUND != s1.Find(_T("SM-T638"))) {
+      g_detect_SMT63x = true;
+    }
+    if (wxNOT_FOUND != s1.Find(_T("SM-T636"))) {
+      g_detect_SMT63x = true;
     }
   }
 
@@ -2546,6 +2643,8 @@ wxSize getAndroidDisplayDimensions(void) {
   }
 
   // 167.802994;1.000000;160;1024;527;1024;552;1024;552;56
+  long NavBarHeight = 0;
+
   wxStringTokenizer tk(return_string, _T(";"));
   if (tk.HasMoreTokens()) {
     wxString token = tk.GetNextToken();  // xdpi
@@ -2568,10 +2667,18 @@ wxSize getAndroidDisplayDimensions(void) {
     long abh = 0;
     token = tk.GetNextToken();  //  ActionBar height, if shown
     if (token.ToLong(&abh)) sz_ret.y -= abh;
+    token = tk.GetNextToken();  //  text size, float
+    token = tk.GetNextToken();  //  NavBarHeight
+    token.ToLong(&NavBarHeight);
+  }
+
+  // Account for physical Nav buttons, hacking Java insets logic
+  if (g_detect_SMT63x) {
+    if (sz_ret.x > sz_ret.y)  // only in Landscape orientation.
+      sz_ret.y += NavBarHeight;
   }
 
   // qDebug() << "getAndroidDisplayDimensions" << sz_ret.x << sz_ret.y;
-
   return sz_ret;
 }
 
@@ -3025,13 +3132,13 @@ std::atomic<bool> AndroidFileDialog::g_done(false);
 std::string AndroidFileDialog::g_result;
 
 // Synchronous wxWidgets-style file dialog
-std::string AndroidFileDialog::Show(const std::string &startDir,
+std::string AndroidFileDialog::Show(const std::string &startDir, bool dir_mode,
                                     bool allowCreate = true) {
   g_done = false;
   g_result.clear();
 
   // Call Java dialog (Java handles runOnUiThread internally)
-  showDialogJNI(startDir, allowCreate);
+  showDialogJNI(startDir, dir_mode, allowCreate);
 
   // Spin loop to emulate synchronous dialog
   auto start = std::chrono::steady_clock::now();
@@ -3052,19 +3159,7 @@ void AndroidFileDialog::CallbackFromJava(const std::string &path) {
   g_done.store(true, std::memory_order_release);
 }
 
-void AndroidFileDialog::showDialogJNI(const std::string &startDir,
-                                      bool allowCreate) {
-  QAndroidJniEnvironment env;
-
-  // Obtain Qt Android Activity
-  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
-      "org/qtproject/qt5/android/QtNative", "activity",
-      "()Landroid/app/Activity;");
-
-  if (!activity.isValid()) return;
-
-  // --- Hide keyboard (prevents IME finishComposingText deadlock) ---
-
+void AndroidFileDialog::DismissImeBeforeFileDialog(QAndroidJniObject activity) {
   QAndroidJniObject serviceName = QAndroidJniObject::getStaticObjectField(
       "android/content/Context", "INPUT_METHOD_SERVICE", "Ljava/lang/String;");
 
@@ -3086,6 +3181,23 @@ void AndroidFileDialog::showDialogJNI(const std::string &startDir,
                              "(Landroid/os/IBinder;I)Z",
                              token.object<jobject>(), 0);
   }
+}
+
+void AndroidFileDialog::showDialogJNI(const std::string &startDir,
+                                      bool dir_mode, bool allowCreate) {
+  QAndroidJniEnvironment env;
+
+  // Obtain Qt Android Activity
+  QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
+      "org/qtproject/qt5/android/QtNative", "activity",
+      "()Landroid/app/Activity;");
+
+  if (!activity.isValid()) return;
+
+  // Hide IME (soft keyboard) before any synchronous Android dialog.
+  // Prevents Android IME finishComposingText() callback
+  // from blocking on Qt thread while FileChooserDialog waits.
+  DismissImeBeforeFileDialog(activity);
 
   // --- Create callback proxy ---
   QAndroidJniObject callback("org/opencpn/FileDialogCallbackProxy", "()V");
@@ -3097,9 +3209,10 @@ void AndroidFileDialog::showDialogJNI(const std::string &startDir,
   QAndroidJniObject::callStaticMethod<void>(
       "org/opencpn/OCPNFileDialog", "showFileDialog",
       "(Landroid/app/Activity;Ljava/lang/String;Lorg/opencpn/"
-      "OCPNFileDialog$Callback;Z)V",
+      "OCPNFileDialog$Callback;ZZ)V",
       activity.object<jobject>(), jStartDir.object<jstring>(),
-      callback.object<jobject>(), allowCreate ? JNI_TRUE : JNI_FALSE);
+      callback.object<jobject>(), dir_mode ? JNI_TRUE : JNI_FALSE,
+      allowCreate ? JNI_TRUE : JNI_FALSE);
 
   if (env->ExceptionCheck()) {
     env->ExceptionDescribe();
@@ -3120,8 +3233,11 @@ Java_org_opencpn_FileDialogCallbackProxy_nativeFileDialogFinished(
 int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &title, const wxString &suggestion,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
-  if (dirOnly) {
-    std::string file = AndroidFileDialog::Show(initDir.ToStdString());
+  // Inspect the specified initial directory to determine if a local
+  // "sandbox" file chooser may be used.
+  //  If not "sandboxed", use Java side SAF chooser.
+  if (initDir.StartsWith("/storage/emulated") && initDir.Contains("opencpn")) {
+    std::string file = AndroidFileDialog::Show(initDir.ToStdString(), dirOnly);
     if (file == "cancel") {
       return wxID_CANCEL;
     } else {
@@ -3145,7 +3261,6 @@ int androidFileChooser(wxString *result, const wxString &initDir,
       }
     }
   }
-
   return wxID_CANCEL;
 }
 

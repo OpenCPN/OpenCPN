@@ -360,6 +360,10 @@ AddSourceDlg::AddSourceDlg(wxWindow* parent, wxWindowID id,
 void AddSourceDlg::OnNbPage(wxNotebookEvent& event) {
   if (event.GetSelection() == 1) {
     m_buttonChartDirectory->Enable();
+    if (m_tcChartDirectory->GetValue().IsEmpty()) {
+      m_tcChartDirectory->SetValue(*GetpPrivateApplicationDataLocation());
+      m_panelChartDirectory->SetText(*GetpPrivateApplicationDataLocation());
+    }
   } else {
     wxTreeItemId item = m_treeCtrlPredefSrcs->GetSelection();
     ChartSource* cs = nullptr;

@@ -762,6 +762,13 @@ bool Routeman::DeleteTrack(Track *pTrack) {
   return false;
 }
 
+bool Routeman::IsRouteInList(Route *pRoute) {
+  if (!pRoute) return false;
+
+  return std::find(pRouteList->begin(), pRouteList->end(), pRoute) !=
+         pRouteList->end();
+}
+
 bool Routeman::DeleteRoute(Route *pRoute) {
   if (pRoute) {
     if (pRoute == pAISMOBRoute) {

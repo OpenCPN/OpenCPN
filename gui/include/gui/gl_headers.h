@@ -29,6 +29,7 @@
 #elif defined(ocpnUSE_GL)
 #if defined(_WIN32)
 #include <glew.h>
+#include <GL/glu.h>
 
 #elif __APPLE__
 typedef void (*_GLUfuncptr)();
