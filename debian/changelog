@@ -1,8 +1,10 @@
-opencpn (1:5.14.2+dfsg-1~bpo22.04~ppa1) UNRELEASED; urgency=medium
+opencpn (1:5.14.2+dfsg-1~bpo22.04~ppa1) jammy; urgency=medium
 
   * New upstream release
+  * d/patches: rebased
+  * d/opencpn-data.install: drop file removed by upstream
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 25 Sep 2026 15:29:22 +0200
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 25 Sep 2026 16:17:29 +0200
 
 opencpn (1:5.14.1+dfsg-1~bpo22.04~ppa2) jammy; urgency=medium
 
