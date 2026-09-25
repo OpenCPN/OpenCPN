@@ -2624,7 +2624,12 @@ void ChartCanvas::CancelMeasureRoute() {
   m_nMeasureState = 0;
   m_bDrawingRoute = false;
 
-  g_pRouteMan->DeleteRoute(m_pMeasureRoute);
+  if (m_pMeasureRoute && g_pRouteMan->IsRouteInList(m_pMeasureRoute)) {
+    g_pRouteMan->DeleteRoute(m_pMeasureRoute);
+  } else if (m_pMeasureRoute) {
+    wxLogMessage("CancelMeasureRoute: stale route %p", m_pMeasureRoute);
+  }
+
   m_pMeasureRoute = NULL;
 
   SetCursor(*pCursorArrow);
@@ -4051,6 +4056,14 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
           RoutePoint *segShow_point_b =
               (RoutePoint *)m_pRolloverRouteSeg->m_pData2;
 
+          // Minimally validate routepoint pointers
+          int ia = pr->GetIndexOf(segShow_point_a);
+          int ib = pr->GetIndexOf(segShow_point_b);
+          if (ia < 0 || ib < 0) {
+            wxLogMessage("Ignoring stale route segment selection.");
+            return;
+          }
+
           double brg, dist;
           DistanceBearingMercator(
               segShow_point_b->m_lat, segShow_point_b->m_lon,
@@ -4986,7 +4999,8 @@ void ChartCanvas::UpdateFollowButtonState() {
     for (auto pic : *PluginLoader::GetInstance()->GetPlugInArray()) {
       if (pic->m_enabled && pic->m_init_state) {
         switch (pic->m_api_version) {
-          case 121: {
+          case 121:
+          case 122: {
             auto *ppi = dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);
             if (ppi) ppi->UpdateFollowState(m_canvasIndex, m_bFollow);
             break;
@@ -5170,6 +5184,10 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
       }
     }
 
+#ifndef __ANDROID__
+    // ToDo:  Have seen crashes on "if (m_pCurrentStack->nEntry)"
+    //  Action: convert  m_pCurrentStack to member object, not pointer.
+
     if (new_ref_dbIndex == -1) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
@@ -5181,8 +5199,7 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
       // scale chart on the screen to be a new reference chart.
       int trial_index = -1;
       if (m_pCurrentStack->nEntry) {
-        int trial_index =
-            m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
+        trial_index = m_pCurrentStack->GetDBIndex(m_pCurrentStack->nEntry - 1);
       }
 
       if (trial_index < 0) {
@@ -5199,6 +5216,7 @@ bool ChartCanvas::PanCanvas(double dx, double dy) {
       }
 #pragma GCC diagnostic pop
     }
+#endif
   }
 
   //  Turn off bFollow only if the ownship has left the screen
@@ -7545,7 +7563,7 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
   double slat, slon;
   GetCanvasPixPoint(x, y, slat, slon);
 
-  SelectItem *pFindAIS;
+  SelectItem *pFindAIS = NULL;
   SelectItem *pFindRP;
   SelectItem *pFindRouteSeg;
   SelectItem *pFindTrackSeg;
@@ -7554,7 +7572,8 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
 
   //      Get all the selectable things at the selected point
   SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
-  pFindAIS = pSelectAIS->FindSelection(ctx, slat, slon, SELTYPE_AISTARGET);
+  if (m_bShowAIS)  // look for AIS targets only if they are shown
+    pFindAIS = pSelectAIS->FindSelection(ctx, slat, slon, SELTYPE_AISTARGET);
   pFindRP = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTEPOINT);
   pFindRouteSeg = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTESEGMENT);
   pFindTrackSeg = pSelect->FindSelection(ctx, slat, slon, SELTYPE_TRACKSEGMENT);
@@ -8381,6 +8400,22 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
   }
   m_pFoundRoutePoint = NULL;
 
+  // A route/mark edit may have been in progress (m_pRoutePointEditTarget set)
+  // when the menu action deleted that very RoutePoint (e.g. "Delete" on a
+  // waypoint of a route). Nulling m_pSelectedRoute/m_pFoundRoutePoint above is
+  // not enough: m_pRoutePointEditTarget (and m_pFoundPoint) would still point
+  // at the freed point, so the next mouse motion in MouseEventProcessObjects
+  // dereferences it (GetIconName()) -> use-after-free -> crash. Drop the edit
+  // state if its target no longer exists.
+  if (m_pRoutePointEditTarget &&
+      !pSelect->IsSelectableRoutePointValid(m_pRoutePointEditTarget)) {
+    m_pRoutePointEditTarget = NULL;
+    m_lastRoutePointEditTarget = NULL;
+    m_pFoundPoint = NULL;
+    m_bRouteEditing = false;
+    m_bMarkEditing = false;
+  }
+
   Refresh(true);
   // Refresh(false);  // needed for MSW, not GTK  Why??
 }
@@ -8941,22 +8976,30 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           r_rband.y = y;
         }
 
-        RoutePoint *pMousePoint =
-            new RoutePoint(m_cursor_lat, m_cursor_lon, wxString("circle"),
-                           wxEmptyString, wxEmptyString);
-        pMousePoint->m_bShowName = false;
-        pMousePoint->SetShowWaypointRangeRings(false);
+        if (!g_pRouteMan->IsRouteInList(m_pMeasureRoute)) {
+          wxLogMessage("Stale measure route");
+          CancelMeasureRoute();
+          top_frame::Get()->RefreshAllCanvas();
+          ret = true;
+        } else {
+          RoutePoint *pMousePoint =
+              new RoutePoint(m_cursor_lat, m_cursor_lon, wxString("circle"),
+                             wxEmptyString, wxEmptyString);
+          pMousePoint->m_bShowName = false;
+          pMousePoint->SetShowWaypointRangeRings(false);
 
-        m_pMeasureRoute->AddPoint(pMousePoint);
+          m_pMeasureRoute->AddPoint(pMousePoint);
 
-        m_prev_rlat = m_cursor_lat;
-        m_prev_rlon = m_cursor_lon;
-        m_prev_pMousePoint = pMousePoint;
-        m_pMeasureRoute->m_lastMousePointIndex = m_pMeasureRoute->GetnPoints();
+          m_prev_rlat = m_cursor_lat;
+          m_prev_rlon = m_cursor_lon;
+          m_prev_pMousePoint = pMousePoint;
+          m_pMeasureRoute->m_lastMousePointIndex =
+              m_pMeasureRoute->GetnPoints();
 
-        m_nMeasureState++;
-        top_frame::Get()->RefreshAllCanvas();
-        ret = true;
+          m_nMeasureState++;
+          top_frame::Get()->RefreshAllCanvas();
+          ret = true;
+        }
       }
 
       else {
@@ -8978,6 +9021,22 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
   }
 
   if (event.Dragging()) {
+    // The route/mark edit target is a raw RoutePoint* that can be freed out
+    // from under us by a delete (context menu, Routes panel, or a plugin)
+    // between the press that armed the edit and this drag event. The canvas is
+    // not notified, so the pointer dangles. Validate it against the Select list
+    // before any use below; if it is gone, drop the stale edit state, otherwise
+    // the drag logic dereferences freed memory (e.g. GetIconName()) -> crash.
+    if (m_pRoutePointEditTarget &&
+        !pSelect->IsSelectableRoutePointValid(m_pRoutePointEditTarget)) {
+      m_pRoutePointEditTarget = NULL;
+      m_lastRoutePointEditTarget = NULL;
+      m_pFoundPoint = NULL;
+      m_bRouteEditing = false;
+      m_bMarkEditing = false;
+      return false;
+    }
+
     // in touch screen mode ensure the finger/cursor is on the selected point's
     // radius to allow dragging
     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue());
@@ -9472,7 +9531,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         if (appending ||
             inserting) {  // Appending a route or making a new route
           int connect = tail->GetIndexOf(pMousePoint);
-          if (connect == 1) {
+          if (connect == 0) {
             inserting = false;  // there is nothing to insert
             appending = true;   // so append
           }
@@ -9481,17 +9540,17 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           int i;
           int start, stop;
           if (appending) {
-            start = connect + 1;
+            start = connect;
             stop = length;
           } else {  // inserting
-            start = 1;
-            stop = connect;
+            start = 0;
+            stop = connect + 1;
             m_pMouseRoute->RemovePoint(
                 m_pMouseRoute
                     ->GetLastPoint());  // Remove the first and only point
           }
-          for (i = start; i <= stop; i++) {
-            m_pMouseRoute->AddPointAndSegment(tail->GetPoint(i), false);
+          for (i = start; i < stop; i++) {
+            m_pMouseRoute->AddPointAndSegment(tail->GetPoint(i + 1), false);
             if (m_pMouseRoute)
               m_pMouseRoute->m_lastMousePointIndex =
                   m_pMouseRoute->GetnPoints();
@@ -9499,6 +9558,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             top_frame::Get()->RefreshAllCanvas();
             ret = true;
           }
+          g_pRouteMan->DeleteRoute(tail);
+
           m_prev_rlat =
               m_pMouseRoute->GetPoint(m_pMouseRoute->GetnPoints())->m_lat;
           m_prev_rlon =
@@ -9529,25 +9590,31 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
           r_rband.y = y;
         }
 
-        if (m_pMeasureRoute) {
-          RoutePoint *pMousePoint =
-              new RoutePoint(m_cursor_lat, m_cursor_lon, wxString("circle"),
-                             wxEmptyString, wxEmptyString);
-          pMousePoint->m_bShowName = false;
-
-          m_pMeasureRoute->AddPoint(pMousePoint);
-
-          m_prev_rlat = m_cursor_lat;
-          m_prev_rlon = m_cursor_lon;
-          m_prev_pMousePoint = pMousePoint;
-          m_pMeasureRoute->m_lastMousePointIndex =
-              m_pMeasureRoute->GetnPoints();
-
-          m_nMeasureState++;
-        } else {
+        if (!g_pRouteMan->IsRouteInList(m_pMeasureRoute)) {
+          wxLogMessage("Stale measure route");
           CancelMeasureRoute();
-        }
+          top_frame::Get()->RefreshAllCanvas();
+          ret = true;
+        } else {
+          if (m_pMeasureRoute) {
+            RoutePoint *pMousePoint =
+                new RoutePoint(m_cursor_lat, m_cursor_lon, wxString("circle"),
+                               wxEmptyString, wxEmptyString);
+            pMousePoint->m_bShowName = false;
 
+            m_pMeasureRoute->AddPoint(pMousePoint);
+
+            m_prev_rlat = m_cursor_lat;
+            m_prev_rlon = m_cursor_lon;
+            m_prev_pMousePoint = pMousePoint;
+            m_pMeasureRoute->m_lastMousePointIndex =
+                m_pMeasureRoute->GetnPoints();
+
+            m_nMeasureState++;
+          } else {
+            CancelMeasureRoute();
+          }
+        }
         Refresh(true);
         ret = true;
       } else {
@@ -9809,7 +9876,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         wxString dmsg(
                             _("Last part of route to be appended to dragged "
                               "route?"));
-                        if (connect == 1)
+                        if (connect == 0)
                           dmsg =
                               _("Full route to be appended to dragged route?");
 
@@ -9821,8 +9888,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         }
                       }
                     } else if (index_current_route ==
-                               1) {  // dragging the first point of the route
-                      if (connect != 1) {  // anything to do?
+                               0) {  // dragging the first point of the route
+                      if (connect != 0) {  // anything to do?
 
                         wxString dmsg(
                             _("First part of route to be inserted into dragged "
@@ -9974,11 +10041,12 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         current->m_bIsBeingEdited = false;
         FinishRoute();
         g_pRouteMan->DeleteRoute(tail);
+        NavObj_dB::GetInstance().UpdateRoute(current);
       }
       if (inserting) {
         pSelect->DeleteAllSelectableRoutePoints(current);
         pSelect->DeleteAllSelectableRouteSegments(current);
-        for (int i = 1; i < connect; i++) {  // numbering in the tail route
+        for (int i = 1; i < connect + 1; i++) {  // numbering in the tail route
           current->InsertPointAndSegment(tail->GetPoint(i), i - 1, false);
         }
         pSelect->AddAllSelectableRouteSegments(current);
@@ -9986,6 +10054,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         current->FinalizeForRendering();
         current->m_bIsBeingEdited = false;
         g_pRouteMan->DeleteRoute(tail);
+        NavObj_dB::GetInstance().UpdateRoute(current);
       }
 
       //    Update the RouteProperties Dialog, if currently shown
@@ -10080,7 +10149,7 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         wxString dmsg(
                             _("Last part of route to be appended to dragged "
                               "route?"));
-                        if (connect == 1)
+                        if (connect == 0)
                           dmsg =
                               _("Full route to be appended to dragged route?");
 
@@ -10092,8 +10161,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                         }
                       }
                     } else if (index_current_route ==
-                               1) {  // dragging the first point of the route
-                      if (connect != 1) {  // anything to do?
+                               0) {  // dragging the first point of the route
+                      if (connect != 0) {  // anything to do?
 
                         wxString dmsg(
                             _("First part of route to be inserted into dragged "
@@ -10197,18 +10266,22 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
             current->m_bIsBeingEdited = false;
             FinishRoute();
             g_pRouteMan->DeleteRoute(tail);
+            NavObj_dB::GetInstance().UpdateRoute(current);
           }
           if (inserting) {
             pSelect->DeleteAllSelectableRoutePoints(current);
             pSelect->DeleteAllSelectableRouteSegments(current);
-            for (int i = 1; i < connect; i++) {  // numbering in the tail route
+            for (int i = 1; i < connect + 1;
+                 i++) {  // numbering in the tail route
               current->InsertPointAndSegment(tail->GetPoint(i), i - 1, false);
             }
+
             pSelect->AddAllSelectableRouteSegments(current);
             pSelect->AddAllSelectableRoutePoints(current);
             current->FinalizeForRendering();
             current->m_bIsBeingEdited = false;
             g_pRouteMan->DeleteRoute(tail);
+            NavObj_dB::GetInstance().UpdateRoute(current);
           }
 
           //    Update the RouteProperties Dialog, if currently shown
@@ -11278,7 +11351,6 @@ wxString ChartCanvas::FinishRoute() {
 
   if (m_pMouseRoute) {
     if (m_bAppendingRoute) {
-      // pConfig->UpdateRoute(m_pMouseRoute);
       NavObj_dB::GetInstance().UpdateRoute(m_pMouseRoute);
     } else {
       if (m_pMouseRoute->GetnPoints() > 1) {
@@ -11360,6 +11432,9 @@ void ChartCanvas::RenderAllChartOutlines(ocpnDC &dc, ViewPort &vp) {
       }
     } else
       b_group_draw = true;
+
+    // Do not render chart outlines if chart identifies as a "basemap"
+    if (pt->IsBasemap()) continue;
 
     if (b_group_draw) RenderChartOutline(dc, i, vp);
   }

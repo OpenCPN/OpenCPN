@@ -193,6 +193,7 @@ void S57Obj::Init() {
 
   iOBJL = -1;  // deferred, done by OBJL filtering in the PLIB as needed
   bBBObj_valid = false;
+  bOK_to_Render = true;
 
   //        Set default (unity) auxiliary transform coefficients
   x_rate = 1.0;

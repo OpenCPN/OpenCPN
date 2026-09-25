@@ -191,6 +191,7 @@ void Route::AddPointAndSegment(RoutePoint *pNewPoint, bool b_rename_in_sequence,
 
 void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
                                   bool bRenamePoints, bool b_deferBoxCalc) {
+  // insert_after is zero-based.
   {
     bool add = false;
 
@@ -205,7 +206,7 @@ void Route::InsertPointAndSegment(RoutePoint *pNewPoint, int insert_after,
       return;
     }
 
-    auto pos = pRoutePointList->begin() + insert_after + 1;
+    auto pos = pRoutePointList->begin() + insert_after;
     pNewPoint->m_bIsInRoute = true;
     pNewPoint->SetNameShown(false);
     pRoutePointList->insert(pos, pNewPoint);

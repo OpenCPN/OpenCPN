@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 10:26-0500\n"
-"PO-Revision-Date: 2026-02-13 20:43\n"
+"POT-Creation-Date: 2026-09-22 12:48-0400\n"
+"PO-Revision-Date: 2026-09-24 18:08\n"
 "Last-Translator: \n"
 "Language-Team: Hungarian\n"
 "Language: hu_HU\n"
@@ -74,432 +74,432 @@ msgstr "Látszólagos szél irány és sebesség"
 msgid "App & True Wind Angle"
 msgstr "Valós szél irány"
 
-#: src/dashboard_pi.cpp:295 src/dashboard_pi.cpp:297
+#: src/dashboard_pi.cpp:296
 msgid "App. Wind Speed"
 msgstr "Látszólagos szél sebesség"
 
-#: src/dashboard_pi.cpp:299
+#: src/dashboard_pi.cpp:298
 msgid "True Wind Angle & Speed"
 msgstr "Valós szél irány és sebesség"
 
-#: src/dashboard_pi.cpp:301
+#: src/dashboard_pi.cpp:300
 msgid "Altitude"
 msgstr ""
 
-#: src/dashboard_pi.cpp:303
+#: src/dashboard_pi.cpp:302
 msgid "Altitude Trace"
 msgstr ""
 
-#: src/dashboard_pi.cpp:305 src/dashboard_pi.cpp:307
+#: src/dashboard_pi.cpp:305
 msgid "Depth"
 msgstr "Mélység"
 
-#: src/dashboard_pi.cpp:309 src/dashboard_pi.cpp:311
+#: src/dashboard_pi.cpp:308
 msgid "Barometric pressure"
 msgstr "Légköri nyomás"
 
-#: src/dashboard_pi.cpp:313
+#: src/dashboard_pi.cpp:310
 msgid "Water Temp."
 msgstr "Víz hőmérséklet"
 
-#: src/dashboard_pi.cpp:315
+#: src/dashboard_pi.cpp:312
 msgid "Air Temp."
 msgstr "Levegő hőmérséklet"
 
-#: src/dashboard_pi.cpp:317
+#: src/dashboard_pi.cpp:314
 msgid "App. Wind Angle"
 msgstr "Látszólagos szél irány"
 
-#: src/dashboard_pi.cpp:319
+#: src/dashboard_pi.cpp:316
 msgid "True Wind Angle"
 msgstr "Valós szél irány"
 
-#: src/dashboard_pi.cpp:321
+#: src/dashboard_pi.cpp:318
 msgid "True Wind Direction"
 msgstr "Valós szél irány"
 
-#: src/dashboard_pi.cpp:323
+#: src/dashboard_pi.cpp:320
 msgid "True Wind Speed"
 msgstr "Valós szél sebesség"
 
-#: src/dashboard_pi.cpp:325
+#: src/dashboard_pi.cpp:322
 msgid "True Wind Dir. & Speed"
 msgstr "Valós szél irány és sebesség"
 
-#: src/dashboard_pi.cpp:327 src/dashboard_pi.cpp:329
+#: src/dashboard_pi.cpp:325
 msgid "VMG"
 msgstr "VMG"
 
-#: src/dashboard_pi.cpp:331
+#: src/dashboard_pi.cpp:327
 msgid "VMG Wind"
 msgstr ""
 
-#: src/dashboard_pi.cpp:333 src/dashboard_pi.cpp:335
+#: src/dashboard_pi.cpp:330
 msgid "Rudder Angle"
 msgstr "Kormánylapát szög"
 
-#: src/dashboard_pi.cpp:337
+#: src/dashboard_pi.cpp:332
 msgid "GNSS in use"
 msgstr "GNSS használatban"
 
-#: src/dashboard_pi.cpp:339
+#: src/dashboard_pi.cpp:334
 msgid "GNSS Status"
 msgstr "GNSS státusz"
 
-#: src/dashboard_pi.cpp:341
+#: src/dashboard_pi.cpp:336
 msgid "Cursor"
 msgstr "Kurzor"
 
-#: src/dashboard_pi.cpp:343
+#: src/dashboard_pi.cpp:338
 msgid "GNSS Clock"
 msgstr "GNSS idő"
 
-#: src/dashboard_pi.cpp:345
+#: src/dashboard_pi.cpp:340
 msgid "Sunrise/Sunset"
 msgstr "napkelte / napnyugta"
 
-#: src/dashboard_pi.cpp:347
+#: src/dashboard_pi.cpp:342
 msgid "Moon phase"
 msgstr "holdfázis"
 
-#: src/dashboard_pi.cpp:349
+#: src/dashboard_pi.cpp:344
 msgid "Wind history"
 msgstr "Szél előzmények"
 
-#: src/dashboard_pi.cpp:351
+#: src/dashboard_pi.cpp:346
 msgid "Barometric history"
 msgstr "Korábbi légnymás"
 
-#: src/dashboard_pi.cpp:353
+#: src/dashboard_pi.cpp:348
 msgid "Trip Log"
 msgstr "Út távolság"
 
-#: src/dashboard_pi.cpp:355
+#: src/dashboard_pi.cpp:350
 msgid "Sum Log"
 msgstr "Öszesített távolság"
 
-#: src/dashboard_pi.cpp:357
+#: src/dashboard_pi.cpp:352
 msgid "From Ownship"
 msgstr "Saját hajótól"
 
-#: src/dashboard_pi.cpp:359
+#: src/dashboard_pi.cpp:354
 msgid "Pitch"
 msgstr "Bólintás"
 
-#: src/dashboard_pi.cpp:361
+#: src/dashboard_pi.cpp:356
 msgid "Heel"
 msgstr "Dőlés"
 
-#: src/dashboard_pi.cpp:363
+#: src/dashboard_pi.cpp:358
 msgid "Local GNSS Clock"
 msgstr "Helyi GNSS idő"
 
-#: src/dashboard_pi.cpp:365
+#: src/dashboard_pi.cpp:360
 msgid "Local CPU Clock"
 msgstr "Helyi CPU idő"
 
-#: src/dashboard_pi.cpp:367
+#: src/dashboard_pi.cpp:362
 msgid "Local Sunrise/Sunset"
 msgstr "Helyi napkelte / napnyugta"
 
-#: src/dashboard_pi.cpp:369
+#: src/dashboard_pi.cpp:364
 msgid "Humidity"
 msgstr ""
 
-#: src/dashboard_pi.cpp:371
+#: src/dashboard_pi.cpp:366
 msgid "Windlass"
 msgstr ""
 
-#: src/dashboard_pi.cpp:622 src/dashboard_pi.cpp:968 src/dashboard_pi.cpp:3666
-#: src/dashboard_pi.cpp:3682 src/dashboard_pi.cpp:4215 src/dashboard_pi.cpp:4305
-#: src/dashboard_pi.cpp:5021
+#: src/dashboard_pi.cpp:617 src/dashboard_pi.cpp:963 src/dashboard_pi.cpp:3661
+#: src/dashboard_pi.cpp:3677 src/dashboard_pi.cpp:4210 src/dashboard_pi.cpp:4300
+#: src/dashboard_pi.cpp:5016
 msgid "Dashboard"
 msgstr "Műszerfal"
 
-#: src/dashboard_pi.cpp:971
+#: src/dashboard_pi.cpp:966
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "OpenCPN műszerfal plugin"
 
-#: src/dashboard_pi.cpp:976
+#: src/dashboard_pi.cpp:971
 msgid "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr "OpenCPN Műszerfal plugin\n"
 "NMEA forrásból navigációs adatokat jelenít meg."
 
-#: src/dashboard_pi.cpp:1847 src/dashboard_pi.cpp:2122 src/dashboard_pi.cpp:3126
-#: src/dashboard_pi.cpp:4439
+#: src/dashboard_pi.cpp:1842 src/dashboard_pi.cpp:2117 src/dashboard_pi.cpp:3121
+#: src/dashboard_pi.cpp:4434
 msgid "Up"
 msgstr "fel"
 
-#: src/dashboard_pi.cpp:1850 src/dashboard_pi.cpp:2124 src/dashboard_pi.cpp:3128
-#: src/dashboard_pi.cpp:4446
+#: src/dashboard_pi.cpp:1845 src/dashboard_pi.cpp:2119 src/dashboard_pi.cpp:3123
+#: src/dashboard_pi.cpp:4441
 msgid "Down"
 msgstr "le"
 
-#: src/dashboard_pi.cpp:1867 src/dashboard_pi.cpp:2133 src/dashboard_pi.cpp:3115
+#: src/dashboard_pi.cpp:1862 src/dashboard_pi.cpp:2128 src/dashboard_pi.cpp:3110
 msgid "Stbd"
 msgstr "Steuerbord"
 
-#: src/dashboard_pi.cpp:1870 src/dashboard_pi.cpp:2135 src/dashboard_pi.cpp:3117
+#: src/dashboard_pi.cpp:1865 src/dashboard_pi.cpp:2130 src/dashboard_pi.cpp:3112
 msgid "Port"
 msgstr "Backbord"
 
-#: src/dashboard_pi.cpp:4153
+#: src/dashboard_pi.cpp:4148
 msgid "Dashboard preferences"
 msgstr "Műszerfal beállítások"
 
-#: src/dashboard_pi.cpp:4156 src/dashboard_pi.cpp:5058 src/dashboard_pi.cpp:5357
-#: src/dashboard_pi.cpp:6369
+#: src/dashboard_pi.cpp:4151 src/dashboard_pi.cpp:5053 src/dashboard_pi.cpp:5352
+#: src/dashboard_pi.cpp:6364
 msgid "Dialog"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4314
+#: src/dashboard_pi.cpp:4309
 msgid "show this dashboard"
 msgstr "mutassa ezt a műszerfalat"
 
-#: src/dashboard_pi.cpp:4325
+#: src/dashboard_pi.cpp:4320
 msgid "Caption:"
 msgstr "Felirat:"
 
-#: src/dashboard_pi.cpp:4335
+#: src/dashboard_pi.cpp:4330
 msgid "Orientation:"
 msgstr "Orientáció:"
 
-#: src/dashboard_pi.cpp:4341 src/dashboard_pi.cpp:5747
+#: src/dashboard_pi.cpp:4336 src/dashboard_pi.cpp:5742
 msgid "Vertical"
 msgstr "Függőleges"
 
-#: src/dashboard_pi.cpp:4342 src/dashboard_pi.cpp:5750
+#: src/dashboard_pi.cpp:4337 src/dashboard_pi.cpp:5745
 msgid "Horizontal"
 msgstr "Vízszintes"
 
-#: src/dashboard_pi.cpp:4373 src/dashboard_pi.cpp:4393 src/dashboard_pi.cpp:5355
+#: src/dashboard_pi.cpp:4368 src/dashboard_pi.cpp:4388 src/dashboard_pi.cpp:5350
 msgid "Instruments"
 msgstr "Műszerek"
 
-#: src/dashboard_pi.cpp:4406
+#: src/dashboard_pi.cpp:4401
 msgid "Add"
 msgstr "Hozzáad"
 
-#: src/dashboard_pi.cpp:4415
+#: src/dashboard_pi.cpp:4410
 msgid "Edit"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4431
+#: src/dashboard_pi.cpp:4426
 msgid "Delete"
 msgstr "Törlés"
 
-#: src/dashboard_pi.cpp:4459
+#: src/dashboard_pi.cpp:4454
 msgid "Appearance"
 msgstr "Megjelenítés"
 
-#: src/dashboard_pi.cpp:4462
+#: src/dashboard_pi.cpp:4457
 msgid "Fonts"
 msgstr "Betűtípusok"
 
-#: src/dashboard_pi.cpp:4471 src/dashboard_pi.cpp:6479
+#: src/dashboard_pi.cpp:4466 src/dashboard_pi.cpp:6474
 msgid "Title:"
 msgstr "Cím:"
 
-#: src/dashboard_pi.cpp:4481 src/dashboard_pi.cpp:6498
+#: src/dashboard_pi.cpp:4476 src/dashboard_pi.cpp:6493
 msgid "Data:"
 msgstr "Adat:"
 
-#: src/dashboard_pi.cpp:4490 src/dashboard_pi.cpp:6517
+#: src/dashboard_pi.cpp:4485 src/dashboard_pi.cpp:6512
 msgid "Label:"
 msgstr "Címke:"
 
-#: src/dashboard_pi.cpp:4499 src/dashboard_pi.cpp:6526
+#: src/dashboard_pi.cpp:4494 src/dashboard_pi.cpp:6521
 msgid "Small:"
 msgstr "Kicsi:"
 
-#: src/dashboard_pi.cpp:4509
+#: src/dashboard_pi.cpp:4504
 msgid "Reset:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4514
+#: src/dashboard_pi.cpp:4509
 msgid "Set dashboard default fonts"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4523
+#: src/dashboard_pi.cpp:4518
 msgid "Units, Ranges, Formats"
 msgstr "Mértékegységek, értéktartományok, formátumok"
 
-#: src/dashboard_pi.cpp:4531
+#: src/dashboard_pi.cpp:4526
 msgid "Speedometer max value:"
 msgstr "Sebességmérő max értéke:"
 
-#: src/dashboard_pi.cpp:4540
+#: src/dashboard_pi.cpp:4535
 msgid "Speed Over Ground Damping Factor:"
 msgstr "Földfelszíni sebesség (SOG) csillapítási érték:"
 
-#: src/dashboard_pi.cpp:4549
+#: src/dashboard_pi.cpp:4544
 msgid "COG Damping Factor:"
 msgstr "COG csillapítási tényező:"
 
-#: src/dashboard_pi.cpp:4558
+#: src/dashboard_pi.cpp:4553
 msgid "Wind speed Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4567
+#: src/dashboard_pi.cpp:4562
 msgid "Wind angle Damping Factor:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4576
+#: src/dashboard_pi.cpp:4571
 msgid "Local Time Offset From UTC:"
 msgstr "Helyi idő eltérése UTC-től:"
 
-#: src/dashboard_pi.cpp:4601
+#: src/dashboard_pi.cpp:4596
 msgid "Boat speed units:"
 msgstr "Hajó sebsség mértékegysége:"
 
-#: src/dashboard_pi.cpp:4604 src/dashboard_pi.cpp:4668
+#: src/dashboard_pi.cpp:4599 src/dashboard_pi.cpp:4663
 msgid "Honor OpenCPN settings"
 msgstr "OpenCPN beállítások betartás"
 
-#: src/dashboard_pi.cpp:4604 src/dashboard_pi.cpp:4691
+#: src/dashboard_pi.cpp:4599 src/dashboard_pi.cpp:4686
 msgid "Kts"
 msgstr "csomó"
 
-#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
+#: src/dashboard_pi.cpp:4600 src/dashboard_pi.cpp:4686
 msgid "mph"
 msgstr "mph"
 
-#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
+#: src/dashboard_pi.cpp:4600 src/dashboard_pi.cpp:4686
 msgid "km/h"
 msgstr "km/h"
 
-#: src/dashboard_pi.cpp:4605 src/dashboard_pi.cpp:4691
+#: src/dashboard_pi.cpp:4600 src/dashboard_pi.cpp:4686
 msgid "m/s"
 msgstr "m/s"
 
-#: src/dashboard_pi.cpp:4619
+#: src/dashboard_pi.cpp:4614
 msgid "Depth units:"
 msgstr "Mélység mértékegységek:"
 
-#: src/dashboard_pi.cpp:4623 src/dashboard_pi.cpp:4670
+#: src/dashboard_pi.cpp:4618 src/dashboard_pi.cpp:4665
 msgid "Meters"
 msgstr "Méter"
 
-#: src/dashboard_pi.cpp:4623
+#: src/dashboard_pi.cpp:4618
 msgid "Feet"
 msgstr "láb"
 
-#: src/dashboard_pi.cpp:4623
+#: src/dashboard_pi.cpp:4618
 msgid "Fathoms"
 msgstr "Öl"
 
-#: src/dashboard_pi.cpp:4624
+#: src/dashboard_pi.cpp:4619
 msgid "Inches"
 msgstr "hüvelyk"
 
-#: src/dashboard_pi.cpp:4624
+#: src/dashboard_pi.cpp:4619
 msgid "Centimeters"
 msgstr "Centiméter"
 
-#: src/dashboard_pi.cpp:4636
+#: src/dashboard_pi.cpp:4631
 #, c-format
 msgid "Depth Offset (%s):"
 msgstr "Mélység eltolás (%s):"
 
-#: src/dashboard_pi.cpp:4665
+#: src/dashboard_pi.cpp:4660
 msgid "Distance units:"
 msgstr "Távolság mértékegysége:"
 
-#: src/dashboard_pi.cpp:4669
+#: src/dashboard_pi.cpp:4664
 msgid "Nautical miles"
 msgstr "Tengeri mérföld"
 
-#: src/dashboard_pi.cpp:4669
+#: src/dashboard_pi.cpp:4664
 msgid "Statute miles"
 msgstr "Mérföld"
 
-#: src/dashboard_pi.cpp:4670
+#: src/dashboard_pi.cpp:4665
 msgid "Kilometers"
 msgstr "kilóméter"
 
-#: src/dashboard_pi.cpp:4688
+#: src/dashboard_pi.cpp:4683
 msgid "Wind speed units:"
 msgstr "Szélsebesség mértékegysége:"
 
-#: src/dashboard_pi.cpp:4705
+#: src/dashboard_pi.cpp:4700
 msgid "Temperature units:"
 msgstr "Hőmérséklet mértékegység:"
 
-#: src/dashboard_pi.cpp:4708
+#: src/dashboard_pi.cpp:4703
 msgid "Celsius"
 msgstr "Celsius"
 
-#: src/dashboard_pi.cpp:4708
+#: src/dashboard_pi.cpp:4703
 msgid "Fahrenheit"
 msgstr "Farenheit"
 
-#: src/dashboard_pi.cpp:4708
+#: src/dashboard_pi.cpp:4703
 msgid "Kelvin"
 msgstr "Kelvin"
 
-#: src/dashboard_pi.cpp:4724 src/dashboard_pi.cpp:4759
+#: src/dashboard_pi.cpp:4719 src/dashboard_pi.cpp:4754
 msgid "Other selections"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4734 src/dashboard_pi.cpp:4769
+#: src/dashboard_pi.cpp:4729 src/dashboard_pi.cpp:4764
 msgid "Use internal Sumlog."
 msgstr ""
 
-#: src/dashboard_pi.cpp:4735 src/dashboard_pi.cpp:4776
+#: src/dashboard_pi.cpp:4730 src/dashboard_pi.cpp:4771
 msgid "Enter new value if desired"
 msgstr ""
 
-#: src/dashboard_pi.cpp:4751 src/dashboard_pi.cpp:4793
+#: src/dashboard_pi.cpp:4746 src/dashboard_pi.cpp:4788
 msgid "Use N2K & SignalK true wind data over ground.\n"
 "(Instead of through water)"
 msgstr ""
 
-#: src/dashboard_pi.cpp:5317
+#: src/dashboard_pi.cpp:5312
 msgid "Add instrument"
 msgstr "Műszer hozzáadása"
 
-#: src/dashboard_pi.cpp:5322
+#: src/dashboard_pi.cpp:5317
 msgid "Select instrument to add:"
 msgstr "Válaszd ki a hozzáadni kívánt műszert:"
 
-#: src/dashboard_pi.cpp:5727
+#: src/dashboard_pi.cpp:5722
 msgid "Menu"
 msgstr ""
 
-#: src/dashboard_pi.cpp:5731 src/dashboard_pi.cpp:5757
+#: src/dashboard_pi.cpp:5726 src/dashboard_pi.cpp:5752
 msgid "Preferences..."
 msgstr "Beállítások..."
 
-#: src/dashboard_pi.cpp:5736
+#: src/dashboard_pi.cpp:5731
 msgid "Resize..."
 msgstr "Átméretezés..."
 
-#: src/dashboard_pi.cpp:5744
+#: src/dashboard_pi.cpp:5739
 msgid "Undock"
 msgstr "Rögzítés feloldása"
 
-#: src/dashboard_pi.cpp:6346
+#: src/dashboard_pi.cpp:6341
 msgid "Choose font"
 msgstr "Betűtípus kiválasztása"
 
-#: src/dashboard_pi.cpp:6488
+#: src/dashboard_pi.cpp:6483
 msgid "Title background color:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6507
+#: src/dashboard_pi.cpp:6502
 msgid "Data background color:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6535
+#: src/dashboard_pi.cpp:6530
 msgid "Arrow 1 Color :"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6545
+#: src/dashboard_pi.cpp:6540
 msgid "Arrow 2 Color :"
 msgstr ""
 
-#: src/dashboard_pi.cpp:6572
+#: src/dashboard_pi.cpp:6567
 msgid "Set default"
 msgstr ""
 

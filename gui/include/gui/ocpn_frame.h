@@ -317,6 +317,10 @@ public:
   }
   void OnToolLeftClick(wxCommandEvent& event) override;
 
+  bool DisableTbarTooltips();
+  void EnableTbarTooltips();
+  void HideTbarTooltip();
+
   void SetENCDisplayCategory(ChartCanvas* cc, enum _DisCat nset);
   void ToggleQuiltMode(ChartCanvas* cc);
 
@@ -441,6 +445,7 @@ public:
   DataMonitor* GetDataMonitor() const { return m_data_monitor; }
 
   void SetAndApplyColorScheme(ColorScheme cs);
+  void ValidateColorScheme();
 
   void OnFrameTCTimer(wxTimerEvent& event);
   void OnFrameCOGTimer(wxTimerEvent& event);
@@ -516,7 +521,6 @@ private:
   void ProcessAnchorWatch();
   void ProcessLogAndBells();
   void CalculateCOGAverage();
-  void CheckToolbarPosition();
 
   void ODoSetSize(void);
   void DoCOGSet(void);

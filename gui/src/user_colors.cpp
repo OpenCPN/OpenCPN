@@ -5,6 +5,7 @@
 #include "color_types.h"
 #include "color_handler.h"
 #include "s52plib.h"
+#include "model/config_vars.h"
 
 ColorScheme global_color_scheme = GLOBAL_COLOR_SCHEME_DAY;
 
@@ -324,10 +325,18 @@ void DeInitialize() {
 }
 
 wxColorHashMap *GetMapByScheme(const std::string &scheme_name) {
+  std::string name = scheme_name;
+  if (g_hicon_colors) {
+    if (scheme_name == "DAY_HICON")
+      name = "DAY";
+    else
+      name = "NIGHT";
+  }
+
   unsigned Usercolortable_index = 0;
   for (unsigned int i = 0; i < UserColorTableArray->GetCount(); i++) {
     colTable *ct = (colTable *)UserColorTableArray->Item(i);
-    if (scheme_name == (*ct->tableName)) {
+    if (name == (*ct->tableName)) {
       return (wxColorHashMap *)UserColourHashTableArray->Item(i);
     }
   }

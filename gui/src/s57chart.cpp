@@ -366,6 +366,13 @@ void s57chart::SetColorScheme(ColorScheme cs, bool bApplyImmediate) {
     case GLOBAL_COLOR_SCHEME_NIGHT:
       ps52plib->SetPLIBColorScheme("NIGHT", ChartCtxFactory());
       break;
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
+      ps52plib->SetPLIBColorScheme("DAY_HICON", ChartCtxFactory());
+      break;
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
+      ps52plib->SetPLIBColorScheme("NIGHT_HICON", ChartCtxFactory());
+      break;
+
     default:
       ps52plib->SetPLIBColorScheme("DAY", ChartCtxFactory());
       break;
