@@ -325,7 +325,7 @@ void TCWin::CreateLayout() {
   OK_button = new wxButton(m_buttonPanel, wxID_OK, _("OK"));
 
   // Create timezone choice
-  wxString choiceOptions[] = {_("LMT@Station"), _("UTC")};
+  wxString choiceOptions[] = {_("LMT@Station"), _("SystemTime"), _("UTC")};
   int numChoices = sizeof(choiceOptions) / sizeof(wxString);
   m_choiceTimezone = new wxChoice(m_buttonPanel, wxID_ANY, wxDefaultPosition,
                                   wxDefaultSize, numChoices, choiceOptions);
@@ -508,7 +508,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
   // Always draw system time indicator (solid red line)
   time_t t_system_now = system_now.GetTicks();
   t_system_now -= m_diff_mins * 60;
-  if (m_tzoneDisplay == 0)  // LMT @ Station
+  if (m_tzoneDisplay <= 1)  // LMT @ Station or SystemTime
     t_system_now += m_stationOffset_mins * 60;
 
   float t_system_ratio =
@@ -529,7 +529,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
     time_t t_selected_time = gTimeSource.GetTicks();
     if (abs(t_selected_time - t_system_now) > 300) {
       t_selected_time -= m_diff_mins * 60;
-      if (m_tzoneDisplay == 0)  // LMT @ Station
+      if (m_tzoneDisplay <= 1)  // LMT @ Station or SystemTime
         t_selected_time += m_stationOffset_mins * 60;
 
       float t_selected_time_ratio = m_graph_rect.width *
@@ -565,7 +565,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
     // We want UTC, so adjust accordingly
     int tt_localtz = m_t_graphday_GMT + (m_diff_mins * 60);
     // then eventually we could need LMT at station
-    if (m_tzoneDisplay == 0)
+    if (m_tzoneDisplay <= 1)
       tt_localtz -= m_stationOffset_mins * 60;  // LMT at station
 
     // get tide flow sens ( flood or ebb ? )
@@ -608,7 +608,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
             wxDateTime tcd;           // write date
             wxString s, s1;
             tcd.Set(tctime - (m_diff_mins * 60));
-            if (m_tzoneDisplay == 0)  // LMT @ Station
+            if (m_tzoneDisplay <= 1)  // LMT @ Station
               tcd.Set(tctime + (m_stationOffset_mins - m_diff_mins) * 60);
 
             s.Printf(tcd.Format("%H:%M  "));
@@ -654,7 +654,7 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
         wxDateTime thx;  // write date
         wxString s, s1;
         thx.Set((time_t)tt - (m_diff_mins * 60));
-        if (m_tzoneDisplay == 0)  // LMT @ Station
+        if (m_tzoneDisplay <= 1)  // LMT @ Station or SystemTime
           thx.Set((time_t)tt + (m_stationOffset_mins - m_diff_mins) * 60);
 
         s.Printf(thx.Format("%H:%M  "));
@@ -756,8 +756,10 @@ void TCWin::PaintChart(wxDC &dc, const wxRect &chartRect) {
 #endif
 
   //  More Info - positioned below chart panel
-  if (m_tzoneDisplay == 0) {
-    int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
+  if (m_tzoneDisplay <= 1) {
+    int station_offset = m_tzoneDisplay == 0
+                             ? ptcmgr->GetStationTimeOffset(pIDX)
+                             : int(-wxGetTimeZone() / 60);
     int h = station_offset / 60;
     int m = station_offset - (h * 60);
     if (m_graphday.IsDST()) h += 1;
@@ -906,6 +908,8 @@ void TCWin::SetTimeFactors() {
 #endif
 
   int station_offset = ptcmgr->GetStationTimeOffset(pIDX);
+  // if systemTime set to system timezone
+  if (m_tzoneDisplay == 1) station_offset = -wxGetTimeZone() / 60;
 
   m_stationOffset_mins = station_offset;
   if (this_now.IsDST()) {
@@ -1221,7 +1225,7 @@ void TCWin::OnTCWinPopupTimerEvent(wxTimerEvent &event) {
     int tt_localtz = m_t_graphday_GMT + (m_diff_mins * 60);
 
     int ttv = tt_localtz + (int)(t * 3600);
-    if (m_tzoneDisplay == 0) {
+    if (m_tzoneDisplay <= 1) {
       ttv -= m_stationOffset_mins * 60;  // LMT at station
     }
 
