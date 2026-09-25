@@ -131,8 +131,9 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour col1,
                  wxColour udkrd, wxColour gridline);
 
 bool WptIsInRouteList(RoutePoint *pr);
-RoutePoint *WaypointExists(const wxString &name, double lat, double lon);
-RoutePoint *WaypointExists(const wxString &guid);
+RoutePoint *WaypointExistsByNamePosition(const wxString &name, double lat,
+                                         double lon);
+RoutePoint *WaypointExistsByGUID(const wxString &guid);
 Route *RouteExists(const wxString &guid);
 Route *RouteExists(Route *pTentRoute);
 Track *TrackExists(const wxString &guid);

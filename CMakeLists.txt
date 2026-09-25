@@ -142,7 +142,11 @@ set(OCPN_TARGET_TUPLE "" CACHE STRING
 )
 
 if (MSVC OR MINGW)
-  option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(OCPN_USE_CRASHREPORT FALSE)
+  else ()
+    option(OCPN_USE_CRASHREPORT "Enable crash reporting" ON)
+  endif()
 else ()
   set(OCPN_USE_CRASHREPORT FALSE)
 endif ()
@@ -448,8 +452,8 @@ if (QT_ANDROID)
   add_definitions(-D__OCPN__ANDROID__)
   add_definitions(-DANDROID)
   add_definitions(-DNOASSERT)
-  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g -O2")
-  set(CMAKE_C_FLAGS "-pthread -fPIC -g -O2")
+  set(CMAKE_CXX_FLAGS "-pthread -fPIC -g -O2 ${CMAKE_CXX_FLAGS}")
+  set(CMAKE_C_FLAGS "-pthread -fPIC -g -O2 ${CMAKE_C_FLAGS}")
 
   add_compile_options(
     "-Wno-inconsistent-missing-override"
@@ -906,6 +910,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ais_target_list_dlg.cpp
     ${GUI_SRC_DIR}/ais_target_query_dlg.cpp
     ${GUI_SRC_DIR}/api_121.cpp
+    ${GUI_SRC_DIR}/api_122.cpp
     ${GUI_SRC_DIR}/canvas_config.cpp
     ${GUI_SRC_DIR}/canvas_menu.cpp
     ${GUI_SRC_DIR}/canvas_options.cpp
@@ -1518,8 +1523,13 @@ add_subdirectory(libs/gui)
 target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::guilib)
 
 if (MSVC)
-  install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
-  install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
+  if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    install(FILES "cache/buildwin/libssl-3-x64.dll" DESTINATION ".")
+    install(FILES "cache/buildwin/libcrypto-3-x64.dll" DESTINATION ".")
+  else()
+    install(FILES "cache/buildwin/libssl-3.dll" DESTINATION ".")
+    install(FILES "cache/buildwin/libcrypto-3.dll" DESTINATION ".")
+  endif()
 endif ()
 
 message(STATUS "S57 ENC support: enabled")
@@ -2017,7 +2027,6 @@ if (NOT APPLE)
   endif ()
   if (LINUX)
     install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-    install(FILES LINUX_DEVICES.md DESTINATION ${PREFIX_DATA}/${PACKAGE_NAME})
   endif ()
 
   install(
@@ -2373,14 +2382,31 @@ if (WIN32 AND NOT UNIX)
       STATUS "MSVC redistributable DLLs bundled into the installer package..."
     )
   endif ()
+
   if (BUNDLE_LIBARCHIVEDLLS)
-    file(
-      GLOB
-      libarchivedll_files
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
-      "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.dll"
-    )
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      file(
+            GLOB
+            libarchivedll_files
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/z.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/bz2.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/lz4.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zstd.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/libxml2.dll"
+      )
+
+    else ()
+      file(
+        GLOB
+          libarchivedll_files
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
+          "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zlib1.dll"
+      )
+    endif ()
+
     install(FILES ${libarchivedll_files} DESTINATION ".")
     message(STATUS "LibArchive DLLs bundled into the installer package...")
   endif ()
@@ -2449,9 +2475,29 @@ endif ()
 #
 if (WIN32)
   configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
-    ${CMAKE_BINARY_DIR}/NSIS.template.in COPYONLY
+          ${CMAKE_CURRENT_SOURCE_DIR}/NSIS.template.in.in
+          ${CMAKE_BINARY_DIR}/NSIS.template.in
+          COPYONLY
   )
+
+  # Fixup the install directory for x64 build
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    file(READ
+            "${CMAKE_BINARY_DIR}/NSIS.template.in"
+            NSIS_TEMPLATE
+            )
+    string(REPLACE
+            "@NSIS_INSTALL_PROGRAMFILES@"
+            "$PROGRAMFILES64"
+            NSIS_TEMPLATE
+            "${NSIS_TEMPLATE}"
+            )
+    file(WRITE
+            "${CMAKE_BINARY_DIR}/NSIS.template.in"
+            "${NSIS_TEMPLATE}"
+            )
+  endif()
+
 endif ()
 
 #
@@ -2589,6 +2635,7 @@ if (WIN32)
   set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
   set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/resources/bitmaps\\\\opencpn.ico")
   set(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${PACKAGE_VERSION}_setup")
+
   set(CPACK_RESOURCE_FILE_LICENSE
       "${CMAKE_CURRENT_SOURCE_DIR}/data/license.txt"
   )
@@ -2644,6 +2691,13 @@ if (APPLE)
 
   set(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   set(DIRS "/usr/local/lib")
+  # Homebrew on arm64 lives in /opt/homebrew, and its newer bottles use
+  # @rpath install names (e. g. libwebp's libsharpyuv). fixup_bundle
+  # resolves such items by searching DIRS, so the Homebrew lib directory
+  # must be listed or the install fails with "cannot resolve item".
+  if (EXISTS "/opt/homebrew/lib")
+    list(APPEND DIRS "/opt/homebrew/lib")
+  endif ()
 
   # INSTALL(DIRECTORY DESTINATION "bin/OpenCPN.app/Contents/Plugins")
   install(

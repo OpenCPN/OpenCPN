@@ -508,6 +508,8 @@ void OCPNPlatform::Initialize_2() {
     }
   }
 
+  if (!g_TCData_Dir.Length()) g_TCData_Dir = GetPrivateDataDir();
+
 #endif
 
   //  Set a global toolbar scale factor
@@ -1372,12 +1374,11 @@ void OCPNPlatform::SetUpgradeOptions(wxString vNew, wxString vOld) {
     g_n_ownship_min_mm = 8;
     g_toolbarConfig = "X.....XX.......XX.XXXXXXXXXXX";
 
-    //  Experience indicates a slightly larger default font size is better
-    pConfig->DeleteGroup("/Settings/QTFonts");
-    g_default_font_size = 20;
-    g_default_font_facename = "Roboto";
-
-    FontMgr::Get().Shutdown();  // Restart the font manager
+    // Avoid changing fonts on app upgrade.
+    // pConfig->DeleteGroup("/Settings/QTFonts");
+    // g_default_font_size = 20;
+    // g_default_font_facename = "Roboto";
+    // FontMgr::Get().Shutdown();  // Restart the font manager
 
     // Reshow the zoom buttons
     g_bShowMuiZoomButtons = true;
@@ -1899,12 +1900,12 @@ double OCPNPlatform::GetToolbarScaleFactor(int GUIScaleFactor) {
   //  This may be approximated in a device orientation-independent way as:
   //   45pixels * DENSITY
   double premult = 1.0;
-  if (g_config_display_size_manual && g_config_display_size_mm[0] > 0) {
-    double target_size = 9.0;  // mm
-
-    double basic_tool_size_mm = tool_size / GetDisplayDPmm();
-    premult = target_size / basic_tool_size_mm;
-
+  if (g_config_display_size_manual && g_config_display_size_mm.size()) {
+    if (g_config_display_size_mm[0] > 0) {
+      double target_size = 9.0;  // mm
+      double basic_tool_size_mm = tool_size / GetDisplayDPmm();
+      premult = target_size / basic_tool_size_mm;
+    }
   } else {
     premult = wxMax(45 * getAndroidDisplayDensity(), 45) /
               tool_size;  // make sure not too small

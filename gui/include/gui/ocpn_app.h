@@ -42,8 +42,12 @@
 #include "model/usb_watch_daemon.h"
 
 #include "data_monitor.h"
+#include "ocpn_plugin.h"
 
-class MyApp : public wxApp {
+using CallbacksByPlugin =
+    std::unordered_map<std::string, std::function<void(HostApi122::EventType)>>;
+
+class MyApp : public wxApp, public Api122Impl {
 public:
   MyApp();
   ~MyApp() {};
@@ -64,6 +68,10 @@ public:
   void OnActivateApp(wxActivateEvent& event);
   bool OpenFile(const std::string& path);
   void OnUnhandledException() override;
+
+  void RegisterApiEventCallback(
+      const std::string& plugin_name,
+      std::function<void(HostApi122::EventType what)> callback) override;
 
 #ifdef LINUX_CRASHRPT
   //! fatal exeption handling
@@ -96,8 +104,14 @@ private:
   int m_exitcode;  ///< by default -2. Otherwise, forces exit(exit_code)
 
   void InitRestListeners();
+
+  void OnNewMsgTypes();
+
   ObsListener rest_activate_listener;
   ObsListener rest_reverse_listener;
+  ObsListener new_msg_type_listener;
+
+  CallbacksByPlugin m_api_events_callbacks;
 };
 
 wxDECLARE_APP(MyApp);
