@@ -1,3 +1,9 @@
+opencpn (1:5.14.2+dfsg-1~bpo22.04~ppa1) UNRELEASED; urgency=medium
+
+  * New upstream release
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Fri, 25 Sep 2026 15:29:22 +0200
+
 opencpn (1:5.14.1+dfsg-1~bpo22.04~ppa2) jammy; urgency=medium
 
   *  Silly rebuild
