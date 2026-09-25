@@ -23,10 +23,10 @@ index 197b0ca..ff96355 100644
    bool ProcessActisense_ASCII_N2K(std::vector<unsigned char> packet);
    bool ProcessActisense_N2K(std::vector<unsigned char> packet);
 diff --git a/model/src/comm_drv_n2k_net.cpp b/model/src/comm_drv_n2k_net.cpp
-index 4d79260..4f566e4 100644
+index 9af2961..0b26a87 100644
 --- a/model/src/comm_drv_n2k_net.cpp
 +++ b/model/src/comm_drv_n2k_net.cpp
-@@ -617,14 +617,14 @@ void CommDriverN2KNet::HandleCanFrameInput(can_frame frame) {
+@@ -620,14 +620,14 @@ void CommDriverN2KNet::HandleCanFrameInput(can_frame frame) {
    }
  }
  

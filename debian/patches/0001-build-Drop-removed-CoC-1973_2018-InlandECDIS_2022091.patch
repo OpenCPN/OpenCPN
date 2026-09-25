@@ -13,10 +13,10 @@ Forwarded: not-needed
  1 file changed, 4 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7cc51c7..5fa1a30 100644
+index 8f6cb0e..f52ed62 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1427,8 +1427,10 @@ if (OCPN_USE_SVG)
+@@ -1432,8 +1432,10 @@ if (OCPN_USE_SVG)
    endif ()
  endif ()
  
@@ -28,7 +28,7 @@ index 7cc51c7..5fa1a30 100644
    target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::serial)
    message(STATUS "Using new serial library...")
  endif ()
-@@ -1498,6 +1500,7 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
+@@ -1503,6 +1505,7 @@ target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::gl-headers)
  add_subdirectory(libs/std_filesystem)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::filesystem)
  
@@ -36,7 +36,7 @@ index 7cc51c7..5fa1a30 100644
  message(STATUS "    Adding local LIBTESS2")
  add_subdirectory(libs/libtess2)
  target_link_libraries(${PACKAGE_NAME} PRIVATE ocpn::tess2)
-@@ -1760,16 +1763,6 @@ if (APPLE)
+@@ -1770,16 +1773,6 @@ if (APPLE)
      data/opencpn.png PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport
    )
  
@@ -53,7 +53,7 @@ index 7cc51c7..5fa1a30 100644
    set_source_files_properties(
      ${CMAKE_SOURCE_DIR}/data/ocpn-plugins.xml PROPERTIES MACOSX_PACKAGE_LOCATION
                                                           SharedSupport
-@@ -1928,8 +1921,6 @@ if (APPLE)
+@@ -1938,8 +1931,6 @@ if (APPLE)
              data/license.html
              data/opencpn.png
              data/ocpn-plugins.xml
@@ -62,7 +62,7 @@ index 7cc51c7..5fa1a30 100644
              ${SOUND_FILES}
              buildosx/opencpn.icns
              buildosx/MainMenu.xib
-@@ -2062,10 +2053,6 @@ if (NOT APPLE)
+@@ -2071,10 +2062,6 @@ if (NOT APPLE)
    file(GLOB LICENSES "${CMAKE_SOURCE_DIR}/COPYING.*")
    install(FILES ${LICENSES} LICENSING DESTINATION "${PREFIX_PKGDATA}")
  

@@ -41,10 +41,10 @@ index 0000000..e394310
 +.gitignore     export-ignore
 +.gitkeep       export-ignore
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 110dfc8..635d72c 100644
+index 5c8db60..8782310 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -505,8 +505,29 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
+@@ -509,8 +509,29 @@ set(PREFIX_LIB "${CMAKE_INSTALL_FULL_LIBDIR}")
  #
  include(${CMAKE_SOURCE_DIR}/VERSION.cmake)
  
@@ -77,15 +77,15 @@ index 110dfc8..635d72c 100644
    include(Utils)
    commit_id(COMMIT)
 diff --git a/VERSION.cmake b/VERSION.cmake
-index f2a2f3c..eb5d8f2 100644
+index 1cd83e8..681601e 100644
 --- a/VERSION.cmake
 +++ b/VERSION.cmake
 @@ -1,4 +1,7 @@
 +# filtered, see .gitattributes
  SET(VERSION_MAJOR "5")
  SET(VERSION_MINOR "14")
- SET(VERSION_PATCH "0")
- SET(VERSION_DATE "2026-04-08")
+ SET(VERSION_PATCH "2")
+ SET(VERSION_DATE "2026-09-24")
 +SET(VERSION_GIT_DATE %git_date%)
 +SET(VERSION_GIT_STAMP %git_stamp%)
 diff --git a/tools/configure_git_filters b/tools/configure_git_filters
