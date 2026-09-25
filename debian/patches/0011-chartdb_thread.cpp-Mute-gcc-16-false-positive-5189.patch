@@ -1,16 +1,15 @@
-From e2ed4b53cc4ca9ed74d355e4b8921fea666d3ac7 Mon Sep 17 00:00:00 2001
 From: Alec Leamas <leamas.alec@gmail.com>
 Date: Wed, 15 Apr 2026 13:20:52 +0200
-Subject: [PATCH 11/12] chartdb_thread.cpp:  Mute gcc 16 false positive - #5189
+Subject: [PATCH 11/12] chartdb_thread.cpp:  Mute gcc 16 false positive -
+ #5189
 
 Applied-upstream: https://github.com/OpenCPN/OpenCPN/commit/e2ed4b53cc4
-
 ---
  gui/src/chartdb_thread.cpp | 6 ++++++
  1 file changed, 6 insertions(+)
 
 diff --git a/gui/src/chartdb_thread.cpp b/gui/src/chartdb_thread.cpp
-index e7926a590..e2ba8c3bc 100644
+index e7926a5..e2ba8c3 100644
 --- a/gui/src/chartdb_thread.cpp
 +++ b/gui/src/chartdb_thread.cpp
 @@ -34,6 +34,11 @@ wxDEFINE_EVENT(wxEVT_OCPN_CHARTTABLEENTRYTHREAD,
@@ -30,6 +29,3 @@ index e7926a590..e2ba8c3bc 100644
    return true;
  }
 +#pragma GCC diagnostic pop
--- 
-2.53.0
-

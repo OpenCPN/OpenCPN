@@ -5,7 +5,6 @@ Subject: tests: disable some tests for now
 Tests needs a major overhaul, this point patch is not applicable upstream
 
 Forwarded: not-needed
-
 ---
  test/datetime_tests.cpp | 3 ++-
  test/tests.cpp          | 3 ++-
