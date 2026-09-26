@@ -1,10 +1,9 @@
-opencpn (1:5.14.2+dfsg-1~bpo26.04~1~ppa1) UNRELEASED; urgency=medium
+opencpn (1:5.14.2+dfsg-1~bpo26.04~1~ppa1) resolute; urgency=medium
 
+  [ Dave Register ]
   * New upstream release
-  * d/patches: rebased
-  * d/opencpn-data.install: Drop file removed from upstream
 
- -- Alec Leamas <leamas.alec@gmail.com>  Fri, 25 Sep 2026 09:39:09 +0000
+ -- dsr <dsr@dsr-VirtualBox>  Sat, 26 Sep 2026 10:31:11 -0400
 
 opencpn (1:5.14.1+dfsg-3~bpo26.04~3) resolute; urgency=medium
 
