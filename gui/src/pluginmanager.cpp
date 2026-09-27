@@ -2470,6 +2470,11 @@ void CatalogMgrPanel::SetUpdateButtonLabel() {
 }
 
 wxString CatalogMgrPanel::GetImportInitDir() {
+#ifdef __ANDROID__
+  // Public downloads require the system document picker under scoped storage.
+  // The app-private default cannot reach a tarball downloaded by a browser.
+  return androidGetDownloadDirectory();
+#else
   // Check the config file for the last Import path.
   pConfig->SetPath("/PlugIns/");
   wxString lastImportDir;
@@ -2479,6 +2484,7 @@ wxString CatalogMgrPanel::GetImportInitDir() {
     return lastImportDir;
   }
   return (g_Platform->GetWritableDocumentsDir());
+#endif
 }
 
 BEGIN_EVENT_TABLE(PluginListPanel, wxScrolledWindow)
