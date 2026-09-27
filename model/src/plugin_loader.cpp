@@ -1,3 +1,5 @@
+// POBsoft (1985-2026): unofficial Android plugin import/lifecycle patch.
+// Original OpenCPN copyrights and licences are retained below.
 /**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *   Copyright (C) 2022-2025 Alec Leamas                                   *
