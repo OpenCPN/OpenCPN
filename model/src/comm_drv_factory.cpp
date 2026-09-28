@@ -51,6 +51,10 @@
 #include "model/comm_drv_n2k_socketcan.h"
 #endif
 
+#ifdef _WIN32
+#include "model/comm_drv_n2k_canable.h"
+#endif
+
 class N0183Listener : public DriverListener {
 public:
   N0183Listener() = default;
@@ -90,6 +94,15 @@ void MakeCommDriver(const ConnectionParams* params) {
   auto& msgbus = NavMsgBus::GetInstance();
   auto& registry = CommDriverRegistry::GetInstance();
   switch (params->type) {
+    case CANABLE: {
+#ifdef _WIN32
+      auto driver = std::make_unique<CommDriverN2KCanable>(params, msgbus);
+      registry.Activate(std::move(driver));
+#else
+      wxLogMessage("CANable connections require Windows.");
+#endif
+      break;
+    }
     case SERIAL:
       switch (params->data_protocol) {
         case PROTO_NMEA2000: {
