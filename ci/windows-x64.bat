@@ -82,7 +82,8 @@ makensis /VERSION
 
 cmake --build . --target package --config %CONFIGURATION%
 
-dir D:\a\OpenCPN\OpenCPN\build\*.exe
+dir D:\a\OpenCPN\OpenCPN\build
+dir D:\a\OpenCPN\OpenCPN\build\Release
 
 :: Rename setup.exe artifact before upload
 for %%F in ("opencpn_*_setup.exe") do ren "%%F" "%%~nF_x64.exe"
@@ -90,13 +91,9 @@ for %%F in ("opencpn_*_setup.exe") do ren "%%F" "%%~nF_x64.exe"
 :: Verify
 dir D:\a\OpenCPN\OpenCPN\build\*.exe
 
-::type D:\a\OpenCPN\OpenCPN\build\NSIS.template.in
+:: Rename the .lib file artifact for upload
+copy "Release\opencpn.lib" "opencpn-x64.lib"
 
-echo ===== NSIS template =====
-findstr /n /i "InstallDir" NSIS.template.in
-
-echo ===== CPack NSIS script =====
-findstr /n /i "InstallDirRegKey InstallDir InstallLocation ReadRegStr INSTDIR" _CPack_Packages\win64\NSIS\project.nsi
 
 ::type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\project.nsi
 ::type D:\a\OpenCPN\OpenCPN\build\_CPack_Packages\win64\NSIS\NSISOutput.log
