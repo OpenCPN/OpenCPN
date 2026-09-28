@@ -25,6 +25,7 @@
 #include <wx/app.h>
 
 #include "ocpn_plugin.h"
+#include "chart_safety_api.h"
 
 #include "ocpn-nlohmann/json.hpp"
 #include "observable/observable.h"
@@ -36,7 +37,7 @@
 std::unique_ptr<HostApi> GetHostApi() {
   auto impl = dynamic_cast<Api122Impl*>(wxTheApp);
   assert(impl && "wxTheApp does not implement Api122Impl");
-  return std::make_unique<HostApi123>(HostApi123(impl));
+  return ocpn::chart_safety::MakeHostApi(impl);
 }
 
 void HostApi122::RegisterApiEventCallback(

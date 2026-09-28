@@ -130,6 +130,7 @@
 #include "cat_settings.h"
 #include "chartbase.h"  // for ChartPlugInWrapper
 #include "chartdb.h"
+#include "chart_safety_api.h"
 #include "chartdbs.h"
 #include "chcanv.h"
 #include "config.h"
@@ -1120,6 +1121,7 @@ bool PlugInManager::CallLateInit() {
       case 119:
       case 120:
       case 121:
+      case 122:
         ProcessLateInit(pic);
         break;
     }
@@ -1159,6 +1161,8 @@ void PlugInManager::OnPluginDeactivate(const PlugInContainer* pic) {
   auto api_impl = dynamic_cast<Api122Impl*>(wxTheApp);
   assert(api_impl && "wxTheApp does not implement Api122Impl");
   api_impl->RegisterApiEventCallback(name, nullptr);
+  RegisterChartSafetyProvider(name, nullptr);
+  RegisterSegmentSafetyTileCache(name, nullptr);
   // Unload chart cache if this plugin is responsible for any charts
   if ((pic->m_cap_flag & INSTALLS_PLUGIN_CHART) ||
       (pic->m_cap_flag & INSTALLS_PLUGIN_CHART_GL)) {
@@ -1384,7 +1388,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
             case 118:
             case 119:
             case 120:
-            case 121: {
+            case 121:
+            case 122: {
               if (priority <= 0) {
                 opencpn_plugin_18* ppi =
                     dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1465,7 +1470,8 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns(ocpnDC& dc,
             case 118:
             case 119:
             case 120:
-            case 121: {
+            case 121:
+            case 122: {
               if (priority <= 0) {
                 opencpn_plugin_18* ppi =
                     dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1555,7 +1561,8 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns(wxGLContext* pcontext,
           case 118:
           case 119:
           case 120:
-          case 121: {
+          case 121:
+          case 122: {
             if (priority <= 0) {
               opencpn_plugin_18* ppi =
                   dynamic_cast<opencpn_plugin_18*>(pic->m_pplugin);
@@ -1721,7 +1728,8 @@ void PlugInManager::PrepareAllPluginContextMenus() {
           case 118:
           case 119:
           case 120:
-          case 121: {
+          case 121:
+          case 122: {
             opencpn_plugin_116* ppi =
                 dynamic_cast<opencpn_plugin_116*>(pic->m_pplugin);
             if (ppi) ppi->PrepareContextMenu(canvasIndex);
@@ -4341,6 +4349,127 @@ ListOfPI_S57Obj* PlugInManager::GetPlugInObjRuleListAtLatLon(
       return list;
   } else
     return list;
+}
+
+HostApi123::ChartSafetyProviderStatus PlugInManager::QueryPlugInChartSafetyGrid(
+    ChartPlugInWrapper* target,
+    const HostApi123::ChartSafetyProviderRequest& request,
+    HostApi123::ChartSafetyProviderResult* result, const ViewPort& vp) {
+  if (!target || !target->GetPlugInChart() || !result)
+    return HostApi123::kChartSafetyProviderUnsupported;
+
+  wxClassInfo* class_info = target->GetPlugInChart()->GetClassInfo();
+  if (!class_info) return HostApi123::kChartSafetyProviderUnsupported;
+  const wxString chart_class_name = class_info->GetClassName();
+
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); ++i) {
+    PlugInContainer* pic = plugin_array->Item(i);
+    if (!pic || !pic->m_enabled || !pic->m_init_state) continue;
+    const wxArrayString classes =
+        pic->m_pplugin->GetDynamicChartClassNameArray();
+    bool provides_chart = false;
+    for (unsigned int j = 0; j < classes.GetCount(); ++j) {
+      if (classes[j].IsSameAs(chart_class_name)) {
+        provides_chart = true;
+        break;
+      }
+    }
+    if (!provides_chart) continue;
+
+    const std::string plugin_name =
+        pic->m_pplugin->GetCommonName().ToStdString();
+    const auto provider = m_chart_safety_providers.find(plugin_name);
+    if (provider == m_chart_safety_providers.end() || !provider->second.query)
+      return HostApi123::kChartSafetyProviderUnsupported;
+
+    HostApi123::ChartSafetyProviderRequest provider_request = request;
+    PlugIn_ViewPort pi_vp = CreatePlugInViewport(vp);
+    provider_request.plugin_viewport = &pi_vp;
+    return provider->second.query(provider->second.context,
+                                  target->GetPlugInChart(), &provider_request,
+                                  result);
+  }
+  return HostApi123::kChartSafetyProviderUnsupported;
+}
+
+bool PlugInManager::HasPlugInChartSafetyGrid() const {
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); ++i) {
+    PlugInContainer* pic = plugin_array->Item(i);
+    if (!pic || !pic->m_enabled || !pic->m_init_state || !pic->m_pplugin)
+      continue;
+    const auto provider = m_chart_safety_providers.find(
+        pic->m_pplugin->GetCommonName().ToStdString());
+    if (provider != m_chart_safety_providers.end() && provider->second.query)
+      return true;
+  }
+  return false;
+}
+
+bool PlugInManager::HasChartSafetyProvider(
+    const std::string& plugin_name) const {
+  const auto provider = m_chart_safety_providers.find(plugin_name);
+  return provider != m_chart_safety_providers.end() && provider->second.query;
+}
+
+bool PlugInManager::RegisterChartSafetyProvider(
+    const std::string& plugin_name,
+    const HostApi123::ChartSafetyProviderCallbacks* callbacks) {
+  if (!wxThread::IsMain() || plugin_name.empty()) return false;
+  if (!callbacks) {
+    m_chart_safety_providers.erase(plugin_name);
+    return true;
+  }
+  if (callbacks->struct_size <
+          static_cast<int>(sizeof(HostApi123::ChartSafetyProviderCallbacks)) ||
+      !callbacks->query)
+    return false;
+
+  bool loaded_plugin = false;
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); ++i) {
+    const PlugInContainer* pic = plugin_array->Item(i);
+    if (pic && pic->m_pplugin &&
+        pic->m_pplugin->GetCommonName().ToStdString() == plugin_name) {
+      loaded_plugin = true;
+      break;
+    }
+  }
+  if (!loaded_plugin) return false;
+
+  m_chart_safety_providers[plugin_name] = *callbacks;
+  return true;
+}
+
+bool PlugInManager::RegisterSegmentSafetyTileCache(
+    const std::string& plugin_name,
+    const HostApi123::SegmentSafetyTileCacheCallbacks* callbacks) {
+  if (!wxThread::IsMain() || plugin_name.empty()) return false;
+  if (!callbacks) {
+    if (m_chart_safety_tile_cache_owner != plugin_name) return true;
+    const bool removed = ocpn::chart_safety::RegisterTileCache(nullptr);
+    if (removed) m_chart_safety_tile_cache_owner.clear();
+    return removed;
+  }
+
+  bool loaded_plugin = false;
+  auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned int i = 0; i < plugin_array->GetCount(); ++i) {
+    const PlugInContainer* pic = plugin_array->Item(i);
+    if (pic && pic->m_pplugin &&
+        pic->m_pplugin->GetCommonName().ToStdString() == plugin_name) {
+      loaded_plugin = true;
+      break;
+    }
+  }
+  if (!loaded_plugin || (!m_chart_safety_tile_cache_owner.empty() &&
+                         m_chart_safety_tile_cache_owner != plugin_name))
+    return false;
+
+  if (!ocpn::chart_safety::RegisterTileCache(callbacks)) return false;
+  m_chart_safety_tile_cache_owner = plugin_name;
+  return true;
 }
 
 wxString PlugInManager::CreateObjDescriptions(ChartPlugInWrapper* target,
