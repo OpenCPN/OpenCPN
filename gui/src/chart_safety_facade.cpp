@@ -20,7 +20,7 @@
 /**
  * \file
  *
- * Public HostApi122 facade and request lifecycle for chart-safety services.
+ * HostApi123 facade and request lifecycle for chart-safety services.
  */
 #include <cstddef>
 #include <cstdint>
