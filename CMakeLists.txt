@@ -2480,24 +2480,27 @@ if (WIN32)
           COPYONLY
   )
 
-  # Fixup the install directory for x64 build
+  # Fixup the install directory for architecture
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    file(READ
-            "${CMAKE_BINARY_DIR}/NSIS.template.in"
-            NSIS_TEMPLATE
-            )
-    string(REPLACE
-            "@NSIS_INSTALL_PROGRAMFILES@"
-            "$PROGRAMFILES64"
-            NSIS_TEMPLATE
-            "${NSIS_TEMPLATE}"
-            )
-    file(WRITE
-            "${CMAKE_BINARY_DIR}/NSIS.template.in"
-            "${NSIS_TEMPLATE}"
-            )
+    set(NSIS_INSTALL_PROGRAMFILES "$PROGRAMFILES64")
+  else()
+    set(NSIS_INSTALL_PROGRAMFILES "$PROGRAMFILES")
   endif()
 
+  file(READ
+          "${CMAKE_BINARY_DIR}/NSIS.template.in"
+          NSIS_TEMPLATE
+          )
+  string(REPLACE
+          "@NSIS_INSTALL_PROGRAMFILES@"
+          "${NSIS_INSTALL_PROGRAMFILES}"
+          NSIS_TEMPLATE
+          "${NSIS_TEMPLATE}"
+          )
+  file(WRITE
+          "${CMAKE_BINARY_DIR}/NSIS.template.in"
+          "${NSIS_TEMPLATE}"
+          )
 endif ()
 
 #
