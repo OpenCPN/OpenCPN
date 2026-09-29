@@ -176,6 +176,7 @@ private:
   wxStdDialogButtonSizer* m_std_dialog_btn_sizer;
   wxStaticText* m_talker_id_text;
   wxRadioButton* m_type_can_radiobtn;
+  wxRadioButton* m_type_canable_radiobtn;
   wxRadioButton* m_type_internal_bt_radiobtn;
   wxRadioButton* m_type_internal_gps_radiobtn;
   wxRadioButton* m_type_net_radiobtn;
@@ -213,6 +214,7 @@ private:
   void OnSelectDatasource(wxListEvent& event);
   void OnTypeBTSelected(wxCommandEvent& event);
   void OnTypeCANSelected(wxCommandEvent& event);
+  void OnTypeCanableSelected(wxCommandEvent& event);
   void OnTypeGPSSelected(wxCommandEvent& event);
   void OnTypeNetSelected(wxCommandEvent& event);
   void OnTypeSerialSelected(wxCommandEvent& event);
@@ -226,6 +228,7 @@ private:
   void SetNMEAFormForSerialProtocol();
   void SetNMEAFormToBT();
   void SetNMEAFormToCAN();
+  void SetNMEAFormToCanable();
   void SetNMEAFormToGPS();
   void SetNMEAFormToNet();
   void SetNMEAFormToSerial();
@@ -233,6 +236,7 @@ private:
   void ShowInFilter(bool bshow = true);
   void ShowNMEABT(bool visible);
   void ShowNMEACAN(bool visible);
+  void ShowNMEACanable(bool visible);
   void ShowNMEACommon(bool visible);
   void ShowNMEAGPS(bool visible);
   void ShowNMEANet(bool visible);
