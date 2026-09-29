@@ -454,11 +454,15 @@ void ConnectionEditDialog::InitiateNewConnection() {
   m_net_comment_text->Hide();
   auto port_ctrl = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tctrl);
   if (port_ctrl) port_ctrl->RestoreHelp();
-  m_net_address_tctrl->Show();
+  // BUG BUG commented out m_net_address_tctrl->Show() and
+  // m_net_addr_text->Show() because they are displayed on the initial Add
+  // Connecion panel which defaults to a serial connection.
+  // InitiateNewConnection is called after ShowNMEAComForm
+  // m_net_address_tctrl->Show();
   m_net_address_tctrl->Enable();
   auto addr_ctrl = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tctrl);
   if (addr_ctrl) addr_ctrl->SetHelp(kAddressDefaultHelp);
-  m_net_addr_text->Show();
+  // m_net_addr_text->Show();
   SetupProtocolChoice(m_net_data_protocol_choice);
   m_output_chkbox->SetValue(false);
   m_input_chkbox->SetValue(true);
@@ -861,27 +865,30 @@ void ConnectionEditDialog::Init() {
   m_serial_protocol_choice->Enable(true);
   fgSizer1->Add(m_serial_protocol_choice, 1, wxEXPAND | wxTOP, 5);
 
-  m_ser_props_sizer->Add(fgSizer1, 0, wxEXPAND, 5);
-
   //  User Comments
 
-  auto* commentSizer = new wxFlexGridSizer(0, 2, 0, 0);
+  // Added to fgSizer1 instead of commentSizer to align nicely
+  // auto* commentSizer = new wxFlexGridSizer(0, 2, 0, 0);
   // sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
   //  Serial User Comments
+  fgSizer1->AddSpacer(1);
+  fgSizer1->AddSpacer(1);
   m_ser_comment_text = new wxStaticText(this, wxID_ANY, _("User Comment"));
   m_ser_comment_text->Wrap(-1);
   m_ser_comment_text->SetMinSize(wxSize(column1width, -1));
-  commentSizer->Add(m_ser_comment_text, 0, wxALL, 5);
 
+  // commentSizer->Add(m_ser_comment_text, 0, wxALL, 5);
+  fgSizer1->Add(m_ser_comment_text, 0, wxALL, 5);
   m_serial_comment_tctrl = new wxTextCtrl(this, wxID_ANY);
   m_serial_comment_tctrl->SetMaxSize(wxSize(column2width, -1));
   m_serial_comment_tctrl->SetMinSize(wxSize(column2width, -1));
 
-  commentSizer->Add(m_serial_comment_tctrl, 1, wxTOP, 5);
+  // commentSizer->Add(m_serial_comment_tctrl, 1, wxEXPAND | wxTOP, 5);
+  fgSizer1->Add(m_serial_comment_tctrl, 1, wxEXPAND | wxTOP, 5);
 
-  m_connection_props_sizer->Add(commentSizer, 0, wxALL, 5);
-
+  // m_connection_props_sizer->Add(commentSizer, 0, wxALL, 5);
+  m_ser_props_sizer->Add(fgSizer1, 0, wxEXPAND, 5);
   wxFlexGridSizer* fgSizer5;
   fgSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer5->SetFlexibleDirection(wxBOTH);
@@ -1367,6 +1374,8 @@ void ConnectionEditDialog::ShowNMEASerial(bool visible) {
   m_garmin_host_chkbox->Show(visible && advanced);
   m_ser_comment_text->Show(visible);
   m_serial_comment_tctrl->Show(visible);
+  m_net_addr_text->Hide();
+  m_net_address_tctrl->Hide();
   m_net_comment_text->Hide();
   m_net_comment_tctrl->Hide();
 }
