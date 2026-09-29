@@ -58,9 +58,6 @@ set(
   ${MODEL_HDR_DIR}/comm_drv_n0183_net.h
   ${MODEL_HDR_DIR}/comm_drv_n0183_serial.h
   ${MODEL_HDR_DIR}/comm_drv_n2k.h
-if (WIN32)
-  ${MODEL_HDR_DIR}/comm_drv_n2k_canable.h
-endif(WIN32)
   ${MODEL_HDR_DIR}/comm_drv_n2k_net.h
   ${MODEL_HDR_DIR}/comm_drv_n2k_serial.h
   ${MODEL_HDR_DIR}/comm_drv_registry.h
@@ -174,9 +171,6 @@ set(SRC
   ${MODEL_SRC_DIR}/comm_drv_n0183_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n0183_serial.cpp
   ${MODEL_SRC_DIR}/comm_drv_n2k.cpp
-if (WIN32)
-  ${MODEL_SRC_DIR}/comm_drv_n2k_canable.cpp
-endif(WIN32)
   ${MODEL_SRC_DIR}/comm_drv_n2k_net.cpp
   ${MODEL_SRC_DIR}/comm_drv_n2k_serial.cpp
   ${MODEL_SRC_DIR}/comm_drv_registry.cpp
@@ -250,6 +244,10 @@ endif(WIN32)
   ${MODEL_SRC_DIR}/track.cpp
   ${MODEL_SRC_DIR}/usb_watch_factory.cpp
 )
+if (WIN32)
+  list(APPEND HDRS ${MODEL_HDR_DIR}/comm_drv_n2k_canable.h)
+  list(APPEND SRC ${MODEL_SRC_DIR}/comm_drv_n2k_canable.cpp)
+endif ()
 
 if (QT_ANDROID)
   list(APPEND HDRS ${MODEL_SRC_DIR}/android_serial_io.cpp)
