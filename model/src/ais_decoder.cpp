@@ -2223,7 +2223,12 @@ void AisDecoder::updateItem(const std::shared_ptr<AisTargetData> &pTargetData,
       pTargetData->HDG = GEODESIC_RAD2DEG(item["value"].GetDouble());
     } else if (update_path == "navigation.rateOfTurn" &&
                item["value"].IsNumber()) {
-      pTargetData->ROTAIS = 4.733 * sqrt(item["value"].GetDouble());
+      double deg_min = item["value"].GetDouble() * 180.0 / M_PI * 60.0;
+      double rot = 4.733 * sqrt(fabs(deg_min));
+      int rotais = wxRound(rot);
+      if (rotais > 126) rotais = 126;
+      pTargetData->ROTAIS = deg_min < 0 ? -rotais : rotais;
+      pTargetData->ROTIND = wxRound(deg_min);
     } else if (update_path == "design.aisShipType") {
       if (item["value"].HasMember("id")) {
         if (!pTargetData->b_isDSCtarget) {
