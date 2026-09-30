@@ -1,3 +1,5 @@
+// POBsoft (1985-2026): unofficial Android plugin import/lifecycle patch.
+// Original OpenCPN copyrights and licences are retained below.
 /***************************************************************************
  *
  * Project:  OpenCPN
@@ -29,6 +31,9 @@
 #endif  // precompiled headers
 
 #include <sstream>
+#include <future>
+#include <QEventLoop>
+#include <QTimer>
 
 #include <wx/tokenzr.h>
 #include <wx/aui/aui.h>
@@ -3232,6 +3237,83 @@ Java_org_opencpn_FileDialogCallbackProxy_nativeFileDialogFinished(
   AndroidFileDialog::CallbackFromJava(path);
 }
 
+// The legacy Java chooser waits for its UI callback. Calling it on the Qt
+// GUI thread deadlocks when Android's IME synchronously calls back into Qt.
+// Keep that thread dispatching while an attached JNI worker owns the wait.
+static wxString RunAndroidFileChooser(const wxString &initDir,
+                                      const wxString &title,
+                                      const wxString &suggestion,
+                                      const wxString &wildcard) {
+  auto select = [initDir, title, suggestion, wildcard]() {
+    QAndroidJniEnvironment env;
+    const auto activity = QAndroidJniObject::callStaticObjectMethod(
+        "org/qtproject/qt5/android/QtNative", "activity",
+        "()Landroid/app/Activity;");
+    const auto dir =
+        QAndroidJniObject::fromString(QString::fromUtf8(initDir.utf8_str()));
+    const auto caption =
+        QAndroidJniObject::fromString(QString::fromUtf8(title.utf8_str()));
+    const auto name =
+        QAndroidJniObject::fromString(QString::fromUtf8(suggestion.utf8_str()));
+    const auto filter =
+        QAndroidJniObject::fromString(QString::fromUtf8(wildcard.utf8_str()));
+    const auto response = activity.callObjectMethod(
+        "FileChooserDialog",
+        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/"
+        "String;)Ljava/lang/String;",
+        dir.object<jstring>(), caption.object<jstring>(),
+        name.object<jstring>(), filter.object<jstring>());
+    if (env->ExceptionCheck()) {
+      env->ExceptionDescribe();
+      env->ExceptionClear();
+      return wxString("cancel:");
+    }
+    return response.isValid()
+               ? wxString::FromUTF8(response.toString().toUtf8().constData())
+               : wxString("cancel:");
+  };
+  static std::atomic<bool> active{false};
+  if (active.exchange(true)) return "cancel:";
+  struct ResetActive {
+    std::atomic<bool> &active;
+    ~ResetActive() { active.store(false); }
+  } reset{active};
+  auto pending = std::async(std::launch::async, select);
+  QEventLoop loop;
+  QTimer poll;
+  QObject::connect(&poll, &QTimer::timeout, &loop, [&]() {
+    if (pending.wait_for(std::chrono::milliseconds(0)) ==
+        std::future_status::ready)
+      loop.quit();
+  });
+  poll.start(20);
+  while (pending.wait_for(std::chrono::milliseconds(0)) !=
+         std::future_status::ready)
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
+  poll.stop();
+  wxString response = pending.get();
+  // The SAF document picker is asynchronous and initially returns "OK".
+  // Never report success until its callback supplies an actual filename.
+  while (response == "OK" || response == "no") {
+    QTimer::singleShot(20, &loop, &QEventLoop::quit);
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
+    QAndroidJniEnvironment env;
+    const auto activity = QAndroidJniObject::callStaticObjectMethod(
+        "org/qtproject/qt5/android/QtNative", "activity",
+        "()Landroid/app/Activity;");
+    const auto result = activity.callObjectMethod("isFileChooserFinished",
+                                                  "()Ljava/lang/String;");
+    if (env->ExceptionCheck()) {
+      env->ExceptionClear();
+      return "cancel:";
+    }
+    response = result.isValid()
+                   ? wxString::FromUTF8(result.toString().toUtf8().constData())
+                   : wxString("cancel:");
+  }
+  return response;
+}
+
 int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &title, const wxString &suggestion,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
@@ -3250,14 +3332,9 @@ int androidFileChooser(wxString *result, const wxString &initDir,
   } else {
     if (g_androidUtilHandler) {
       wxString activityResult;
-      activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
-                                              title, suggestion, wildcard);
+      activityResult = RunAndroidFileChooser(initDir, title, suggestion, wildcard);
 
-      if (activityResult == _T("OK")) {
-        return wxID_OK;
-      } else if (activityResult == "cancel:") {
-        return wxID_CANCEL;
-      } else {
+      if (activityResult.StartsWith("file:") && !activityResult.AfterFirst(':').empty()) {
         *result = activityResult.AfterFirst(':');
         return wxID_OK;
       }

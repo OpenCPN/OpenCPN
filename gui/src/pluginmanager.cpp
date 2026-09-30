@@ -1,3 +1,5 @@
+// POBsoft (1985-2026): unofficial Android plugin import/lifecycle patch.
+// Original OpenCPN copyrights and licences are retained below.
 /**************************************************************************
  *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
@@ -29,6 +31,11 @@
 #include <iostream>
 #include <memory>
 #include <set>
+#ifdef __ANDROID__
+#include <QTimer>
+#include <wx/weakref.h>
+#endif
+
 #include <sstream>
 #include <string>
 #include <typeinfo>
@@ -2470,6 +2477,11 @@ void CatalogMgrPanel::SetUpdateButtonLabel() {
 }
 
 wxString CatalogMgrPanel::GetImportInitDir() {
+#ifdef __ANDROID__
+  // Public downloads require the system document picker under scoped storage.
+  // The app-private default cannot reach a tarball downloaded by a browser.
+  return androidGetDownloadDirectory();
+#else
   // Check the config file for the last Import path.
   pConfig->SetPath("/PlugIns/");
   wxString lastImportDir;
@@ -2479,6 +2491,7 @@ wxString CatalogMgrPanel::GetImportInitDir() {
     return lastImportDir;
   }
   return (g_Platform->GetWritableDocumentsDir());
+#endif
 }
 
 BEGIN_EVENT_TABLE(PluginListPanel, wxScrolledWindow)
@@ -3341,6 +3354,29 @@ void PluginPanel::OnPluginPreferences(wxCommandEvent& event) {
 }
 
 void PluginPanel::OnPluginEnableToggle(wxCommandEvent& event) {
+#ifdef __ANDROID__
+  // Plugin DeInit can synchronously release wxQt/QScroller objects. Doing
+  // this inside Qt's touch/gesture recognizer callback invalidates its live
+  // recognizer iteration. Apply the toggle after that callback returns.
+  const bool enabled = event.IsChecked();
+  m_cbEnable->Disable();
+  wxWeakRef<PluginPanel> weak(this);
+  QTimer::singleShot(0, GetHandle(), [weak, enabled]() {
+    if (!weak) return;
+    PluginPanel* self = weak.get();
+    g_Platform->ShowBusySpinner();
+    self->SetEnabled(enabled);
+    if (weak) {
+      self->m_pVersion->SetLabel(
+          PluginLoader::GetPluginVersion(self->m_plugin, GetMetadataByName));
+      self->m_cbEnable->Enable();
+      if (self->m_plugin.m_status == PluginStatus::System)
+        PluginLoader::GetInstance()->evt_pluglist_change.Notify();
+    }
+    g_Platform->HideBusySpinner();
+  });
+  return;
+#endif
   g_Platform->ShowBusySpinner();
   SetEnabled(event.IsChecked());
   m_pVersion->SetLabel(
