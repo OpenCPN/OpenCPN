@@ -154,7 +154,7 @@ License: GPL-3+
 Comment: From https://flathub.org/apps/org.gnome.design.IconLibrary
 
 Files: debian/*
-Copyright: 2023-2025, Alec Leamas
+Copyright: 2023-2026, Alec Leamas
 License: GPL-2+
 
 Files: glutil/*
