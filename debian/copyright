@@ -749,10 +749,6 @@ Copyright: 2013, Ryan Hileman
  1995-1998, Brian Paul
 License: Expat or GPL-2+
 
-Files: libs/glshim/LICENSE
-Copyright: 2013, Ryan Hileman
-License: Expat
-
 Files: libs/glshim/README.md
 Copyright: 2011, 2014, Pavel Kalian
  2011, 2013-2016, Sean D'Epagnier
@@ -1242,10 +1238,6 @@ Files: libs/mdns/mdns-1.4.3/*
 Copyright: 2017, Mattias Jansson
 License: Unlicense or public-domain
 
-Files: libs/mdns/mdns-1.4.3/LICENSE
-Copyright: 2017, Mattias Jansson
-License: Unlicense
-
 Files: libs/mdns/mdns-1.4.3/README.md
  libs/mdns/mdns-1.4.3/mdns.h libs/mdns/include/mdns_util.h
 Copyright: no-info-found
@@ -1295,10 +1287,6 @@ Files: libs/observable/*
 Copyright: Alec Leamas 2021-2022. It is distributed under
  1989, 1991, Free Software Foundation, Inc.
 License: GPL-2+
-
-Files: libs/observable/COPYING
-Copyright: 1989, 1991, Free Software Foundation, Inc.
-License: GPL-2
 
 Files: libs/observable/include/*
 Copyright: 2011-2026, Alec Leamas <leamas.alec@gmail.com>
