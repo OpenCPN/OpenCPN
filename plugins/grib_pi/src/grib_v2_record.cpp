@@ -48,6 +48,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "grib_v2_record.h"
 
+#include <vector>
+
+#include <libaec.h>
+
 #ifdef JASPER
 #include <jasper/jasper.h>
 #endif
@@ -144,6 +148,9 @@ public:
       unsigned int order, order_vals_width;
     } spatial_diff;
   } complex_pack;
+  struct {
+    int flags, block_size, rsi;
+  } ccsds;
   int drs_templ_num;
   int precision;
   float R;
@@ -642,9 +649,10 @@ static bool unpackDRS(GRIBMessage *grib_msg) {
     case 4:                              // Grid Point Data - Simple Packing
       grib_msg->md.precision = b[11];
       break;
-    case 0:  // Grid Point Data - Simple Packing
-    case 2:  // Grid Point Data - Complex Packing
-    case 3:  // Grid Point Data - Complex Packing and Spatial Differencing
+    case 0:   // Grid Point Data - Simple Packing
+    case 2:   // Grid Point Data - Complex Packing
+    case 3:   // Grid Point Data - Complex Packing and Spatial Differencing
+    case 42:  // Grid Point Data - CCSDS Recommended Lossless Compression
 #ifdef JASPER
     case 40:  // Grid Point Data - JPEG2000 Compression
     case 40000:
@@ -685,6 +693,11 @@ static bool unpackDRS(GRIBMessage *grib_msg) {
         grib_msg->md.complex_pack.length.incr = b[41];
         grib_msg->md.complex_pack.length.last = uint4(b + 42);
         grib_msg->md.complex_pack.length.pack_width = b[46];
+      }
+      if (grib_msg->md.drs_templ_num == 42) {
+        grib_msg->md.ccsds.flags = b[21];
+        grib_msg->md.ccsds.block_size = b[22];
+        grib_msg->md.ccsds.rsi = uint2(b + 23);
       }
       if (grib_msg->md.drs_templ_num == 3) {
         grib_msg->md.complex_pack.spatial_diff.order = b[47];
@@ -977,6 +990,49 @@ static bool unpackDS(GRIBMessage *grib_msg) {
                 "g2_unpack7: Invalid precision=%d for Data Section 5.4.\n",
                 grib_msg->md.precision);
         return false;
+      }
+    } break;
+    case 42: {
+      int len;
+      getBits(grib_msg->buffer, &len, grib_msg->offset, 32);
+      if (len < 5) return false;
+      len -= 5;
+      int nbits = grib_msg->md.pack_width;
+      int flags = grib_msg->md.ccsds.flags;
+      // Sample size in the decoded stream, cf. libaec docs (3 bytes only with
+      // AEC_DATA_3BYTE).
+      size_t nbytes = (nbits + 7) / 8;
+      if (nbytes == 3 && !(flags & AEC_DATA_3BYTE)) nbytes = 4;
+      size_t nvals = grib_msg->md.num_packed;
+      std::vector<unsigned char> out(nvals * nbytes);
+      if (nbits > 0 && len > 0 && nvals > 0) {
+        aec_stream strm;
+        strm.flags = flags;
+        strm.bits_per_sample = nbits;
+        strm.block_size = grib_msg->md.ccsds.block_size;
+        strm.rsi = grib_msg->md.ccsds.rsi;
+        strm.next_in = &grib_msg->buffer[grib_msg->offset / 8 + 5];
+        strm.avail_in = len;
+        strm.next_out = out.data();
+        strm.avail_out = out.size();
+        if (aec_buffer_decode(&strm) != AEC_OK) {
+          erreur("CCSDS decoding failed (%d bits)", nbits);
+          return false;
+        }
+      }
+      grib_msg->grids.gridpoints = new double[npoints];
+      size_t cnt = 0;
+      for (l = 0; l < npoints; l++) {
+        if ((grib_msg->md.bitmap == nullptr || grib_msg->md.bitmap[l] == 1) &&
+            cnt < nvals) {
+          const unsigned char *p = out.data() + cnt++ * nbytes;
+          unsigned int v = 0;
+          for (size_t k = 0; k < nbytes; k++)
+            v |= (unsigned int)(flags & AEC_DATA_MSB ? p[k] : p[nbytes - 1 - k])
+                 << (8 * (nbytes - 1 - k));
+          grib_msg->grids.gridpoints[l] = grib_msg->md.R + v * E / D;
+        } else
+          grib_msg->grids.gridpoints[l] = GRIB_MISSING_VALUE;
       }
     } break;
 #ifdef JASPER
