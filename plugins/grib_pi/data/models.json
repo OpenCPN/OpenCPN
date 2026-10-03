@@ -1,0 +1,62 @@
+[
+  {
+    "name": "ecmwf0p25",
+    "title": "ECMWF IFS 0.25°",
+    "resolution": 0.25,
+    "maxlength": 240
+  },
+  {
+    "name": "ecmwfaifs0p25",
+    "title": "ECMWF AIFS 0.25°",
+    "resolution": 0.25,
+    "maxlength": 360
+  },
+  {
+    "name": "dwdicon0p25",
+    "title": "DWD ICON 0.25°",
+    "resolution": 0.25,
+    "maxlength": 180
+  },
+  {
+    "name": "dwdicon0p125",
+    "title": "DWD ICON 0.125°",
+    "resolution": 0.125,
+    "maxlength": 180
+  },
+  {
+    "name": "gfs0p25",
+    "title": "NOAA GFS 0.25°",
+    "resolution": 0.25,
+    "maxlength": 384
+  },
+  {
+    "name": "gdps0p15",
+    "title": "ECCC GDPS 0.15°",
+    "resolution": 0.15,
+    "maxlength": 240
+  },
+  {
+    "name": "arpege0p25",
+    "title": "Météo-France ARPEGE 0.25°",
+    "resolution": 0.25,
+    "maxlength": 102
+  },
+  {
+    "name": "rtofs0p25",
+    "title": "NOAA RTOFS currents 0.25°",
+    "resolution": 0.25,
+    "maxlength": 192
+  },
+  {
+    "name": "rtofs0p1",
+    "title": "NOAA RTOFS currents 0.1°",
+    "resolution": 0.1,
+    "maxlength": 192
+  },
+  {
+    "name": "smoc0p083",
+    "title": "CMEMS SMOC currents incl. tidal 1/12°",
+    "resolution": 0.08333333333333333,
+    "maxlength": 239
+  }
+]
