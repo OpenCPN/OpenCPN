@@ -630,6 +630,7 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   oss << "&lonmin=" << GetMinLon();
   oss << "&lonmax=" << GetMaxLon();
   oss << "&length=" << LengthSelToHours(m_chForecastLength->GetSelection());
+  oss << "&encoding=ccsds";
   wxString filename =
       wxString::Format("ocpn_%s_%li_%s.grb2", model.c_str(),
                        LengthSelToHours(m_chForecastLength->GetSelection()),
