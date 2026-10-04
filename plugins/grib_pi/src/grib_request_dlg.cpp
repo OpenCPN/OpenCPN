@@ -1004,6 +1004,7 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
         }
       }
     }
+    wxRemoveFile(path);
     if (!success) {  // Something went wrong, clean up and do not continue to
                      // the actual download
       m_downloading = false;
@@ -1075,6 +1076,7 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
       m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
     }
   }
+  if (m_canceled || !m_bTransferSuccess) wxRemoveFile(path);
   m_btnDownloadWorld->SetLabelText(_("Download"));
   m_downloadType = GribDownloadType::NONE;
   EnableDownloadButtons();
@@ -2334,6 +2336,7 @@ void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
       m_xygribPanel->m_status_text->SetLabelText(_("Download failed"));
     }
   }
+  if (m_canceled || !m_bTransferSuccess) wxRemoveFile(path);
   m_downloadType = GribDownloadType::NONE;
   EnableDownloadButtons();
 }
