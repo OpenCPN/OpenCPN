@@ -144,6 +144,11 @@ int GribPi::Init() {
   if (!wxFileExists(m_local_sources_catalog)) {
     wxCopyFile(shareLocn + local_grib_catalog, m_local_sources_catalog);
   }
+  m_world_models_catalog =
+      data_path + wxFileName::GetPathSeparator() + "models.json";
+  if (!wxFileExists(m_world_models_catalog)) {
+    wxCopyFile(shareLocn + "models.json", m_world_models_catalog);
+  }
   if (m_bGRIBShowIcon) {
     wxString normalIcon = shareLocn + "grib.svg";
     wxString toggledIcon = shareLocn + "grib_toggled.svg";

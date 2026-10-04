@@ -2527,39 +2527,39 @@ void GribRequestSettingBase::createWorldPanel() {
   wxBoxSizer* bSizerWorld;
   bSizerWorld = new wxBoxSizer(wxHORIZONTAL);
 
+  m_stWorldModel = new wxStaticText(m_panelWorld, wxID_ANY, _("Model"),
+                                    wxDefaultPosition, wxDefaultSize, 0);
+  m_stWorldModel->Wrap(-1);
+  bSizerWorld->Add(m_stWorldModel, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  m_chWorldModel = new wxChoice(m_panelWorld, wxID_ANY);
+  bSizerWorld->Add(m_chWorldModel, 0, wxALL, 5);
+
   m_stForecastLength =
       new wxStaticText(m_panelWorld, wxID_ANY, _("Forecast length"),
                        wxDefaultPosition, wxDefaultSize, 0);
   m_stForecastLength->Wrap(-1);
   bSizerWorld->Add(m_stForecastLength, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  wxString m_chForecastLengthChoices[] = {_("24 hours"), _("3 days"),
-                                          _("Maximum")};
-  int m_chForecastLengthNChoices =
-      sizeof(m_chForecastLengthChoices) / sizeof(wxString);
-  m_chForecastLength =
-      new wxChoice(m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                   m_chForecastLengthNChoices, m_chForecastLengthChoices, 0);
-  m_chForecastLength->SetSelection(0);
-  bSizerWorld->Add(m_chForecastLength, 0, wxALL, 5);
+  m_spForecastLength =
+      new wxSpinCtrl(m_panelWorld, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxDefaultSize, wxSP_ARROW_KEYS, 1, 999, 24);
+  bSizerWorld->Add(m_spForecastLength, 0, wxALL, 5);
+  m_spForecastLength->SetToolTip(
+      _("Hours from the start of the model run, not from now"));
+  m_stForecastLength->SetToolTip(m_spForecastLength->GetToolTipText());
 
-  m_stECMWFResolution = new wxStaticText(m_panelWorld, wxID_ANY, _("Model"),
-                                         wxDefaultPosition, wxDefaultSize, 0);
-  m_stECMWFResolution->Wrap(-1);
-  bSizerWorld->Add(m_stECMWFResolution, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
-
-  wxString m_chECMWFResolutionChoices[] = {
-      wxString::Format("0.25%c IFS", 0x00B0),
-      wxString::Format("0.25%c AIFS", 0x00B0)};
-  int m_chECMWFResolutionNChoices =
-      sizeof(m_chECMWFResolutionChoices) / sizeof(wxString);
-  m_chECMWFResolution =
-      new wxChoice(m_panelWorld, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                   m_chECMWFResolutionNChoices, m_chECMWFResolutionChoices, 0);
-  m_chECMWFResolution->SetSelection(0);
-  bSizerWorld->Add(m_chECMWFResolution, 0, wxALL, 5);
+  m_stForecastLengthUnit = new wxStaticText(
+      m_panelWorld, wxID_ANY, _("hours"), wxDefaultPosition, wxDefaultSize, 0);
+  bSizerWorld->Add(m_stForecastLengthUnit, 0, wxALIGN_CENTER_VERTICAL | wxALL,
+                   5);
 
   bSizerWorld->Add(0, 0, 1, wxEXPAND, 5);
+
+  m_btnUpdateWorldModels =
+      new wxButton(m_panelWorld, wxID_ANY, _("Update Models"),
+                   wxDefaultPosition, wxDefaultSize, 0);
+  bSizerWorld->Add(m_btnUpdateWorldModels, 0, wxALL, 5);
 
   m_btnDownloadWorld = new wxButton(m_panelWorld, wxID_ANY, _("Download"),
                                     wxDefaultPosition, wxDefaultSize, 0);
@@ -3097,14 +3097,18 @@ GribRequestSettingBase::GribRequestSettingBase(GRIBUICtrlBarBase* parent,
   // Connect Events
   this->Connect(wxEVT_CLOSE_WINDOW,
                 wxCloseEventHandler(GribRequestSettingBase::OnClose));
-  m_chForecastLength->Connect(
+  m_chWorldModel->Connect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnWorldLengthChoice),
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldModelChoice),
       nullptr, this);
   m_btnDownloadWorld->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnWorldDownload), nullptr,
       this);
+  m_btnUpdateWorldModels->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnUpdateWorldModels),
+      nullptr, this);
   m_SourcesTreeCtrl1->Connect(
       wxEVT_COMMAND_TREE_ITEM_EXPANDED,
       wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeItemExpanded),
@@ -3325,14 +3329,18 @@ GribRequestSettingBase::~GribRequestSettingBase() {
   // Disconnect Events
   this->Disconnect(wxEVT_CLOSE_WINDOW,
                    wxCloseEventHandler(GribRequestSettingBase::OnClose));
-  m_chForecastLength->Disconnect(
+  m_chWorldModel->Disconnect(
       wxEVT_COMMAND_CHOICE_SELECTED,
-      wxCommandEventHandler(GribRequestSettingBase::OnWorldLengthChoice),
+      wxCommandEventHandler(GribRequestSettingBase::OnWorldModelChoice),
       nullptr, this);
   m_btnDownloadWorld->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(GribRequestSettingBase::OnWorldDownload), nullptr,
       this);
+  m_btnUpdateWorldModels->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(GribRequestSettingBase::OnUpdateWorldModels),
+      nullptr, this);
   m_SourcesTreeCtrl1->Disconnect(
       wxEVT_COMMAND_TREE_ITEM_EXPANDED,
       wxTreeEventHandler(GribRequestSettingBase::OnLocalTreeItemExpanded),

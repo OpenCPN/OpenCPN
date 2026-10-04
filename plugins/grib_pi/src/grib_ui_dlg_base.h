@@ -463,10 +463,12 @@ protected:
   wxHtmlWindow* m_htmlWinWorld;
   wxStaticText* m_staticTextInfo;
   wxStaticText* m_stForecastLength;
-  wxChoice* m_chForecastLength;
-  wxStaticText* m_stECMWFResolution;
-  wxChoice* m_chECMWFResolution;
+  wxSpinCtrl* m_spForecastLength;
+  wxStaticText* m_stForecastLengthUnit;
+  wxStaticText* m_stWorldModel;
+  wxChoice* m_chWorldModel;
   wxButton* m_btnDownloadWorld;
+  wxButton* m_btnUpdateWorldModels;
   wxPanel* m_panelLocalModels;
   wxTreeCtrl* m_SourcesTreeCtrl1;
   wxStaticText* m_stLocalDownloadInfo;
@@ -553,9 +555,9 @@ protected:
   // Virtual event handlers, override them in your derived class
   virtual void OnClose(wxCloseEvent& event) { event.Skip(); }
   virtual void OnNotebookPageChanged(wxNotebookEvent& event) { event.Skip(); }
-  virtual void OnWorldLengthChoice(wxCommandEvent& event) { event.Skip(); }
-  virtual void OnWorldResolutionChoice(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnWorldModelChoice(wxCommandEvent& event) { event.Skip(); }
   virtual void OnWorldDownload(wxCommandEvent& event) { event.Skip(); }
+  virtual void OnUpdateWorldModels(wxCommandEvent& event) { event.Skip(); }
   virtual void OnLocalTreeItemExpanded(wxTreeEvent& event) { event.Skip(); }
   virtual void OnLocalTreeSelChanged(wxTreeEvent& event) { event.Skip(); }
   virtual void OnUpdateLocalCatalog(wxCommandEvent& event) { event.Skip(); }

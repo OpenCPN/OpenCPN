@@ -70,6 +70,8 @@ const std::string CATALOG_URL =
     "https://raw.githubusercontent.com/chartcatalogs/gribcatalog/main/"
     "sources.json";
 
+const std::string WORLD_MODELS_URL = "https://grib.bosun.io/models";
+
 /**
  * Enumeration defining the states of the GRIB zone selection overlay rendering.
  */
@@ -255,8 +257,8 @@ protected:
     wxCloseEvent evt;
     OnClose(evt);
   }
-  void OnWorldLengthChoice(wxCommandEvent &event) override { event.Skip(); }
-  void OnWorldResolutionChoice(wxCommandEvent &event) override { event.Skip(); }
+  void OnWorldModelChoice(wxCommandEvent &event) override;
+  void OnUpdateWorldModels(wxCommandEvent &event) override;
   void OnWorldDownload(wxCommandEvent &event) override;
   void OnLocalTreeItemExpanded(wxTreeEvent &event) override { event.Skip(); }
   void OnLocalTreeSelChanged(wxTreeEvent &event) override;
@@ -274,6 +276,9 @@ private:
   void HighlightArea(double latmax, double lonmax, double latmin,
                      double lonmin);
   void ReadLocalCatalog();
+  void ReadWorldModels();
+  int FindWorldModel(const wxString &name);
+  wxJSONValue m_world_models;  ///< Models from models.json
   void FillTreeCtrl(wxJSONValue &data);
   void ApplyRequestConfig(unsigned rs, unsigned it, unsigned tr);
   wxString WriteMail();
