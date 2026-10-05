@@ -455,12 +455,16 @@ const wxBitmap* PluginLoader::GetPluginDefaultIcon() {
 // Plugin icons outlive the plugin library during disable/replacement. Private
 // static wxQt copies carry plugin-owned virtual ref-data destructors, so create
 // the retained Android bitmap using the host's image/bitmap implementation.
-static wxBitmap CopyPluginBitmap(const wxBitmap& bitmap) {
+static wxBitmap CopyPluginBitmap(const wxBitmap* bitmap) {
+  // Plugins may return null or an empty bitmap, including after Init/DeInit.
+  // The wxQt ConvertToImage implementation dereferences empty ref-data.
+  if (!bitmap || !bitmap->IsOk())
+    bitmap = PluginLoader::GetInstance()->GetPluginDefaultIcon();
 #ifdef __ANDROID__
-  return wxBitmap(bitmap.ConvertToImage());
+  return wxBitmap(bitmap->ConvertToImage());
 #else
-  return wxBitmap(bitmap.GetSubBitmap(
-      wxRect(0, 0, bitmap.GetWidth(), bitmap.GetHeight())));
+  return wxBitmap(bitmap->GetSubBitmap(
+      wxRect(0, 0, bitmap->GetWidth(), bitmap->GetHeight())));
 #endif
 }
 
@@ -681,10 +685,7 @@ bool PluginLoader::LoadPluginCandidate(const wxString& file_name,
       m_on_activate_cb(pic);
 
       auto pbm0 = pic->m_pplugin->GetPlugInBitmap();
-      if (!pbm0->IsOk()) {
-        pbm0 = (wxBitmap*)GetPluginDefaultIcon();
-      }
-      pic->m_bitmap = CopyPluginBitmap(*pbm0);
+      pic->m_bitmap = CopyPluginBitmap(pbm0);
 
       if (!pic->m_enabled && pic->m_destroy_fn) {
         pic->m_destroy_fn(pic->m_pplugin);
@@ -863,13 +864,13 @@ bool PluginLoader::UpdatePlugIns() {
       pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
       pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
       wxBitmap* pbm0 = pic->m_pplugin->GetPlugInBitmap();
-      pic->m_bitmap = CopyPluginBitmap(*pbm0);
+      pic->m_bitmap = CopyPluginBitmap(pbm0);
       m_on_activate_cb(pic);
       bret = true;
     } else if (!pic->m_enabled && pic->m_init_state) {
       // Save a local copy of the plugin icon before unloading
       wxBitmap* pbm0 = pic->m_pplugin->GetPlugInBitmap();
-      pic->m_bitmap = CopyPluginBitmap(*pbm0);
+      pic->m_bitmap = CopyPluginBitmap(pbm0);
 
       bret = DeactivatePlugIn(pic);
       if (pic->m_pplugin) pic->m_destroy_fn(pic->m_pplugin);

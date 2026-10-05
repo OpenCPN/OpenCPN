@@ -2248,7 +2248,6 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
     m_updateButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                          &CatalogMgrPanel::OnUpdateButton, this);
     SetUpdateButtonLabel();
-    m_tarballButton = NULL;
     m_adv_button = NULL;
   } else {
     // First line
@@ -2272,15 +2271,16 @@ CatalogMgrPanel::CatalogMgrPanel(wxWindow* parent)
                              GetCharWidth());
     m_adv_button->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
                        &CatalogMgrPanel::OnPluginSettingsButton, this);
-
-    // Next line
-    m_tarballButton = new wxButton(this, wxID_ANY, _("Import plugin..."),
-                                   wxDefaultPosition, wxDefaultSize, 0);
-    itemStaticBoxSizer4->Add(m_tarballButton, 0, wxALIGN_LEFT | wxALL,
-                             2 * GetCharWidth());
-    m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
-                          &CatalogMgrPanel::OnTarballButton, this);
   }
+
+  // Local plugin imports are available with a fresh Android profile too.
+  // CatalogExpert controls advanced catalog settings, not tarball import.
+  m_tarballButton = new wxButton(this, wxID_ANY, _("Import plugin..."),
+                                 wxDefaultPosition, wxDefaultSize, 0);
+  itemStaticBoxSizer4->Add(m_tarballButton, 0, wxALIGN_LEFT | wxALL,
+                           2 * GetCharWidth());
+  m_tarballButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED,
+                        &CatalogMgrPanel::OnTarballButton, this);
 
 #endif
 }
