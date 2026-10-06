@@ -3,10 +3,15 @@
 @echo on
 setlocal enabledelayedexpansion
 
+set "CACHE_DIR=%~dp0..\cache"
+if not defined OCPN_VCPKG_ROOT set "OCPN_VCPKG_ROOT=%CACHE_DIR%\vcpkg"
+if not exist "%CACHE_DIR%" mkdir "%CACHE_DIR%"
+
 :: Install Poedit if required
 msgmerge --version >nul 2>&1
 if errorlevel 1 (
   choco install poedit -y --no-progress
+  if errorlevel 1 exit /b 1
   set "PATH=%PATH%;C:\Program Files (x86)\Poedit\Gettexttools\bin"
 )
 
@@ -14,35 +19,44 @@ if errorlevel 1 (
 git --version >nul 2>&1
 if errorlevel 1 (
   choco install git -y --no-progress
-  set "PATH=%PATH%;C:\Program Files\Git\bin"
+  if errorlevel 1 exit /b 1
 )
 
-if not exist C:\ProgramData\chocolatey\lib\nsis (
+makensis /VERSION >nul 2>&1
+if errorlevel 1 (
   echo Installing nsis tools using choco
   choco install nsis -y --no-progress
+  if errorlevel 1 exit /b 1
+  set "PATH=%PATH%;C:\Program Files (x86)\NSIS;C:\Program Files\NSIS"
 )
+makensis /VERSION >nul 2>&1
+if errorlevel 1 exit /b 1
 
 :: install wget as required
-wget --version >nul 2>&1 || choco install wget -y --no-progress
+wget --version >nul 2>&1 || choco install wget -y --no-progress || exit /b 1
 
-git clone https://github.com/microsoft/vcpkg D:\code\vcpkg
+if not exist "%OCPN_VCPKG_ROOT%\bootstrap-vcpkg.bat" (
+  git clone https://github.com/microsoft/vcpkg "%OCPN_VCPKG_ROOT%"
+  if errorlevel 1 exit /b 1
+)
 set "VCPKG_DISABLE_METRICS=1"
-call D:\code\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+call "%OCPN_VCPKG_ROOT%\bootstrap-vcpkg.bat" -disableMetrics
+if errorlevel 1 exit /b 1
 echo After Bootstrap
-call D:\code\vcpkg\vcpkg install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows liblzma:x64-windows --debug
+call "%OCPN_VCPKG_ROOT%\vcpkg.exe" install openssl:x64-windows curl:x64-windows libarchive:x64-windows glew:x64-windows liblzma:x64-windows --debug
+if errorlevel 1 exit /b 1
 echo After vcpkg intall...
 
 echo The current working directory is: %CD%
 echo The batch file is located in: %~dp0
 
 :: If needed, download wxWidgets binary build.
-set "CACHE_DIR=%~dp0..\cache"
-if not exist !CACHE_DIR! (mkdir !CACHE_DIR!)
 
 echo The cache directory is: %CACHE_DIR%
 
 set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
-if not exist cache\wxWidgets-3.2.9 (
+if not exist "%CACHE_DIR%\wxWidgets-3.2.9" (
+  pushd "%CACHE_DIR%"
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxWidgets-3.2.1-headers.7z
@@ -55,6 +69,7 @@ if not exist cache\wxWidgets-3.2.9 (
   7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxWidgets-3.2.9-headers.7z
   wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
   7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
+  popd
 )
 
 
@@ -69,7 +84,7 @@ type %CACHE_DIR%\wx-config.bat
 
 :: Make sure the pre-compiled vcpkg libraries are in place
 
-set "vcpkg=D:\code\vcpkg\installed\x64-windows"
+set "vcpkg=%OCPN_VCPKG_ROOT%\installed\x64-windows"
 set "dest=%CACHE_DIR%\buildwin"
 if not exist "%dest%" mkdir "%dest%"
 if not exist "%dest%\include" mkdir "%dest%\include"
