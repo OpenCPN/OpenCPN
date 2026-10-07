@@ -176,7 +176,8 @@ private:
   [[nodiscard]] wxBitmap IconApplyColorScheme(const wxBitmap& proto) const {
     if (!proto.IsOk()) return wxNullBitmap;
     if ((m_cs != GLOBAL_COLOR_SCHEME_DAY) &&
-        (m_cs != GLOBAL_COLOR_SCHEME_RGB)) {
+        (m_cs != GLOBAL_COLOR_SCHEME_RGB) &&
+        (m_cs != GLOBAL_COLOR_SCHEME_DAY_HICON)) {
       // Assume the bitmap is monochrome, so simply invert the colors.
       const wxImage image = proto.ConvertToImage();
       unsigned char* data = image.GetData();
