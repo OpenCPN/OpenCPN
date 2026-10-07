@@ -27,8 +27,19 @@ if not defined VCINSTALLDIR (
   ) do call "%%p\Common7\Tools\vsDevCmd.bat"
 )
 
+set "PATH=%PATH%;C:\Program Files (x86)\NSIS;C:\Program Files (x86)\NSIS\Bin;C:\Program Files\NSIS;C:\Program Files\NSIS\Bin"
 call %SCRIPTDIR%..\buildwin\win_deps_x64.bat wx32
+if errorlevel 1 exit /b 1
+set "GIT_EXE="
+for /f "delims=" %%G in ('where git.exe') do if not defined GIT_EXE set "GIT_EXE=%%G"
+if not defined GIT_EXE exit /b 1
+for %%G in ("!GIT_EXE!") do set "GIT_ROOT=%%~dpG.."
+if not exist "!GIT_ROOT!\bin\bash.exe" exit /b 1
+if not exist "!GIT_ROOT!\usr\bin\patch.exe" exit /b 1
+set "GIT_BASH=!GIT_ROOT!\bin\bash.exe"
+set "PATH=!PATH!;!GIT_ROOT!\bin;!GIT_ROOT!\usr\bin"
 call %SCRIPTDIR%..\cache\wx-config.bat
+set "PATH=%PATH%;%SCRIPTDIR%..\cache\buildwin"
 echo USING wxWidgets_LIB_DIR: !wxWidgets_LIB_DIR!
 echo USING wxWidgets_ROOT_DIR: !wxWidgets_ROOT_DIR!
 
@@ -58,7 +69,7 @@ echo The build directory is: %CD%
 
 :: This id done in win_deps.bat, but for some reason stopped
 :: working since 2024-02-28, so work it around here
-set "PATH=%PATH%;%PROGRAMFILES%\Poedit\Gettexttools\bin"
+set "PATH=!PATH!;%PROGRAMFILES%\Poedit\Gettexttools\bin;!wxWidgets_LIB_DIR!;%SCRIPTDIR%..\cache\buildwin"
 
 @echo on
 
@@ -79,16 +90,19 @@ cmake -A x64 -G "Visual Studio 17 2022" ^
     ..
 
 makensis /VERSION
+if errorlevel 1 exit /b 1
 
 cmake --build . --target package --config %CONFIGURATION%
+if errorlevel 1 exit /b 1
 
-dir D:\a\OpenCPN\OpenCPN\build\*.exe
+dir *.exe
 
 :: Rename setup.exe artifact before upload
 for %%F in ("opencpn_*_setup.exe") do ren "%%F" "%%~nF_x64.exe"
+if errorlevel 1 exit /b 1
 
 :: Verify
-dir D:\a\OpenCPN\OpenCPN\build\*.exe
+dir "opencpn_*_setup_x64.exe"
 
 ::type D:\a\OpenCPN\OpenCPN\build\NSIS.template.in
 
@@ -104,7 +118,8 @@ findstr /n /i "InstallDirRegKey InstallDir InstallLocation ReadRegStr INSTDIR" _
 echo Build complete.
 
 :: Compress pdb and mark with git hash
-"C:\Program Files\Git\bin\bash" -c ^
+if "%GITHUB_SHA%" == "" for /f %%H in ('git rev-parse --short=8 HEAD') do set "GITHUB_SHA=%%H"
+"!GIT_BASH!" -c ^
   "tar czf opencpn+%GITHUB_SHA:~0,8%.pdb.tar.gz %CONFIGURATION%/opencpn.pdb"
 @echo off
 

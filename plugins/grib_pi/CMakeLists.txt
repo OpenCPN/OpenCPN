@@ -200,6 +200,21 @@ else ()
   target_link_libraries(${PACKAGE_NAME} PRIVATE JASPER)
 endif ()
 
+find_path(AEC_INCLUDE_DIR libaec.h)
+find_library(AEC_LIBRARY aec)
+use_bundled_lib(USE_BUNDLED_AEC libaec)
+if (AEC_INCLUDE_DIR AND AEC_LIBRARY AND NOT USE_BUNDLED_AEC)
+  message(STATUS "Using system libaec library...")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE ${AEC_LIBRARY})
+  target_include_directories(
+    ${PACKAGE_NAME} BEFORE PRIVATE ${AEC_INCLUDE_DIR}
+  )
+else ()
+  message(STATUS "Using bundled libaec library...")
+  add_subdirectory("libs/libaec")
+  target_link_libraries(${PACKAGE_NAME} PRIVATE AEC)
+endif ()
+
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang|AppleClang")
   # FIXME: Need better handling after 5.0.0
   target_compile_options(${PACKAGE_NAME} PRIVATE -Wno-format)

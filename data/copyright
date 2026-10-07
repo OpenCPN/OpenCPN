@@ -1930,6 +1930,10 @@ Copyright: 2001-2004, Michael David Adams.
  1999, 2000, Image Power, Inc. and the University of
 License: GPL-2+
 
+Files: plugins/grib_pi/libs/libaec/*
+Copyright: 2026, Mathis Rosenhauer, Moritz Hanke, Joerg Behrens, Luis Kornblueh
+License: BSD-2-clause
+
 Files: plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h
  plugins/grib_pi/libs/jasper/src/include/jasper/jas_config.h.in
 Copyright: 2011, 2014, Pavel Kalian

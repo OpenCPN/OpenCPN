@@ -100,8 +100,8 @@ See  https://docs.flatpak.org/en/latest/debugging.html[The flatpak site]
 From RPi 4 the board has resources enough to run a native build, which is
 performed according to the instructions for xref:#build_debian[Debian].
 
-For RPi 3 with 1GB of ram builds are usually done utilizing cross-compiling on Linux, 
-often using docker and, for 32-bit armhf builds, also qemu. 
+For RPi 3 with 1GB of ram builds are usually done utilizing cross-compiling on Linux,
+often using docker and, for 32-bit armhf builds, also qemu.
 A description of these builds is out of scope for this document.
 
 == Fedora
@@ -113,7 +113,7 @@ To install the dependencies required to build OpenCPN from source on Fedora
 sudo dnf install wxGTK-devel cmake gcc-c++ git glew-devel openssl-devel \
 libcurl-devel libarchive-devel elfutils-libelf-devel redhat-lsb-core \
 libusb1-devel tinyxml-devel systemd-devel portaudio-devel libsndfile-devel \
-gtest-devel sqlite-devel rapidjson-devel
+gtest-devel sqlite-devel rapidjson-devel libaec-devel
 ```
 
 Then use whichever build method you prefer.
@@ -148,10 +148,10 @@ tools.
 
 === https://www.jetbrains.com/clion/[CLion]
 
-The CLion IDE is currently used by some of the core project developers 
+The CLion IDE is currently used by some of the core project developers
 with good results.
 
-CLion is commercial software, but are giving out free licenses for open source 
+CLion is commercial software, but are giving out free licenses for open source
 development since the 2025 version
 
 === https://github.com/wxFormBuilder/wxFormBuilder[wxFormBuilder]

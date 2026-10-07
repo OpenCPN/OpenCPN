@@ -35,6 +35,7 @@
 
 #include "grib_request_dlg.h"
 #include "grib_overlay_factory.h"
+#include <wx/file.h>
 #include <wx/wfstream.h>
 #include "grib_pi.h"
 
@@ -75,6 +76,7 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
   m_displayScale = wxWindow::GetContentScaleFactor();
 #endif
 
+  ReadWorldModels();
   InitRequestConfig();
   m_connected = false;
   m_downloading = false;
@@ -96,21 +98,17 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
       fg +
       ""
       ">" +
-      _("<h1>OpenCPN ECMWF forecast</h1>"
-        "<p>Free service based on ECMWF Open Data published under the terms of "
-        "Creative Commons CC-4.0-BY license</p>"
-        "<p>The IFS model GRIB files include information about surface "
-        "temperature, "
-        "atmospheric pressure, wind strength, wind direction, wave height and "
-        "direction for the whole world on a 0.25 degree resolution "
-        "grid with 3 hour "
-        "step in the first 144 hours and 6 hour step up to 10 days.</p>"
-        "The AIFS model contains data for wind, pressure and temperature on a "
-        "0.25 degree grid with 6 hour step for up to 15 days"
-        "<p>The data is updated twice a day as soon as the 00z and 12z model "
-        "runs finish and the "
-        "results are published by ECMWF, which usually means new forecast data "
-        "is available shortly after 8AM and 8PM UTC.</p>"
+      _("<h1>OpenCPN world forecast</h1>"
+        "<p>Free service providing GRIB files from global weather and ocean "
+        "models based on open data published by their respective "
+        "producers.</p>"
+        "<p>Select the model and the forecast length in hours. The length "
+        "counts from the start of the model run, not from the time of "
+        "download, and newly published runs are usually several hours old, "
+        "so the forecast reaches correspondingly less far into the future. "
+        "The maximum length depends on the selected model.</p>"
+        "<p>The data is updated as soon as new model runs finish and the "
+        "results are published by their producers.</p>"
         "<p>The grib downloaded covers the area of the primary chart "
         "canvas.</p>"
         "<p>The service is provided on best effort basis and comes with no "
@@ -119,12 +117,15 @@ GribRequestSetting::GribRequestSetting(GRIBUICtrlBar &parent)
         "whatsoever for its continuous availability, or for any loss or damage "
         "arising from its use. If you find the service useful, please "
         "consider making a donation to the OpenCPN project.</p>"
-        "<p>This service is based on data and products of the European Centre "
-        "for Medium-Range Weather Forecasts (ECMWF).</p>"
-        "<p>Source: www.ecmwf.int</p>"
-        "<p>Disclaimer: ECMWF does not accept any liability whatsoever for any "
-        "error or omission in the data, their availability, or for any loss or "
-        "damage arising from their use.</p>"
+        "<p>Sources: European Centre for Medium-Range Weather Forecasts "
+        "(ECMWF, www.ecmwf.int, CC-BY-4.0), Deutscher Wetterdienst (DWD), "
+        "NOAA, Environment and Climate Change Canada (ECCC) and "
+        "M&eacute;t&eacute;o-France.</p>"
+        "<p>SMOC currents: Generated using E.U. Copernicus Marine Service "
+        "Information; https://doi.org/10.48670/moi-00016</p>"
+        "<p>Disclaimer: The data producers do not accept any liability "
+        "whatsoever for any error or omission in the data, their "
+        "availability, or for any loss or damage arising from their use.</p>"
         "</font></body></html>"));
   m_htmlInfoWin->SetBorders(10);
   m_htmlInfoWin->SetPage(
@@ -188,6 +189,12 @@ void GribRequestSetting::SaveConfig() {
     pConf->Write("RequestZoneMinLat", m_spMinLat->GetValue());
     pConf->Write("RequestZoneMaxLon", m_spMaxLon->GetValue());
     pConf->Write("RequestZoneMinLon", m_spMinLon->GetValue());
+
+    int sel = m_chWorldModel->GetSelection();
+    if (sel != wxNOT_FOUND) {
+      pConf->Write("WorldModel", m_world_models[sel]["name"].AsString());
+    }
+    pConf->Write("WorldForecastLength", m_spForecastLength->GetValue());
   }
 }
 
@@ -230,6 +237,14 @@ void GribRequestSetting::InitRequestConfig() {
     m_spMaxLon->SetValue(m);
     pConf->Read("RequestZoneMinLon", &m, 0);
     m_spMinLon->SetValue(m);
+    pConf->Read("WorldModel", &l, "");
+    if (FindWorldModel(l) != wxNOT_FOUND) {
+      m_chWorldModel->SetSelection(FindWorldModel(l));
+    }
+    pConf->Read("WorldForecastLength", &m, 24);
+    m_spForecastLength->SetValue(m);
+    wxCommandEvent evt;
+    OnWorldModelChoice(evt);
 
     SetCoordinatesText();
     // if GriDataConfig has been corrupted , take the standard one to fix a
@@ -505,17 +520,6 @@ void GribRequestSetting::SetCoordinatesText() {
   m_stMinLatNS->SetLabel(m_spMinLat->GetValue() < 0 ? _("S") : _("N"));
 }
 
-size_t LengthSelToHours(int sel) {
-  switch (sel) {
-    case 1:
-      return 72;
-    case 2:
-      return 999;
-    default:
-      return 24;
-  }
-}
-
 template <typename T>
 std::string GribRequestSetting::FormatPerLocale(T value) {
   std::stringstream ss;
@@ -610,18 +614,9 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   m_btnDownloadWorld->SetLabelText(_("Cancel"));
   m_staticTextInfo->SetLabelText(_("Preparing data on server..."));
   wxYieldIfNeeded();
-  wxString model;
-  switch (m_chECMWFResolution->GetSelection()) {
-    case 0:
-      model = "ecmwf0p25";
-      break;
-    case 1:
-      model = "ecmwfaifs0p25";
-      break;
-    default:
-      model = "ecmwf0p25";
-      break;
-  }
+  wxString model =
+      m_world_models[m_chWorldModel->GetSelection()]["name"].AsString();
+  int length = m_spForecastLength->GetValue();
   std::ostringstream oss;
   oss << "https://grib.bosun.io/grib?";
   oss << "model=" << model;
@@ -629,10 +624,10 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
   oss << "&latmax=" << GetMaxLat();
   oss << "&lonmin=" << GetMinLon();
   oss << "&lonmax=" << GetMaxLon();
-  oss << "&length=" << LengthSelToHours(m_chForecastLength->GetSelection());
+  oss << "&length=" << length;
+  oss << "&encoding=ccsds";
   wxString filename =
-      wxString::Format("ocpn_%s_%li_%s.grb2", model.c_str(),
-                       LengthSelToHours(m_chForecastLength->GetSelection()),
+      wxString::Format("ocpn_%s_%i_%s.grb2", model.c_str(), length,
                        wxDateTime::Now().Format("%F-%H-%M"));
   wxString path = m_parent.GetGribDir();
   path.Append(wxFileName::GetPathSeparator());
@@ -664,9 +659,23 @@ void GribRequestSetting::OnWorldDownload(wxCommandEvent &event) {
       SaveConfig();
       Close();
     } else {
-      m_staticTextInfo->SetLabelText(_("Download failed"));
+      // On an HTTP error the server's explanation (e.g. area limits) is what
+      // got written to the file, show it unless it is a proxy's HTML page
+      wxString reason;
+      wxFile f;
+      if (wxFileName::GetSize(path) < 1024 && f.Open(path)) f.ReadAll(&reason);
+      reason.Trim().Trim(false);
+      if (reason.IsEmpty() || reason.StartsWith("<")) {
+        m_staticTextInfo->SetLabelText(_("Download failed"));
+      } else {
+        m_staticTextInfo->SetLabelText(
+            wxString::Format(_("Download failed: %s"), reason));
+        m_staticTextInfo->Wrap(m_panelWorld->GetClientSize().x - 10);
+        m_panelWorld->Layout();
+      }
     }
   }
+  if (m_canceled || !m_bTransferSuccess) wxRemoveFile(path);
   m_btnDownloadWorld->SetLabelText(_("Download"));
   m_downloadType = GribDownloadType::NONE;
   EnableDownloadButtons();
@@ -765,6 +774,80 @@ void GribRequestSetting::ReadLocalCatalog() {
   FillTreeCtrl(root);
 }
 
+void GribRequestSetting::ReadWorldModels() {
+  int sel = m_chWorldModel->GetSelection();
+  wxString current =
+      sel == wxNOT_FOUND ? "" : m_world_models[sel]["name"].AsString();
+  wxJSONReader reader;
+  wxFileInputStream str(m_parent.pPlugIn->m_world_models_catalog);
+  m_world_models = wxJSONValue();
+  if (str.IsOk()) reader.Parse(str, &m_world_models);
+  m_chWorldModel->Clear();
+  for (int i = 0; i < m_world_models.Size(); i++) {
+    m_chWorldModel->Append(m_world_models[i]["title"].AsString());
+  }
+  sel = FindWorldModel(current);
+  m_chWorldModel->SetSelection(
+      sel != wxNOT_FOUND ? sel : (m_chWorldModel->IsEmpty() ? wxNOT_FOUND : 0));
+  wxCommandEvent evt;
+  OnWorldModelChoice(evt);
+}
+
+int GribRequestSetting::FindWorldModel(const wxString &name) {
+  for (int i = 0; i < m_world_models.Size(); i++) {
+    if (m_world_models[i]["name"].AsString() == name) return i;
+  }
+  return wxNOT_FOUND;
+}
+
+void GribRequestSetting::OnUpdateWorldModels(wxCommandEvent &event) {
+  m_canceled = false;
+  m_downloading = true;
+  m_downloadType = GribDownloadType::WORLD;
+  EnableDownloadButtons();
+  m_btnDownloadWorld->SetLabelText(_("Cancel"));
+  m_staticTextInfo->SetLabelText(_("Downloading model list update..."));
+  wxYieldIfNeeded();
+  if (!m_connected) {
+    m_connected = true;
+    Connect(
+        wxEVT_DOWNLOAD_EVENT,
+        (wxObjectEventFunction)(wxEventFunction)&GribRequestSetting::onDLEvent);
+  }
+  wxString tmp = m_parent.pPlugIn->m_world_models_catalog + "new";
+  OCPN_downloadFileBackground(WORLD_MODELS_URL, tmp, this, &m_download_handle);
+  while (m_downloading) {
+    wxTheApp->ProcessPendingEvents();
+    wxMilliSleep(10);
+  }
+  if (!m_canceled) {
+    // Only replace the current list with a non-empty, parseable one
+    wxJSONValue models;
+    wxJSONReader reader;
+    wxFileInputStream str(tmp);
+    if (m_bTransferSuccess && str.IsOk() && reader.Parse(str, &models) == 0 &&
+        models.IsArray() && models.Size() > 0) {
+      wxRenameFile(tmp, m_parent.pPlugIn->m_world_models_catalog, true);
+      ReadWorldModels();
+      m_staticTextInfo->SetLabelText(_("Model list update complete."));
+    } else {
+      m_staticTextInfo->SetLabelText(_("Model list update failed"));
+    }
+  }
+  wxRemoveFile(tmp);
+  m_btnDownloadWorld->SetLabelText(_("Download"));
+  m_downloadType = GribDownloadType::NONE;
+  EnableDownloadButtons();
+}
+
+void GribRequestSetting::OnWorldModelChoice(wxCommandEvent &event) {
+  int sel = m_chWorldModel->GetSelection();
+  if (sel == wxNOT_FOUND) return;
+  int max = m_world_models[sel]["maxlength"].AsInt();
+  m_spForecastLength->SetRange(1, max);
+  m_spForecastLength->SetValue(std::min(m_spForecastLength->GetValue(), max));
+}
+
 void GribRequestSetting::HighlightArea(double latmax, double lonmax,
                                        double latmin, double lonmin) {
   m_parent.m_highlight_latmax = latmax;
@@ -813,7 +896,7 @@ void GribRequestSetting::OnUpdateLocalCatalog(wxCommandEvent &event) {
   m_downloadType = GribDownloadType::LOCAL_CATALOG;
   EnableDownloadButtons();
   m_btnDownloadLocal->SetLabelText(_("Cancel"));
-  m_staticTextInfo->SetLabelText(_("Downloading catalog update..."));
+  m_stLocalDownloadInfo->SetLabelText(_("Downloading catalog update..."));
   wxYieldIfNeeded();
   if (!m_connected) {
     m_connected = true;
@@ -921,6 +1004,7 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
         }
       }
     }
+    wxRemoveFile(path);
     if (!success) {  // Something went wrong, clean up and do not continue to
                      // the actual download
       m_downloading = false;
@@ -992,6 +1076,7 @@ void GribRequestSetting::OnDownloadLocal(wxCommandEvent &event) {
       m_stLocalDownloadInfo->SetLabelText(_("Download failed"));
     }
   }
+  if (m_canceled || !m_bTransferSuccess) wxRemoveFile(path);
   m_btnDownloadWorld->SetLabelText(_("Download"));
   m_downloadType = GribDownloadType::NONE;
   EnableDownloadButtons();
@@ -1003,20 +1088,23 @@ void GribRequestSetting::EnableDownloadButtons() {
       m_btnDownloadWorld->Enable(true);
       m_btnDownloadLocal->Enable(false);
       m_buttonUpdateCatalog->Enable(false);
+      m_btnUpdateWorldModels->Enable(false);
       break;
     case GribDownloadType::LOCAL:
     case GribDownloadType::LOCAL_CATALOG:
       m_btnDownloadWorld->Enable(false);
       m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
       m_buttonUpdateCatalog->Enable(false);
+      m_btnUpdateWorldModels->Enable(false);
       break;
     case GribDownloadType::XYGRIB:
       m_xygribPanel->m_download_button->Enable(true);
       break;
     default:
-      m_btnDownloadWorld->Enable(true);
+      m_btnDownloadWorld->Enable(m_chWorldModel->GetSelection() != wxNOT_FOUND);
       m_btnDownloadLocal->Enable(m_bLocal_source_selected || m_downloading);
       m_buttonUpdateCatalog->Enable(true);
+      m_btnUpdateWorldModels->Enable(true);
       m_xygribPanel->m_download_button->Enable(true);
       break;
   }
@@ -2248,6 +2336,7 @@ void GribRequestSetting::OnXyGribDownloadButton(wxCommandEvent &event) {
       m_xygribPanel->m_status_text->SetLabelText(_("Download failed"));
     }
   }
+  if (m_canceled || !m_bTransferSuccess) wxRemoveFile(path);
   m_downloadType = GribDownloadType::NONE;
   EnableDownloadButtons();
 }
