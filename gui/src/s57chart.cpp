@@ -24,6 +24,7 @@
 #include <algorithm>  // for std::sort
 #include <list>
 #include <map>
+#include <set>
 #include <vector>
 
 #ifdef __ANDROID__
@@ -53,6 +54,7 @@
 #endif
 
 #include "s57chart.h"
+#include "chart_safety_geometry.h"
 
 #include "model/chartdata_input_stream.h"
 #include "model/cutil.h"
@@ -4842,6 +4844,568 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon(float lat, float lon,
   }
 
   return ret_ptr;
+}
+
+bool s57chart::CollectSafetyTileRules(std::vector<ObjRazRules *> &rules) {
+  rules.clear();
+  if (!wxThread::IsMain() || !m_RAZBuilt) return false;
+  std::set<S57Obj *> seen;
+  auto add = [&](ObjRazRules *rule) {
+    S57Obj *obj = rule ? rule->obj : nullptr;
+    if (!obj || !seen.insert(obj).second) return;
+    bool relevant = ocpn::chart_safety::IsIsolatedDanger(obj->FeatureName);
+    for (const char *name : {"LNDARE", "DEPARE", "DRGARE", "UNSARE", "SOUNDG"})
+      relevant = relevant || !strncmp(obj->FeatureName, name, 6);
+    for (int i = 0; obj->att_array && i < obj->n_attr; ++i)
+      relevant = relevant || !strncmp(obj->att_array + 6 * i, "WATLEV", 6);
+    if (relevant) rules.push_back(rule);
+  };
+  // Both point and boundary styles, and all children, are semantic evidence.
+  // S-52 category, SCAMIN, visibility and renderer state cannot hide hazards.
+  for (int priority = 0; priority < PRIO_NUM; ++priority)
+    for (int lookup = 0; lookup < LUPNAME_NUM; ++lookup)
+      for (auto *rule = razRules[priority][lookup]; rule; rule = rule->next) {
+        add(rule);
+        for (auto *child = rule->child; child; child = child->next) add(child);
+      }
+  return true;
+}
+
+bool s57chart::SafetyObjectMayIntersectBox(S57Obj *obj, double min_lat,
+                                           double max_lat, double min_lon,
+                                           double max_lon) {
+  using namespace ocpn::chart_safety;
+  constexpr double guard = .00002;
+  const CellBox query{min_lon - guard, min_lat - guard, max_lon + guard,
+                      max_lat + guard};
+  if (!obj || obj->Primitive_type == GEO_POINT || !query.Valid() ||
+      query.max_x - query.min_x >= 180 || !obj->BBObj.GetValid() ||
+      obj->BBObj.GetLonRange() > 180)
+    return true;
+  const CellBox bounds{obj->BBObj.GetMinLon(), obj->BBObj.GetMinLat(),
+                       obj->BBObj.GetMaxLon(), obj->BBObj.GetMaxLat()};
+  if (!bounds.Valid()) return true;
+  const double centre = (query.min_x + query.max_x) / 2;
+  const double bounds_centre = (bounds.min_x + bounds.max_x) / 2;
+  const double shift =
+      centre + std::remainder(bounds_centre - centre, 360.0) - bounds_centre;
+  return !(bounds.max_y < query.min_y || bounds.min_y > query.max_y ||
+           bounds.max_x + shift < query.min_x ||
+           bounds.min_x + shift > query.max_x);
+}
+
+std::shared_ptr<const ocpn::chart_safety::PreparedGeometry>
+s57chart::PrepareSafetyObjectGeometry(S57Obj *obj, bool prepare_index) {
+  using namespace ocpn::chart_safety;
+  auto g = std::make_shared<PreparedGeometry>();
+  g->ref_lat = ref_lat;
+  g->ref_lon = ref_lon;
+  if (!obj) return g;
+  g->soundings = !strncmp(obj->FeatureName, "SOUNDG", 6);
+  if (obj->Primitive_type == GEO_POINT) {
+    g->kind = PreparedGeometry::kPoints;
+    if (obj->npt == 1 && !obj->geoPtMulti) {
+      double lat, lon;
+      fromSM(obj->x * obj->x_rate + obj->x_origin,
+             obj->y * obj->y_rate + obj->y_origin, ref_lat, ref_lon, &lat,
+             &lon);
+      if (!std::isfinite(lat) || !std::isfinite(lon)) return g;
+      g->points.push_back({lon, lat});
+    } else {
+      if (obj->npt <= 0 || !obj->geoPtMulti) return g;
+      for (int i = 0; i < obj->npt; ++i) {
+        Point p{obj->geoPtMulti[2 * i], obj->geoPtMulti[2 * i + 1]};
+        if (!Finite(p) || p.y < -90 || p.y > 90) return g;
+        g->points.push_back(p);
+      }
+    }
+    if (g->soundings && obj->geoPtz)
+      for (int i = 0; i < obj->npt; ++i)
+        g->depths.push_back(obj->geoPtz[3 * i + 2]);
+    g->valid = !prepare_index || BuildPointIndex(g.get());
+    return g;
+  }
+  if (!obj->BBObj.GetValid() || obj->BBObj.GetLonRange() > 180) return g;
+  g->geographic = {obj->BBObj.GetMinLon(), obj->BBObj.GetMinLat(),
+                   obj->BBObj.GetMaxLon(), obj->BBObj.GetMaxLat()};
+  if (!g->geographic.Valid()) return g;
+  if (obj->Primitive_type == GEO_LINE) {
+    // Non-CM93 line encodings retain the complete geographic bounding box.
+    // They can cause conservative rejection, never a false clear answer.
+    if (!obj->geoPt || obj->npt < 2) {
+      g->valid = true;
+      return g;
+    }
+    g->kind = PreparedGeometry::kLine;
+    for (int i = 0; i < obj->npt; ++i) {
+      Point p{obj->geoPt[i].x * obj->x_rate + obj->x_origin,
+              obj->geoPt[i].y * obj->y_rate + obj->y_origin};
+      if (!Finite(p)) return g;
+      g->points.push_back(p);
+    }
+    g->valid = true;
+    return g;
+  }
+  if (obj->Primitive_type != GEO_AREA || !obj->pPolyTessGeo) return g;
+  if (!obj->pPolyTessGeo->IsOk()) obj->pPolyTessGeo->BuildDeferredTess();
+  if (!obj->pPolyTessGeo->IsOk()) return g;
+  auto *group = obj->pPolyTessGeo->Get_PolyTriGroup_head();
+  if (!group || !group->tri_prim_head) return g;
+  if (!group->m_bSMSENC &&
+      (!std::isfinite(obj->x_rate) || !std::isfinite(obj->y_rate) ||
+       obj->x_rate == 0 || obj->y_rate == 0))
+    return g;
+  g->kind = PreparedGeometry::kArea;
+  for (auto *p = group->tri_prim_head; p; p = p->p_next) {
+    if (!p->p_vertex || p->nVert < 3 ||
+        (group->data_type != DATA_TYPE_FLOAT &&
+         group->data_type != DATA_TYPE_DOUBLE) ||
+        (p->type != PTG_TRIANGLES && p->type != PTG_TRIANGLE_FAN &&
+         p->type != PTG_TRIANGLE_STRIP) ||
+        (p->type == PTG_TRIANGLES && p->nVert % 3))
+      return g;
+    std::vector<Point> vertices;
+    vertices.reserve(p->nVert);
+    for (int i = 0; i < p->nVert; ++i) {
+      Point v;
+      if (group->data_type == DATA_TYPE_DOUBLE)
+        v = {p->p_vertex[2 * i], p->p_vertex[2 * i + 1]};
+      else {
+        const auto *f = reinterpret_cast<const float *>(p->p_vertex);
+        v = {f[2 * i], f[2 * i + 1]};
+      }
+      if (!group->m_bSMSENC)
+        v = {v.x * obj->x_rate + obj->x_origin,
+             v.y * obj->y_rate + obj->y_origin};
+      if (!Finite(v)) return g;
+      vertices.push_back(v);
+    }
+    const int count = p->type == PTG_TRIANGLES ? p->nVert / 3 : p->nVert - 2;
+    for (int i = 0; i < count; ++i) {
+      const auto a = vertices[p->type == PTG_TRIANGLES      ? 3 * i
+                              : p->type == PTG_TRIANGLE_FAN ? 0
+                                                            : i];
+      const auto b = vertices[p->type == PTG_TRIANGLES ? 3 * i + 1 : i + 1];
+      const auto c = vertices[p->type == PTG_TRIANGLES ? 3 * i + 2 : i + 2];
+      g->triangles.push_back({a, b, c});
+      g->triangle_boxes.push_back(
+          {std::min({a.x, b.x, c.x}), std::min({a.y, b.y, c.y}),
+           std::max({a.x, b.x, c.x}), std::max({a.y, b.y, c.y})});
+    }
+  }
+  g->valid = !g->triangles.empty();
+  if (prepare_index) BuildTriangleBoundary(g.get());
+  return g;
+}
+
+int s57chart::PreparedSafetyBoxRelation(
+    const ocpn::chart_safety::PreparedGeometry &g, double min_lat,
+    double max_lat, double min_lon, double max_lon, bool require_coverage) {
+  using namespace ocpn::chart_safety;
+  constexpr double guard = .00002;
+  CellBox geographic{min_lon - guard, min_lat - guard, max_lon + guard,
+                     max_lat + guard};
+  if (!g.valid || !geographic.Valid() || geographic.min_y <= -85 ||
+      geographic.max_y >= 85 || geographic.max_x - geographic.min_x >= 180 ||
+      std::abs(geographic.min_x) > 540 || std::abs(geographic.max_x) > 540)
+    return -1;
+  const double centre = (geographic.min_x + geographic.max_x) / 2;
+  auto branch_lon = [&](double lon) {
+    return centre + std::remainder(lon - centre, 360.0);
+  };
+  if (g.kind == PreparedGeometry::kPoints)
+    return VisitPointsInCell(g, geographic, [](size_t) { return true; }) ? 1
+                                                                         : 0;
+  const double bbox_centre = (g.geographic.min_x + g.geographic.max_x) / 2;
+  const double shift = branch_lon(bbox_centre) - bbox_centre;
+  if (g.geographic.max_y < geographic.min_y ||
+      g.geographic.min_y > geographic.max_y ||
+      g.geographic.max_x + shift < geographic.min_x ||
+      g.geographic.min_x + shift > geographic.max_x)
+    return 0;
+  if (g.kind == PreparedGeometry::kConservativeBox) return 1;
+  double x[4], y[4];
+  const Point corners[] = {{geographic.min_x, geographic.min_y},
+                           {geographic.max_x, geographic.min_y},
+                           {geographic.max_x, geographic.max_y},
+                           {geographic.min_x, geographic.max_y}};
+  for (int i = 0; i < 4; ++i) {
+    toSM(corners[i].y, corners[i].x - shift, g.ref_lat, g.ref_lon, &x[i],
+         &y[i]);
+    if (!std::isfinite(x[i]) || !std::isfinite(y[i])) return -1;
+  }
+  CellBox box{*std::min_element(x, x + 4), *std::min_element(y, y + 4),
+              *std::max_element(x, x + 4), *std::max_element(y, y + 4)};
+  if (g.kind == PreparedGeometry::kLine) {
+    for (size_t i = 1; i < g.points.size(); ++i)
+      if (SegmentIntersectsCell(g.points[i - 1], g.points[i], box)) return 1;
+    return 0;
+  }
+  if (require_coverage && TessellationContainsCell(g, box)) return 2;
+  bool hit = false;
+  for (size_t i = 0; i < g.triangles.size(); ++i) {
+    const auto bounds = g.triangle_boxes[i];
+    if (bounds.max_x < box.min_x || bounds.min_x > box.max_x ||
+        bounds.max_y < box.min_y || bounds.min_y > box.max_y)
+      continue;
+    const auto t = g.triangles[i];
+    if (require_coverage && TriangleContainsCell(t[0], t[1], t[2], box))
+      return 2;
+    if (TriangleIntersectsCell(t[0], t[1], t[2], box)) {
+      if (!require_coverage) return 1;
+      hit = true;
+    }
+  }
+  return hit ? 1 : 0;
+}
+int s57chart::SafetyObjectBoxRelation(S57Obj *obj, double min_lat,
+                                      double max_lat, double min_lon,
+                                      double max_lon) {
+  return PreparedSafetyBoxRelation(*PrepareSafetyObjectGeometry(obj, false),
+                                   min_lat, max_lat, min_lon, max_lon);
+}
+bool s57chart::SafetySoundingMinDepthM(S57Obj *obj, double lat, double lon,
+                                       double radius, double *minimum,
+                                       bool *unknown) {
+  *unknown = false;
+  if (!obj || strncmp(obj->FeatureName, "SOUNDG", 6)) return false;
+  return ocpn::chart_safety::SoundingMinDepth(
+      *PrepareSafetyObjectGeometry(obj, false), lat, lon, radius, minimum,
+      unknown);
+}
+
+ListOfObjRazRules *s57chart::GetSafetyRulesAtLatLon(float lat, float lon,
+                                                    float radius) {
+  std::vector<ObjRazRules *> rules;
+  if (!std::isfinite(radius) || radius < 0 || !CollectSafetyTileRules(rules))
+    return nullptr;
+  auto *result = new ListOfObjRazRules;
+  for (auto *rule : rules) {
+    auto *obj = rule->obj;
+    if (!SafetyObjectMayIntersectBox(obj, lat - radius, lat + radius,
+                                     lon - radius, lon + radius))
+      continue;
+    const int hit = PreparedSafetyBoxRelation(
+        *PrepareSafetyObjectGeometry(obj, false), lat - radius, lat + radius,
+        lon - radius, lon + radius, false);
+    if (hit < 0) {
+      delete result;
+      return nullptr;
+    }
+    if (hit) result->Append(rule);
+  }
+  return result;
+}
+
+void s57chart::CollectSafetyTileAreaRules(ViewPort *viewport,
+                                          std::vector<ObjRazRules *> &rules) {
+  rules.clear();
+  PrepareForRender(viewport, ps52plib);
+  const int area_index = ps52plib->m_nBoundaryStyle == PLAIN_BOUNDARIES ? 3 : 4;
+  for (int priority = 0; priority < PRIO_NUM; ++priority) {
+    for (ObjRazRules *rule = razRules[priority][area_index]; rule;
+         rule = rule->next) {
+      if (ps52plib->ObjectRenderCheck(rule)) rules.push_back(rule);
+    }
+  }
+}
+
+size_t s57chart::CollectFeatureAreaRings(
+    const char *feature_name,
+    std::vector<std::vector<wxPoint2DDouble> > &rings) {
+  if (!feature_name) return 0;
+
+  std::set<S57Obj *> seen_objects;
+  const int area_rule_indexes[] = {3, 4};
+
+  for (int priority = 0; priority < PRIO_NUM; ++priority) {
+    for (size_t rule_index = 0;
+         rule_index < sizeof(area_rule_indexes) / sizeof(area_rule_indexes[0]);
+         ++rule_index) {
+      ObjRazRules *rule = razRules[priority][area_rule_indexes[rule_index]];
+      while (rule) {
+        S57Obj *obj = rule->obj;
+        if (obj && obj->Primitive_type == GEO_AREA &&
+            !strncmp(obj->FeatureName, feature_name, 6) && obj->pPolyTessGeo &&
+            !seen_objects.count(obj)) {
+          seen_objects.insert(obj);
+
+          if (!obj->pPolyTessGeo->IsOk())
+            obj->pPolyTessGeo->BuildDeferredTess();
+          PolyTriGroup *group = obj->pPolyTessGeo->Get_PolyTriGroup_head();
+          if (group && group->pgroup_geom && group->pn_vertex) {
+            int offset = 0;
+            float *poly_geom = group->pgroup_geom;
+            for (int contour = 0; contour < group->nContours; ++contour) {
+              int npt = group->pn_vertex[contour];
+              if (npt >= 3) {
+                std::vector<wxPoint2DDouble> ring;
+                ring.reserve(npt);
+                bool valid_ring = true;
+                for (int i = 0; i < npt; ++i) {
+                  double lon = poly_geom[offset + 2 * i];
+                  double lat = poly_geom[offset + 2 * i + 1];
+                  if (!std::isfinite(lat) || !std::isfinite(lon) ||
+                      lat < -90.0 || lat > 90.0 || lon < -180.0 ||
+                      lon > 180.0) {
+                    valid_ring = false;
+                    break;
+                  }
+                  ring.push_back(wxPoint2DDouble(lon, lat));
+                }
+                if (valid_ring) rings.push_back(ring);
+              }
+              offset += npt * 2;
+            }
+          }
+        }
+        rule = rule->next;
+      }
+    }
+  }
+
+  return rings.size();
+}
+
+static double SafetyAreaCross(double ax, double ay, double bx, double by,
+                              double cx, double cy) {
+  return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+}
+
+static bool SafetyAreaPointOnSegment(double ax, double ay, double bx, double by,
+                                     double px, double py) {
+  const double epsilon = 1e-10;
+  return fabs(SafetyAreaCross(ax, ay, bx, by, px, py)) <= epsilon &&
+         px >= wxMin(ax, bx) - epsilon && px <= wxMax(ax, bx) + epsilon &&
+         py >= wxMin(ay, by) - epsilon && py <= wxMax(ay, by) + epsilon;
+}
+
+static bool SafetyAreaSegmentsIntersect(double ax, double ay, double bx,
+                                        double by, double cx, double cy,
+                                        double dx, double dy) {
+  const double ab_c = SafetyAreaCross(ax, ay, bx, by, cx, cy);
+  const double ab_d = SafetyAreaCross(ax, ay, bx, by, dx, dy);
+  const double cd_a = SafetyAreaCross(cx, cy, dx, dy, ax, ay);
+  const double cd_b = SafetyAreaCross(cx, cy, dx, dy, bx, by);
+  if (((ab_c > 0.0 && ab_d < 0.0) || (ab_c < 0.0 && ab_d > 0.0)) &&
+      ((cd_a > 0.0 && cd_b < 0.0) || (cd_a < 0.0 && cd_b > 0.0)))
+    return true;
+  return SafetyAreaPointOnSegment(ax, ay, bx, by, cx, cy) ||
+         SafetyAreaPointOnSegment(ax, ay, bx, by, dx, dy) ||
+         SafetyAreaPointOnSegment(cx, cy, dx, dy, ax, ay) ||
+         SafetyAreaPointOnSegment(cx, cy, dx, dy, bx, by);
+}
+
+static bool SafetyAreaPointInTriangle(double px, double py, double ax,
+                                      double ay, double bx, double by,
+                                      double cx, double cy) {
+  const double c1 = SafetyAreaCross(ax, ay, bx, by, px, py);
+  const double c2 = SafetyAreaCross(bx, by, cx, cy, px, py);
+  const double c3 = SafetyAreaCross(cx, cy, ax, ay, px, py);
+  const bool negative = c1 < 0.0 || c2 < 0.0 || c3 < 0.0;
+  const bool positive = c1 > 0.0 || c2 > 0.0 || c3 > 0.0;
+  return !(negative && positive);
+}
+
+static bool SafetyAreaTriangleMayAffectBox(double ax, double ay, double bx,
+                                           double by, double cx, double cy,
+                                           double min_x, double max_x,
+                                           double min_y, double max_y) {
+  if (wxMax(ax, wxMax(bx, cx)) < min_x || wxMin(ax, wxMin(bx, cx)) > max_x ||
+      wxMax(ay, wxMax(by, cy)) < min_y || wxMin(ay, wxMin(by, cy)) > max_y)
+    return false;
+
+  const double triangle_x[] = {ax, bx, cx};
+  const double triangle_y[] = {ay, by, cy};
+  for (int vertex = 0; vertex < 3; ++vertex)
+    if (triangle_x[vertex] >= min_x && triangle_x[vertex] <= max_x &&
+        triangle_y[vertex] >= min_y && triangle_y[vertex] <= max_y)
+      return true;
+
+  const double corner_x[] = {min_x, max_x, max_x, min_x};
+  const double corner_y[] = {min_y, min_y, max_y, max_y};
+  for (int corner = 0; corner < 4; ++corner)
+    if (SafetyAreaPointInTriangle(corner_x[corner], corner_y[corner], ax, ay,
+                                  bx, by, cx, cy))
+      return true;
+
+  for (int triangle_edge = 0; triangle_edge < 3; ++triangle_edge) {
+    const int triangle_next = (triangle_edge + 1) % 3;
+    for (int box_edge = 0; box_edge < 4; ++box_edge) {
+      const int box_next = (box_edge + 1) % 4;
+      if (SafetyAreaSegmentsIntersect(
+              triangle_x[triangle_edge], triangle_y[triangle_edge],
+              triangle_x[triangle_next], triangle_y[triangle_next],
+              corner_x[box_edge], corner_y[box_edge], corner_x[box_next],
+              corner_y[box_next]))
+        return true;
+    }
+  }
+  return false;
+}
+
+bool s57chart::SafetyAreaHazardMayIntersect(double min_lat, double max_lat,
+                                            double min_lon, double max_lon,
+                                            int *hazard_objects) {
+  if (hazard_objects) *hazard_objects = 0;
+  std::set<S57Obj *> seen_objects;
+  const int area_rule_indexes[] = {3, 4};
+
+  for (int priority = 0; priority < PRIO_NUM; ++priority) {
+    for (size_t rule_index = 0;
+         rule_index < sizeof(area_rule_indexes) / sizeof(area_rule_indexes[0]);
+         ++rule_index) {
+      ObjRazRules *rule = razRules[priority][area_rule_indexes[rule_index]];
+      while (rule) {
+        S57Obj *obj = rule->obj;
+        if (obj && obj->Primitive_type == GEO_AREA &&
+            seen_objects.insert(obj).second) {
+          const bool land = !strncmp(obj->FeatureName, "LNDARE", 6);
+          const bool drying_area = !strncmp(obj->FeatureName, "DRGARE", 6);
+          wxString watlev = obj->GetAttrValueAsString("WATLEV");
+          watlev.Trim(true);
+          watlev.Trim(false);
+          const bool drying_level = watlev == "4";
+          if (land || drying_area || drying_level) {
+            if (hazard_objects) ++*hazard_objects;
+            // An invalid object box cannot support a negative safety proof.
+            if (!obj->BBObj.GetValid()) return true;
+            if (!(obj->BBObj.GetMaxLat() < min_lat ||
+                  obj->BBObj.GetMinLat() > max_lat ||
+                  obj->BBObj.GetMaxLon() < min_lon ||
+                  obj->BBObj.GetMinLon() > max_lon)) {
+              if (!obj->pPolyTessGeo) return true;
+              if (!obj->pPolyTessGeo->IsOk())
+                obj->pPolyTessGeo->BuildDeferredTess();
+              PolyTriGroup *group = obj->pPolyTessGeo->Get_PolyTriGroup_head();
+              if (!group || !group->tri_prim_head) return true;
+
+              double box_x[4];
+              double box_y[4];
+              const double corner_lon[] = {min_lon, max_lon, max_lon, min_lon};
+              const double corner_lat[] = {min_lat, min_lat, max_lat, max_lat};
+              for (int corner = 0; corner < 4; ++corner) {
+                toSM(corner_lat[corner], corner_lon[corner], ref_lat, ref_lon,
+                     &box_x[corner], &box_y[corner]);
+                if (!group->m_bSMSENC) {
+                  box_x[corner] = (box_x[corner] - obj->x_origin) / obj->x_rate;
+                  box_y[corner] = (box_y[corner] - obj->y_origin) / obj->y_rate;
+                }
+              }
+              const double min_x =
+                  *std::min_element(box_x, box_x + WXSIZEOF(box_x));
+              const double max_x =
+                  *std::max_element(box_x, box_x + WXSIZEOF(box_x));
+              const double min_y =
+                  *std::min_element(box_y, box_y + WXSIZEOF(box_y));
+              const double max_y =
+                  *std::max_element(box_y, box_y + WXSIZEOF(box_y));
+
+              for (TriPrim *primitive = group->tri_prim_head; primitive;
+                   primitive = primitive->p_next) {
+                if (group->data_type != DATA_TYPE_DOUBLE &&
+                    group->data_type != DATA_TYPE_FLOAT)
+                  return true;
+                auto Vertex = [group, primitive](int index, double *x,
+                                                 double *y) {
+                  if (group->data_type == DATA_TYPE_DOUBLE) {
+                    const double *vertices = primitive->p_vertex;
+                    *x = vertices[index * 2];
+                    *y = vertices[index * 2 + 1];
+                  } else {
+                    const float *vertices =
+                        reinterpret_cast<const float *>(primitive->p_vertex);
+                    *x = vertices[index * 2];
+                    *y = vertices[index * 2 + 1];
+                  }
+                };
+                if (primitive->type != PTG_TRIANGLES &&
+                    primitive->type != PTG_TRIANGLE_STRIP &&
+                    primitive->type != PTG_TRIANGLE_FAN)
+                  return true;
+                const int triangle_count = primitive->type == PTG_TRIANGLES
+                                               ? primitive->nVert / 3
+                                               : wxMax(0, primitive->nVert - 2);
+                for (int triangle = 0; triangle < triangle_count; ++triangle) {
+                  const int first =
+                      primitive->type == PTG_TRIANGLE_FAN
+                          ? 0
+                          : (primitive->type == PTG_TRIANGLES ? triangle * 3
+                                                              : triangle);
+                  const int second = primitive->type == PTG_TRIANGLE_FAN
+                                         ? triangle + 1
+                                         : first + 1;
+                  const int third = primitive->type == PTG_TRIANGLE_FAN
+                                        ? triangle + 2
+                                        : first + 2;
+                  double ax, ay, bx, by, cx, cy;
+                  Vertex(first, &ax, &ay);
+                  Vertex(second, &bx, &by);
+                  Vertex(third, &cx, &cy);
+                  if (SafetyAreaTriangleMayAffectBox(
+                          ax, ay, bx, by, cx, cy, min_x, max_x, min_y, max_y))
+                    return true;
+                }
+              }
+            }
+          }
+        }
+        rule = rule->next;
+      }
+    }
+  }
+  return false;
+}
+
+wxString s57chart::GetFeatureDebugSummary() {
+  std::set<S57Obj *> seen_objects;
+  int total = 0;
+  int area = 0;
+  int line = 0;
+  int point = 0;
+  int with_poly = 0;
+  int lndare = 0;
+  int coalne = 0;
+  int depare = 0;
+  int drgare = 0;
+  int unsare = 0;
+  int m_covr = 0;
+  int areas = 0;
+  int background = 0;
+
+  for (int priority = 0; priority < PRIO_NUM; ++priority) {
+    for (int lup = 0; lup < LUPNAME_NUM; ++lup) {
+      ObjRazRules *rule = razRules[priority][lup];
+      while (rule) {
+        S57Obj *obj = rule->obj;
+        if (obj && !seen_objects.count(obj)) {
+          seen_objects.insert(obj);
+          ++total;
+          if (obj->Primitive_type == GEO_AREA) ++area;
+          if (obj->Primitive_type == GEO_LINE) ++line;
+          if (obj->Primitive_type == GEO_POINT) ++point;
+          if (obj->pPolyTessGeo) ++with_poly;
+
+          if (!strncmp(obj->FeatureName, "LNDARE", 6)) ++lndare;
+          if (!strncmp(obj->FeatureName, "COALNE", 6)) ++coalne;
+          if (!strncmp(obj->FeatureName, "DEPARE", 6)) ++depare;
+          if (!strncmp(obj->FeatureName, "DRGARE", 6)) ++drgare;
+          if (!strncmp(obj->FeatureName, "UNSARE", 6)) ++unsare;
+          if (!strncmp(obj->FeatureName, "M_COVR", 6)) ++m_covr;
+          if (!strncmp(obj->FeatureName, "$AREAS", 6)) ++areas;
+          if (!strncmp(obj->FeatureName, "BACKGR", 6)) ++background;
+        }
+        rule = rule->next;
+      }
+    }
+  }
+
+  return wxString::Format(
+      "objects total=%d area=%d line=%d point=%d with_poly=%d "
+      "LNDARE=%d COALNE=%d DEPARE=%d DRGARE=%d UNSARE=%d M_COVR=%d "
+      "$AREAS=%d BACKGR=%d",
+      total, area, line, point, with_poly, lndare, coalne, depare, drgare,
+      unsare, m_covr, areas, background);
 }
 
 bool s57chart::DoesLatLonSelectObject(float lat, float lon, float select_radius,

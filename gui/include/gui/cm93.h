@@ -36,6 +36,16 @@
 
 #define CM93_ZOOM_FACTOR_MAX_RANGE 5
 
+/** Safety extraction has its own progress reporting. Suppress per-cell
+ * global busy-cursor changes only for this thread and this nested scope. */
+class Cm93SafetyQueryScope {
+public:
+  Cm93SafetyQueryScope();
+  ~Cm93SafetyQueryScope();
+  Cm93SafetyQueryScope(const Cm93SafetyQueryScope &) = delete;
+  Cm93SafetyQueryScope &operator=(const Cm93SafetyQueryScope &) = delete;
+};
+
 class CM93OffsetDialog;                       // Forward
 extern CM93OffsetDialog *g_pCM93OffsetDialog; /**< Global instance */
 
@@ -324,6 +334,8 @@ public:
   void SetCM93Manager(cm93manager *pManager) { m_pManager = pManager; }
 
   bool UpdateCovrSet(ViewPort *vpt);
+  int SafetyCoverageBoxRelation(double min_lat, double max_lat, double min_lon,
+                                double max_lon);
   bool IsPointInLoadedM_COVR(double xc, double yc);
   covr_set *GetCoverSet() { return m_pcovr_set; }
   LLRegion GetValidRegion();
@@ -459,6 +471,34 @@ public:
                                             float select_radius,
                                             ViewPort *VPoint,
                                             int selection_mask = MASK_ALL);
+  size_t CollectFeatureAreaRings(
+      const char *feature_name,
+      std::vector<std::vector<wxPoint2DDouble> > &rings) override;
+  wxString GetFeatureDebugSummary() override;
+  /**
+   * Load every CM93 scale intersecting a chart-safety viewport once.  Safety
+   * grid generation can then classify all points in the viewport without
+   * changing the composite viewport (and re-running CM93 scale/cell
+   * selection) for every point.
+   */
+  void PrepareSafetyTile(const ViewPort &vpt);
+  /**
+   * Return the highest-detail prepared single-scale chart which covers the
+   * point, or NULL when no prepared CM93 coverage contains it.
+   */
+  cm93chart *GetHighestDetailSafetyChartAt(double lat, double lon);
+  /** Whole-box coverage by one highest-detail prepared chart. Ambiguous
+   * boundaries, coverage holes and longitude wrapping refuse the shortcut. */
+  cm93chart *GetUniformSafetyChartForBox(double min_lat, double max_lat,
+                                         double min_lon, double max_lon);
+  /**
+   * Test all prepared CM93 scales for a land or drying area whose bounding
+   * box intersects the query.  A false result is a conservative open-water
+   * certificate for the currently prepared working set.
+   */
+  bool SafetyAreaHazardMayIntersect(double min_lat, double max_lat,
+                                    double min_lon, double max_lon,
+                                    int *hazard_objects = NULL);
   S57ObjectDesc *CreateObjDescription(const ObjRazRules *obj);
 
   std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void);

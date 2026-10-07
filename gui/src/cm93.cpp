@@ -45,6 +45,7 @@
 
 #include "chcanv.h"
 #include "cm93.h"
+#include "chart_safety_geometry.h"
 #include "detail_slider.h"
 #include "gui_lib.h"
 #include "line_clip.h"
@@ -67,6 +68,13 @@
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
 #endif
+
+namespace {
+thread_local unsigned cm93_safety_query_depth = 0;
+}
+
+Cm93SafetyQueryScope::Cm93SafetyQueryScope() { ++cm93_safety_query_depth; }
+Cm93SafetyQueryScope::~Cm93SafetyQueryScope() { --cm93_safety_query_depth; }
 
 extern s52plib *ps52plib;
 
@@ -2019,13 +2027,15 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
 
     //    The cell is not in place, so go load it
     if (!bcell_is_in) {
+      bool added_geometry = false;
 #ifndef __OCPN__ANDROID__
-      AbstractPlatform::ShowBusySpinner();
+      if (!cm93_safety_query_depth) AbstractPlatform::ShowBusySpinner();
 #endif
       int cell_index = vpcells[i];
 
       if (loadcell_in_sequence(cell_index, '0'))  // Base cell
       {
+        added_geometry = true;
         ProcessVectorEdges();
         CreateObjChain(cell_index, (int)'0', vpt.view_scale_ppm);
 
@@ -2041,6 +2051,7 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       //    Load any subcells in sequence
       //    On successful load, add it to the member list and process the cell
       while (loadcell_in_sequence(cell_index, loadcell_key)) {
+        added_geometry = true;
         ProcessVectorEdges();
         CreateObjChain(cell_index, (int)loadcell_key, vpt.view_scale_ppm);
 
@@ -2055,6 +2066,11 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
         loadcell_key++;
       }
 
+      // Keep absent-cell retries, but unchanged geometry needs no rebuild.
+      if (!added_geometry) {
+        if (!cm93_safety_query_depth) AbstractPlatform::HideBusySpinner();
+        continue;
+      }
       AssembleLineGeometry();
 
       ClearDepthContourArray();
@@ -2085,7 +2101,7 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
         }
       }
 
-      AbstractPlatform::HideBusySpinner();
+      if (!cm93_safety_query_depth) AbstractPlatform::HideBusySpinner();
     }
   }
 }
@@ -4183,6 +4199,39 @@ bool cm93chart::UpdateCovrSet(ViewPort *vpt) {
   return true;
 }
 
+int cm93chart::SafetyCoverageBoxRelation(double min_lat, double max_lat,
+                                         double min_lon, double max_lon) {
+  using namespace ocpn::chart_safety;
+  const CellBox box{min_lon, min_lat, max_lon, max_lat};
+  if (!box.Valid() || max_lon - min_lon >= 180 || min_lat <= -85 ||
+      max_lat >= 85)
+    return -1;
+  const double centre = (min_lon + max_lon) / 2;
+  bool covered = false, partial = false;
+  for (unsigned i = 0; i < m_pcovr_array_loaded.GetCount(); ++i) {
+    const auto *coverage = m_pcovr_array_loaded[i];
+    if (!coverage || coverage->m_nvertices < 3 || !coverage->pvertices ||
+        coverage->user_xoff != 0 || coverage->user_yoff != 0)
+      return -1;
+    std::vector<std::vector<Point>> rings(1);
+    auto &ring = rings.front();
+    for (int v = 0; v < coverage->m_nvertices; ++v) {
+      const auto p = coverage->pvertices[v];
+      if (!std::isfinite(p.x) || !std::isfinite(p.y)) return -1;
+      ring.push_back({centre + std::remainder(p.x - centre, 360.0), p.y});
+    }
+    for (size_t v = 0; v < ring.size(); ++v)
+      if (std::abs(ring[v].x - ring[(v + 1) % ring.size()].x) >= 180) return -1;
+    if (BoundaryMayIntersectCell(rings, box))
+      partial = true;
+    else if (PointInsideRings(rings, {centre, (min_lat + max_lat) / 2}))
+      covered = true;
+  }
+  // Refuse partial coverage even if another overlapping polygon contains the
+  // box: this keeps the first prototype conservative at coverage boundaries.
+  return partial ? 1 : covered ? 2 : 0;
+}
+
 bool cm93chart::IsPointInLoadedM_COVR(double xc, double yc) {
   //  Provisionally revert to older method pending investigation.
 #if 1
@@ -4940,6 +4989,96 @@ int cm93compchart::GetNativeScale() {
     return m_pcm93chart_current->GetNativeScale();
   else
     return (int)1e8;
+}
+
+size_t cm93compchart::CollectFeatureAreaRings(
+    const char *feature_name,
+    std::vector<std::vector<wxPoint2DDouble>> &rings) {
+  size_t before = rings.size();
+
+  if (m_pcm93chart_current)
+    m_pcm93chart_current->CollectFeatureAreaRings(feature_name, rings);
+
+  return rings.size() - before;
+}
+
+wxString cm93compchart::GetFeatureDebugSummary() {
+  if (m_pcm93chart_current)
+    return wxString::Format("current_cm93_scale=%d %s",
+                            m_pcm93chart_current->GetNativeScale(),
+                            m_pcm93chart_current->GetFeatureDebugSummary());
+
+  return "current_cm93_scale=none";
+}
+
+void cm93compchart::PrepareSafetyTile(const ViewPort &vpt) {
+  // CM93's normal composite selection is deliberately viewport-dependent.
+  // Repeating it for every point in a 41x41 safety tile is both unnecessary
+  // and extremely expensive.  Prepare all eight scales over the complete
+  // tile once; point classification below still selects the highest-detail
+  // scale whose real M_COVR contains that exact point.
+  for (int cmscale = 0; cmscale < 8; ++cmscale) {
+    if (!m_pcm93chart_array[cmscale]) {
+      m_pcm93chart_array[cmscale] = new cm93chart();
+
+      wxChar ext = (wxChar)('A' + cmscale - 1);
+      if (cmscale == 0) ext = 'Z';
+      wxString file_dummy = "CM93.";
+      file_dummy << ext;
+
+      m_pcm93chart_array[cmscale]->SetCM93Dict(m_pDictComposite);
+      m_pcm93chart_array[cmscale]->SetCM93Prefix(m_prefixComposite);
+      m_pcm93chart_array[cmscale]->SetCM93Manager(m_pcm93mgr);
+      m_pcm93chart_array[cmscale]->SetColorScheme(m_global_color_scheme);
+      m_pcm93chart_array[cmscale]->Init(file_dummy, FULL_INIT);
+    }
+    m_pcm93chart_array[cmscale]->SetVPParms(vpt);
+  }
+}
+
+cm93chart *cm93compchart::GetHighestDetailSafetyChartAt(double lat,
+                                                        double lon) {
+  for (int cmscale = 7; cmscale >= 0; --cmscale) {
+    cm93chart *chart = m_pcm93chart_array[cmscale];
+    if (chart && chart->IsPointInLoadedM_COVR(lon, lat)) return chart;
+  }
+  return NULL;
+}
+
+cm93chart *cm93compchart::GetUniformSafetyChartForBox(double min_lat,
+                                                      double max_lat,
+                                                      double min_lon,
+                                                      double max_lon) {
+  if (min_lon <= -180 || max_lon >= 180) return nullptr;
+  for (int scale = 7; scale >= 0; --scale) {
+    auto *chart = m_pcm93chart_array[scale];
+    if (!chart) continue;
+    const int relation =
+        chart->SafetyCoverageBoxRelation(min_lat, max_lat, min_lon, max_lon);
+    if (relation == 2) return chart;
+    if (relation != 0) return nullptr;
+  }
+  return nullptr;
+}
+
+bool cm93compchart::SafetyAreaHazardMayIntersect(double min_lat, double max_lat,
+                                                 double min_lon, double max_lon,
+                                                 int *hazard_objects) {
+  int total_hazard_objects = 0;
+  for (int cmscale = 0; cmscale < 8; ++cmscale) {
+    cm93chart *chart = m_pcm93chart_array[cmscale];
+    if (!chart) continue;
+    int scale_hazard_objects = 0;
+    if (chart->SafetyAreaHazardMayIntersect(min_lat, max_lat, min_lon, max_lon,
+                                            &scale_hazard_objects)) {
+      total_hazard_objects += scale_hazard_objects;
+      if (hazard_objects) *hazard_objects = total_hazard_objects;
+      return true;
+    }
+    total_hazard_objects += scale_hazard_objects;
+  }
+  if (hazard_objects) *hazard_objects = total_hazard_objects;
+  return false;
 }
 
 double cm93compchart::GetNormalScaleMin(double canvas_scale_factor,
