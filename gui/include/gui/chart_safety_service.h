@@ -30,6 +30,47 @@ inline bool MayPrefetchNeighbour(long elapsed_ms, int max_milliseconds) {
   return max_milliseconds <= 0 || elapsed_ms < max_milliseconds;
 }
 
+/**
+ * Plan one aligned 0.2-degree lookahead block around a live 0.05-degree tile.
+ *
+ * The block is a scheduling unit only. Every returned tile still goes through
+ * the authoritative provider and fine-grid classifier. Depth and force-fine
+ * requests remain demand-only because one depth tile can be much more costly
+ * than an open-water land tile.
+ */
+inline std::vector<std::pair<long, long>> PlanAdaptiveLookaheadTiles(
+    long centre_lat_tile, long centre_lon_tile, bool check_depth,
+    bool force_authoritative_fine, int coarse_factor = 4) {
+  std::vector<std::pair<long, long>> tiles;
+  if (check_depth || force_authoritative_fine || coarse_factor <= 1)
+    return tiles;
+  const long start_lat =
+      static_cast<long>(
+          std::floor(static_cast<double>(centre_lat_tile) / coarse_factor)) *
+      coarse_factor;
+  const long start_lon =
+      static_cast<long>(
+          std::floor(static_cast<double>(centre_lon_tile) / coarse_factor)) *
+      coarse_factor;
+  for (int dlat = 0; dlat < coarse_factor; ++dlat) {
+    for (int dlon = 0; dlon < coarse_factor; ++dlon) {
+      const std::pair<long, long> tile{start_lat + dlat, start_lon + dlon};
+      if (tile.first == centre_lat_tile && tile.second == centre_lon_tile)
+        continue;
+      tiles.push_back(tile);
+    }
+  }
+  std::stable_sort(
+      tiles.begin(), tiles.end(), [&](const auto& a, const auto& b) {
+        const long a_lat = a.first - centre_lat_tile;
+        const long a_lon = a.second - centre_lon_tile;
+        const long b_lat = b.first - centre_lat_tile;
+        const long b_lon = b.second - centre_lon_tile;
+        return a_lat * a_lat + a_lon * a_lon < b_lat * b_lat + b_lon * b_lon;
+      });
+  return tiles;
+}
+
 struct TileBatchBlock {
   long min_lat_tile;
   long max_lat_tile;

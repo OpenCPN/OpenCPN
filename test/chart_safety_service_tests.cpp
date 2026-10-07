@@ -10,6 +10,7 @@ using ocpn::chart_safety::ExpandCandidateDiscoveryBounds;
 using ocpn::chart_safety::GeographicBounds;
 using ocpn::chart_safety::GlobalGridCoordinate;
 using ocpn::chart_safety::MayPrefetchNeighbour;
+using ocpn::chart_safety::PlanAdaptiveLookaheadTiles;
 using ocpn::chart_safety::PlanTileBatchBlocks;
 
 TEST(ChartSafetyService, PermitsPrefetchBeforePositiveBudgetExpires) {
@@ -24,6 +25,25 @@ TEST(ChartSafetyService, StopsPrefetchAtAndAfterBudget) {
 TEST(ChartSafetyService, NonPositiveBudgetIsUnlimited) {
   EXPECT_TRUE(MayPrefetchNeighbour(5000, 0));
   EXPECT_TRUE(MayPrefetchNeighbour(5000, -1));
+}
+
+TEST(ChartSafetyService, AdaptiveLookaheadFillsAlignedCoarseBlock) {
+  const auto tiles = PlanAdaptiveLookaheadTiles(-371, -3420, false, false);
+  ASSERT_EQ(tiles.size(), 15u);
+  std::set<std::pair<long, long>> unique(tiles.begin(), tiles.end());
+  EXPECT_EQ(unique.size(), 15u);
+  EXPECT_EQ(unique.count({-371, -3420}), 0u);
+  for (const auto& tile : tiles) {
+    EXPECT_GE(tile.first, -372);
+    EXPECT_LE(tile.first, -369);
+    EXPECT_GE(tile.second, -3420);
+    EXPECT_LE(tile.second, -3417);
+  }
+}
+
+TEST(ChartSafetyService, AdaptiveLookaheadKeepsExpensiveChecksDemandOnly) {
+  EXPECT_TRUE(PlanAdaptiveLookaheadTiles(100, -20, true, false).empty());
+  EXPECT_TRUE(PlanAdaptiveLookaheadTiles(100, -20, false, true).empty());
 }
 
 TEST(ChartSafetyService, PlansProviderSizedGeographicBlocks) {

@@ -427,6 +427,7 @@ wxString SegmentSafetyRuleSummary(ObjRazRules *rule);
 bool SegmentSafetyRuleDepthMinM(ObjRazRules *rule, double *depth_m);
 bool SegmentSafetyRuleIsDrying(ObjRazRules *rule);
 bool SegmentSafetyRuleIsAlwaysDry(ObjRazRules *rule);
+bool SegmentSafetyIsIsolatedDanger(const char *feature_name);
 bool SegmentSafetyRuleDangerDepthM(ObjRazRules *rule, double *depth_m,
                                    bool *unknown_depth);
 wxString SegmentSafetyPluginObjectSummary(PI_S57Obj *obj);

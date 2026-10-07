@@ -50,6 +50,7 @@ endif ()
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
+  chart_safety_geometry_tests.cpp
   chart_safety_depth_tests.cpp
   chart_safety_service_tests.cpp
   navigation_safety_tests.cpp

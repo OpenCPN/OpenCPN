@@ -7849,9 +7849,9 @@ public:
    * GUI thread and the route checked again. No route is inserted or changed.
    */
   virtual bool CheckNavigationRoute(
-      const NavigationSafetyProfile& profile,
-      const std::vector<NavigationSafetyPosition>& positions,
-      NavigationRouteSafetyResult* result) = 0;
+      const NavigationSafetyProfile &profile,
+      const std::vector<NavigationSafetyPosition> &positions,
+      NavigationRouteSafetyResult *result) = 0;
 
   /** Build or reuse the listed base tiles on the GUI thread. */
   virtual bool PrepareSegmentSafetyTiles(const long *lat_tiles,

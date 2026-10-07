@@ -1,6 +1,6 @@
-# Draft chart-safety service for HostApi123
+# Chart-aware routing support for xWeatherRouting 1.27
 
-## Scope of this milestone
+## Scope of the combined proposal
 
 This branch implements the shared chart-checking foundation discussed in
 [issue #5401](https://github.com/OpenCPN/OpenCPN/issues/5401) and overlaps the
@@ -29,6 +29,30 @@ Implemented:
 - Rejection of non-finite coordinates and invalid allowances. Early calls while
   the chart database is rebuilding return NoData without storing false coverage
   results in the tile cache.
+
+The 1.27 support adds adaptive aligned fine-tile lookahead, reuse of decoded
+CM93 rules while the loaded cell is unchanged, and mixed provider/CM93 boundary
+recovery. Only complete fine coverage can promote a coarse search certificate;
+depth and final validation retain fine checks.
+
+Native S-57/CM93 extraction is independent of chart display styles. Prepared
+geometry retains tiny land/shallow/drying areas, point/line/area isolated dangers,
+dateline geometry, local soundings and unresolved geometry. Unknown hazard depth
+cannot borrow a safe depth from surrounding water. Soundings provide local depth
+evidence and cannot certify coverage. The semantic cache identity changes when
+these classifier semantics change.
+
+A complete-polygon, uniform-depth tile proof is available only when explicitly
+enabled with `OCPN_CHART_SAFETY_GEOMETRY_PROOF=1`. Coverage holes, conflicting
+areas, land, drying features, isolated dangers or unresolved geometry prevent
+that shortcut. It is off by default pending broader qualification. Mutable
+chart extraction remains on the GUI thread; the acceleration does not permit
+worker access to chart objects.
+
+This combines the modular API work from #5460 with subsequent safety and
+acceleration changes. It supersedes the experimental global-function proposal
+in #5400. The implementation is split into core, raster, facade and navigation
+modules, rather than extending `ocpn_plugin_gui.cpp`.
 
 Profiles are caller-owned values. The host does not silently choose defaults,
 apply a day/night context or persist a vessel profile. No existing route is
@@ -148,11 +172,22 @@ not distributed with this patch; other fixtures require corresponding expected
 results. Clear only the disposable profile's chart-safety caches before a cold
 worker test. A warm cache can legitimately bypass PendingData.
 
-The September 28 local run passed 23 focused core tests, 203 coordinated Weather
-Routing tests, stock 5.14.2 plugin compatibility, and the CM93 probe cases. Four
-existing loopback tests segfaulted on both the stock control and this candidate;
-this is not a claim that the full upstream suite is green. The o-charts provider
-built and loaded. Its retained extraction code had already passed licensed-chart
-testing before this port; those geographical checks were not repeated here.
-The local helper dependency was supplied privately to the test instance. No
-cross-platform result is implied.
+Historical September 28 checks of the preceding API port passed 23 focused
+core tests and 203 consumer tests, plus stock 5.14.2 compatibility and CM93 probe
+cases. Those results are background, not qualification of this combined branch.
+Four loopback tests failed in both that candidate and the stock control.
+
+The new native fixture harness can be built after the Linux Makefiles host build:
+
+```sh
+python3 test/build_chart_safety_native_tests.py --build-dir build --output-dir native-tests
+# Run under a private virtual display, using a disposable runtime environment.
+DISPLAY=:188 native-tests/native-fixtures
+```
+
+It exercises production CM93/S-57 classification and typed provider visits
+without adding exported test hooks. The pure geometry tests include generated
+comparisons against the direct geometry predicates. Licensed S-63 geographical
+qualification and enhanced Android host runtime qualification remain separate
+release gates. The existing provider branch must be used with the matching
+HostApi123 header; this core PR does not change or publish the o-charts plugin.

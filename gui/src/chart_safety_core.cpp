@@ -80,6 +80,7 @@
 #include "font_mgr.h"
 #include "gl_chart_canvas.h"
 #include "chart_safety_depth.h"
+#include "chart_safety_geometry.h"
 #include "chart_safety_api.h"
 #include "chart_safety_service.h"
 #include "chart_safety_internal.h"
@@ -493,7 +494,7 @@ bool SegmentSafetyParseDouble(wxString value, double* out) {
   value.Trim(false);
   if (value.empty()) return false;
   double parsed = 0.0;
-  if (!value.ToDouble(&parsed)) return false;
+  if (!value.ToDouble(&parsed) || !std::isfinite(parsed)) return false;
   if (out) *out = parsed;
   return true;
 }
@@ -517,9 +518,7 @@ bool SegmentSafetyWaterLevelIs(const wxString& value, int code) {
 }
 
 bool SegmentSafetyIsIsolatedDanger(const char* feature_name) {
-  return feature_name && (!strncmp(feature_name, "WRECKS", 6) ||
-                          !strncmp(feature_name, "UWTROC", 6) ||
-                          !strncmp(feature_name, "OBSTRN", 6));
+  return ocpn::chart_safety::IsIsolatedDanger(feature_name);
 }
 
 bool SegmentSafetyRuleIsDrying(ObjRazRules* rule) {
@@ -1456,17 +1455,15 @@ wxString SegmentSafetyChartIdentity() {
   // Keep only global semantic inputs here.  Individual chart metadata is
   // fingerprinted per tile, allowing a chart update to invalidate affected
   // waters without discarding an otherwise valid regional atlas.
-  SegmentSafetyHashAdd(&hash, "semantic-grid-v6");
+  SegmentSafetyHashAdd(&hash, "semantic-grid-v7-geometry-prototype-3");
   SegmentSafetyHashAdd(
       &hash, wxString::Format("group=%d", SegmentSafetyCurrentGroupIndex()));
   if (g_pi_manager)
     SegmentSafetyHashAdd(
         &hash, "batch-providers=" + SegmentSafetyPluginBatchProviderIdentity());
-  // v6 also identifies canonical global-grid coordinates and padded chart
-  // candidate discovery at shared provider-batch edges.  Earlier v4 stores
-  // can contain edge cells classified from an incomplete candidate set, so
-  // they must be invalidated once even when the chart database is unchanged.
-  return wxString::Format("ocpn-chart-safety-v6-%016llx",
+  // The prototype adds display-independent isolated dangers and conservative
+  // cell geometry. Older certificates cannot certify the stronger semantics.
+  return wxString::Format("ocpn-chart-safety-v7-geometry-prototype-3-%016llx",
                           (unsigned long long)hash);
 }
 
