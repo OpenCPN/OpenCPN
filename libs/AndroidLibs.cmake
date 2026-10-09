@@ -1,64 +1,59 @@
 #
-# For armhf and arm64: Download precompiled libraries and set up
-# linking
+# For armhf and arm64: locate the prebuilt Qt, wxWidgets and OpenSSL staged by
+# the builder image, and set up linking.
 # Also setup preprocessor definitions
 #
 cmake_minimum_required(VERSION 3.1)
 
 set(CMAKE_SKIP_RPATH true)
 
-# Make sure we have downloaded and unpacked master.zip
+# Base directory of the Android dependencies staged by OpenCPN-builder's
+# Dockerfile.android, one subtree per component:
+#
+#   ${OCPN_ANDROID_DEPS}/qt5/<armhf|arm64>/{include,lib}      official upstream Qt
+#   ${OCPN_ANDROID_DEPS}/wxWidgets/{include,libs/<abi>/lib}   wxQt, built from source
+#   ${OCPN_ANDROID_DEPS}/openssl/<armhf|arm64>/{include,lib}  built from source
+#
+# This replaces downloading the ~1.3GB OCPNAndroidCoreBuildSupport bundle on
+# every configure. That bundle carried an EOL Qt and OpenSSL, baked absolute
+# paths from the packager's machine into its pkg-config files, and had no
+# reproducible build recipe.
 set(
-  OCPN_ANDROID_CACHEDIR "${CMAKE_SOURCE_DIR}/cache"
-  CACHE STRING "Build download area"
+  OCPN_ANDROID_DEPS "/usr/src"
+  CACHE STRING "Base directory of the staged Android dependencies"
 )
-set(_master_base ${OCPN_ANDROID_CACHEDIR}/OCPNAndroidCoreBuildSupport)
-message(STATUS "Android Build support file base:  ${OCPN_ANDROID_CACHEDIR}/OCPNAndroidCoreBuildSupport")
+message(STATUS "Android staged dependency base: ${OCPN_ANDROID_DEPS}")
 
-
-if (TRUE) #(NOT EXISTS ${OCPN_ANDROID_CACHEDIR}/support.zip)
-  file(
-    DOWNLOAD
-      https://github.com/bdbcat/OCPNAndroidCoreBuildSupport/releases/download/v1.2/OCPNAndroidCoreBuildSupport.zip
-      ${OCPN_ANDROID_CACHEDIR}/support.zip
-#    EXPECTED_HASH
-#      SHA256=ac36afaf4f026e9b2624a963f5356f5b1fb2c45dec1134209333a8b46fb05ca0
-    SHOW_PROGRESS
-  )
-endif ()
-if (TRUE) #(NOT EXISTS ${_master_base})
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar -xzf ${OCPN_ANDROID_CACHEDIR}/support.zip
-    WORKING_DIRECTORY "${OCPN_ANDROID_CACHEDIR}"
-  )
-endif ()
-
-# testing
-#set(_master_base "/home/dsr/Projects/OCPNAndroidCoreBuildSupport")
-
-# Setup directories and libraries
 if ("${OCPN_TARGET_TUPLE}" MATCHES "Android-arm64")
-  file(GLOB _wx_setup
-    ${_master_base}/wxWidgets/libs/arm64/lib/wx/include/arm-linux-*-static-*
-  )
-  set(_qt_include  ${_master_base}/qt5/build_arm64_O3/qtbase/include)
-  set(_qtlibs  ${_master_base}/qt5/build_arm64_O3/qtbase/lib)
-  set(_wxlibs  ${_master_base}/wxWidgets/libs/arm64/lib)
-  set(Qt_Base ${_master_base}/qt5)
-  set(Qt_Build build_arm64_O3/qtbase)
-  set(openssl_include ${_master_base}/openssl/arm64/include)
-
+  set(_abi arm64)
 else ()
-  file(GLOB _wx_setup
-    ${_master_base}/wxWidgets/libs/armhf/lib/wx/include/arm-linux-*-static-*
-  )
-  set(_qt_include ${_master_base}/qt5/build_arm32_19_O3/qtbase/include)
-  set(_qtlibs  ${_master_base}/qt5/build_arm32_19_O3/qtbase/lib)
-  set(_wxlibs  ${_master_base}/wxWidgets/libs/armhf/lib)
-  set(Qt_Base ${_master_base}/qt5)
-  set(Qt_Build build_arm32_19_O3/qtbase)
-  set(openssl_include ${_master_base}/openssl/armhf/include)
+  set(_abi armhf)
 endif ()
+
+set(_wx_base ${OCPN_ANDROID_DEPS}/wxWidgets)
+
+file(GLOB _wx_setup
+  ${_wx_base}/libs/${_abi}/lib/wx/include/arm-linux-*-static-*
+)
+set(_qt_include ${OCPN_ANDROID_DEPS}/qt5/${_abi}/include)
+set(_qtlibs ${OCPN_ANDROID_DEPS}/qt5/${_abi}/lib)
+set(_wxlibs ${_wx_base}/libs/${_abi}/lib)
+# Qt_Base/Qt_Build are also consumed by plugins/*/CMakeLists.txt, which link
+# ${Qt_Base}/${Qt_Build}/lib/libQt5*.so — keep that path shape valid.
+set(Qt_Base ${OCPN_ANDROID_DEPS}/qt5)
+set(Qt_Build ${_abi})
+set(openssl_include ${OCPN_ANDROID_DEPS}/openssl/${_abi}/include)
+
+# Fail early and clearly rather than deep in a link line full of missing files.
+foreach (_dir ${_qt_include} ${_qtlibs} ${_wxlibs})
+  if (NOT EXISTS ${_dir})
+    message(FATAL_ERROR
+      "Staged Android dependency not found: ${_dir}\n"
+      "Build inside the OpenCPN-builder image, or point -DOCPN_ANDROID_DEPS=<dir> "
+      "at a tree containing qt5/, wxWidgets/ and openssl/."
+    )
+  endif ()
+endforeach ()
 
 message(STATUS "Android Build wx include directories: support file base:  ${_wx_setup}")
 
@@ -70,7 +65,7 @@ include_directories(
   ${_qt_include}/QtGui
   ${_qt_include}/QtOpenGL
   ${_qt_include}/QtTest
-  ${_master_base}/wxWidgets/include/
+  ${_wx_base}/include/
   ${_wx_setup}
 )
 target_link_libraries(${PACKAGE_NAME} PRIVATE
@@ -83,19 +78,19 @@ target_link_libraries(${PACKAGE_NAME} PRIVATE
 
 set(_all_wx_libs
     # Link order is critical to avoid circular dependencies
-    ${_wxlibs}/libwx_qtu_html-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwx_baseu_xml-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwx_qtu_qa-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwx_qtu_adv-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwx_qtu_core-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwx_baseu-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwx_qtu_aui-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwxexpat-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwxregexu-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwxjpeg-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwxpng-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwx_qtu_gl-3.1-arm-linux-androideabi.a
-    ${_wxlibs}/libwx_baseu_net-3.1-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_qtu_html-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_baseu_xml-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_qtu_qa-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_qtu_adv-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_qtu_core-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_baseu-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_qtu_aui-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwxexpat-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwxregexu-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwxjpeg-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwxpng-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_qtu_gl-3.2-arm-linux-androideabi.a
+    ${_wxlibs}/libwx_baseu_net-3.2-arm-linux-androideabi.a
 )
 target_link_libraries(${PACKAGE_NAME} PRIVATE ${_all_wx_libs})
 
