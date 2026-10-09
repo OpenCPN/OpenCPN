@@ -63,28 +63,6 @@
 #include "std_filesystem.h"
 #include "model/svg_utils.h"
 
-static wxString UtfArrowDown() {
-  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25bc"));
-}
-static wxString UtfArrowRight() {
-  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25ba"));
-}
-static wxString UtfCheckMark() {
-  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u2713"));
-}
-static wxString UtfGear() {
-  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u2699"));
-}
-static wxString UtfFilledCircle() {
-  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25cf"));
-}
-static wxString UtfOpenCircle() {
-  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25c8"));
-}
-static wxString UtfWastebasket() {
-  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\U0001f5d1"));
-}
-
 static constexpr auto TopScrollWindowName = "TopScroll";
 
 static const char* kInfoHeader = _("OpenCPN help").c_str();
@@ -108,6 +86,28 @@ the only transmitted messages.
 
 static const char* kInterfaceExistsMessage =
     _("Warning: A driver using this interface already exists.").c_str();
+
+static wxString UtfArrowDown() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25bc"));
+}
+static wxString UtfArrowRight() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25ba"));
+}
+static wxString UtfCheckMark() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u2713"));
+}
+static wxString UtfGear() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u2699"));
+}
+static wxString UtfFilledCircle() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25cf"));
+}
+static wxString UtfOpenCircle() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25c8"));
+}
+static wxString UtfWastebasket() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\U0001f5d1"));
+}
 
 static bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
@@ -161,44 +161,6 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
   }
   return nullptr;
 }
-
-/** Custom renderer class for rendering bitmap in a grid cell */
-class BitmapCellRenderer : public wxGridCellRenderer {
-public:
-  BitmapCellRenderer(const wxBitmap& bitmap, ColorScheme cs)
-      : status(ConnState::Disabled), m_bitmap(bitmap), m_cs(cs) {}
-
-  // Update the bitmap dynamically
-  void SetBitmap(const wxBitmap& bitmap) { m_bitmap = bitmap; }
-
-  void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect,
-            int row, int col, bool isSelected) override {
-    dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
-    if ((m_cs != GLOBAL_COLOR_SCHEME_DAY) && m_cs != GLOBAL_COLOR_SCHEME_RGB)
-      dc.SetBrush(wxBrush(GetDialogColor(DLG_BACKGROUND)));
-    if (IsWindows()) dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
-    dc.DrawRectangle(rect);
-
-    // Draw the bitmap centered in the cell
-    dc.DrawBitmap(m_bitmap, rect.x + (rect.width - m_bitmap.GetWidth()) / 2,
-                  rect.y + (rect.height - m_bitmap.GetHeight()) / 2, true);
-  }
-
-  wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row,
-                     int col) override {
-    // Return the size of the bitmap as the best size for the cell
-    return {m_bitmap.GetWidth(), m_bitmap.GetHeight()};
-  }
-
-  [[nodiscard]] BitmapCellRenderer* Clone() const override {
-    return new BitmapCellRenderer(m_bitmap, m_cs);
-  }
-  ConnState status;
-
-private:
-  wxBitmap m_bitmap;
-  ColorScheme m_cs;
-};
 
 /**
  * Custom renderer class for rendering ENABLE in a grid cell.
@@ -384,7 +346,6 @@ public:
   /** Reload grid using data from given list of connections. */
   void ReloadGrid(const std::vector<ConnectionParams*>& connections) {
     ClearGrid();
-    m_renderer_status_vector.clear();
 
     for (auto it = connections.begin(); it != connections.end(); ++it) {
       const auto row = static_cast<int>(it - connections.begin());
@@ -577,7 +538,6 @@ private:
       if (!(*it)->is_enabled) state = ConnState::Disabled;
       auto row = static_cast<int>(it - connections.begin());
       EnsureRows(row);
-      if (static_cast<int>(m_renderer_status_vector.size()) < row + 1) continue;
       switch (state) {
         case ConnState::Disabled:
           SetCellValue(row, 4, UtfFilledCircle());
@@ -697,7 +657,6 @@ private:
   int m_last_tooltip_cell;
   ColorScheme m_cs;
   obs::EventVar& m_on_conn_delete;
-  std::vector<BitmapCellRenderer*> m_renderer_status_vector;
   std::function<void(ConnectionParams* p, bool editing)> m_on_edit_conn;
 };
 
