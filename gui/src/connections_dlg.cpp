@@ -63,10 +63,6 @@
 #include "std_filesystem.h"
 #include "model/svg_utils.h"
 
-static wxString UtfArrowDown() { return wxString::FromUTF8(u8"\u25bc"); }
-static wxString UtfArrowRight() { return wxString::FromUTF8(u8"\u25ba"); }
-static wxString UtfFilledCircle() { return wxString::FromUTF8(u8"\u2b24"); }
-
 static constexpr auto TopScrollWindowName = "TopScroll";
 
 static const char* kInfoHeader = _("OpenCPN help").c_str();
@@ -90,6 +86,28 @@ the only transmitted messages.
 
 static const char* kInterfaceExistsMessage =
     _("Warning: A driver using this interface already exists.").c_str();
+
+static wxString UtfArrowDown() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25bc"));
+}
+static wxString UtfArrowRight() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25ba"));
+}
+static wxString UtfCheckMark() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u2713"));
+}
+static wxString UtfGear() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u2699"));
+}
+static wxString UtfFilledCircle() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25cf"));
+}
+static wxString UtfOpenCircle() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25c8"));
+}
+static wxString UtfWastebasket() {
+  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\U0001f5d1"));
+}
 
 static bool IsWindows() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_WINDOWS;
@@ -143,151 +161,6 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
   }
   return nullptr;
 }
-
-/** Standard icons bitmaps: settings gear, trash bin, etc. */
-class StdIcons {
-private:
-  const unsigned m_size;
-  const fs::path m_svg_dir;
-  ColorScheme m_cs;
-
-  /** Return platform dependent icon size. */
-  static unsigned GetSize(const wxWindow* parent) {
-    double size = parent->GetCharHeight() * (IsWindows() ? 1.3 : 1.0);
-#if wxCHECK_VERSION(3, 1, 2)
-    // Apply scale factor, mostly for Windows. Other platforms
-    // does this in the toolkits, ToDIP() is aware of this.
-    size *= static_cast<double>(parent->ToDIP(100)) / 100.;
-#endif
-    // Force minimum physical size for touch screens
-    if (g_btouch) {
-      double pixel_per_mm =
-          wxGetDisplaySize().x / g_Platform->GetDisplaySizeMM();
-      size = std::max(size, 7.0 * pixel_per_mm);
-    }
-    return static_cast<unsigned>(size);
-  }
-
-  [[nodiscard]] wxBitmap LoadIcon(const std::string& filename) const {
-    fs::path path = m_svg_dir / filename;
-    return LoadSVG(path.string(), m_size, m_size);
-  }
-
-  [[nodiscard]] wxBitmap IconApplyColorScheme(const wxBitmap& proto) const {
-    if (!proto.IsOk()) return wxNullBitmap;
-    if ((m_cs != GLOBAL_COLOR_SCHEME_DAY) &&
-        (m_cs != GLOBAL_COLOR_SCHEME_RGB)) {
-      // Assume the bitmap is monochrome, so simply invert the colors.
-      const wxImage image = proto.ConvertToImage();
-      unsigned char* data = image.GetData();
-      unsigned char* p_idata = data;
-      for (int i = 0; i < image.GetSize().y; i++) {
-        for (int j = 0; j < image.GetSize().x; j++) {
-          unsigned char v = *p_idata;
-          v = 255 - v;
-          *p_idata++ = v;
-          v = *p_idata;
-          v = 255 - v;
-          *p_idata++ = v;
-          v = *p_idata;
-          v = 255 - v;
-          *p_idata++ = v;
-        }
-      }
-      return {image};
-    }
-    return proto;
-  }
-
-public:
-  explicit StdIcons(const wxWindow* parent)
-      : m_size(GetSize(parent)),
-        m_svg_dir(fs::path(g_Platform->GetSharedDataDir().ToStdString()) /
-                  "uidata" / "MUI_flat"),
-        m_cs(GLOBAL_COLOR_SCHEME_RGB),
-        trash_bin_proto(LoadIcon("trash_bin.svg")),
-        settings_proto(LoadIcon("setting_gear.svg")),
-        filled_circle_proto(LoadIcon("circle-on.svg")),
-        open_circle_proto(LoadIcon("circle-off.svg")),
-        exclaim_mark_proto(LoadIcon("exclaim_mark.svg")),
-        x_mult_proto(LoadIcon("X_mult.svg")),
-        check_mark_proto(LoadIcon("check_mark.svg")) {
-    trash_bin = trash_bin_proto;
-    settings = settings_proto;
-    filled_circle = filled_circle_proto;
-    open_circle = open_circle_proto;
-    exclaim_mark = exclaim_mark_proto;
-    x_mult = x_mult_proto;
-    check_mark = check_mark_proto;
-  }
-
-  void SetColorScheme(const ColorScheme cs) {
-    if (m_cs != cs) {
-      m_cs = cs;
-      trash_bin = IconApplyColorScheme(trash_bin_proto);
-      settings = IconApplyColorScheme(settings_proto);
-      filled_circle = IconApplyColorScheme(filled_circle_proto);
-      open_circle = IconApplyColorScheme(open_circle_proto);
-      exclaim_mark = IconApplyColorScheme(exclaim_mark_proto);
-      x_mult = IconApplyColorScheme(x_mult_proto);
-      check_mark = IconApplyColorScheme(check_mark_proto);
-    }
-  }
-
-  const wxBitmap trash_bin_proto;
-  const wxBitmap settings_proto;
-  const wxBitmap filled_circle_proto;
-  const wxBitmap open_circle_proto;
-  const wxBitmap exclaim_mark_proto;
-  const wxBitmap x_mult_proto;
-  const wxBitmap check_mark_proto;
-
-  wxBitmap trash_bin;
-  wxBitmap settings;
-  wxBitmap filled_circle;
-  wxBitmap open_circle;
-  wxBitmap exclaim_mark;
-  wxBitmap x_mult;
-  wxBitmap check_mark;
-};
-
-/** Custom renderer class for rendering bitmap in a grid cell */
-class BitmapCellRenderer : public wxGridCellRenderer {
-public:
-  BitmapCellRenderer(const wxBitmap& bitmap, ColorScheme cs)
-      : status(ConnState::Disabled), m_bitmap(bitmap), m_cs(cs) {}
-
-  // Update the bitmap dynamically
-  void SetBitmap(const wxBitmap& bitmap) { m_bitmap = bitmap; }
-
-  void Draw(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, const wxRect& rect,
-            int row, int col, bool isSelected) override {
-    dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
-    if ((m_cs != GLOBAL_COLOR_SCHEME_DAY) && m_cs != GLOBAL_COLOR_SCHEME_RGB)
-      dc.SetBrush(wxBrush(GetDialogColor(DLG_BACKGROUND)));
-    if (IsWindows()) dc.SetBrush(wxBrush(GetGlobalColor("DILG1")));
-    dc.DrawRectangle(rect);
-
-    // Draw the bitmap centered in the cell
-    dc.DrawBitmap(m_bitmap, rect.x + (rect.width - m_bitmap.GetWidth()) / 2,
-                  rect.y + (rect.height - m_bitmap.GetHeight()) / 2, true);
-  }
-
-  wxSize GetBestSize(wxGrid& grid, wxGridCellAttr& attr, wxDC& dc, int row,
-                     int col) override {
-    // Return the size of the bitmap as the best size for the cell
-    return {m_bitmap.GetWidth(), m_bitmap.GetHeight()};
-  }
-
-  [[nodiscard]] BitmapCellRenderer* Clone() const override {
-    return new BitmapCellRenderer(m_bitmap, m_cs);
-  }
-  ConnState status;
-
-private:
-  wxBitmap m_bitmap;
-  ColorScheme m_cs;
-};
 
 /**
  * Custom renderer class for rendering ENABLE in a grid cell.
@@ -391,7 +264,6 @@ public:
         m_last_tooltip_cell(100),
         m_cs(GLOBAL_COLOR_SCHEME_DAY),
         m_on_conn_delete(on_conn_update),
-        m_icons(parent),
         m_on_edit_conn(on_edit_conn) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     SetTable(new wxGridStringTable(), true);
@@ -446,7 +318,6 @@ public:
   }
   void SetColorScheme(const ColorScheme cs) {
     m_cs = cs;
-    m_icons.SetColorScheme(cs);
     ReloadGrid(m_connections);
   }
 
@@ -475,7 +346,6 @@ public:
   /** Reload grid using data from given list of connections. */
   void ReloadGrid(const std::vector<ConnectionParams*>& connections) {
     ClearGrid();
-    m_renderer_status_vector.clear();
 
     for (auto it = connections.begin(); it != connections.end(); ++it) {
       const auto row = static_cast<int>(it - connections.begin());
@@ -490,16 +360,12 @@ public:
       SetCellValue(row, 2, (*it)->GetPortDirectionValueStr());
       SetCellValue(row, 3, (*it)->GetStrippedDSPort());
       m_tooltips[row][3] = (*it)->user_comment;
-      SetCellRenderer(row, 5, new BitmapCellRenderer(m_icons.settings, m_cs));
+      SetCellValue(row, 5, UtfGear());
       m_tooltips[row][5] = _("Edit connection");
-      SetCellRenderer(row, 6, new BitmapCellRenderer(m_icons.trash_bin, m_cs));
+      SetCellValue(row, 6, UtfWastebasket());
       m_tooltips[row][6] = _("Delete connection");
       SetCellValue(row, 7, (*it)->GetKey());
 
-      auto stat_renderer = new BitmapCellRenderer(m_icons.filled_circle, m_cs);
-      stat_renderer->status = ConnState::Disabled;
-      m_renderer_status_vector.push_back(stat_renderer);
-      SetCellRenderer(row, 4, stat_renderer);
       if (IsAndroid()) {
         wxString sp(protocol);
         unsigned size = sp.Length() * wxWindow::GetCharWidth();
@@ -672,47 +538,31 @@ private:
       if (!(*it)->is_enabled) state = ConnState::Disabled;
       auto row = static_cast<int>(it - connections.begin());
       EnsureRows(row);
-      if (static_cast<int>(m_renderer_status_vector.size()) < row + 1) continue;
       switch (state) {
         case ConnState::Disabled:
-          if (m_renderer_status_vector[row]->status != ConnState::Disabled) {
-            m_renderer_status_vector[row]->SetBitmap(m_icons.filled_circle);
-            m_renderer_status_vector[row]->status = ConnState::Disabled;
-            refresh_needed = true;
-          }
+          SetCellValue(row, 4, UtfFilledCircle());
           m_tooltips[row][4] = _("Disabled");
+          refresh_needed = true;
           break;
         case ConnState::NoStats:
-          if (m_renderer_status_vector[row]->status != ConnState::NoStats) {
-            m_renderer_status_vector[row]->SetBitmap(m_icons.open_circle);
-            m_renderer_status_vector[row]->status = ConnState::NoStats;
-            refresh_needed = true;
-          }
+          SetCellValue(row, 4, UtfOpenCircle());
           m_tooltips[row][4] = _("No driver statistics available");
+          refresh_needed = true;
           break;
         case ConnState::NoData:
-          if (m_renderer_status_vector[row]->status != ConnState::NoData) {
-            m_renderer_status_vector[row]->SetBitmap(m_icons.exclaim_mark);
-            m_renderer_status_vector[row]->status = ConnState::NoData;
-            refresh_needed = true;
-          }
+          SetCellValue(row, 4, "!");
           m_tooltips[row][4] = _("No data flowing through connection");
+          refresh_needed = true;
           break;
         case ConnState::Unavailable:
-          if (m_renderer_status_vector[row]->status != ConnState::Unavailable) {
-            m_renderer_status_vector[row]->SetBitmap(m_icons.x_mult);
-            m_renderer_status_vector[row]->status = ConnState::Unavailable;
-            refresh_needed = true;
-          }
+          SetCellValue(row, 4, "X");
           m_tooltips[row][4] = _("The device is unavailable");
+          refresh_needed = true;
           break;
         case ConnState::Ok:
-          if (m_renderer_status_vector[row]->status != ConnState::Ok) {
-            m_renderer_status_vector[row]->SetBitmap(m_icons.check_mark);
-            m_renderer_status_vector[row]->status = ConnState::Ok;
-            refresh_needed = true;
-          }
+          SetCellValue(row, 4, UtfCheckMark());
           m_tooltips[row][4] = _("Data is flowing");
+          refresh_needed = true;
           break;
       }
     }
@@ -807,8 +657,6 @@ private:
   int m_last_tooltip_cell;
   ColorScheme m_cs;
   obs::EventVar& m_on_conn_delete;
-  StdIcons m_icons;
-  std::vector<BitmapCellRenderer*> m_renderer_status_vector;
   std::function<void(ConnectionParams* p, bool editing)> m_on_edit_conn;
 };
 
