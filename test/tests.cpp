@@ -1299,6 +1299,49 @@ public:
 TEST(AIS, BitstringBounds) { AisBitstringApp app; }
 TEST(AIS, MultipartVDOTooLong) { AisVdoMultipartApp app; }
 
+class AisDseApp : public BasicTest {
+public:
+  AisDseApp() : BasicTest() { Work(); }
+
+  static wxString WithChecksum(const std::string& body) {
+    unsigned char cs = 0;
+    for (size_t k = 1; k < body.size(); k++) cs ^= (unsigned char)body[k];
+    char hex[4];
+    snprintf(hex, sizeof hex, "*%02X", cs);
+    return wxString(body + hex);
+  }
+
+  void Work() override {
+    const int MMSI = 338040079;
+    const std::string dsc =
+        "$CDDSC,12,3380400790,12,06,00,1423108312,2019,,,S,E";
+
+    // Station information whose two-digit codes are outside the ITU-R M.825
+    // table (0..41): they must be skipped, not used as an index.
+    g_pAIS->DecodeN0183(WithChecksum(dsc));
+    g_pAIS->DecodeN0183(WithChecksum("$CDDSE,1,1,A,338040079,04,1145128913"));
+    auto found = g_pAIS->GetTargetList().find(MMSI);
+    ASSERT_NE(found, g_pAIS->GetTargetList().end());
+    EXPECT_EQ(std::string(found->second->ShipName), "ABC");
+
+    // A name longer than SHIP_NAME_LEN is truncated and stays terminated;
+    // the neighbouring ShipNameExtension is not written.
+    std::string long_name = "$CDDSE,1,1,A,338040079,04,";
+    for (int i = 0; i < 49; i++) long_name += "12";
+    g_pAIS->DecodeN0183(WithChecksum(dsc));
+    g_pAIS->DecodeN0183(WithChecksum(long_name));
+    found = g_pAIS->GetTargetList().find(MMSI);
+    ASSERT_NE(found, g_pAIS->GetTargetList().end());
+    EXPECT_EQ(strnlen(found->second->ShipName, SHIP_NAME_LEN),
+              (size_t)SHIP_NAME_LEN - 1);
+    EXPECT_EQ(std::string(found->second->ShipName),
+              std::string(SHIP_NAME_LEN - 1, 'B'));
+    EXPECT_EQ(found->second->ShipNameExtension[0], '\0');
+  }
+};
+
+TEST(AIS, DseExpansion) { AisDseApp app; }
+
 TEST(Navmsg, ActiveMessages) { NavMsgApp app; }
 
 #if API_VERSION_MINOR > 18

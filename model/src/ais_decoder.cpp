@@ -232,9 +232,14 @@ static wxString DecodeDSEExpansionCharacters(const wxString &dseData) {
                         'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
                         'W', 'X', 'Y', 'Z', '.', ',', '-', '/', ' '};
 
+  const long table_size = static_cast<long>(sizeof(lookupTable));
+
   for (size_t i = 0; i < dseData.length(); i += 2) {
-    result.append(1,
-                  lookupTable[strtol(dseData.Mid(i, 2).data(), nullptr, 10)]);
+    // Codes outside the ITU-R M.825 table (0..41) are not characters; skip
+    // them rather than index past lookupTable.
+    long code = strtol(dseData.Mid(i, 2).data(), nullptr, 10);
+    if (code < 0 || code >= table_size) continue;
+    result.append(1, lookupTable[code]);
   }
   return result;
 }
@@ -3680,8 +3685,8 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
             ((m_ptentative_dsctarget->Lon) >= 0 ? dse_lon : -dse_lon);
         if (!dse_shipName.empty()) {
           memset(m_ptentative_dsctarget->ShipName, '\0', SHIP_NAME_LEN);
-          snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(),
-                   "%s", dse_shipName.ToAscii().data());
+          snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "%s",
+                   dse_shipName.ToAscii().data());
         }
         m_ptentative_dsctarget->COG = dse_cog;
         m_ptentative_dsctarget->SOG = dse_sog;
