@@ -919,7 +919,7 @@ void MyFrame::ReloadAllVP() {
 
 void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
   bool scheme_day =
-      (cs == GLOBAL_COLOR_SCHEME_DAY) | (cs == GLOBAL_COLOR_SCHEME_DAY_HICON);
+      (cs == GLOBAL_COLOR_SCHEME_DAY) || (cs == GLOBAL_COLOR_SCHEME_DAY_HICON);
   int is_day = scheme_day ? 1 : 0;
   GuiEvents::GetInstance().color_scheme_change.Notify(is_day, "");
 
@@ -936,10 +936,10 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
       SchemeName = "NIGHT";
       break;
     case GLOBAL_COLOR_SCHEME_DAY_HICON:
-      SchemeName = "DAY_HICON";
+      SchemeName = "DAY";
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
-      SchemeName = "NIGHT_HICON";
+      SchemeName = "DUSK";
       break;
     default:
       SchemeName = "DAY";
@@ -1084,7 +1084,15 @@ void MyFrame::SetAndApplyColorScheme(ColorScheme cs) {
     }
   }
 
-  if (g_pi_manager) g_pi_manager->SetColorSchemeForAllPlugIns(cs);
+  ColorScheme s = cs;
+  if (g_hicon_colors) {
+    // Plugins know nothing about HICON
+    if (cs == GLOBAL_COLOR_SCHEME_DAY_HICON)
+      s = GLOBAL_COLOR_SCHEME_DAY;
+    else if (cs == GLOBAL_COLOR_SCHEME_NIGHT_HICON)
+      s = GLOBAL_COLOR_SCHEME_DUSK;
+  }
+  g_pi_manager->SetColorSchemeForAllPlugIns(s);
 }
 
 void MyFrame::ApplyGlobalColorSchemetoStatusBar() {
@@ -6971,10 +6979,12 @@ bool MyFrame::CheckAndAddPlugInTool() {
 
       switch (global_color_scheme) {
         case GLOBAL_COLOR_SCHEME_DAY:
+        case GLOBAL_COLOR_SCHEME_DAY_HICON:
           ptool_bmp = pttc->bitmap_day;
           ;
           break;
         case GLOBAL_COLOR_SCHEME_DUSK:
+        case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
           ptool_bmp = pttc->bitmap_dusk;
           break;
         case GLOBAL_COLOR_SCHEME_NIGHT:
@@ -7028,9 +7038,11 @@ bool MyFrame::AddDefaultPositionPlugInTools() {
 
       switch (global_color_scheme) {
         case GLOBAL_COLOR_SCHEME_DAY:
+        case GLOBAL_COLOR_SCHEME_DAY_HICON:
           ptool_bmp = pttc->bitmap_day;
           break;
         case GLOBAL_COLOR_SCHEME_DUSK:
+        case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
           ptool_bmp = pttc->bitmap_dusk;
           break;
         case GLOBAL_COLOR_SCHEME_NIGHT:
@@ -7124,7 +7136,8 @@ void SetSystemColors(ColorScheme cs) {  //---------------
   int element[NCOLORS];
   int rgbcolor[NCOLORS];
   int i = 0;
-  if ((GLOBAL_COLOR_SCHEME_DUSK == cs) || (GLOBAL_COLOR_SCHEME_NIGHT == cs)) {
+  if ((GLOBAL_COLOR_SCHEME_DUSK == cs) || (GLOBAL_COLOR_SCHEME_NIGHT == cs) ||
+      (GLOBAL_COLOR_SCHEME_NIGHT_HICON == cs)) {
     MSW_COLOR_SPEC *pcspec = &color_spec[0];
     while (pcspec->COLOR_NAME != -1) {
       wxColour color = GetGlobalColor(pcspec->S52_RGB_COLOR);

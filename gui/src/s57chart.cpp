@@ -394,10 +394,12 @@ void s57chart::ChangeThumbColor(ColorScheme cs) {
   switch (cs) {
     default:
     case GLOBAL_COLOR_SCHEME_DAY:
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
       pThumbData->pDIBThumb = m_pDIBThumbDay;
       m_pDIBThumbOrphan = m_pDIBThumbDim;
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
     case GLOBAL_COLOR_SCHEME_NIGHT: {
       if (NULL == m_pDIBThumbDim) {
         wxImage img = m_pDIBThumbDay->ConvertToImage();
@@ -6676,7 +6678,9 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
   bool bleading_attribute = false;
 
   int opacity = 100;
-  if (cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK) opacity = 50;
+  if (cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ||
+      cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT_HICON)
+    opacity = 50;
   if (cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
 
   int yOpacity = (float)opacity *

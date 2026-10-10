@@ -2929,9 +2929,11 @@ bool Quilt::DoRenderQuiltRegionViewOnDC(wxMemoryDC &dc, ViewPort &vp,
           unsigned char hlcolor = 255;
           switch (global_color_scheme) {
             case GLOBAL_COLOR_SCHEME_DAY:
+            case GLOBAL_COLOR_SCHEME_DAY_HICON:
               hlcolor = 255;
               break;
             case GLOBAL_COLOR_SCHEME_DUSK:
+            case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
               hlcolor = 64;
               break;
             case GLOBAL_COLOR_SCHEME_NIGHT:

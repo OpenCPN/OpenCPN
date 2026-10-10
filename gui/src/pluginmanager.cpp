@@ -1698,11 +1698,19 @@ void PlugInManager::SendResizeEventToAllPlugIns(int x, int y) {
 }
 
 void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs) {
+  ColorScheme s = cs;
+  if (g_hicon_colors) {
+    // Plugins know nothing about HICON
+    if (cs == GLOBAL_COLOR_SCHEME_DAY_HICON)
+      s = GLOBAL_COLOR_SCHEME_DAY;
+    else if (cs == GLOBAL_COLOR_SCHEME_NIGHT_HICON)
+      s = GLOBAL_COLOR_SCHEME_DUSK;
+  }
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state)
-      pic->m_pplugin->SetColorScheme((PI_ColorScheme)cs);
+      pic->m_pplugin->SetColorScheme((PI_ColorScheme)s);
   }
 }
 

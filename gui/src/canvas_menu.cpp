@@ -971,7 +971,8 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
     int sub_menu = 0;
     if (!g_bBasicMenus && menuFocus != contextMenu) {
       if (global_color_scheme != GLOBAL_COLOR_SCHEME_DUSK &&
-          global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT) {
+          global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT &&
+          global_color_scheme != GLOBAL_COLOR_SCHEME_NIGHT_HICON) {
         menuFocus->AppendSeparator();
       }
 

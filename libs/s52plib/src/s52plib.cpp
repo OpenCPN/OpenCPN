@@ -1429,9 +1429,11 @@ void s52plib::SetPLIBColorScheme(ColorScheme cs, const ChartCtx &ctx) {
   wxString SchemeName;
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
       SchemeName = _T("DAY");
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       SchemeName = _T("DUSK");
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:

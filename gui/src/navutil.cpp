@@ -3208,7 +3208,8 @@ void DimeControl(wxWindow *ctrl, wxColour col, wxColour window_back_color,
 
   // Are we in dusk or night mode? (Used below in several places.)
   bool darkMode =
-      (cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT);
+      (cs == GLOBAL_COLOR_SCHEME_DUSK || cs == GLOBAL_COLOR_SCHEME_NIGHT ||
+       cs == GLOBAL_COLOR_SCHEME_NIGHT_HICON);
 
   static int depth = 0;  // recursion count
   if (depth == 0) {      // only for the window root, not for every child

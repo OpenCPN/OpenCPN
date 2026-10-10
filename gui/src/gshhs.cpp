@@ -121,6 +121,7 @@ void GSHHSChart::SetColorScheme(ColorScheme scheme) {
       dim = 0.5;
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       dim = 0.25;
       break;
     default:

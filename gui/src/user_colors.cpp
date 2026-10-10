@@ -326,12 +326,6 @@ void DeInitialize() {
 
 wxColorHashMap *GetMapByScheme(const std::string &scheme_name) {
   std::string name = scheme_name;
-  if (g_hicon_colors) {
-    if (scheme_name == "DAY_HICON")
-      name = "DAY";
-    else
-      name = "NIGHT";
-  }
 
   unsigned Usercolortable_index = 0;
   for (unsigned int i = 0; i < UserColorTableArray->GetCount(); i++) {
@@ -345,11 +339,14 @@ wxColorHashMap *GetMapByScheme(const std::string &scheme_name) {
 
 wxColor GetDimColor(wxColor c) {
   if ((global_color_scheme == GLOBAL_COLOR_SCHEME_DAY) ||
-      (global_color_scheme == GLOBAL_COLOR_SCHEME_RGB))
+      (global_color_scheme == GLOBAL_COLOR_SCHEME_RGB) ||
+      (global_color_scheme == GLOBAL_COLOR_SCHEME_DAY_HICON))
     return c;
 
   float factor = 1.0;
-  if (global_color_scheme == GLOBAL_COLOR_SCHEME_DUSK) factor = 0.5;
+  if ((global_color_scheme == GLOBAL_COLOR_SCHEME_DUSK) ||
+      (global_color_scheme == GLOBAL_COLOR_SCHEME_NIGHT_HICON))
+    factor = 0.5;
   if (global_color_scheme == GLOBAL_COLOR_SCHEME_NIGHT) factor = 0.25;
 
   wxImage::RGBValue rgb(c.Red(), c.Green(), c.Blue());
