@@ -1317,9 +1317,11 @@ public:
         "$CDDSC,12,3380400790,12,06,00,1423108312,2019,,,S,E";
 
     // Station information whose two-digit codes are outside the ITU-R M.825
-    // table (0..41): they must be skipped, not used as an index.
+    // table (0..41) must be skipped, not used as an index ...
     g_pAIS->DecodeN0183(WithChecksum(dsc));
-    g_pAIS->DecodeN0183(WithChecksum("$CDDSE,1,1,A,338040079,04,1145128913"));
+    // ... as are a non-digit pair ("1Z") and an odd trailing character.
+    g_pAIS->DecodeN0183(
+        WithChecksum("$CDDSE,1,1,A,338040079,04,11451289131Z1"));
     auto found = g_pAIS->GetTargetList().find(MMSI);
     ASSERT_NE(found, g_pAIS->GetTargetList().end());
     EXPECT_EQ(std::string(found->second->ShipName), "ABC");

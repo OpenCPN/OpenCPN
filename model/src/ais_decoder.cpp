@@ -24,6 +24,7 @@
 // For compilers that support precompilation, includes "wx.h".
 
 #include <algorithm>
+#include <string_view>
 #include <cstdio>
 #include <fstream>
 
@@ -224,22 +225,34 @@ static void BuildERIShipTypeHash() {
   make_hash_ERI(1910, _("Hydrofoil"));
 }
 
-// DSE Expansion characters, decode table from ITU-R M.825
+// DSE Expansion characters, decode table from ITU-R M.825 (codes 00..41).
+// Anything else (a code outside the table, a non-digit pair, an odd trailing
+// character) is not a character: it is dropped and the field is logged, since
+// a certified DSC transceiver does not produce it.
 static wxString DecodeDSEExpansionCharacters(const wxString &dseData) {
+  static constexpr std::string_view lookupTable =
+      "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ.,-/ ";
   wxString result;
-  char lookupTable[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ',
-                        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-                        'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-                        'W', 'X', 'Y', 'Z', '.', ',', '-', '/', ' '};
-
-  const long table_size = static_cast<long>(sizeof(lookupTable));
+  bool invalid = false;
 
   for (size_t i = 0; i < dseData.length(); i += 2) {
-    // Codes outside the ITU-R M.825 table (0..41) are not characters; skip
-    // them rather than index past lookupTable.
-    long code = strtol(dseData.Mid(i, 2).data(), nullptr, 10);
-    if (code < 0 || code >= table_size) continue;
+    wxString pair = dseData.Mid(i, 2);
+    if (pair.length() != 2 || !wxIsdigit(pair[0]) || !wxIsdigit(pair[1])) {
+      invalid = true;
+      continue;
+    }
+    size_t code = (pair[0] - '0') * 10 + (pair[1] - '0');
+    if (code >= lookupTable.size()) {
+      invalid = true;
+      continue;
+    }
     result.append(1, lookupTable[code]);
+  }
+  if (invalid) {
+    wxLogMessage(
+        "DSE station information with invalid expansion data ignored "
+        "in part: \"%s\"",
+        dseData);
   }
   return result;
 }
