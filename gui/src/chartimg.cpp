@@ -2146,9 +2146,11 @@ void ChartBaseBSB::SetColorScheme(ColorScheme cs, bool bApplyImmediate) {
       m_mapped_color_index = COLOR_RGB_DEFAULT;
       break;
     case GLOBAL_COLOR_SCHEME_DAY:
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
       m_mapped_color_index = DAY;
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       m_mapped_color_index = DUSK;
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:

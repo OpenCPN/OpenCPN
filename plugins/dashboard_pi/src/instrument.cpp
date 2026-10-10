@@ -55,8 +55,10 @@ wxColour GetColourSchemeBackgroundColour(wxColour co) {
     case PI_GLOBAL_COLOR_SCHEME_RGB:
       break;
     case PI_GLOBAL_COLOR_SCHEME_DAY:
+      // case PI_GLOBAL_COLOR_SCHEME_DAY_HICON:
       break;
     case PI_GLOBAL_COLOR_SCHEME_DUSK:
+      // case PI_GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       red *= .8;
       Green *= .8;
       Blue *= .8;

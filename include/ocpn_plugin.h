@@ -242,6 +242,8 @@ enum PI_ColorScheme {
   /** Night/dark color scheme, optimized for dark conditions with minimal impact
      on night vision. */
   PI_GLOBAL_COLOR_SCHEME_NIGHT,
+  // PI_GLOBAL_COLOR_SCHEME_DAY_HICON,
+  // PI_GLOBAL_COLOR_SCHEME_NIGHT_HICON,
   /** Number of color schemes, used for bounds checking. */
   PI_N_COLOR_SCHEMES
 };

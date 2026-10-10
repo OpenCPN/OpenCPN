@@ -486,7 +486,8 @@ void WayPointmanGui::ReloadAllIcons(double displayDPmm) {
   for (unsigned int i = 0; i < m_waypoint_man.m_pIconArray->GetCount(); i++) {
     MarkIcon *pmi = (MarkIcon *)m_waypoint_man.m_pIconArray->Item(i);
     wxImage dim_image;
-    if (m_waypoint_man.m_cs == GLOBAL_COLOR_SCHEME_DUSK) {
+    if (m_waypoint_man.m_cs == GLOBAL_COLOR_SCHEME_DUSK ||
+        m_waypoint_man.m_cs == GLOBAL_COLOR_SCHEME_NIGHT_HICON) {
       dim_image = m_waypoint_man.CreateDimImage(pmi->iconImage, .50);
       pmi->iconImage = dim_image;
     } else if (m_waypoint_man.m_cs == GLOBAL_COLOR_SCHEME_NIGHT) {

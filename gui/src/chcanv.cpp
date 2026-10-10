@@ -3775,6 +3775,7 @@ void ChartCanvas::SetColorScheme(ColorScheme cs) {
   //    Setup ownship image pointers
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
       m_pos_image_red = &m_os_image_red_day;
       m_pos_image_grey = &m_os_image_grey_day;
       m_pos_image_yellow = &m_os_image_yellow_day;
@@ -3786,6 +3787,7 @@ void ChartCanvas::SetColorScheme(ColorScheme cs) {
 
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       m_pos_image_red = &m_os_image_red_dusk;
       m_pos_image_grey = &m_os_image_grey_dusk;
       m_pos_image_yellow = &m_os_image_yellow_dusk;
@@ -3826,6 +3828,7 @@ void ChartCanvas::SetColorScheme(ColorScheme cs) {
   float dim = 1.0;
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       dim = 0.5;
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
@@ -13226,10 +13229,12 @@ emboss_data *ChartCanvas::CreateEmbossMapData(wxFont &font, int width,
   double val_factor;
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
     default:
       val_factor = 1;
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       val_factor = .5;
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
@@ -13511,9 +13516,11 @@ void ChartCanvas::DrawAllTidesInBBox(ocpnDC &dc, LLBBox &BBox) {
   wxBitmap bm;
   switch (m_cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
       bm = m_bmTideDay;
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       bm = m_bmTideDusk;
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
