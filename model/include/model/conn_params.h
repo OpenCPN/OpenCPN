@@ -46,7 +46,8 @@ typedef enum {
   INTERNAL_GPS = 2,
   INTERNAL_BT = 3,
   SOCKETCAN = 4,
-  UNKNOWN = 5
+  UNKNOWN = 5,
+  CANABLE = 6
 } ConnectionType;
 
 typedef enum {

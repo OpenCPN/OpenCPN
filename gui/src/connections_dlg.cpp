@@ -137,6 +137,10 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
         if (cp->socket_can_port != new_cp->socket_can_port) continue;
         return cp;
         break;
+      case CANABLE:
+        if (cp->serial_port != new_cp->serial_port) continue;
+        return cp;
+        break;
       default:
         continue;
     }

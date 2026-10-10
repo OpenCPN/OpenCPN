@@ -407,6 +407,7 @@ ConnectionEditDialog::ConnectionEditDialog(
       m_std_dialog_btn_sizer(nullptr),
       m_talker_id_text(nullptr),
       m_type_can_radiobtn(nullptr),
+      m_type_canable_radiobtn(nullptr),
       m_type_internal_bt_radiobtn(nullptr),
       m_type_internal_gps_radiobtn(nullptr),
       m_type_net_radiobtn(nullptr),
@@ -454,11 +455,15 @@ void ConnectionEditDialog::InitiateNewConnection() {
   m_net_comment_text->Hide();
   auto port_ctrl = dynamic_cast<TextCtrlWithHelp*>(m_net_port_tctrl);
   if (port_ctrl) port_ctrl->RestoreHelp();
-  m_net_address_tctrl->Show();
+  // BUG BUG commented out m_net_address_tctrl->Show() and
+  // m_net_addr_text->Show() because they are displayed on the initial Add
+  // Connecion panel which defaults to a serial connection.
+  // InitiateNewConnection is called after ShowNMEAComForm
+  // m_net_address_tctrl->Show();
   m_net_address_tctrl->Enable();
   auto addr_ctrl = dynamic_cast<TextCtrlWithHelp*>(m_net_address_tctrl);
   if (addr_ctrl) addr_ctrl->SetHelp(kAddressDefaultHelp);
-  m_net_addr_text->Show();
+  // m_net_addr_text->Show();
   SetupProtocolChoice(m_net_data_protocol_choice);
   m_output_chkbox->SetValue(false);
   m_input_chkbox->SetValue(true);
@@ -640,6 +645,15 @@ void ConnectionEditDialog::Init() {
   bSizer15->Add(m_type_can_radiobtn, 0, wxALL, 5);
 #else
   m_type_can_radiobtn->Hide();
+#endif
+
+  m_type_canable_radiobtn = new wxRadioButton(
+      this, wxID_ANY, "Cantact (SLCAN)", wxDefaultPosition, wxDefaultSize, 0);
+
+#if defined(__WXMSW__)
+  bSizer15->Add(m_type_canable_radiobtn, 0, wxALL, 5);
+#else
+  m_type_canable_radiobtn->Hide();
 #endif
 
   auto* bSizer15a = new wxBoxSizer(wxHORIZONTAL);
@@ -861,27 +875,30 @@ void ConnectionEditDialog::Init() {
   m_serial_protocol_choice->Enable(true);
   fgSizer1->Add(m_serial_protocol_choice, 1, wxEXPAND | wxTOP, 5);
 
-  m_ser_props_sizer->Add(fgSizer1, 0, wxEXPAND, 5);
-
   //  User Comments
 
-  auto* commentSizer = new wxFlexGridSizer(0, 2, 0, 0);
+  // Added to fgSizer1 instead of commentSizer to align nicely
+  // auto* commentSizer = new wxFlexGridSizer(0, 2, 0, 0);
   // sbSizerConnectionProps->Add(commentSizer, 0, wxEXPAND, 5);
 
   //  Serial User Comments
+  fgSizer1->AddSpacer(1);
+  fgSizer1->AddSpacer(1);
   m_ser_comment_text = new wxStaticText(this, wxID_ANY, _("User Comment"));
   m_ser_comment_text->Wrap(-1);
   m_ser_comment_text->SetMinSize(wxSize(column1width, -1));
-  commentSizer->Add(m_ser_comment_text, 0, wxALL, 5);
 
+  // commentSizer->Add(m_ser_comment_text, 0, wxALL, 5);
+  fgSizer1->Add(m_ser_comment_text, 0, wxALL, 5);
   m_serial_comment_tctrl = new wxTextCtrl(this, wxID_ANY);
   m_serial_comment_tctrl->SetMaxSize(wxSize(column2width, -1));
   m_serial_comment_tctrl->SetMinSize(wxSize(column2width, -1));
 
-  commentSizer->Add(m_serial_comment_tctrl, 1, wxTOP, 5);
+  // commentSizer->Add(m_serial_comment_tctrl, 1, wxEXPAND | wxTOP, 5);
+  fgSizer1->Add(m_serial_comment_tctrl, 1, wxEXPAND | wxTOP, 5);
 
-  m_connection_props_sizer->Add(commentSizer, 0, wxALL, 5);
-
+  // m_connection_props_sizer->Add(commentSizer, 0, wxALL, 5);
+  m_ser_props_sizer->Add(fgSizer1, 0, wxEXPAND, 5);
   wxFlexGridSizer* fgSizer5;
   fgSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
   fgSizer5->SetFlexibleDirection(wxBOTH);
@@ -1280,6 +1297,11 @@ void ConnectionEditDialog::OnTypeCANSelected(wxCommandEvent& event) {
   SetNMEAFormToCAN();
 }
 
+void ConnectionEditDialog::OnTypeCanableSelected(wxCommandEvent& event) {
+  OnConnValChange(event);
+  SetNMEAFormToCanable();
+}
+
 void ConnectionEditDialog::OnTypeGPSSelected(wxCommandEvent& event) {
   OnConnValChange(event);
   SetNMEAFormToGPS();
@@ -1306,6 +1328,9 @@ void ConnectionEditDialog::ShowTypeCommon(bool visible) {
   m_type_net_radiobtn->Show(visible);
 #if defined(__linux__) && !defined(__ANDROID__) && !defined(__WXOSX__)
   m_type_can_radiobtn->Show(visible);
+#endif
+#if defined(__WXMSW__)
+  m_type_canable_radiobtn->Show(visible);
 #endif
   if (m_type_internal_gps_radiobtn) m_type_internal_gps_radiobtn->Show(visible);
   if (m_type_internal_bt_radiobtn) m_type_internal_bt_radiobtn->Show(visible);
@@ -1367,6 +1392,8 @@ void ConnectionEditDialog::ShowNMEASerial(bool visible) {
   m_garmin_host_chkbox->Show(visible && advanced);
   m_ser_comment_text->Show(visible);
   m_serial_comment_tctrl->Show(visible);
+  m_net_addr_text->Hide();
+  m_net_address_tctrl->Hide();
   m_net_comment_text->Hide();
   m_net_comment_tctrl->Hide();
 }
@@ -1385,6 +1412,20 @@ void ConnectionEditDialog::ShowNMEACAN(bool visible) {
   m_can_source_choice->Show(visible);
   if (visible && m_dlg_ok_btn && m_can_source_choice->IsEmpty())
     m_dlg_ok_btn->Enable(false);
+}
+
+void ConnectionEditDialog::ShowNMEACanable(bool visible) {
+  bool advanced = m_advanced;
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
+  // Baud rate defaults to the device's baud rate
+  // Protocol is only NMEA 2000
+  m_ser_port_text->Show(visible);
+  m_port_combo->Show(visible);
+  m_ser_comment_text->Show(visible);
+  m_serial_comment_tctrl->Show(visible);
+  m_garmin_host_chkbox->Hide();
+  m_net_comment_text->Hide();
+  m_net_comment_tctrl->Hide();
 }
 
 void ConnectionEditDialog::ShowNMEABT(bool visible) {
@@ -1449,6 +1490,21 @@ void ConnectionEditDialog::SetNMEAFormToCAN() {
   ShowNMEACAN(true);
   m_in_filter_sizer->Show(false);
   m_out_filter_sizer->Show(false);
+  SetDSFormRWStates();
+
+  LayoutDialog();
+}
+
+void ConnectionEditDialog::SetNMEAFormToCanable() {
+  if (m_dlg_ok_btn) m_dlg_ok_btn->Enable();
+
+  ShowNMEACommon(false);
+  ShowNMEANet(false);
+  ShowNMEAGPS(false);
+  ShowNMEABT(false);
+  ShowNMEASerial(false);
+  ShowNMEACAN(false);
+  ShowNMEACanable(true);
   SetDSFormRWStates();
 
   LayoutDialog();
@@ -1593,6 +1649,26 @@ void ConnectionEditDialog::SetDSFormOptionVizStates() {
     m_collapse_box->Show(false);
   }
 
+  if (m_type_canable_radiobtn->GetValue()) {
+    m_sk_check_discover_chkbox->Hide();
+    m_sk_discover_btn->Hide();
+    m_sk_server_status_text->Hide();
+    m_garmin_host_chkbox->Hide();
+    m_input_chkbox->Hide();
+    m_output_chkbox->Hide();
+
+    ShowInFilter(false);
+    ShowOutFilter(false);
+
+    m_net_data_protocol_text->Hide();
+    m_net_data_protocol_choice->Hide();
+    m_net_expert_chkbox->Hide();
+    m_net_type_choice_text->Hide();
+    m_net_expert_box_text->Hide();
+    m_net_view_choice->Hide();
+    m_collapse_box->Show(false);
+  }
+
   if (m_type_net_radiobtn->GetValue()) {
     if ((DataProtocol)m_net_data_protocol_choice->GetSelection() ==
         DataProtocol::PROTO_NMEA2000) {
@@ -1718,6 +1794,9 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
   } else if (cp->type == SOCKETCAN) {
     m_type_can_radiobtn->SetValue(true);
     SetNMEAFormToCAN();
+  } else if (cp->type == CANABLE) {
+    m_type_canable_radiobtn->SetValue(true);
+    SetNMEAFormToCanable();
   } else if (cp->type == INTERNAL_GPS) {
     if (m_type_internal_gps_radiobtn)
       m_type_internal_gps_radiobtn->SetValue(true);
@@ -1736,7 +1815,7 @@ void ConnectionEditDialog::SetConnectionParams(ConnectionParams* cp) {
     ClearNMEAForm();
   }
 
-  if (cp->type == SERIAL) {
+  if (cp->type == SERIAL || cp->type == CANABLE) {
     m_serial_comment_tctrl->SetValue(cp->user_comment);
   } else if (cp->type == NETWORK) {
     m_net_comment_tctrl->SetValue(cp->user_comment);
@@ -1796,6 +1875,7 @@ void ConnectionEditDialog::SetDefaultConnectionParams() {
   m_type_net_radiobtn->SetValue(!bserial);
   bserial ? SetNMEAFormToSerial() : SetNMEAFormToNet();
   m_type_can_radiobtn->SetValue(false);
+  m_type_canable_radiobtn->SetValue(false);
 #endif
 
   m_conn_enabled = true;
@@ -2145,7 +2225,18 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     pConnectionParams->socket_can_port =
         m_can_source_choice->GetString(m_can_source_choice->GetSelection());
   }
-  if (pConnectionParams->type == SERIAL) {
+
+  if (m_type_canable_radiobtn && m_type_canable_radiobtn->GetValue()) {
+    pConnectionParams->type = CANABLE;
+    pConnectionParams->data_protocol = PROTO_NMEA2000;
+    pConnectionParams->direction = PortDirection::kInOut;
+    pConnectionParams->network_address = "";
+    pConnectionParams->network_port = 0;
+    pConnectionParams->net_protocol = PROTO_UNDEFINED;
+    pConnectionParams->baudrate = 0;
+  }
+
+  if (pConnectionParams->type == SERIAL || pConnectionParams->type == CANABLE) {
     pConnectionParams->user_comment = m_serial_comment_tctrl->GetValue();
   } else if (pConnectionParams->type == NETWORK) {
     pConnectionParams->user_comment = m_net_comment_tctrl->GetValue();
@@ -2174,6 +2265,10 @@ void ConnectionEditDialog::ConnectControls() {
       wxEVT_COMMAND_RADIOBUTTON_SELECTED,
       wxCommandEventHandler(ConnectionEditDialog::OnTypeCANSelected), nullptr,
       this);
+  m_type_canable_radiobtn->Connect(
+      wxEVT_COMMAND_RADIOBUTTON_SELECTED,
+      wxCommandEventHandler(ConnectionEditDialog::OnTypeCanableSelected),
+      nullptr, this);
   if (m_type_internal_gps_radiobtn)
     m_type_internal_gps_radiobtn->Connect(
         wxEVT_COMMAND_RADIOBUTTON_SELECTED,
