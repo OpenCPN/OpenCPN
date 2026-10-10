@@ -2619,6 +2619,12 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos,
     return AIS_INCOMPLETE_MULTIPART;  // and non-zero return
   }
 
+  //  The accumulated payload must fit AisBitstring; same guard as DecodeN0183.
+  if (string_to_parse.Len() >= AIS_MAX_MESSAGE_LEN) {
+    accumulator->Clear();
+    return AIS_NMEAVDX_TOO_LONG;
+  }
+
   //  Create the bit accessible string
   AisBitstring strbit(string_to_parse.mb_str());
 

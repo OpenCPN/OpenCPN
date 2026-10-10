@@ -22,6 +22,7 @@
 #include "ocpn-nlohmann/json.hpp"
 #include "observable/configvar.h"
 
+#include "model/ais_bitstring.h"
 #include "model/ais_decoder.h"
 #include "model/ais_defs.h"
 #include "model/ais_state_vars.h"
@@ -1247,6 +1248,56 @@ TEST(AIS, Decoding) { AisDecodeApp app; }
 TEST(AIS, AISVDO) { AisVdoApp app; }
 
 TEST(AIS, AISVDM) { AisVdmApp app; }
+
+class AisBitstringApp : public BasicTest {
+public:
+  AisBitstringApp() : BasicTest() { Work(); }
+  void Work() override {
+    // Bits beyond the payload are defined (zero), not whatever the stack held.
+    AisBitstring one("1");
+    EXPECT_EQ(one.GetBitCount(), 6);
+    EXPECT_EQ(one.GetInt(1, 6), 1);
+    EXPECT_EQ(one.GetInt(9, 30), 0);
+    char name[21];
+    EXPECT_EQ(one.GetStr(7, 120, name, 20), 20);
+    EXPECT_EQ(std::string(name), std::string(20, '@'));
+
+    // Payloads longer than AIS_MAX_MESSAGE_LEN are truncated, never copied
+    // past the array.
+    std::string big(AIS_MAX_MESSAGE_LEN * 2, 'w');
+    AisBitstring wide(big.c_str());
+    EXPECT_EQ(wide.GetBitCount(), AIS_MAX_MESSAGE_LEN * 6);
+    EXPECT_EQ(wide.GetInt(AIS_MAX_MESSAGE_LEN * 6 - 5, 6), 63);
+    EXPECT_EQ(wide.GetInt(AIS_MAX_MESSAGE_LEN * 6 + 1, 6), 0);
+  }
+};
+
+class AisVdoMultipartApp : public BasicTest {
+public:
+  AisVdoMultipartApp() : BasicTest() { Work(); }
+  void Work() override {
+    // 12 fragments x 106 payload chars: the accumulated payload (1272) exceeds
+    // AIS_MAX_MESSAGE_LEN (820) while every sentence stays under 128 chars.
+    wxString accumulator;
+    GenericPosDatEx gpd;
+    AisError status = AIS_GENERIC_ERROR;
+    for (int i = 1; i <= 12; i++) {
+      std::string body = "!AIVDO,12," + std::to_string(i) + ",1,A," +
+                         std::string(106, 'w') + ",0";
+      unsigned char cs = 0;
+      for (size_t k = 1; k < body.size(); k++) cs ^= (unsigned char)body[k];
+      char hex[4];
+      snprintf(hex, sizeof hex, "*%02X", cs);
+      body += hex;
+      status = g_pAIS->DecodeSingleVDO(wxString(body), &gpd, &accumulator);
+    }
+    EXPECT_EQ(status, AIS_NMEAVDX_TOO_LONG);
+    EXPECT_TRUE(accumulator.IsEmpty());
+  }
+};
+
+TEST(AIS, BitstringBounds) { AisBitstringApp app; }
+TEST(AIS, MultipartVDOTooLong) { AisVdoMultipartApp app; }
 
 TEST(Navmsg, ActiveMessages) { NavMsgApp app; }
 
