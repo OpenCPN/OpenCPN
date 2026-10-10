@@ -26,8 +26,13 @@
 #include "model/ais_bitstring.h"
 
 AisBitstring::AisBitstring(const char *str) {
-  byte_length = strlen(str);
-
+  // Never trust the caller's length: copy at most AIS_MAX_MESSAGE_LEN bytes and
+  // leave every bit beyond the payload defined (zero) so that GetInt()/GetStr()
+  // on a short message return 0 instead of whatever the stack held.
+  memset(bitbytes, 0, sizeof(bitbytes));
+  size_t len = strlen(str);
+  if (len > AIS_MAX_MESSAGE_LEN) len = AIS_MAX_MESSAGE_LEN;
+  byte_length = static_cast<int>(len);
   for (int i = 0; i < byte_length; i++) {
     bitbytes[i] = to_6bit(str[i]);
   }
@@ -62,7 +67,7 @@ int AisBitstring::GetInt(int sp, int len, bool signed_flag) {
   for (int i = 0; i < len; i++) {
     acc = acc << 1;
     cp = (s0p + i) / 6;
-    cx = bitbytes[cp];  // what if cp >= byte_length?
+    cx = (cp >= 0 && cp < byte_length) ? bitbytes[cp] : 0;
     c0 = (cx >> (5 - ((s0p + i) % 6))) & 1;
     if (i == 0 && signed_flag &&
         c0)  // if signed value and first bit is 1, pad with 1's
@@ -89,7 +94,7 @@ int AisBitstring::GetStr(int sp, int bit_len, char *dest, int max_len) {
     for (int j = 0; j < 6; j++) {
       acc = acc << 1;
       cp = (s0p + i) / 6;
-      cx = bitbytes[cp];  // what if cp >= byte_length?
+      cx = (cp >= 0 && cp < byte_length) ? bitbytes[cp] : 0;
       cs = 5 - ((s0p + i) % 6);
       c0 = (cx >> cs) & 1;
       acc |= c0;
