@@ -677,6 +677,8 @@ private:
   void OnAlertEnableButtonClick(wxCommandEvent &event);
   void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
   void OnResetFont(wxCommandEvent &event);
+  void OnColorChange(wxSysColourChangedEvent &ev);
+  void OnColorChange();
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);

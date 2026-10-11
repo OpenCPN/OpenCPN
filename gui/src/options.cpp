@@ -1470,10 +1470,13 @@ options::options(wxWindow* parent, OptionsCallbacks callbacks, wxWindowID id,
   };
   m_persist_active_route_chkbox->Bind(wxEVT_CHECKBOX, action);
   m_persist_active_route_chkbox->SetValue(g_persist_active_route);
+  OnColorChange();
 
   m_OnChartDb_finalize_listener.Init(
       GuiEvents::GetInstance().on_finalize_chartdbs,
       [&](ObservedEvt& ev) { OptionsFinalizeChartDBUpdate(); });
+  Bind(wxEVT_SYS_COLOUR_CHANGED,
+       [&](wxSysColourChangedEvent& ev) { OnColorChange(ev); });
 }
 
 options::~options() {
@@ -1497,6 +1500,18 @@ options::~options() {
 #ifndef __ANDROID__
   delete m_PluginCatalogMgrPanel;
 #endif
+}
+
+void options::OnColorChange() {
+  auto foreground = wxSystemSettings::GetColour(wxSYS_COLOUR_MENUTEXT);
+  auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+  m_pListbook->GetListView()->SetBackgroundColour(background);
+  m_pListbook->GetListView()->SetForegroundColour(foreground);
+}
+
+void options::OnColorChange(wxSysColourChangedEvent& ev) {
+  OnColorChange();
+  ev.Skip();
 }
 
 // with AIS it's called very often
@@ -6126,6 +6141,7 @@ void options::CreateControls() {
   //      PlugIns can add panels, too
   if (g_pi_manager) g_pi_manager->NotifySetupOptions();
 
+  OnColorChange();
   SetColorScheme(static_cast<ColorScheme>(0));
 
   // Set the maximum size of the entire settings dialog
