@@ -2324,9 +2324,8 @@ SegmentSafetyPointClass ChartPointSafetyClassAt(
                              sizeof(result->hit_object))) {
     result->chart_db_index = tile.chart_db_index;
     result->chart_scale = tile.chart_scale;
-    strncpy(result->chart_path, tile.chart_path,
-            sizeof(result->chart_path) - 1);
-    result->chart_path[sizeof(result->chart_path) - 1] = '\0';
+    CopySegmentSafetyString(result->chart_path, sizeof(result->chart_path),
+                            tile.chart_path);
     if (point_class == kPointLand)
       strncpy(result->hit_object, "grid LAND cell",
               sizeof(result->hit_object) - 1);
@@ -2460,9 +2459,8 @@ bool SegmentSafetyGridCellAt(long lat_cell, long lon_cell,
                              sizeof(result->hit_object))) {
     result->chart_db_index = tile.chart_db_index;
     result->chart_scale = tile.chart_scale;
-    strncpy(result->chart_path, tile.chart_path,
-            sizeof(result->chart_path) - 1);
-    result->chart_path[sizeof(result->chart_path) - 1] = '\0';
+    CopySegmentSafetyString(result->chart_path, sizeof(result->chart_path),
+                            tile.chart_path);
     if (cls == kPointLand)
       strncpy(result->hit_object, "grid LAND cell",
               sizeof(result->hit_object) - 1);
@@ -2540,9 +2538,8 @@ bool SegmentSafetyRouteMaskCellAt(
                              sizeof(result->hit_object))) {
     result->chart_db_index = mask.chart_db_index;
     result->chart_scale = mask.chart_scale;
-    strncpy(result->chart_path, mask.chart_path,
-            sizeof(result->chart_path) - 1);
-    result->chart_path[sizeof(result->chart_path) - 1] = '\0';
+    CopySegmentSafetyString(result->chart_path, sizeof(result->chart_path),
+                            mask.chart_path);
   }
   return true;
 }

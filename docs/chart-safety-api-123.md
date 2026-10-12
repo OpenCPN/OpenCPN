@@ -160,10 +160,15 @@ HostApi123 review consumer requires published API 1.22. This core proposal does
 not publish a new plugin package or catalogue version.
 
 Core build qualification retains the upstream warning and sanitizer settings.
-The cache-result copies use the existing bounded, null-terminating string
-helper, CM93 composite-chart overrides are explicit, and the Windows x64 build
-finds Poedit's Gettext tools under either Program Files directory after the
-dependency setup returns. Gettext and CMake failures stop the build immediately.
+The cache-result and raster/mask copies use the shared bounded,
+null-terminating string helper. Its source precision also bounds reads from
+fixed-size provider buffers without a null terminator. A native regression
+fixture exercises that boundary under AddressSanitizer. CM93 composite-chart
+overrides are explicit, and the Windows x64 build finds Poedit's Gettext tools
+under either Program Files directory after the dependency setup returns.
+Windows x64 downloads use the host-provided `curl.exe` and verify the cached
+wxWidgets headers, import library and runtime DLL. Download, extraction,
+Gettext and CMake failures stop the build immediately.
 
 Platform builds and API review remain gates before this development interface
 can be treated as ready for release. Linux startup or a unit suite alone cannot

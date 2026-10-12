@@ -117,7 +117,8 @@ namespace detail {
 
 void CopySegmentSafetyString(char* dest, size_t dest_size, const char* source) {
   if (!dest || dest_size == 0) return;
-  snprintf(dest, dest_size, "%s", source ? source : "");
+  snprintf(dest, dest_size, "%.*s", static_cast<int>(dest_size - 1),
+           source ? source : "");
 }
 
 void SetSegmentSafetyMessage(SegmentSafetyResult* result, const char* message) {

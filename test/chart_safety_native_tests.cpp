@@ -3,6 +3,7 @@
  * script, so tests exercise its private production classifier without adding
  * test exports or changing the plugin ABI. Linked against the complete host. */
 #include <gtest/gtest.h>
+#include <array>
 #include "../gui/src/chart_safety_raster.cpp"
 using namespace ocpn::chart_safety;
 using namespace ocpn::chart_safety::detail;
@@ -114,6 +115,30 @@ SegmentSafetyResult Classify(FixtureChart &chart) {
       &chart, 123, .025, .025, &vp, &source, nullptr, &result, rules);
   result.status = cls;
   return result;
+}
+TEST(ChartSafetyNative, NonTerminatedProviderStringsHaveBoundedCopies) {
+  // ASan checks the source boundary as well as the destination: a provider
+  // may fill every byte it supplies without adding a string terminator.
+  std::array<char, 255> source;
+  source.fill('x');
+  struct {
+    char value[256];
+    char guard;
+  } destination{};
+  destination.guard = '!';
+  CopySegmentSafetyString(destination.value, sizeof(destination.value),
+                          source.data());
+  EXPECT_EQ(std::string(destination.value), std::string(255, 'x'));
+  EXPECT_EQ(destination.value[255], '\0');
+  EXPECT_EQ(destination.guard, '!');
+
+  char empty[1] = {'x'};
+  CopySegmentSafetyString(empty, sizeof(empty), source.data());
+  EXPECT_EQ(empty[0], '\0');
+  CopySegmentSafetyString(destination.value, sizeof(destination.value),
+                          nullptr);
+  EXPECT_EQ(destination.value[0], '\0');
+  EXPECT_EQ(destination.guard, '!');
 }
 TEST(ChartSafetyNative, CoverageProofUsesCompleteOriginalPolygons) {
   FixtureChart chart;
