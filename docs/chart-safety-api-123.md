@@ -1,4 +1,4 @@
-# Chart-aware routing support for xWeatherRouting 1.27
+# Chart-aware routing support for xWeatherRouting 1.30.0
 
 ## Scope of the combined proposal
 
@@ -30,7 +30,7 @@ Implemented:
   the chart database is rebuilding return NoData without storing false coverage
   results in the tile cache.
 
-The 1.27 support adds adaptive aligned fine-tile lookahead, reuse of decoded
+The chart-safety support includes adaptive aligned fine-tile lookahead, reuse of decoded
 CM93 rules while the loaded cell is unchanged, and mixed provider/CM93 boundary
 recovery. Only complete fine coverage can promote a coarse search certificate;
 depth and final validation retain fine checks.
@@ -148,6 +148,22 @@ final-leg checks, incomplete/failed queries, deferred retries and dateline legs.
 The coordinated Weather Routing consumer has its own independent engine/cache
 suite. Real-host startup/load and native chart queries are tested in isolated
 profiles, separately from the stock compatibility control.
+
+The coordinated consumer now includes the qualified xWeatherRouting 1.30.0
+release, with unchanged routing-engine source and the optional HostApi123
+adaptation retained:
+https://github.com/pob220/xweather_routing_pi/tree/chart-safety/xweather-1.30-api123
+
+Its development SDK is pinned to the matching `opencpn-libs` API123 snapshot.
+Published plugin packages retain their existing API 1.21 loading floor; the
+HostApi123 review consumer requires published API 1.22. This core proposal does
+not publish a new plugin package or catalogue version.
+
+Core build qualification retains the upstream warning and sanitizer settings.
+The cache-result copies use the existing bounded, null-terminating string
+helper, CM93 composite-chart overrides are explicit, and the Windows x64 build
+finds Poedit's Gettext tools under either Program Files directory after the
+dependency setup returns. Gettext and CMake failures stop the build immediately.
 
 Platform builds and API review remain gates before this development interface
 can be treated as ready for release. Linux startup or a unit suite alone cannot

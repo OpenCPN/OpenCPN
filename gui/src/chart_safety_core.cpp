@@ -2340,25 +2340,22 @@ void CopySegmentSafetyPointCacheToResult(
 
   result->chart_db_index = cached.chart_db_index;
   result->chart_scale = cached.chart_scale;
-  strncpy(result->chart_path, cached.chart_path,
-          sizeof(result->chart_path) - 1);
-  result->chart_path[sizeof(result->chart_path) - 1] = '\0';
-  strncpy(result->hit_object, cached.hit_object,
-          sizeof(result->hit_object) - 1);
-  result->hit_object[sizeof(result->hit_object) - 1] = '\0';
+  CopySegmentSafetyString(result->chart_path, sizeof(result->chart_path),
+                          cached.chart_path);
+  CopySegmentSafetyString(result->hit_object, sizeof(result->hit_object),
+                          cached.hit_object);
   if (SegmentSafetyResultHas(
           result, offsetof(SegmentSafetyResult, depth_source_attribute),
           sizeof(result->depth_source_attribute))) {
     result->has_depth = cached.has_depth ? 1 : 0;
     result->min_depth_m = cached.min_depth_m;
     result->has_drying = cached.has_drying ? 1 : 0;
-    strncpy(result->depth_source_object, cached.depth_source_object,
-            sizeof(result->depth_source_object) - 1);
-    result->depth_source_object[sizeof(result->depth_source_object) - 1] = '\0';
-    strncpy(result->depth_source_attribute, cached.depth_source_attribute,
-            sizeof(result->depth_source_attribute) - 1);
-    result->depth_source_attribute[sizeof(result->depth_source_attribute) - 1] =
-        '\0';
+    CopySegmentSafetyString(result->depth_source_object,
+                            sizeof(result->depth_source_object),
+                            cached.depth_source_object);
+    CopySegmentSafetyString(result->depth_source_attribute,
+                            sizeof(result->depth_source_attribute),
+                            cached.depth_source_attribute);
   }
 }
 
@@ -2484,11 +2481,11 @@ bool SegmentSafetyExternalTileCacheLookup(long lat_tile, long lon_tile,
   // Plugin-vector tiles can reach the external cache only after the provider
   // advertised the derived-cache contract in its grid result.
   tile.persistent_cache_allowed = true;
-  strncpy(tile.chart_path, external.chart_path, sizeof(tile.chart_path) - 1);
-  tile.chart_path[sizeof(tile.chart_path) - 1] = '\0';
-  strncpy(tile.dependency_identity, external.dependency_identity,
-          sizeof(tile.dependency_identity) - 1);
-  tile.dependency_identity[sizeof(tile.dependency_identity) - 1] = '\0';
+  CopySegmentSafetyString(tile.chart_path, sizeof(tile.chart_path),
+                          external.chart_path);
+  CopySegmentSafetyString(tile.dependency_identity,
+                          sizeof(tile.dependency_identity),
+                          external.dependency_identity);
   tile.classes.resize(cells);
   tile.has_drying.resize(cells);
   tile.land_count = tile.water_count = tile.drying_count = tile.unknown_count =
