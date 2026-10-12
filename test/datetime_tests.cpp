@@ -284,6 +284,37 @@ TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
 
 #endif  // HAS_EN_US
 
+#if wxCHECK_VERSION(3, 2, 0) && !defined(__WXMSW__)
+TEST_F(DateTimeFormatTest, LondonSeasonalAndDstBoundaryDisplays) {
+  SetTimezone("Europe/London");
+  struct Case {
+    time_t epoch;
+    const char* local;
+    const char* abbreviation;
+  };
+  const Case cases[] = {
+      {1705842931, "2024-01-21 13:15:31", "GMT"},
+      {1718982931, "2024-06-21 16:15:31", "BST"},
+      {1711846799, "2024-03-31 00:59:59", "GMT"},
+      {1711846800, "2024-03-31 02:00:00", "BST"},
+      {1729990799, "2024-10-27 01:59:59", "BST"},
+      {1729990800, "2024-10-27 01:00:00", "GMT"},
+  };
+  for (const auto& item : cases) {
+    SCOPED_TRACE(item.epoch);
+    wxDateTime instant(item.epoch);
+    DateTimeFormatOptions opts = DateTimeFormatOptions()
+                                     .SetFormatString("%Y-%m-%d %H:%M:%S")
+                                     .SetTimezone("Local Time");
+    EXPECT_EQ(ocpn::toUsrDateTimeFormat(instant, opts),
+              wxString(item.local) + " " + item.abbreviation);
+    opts.SetShowTimezone(false);
+    EXPECT_EQ(ocpn::toUsrDateTimeFormat(instant, opts), item.local);
+    EXPECT_EQ(instant.GetTicks(), item.epoch);
+  }
+}
+#endif
+
 #ifdef HAS_SV_SE
 // Test with Local Time in CET timezone with Swedish locale (Västeuropa,
 // sommartid)
@@ -299,8 +330,11 @@ TEST_F(DateTimeFormatTest, LocalTimezoneCETSwedish) {
       << "Swedish locale is not supported on this system";
 
   // Summer time date (DST active)
-  wxDateTime testDateSummer(21, wxDateTime::Jun, 2024, 15, 15, 31);
-  testDateSummer.MakeFromTimezone(wxDateTime::UTC);
+  // Construct an absolute instant: wxWidgets can retain a cached timezone
+  // offset when other tests switch TZ within the same process.
+  wxDateTime testDateSummer(static_cast<time_t>(1718982931));
+  ASSERT_EQ(testDateSummer.Format("%Y-%m-%d %H:%M:%S", wxDateTime::UTC),
+            "2024-06-21 15:15:31");
 
   // Test 1: ISO format with Local Time and timezone shown
   DateTimeFormatOptions opts = DateTimeFormatOptions()
