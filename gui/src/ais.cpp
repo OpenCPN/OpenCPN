@@ -62,7 +62,7 @@
 #include "ocpn_plugin.h"
 #include "styles.h"
 #include "top_frame.h"
-#include "user_colors.h"
+#include "color_handler.h"
 
 extern OCPNPlatform *g_Platform;
 
