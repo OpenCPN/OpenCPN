@@ -62,7 +62,7 @@
 #include "ocpn_platform.h"
 #include "pluginmanager.h"  // FIXME: Refactor
 
-#ifndef __ANDROID__
+#if wxCHECK_VERSION(3, 2, 0)
 #define OCPN_OPTIONS_USE_LISTBOOK
 #endif
 

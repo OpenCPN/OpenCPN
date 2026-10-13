@@ -1502,12 +1502,16 @@ options::~options() {
 #endif
 }
 
+#ifdef OCPN_OPTIONS_USE_LISTBOOK
 void options::OnColorChange() {
   auto foreground = wxSystemSettings::GetColour(wxSYS_COLOUR_MENUTEXT);
   auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
   m_pListbook->GetListView()->SetBackgroundColour(background);
   m_pListbook->GetListView()->SetForegroundColour(foreground);
 }
+#else
+void options::OnColorChange() {}
+#endif
 
 void options::OnColorChange(wxSysColourChangedEvent& ev) {
   OnColorChange();
