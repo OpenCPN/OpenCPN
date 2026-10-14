@@ -27,12 +27,30 @@
 #ifndef _COMM_DRV_N2K_CANABLE_H
 #define _COMM_DRV_N2K_CANABLE_H
 
+// Actisense NGT-1 definitions
+// ASCII Control Characters
+#define DLE 0x10
+#define STX 0x02
+#define ETX 0x03
+#define ESC 0x1B
+
+// Actisense commands
+#define N2K_TX_CMD 0x92
+#define N2K_RX_CMD 0x93
+#define NGT_TX_CMD 0xA1
+#define NGT_RX_CMD 0xA3
+
+// Yacht Devices commands
+// Go figure....
+#define YD_TX_CMD 0x94
+
 #include <atomic>
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <vector>
+#include <chrono>
 
 #include <wx/wx.h>
 #include <wx/thread.h>
@@ -156,7 +174,7 @@ public:
 
   // Return "crude" statistics - populates the tick box in the connection
   // dialog? Mirrors CommDriverN2KSocketCAN::GetDriverStats()
-  DriverStats GetDriverStats() const override { return m_driverStatistics; }
+  DriverStats GetDriverStats() const override;
 
 private:
   // Encode message into Actisense format
@@ -215,6 +233,10 @@ private:
 
   // Driver Stats are updated by a timer, not called by OpenCPN ?
   StatsTimer m_statsTimer;
+
+  // Store the time when the serial listener initialized
+  // Used to generate the Actisense time stamps;
+  std::chrono::steady_clock::time_point m_startTime;
 };
 
 #endif
