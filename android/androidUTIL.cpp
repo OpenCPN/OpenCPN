@@ -1,3 +1,5 @@
+// POBsoft (1985-2026): unofficial Android plugin import/lifecycle patch.
+// Original OpenCPN copyrights and licences are retained below.
 /***************************************************************************
  *
  * Project:  OpenCPN
@@ -29,6 +31,9 @@
 #endif  // precompiled headers
 
 #include <sstream>
+#include <future>
+#include <QEventLoop>
+#include <QTimer>
 
 #include <wx/tokenzr.h>
 #include <wx/aui/aui.h>
@@ -38,6 +43,7 @@
 #include <wx/zipstrm.h>
 #include <wx/textwrapper.h>
 #include <wx/matrix.h>
+#include <wx/dcmemory.h>
 
 #include <QtAndroidExtras/QAndroidJniObject>
 #include <QtAndroidExtras/QAndroidJniEnvironment>
@@ -3232,6 +3238,83 @@ Java_org_opencpn_FileDialogCallbackProxy_nativeFileDialogFinished(
   AndroidFileDialog::CallbackFromJava(path);
 }
 
+// The legacy Java chooser waits for its UI callback. Calling it on the Qt
+// GUI thread deadlocks when Android's IME synchronously calls back into Qt.
+// Keep that thread dispatching while an attached JNI worker owns the wait.
+static wxString RunAndroidFileChooser(const wxString &initDir,
+                                      const wxString &title,
+                                      const wxString &suggestion,
+                                      const wxString &wildcard) {
+  auto select = [initDir, title, suggestion, wildcard]() {
+    QAndroidJniEnvironment env;
+    const auto activity = QAndroidJniObject::callStaticObjectMethod(
+        "org/qtproject/qt5/android/QtNative", "activity",
+        "()Landroid/app/Activity;");
+    const auto dir =
+        QAndroidJniObject::fromString(QString::fromUtf8(initDir.utf8_str()));
+    const auto caption =
+        QAndroidJniObject::fromString(QString::fromUtf8(title.utf8_str()));
+    const auto name =
+        QAndroidJniObject::fromString(QString::fromUtf8(suggestion.utf8_str()));
+    const auto filter =
+        QAndroidJniObject::fromString(QString::fromUtf8(wildcard.utf8_str()));
+    const auto response = activity.callObjectMethod(
+        "FileChooserDialog",
+        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/"
+        "String;)Ljava/lang/String;",
+        dir.object<jstring>(), caption.object<jstring>(),
+        name.object<jstring>(), filter.object<jstring>());
+    if (env->ExceptionCheck()) {
+      env->ExceptionDescribe();
+      env->ExceptionClear();
+      return wxString("cancel:");
+    }
+    return response.isValid()
+               ? wxString::FromUTF8(response.toString().toUtf8().constData())
+               : wxString("cancel:");
+  };
+  static std::atomic<bool> active{false};
+  if (active.exchange(true)) return "cancel:";
+  struct ResetActive {
+    std::atomic<bool> &active;
+    ~ResetActive() { active.store(false); }
+  } reset{active};
+  auto pending = std::async(std::launch::async, select);
+  QEventLoop loop;
+  QTimer poll;
+  QObject::connect(&poll, &QTimer::timeout, &loop, [&]() {
+    if (pending.wait_for(std::chrono::milliseconds(0)) ==
+        std::future_status::ready)
+      loop.quit();
+  });
+  poll.start(20);
+  while (pending.wait_for(std::chrono::milliseconds(0)) !=
+         std::future_status::ready)
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
+  poll.stop();
+  wxString response = pending.get();
+  // The SAF document picker is asynchronous and initially returns "OK".
+  // Never report success until its callback supplies an actual filename.
+  while (response == "OK" || response == "no") {
+    QTimer::singleShot(20, &loop, &QEventLoop::quit);
+    loop.exec(QEventLoop::ExcludeUserInputEvents);
+    QAndroidJniEnvironment env;
+    const auto activity = QAndroidJniObject::callStaticObjectMethod(
+        "org/qtproject/qt5/android/QtNative", "activity",
+        "()Landroid/app/Activity;");
+    const auto result = activity.callObjectMethod("isFileChooserFinished",
+                                                  "()Ljava/lang/String;");
+    if (env->ExceptionCheck()) {
+      env->ExceptionClear();
+      return "cancel:";
+    }
+    response = result.isValid()
+                   ? wxString::FromUTF8(result.toString().toUtf8().constData())
+                   : wxString("cancel:");
+  }
+  return response;
+}
+
 int androidFileChooser(wxString *result, const wxString &initDir,
                        const wxString &title, const wxString &suggestion,
                        const wxString &wildcard, bool dirOnly, bool addFile) {
@@ -3250,14 +3333,9 @@ int androidFileChooser(wxString *result, const wxString &initDir,
   } else {
     if (g_androidUtilHandler) {
       wxString activityResult;
-      activityResult = callActivityMethod_s4s("FileChooserDialog", initDir,
-                                              title, suggestion, wildcard);
+      activityResult = RunAndroidFileChooser(initDir, title, suggestion, wildcard);
 
-      if (activityResult == _T("OK")) {
-        return wxID_OK;
-      } else if (activityResult == "cancel:") {
-        return wxID_CANCEL;
-      } else {
+      if (activityResult.StartsWith("file:") && !activityResult.AfterFirst(':').empty()) {
         *result = activityResult.AfterFirst(':');
         return wxID_OK;
       }
@@ -4395,11 +4473,51 @@ std::string prepareStyleIcon(wxString icon_file, int size) {
 
   wxString file = data_locn + icon_file;
 
-  wxImage Image(file, wxBITMAP_TYPE_PNG);
-  wxImage scaledImage = Image.Scale(size, size, wxIMAGE_QUALITY_HIGH);
+  wxImage image;
+  if (wxFileExists(file)) image.LoadFile(file, wxBITMAP_TYPE_PNG);
+  if (image.IsOk()) {
+    image = image.Scale(size, size, wxIMAGE_QUALITY_HIGH);
+  } else {
+    // Some Android distributions do not bundle these optional style images.
+    // A URL to a nonexistent image hides the real checkbox indicator, leaving
+    // the plugin status bitmap looking misleadingly like the enable control.
+    // Draw usable indicators locally, including on a fresh installation.
+    const bool checkbox = icon_file == "chek_full.png" ||
+                          icon_file == "chek_empty.png";
+    const bool arrow = icon_file == "tabbar_button_left.png" ||
+                       icon_file == "tabbar_button_right.png";
+    if (!checkbox && !arrow) return {};
+    size = wxMax(size, 8);
+    wxBitmap bitmap(size, size);
+    wxMemoryDC dc(bitmap);
+    dc.SetBackground(*wxWHITE_BRUSH);
+    dc.Clear();
+    const int margin = wxMax(1, size / 8);
+    dc.SetPen(wxPen(*wxBLACK, wxMax(1, size / 16)));
+    dc.SetBrush(*wxWHITE_BRUSH);
+    if (checkbox) {
+      dc.DrawRoundedRectangle(margin, margin, size - 2 * margin,
+                              size - 2 * margin, size / 12);
+      if (icon_file == "chek_full.png") {
+        dc.SetPen(wxPen(wxColour(0, 100, 0), wxMax(2, size / 10)));
+        dc.DrawLine(size / 4, size / 2, size * 5 / 12, size * 3 / 4);
+        dc.DrawLine(size * 5 / 12, size * 3 / 4, size * 3 / 4, size / 4);
+      }
+    } else {
+      const bool left = icon_file == "tabbar_button_left.png";
+      const int tip = left ? size / 4 : size * 3 / 4;
+      const int tail = left ? size * 3 / 4 : size / 4;
+      dc.SetPen(wxPen(*wxBLACK, wxMax(2, size / 10)));
+      dc.DrawLine(tail, size / 4, tip, size / 2);
+      dc.DrawLine(tip, size / 2, tail, size * 3 / 4);
+    }
+    dc.SelectObject(wxNullBitmap);
+    image = bitmap.ConvertToImage();
+    wxLogMessage("Using generated Android style icon: %s", icon_file);
+  }
 
   wxString save_file = g_Platform->GetPrivateDataDir() + _T("/") + icon_file;
-  scaledImage.SaveFile(save_file, wxBITMAP_TYPE_PNG);
+  if (!image.SaveFile(save_file, wxBITMAP_TYPE_PNG)) return {};
 
   wxCharBuffer buf = save_file.ToUTF8();
   std::string ret(buf);
@@ -4454,7 +4572,6 @@ void prepareAndroidStyleSheets() {
 
   // add the checkbox specification
   int cbSize = 30 * getAndroidDisplayDensity();
-  char cb[400];
 
   // icons
   // Checked box
@@ -4462,32 +4579,36 @@ void prepareAndroidStyleSheets() {
   //  Empty box
   std::string ucbs = prepareStyleIcon(_T("chek_empty.png"), cbSize);
 
-  snprintf(cb, sizeof(cb),
-           "QCheckBox { spacing: 25px;}\
-    QCheckBox::indicator { width: %dpx;   height: %dpx;}\
-    QCheckBox::indicator:checked {image: url(%s);}\
-    QCheckBox::indicator:unchecked {image: url(%s);}",
-           cbSize, cbSize, cbs.c_str(), ucbs.c_str());
-
-  qtStyleSheetDialog.append(cb);
+  qtStyleSheetDialog.append(
+      QString("QCheckBox { spacing: 25px;} "
+              "QCheckBox::indicator { width: %1px; height: %1px;}")
+          .arg(cbSize));
+  if (!cbs.empty() && !ucbs.empty()) {
+    qtStyleSheetDialog.append(
+        QString("QCheckBox::indicator:checked {image: url(\"%1\");} "
+                "QCheckBox::indicator:unchecked {image: url(\"%2\");}")
+            .arg(QString::fromUtf8(cbs.c_str()))
+            .arg(QString::fromUtf8(ucbs.c_str())));
+  }
 
   //   The qTabBar buttons as in a listbook
   qtStyleSheetListBook.clear();
 
   // compute the tabbar button size
   int tbbSize = 50 * getAndroidDisplayDensity();
-  char tbb[400];
 
   std::string tbbl = prepareStyleIcon(_T("tabbar_button_left.png"), tbbSize);
   std::string tbbr = prepareStyleIcon(_T("tabbar_button_right.png"), tbbSize);
 
-  snprintf(tbb, sizeof(tbb),
-           "QTabBar::scroller { width: %dpx; }\
-    QTabBar QToolButton::right-arrow { image: url(%s); }\
-    QTabBar QToolButton::left-arrow { image: url(%s); }",
-           tbbSize, tbbr.c_str(), tbbl.c_str());
-
-  qtStyleSheetListBook.append(tbb);
+  qtStyleSheetListBook.append(
+      QString("QTabBar::scroller { width: %1px; }").arg(tbbSize));
+  if (!tbbr.empty() && !tbbl.empty()) {
+    qtStyleSheetListBook.append(
+        QString("QTabBar QToolButton::right-arrow { image: url(\"%1\"); } "
+                "QTabBar QToolButton::left-arrow { image: url(\"%2\"); }")
+            .arg(QString::fromUtf8(tbbr.c_str()))
+            .arg(QString::fromUtf8(tbbl.c_str())));
+  }
 
   // A simple stylesheet with scrollbars only
   qtStyleSheetScrollbars.clear();
