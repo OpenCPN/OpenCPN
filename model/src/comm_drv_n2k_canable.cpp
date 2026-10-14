@@ -60,7 +60,7 @@ CanableSerialThread::CanableSerialThread(CommDriverN2KCanable* parent,
   m_pendingWriteEvent = CreateEventW(nullptr, FALSE, FALSE, nullptr);
 }
 
-// Close our handkes correctly
+// Close our handles correctly
 CanableSerialThread::~CanableSerialThread() {
   if (m_stopEvent) {
     CloseHandle(m_stopEvent);
@@ -189,9 +189,6 @@ bool CanableSerialThread::WriteFrame(const std::string& payload) {
   return overlappedBytesWritten == payload.size();
 }
 
-// BUG BUG I need to understand why the use of a names space
-// namespace {
-
 // Parses one complete SLCAN line into a can_frame.
 // Eg. "T1D11220381122334455667788\r"
 // Note the 'T' denotes an extended frame, ie. 29bit Can Id
@@ -229,8 +226,6 @@ bool CanableSerialThread::DecodeSLCANFrame(const std::string& line,
   }
   return true;
 }
-
-//}  // namespace
 
 void CanableSerialThread::ParseReceivedData(
     const char* buf, size_t len, std::vector<can_frame>* out_frames) {
@@ -272,6 +267,7 @@ void CanableSerialThread::ParseReceivedData(
     }
   }
 }
+
 // Enqueue a complete SLCAN frame for transmission
 void CanableSerialThread::QueueWrite(const std::string& slcan_string) {
   {
@@ -390,8 +386,7 @@ void* CanableSerialThread::Entry() {
     } else if (wait_result == WAIT_OBJECT_0 + 1) {
       // Stop requested: cancel the in-flight read so it doesn't leak as
       // an orphaned pending I/O when the handle is closed below, then
-      // wait for the cancellation itself to be acknowledged before
-      // proceeding
+      // wait for the cancellation itself to be acknowledged before proceeding
       CancelIoEx(m_serialPortHandle, &m_overlappedRead);
       DWORD dummy = 0;
       GetOverlappedResult(m_serialPortHandle, &m_overlappedRead, &dummy, TRUE);
@@ -457,6 +452,9 @@ CommDriverN2KCanable::CommDriverN2KCanable(const ConnectionParams* params,
   // Fast Message Map. Used to reassemble fast messages
   m_fastMessageMap = std::make_unique<FastMessageMap>();
 
+  // Initialize time stamping mechanism
+  m_startTime = std::chrono::steady_clock::now();
+
   // Open the Port
   Open();
 }
@@ -492,6 +490,11 @@ void CommDriverN2KCanable::SetN2kName() {
 // Persist our CAN address
 void CommDriverN2KCanable::UpdateAttrCanAddress() {
   this->attributes["canAddress"] = std::to_string(m_sourceAddress.load());
+}
+
+// Populate the tick box in the connection manager
+DriverStats CommDriverN2KCanable::GetDriverStats() const {
+  return m_driverStatistics;
 }
 
 // Start the worker thread (in turn opens the serial port)
@@ -663,7 +666,11 @@ void CommDriverN2KCanable::EncodeActisenseMessage(const can_frame& frame) {
   }
   // Have the complete fast message
   std::vector<uint8_t> envelope;
-  envelope.push_back(0x93);  // Actisense Command Id
+  auto currentTime = std::chrono::steady_clock::now();
+  auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+      currentTime - m_startTime);
+
+  envelope.push_back(N2K_RX_CMD);  // Actisense Command Id
   if (header.IsFastMessage()) {
     const FastMessageMap::Entry& e = (*m_fastMessageMap)[position];
     envelope.push_back(static_cast<uint8_t>(e.expected_length + 11));
@@ -673,38 +680,51 @@ void CommDriverN2KCanable::EncodeActisenseMessage(const can_frame& frame) {
     envelope.push_back((header.pgn >> 16) & 0xFF);
     envelope.push_back(header.destination);
     envelope.push_back(header.source);
-    envelope.push_back(0xFF);  // Time fields: not generated
-    envelope.push_back(0xFF);
-    envelope.push_back(0xFF);
-    envelope.push_back(0xFF);
+    // Insert a proper time stamp
+    envelope.push_back(elapsed.count() & 0xFF);
+    envelope.push_back((elapsed.count() >> 8) & 0xFF);
+    envelope.push_back((elapsed.count() >> 16) & 0xFF);
+    envelope.push_back((elapsed.count() >> 24) & 0xFF);
     envelope.push_back(e.expected_length);
     for (size_t n = 0; n < e.expected_length; n++) {
       envelope.push_back(e.data[n]);
     }
-    envelope.push_back(0x55);  // Dummy CRC, not checked downstream.
 
     // Remove this complete message from the map
     m_fastMessageMap->Remove(position);
 
-    // Single frame message
-  } else {
-    envelope.push_back(0x13);
+  }
+  // Single frame message
+  else {
+    envelope.push_back(0x13);  // 11 bytes of header and 8 bytes of data
     envelope.push_back(header.priority);
     envelope.push_back(header.pgn & 0xFF);
     envelope.push_back((header.pgn >> 8) & 0xFF);
     envelope.push_back((header.pgn >> 16) & 0xFF);
     envelope.push_back(header.destination);
     envelope.push_back(header.source);
-    envelope.push_back(0xFF);
-    envelope.push_back(0xFF);
-    envelope.push_back(0xFF);
-    envelope.push_back(0xFF);
+    // time stamp
+    envelope.push_back(elapsed.count() & 0xFF);
+    envelope.push_back((elapsed.count() >> 8) & 0xFF);
+    envelope.push_back((elapsed.count() >> 16) & 0xFF);
+    envelope.push_back((elapsed.count() >> 24) & 0xFF);
     envelope.push_back(CAN_MAX_DLEN);
     for (size_t n = 0; n < CAN_MAX_DLEN; n++) {
       envelope.push_back(frame.data[n]);
     }
-    envelope.push_back(0x55);
   }
+  // Calculate and append the checksum
+  int checksum = 0;
+  for (auto it : envelope) {
+    checksum += it;
+  }
+  // Checksum ensures modulo 256 = 0
+  checksum %= 256;
+
+  if (checksum != 0) {
+    checksum = 256 - checksum;
+  }
+  envelope.push_back(checksum);
 
   // Send the formatted messages to the listener as well as locally for NMEA
   // 2000 housekeeping
@@ -713,6 +733,7 @@ void CommDriverN2KCanable::EncodeActisenseMessage(const can_frame& frame) {
       std::make_shared<const Nmea2000Msg>(header.pgn, envelope, address);
 
   // Perform local housekeeping
+  // BUG BUG, Really should perform local housekeeping on "un-enveloped" data
   ProcessMessages(message);
 
   // Send to OpenCPN
@@ -744,7 +765,7 @@ std::string CommDriverN2KCanable::EncodeSLCANFrame(
 }
 
 // Formats a CAN Message into Can Id and Payload and then Encodes it in SLCAN
-// Format returns a vector of SLCAN formatted strings
+// format Returns a vector of SLCAN formatted strings
 std::vector<std::string> CommDriverN2KCanable::FormatCanMessage(
     uint8_t priority, uint8_t source, uint8_t destination, uint64_t pgn,
     const std::vector<uint8_t>& data) {
@@ -819,18 +840,62 @@ bool CommDriverN2KCanable::SendMessage(std::shared_ptr<const NavMsg> msg,
   // Either a specific address or a broadcast address
   uint8_t destination = destinationAddress ? destinationAddress->address : 0xFF;
 
-  // We receive an unencapsulated NMEA 2000 message (fortunately no Actisense
-  // envelope)
+  // We receive an unencapsulated NMEA 2000 message
+  // Fortunately no Actisense envelope
   std::vector<std::string> slcan_strings =
       FormatCanMessage(n2kMessage->priority, static_cast<uint8_t>(source),
                        destination, n2kMessage->PGN.pgn, n2kMessage->payload);
-
+  // Kind of bogus. The data is queued but we have no idea if it was actually
+  // sent on the wire. Port could be present and open, but disconnected from the
+  // network etc.
   bool result = true;
   for (const auto& slcan_string : slcan_strings) {
     result = WriteFrame(slcan_string) && result;
   }
 
-  // Update our stats, although not entirely accurate!
+  // Update our stats
   m_driverStatistics.tx_count += n2kMessage->payload.size();
+
+  // Notify Upper Layers for logging in Data Monitor
+  // This is not the "proper" way that logging is to be implemented, so
+  // commented out for now
+  /*
+  if (result) {
+    auto currentTime = std::chrono::steady_clock::now();
+    auto elapsed =
+  std::chrono::duration_cast<std::chrono::milliseconds>(currentTime -
+  m_startTime); std::vector<unsigned char> data; data.push_back(YD_TX_CMD);
+    data.push_back(n2kMessage->payload.size() + 6); // 11, header excluding
+  command, length & crc data.push_back(n2kMessage->priority);
+    data.push_back(n2kMessage->PGN.pgn & 0xFF);
+    data.push_back((n2kMessage->PGN.pgn >> 8) & 0xFF);
+    data.push_back((n2kMessage->PGN.pgn >> 16) & 0xFF);
+    data.push_back(destination);
+    data.push_back(source);
+    // Logging uses a bastardized format!
+    //data.push_back(elapsed.count() & 0xFF);
+    //data.push_back((elapsed.count() >> 8) & 0xFF);
+    //data.push_back((elapsed.count() >> 16) & 0xFF);
+    //data.push_back((elapsed.count() >> 24) & 0xFF);
+    //data.push_back(n2kMessage->payload.size());
+    for (size_t n = 0; n < n2kMessage->payload.size(); n++)
+      data.push_back(n2kMessage->payload[n]);
+    // Calculate and append the checksum
+    int checksum = 0;
+    for (auto it : data) {
+      checksum += it;
+    }
+    // Checksum ensures modulo 256 = 0
+    checksum %= 256;
+
+    if (checksum != 0) {
+      checksum = 256 - checksum;
+    }
+    data.push_back(checksum);
+    auto src =  std::static_pointer_cast<const NavAddr2000>(addr);
+    m_driverListener.Notify(std::make_shared<const
+  Nmea2000Msg>(n2kMessage->PGN.pgn, data, src));
+  }
+  */
   return result;
 }
