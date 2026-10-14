@@ -75,7 +75,9 @@ protected:
   wxStaticText* m_stDistTotal;
   wxTextCtrl* m_tcDistance;
   wxStaticText* m_stPlanSpeed;
+  wxStaticText* m_stArrivalRadius;
   wxTextCtrl* m_tcPlanSpeed;
+  wxTextCtrl* m_tcArrivalRadius;
   wxStaticText* m_stEnroute;
   wxTextCtrl* m_tcEnroute;
   wxStaticText* m_stDeparture;
@@ -111,6 +113,7 @@ protected:
   wxDataViewColumn* m_dataViewListColumnCourse;
   wxDataViewColumn* m_dataViewListColumnETD;
   wxDataViewColumn* m_dataViewListColumnEmpty;
+  wxDataViewColumn* m_dataViewListColumnArrivalRadius;
   wxPanel* m_pnlAdvanced;
   wxStaticText* m_stDescription;
   wxTextCtrl* m_tcDescription;
@@ -137,6 +140,8 @@ protected:
   }
   virtual void PlanSpeedOnKillFocus(wxFocusEvent& event) { event.Skip(); }
   virtual void PlanSpeedOnTextEnter(wxCommandEvent& event) { event.Skip(); }
+  virtual void ArrivalRadiusOnKillFocus(wxFocusEvent& event) { event.Skip(); }
+  virtual void ArrivalRadiusOnTextEnter(wxCommandEvent& event) { event.Skip(); }
   virtual void DepartureDateOnDateChanged(wxDateEvent& event) { event.Skip(); }
   virtual void DepartureTimeOnTimeChanged(wxDateEvent& event) { event.Skip(); }
   virtual void TimezoneOnChoice(wxCommandEvent& event) { event.Skip(); }
