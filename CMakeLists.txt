@@ -2344,11 +2344,11 @@ endif ()
 #
 if (WIN32 AND NOT UNIX)
   if (OCPN_BUNDLE_WXDLLS)
-    file(GLOB wxdll_files "${wxWidgets_LIB_DIR}/wxmsw32*u_*.dll"
-         "${wxWidgets_LIB_DIR}/wxbase32*u_*.dll"
+    file(GLOB wxdll_files "${wxWidgets_LIB_DIR}/wxmsw3*u_*.dll"
+         "${wxWidgets_LIB_DIR}/wxbase3*u_*.dll"
     )
-    file(GLOB wxdll_debug_files "${wxWidgets_LIB_DIR}/wxmsw32*ud_*.dll"
-         "${wxWidgets_LIB_DIR}/wxbase32*ud_*.dll"
+    file(GLOB wxdll_debug_files "${wxWidgets_LIB_DIR}/wxmsw3*ud_*.dll"
+         "${wxWidgets_LIB_DIR}/wxbase3*ud_*.dll"
     )
     list(LENGTH wxdll_files wxdll_count)
     if (wxdll_count LESS 5)
@@ -2378,11 +2378,11 @@ if (WIN32 AND NOT UNIX)
         "${wxdllud_count} wxWidgets debug DLLs available to be bundled into the installer package..."
     )
     if (OCPN_BUNDLE_WXDLLS AND NOT OCPN_CI_BUILD)
-      file(GLOB wxpdb_files "${wxWidgets_LIB_DIR}/wxmsw32*u_*.pdb"
-           "${wxWidgets_LIB_DIR}/wxbase32*u_*.pdb"
+      file(GLOB wxpdb_files "${wxWidgets_LIB_DIR}/wxmsw3*u_*.pdb"
+           "${wxWidgets_LIB_DIR}/wxbase3*u_*.pdb"
       )
-      file(GLOB wxpdb_debug_files "${wxWidgets_LIB_DIR}/wxmsw32*ud_*.pdb"
-           "${wxWidgets_LIB_DIR}/wxbase32*ud_*.pdb"
+      file(GLOB wxpdb_debug_files "${wxWidgets_LIB_DIR}/wxmsw3*ud_*.pdb"
+           "${wxWidgets_LIB_DIR}/wxbase3*ud_*.pdb"
       )
       list(LENGTH wxpdb_files wxpdb_count)
       list(LENGTH wxpdb_debug_files wxpdbud_count)
