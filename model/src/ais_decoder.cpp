@@ -3086,7 +3086,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     int origin_mmsi = 0;
     int messID = strbit.GetInt(1, 6);
     // No need for a message without a valid mess-ID
-    if (messID < 1 || messID > 63) return AIS_GENERIC_ERROR;
+    if (messID < 0 || messID > 63) return AIS_GENERIC_ERROR;
 
     int dac = strbit.GetInt(41, 10);
     int fi = strbit.GetInt(51, 6);
