@@ -74,8 +74,9 @@ jobs:
         continue-on-error: true
         run: |
           set -x
-          cd build
-          cmake --build . --config $CONFIGURATION --target run-tests
+          # Not via MSBuild: it treats "x : error : y" test output as a failure
+          cd build/test
+          cmake -P ../run_tests.cmake
 
       - name: Upload
         shell: bash
