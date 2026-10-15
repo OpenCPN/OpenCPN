@@ -938,6 +938,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ais_target_query_dlg.cpp
     ${GUI_SRC_DIR}/api_121.cpp
     ${GUI_SRC_DIR}/api_122.cpp
+    ${GUI_SRC_DIR}/api_123.cpp
     ${GUI_SRC_DIR}/canvas_config.cpp
     ${GUI_SRC_DIR}/canvas_menu.cpp
     ${GUI_SRC_DIR}/canvas_options.cpp
@@ -988,6 +989,10 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/notification_manager_gui.cpp
     ${GUI_SRC_DIR}/ocp_cursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
+    ${GUI_SRC_DIR}/chart_safety_core.cpp
+    ${GUI_SRC_DIR}/chart_safety_facade.cpp
+    ${GUI_SRC_DIR}/navigation_safety.cpp
+    ${GUI_SRC_DIR}/chart_safety_raster.cpp
     ${GUI_SRC_DIR}/ocpn_plugin_gui.cpp
     ${GUI_SRC_DIR}/ocpn_aui_manager.cpp
     ${GUI_SRC_DIR}/ocpndc.cpp

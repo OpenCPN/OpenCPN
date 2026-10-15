@@ -32,8 +32,9 @@ if errorlevel 1 (
 makensis /VERSION >nul 2>&1
 if errorlevel 1 exit /b 1
 
-:: install wget as required
-wget --version >nul 2>&1 || choco install wget -y --no-progress || exit /b 1
+:: curl.exe is supplied by supported Windows build hosts.
+curl.exe --version >nul 2>&1
+if errorlevel 1 exit /b 1
 
 if not exist "%OCPN_VCPKG_ROOT%\bootstrap-vcpkg.bat" (
   git clone https://github.com/microsoft/vcpkg "%OCPN_VCPKG_ROOT%"
@@ -54,33 +55,34 @@ echo The batch file is located in: %~dp0
 
 echo The cache directory is: %CACHE_DIR%
 
-set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
-if not exist "%CACHE_DIR%\wxWidgets-3.2.9" (
-  pushd "%CACHE_DIR%"
-::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
-::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
-::  wget -nv %GITHUB_DL%/v3.2.1/wxWidgets-3.2.1-headers.7z
-::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
-::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_x64_Dev.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_Dev.7z
-  wget -nv %GITHUB_DL%/v3.2.9/wxWidgets-3.2.9-headers.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxWidgets-3.2.9-headers.7z
-  wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
-  popd
+set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.9"
+set "WXWIN=%CACHE_DIR%\wxWidgets-3.2.9"
+set "WX_DEPS_MISSING="
+for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw32u_core.lib lib\vc14x_x64_dll\wxmsw32u_core_vc14x_x64.dll) do (
+  if not exist "%WXWIN%\%%F" set "WX_DEPS_MISSING=1"
+)
+if defined WX_DEPS_MISSING (
+  for %%A in (wxMSW-3.2.9_vc14x_x64_Dev.7z wxWidgets-3.2.9-headers.7z wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z) do (
+    curl.exe -fL --retry 3 --retry-delay 2 "%GITHUB_DL%/%%A" -o "%CACHE_DIR%\%%A"
+    if errorlevel 1 exit /b 1
+    7z x -y "-o%WXWIN%" "%CACHE_DIR%\%%A"
+    if errorlevel 1 exit /b 1
+  )
+)
+for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw32u_core.lib lib\vc14x_x64_dll\wxmsw32u_core_vc14x_x64.dll) do (
+  if not exist "%WXWIN%\%%F" (
+    echo Missing wxWidgets dependency: %WXWIN%\%%F
+    exit /b 1
+  )
 )
 
-
 :: Create cache\wx-config.bat, paths to downloaded wxWidgets.
-set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.9"
-echo set "wxWidgets_ROOT_DIR=%WXWIN%" > %CACHE_DIR%\wx-config.bat
-echo set "wxWidgets_LIB_DIR=%WXWIN%\lib\vc14x_x64_dll" >> %CACHE_DIR%\wx-config.bat
+echo set "wxWidgets_ROOT_DIR=%WXWIN%" > "%CACHE_DIR%\wx-config.bat"
+echo set "wxWidgets_LIB_DIR=%WXWIN%\lib\vc14x_x64_dll" >> "%CACHE_DIR%\wx-config.bat"
 
 :: Verify
 @echo on
-type %CACHE_DIR%\wx-config.bat
+type "%CACHE_DIR%\wx-config.bat"
 
 :: Make sure the pre-compiled vcpkg libraries are in place
 

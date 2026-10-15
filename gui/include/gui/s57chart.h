@@ -25,6 +25,7 @@
 #define S57CHART_H_
 
 #include <memory>
+#include <vector>
 #include <unordered_map>
 
 #include <wx/wx.h>
@@ -53,6 +54,9 @@
 extern bool chain_broken_mssage_shown; /**< Global instance */
 
 class ChartCanvas;  // circular
+namespace ocpn::chart_safety {
+struct PreparedGeometry;
+}
 
 enum {
   BUILD_SENC_OK,
@@ -152,6 +156,45 @@ public:
   virtual ListOfObjRazRules *GetObjRuleListAtLatLon(
       float lat, float lon, float select_radius, ViewPort *VPoint,
       int selection_mask = MASK_ALL);
+  /** Collect the existing MASK_AREA-eligible rules for a prepared safety tile.
+   * The pointers are borrowed and must be discarded before chart mutation. */
+  void CollectSafetyTileAreaRules(ViewPort *viewport,
+                                  std::vector<ObjRazRules *> &rules);
+  /** All semantic candidates, independent of display styles/categories.
+   * Borrowed pointers are valid only until the next chart mutation. */
+  bool CollectSafetyTileRules(std::vector<ObjRazRules *> &rules);
+  /** Cheap rejection using authoritative line/area bounds. A true result
+   * still requires exact geometry; point and unresolved bounds always pass. */
+  static bool SafetyObjectMayIntersectBox(S57Obj *, double min_lat,
+                                          double max_lat, double min_lon,
+                                          double max_lon);
+  /** -1 unknown geometry, 0 disjoint, 1 intersects, 2 complete box covered
+   * by validated tessellation coverage. All external and hole boundaries
+   * are considered; no polygon sampling is used. */
+  int SafetyObjectBoxRelation(S57Obj *obj, double min_lat, double max_lat,
+                              double min_lon, double max_lon);
+  std::shared_ptr<const ocpn::chart_safety::PreparedGeometry>
+  PrepareSafetyObjectGeometry(S57Obj *, bool prepare_index = true);
+  static int PreparedSafetyBoxRelation(
+      const ocpn::chart_safety::PreparedGeometry &, double min_lat,
+      double max_lat, double min_lon, double max_lon,
+      bool require_coverage = true);
+  bool SafetySoundingMinDepthM(S57Obj *, double lat, double lon, double radius,
+                               double *minimum, bool *unknown);
+  ListOfObjRazRules *GetSafetyRulesAtLatLon(float lat, float lon, float radius);
+  virtual size_t CollectFeatureAreaRings(
+      const char *feature_name,
+      std::vector<std::vector<wxPoint2DDouble> > &rings);
+  /**
+   * Conservatively test whether any loaded area object which chart safety
+   * treats as land or drying has a bounding box intersecting the query.
+   * This is intended only as a fast negative proof: false means that exact
+   * point classification cannot find one of these hazards in the box.
+   */
+  virtual bool SafetyAreaHazardMayIntersect(double min_lat, double max_lat,
+                                            double min_lon, double max_lon,
+                                            int *hazard_objects = NULL);
+  virtual wxString GetFeatureDebugSummary();
   bool DoesLatLonSelectObject(float lat, float lon, float select_radius,
                               S57Obj *obj);
   bool IsPointInObjArea(float lat, float lon, float select_radius, S57Obj *obj);

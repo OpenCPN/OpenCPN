@@ -69,7 +69,11 @@ echo The build directory is: %CD%
 
 :: This id done in win_deps.bat, but for some reason stopped
 :: working since 2024-02-28, so work it around here
-set "PATH=!PATH!;%PROGRAMFILES%\Poedit\Gettexttools\bin;!wxWidgets_LIB_DIR!;%SCRIPTDIR%..\cache\buildwin"
+set "PATH=!PATH!;%PROGRAMFILES%\Poedit\Gettexttools\bin;%PROGRAMFILES(x86)%\Poedit\Gettexttools\bin;!wxWidgets_LIB_DIR!;%SCRIPTDIR%..\cache\buildwin"
+msgmerge --version >nul 2>&1
+if errorlevel 1 exit /b 1
+msgfmt --version >nul 2>&1
+if errorlevel 1 exit /b 1
 
 @echo on
 
@@ -88,6 +92,7 @@ cmake -A x64 -G "Visual Studio 17 2022" ^
     -DCMAKE_INSTALL_PREFIX="%cd%/test/%CONFIGURATION%" ^
     -DOCPN_BUILD_TEST=ON ^
     ..
+if errorlevel 1 exit /b 1
 
 makensis /VERSION
 if errorlevel 1 exit /b 1

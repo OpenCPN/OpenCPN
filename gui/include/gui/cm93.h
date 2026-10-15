@@ -36,6 +36,16 @@
 
 #define CM93_ZOOM_FACTOR_MAX_RANGE 5
 
+/** Safety extraction has its own progress reporting. Suppress per-cell
+ * global busy-cursor changes only for this thread and this nested scope. */
+class Cm93SafetyQueryScope {
+public:
+  Cm93SafetyQueryScope();
+  ~Cm93SafetyQueryScope();
+  Cm93SafetyQueryScope(const Cm93SafetyQueryScope &) = delete;
+  Cm93SafetyQueryScope &operator=(const Cm93SafetyQueryScope &) = delete;
+};
+
 class CM93OffsetDialog;                       // Forward
 extern CM93OffsetDialog *g_pCM93OffsetDialog; /**< Global instance */
 
@@ -324,6 +334,8 @@ public:
   void SetCM93Manager(cm93manager *pManager) { m_pManager = pManager; }
 
   bool UpdateCovrSet(ViewPort *vpt);
+  int SafetyCoverageBoxRelation(double min_lat, double max_lat, double min_lon,
+                                double max_lon);
   bool IsPointInLoadedM_COVR(double xc, double yc);
   covr_set *GetCoverSet() { return m_pcovr_set; }
   LLRegion GetValidRegion();
@@ -416,57 +428,87 @@ class CM93OffsetDialog;
 class cm93compchart : public s57chart {
 public:
   cm93compchart();
-  ~cm93compchart();
+  ~cm93compchart() override;
 
-  InitReturn Init(const wxString &name, ChartInitFlag flags);
+  InitReturn Init(const wxString &name, ChartInitFlag flags) override;
 
-  void Activate(void);
-  void Deactivate(void);
+  void Activate(void) override;
+  void Deactivate(void) override;
 
-  double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
-  double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
-  int GetNativeScale(void);
+  double GetNormalScaleMin(double canvas_scale_factor,
+                           bool b_allow_overzoom) override;
+  double GetNormalScaleMax(double canvas_scale_factor,
+                           int canvas_width) override;
+  int GetNativeScale(void) override;
 
-  wxString GetPubDate();
+  wxString GetPubDate() override;
 
-  void SetVPParms(const ViewPort &vpt);
-  void GetValidCanvasRegion(const ViewPort &VPoint, OCPNRegion *pValidRegion);
-  LLRegion GetValidRegion();
+  void SetVPParms(const ViewPort &vpt) override;
+  void GetValidCanvasRegion(const ViewPort &VPoint,
+                            OCPNRegion *pValidRegion) override;
+  LLRegion GetValidRegion() override;
 
-  ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
-  ThumbData *GetThumbData() { return (ThumbData *)NULL; }
+  ThumbData *GetThumbData(int tnx, int tny, float lat, float lon) override;
+  ThumbData *GetThumbData() override { return (ThumbData *)NULL; }
 
-  bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
+  bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) override;
 
   bool RenderRegionViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint,
-                            const OCPNRegion &Region);
+                            const OCPNRegion &Region) override;
 
-  virtual bool RenderRegionViewOnGL(const wxGLContext &glc,
-                                    const ViewPort &VPoint,
-                                    const OCPNRegion &RectRegion,
-                                    const LLRegion &Region);
-  void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
+  bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort &VPoint,
+                            const OCPNRegion &RectRegion,
+                            const LLRegion &Region) override;
+  void SetColorScheme(ColorScheme cs, bool bApplyImmediate) override;
 
   bool RenderNextSmallerCellOutlines(ocpnDC &dc, ViewPort &vp, ChartCanvas *cc);
 
-  void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r);
+  void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon,
+                   wxPoint *r) override;
   void GetPixPoint(int pixx, int pixy, double *plat, double *plon,
-                   ViewPort *vpt);
+                   ViewPort *vpt) override;
   void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r,
-                   int nPoints);
+                   int nPoints) override;
 
-  ListOfObjRazRules *GetObjRuleListAtLatLon(float lat, float lon,
-                                            float select_radius,
-                                            ViewPort *VPoint,
-                                            int selection_mask = MASK_ALL);
+  ListOfObjRazRules *GetObjRuleListAtLatLon(
+      float lat, float lon, float select_radius, ViewPort *VPoint,
+      int selection_mask = MASK_ALL) override;
+  size_t CollectFeatureAreaRings(
+      const char *feature_name,
+      std::vector<std::vector<wxPoint2DDouble> > &rings) override;
+  wxString GetFeatureDebugSummary() override;
+  /**
+   * Load every CM93 scale intersecting a chart-safety viewport once.  Safety
+   * grid generation can then classify all points in the viewport without
+   * changing the composite viewport (and re-running CM93 scale/cell
+   * selection) for every point.
+   */
+  void PrepareSafetyTile(const ViewPort &vpt);
+  /**
+   * Return the highest-detail prepared single-scale chart which covers the
+   * point, or NULL when no prepared CM93 coverage contains it.
+   */
+  cm93chart *GetHighestDetailSafetyChartAt(double lat, double lon);
+  /** Whole-box coverage by one highest-detail prepared chart. Ambiguous
+   * boundaries, coverage holes and longitude wrapping refuse the shortcut. */
+  cm93chart *GetUniformSafetyChartForBox(double min_lat, double max_lat,
+                                         double min_lon, double max_lon);
+  /**
+   * Test all prepared CM93 scales for a land or drying area whose bounding
+   * box intersects the query.  A false result is a conservative open-water
+   * certificate for the currently prepared working set.
+   */
+  bool SafetyAreaHazardMayIntersect(double min_lat, double max_lat,
+                                    double min_lon, double max_lon,
+                                    int *hazard_objects = NULL) override;
   S57ObjectDesc *CreateObjDescription(const ObjRazRules *obj);
 
-  std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void);
-  std::unordered_map<unsigned, VC_Element *> &Get_vc_hash(void);
+  std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void) override;
+  std::unordered_map<unsigned, VC_Element *> &Get_vc_hash(void) override;
 
-  void UpdateLUPs(s57chart *pOwner);
-  void ForceEdgePriorityEvaluate(void);
-  std::list<S57Obj *> *GetAssociatedObjects(S57Obj *obj);
+  void UpdateLUPs(s57chart *pOwner) override;
+  void ForceEdgePriorityEvaluate(void) override;
+  std::list<S57Obj *> *GetAssociatedObjects(S57Obj *obj) override;
   cm93chart *GetCurrentSingleScaleChart() { return m_pcm93chart_current; }
 
   void SetSpecialOutlineCellIndex(int cell_index, int object_id, int subcell) {
@@ -479,14 +521,14 @@ public:
                                  int xoff, int yoff);
   void CloseandReopenCurrentSubchart(void);
 
-  void InvalidateCache();
+  void InvalidateCache() override;
 
 private:
   void UpdateRenderRegions(const ViewPort &VPoint);
   OCPNRegion GetValidScreenCanvasRegion(const ViewPort &VPoint,
                                         const OCPNRegion &ScreenRegion);
 
-  bool RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint);
+  bool RenderViewOnDC(wxMemoryDC &dc, const ViewPort &VPoint) override;
 
   InitReturn CreateHeaderData();
   cm93_dictionary *FindAndLoadDictFromDir(const wxString &dir);
