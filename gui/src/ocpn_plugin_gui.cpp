@@ -814,7 +814,8 @@ static void cloneHyperlinkList(RoutePoint* dst, const PlugIn_Waypoint* src) {
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -921,7 +922,7 @@ bool UpdateSingleWaypoint(PlugIn_Waypoint* pwaypoint) {
     if (pwaypoint->m_HyperlinkList) {
       prp->m_HyperlinkList->clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
+        Plugin_HyperlinkList::compatibility_iterator linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
         while (linknode) {
           Plugin_Hyperlink* link = linknode->GetData();
@@ -1106,7 +1107,8 @@ bool AddPlugInRoute(PlugIn_Route* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointList::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwp = pwpnode->GetData();
 
@@ -1194,7 +1196,8 @@ bool AddPlugInTrack(PlugIn_Track* ptrack, bool b_permanent) {
   TrackPoint* pWP_src = 0;
   int ip = 0;
 
-  wxPlugin_WaypointListNode* pwpnode = ptrack->pWaypointList->GetFirst();
+  Plugin_WaypointList::compatibility_iterator pwpnode =
+      ptrack->pWaypointList->GetFirst();
   while (pwpnode) {
     pwp = pwpnode->GetData();
 
@@ -1991,7 +1994,8 @@ static void cloneHyperlinkListExV2(RoutePoint* dst,
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -2175,7 +2179,8 @@ bool AddPlugInRouteExV2(PlugIn_Route_ExV2* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointExV2ListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointExV2List::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwaypointex = pwpnode->GetData();
 
@@ -2329,7 +2334,8 @@ static void cloneHyperlinkListEx(RoutePoint* dst,
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -2441,7 +2447,7 @@ bool UpdateSingleWaypointEx(PlugIn_Waypoint_Ex* pwaypoint) {
     if (pwaypoint->m_HyperlinkList) {
       prp->m_HyperlinkList->clear();
       if (pwaypoint->m_HyperlinkList->GetCount() > 0) {
-        wxPlugin_HyperlinkListNode* linknode =
+        Plugin_HyperlinkList::compatibility_iterator linknode =
             pwaypoint->m_HyperlinkList->GetFirst();
         while (linknode) {
           Plugin_Hyperlink* link = linknode->GetData();
@@ -2500,7 +2506,8 @@ bool AddPlugInRouteEx(PlugIn_Route_Ex* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointExListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointExList::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwaypointex = pwpnode->GetData();
 

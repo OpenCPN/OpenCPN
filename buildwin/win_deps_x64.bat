@@ -55,7 +55,7 @@ echo The batch file is located in: %~dp0
 echo The cache directory is: %CACHE_DIR%
 
 set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download"
-if not exist "%CACHE_DIR%\wxWidgets-3.2.9" (
+if not exist "%CACHE_DIR%\wxWidgets-3.3.4" (
   pushd "%CACHE_DIR%"
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_Dev.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_Dev.7z
@@ -63,18 +63,18 @@ if not exist "%CACHE_DIR%\wxWidgets-3.2.9" (
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxWidgets-3.2.1-headers.7z
 ::  wget -nv %GITHUB_DL%/v3.2.1/wxMSW-3.2.1_vc14x_ReleaseDLL.7z
 ::  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.1 wxMSW-3.2.1_vc14x_ReleaseDLL.7z
-  wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_x64_Dev.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_Dev.7z
-  wget -nv %GITHUB_DL%/v3.2.9/wxWidgets-3.2.9-headers.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxWidgets-3.2.9-headers.7z
-  wget -nv %GITHUB_DL%/v3.2.9/wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
-  7z x -y -o%CACHE_DIR%\wxWidgets-3.2.9 wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z
+  wget -nv %GITHUB_DL%/v3.3.4/wxMSW-3.3.4_vc14x_x64_Dev.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.3.4 wxMSW-3.3.4_vc14x_x64_Dev.7z
+  wget -nv %GITHUB_DL%/v3.3.4/wxWidgets-3.3.4-headers.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.3.4 wxWidgets-3.3.4-headers.7z
+  wget -nv %GITHUB_DL%/v3.3.4/wxMSW-3.3.4_vc14x_x64_ReleaseDLL.7z
+  7z x -y -o%CACHE_DIR%\wxWidgets-3.3.4 wxMSW-3.3.4_vc14x_x64_ReleaseDLL.7z
   popd
 )
 
 
 :: Create cache\wx-config.bat, paths to downloaded wxWidgets.
-set "WXWIN=!CACHE_DIR!\wxWidgets-3.2.9"
+set "WXWIN=!CACHE_DIR!\wxWidgets-3.3.4"
 echo set "wxWidgets_ROOT_DIR=%WXWIN%" > %CACHE_DIR%\wx-config.bat
 echo set "wxWidgets_LIB_DIR=%WXWIN%\lib\vc14x_x64_dll" >> %CACHE_DIR%\wx-config.bat
 

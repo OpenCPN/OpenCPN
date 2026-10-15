@@ -94,8 +94,6 @@ ConnectionParams::ConnectionParams()
       last_network_port(0),
       input_sentence_list_type(WHITELIST),
       output_sentence_list_type(WHITELIST),
-      input_sentence_list(WHITELIST),
-      output_sentence_list(WHITELIST),
       options_panel(nullptr) {}
 
 ConnectionParams::~ConnectionParams() = default;

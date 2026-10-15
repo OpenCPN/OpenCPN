@@ -49,6 +49,17 @@ jobs:
           host_arch: x86
           arch: x86
 
+      # vcpkg builds + wxWidgets binaries; win_deps_x64.bat skips what exists
+      - name: "Cache dependencies"
+        uses: actions/cache@v4
+        with:
+          path: |
+            cache
+            !cache/vcpkg/buildtrees
+            !cache/vcpkg/downloads
+            !cache/vcpkg/packages
+          key: win-x64-deps-${{ hashFiles('buildwin/win_deps_x64.bat') }}
+
       - name: "Dependencies, configure, build"
         shell: cmd
         env:
@@ -74,8 +85,9 @@ jobs:
         continue-on-error: true
         run: |
           set -x
-          cd build
-          cmake --build . --config $CONFIGURATION --target run-tests
+          # Not via MSBuild: it treats "x : error : y" test output as a failure
+          cd build/test
+          cmake -P ../run_tests.cmake
 
       - name: Upload
         shell: bash

@@ -188,8 +188,9 @@ public:
   void RenderViewOnDC(ocpnDC &dc, ViewPort &vp) { DrawPolygonFilled(dc, vp); }
   static const std::string ConstructPath(const std::string &dir,
                                          const std::string &quality_suffix) {
-    return std::string(dir + fs::path::preferred_separator + "basemap_" +
-                       quality_suffix + ".shp");
+    return std::string(dir +
+                       static_cast<const char>(fs::path::preferred_separator) +
+                       "basemap_" + quality_suffix + ".shp");
   }
 
   /**

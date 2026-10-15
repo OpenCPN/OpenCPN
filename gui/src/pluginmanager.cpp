@@ -277,7 +277,7 @@ public:
   }
 
   void show_deferred_messages() {
-    for (auto m : m_deferred_messages) show_msg(m);
+    for (const auto& m : m_deferred_messages) show_msg(m);
     m_defer = false;
   }
 
@@ -290,7 +290,7 @@ private:
   }
 
   bool m_defer;  // defer dialogs until setup completed
-  std::vector<wxString> m_deferred_messages;
+  std::vector<std::string> m_deferred_messages;
 };
 
 class PanelHardBreakWrapper : public wxTextWrapper {
@@ -2568,7 +2568,7 @@ void PluginListPanel::ReloadPluginPanels() {
 
   wxWindowList kids = GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow* win = node->GetData();
     PluginPanel* pp = dynamic_cast<PluginPanel*>(win);
     if (pp) win->Destroy();

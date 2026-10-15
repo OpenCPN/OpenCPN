@@ -1095,12 +1095,8 @@ bool TrackPropDlg::UpdateProperties() {
   ::wxBeginBusyCursor();
 
   if (m_scrolledWindowLinks) {
-    wxWindowList kids = m_scrolledWindowLinks->GetChildren();
-    for (unsigned int i = 0; i < kids.GetCount(); i++) {
-      wxWindowListNode* node = kids.Item(i);
-      wxWindow* win = node->GetData();
-
-      auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
+    for (const auto child : m_scrolledWindowLinks->GetChildren()) {
+      auto link_win = dynamic_cast<wxHyperlinkCtrl*>(child);
       if (link_win) {
         link_win->Disconnect(
             wxEVT_COMMAND_HYPERLINK,
@@ -1108,7 +1104,7 @@ bool TrackPropDlg::UpdateProperties() {
         link_win->Disconnect(
             wxEVT_RIGHT_DOWN,
             wxMouseEventHandler(TrackPropDlg::m_hyperlinkContextMenu));
-        win->Destroy();
+        child->Destroy();
       }
     }
     ///        m_scrolledWindowLinks->DestroyChildren();
@@ -1506,7 +1502,7 @@ void TrackPropDlg::OnDeleteLink(wxCommandEvent& event) {
 
   wxWindowList kids = m_scrolledWindowLinks->GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow* win = node->GetData();
 
     auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
