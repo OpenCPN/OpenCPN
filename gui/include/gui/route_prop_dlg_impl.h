@@ -67,6 +67,8 @@ protected:
   }
   void PlanSpeedOnKillFocus(wxFocusEvent& event);
   void PlanSpeedOnTextEnter(wxCommandEvent& event);
+  void ArrivalRadiusOnKillFocus(wxFocusEvent& event);
+  void ArrivalRadiusOnTextEnter(wxCommandEvent& event);
   void DepartureDateOnDateChanged(wxDateEvent& event);
   void DepartureTimeOnTimeChanged(wxDateEvent& event);
   void TimezoneOnChoice(wxCommandEvent& event);
