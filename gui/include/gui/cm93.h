@@ -459,6 +459,30 @@ public:
                                             float select_radius,
                                             ViewPort *VPoint,
                                             int selection_mask = MASK_ALL);
+  size_t CollectFeatureAreaRings(
+      const char *feature_name,
+      std::vector<std::vector<wxPoint2DDouble> > &rings) override;
+  wxString GetFeatureDebugSummary() override;
+  /**
+   * Load every CM93 scale intersecting a chart-safety viewport once.  Safety
+   * grid generation can then classify all points in the viewport without
+   * changing the composite viewport (and re-running CM93 scale/cell
+   * selection) for every point.
+   */
+  void PrepareSafetyTile(const ViewPort &vpt);
+  /**
+   * Return the highest-detail prepared single-scale chart which covers the
+   * point, or NULL when no prepared CM93 coverage contains it.
+   */
+  cm93chart *GetHighestDetailSafetyChartAt(double lat, double lon);
+  /**
+   * Test all prepared CM93 scales for a land or drying area whose bounding
+   * box intersects the query.  A false result is a conservative open-water
+   * certificate for the currently prepared working set.
+   */
+  bool SafetyAreaHazardMayIntersect(double min_lat, double max_lat,
+                                    double min_lon, double max_lon,
+                                    int *hazard_objects = NULL);
   S57ObjectDesc *CreateObjDescription(const ObjRazRules *obj);
 
   std::unordered_map<unsigned, VE_Element *> &Get_ve_hash(void);

@@ -50,6 +50,10 @@ endif ()
 set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
+  chart_safety_depth_tests.cpp
+  chart_safety_service_tests.cpp
+  navigation_safety_tests.cpp
+  ${CMAKE_SOURCE_DIR}/gui/src/navigation_safety.cpp
   datetime_tests.cpp
   tests.cpp filter_tests.cpp
   navutil_base_tests.cpp
@@ -73,6 +77,11 @@ if (CURL)
 endif ()
 
 add_executable(tests ${SRC})
+
+target_include_directories(tests PRIVATE
+  ${CMAKE_SOURCE_DIR}/gui/include
+  ${CMAKE_SOURCE_DIR}/gui/include/gui
+)
 
 if (DEFINED ENV{FLATPAK_ID})
   target_compile_definitions(tests PRIVATE OCPN_FLATPAK)
@@ -205,3 +214,12 @@ PATH=%PATH%\;${_cache_dir}\\\\wxWidgets-3.2.5\\\\lib\\\\vc14x_dll\")
 endif ()
 
 add_dependencies(tests cli-server ipc-client)
+
+# Optional real-host diagnostic plugin; never installed or run automatically.
+# Enable only in a disposable test profile and set CHART_SAFETY_PROBE_OUTPUT.
+if (LINUX AND NOT QT_ANDROID)
+  add_library(chart_safety_probe_pi SHARED EXCLUDE_FROM_ALL chart_safety_probe.cpp)
+  target_include_directories(chart_safety_probe_pi PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  target_link_libraries(chart_safety_probe_pi PRIVATE
+    ${wxWidgets_LIBRARIES} nlohmann::json ocpn::gl-headers)
+endif ()

@@ -28,6 +28,7 @@
 #include <atomic>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "config.h"
 
@@ -266,6 +267,18 @@ public:
                                                 float zlat, float zlon,
                                                 float SelectRadius,
                                                 const ViewPort& vp);
+  HostApi123::ChartSafetyProviderStatus QueryPlugInChartSafetyGrid(
+      ChartPlugInWrapper* target,
+      const HostApi123::ChartSafetyProviderRequest& request,
+      HostApi123::ChartSafetyProviderResult* result, const ViewPort& vp);
+  bool HasPlugInChartSafetyGrid() const;
+  bool HasChartSafetyProvider(const std::string& plugin_name) const;
+  bool RegisterChartSafetyProvider(
+      const std::string& plugin_name,
+      const HostApi123::ChartSafetyProviderCallbacks* callbacks);
+  bool RegisterSegmentSafetyTileCache(
+      const std::string& plugin_name,
+      const HostApi123::SegmentSafetyTileCacheCallbacks* callbacks);
   wxString CreateObjDescriptions(ChartPlugInWrapper* target,
                                  ListOfPI_S57Obj* rule_list);
 
@@ -304,6 +317,9 @@ private:
   obs::Listener m_on_msg_sent_listener;
 
   std::unordered_map<std::string, obs::Listener> m_0183_listeners;
+  std::unordered_map<std::string, HostApi123::ChartSafetyProviderCallbacks>
+      m_chart_safety_providers;
+  std::string m_chart_safety_tile_cache_owner;
 
   wxBitmap* BuildDimmedToolBitmap(wxBitmap* pbmp_normal,
                                   unsigned char dim_ratio);
