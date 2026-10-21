@@ -831,6 +831,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/connection_edit.h
     ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
+    ${GUI_HDR_DIR}/conn_edit_commons.h
     ${GUI_HDR_DIR}/data_monitor.h
     ${GUI_HDR_DIR}/detail_slider.h
     ${GUI_HDR_DIR}/displays.h
@@ -838,6 +839,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
     ${GUI_HDR_DIR}/flex_hash.h
+    ${GUI_HDR_DIR}/filter_sentence_dlg.h
     ${GUI_HDR_DIR}/font_desc.h
     ${GUI_HDR_DIR}/font_mgr.h
     ${GUI_HDR_DIR}/go_to_position_dlg.h
@@ -955,6 +957,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/config_mgr.cpp
     ${GUI_SRC_DIR}/connection_edit.cpp
+    ${GUI_SRC_DIR}/conn_edit_commons.cpp
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/data_monitor.cpp
@@ -962,6 +965,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/filter_dlg.cpp
+    ${GUI_SRC_DIR}/filter_sentence_dlg.cpp
     ${GUI_SRC_DIR}/flex_hash.cpp
     ${GUI_SRC_DIR}/font_desc.cpp
     ${GUI_SRC_DIR}/font_mgr.cpp

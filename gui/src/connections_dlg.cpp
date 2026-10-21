@@ -35,10 +35,10 @@
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/spinctrl.h>
-#include <wx/statbox.h>
-#include <wx/statline.h>
 #include <wx/textctrl.h>
 #include <wx/window.h>
+
+#include "libgui/expand_panel.h"
 
 #include "model/base_platform.h"
 #include "model/comm_drv_factory.h"
@@ -57,11 +57,9 @@
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_platform.h"
 #include "options.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"
-#include "model/svg_utils.h"
 
 static constexpr auto TopScrollWindowName = "TopScroll";
 
@@ -166,6 +164,13 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
   return nullptr;
 }
 
+static ConnectionParams* FindConnectionByIface(
+    const std::unique_ptr<ConnectionParams>& cp) {
+  return FindConnectionByIface(cp.get());
+}
+
+namespace {
+
 /**
  * Custom renderer class for rendering ENABLE in a grid cell.
  * Allows setting of rendered Icon size
@@ -188,8 +193,7 @@ private:
   ColorScheme m_cs;
 };
 
-/** std::sort support: Compare twSetInitialSettingso ConnectionParams w r t
- * given column */
+/** std::sort support: Compare two ConnectionParams w r t given column */
 class ConnCompare {
 public:
   explicit ConnCompare(int col) : m_col(col) {}
@@ -307,7 +311,7 @@ public:
       ev.Skip();
     });
     GetGridWindow()->Bind(wxEVT_MOUSEWHEEL,
-                          [&](const wxMouseEvent& ev) { OnWheel(ev); });
+                          [&](wxMouseEvent& ev) { OnWheel(ev); });
     // wxGridEvent.GetCol() and GetRow() are not const until wxWidgets 3.2
     Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
          [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
@@ -354,10 +358,14 @@ public:
   }
 
   /** Mouse wheel: scroll the TopScroll window */
-  static void OnWheel(const wxMouseEvent& ev) {
+  void OnWheel(wxMouseEvent& ev) {
+    if (!IsShown()) {
+      ev.Skip();
+      return;
+    }
     auto w =
         dynamic_cast<wxScrolledWindow*>(FindWindowByName(TopScrollWindowName));
-    assert(w && "No TopScroll window found");
+    if (!w) return;
     int xpos;
     int ypos;
     w->GetViewStart(&xpos, &ypos);
@@ -439,7 +447,7 @@ public:
   /**
    * Find index in m_connections for given pointer.
    * @return positive index if found, else -1;
-   * */
+   */
   int FindConnectionIndex(const ConnectionParams* cp) const {
     using namespace std;
     auto key = cp->GetKey();
@@ -546,7 +554,8 @@ private:
   }
 
   /** Handle mouse movements i.e., the tooltips. */
-  void OnMouseMove(const wxMouseEvent& ev) {
+  void OnMouseMove(wxMouseEvent& ev) {
+    if (!IsShown()) return;
     const wxPoint pt = ev.GetPosition();
     int row = YToRow(pt.y);
     int col = XToCol(pt.x);
@@ -554,6 +563,7 @@ private:
     if (row * 7 + col == m_last_tooltip_cell) return;
     m_last_tooltip_cell = row * 7 + col;
     GetGridWindow()->SetToolTip(m_tooltips[row][col]);
+    ev.Skip();
   }
 
   /** Handle connections driver statistics status changes event. */
@@ -690,16 +700,15 @@ private:
 /** Indeed: the General  panel. */
 class GeneralPanel : public wxPanel {
 public:
-  explicit GeneralPanel(wxWindow* parent, wxSize max_size)
-      : wxPanel(parent, wxID_ANY) {
+  explicit GeneralPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, _("General"));
     SetSizer(sizer);
     auto flags = wxSizerFlags().Border();
     m_upload_options = new UploadOptionsChoice(this);
     sizer->Add(m_upload_options, flags);
     sizer->Add(new PrioritiesBtn(this), flags);
-    wxWindow::SetMaxSize(max_size);
   }
+
   void SetColorScheme(ColorScheme) {
     DimeControl(m_upload_options);
     Refresh();
@@ -765,36 +774,10 @@ private:
   UploadOptionsChoice* m_upload_options;
 };
 
-/** The "Show advanced" text + right/down triangle and handler. */
-class ShowAdvanced : public wxStaticText {
-public:
-  ShowAdvanced(wxWindow* parent, std::function<void(bool)> on_toggle)
-      : wxStaticText(parent, wxID_ANY, ""),
-        m_on_toggle(std::move(on_toggle)),
-        m_show_advanced(true) {
-    Toggle();
-    Bind(wxEVT_LEFT_DOWN, [&](const wxMouseEvent& ev) { Toggle(); });
-  }
-
-private:
-  wxString m_label = _("Advanced ");
-  std::function<void(bool)> m_on_toggle;
-  bool m_show_advanced;
-
-  void Toggle() {
-    m_show_advanced = !m_show_advanced;
-    m_label = _("Advanced ");
-    m_label += m_show_advanced ? UtfArrowDown() : UtfArrowRight();
-    SetLabelText(m_label);
-    m_on_toggle(m_show_advanced);
-  }
-};
-
 /** Indeed: The "Advanced" panel. */
 class AdvancedPanel : public wxPanel {
 public:
-  explicit AdvancedPanel(wxWindow* parent, wxSize max_size)
-      : wxPanel(parent, wxID_ANY) {
+  explicit AdvancedPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, "");
     sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
     sizer->Add(new ExtraRmbRmcLine(this), wxSizerFlags().Expand());
@@ -802,7 +785,6 @@ public:
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
     sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
     SetSizer(sizer);
-    wxWindow::SetMaxSize(max_size);
   }
 
 private:
@@ -844,6 +826,7 @@ private:
       wxWindow::Show();
     }
   };
+
   class ExtraRmbRmcCheckbox final : public wxCheckBox, public ApplyCancel {
   public:
     explicit ExtraRmbRmcCheckbox(wxWindow* parent)
@@ -970,7 +953,6 @@ public:
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto conn_grid = new Connections(this, m_connections, m_evt_add_connection,
                                      on_edit_conn);
-    wxSize panel_max_size(conn_grid->GetEstimatedSize());
     vbox->AddSpacer(wxWindow::GetCharHeight());
     auto conn_flags = wxSizerFlags().Border();
     if (IsAndroid()) conn_flags = wxSizerFlags().Border().Expand();
@@ -980,19 +962,19 @@ public:
     vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
     auto panel_flags =
         wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
-    m_general_panel = new GeneralPanel(this, panel_max_size);
+    m_general_panel = new GeneralPanel(this);
+    m_general_panel->SetMinSize(m_general_panel->GetBestSize());
     vbox->Add(m_general_panel, panel_flags);
 
-    auto advanced_panel = new AdvancedPanel(this, panel_max_size);
+    auto advanced_panel = new AdvancedPanel(this);
     m_advanced_panel = advanced_panel;
-    auto on_toggle = [&, advanced_panel, vbox](bool show) {
-      // FIXME advanced_panel->SetMaxSize({conn_grid->GetSize().x, -1});
-      advanced_panel->Show(show);
-      vbox->SetSizeHints(this);
-      vbox->Fit(this);
-    };
-    vbox->Add(new ShowAdvanced(this, on_toggle), panel_flags);
-    vbox->Add(advanced_panel, panel_flags.ReserveSpaceEvenIfHidden());
+    auto adv_box = new wxBoxSizer(wxHORIZONTAL);
+    adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
+    adv_box->Add(new ExpandablePanel(this, advanced_panel,
+                                     [&] { GetParent()->Layout(); }));
+    vbox->Add(adv_box, wxSizerFlags().Border());
+    vbox->Add(advanced_panel,
+              wxSizerFlags().Border().ReserveSpaceEvenIfHidden());
 
     SetSizer(vbox);
     vbox->SetSizeHints(this);
@@ -1004,6 +986,7 @@ public:
       conn_grid->ReloadGrid(TheConnectionParams());
       conn_grid->Show(conn_grid->GetNumberRows() > 0);
       Layout();
+      FitInside();
     };
     m_add_connection_lstnr.Init(m_evt_add_connection,
                                 on_evt_update_connections);
@@ -1026,14 +1009,17 @@ private:
   AdvancedPanel* m_advanced_panel;
 };
 
-/** Top scroll window, adds scrollbars to TopPanel. */
-class TopScroll : public wxScrolledWindow {
+}  // anonymous namespace
+
+/** Top window. */
+class EditPanel : public wxScrolled<wxPanel> {
 public:
-  TopScroll(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
+  EditPanel(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
             obs::EventVar& evt_add_connection)
-      : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                         wxVSCROLL | wxHSCROLL, TopScrollWindowName) {
-    ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
+      : wxScrolled<wxPanel>(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                            wxVSCROLL | wxHSCROLL),
+        m_edited_connection(nullptr),
+        m_edit_panel(nullptr) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     SetSizer(vbox);
 
@@ -1044,59 +1030,47 @@ public:
         HandleNew(p);
     };
 
-    top_panel =
+    m_top_panel =
         new TopPanel(this, connections, evt_add_connection, on_edit_connection);
-    vbox->Add(top_panel, wxSizerFlags(1).Expand());
+    vbox->Add(m_top_panel, wxSizerFlags(1).Expand());
+    auto on_cancel = [&] { SwitchToGrid(); };
 
-    auto on_edit_click = [&](const ConnectionParams* p, bool new_mode,
-                             bool ok_cancel) {
-      HandleEditFinish(p, new_mode, ok_cancel);
+    auto on_edit_click = [&](std::unique_ptr<ConnectionParams> params,
+                             bool new_mode) {
+      HandleEditFinish(std::move(params), new_mode);
     };
 
-    m_edit_panel = new ConnectionEditDialog(this, on_edit_click);
-    m_edit_panel->SetPropsLabel(_("Edit Selected Connection"));
-    wxWindow* options = FindWindowByName("Options");
-    assert(options && "Null Options window!");
-    int fraction = 9;
-#ifdef ANDROID
-    fraction = 10;
-#endif
-    m_edit_panel->SetSize(
-        wxSize(options->GetSize().x, options->GetSize().y * fraction / 10));
-    vbox->Add(m_edit_panel, wxSizerFlags(0).Expand());
+    m_edit_panel =
+        AbstractConnectionEditDlg::Create(this, on_cancel, on_edit_click);
+    vbox->Add(m_edit_panel, wxSizerFlags(1).Expand());
+    wxWindowBase::Layout();
     m_edit_panel->Hide();
 
-    SetScrollRate(0, 10);
-    if (IsAndroid()) SetScrollRate(1, 1);
-
-    SetScrollRate(0, 10);
-    if (IsAndroid()) SetScrollRate(1, 1);
+    if (IsAndroid())
+      SetScrollRate(1, 1);
+    else
+      SetScrollRate(10, 10);
   }
 
   void SetColorScheme(ColorScheme cs) const {
-    if (top_panel) top_panel->SetColorScheme(cs);
+    if (m_top_panel) m_top_panel->SetColorScheme(cs);
   }
 
   void HandleEdit(ConnectionParams* p) {
-    m_edit_panel->SetPropsLabel(_("Edit Selected Connection"));
-    m_edit_panel->SetNewMode(false);
-    m_edit_panel->PreloadControls(p);
-    m_edit_panel->AddOKCancelButtons();
+    m_edited_connection = p;
+    m_edit_panel->SetParams(std::make_unique<ConnectionParams>(*p));
     SwitchToEditor();
   }
 
   void HandleNew(ConnectionParams*) {
-    m_edit_panel->SetPropsLabel(_("Configure new connection"));
-    m_edit_panel->SetDefaultConnectionParams();
-    m_edit_panel->SetNewMode(true);
-    m_edit_panel->AddOKCancelButtons();
-    m_edit_panel->InitiateNewConnection();
+    m_edit_panel->SetParams(nullptr);
     SwitchToEditor();
   }
 
   void SwitchToEditor() {
-    top_panel->Hide();  // TopPanel
-    Scroll(0, 0);
+    ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
+    m_top_panel->Hide();  // TopPanel
+    m_edit_panel->Scroll(0, 0);
     DimeControl(m_edit_panel);
     m_edit_panel->Show();
     g_options->ShowOKButtons(false);
@@ -1104,58 +1078,54 @@ public:
   }
 
   void SwitchToGrid() {
-    g_options->ShowOKButtons(true);
     m_edit_panel->Hide();
-    top_panel->Show();
-    top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
+    m_top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
+    g_options->ShowOKButtons(true);
+    m_top_panel->Show();
     Layout();
+    FitInside();
     Scroll(0, 0);
+    ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
   }
 
-  void HandleEditFinish(const ConnectionParams* cp_orig, bool new_mode,
-                        bool ok_cancel) {
-    if (!ok_cancel) {
-      SwitchToGrid();
-      return;
-    }
-    // OK from EDIT mode
+  void HandleEditFinish(std::unique_ptr<ConnectionParams> new_params,
+                        bool new_mode) {
     if (!new_mode) {
-      ConnectionParams* cp_edited = m_edit_panel->GetParamsFromControls();
-      delete cp_orig->options_panel;
-      StopAndRemoveCommDriver(cp_orig->GetStrippedDSPort(),
-                              cp_orig->GetCommProtocol());
-      int index = top_panel->GetConnectionsGrid()->FindConnectionIndex(cp_orig);
+      // OK from EDIT mode
+      StopAndRemoveCommDriver(m_edited_connection->GetStrippedDSPort(),
+                              m_edited_connection->GetCommProtocol());
+      assert(m_edited_connection && "No edited connection");
+      int index = m_top_panel->GetConnectionsGrid()->FindConnectionIndex(
+          m_edited_connection);
       assert(index != -1 && "Cannot look up connection index");
-      TheConnectionParams()[index] = cp_edited;
-      cp_edited->is_setup = false;  // Trigger new stream
-    }
-    //  OK from NEW mode
-    else {
-      ConnectionParams* cp = m_edit_panel->GetParamsFromControls();
-      if (cp) {
-        if (FindConnectionByIface(cp)) {
-          wxMessageDialog dialog(this, kInterfaceExistsMessage,
-                                 _("Driver creation warning"),
-                                 wxOK | wxCENTRE | wxICON_WARNING);
-          dialog.ShowModal();
-        }
-        if (cp->IsPortValid()) {
-          // Trigger new stream
-          cp->is_setup = false;
-          // transfer ownership FIXME use smart pointers
-          TheConnectionParams().push_back(cp);
-        } else {
-          wxString msg =
-              _("Unable to create a connection as configured. "
-                "Connected port or address was missing.");
-          auto& noteman = NotificationManager::GetInstance();
-          noteman.AddNotification(NotificationSeverity::kWarning,
-                                  msg.ToStdString(), 60);
-          delete cp;
-        }
+      *TheConnectionParams()[index] = *new_params;
+      TheConnectionParams()[index]->is_setup = false;  // Trigger new stream
+      m_edited_connection = nullptr;
+    } else {
+      //  OK from NEW mode
+      ConnectionParams cp = m_edit_panel->GetEditedParams();
+      if (FindConnectionByIface(&cp)) {
+        wxMessageDialog dialog(this, kInterfaceExistsMessage,
+                               _("Driver creation warning"),
+                               wxOK | wxCENTRE | wxICON_WARNING);
+        dialog.ShowModal();
+      }
+      if (cp.IsPortValid()) {
+        // Trigger new stream
+        cp.is_setup = false;
+        // transfer ownership FIXME use smart pointers
+        auto new_cp = new ConnectionParams(cp);
+        TheConnectionParams().push_back(new_cp);
+      } else {
+        wxString msg =
+            _("Unable to create a connection as configured. "
+              "Connected port or address was missing.");
+        auto& noteman = NotificationManager::GetInstance();
+        noteman.AddNotification(NotificationSeverity::kWarning,
+                                msg.ToStdString(), 60);
       }
       UpdateDatastreams();
-      top_panel->m_evt_add_connection.Notify();
+      m_top_panel->m_evt_add_connection.Notify();
     }
 
     SwitchToGrid();
@@ -1163,8 +1133,9 @@ public:
   }
 
 private:
-  TopPanel* top_panel;
-  ConnectionEditDialog* m_edit_panel;
+  const ConnectionParams* m_edited_connection;
+  AbstractConnectionEditDlg* m_edit_panel;
+  TopPanel* m_top_panel;
 };
 
 /** Main window: Panel with a single TopScroll child. */
@@ -1172,18 +1143,11 @@ ConnectionsDlg::ConnectionsDlg(
     wxWindow* parent, const std::vector<ConnectionParams*>& connections)
     : wxPanel(parent, wxID_ANY), m_connections(connections) {
   const auto vbox = new wxBoxSizer(wxVERTICAL);
-  vbox->Add(new TopScroll(this, connections, m_evt_add_connection),
+  vbox->Add(new EditPanel(this, connections, m_evt_add_connection),
             wxSizerFlags(1).Expand());
   SetSizer(vbox);
-  wxWindow::Fit();
+  wxWindow::Layout();
   wxWindow::Show();
-}
-
-void ConnectionsDlg::OnResize(const wxSize& size) {
-  auto w = FindWindowByName(TopScrollWindowName);
-  if (!w) return;
-  w->SetMinSize(size);
-  Fit();
 }
 
 void ConnectionsDlg::DoApply(wxWindow* root) {
@@ -1205,6 +1169,6 @@ void ConnectionsDlg::ApplySettings() { DoApply(this); }
 void ConnectionsDlg::CancelSettings() { DoCancel(this); }
 
 void ConnectionsDlg::SetColorScheme(ColorScheme cs) {
-  auto w = dynamic_cast<TopScroll*>(FindWindowByName(TopScrollWindowName));
+  auto w = dynamic_cast<EditPanel*>(FindWindowByName(TopScrollWindowName));
   if (w) w->SetColorScheme(cs);
 }
