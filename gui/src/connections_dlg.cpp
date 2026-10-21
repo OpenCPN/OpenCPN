@@ -61,6 +61,7 @@
 #include "options.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"
+#include "libgui/expand_panel.h"
 #include "model/svg_utils.h"
 
 static constexpr auto TopScrollWindowName = "TopScroll";
@@ -164,6 +165,10 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
     }
   }
   return nullptr;
+}
+static ConnectionParams* FindConnectionByIface(
+    const std::unique_ptr<ConnectionParams>& cp) {
+  return FindConnectionByIface(cp.get());
 }
 
 /**
@@ -765,31 +770,6 @@ private:
   UploadOptionsChoice* m_upload_options;
 };
 
-/** The "Show advanced" text + right/down triangle and handler. */
-class ShowAdvanced : public wxStaticText {
-public:
-  ShowAdvanced(wxWindow* parent, std::function<void(bool)> on_toggle)
-      : wxStaticText(parent, wxID_ANY, ""),
-        m_on_toggle(std::move(on_toggle)),
-        m_show_advanced(true) {
-    Toggle();
-    Bind(wxEVT_LEFT_DOWN, [&](const wxMouseEvent& ev) { Toggle(); });
-  }
-
-private:
-  wxString m_label = _("Advanced ");
-  std::function<void(bool)> m_on_toggle;
-  bool m_show_advanced;
-
-  void Toggle() {
-    m_show_advanced = !m_show_advanced;
-    m_label = _("Advanced ");
-    m_label += m_show_advanced ? UtfArrowDown() : UtfArrowRight();
-    SetLabelText(m_label);
-    m_on_toggle(m_show_advanced);
-  }
-};
-
 /** Indeed: The "Advanced" panel. */
 class AdvancedPanel : public wxPanel {
 public:
@@ -844,6 +824,7 @@ private:
       wxWindow::Show();
     }
   };
+
   class ExtraRmbRmcCheckbox final : public wxCheckBox, public ApplyCancel {
   public:
     explicit ExtraRmbRmcCheckbox(wxWindow* parent)
@@ -985,14 +966,13 @@ public:
 
     auto advanced_panel = new AdvancedPanel(this, panel_max_size);
     m_advanced_panel = advanced_panel;
-    auto on_toggle = [&, advanced_panel, vbox](bool show) {
-      // FIXME advanced_panel->SetMaxSize({conn_grid->GetSize().x, -1});
-      advanced_panel->Show(show);
-      vbox->SetSizeHints(this);
-      vbox->Fit(this);
-    };
-    vbox->Add(new ShowAdvanced(this, on_toggle), panel_flags);
-    vbox->Add(advanced_panel, panel_flags.ReserveSpaceEvenIfHidden());
+    auto adv_box = new wxBoxSizer(wxHORIZONTAL);
+    adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
+    adv_box->Add(new ExpandablePanel(this, advanced_panel,
+                                     [&] { GetParent()->Layout(); }));
+    vbox->Add(adv_box, wxSizerFlags().Border());
+    vbox->Add(advanced_panel,
+              wxSizerFlags().Border().ReserveSpaceEvenIfHidden());
 
     SetSizer(vbox);
     vbox->SetSizeHints(this);
@@ -1032,7 +1012,8 @@ public:
   TopScroll(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
             obs::EventVar& evt_add_connection)
       : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                         wxVSCROLL | wxHSCROLL, TopScrollWindowName) {
+                         wxVSCROLL | wxHSCROLL, TopScrollWindowName),
+        m_edited_connection(nullptr) {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     SetSizer(vbox);
@@ -1044,17 +1025,18 @@ public:
         HandleNew(p);
     };
 
-    top_panel =
+    m_top_panel =
         new TopPanel(this, connections, evt_add_connection, on_edit_connection);
-    vbox->Add(top_panel, wxSizerFlags(1).Expand());
+    vbox->Add(m_top_panel, wxSizerFlags(1).Expand());
+    auto on_cancel = [&] { SwitchToGrid(); };
 
-    auto on_edit_click = [&](const ConnectionParams* p, bool new_mode,
-                             bool ok_cancel) {
-      HandleEditFinish(p, new_mode, ok_cancel);
+    auto on_edit_click = [&](std::unique_ptr<ConnectionParams> params,
+                             bool new_mode) {
+      HandleEditFinish(std::move(params), new_mode);
     };
 
-    m_edit_panel = new ConnectionEditDialog(this, on_edit_click);
-    m_edit_panel->SetPropsLabel(_("Edit Selected Connection"));
+    m_edit_panel =
+        AbstractConnectionEditDlg::Create(this, on_cancel, on_edit_click);
     wxWindow* options = FindWindowByName("Options");
     assert(options && "Null Options window!");
     int fraction = 9;
@@ -1074,28 +1056,22 @@ public:
   }
 
   void SetColorScheme(ColorScheme cs) const {
-    if (top_panel) top_panel->SetColorScheme(cs);
+    if (m_top_panel) m_top_panel->SetColorScheme(cs);
   }
 
   void HandleEdit(ConnectionParams* p) {
-    m_edit_panel->SetPropsLabel(_("Edit Selected Connection"));
-    m_edit_panel->SetNewMode(false);
-    m_edit_panel->PreloadControls(p);
-    m_edit_panel->AddOKCancelButtons();
+    m_edited_connection = p;
+    m_edit_panel->SetParams(std::make_unique<ConnectionParams>(*p));
     SwitchToEditor();
   }
 
   void HandleNew(ConnectionParams*) {
-    m_edit_panel->SetPropsLabel(_("Configure new connection"));
-    m_edit_panel->SetDefaultConnectionParams();
-    m_edit_panel->SetNewMode(true);
-    m_edit_panel->AddOKCancelButtons();
-    m_edit_panel->InitiateNewConnection();
+    m_edit_panel->SetParams(nullptr);
     SwitchToEditor();
   }
 
   void SwitchToEditor() {
-    top_panel->Hide();  // TopPanel
+    m_top_panel->Hide();  // TopPanel
     Scroll(0, 0);
     DimeControl(m_edit_panel);
     m_edit_panel->Show();
@@ -1104,58 +1080,52 @@ public:
   }
 
   void SwitchToGrid() {
-    g_options->ShowOKButtons(true);
     m_edit_panel->Hide();
-    top_panel->Show();
-    top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
+    m_top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
+    g_options->ShowOKButtons(true);
     Layout();
     Scroll(0, 0);
+    m_top_panel->Show();
   }
 
-  void HandleEditFinish(const ConnectionParams* cp_orig, bool new_mode,
-                        bool ok_cancel) {
-    if (!ok_cancel) {
-      SwitchToGrid();
-      return;
-    }
-    // OK from EDIT mode
+  void HandleEditFinish(std::unique_ptr<ConnectionParams> new_params,
+                        bool new_mode) {
     if (!new_mode) {
-      ConnectionParams* cp_edited = m_edit_panel->GetParamsFromControls();
-      delete cp_orig->options_panel;
-      StopAndRemoveCommDriver(cp_orig->GetStrippedDSPort(),
-                              cp_orig->GetCommProtocol());
-      int index = top_panel->GetConnectionsGrid()->FindConnectionIndex(cp_orig);
+      // OK from EDIT mode
+      StopAndRemoveCommDriver(m_edited_connection->GetStrippedDSPort(),
+                              m_edited_connection->GetCommProtocol());
+      assert(m_edited_connection && "No edited connection");
+      int index = m_top_panel->GetConnectionsGrid()->FindConnectionIndex(
+          m_edited_connection);
       assert(index != -1 && "Cannot look up connection index");
-      TheConnectionParams()[index] = cp_edited;
-      cp_edited->is_setup = false;  // Trigger new stream
-    }
-    //  OK from NEW mode
-    else {
-      ConnectionParams* cp = m_edit_panel->GetParamsFromControls();
-      if (cp) {
-        if (FindConnectionByIface(cp)) {
-          wxMessageDialog dialog(this, kInterfaceExistsMessage,
-                                 _("Driver creation warning"),
-                                 wxOK | wxCENTRE | wxICON_WARNING);
-          dialog.ShowModal();
-        }
-        if (cp->IsPortValid()) {
-          // Trigger new stream
-          cp->is_setup = false;
-          // transfer ownership FIXME use smart pointers
-          TheConnectionParams().push_back(cp);
-        } else {
-          wxString msg =
-              _("Unable to create a connection as configured. "
-                "Connected port or address was missing.");
-          auto& noteman = NotificationManager::GetInstance();
-          noteman.AddNotification(NotificationSeverity::kWarning,
-                                  msg.ToStdString(), 60);
-          delete cp;
-        }
+      *TheConnectionParams()[index] = *new_params;
+      TheConnectionParams()[index]->is_setup = false;  // Trigger new stream
+      m_edited_connection = nullptr;
+    } else {
+      //  OK from NEW mode
+      ConnectionParams cp = m_edit_panel->GetEditedParams();
+      if (FindConnectionByIface(&cp)) {
+        wxMessageDialog dialog(this, kInterfaceExistsMessage,
+                               _("Driver creation warning"),
+                               wxOK | wxCENTRE | wxICON_WARNING);
+        dialog.ShowModal();
+      }
+      if (cp.IsPortValid()) {
+        // Trigger new stream
+        cp.is_setup = false;
+        // transfer ownership FIXME use smart pointers
+        auto new_cp = new ConnectionParams(cp);
+        TheConnectionParams().push_back(new_cp);
+      } else {
+        wxString msg =
+            _("Unable to create a connection as configured. "
+              "Connected port or address was missing.");
+        auto& noteman = NotificationManager::GetInstance();
+        noteman.AddNotification(NotificationSeverity::kWarning,
+                                msg.ToStdString(), 60);
       }
       UpdateDatastreams();
-      top_panel->m_evt_add_connection.Notify();
+      m_top_panel->m_evt_add_connection.Notify();
     }
 
     SwitchToGrid();
@@ -1163,8 +1133,9 @@ public:
   }
 
 private:
-  TopPanel* top_panel;
-  ConnectionEditDialog* m_edit_panel;
+  TopPanel* m_top_panel;
+  AbstractConnectionEditDlg* m_edit_panel;
+  const ConnectionParams* m_edited_connection;
 };
 
 /** Main window: Panel with a single TopScroll child. */
