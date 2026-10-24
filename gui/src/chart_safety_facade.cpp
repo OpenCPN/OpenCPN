@@ -78,6 +78,7 @@
 #include "config_mgr.h"
 #include "font_mgr.h"
 #include "gl_chart_canvas.h"
+#include "chart_safety_longitude.h"
 #include "chart_safety_depth.h"
 #include "chart_safety_api.h"
 #include "chart_safety_service.h"
@@ -203,7 +204,8 @@ bool ServicePendingRequests(int max_requests, int max_milliseconds,
           break;
         }
         const long neighbour_lat_tile = tile->first;
-        const long neighbour_lon_tile = tile->second;
+        const long neighbour_lon_tile =
+            CanonicalLongitudeIndex(tile->second, 3600);
         const double neighbour_min_lat = neighbour_lat_tile * kGridTileDegrees;
         const double neighbour_min_lon = neighbour_lon_tile * kGridTileDegrees;
         if (neighbour_min_lat < -90.0 || neighbour_min_lat >= 90.0 ||
@@ -299,7 +301,8 @@ bool PrepareRawTiles(const long* lat_tiles, const long* lon_tiles,
   SegmentSafetyPersistentCacheEnsureLoaded();
   std::set<std::pair<long, long>> tiles;
   for (int index = 0; index < tile_count; ++index)
-    tiles.insert(std::make_pair(lat_tiles[index], lon_tiles[index]));
+    tiles.insert(std::make_pair(
+        lat_tiles[index], CanonicalLongitudeIndex(lon_tiles[index], 3600)));
 
   {
     wxMutexLocker lock(s_segment_safety_cache_mutex);
@@ -551,8 +554,8 @@ bool CheckSegment(double lat1, double lon1, double lat2, double lon2,
   }
   // Accept finite longitudes in either common convention, but never feed
   // unbounded coordinates into tile-index integer conversions.
-  lon1 = std::remainder(lon1, 360.0);
-  lon2 = std::remainder(lon2, 360.0);
+  // Follow the short continuous crossing. Cell/tile lookup uses cyclic keys.
+  UnwrapSafetySegment(lon1, lon2);
   if (wxThread::IsMain() && (!ChartData || !ChartData->IsValid())) {
     SetSegmentSafetyStatus(result, kNoData);
     SetSegmentSafetyDiagnosticReason(result, kDiagnosticNoChartDatabase);
@@ -1164,6 +1167,8 @@ void AddSegmentSafetyRouteMaskCorridorTiles(
   if (!tiles || !std::isfinite(lat1) || !std::isfinite(lon1) ||
       !std::isfinite(lat2) || !std::isfinite(lon2))
     return;
+
+  UnwrapSafetySegment(lon1, lon2);
 
   double bearing = 0.0;
   double dist_nm = 0.0;

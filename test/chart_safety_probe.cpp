@@ -123,6 +123,14 @@ public:
       check("mixed_route", {{28.4, -16.1}, {28.4, -16.5}, {28.4, -16.6}}, false,
             0, 0);
       check("polar_missing_depth", {{89.8, -150}, {89.81, -150}}, true, 0, 2.8);
+      // Public API coverage: short date-line crossings must retain depth and
+      // clearance checks without visiting the far side of the world.
+      check("dateline_depth", {{-18.77, 179.99}, {-18.77, -179.99}}, true, .1,
+            1.5);
+      check("dateline_reverse_depth", {{-18.77, -179.99}, {-18.77, 179.99}},
+            true, .1, 1.5);
+      check("dateline_unreachable_depth", {{-18.77, 179.99}, {-18.77, -179.99}},
+            true, .1, 10000);
       HostApi123::NavigationRouteSafetyResult worker_first, worker_second;
       bool worker_register_rejected = false;
       const std::vector<HostApi123::NavigationSafetyPosition> worker_points{

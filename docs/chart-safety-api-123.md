@@ -212,3 +212,33 @@ comparisons against the direct geometry predicates. Licensed S-63 geographical
 qualification and enhanced Android host runtime qualification remain separate
 release gates. The existing provider branch must be used with the matching
 HostApi123 header; this core PR does not change or publish the o-charts plugin.
+
+## Date-line regression qualification (24 October 2026)
+
+A short segment from 179.99°E to 179.99°W now follows a continuous local
+longitude interval. Fine tiles, derived masks, worker requests and clearance
+halos use the same cyclic tile identities. CM93's safety-only scale selector
+checks original M_COVR polygons at the seam: it bypasses a previously selected
+chart only when those polygons prove the point is outside. Unresolved coverage
+does not authorise falling through to deeper coarse water. General rendering
+and ordinary chart priority are unchanged.
+
+The semantic cache identity advances to `geometry-prototype-4-dateline`,
+invalidating earlier raw tiles and safety certificates. Published API1.22 and
+the HostApi123 declarations are unchanged. This does not change a routing
+engine, consumer version or preview package.
+
+Local Linux Release/AddressSanitizer checks pass 46 focused tests and 20 native
+fixtures (GTK leak detection disabled). Native fixtures cover both crossing
+directions, bounded traversal, cyclic corridor footprints, clear-water halos,
+land/drying/shallow hazards across the seam and unknown/no-chart rejection at
+traversed cells. The test harness reports wx assertions as test failures rather
+than opening modal dialogs; it caught and corrected a pre-existing elapsed-time
+log format mismatch.
+
+The real-host probe retains all seven previous route results and adds positive
+1.5 m depth/0.1 NM margin crossings in both directions plus rejection at an
+impossible depth threshold. These tests use local CM93 charts; raw chart data
+is not included. Cross-platform CI results for the earlier PR head do not
+qualify this new revision. Licensed S-63 and Android runtime checks remain
+separate gates. The developer preview bundle is not refreshed by this change.

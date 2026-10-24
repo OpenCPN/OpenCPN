@@ -138,3 +138,39 @@ TEST(ChartSafetyService, AtlasHonoursHardTileCapacity) {
 }
 
 }  // namespace
+// Longitude arithmetic is shared by public queries, tile halos and workers.
+#include "gui/chart_safety_longitude.h"
+TEST(ChartSafetyLongitude, OrdinaryCoordinatesKeepTheirExactRepresentation) {
+  for (double lon : {-179.999, -174.309446, -0.0, 0.0, 177.353350, 179.999}) {
+    const double actual = ocpn::chart_safety::CanonicalLongitude(lon);
+    EXPECT_EQ(std::signbit(actual), std::signbit(lon));
+    EXPECT_DOUBLE_EQ(actual, lon);
+  }
+}
+TEST(ChartSafetyLongitude, AliasesHaveOneCanonicalIdentity) {
+  for (long turns = -100; turns <= 100; ++turns) {
+    EXPECT_DOUBLE_EQ(
+        ocpn::chart_safety::CanonicalLongitude(180.0 + 360 * turns), -180.0);
+    EXPECT_EQ(
+        ocpn::chart_safety::CanonicalLongitudeIndex(3600 + 7200 * turns, 3600),
+        -3600);
+    EXPECT_EQ(
+        ocpn::chart_safety::CanonicalLongitudeIndex(-3601 + 7200 * turns, 3600),
+        3599);
+  }
+}
+TEST(ChartSafetyLongitude, BothDirectionsFollowTheShortContinuousCrossing) {
+  for (bool reverse : {false, true}) {
+    double start = reverse ? -179.99 : 179.99, end = reverse ? 179.99 : -179.99;
+    ocpn::chart_safety::UnwrapSafetySegment(start, end);
+    EXPECT_NEAR(std::abs(end - start), .02, 1e-10);
+    EXPECT_EQ(end > start, !reverse);
+  }
+}
+TEST(ChartSafetyLongitude, ExactSeamAndDegenerateSegmentsRemainLocal) {
+  for (double start : {-180., 180., 540.}) {
+    double end = -180.;
+    ocpn::chart_safety::UnwrapSafetySegment(start, end);
+    EXPECT_DOUBLE_EQ(start, end);
+  }
+}

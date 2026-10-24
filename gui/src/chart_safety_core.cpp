@@ -79,6 +79,7 @@
 #include "config_mgr.h"
 #include "font_mgr.h"
 #include "gl_chart_canvas.h"
+#include "chart_safety_longitude.h"
 #include "chart_safety_depth.h"
 #include "chart_safety_geometry.h"
 #include "chart_safety_api.h"
@@ -804,6 +805,7 @@ std::string SegmentSafetyGridTileKeyForIndices(long lat_tile, long lon_tile);
 std::string SegmentSafetyRouteMaskKey(long lat_tile, long lon_tile,
                                       double safety_margin_nm, bool check_depth,
                                       double minimum_depth_m) {
+  lon_tile = CanonicalLongitudeIndex(lon_tile, 3600);
   long margin_mm = lround(wxMax(0.0, safety_margin_nm) * 1000.0);
   long depth_cm = check_depth ? lround(wxMax(0.0, minimum_depth_m) * 100.0) : 0;
   char buf[160];
@@ -1456,16 +1458,17 @@ wxString SegmentSafetyChartIdentity() {
   // Keep only global semantic inputs here.  Individual chart metadata is
   // fingerprinted per tile, allowing a chart update to invalidate affected
   // waters without discarding an otherwise valid regional atlas.
-  SegmentSafetyHashAdd(&hash, "semantic-grid-v7-geometry-prototype-3");
+  SegmentSafetyHashAdd(&hash, "semantic-grid-v7-geometry-prototype-4-dateline");
   SegmentSafetyHashAdd(
       &hash, wxString::Format("group=%d", SegmentSafetyCurrentGroupIndex()));
   if (g_pi_manager)
     SegmentSafetyHashAdd(
         &hash, "batch-providers=" + SegmentSafetyPluginBatchProviderIdentity());
-  // The prototype adds display-independent isolated dangers and conservative
-  // cell geometry. Older certificates cannot certify the stronger semantics.
-  return wxString::Format("ocpn-chart-safety-v7-geometry-prototype-3-%016llx",
-                          (unsigned long long)hash);
+  // Seam coverage selection and cyclic halo identities changed. Rebuild raw
+  // tiles and dependent certificates; old unknown/clear cells are stale.
+  return wxString::Format(
+      "ocpn-chart-safety-v7-geometry-prototype-4-dateline-%016llx",
+      (unsigned long long)hash);
 }
 
 wxString SegmentSafetyChartCatalogIdentity() {
@@ -2396,6 +2399,7 @@ CachedPointSafetyClassification MakeSegmentSafetyPointCacheEntry(
 }
 
 std::string SegmentSafetyGridTileKeyForIndices(long lat_tile, long lon_tile) {
+  lon_tile = CanonicalLongitudeIndex(lon_tile, 3600);
   char key[96];
   snprintf(key, sizeof(key), "%d:%ld:%ld:%.6f",
            SegmentSafetyCurrentGroupIndex(), lat_tile, lon_tile,
@@ -2406,6 +2410,7 @@ std::string SegmentSafetyGridTileKeyForIndices(long lat_tile, long lon_tile) {
 
 std::string SegmentSafetyGridTileKey(double lat, double lon, long* lat_tile,
                                      long* lon_tile) {
+  lon = CanonicalLongitude(lon);
   long lt = floor(lat / kGridTileDegrees);
   long ln = floor(lon / kGridTileDegrees);
   if (lat_tile) *lat_tile = lt;
@@ -2635,6 +2640,7 @@ bool SegmentSafetyCachedTileProviderIsCurrent(
 bool EnsureSegmentSafetyGridTile(long lat_tile, long lon_tile,
                                  SegmentSafetyCoreStats* stats, bool* built,
                                  bool require_depth) {
+  lon_tile = CanonicalLongitudeIndex(lon_tile, 3600);
   if (built) *built = false;
   std::string key = SegmentSafetyGridTileKeyForIndices(lat_tile, lon_tile);
   CachedPointSafetyGridTile active_tile;
@@ -3148,7 +3154,8 @@ void AddSegmentSafetyTileHalo(long lat_tile, long lon_tile, int radius,
   if (!tiles) return;
   for (int dlat = -radius; dlat <= radius; ++dlat) {
     for (int dlon = -radius; dlon <= radius; ++dlon)
-      tiles->insert(std::make_pair(lat_tile + dlat, lon_tile + dlon));
+      tiles->insert(std::make_pair(
+          lat_tile + dlat, CanonicalLongitudeIndex(lon_tile + dlon, 3600)));
   }
 }
 
@@ -3523,7 +3530,7 @@ CachedSegmentSafetyRouteMaskTile BuildSegmentSafetyRouteMaskTile(
       "depth_check=%d min_depth_m=%.2f cells=%d clear=%d land=%d drying=%d "
       "shallow=%d unknown_depth=%d no_chart=%d margin=%d summary_flags=%u "
       "base_built=%d clear_shortcut=%d prefix_verify_cells=%d "
-      "prefix_verify_mismatches=%d build_ms=%d",
+      "prefix_verify_mismatches=%d build_ms=%ld",
       lat_tile, lon_tile, mask.group_index, safety_margin_nm,
       check_depth ? 1 : 0, minimum_depth_m, mask.rows * mask.cols,
       mask.clear_count, mask.land_count, mask.drying_count, mask.shallow_count,
@@ -3561,6 +3568,7 @@ bool EnsureSegmentSafetyRouteMaskTile(long lat_tile, long lon_tile,
                                       SegmentSafetyCoreStats* stats,
                                       bool* built,
                                       bool force_authoritative_fine) {
+  lon_tile = CanonicalLongitudeIndex(lon_tile, 3600);
   if (built) *built = false;
   std::string key = SegmentSafetyRouteMaskKey(
       lat_tile, lon_tile, safety_margin_nm, check_depth, minimum_depth_m);

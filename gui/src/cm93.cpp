@@ -45,6 +45,7 @@
 
 #include "chcanv.h"
 #include "cm93.h"
+#include "chart_safety_longitude.h"
 #include "chart_safety_geometry.h"
 #include "detail_slider.h"
 #include "gui_lib.h"
@@ -5038,9 +5039,20 @@ void cm93compchart::PrepareSafetyTile(const ViewPort &vpt) {
 
 cm93chart *cm93compchart::GetHighestDetailSafetyChartAt(double lat,
                                                         double lon) {
+  const double canonical_lon = ocpn::chart_safety::CanonicalLongitude(lon);
   for (int cmscale = 7; cmscale >= 0; --cmscale) {
     cm93chart *chart = m_pcm93chart_array[cmscale];
-    if (chart && chart->IsPointInLoadedM_COVR(lon, lat)) return chart;
+    if (!chart || !chart->IsPointInLoadedM_COVR(canonical_lon, lat)) continue;
+    // LLRegion's cached union can report phantom coverage exactly on the
+    // date line. Only bypass that chart when its original M_COVR polygons
+    // prove the point is outside. Unresolved polygons retain the existing
+    // selection, never authorising a fallback to deeper, coarser water.
+    // Normal rendering and chart priority away from the seam are unchanged.
+    if (std::abs(std::abs(canonical_lon) - 180.0) < 1e-8 &&
+        chart->SafetyCoverageBoxRelation(lat, lat, canonical_lon,
+                                         canonical_lon) == 0)
+      continue;
+    return chart;
   }
   return NULL;
 }

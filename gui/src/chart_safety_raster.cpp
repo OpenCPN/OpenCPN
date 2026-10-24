@@ -78,6 +78,7 @@
 #include "config_mgr.h"
 #include "font_mgr.h"
 #include "gl_chart_canvas.h"
+#include "chart_safety_longitude.h"
 #include "chart_safety_depth.h"
 #include "chart_safety_geometry.h"
 #include "chart_safety_api.h"
@@ -2289,6 +2290,7 @@ bool SegmentSafetyAllTouchedTilesAreWater(double lat1, double lon1, double lat2,
 SegmentSafetyPointClass ChartPointSafetyClassAt(
     double lat, double lon, SegmentSafetySource* source,
     SegmentSafetyCoreStats* stats, SegmentSafetyResult* result = NULL) {
+  lon = CanonicalLongitude(lon);
   long lat_tile = 0;
   long lon_tile = 0;
   std::string key = SegmentSafetyGridTileKey(lat, lon, &lat_tile, &lon_tile);
@@ -2415,6 +2417,7 @@ bool SegmentSafetyGridCellAt(long lat_cell, long lon_cell,
                              SegmentSafetyResult* result,
                              SegmentSafetyPointClass* point_class,
                              uint16_t* hazard_flags) {
+  lon_cell = CanonicalLongitudeIndex(lon_cell, 144000);
   double lat = lat_cell * kGridResolutionDegrees;
   double lon = lon_cell * kGridResolutionDegrees;
 
@@ -2498,6 +2501,7 @@ bool SegmentSafetyRouteMaskCellAt(
     double minimum_depth_m, bool force_authoritative_fine,
     SegmentSafetyCoreStats* stats, SegmentSafetyResult* result,
     uint16_t* block_flags, SegmentSafetySource* source) {
+  lon_cell = CanonicalLongitudeIndex(lon_cell, 144000);
   double lat = lat_cell * kGridResolutionDegrees;
   double lon = lon_cell * kGridResolutionDegrees;
   long lat_tile = 0;
@@ -2552,7 +2556,8 @@ void SegmentSafetySetRouteMaskHitResult(SegmentSafetyResult* result,
   if (!result) return;
 
   result->hit_sample_lat = lat_cell * kGridResolutionDegrees;
-  result->hit_sample_lon = lon_cell * kGridResolutionDegrees;
+  result->hit_sample_lon =
+      CanonicalLongitude(lon_cell * kGridResolutionDegrees);
   result->hit_sample_index = sample_index;
   result->hit_sample_count = sample_count;
   SetSegmentSafetySource(result, source);
