@@ -28,6 +28,9 @@
 #include <winsock2.h>
 #include <windows.h>
 
+#include <wx/frame.h>
+#include <wx/weakref.h>
+
 #include "model/usb_watch_daemon.h"
 
 /**
@@ -37,12 +40,14 @@
  */
 class WinUsbWatchDaemon : public UsbWatchDaemon {
 public:
-  WinUsbWatchDaemon(SystemEvents& se) : UsbWatchDaemon(se), m_frame(0) {}
+  WinUsbWatchDaemon(SystemEvents& se) : UsbWatchDaemon(se) {}
   virtual ~WinUsbWatchDaemon() = default;
 
   void Start();
   void Stop();
 
 private:
-  wxFrame* m_frame;
+  // The parent or wxWidgets shutdown can destroy the hidden listener before
+  // MyApp::OnExit() stops the daemon. Do not retain a dangling window pointer.
+  wxWeakRef<wxFrame> m_frame;
 };

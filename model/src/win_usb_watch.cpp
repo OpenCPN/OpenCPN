@@ -30,7 +30,6 @@
 #include <wx/log.h>
 #include <wx/window.h>
 
-#include "model/gui.h"
 #include "model/sys_events.h"
 #include "model/win_usb_watch.h"
 
@@ -57,7 +56,7 @@ void WinUsbWatchDaemon::Start() {
 }
 
 void WinUsbWatchDaemon::Stop() {
-  if (!m_frame) return;
-  delete m_frame;
-  m_frame = 0;
+  wxFrame* frame = m_frame.get();
+  m_frame = nullptr;
+  delete frame;
 }
