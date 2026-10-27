@@ -110,6 +110,11 @@ public:
     return m_workers.size();
   }
 
+  int CallbackCount() {
+    std::lock_guard lock(m_mutex);
+    return m_count;
+  }
+
 private:
   void Notify() override {
     std::lock_guard lock(m_mutex);
@@ -163,8 +168,9 @@ TEST(PeriodicTimer, CanRestartAfterStop) {
   timer.Start();
   ASSERT_TRUE(timer.WaitForCallbacks(1));
   timer.Stop();
+  const int stopped_count = timer.CallbackCount();
   timer.Start();
-  EXPECT_TRUE(timer.WaitForCallbacks(2));
+  EXPECT_TRUE(timer.WaitForCallbacks(stopped_count + 1));
 }
 
 TEST(PeriodicTimer, RapidStartAndStopDoesNotLoseWakeup) {
