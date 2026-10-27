@@ -140,6 +140,7 @@ CommDriverN0183AndroidInt::CommDriverN0183AndroidInt(
        &CommDriverN0183AndroidInt::handle_N0183_MSG, this);
 
   Open();
+  m_stats_timer.Start();
 }
 
 CommDriverN0183AndroidInt::~CommDriverN0183AndroidInt() { Close(); }
