@@ -219,7 +219,7 @@ struct ChartTableEntry {
 
   const LLBBox &GetBBox() const { return m_bbox; }
 
-  char *GetpFullPath() const { return pFullPath; }
+  const char *GetpFullPath() const { return m_FullPath.c_str(); }
   float GetLonMax() const { return LonMax; }
   float GetLonMin() const { return LonMin; }
   float GetLatMax() const { return LatMax; }
@@ -261,7 +261,6 @@ private:
   float LatMin;
   float LonMax;
   float LonMin;
-  char *pFullPath;
   int rounding;
   int Scale;
   time_t edition_date;

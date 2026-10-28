@@ -166,9 +166,7 @@ void ChartTableEntry::SetScale(int scale) {
 ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
   Clear();
 
-  char *pt = (char *)malloc(strlen(utf8Path.mb_str(wxConvUTF8)) + 1);
-  strcpy(pt, utf8Path.mb_str(wxConvUTF8));
-  pFullPath = pt;
+  m_FullPath = utf8Path.ToStdString(wxConvUTF8);
 
   SetScale(theChart.GetNativeScale());
 
@@ -191,7 +189,6 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
   m_psFullPath = new wxString;
   *m_psFullPath = utf8Path;
   m_fullSystemPath = utf8Path;
-  m_FullPath = std::string(pFullPath);
 
 #ifdef __ANDROID__
   m_fullSystemPath = wxString(utf8Path.mb_str(wxConvUTF8));
@@ -381,7 +378,6 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
 ///////////////////////////////////////////////////////////////////////
 
 ChartTableEntry::~ChartTableEntry() {
-  // free(pFullPath);
   free(pPlyTable);
 
   for (int i = 0; i < nAuxPlyEntries; i++) free(pAuxPlyTable[i]);
@@ -483,19 +479,17 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
   if (db_version == 18) {
     // Read the path first
     for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
-    pFullPath = (char *)malloc(cp - path + 1);
-    strncpy(pFullPath, path, cp - path + 1);
-    wxLogVerbose("  Chart %s", pFullPath);
+    m_FullPath = path;
+    wxLogVerbose("  Chart %s", path);
 
     //  Create and populate the helper members
     m_pfilename = new wxString;
-    wxString fullfilename(pFullPath, wxConvUTF8);
+    wxString fullfilename(path, wxConvUTF8);
     wxFileName fn(fullfilename);
     *m_pfilename = fn.GetFullName();
     m_psFullPath = new wxString;
     *m_psFullPath = fullfilename;
     m_fullSystemPath = fullfilename;
-    m_FullPath = std::string(pFullPath);
 
 #ifdef __ANDROID__
     m_fullSystemPath = wxString(fullfilename.mb_str(wxConvUTF8));
@@ -566,18 +560,16 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
   else if (db_version == 17) {
     // Read the path first
     for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
-    pFullPath = (char *)malloc(cp - path + 1);
-    strncpy(pFullPath, path, cp - path + 1);
-    wxLogVerbose("  Chart %s", pFullPath);
+    m_FullPath = path;
+    wxLogVerbose("  Chart %s", path);
 
     //  Create and populate the helper members
     m_pfilename = new wxString;
-    wxString fullfilename(pFullPath, wxConvUTF8);
+    wxString fullfilename(path, wxConvUTF8);
     wxFileName fn(fullfilename);
     *m_pfilename = fn.GetFullName();
     m_psFullPath = new wxString;
     *m_psFullPath = fullfilename;
-    m_FullPath = std::string(pFullPath);
 
     // Read the table entry
     ChartTableEntry_onDisk_17 cte;
@@ -645,18 +637,16 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
     // Read the path first
     for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
     // TODO: optimize prepended dir
-    pFullPath = (char *)malloc(cp - path + 1);
-    strncpy(pFullPath, path, cp - path + 1);
-    wxLogVerbose("  Chart %s", pFullPath);
+    m_FullPath = path;
+    wxLogVerbose("  Chart %s", path);
 
     //  Create and populate the helper members
     m_pfilename = new wxString;
-    wxString fullfilename(pFullPath, wxConvUTF8);
+    wxString fullfilename(path, wxConvUTF8);
     wxFileName fn(fullfilename);
     *m_pfilename = fn.GetFullName();
     m_psFullPath = new wxString;
     *m_psFullPath = fullfilename;
-    m_FullPath = std::string(pFullPath);
 
     // Read the table entry
     ChartTableEntry_onDisk_16 cte;
@@ -709,9 +699,8 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
     // Read the path first
     for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
     // TODO: optimize prepended dir
-    pFullPath = (char *)malloc(cp - path + 1);
-    strncpy(pFullPath, path, cp - path + 1);
-    wxLogVerbose("  Chart %s", pFullPath);
+    m_FullPath = path;
+    wxLogVerbose("  Chart %s", path);
 
     // Read the table entry
     ChartTableEntry_onDisk_15 cte;
@@ -758,9 +747,8 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
   } else if (db_version == 14) {
     // Read the path first
     for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
-    pFullPath = (char *)malloc(cp - path + 1);
-    strncpy(pFullPath, path, cp - path + 1);
-    wxLogVerbose("  Chart %s", pFullPath);
+    m_FullPath = path;
+    wxLogVerbose("  Chart %s", path);
 
     // Read the table entry
     ChartTableEntry_onDisk_14 cte;
@@ -812,7 +800,7 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is) {
 ///////////////////////////////////////////////////////////////////////
 
 bool ChartTableEntry::Write(const ChartDatabase *pDb, wxOutputStream &os) {
-  os.Write(pFullPath, strlen(pFullPath) + 1);
+  os.Write(m_FullPath.c_str(), m_FullPath.size() + 1);
 
   //      Write the current version type only
   //      Create an on_disk table entry
@@ -842,7 +830,7 @@ bool ChartTableEntry::Write(const ChartDatabase *pDb, wxOutputStream &os) {
   cte.nNoCovrPlyEntries = nNoCovrPlyEntries;
 
   os.Write(&cte, sizeof(ChartTableEntry_onDisk_18));
-  wxLogVerbose("  Wrote Chart %s", pFullPath);
+  wxLogVerbose("  Wrote Chart %s", m_FullPath.c_str());
 
   //      Write out the tables
   if (nPlyEntries) {
@@ -876,7 +864,7 @@ bool ChartTableEntry::Write(const ChartDatabase *pDb, wxOutputStream &os) {
 ///////////////////////////////////////////////////////////////////////
 
 void ChartTableEntry::Clear() {
-  pFullPath = NULL;
+  m_FullPath.clear();
   pPlyTable = NULL;
   pAuxPlyTable = NULL;
   pAuxCntTable = NULL;
