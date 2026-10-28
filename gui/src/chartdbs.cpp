@@ -166,7 +166,7 @@ void ChartTableEntry::SetScale(int scale) {
 ChartTableEntry::ChartTableEntry(ChartBase &theChart, wxString &utf8Path) {
   Clear();
 
-  m_FullPath = utf8Path.ToStdString(wxConvUTF8);
+  m_FullPath = std::string(utf8Path.utf8_str());
 
   SetScale(theChart.GetNativeScale());
 
