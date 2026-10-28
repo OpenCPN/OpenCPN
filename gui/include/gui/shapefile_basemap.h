@@ -84,10 +84,7 @@ public:
   int lon;
 
   bool operator<(const LatLonKey &k) const {
-    if (this->lat < k.lat) {
-      return this->lon < k.lon;
-    }
-    return this->lat < k.lat;
+    return lat < k.lat || (lat == k.lat && lon < k.lon);
   }
 
   bool operator==(const LatLonKey &other) const {
@@ -185,7 +182,23 @@ public:
    */
   bool IsUsable() { return _is_usable && !_loading; }
   size_t MinScale() { return _min_scale; }
-  void RenderViewOnDC(ocpnDC &dc, ViewPort &vp) { DrawPolygonFilled(dc, vp); }
+  /**
+   * Draw the chart.
+   * @return Cells (north and west edges) that could not be drawn yet because
+   * their tiles are still being tessellated.
+   */
+  std::vector<LatLonKey> RenderViewOnDC(ocpnDC &dc, ViewPort &vp) {
+    return DrawPolygonFilled(dc, vp);
+  }
+#ifdef ocpnUSE_GL
+  /**
+   * Draw only the given cells (north and west edges), used to fill in tiles
+   * another chart of the same tile size is still building.
+   * @return Cells that could not be drawn yet.
+   */
+  std::vector<LatLonKey> DrawCellsGL(ocpnDC &pnt, ViewPort &vp,
+                                     const std::vector<LatLonKey> &cells);
+#endif
   static const std::string ConstructPath(const std::string &dir,
                                          const std::string &quality_suffix) {
     return std::string(dir +
@@ -225,6 +238,8 @@ private:
    * contains feature indexes grouped by LatLonKey.
    */
   bool _is_tiled;
+  /** True if the 'y' tile key is the south edge of the tile, not the north. */
+  bool _key_is_south_edge{false};
   /**
    * The minimum scale threshold at which this chart should be displayed. Lower
    * quality charts are used for smaller scales (more zoomed out), and higher
@@ -233,12 +248,36 @@ private:
   size_t _min_scale;
   void DoDrawPolygonFilled(ocpnDC &pnt, ViewPort &vp,
                            const shp::Feature &feature);
-  void DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
-                             const shp::Feature &feature);
-  void DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp);
+  std::vector<LatLonKey> DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp);
+  /** Start loading the shapefile if needed. @return true once usable. */
+  bool EnsureLoaded();
+  /** Key of the tile covering a cell given by its north and west edges. */
+  LatLonKey TileKey(const LatLonKey &cell) const;
 #ifdef ocpnUSE_GL
-  void AddPointToTessList(shp::Point &point, ViewPort &vp, GLUtesselator *tobj,
-                          bool idl);
+  /**
+   * Triangles of all features in a tile as (lat, lon) offsets from the tile
+   * corner. Tessellation is by far the most expensive part of drawing the
+   * basemap, so tiles are tessellated once on a worker thread and cached.
+   * @return Cached triangles, or nullptr while the tile is being built.
+   */
+  const std::vector<float> *TileTriangles(const LatLonKey &key,
+                                          const std::vector<size_t> &fids);
+  /** Move finished tile jobs into the cache. */
+  void HarvestTileJobs();
+  /** Project a tile's triangles into _frame_pts. @return false if pending. */
+  bool AppendTileGL(ViewPort &vp, const LatLonKey &key,
+                    const std::vector<size_t> &fids);
+  /** Draw the triangles collected in _frame_pts for the current frame. */
+  void DrawTrianglesGL(ocpnDC &pnt);
+  /** Cache size limit, 32M floats = 128 MB. */
+  static constexpr size_t kTriCacheMaxFloats = 32 * 1024 * 1024;
+  std::unordered_map<LatLonKey, std::vector<float>> _tri_cache;
+  size_t _tri_cache_floats{0};
+  /** Tiles being tessellated. The jobs share no state with this object, and
+   * the futures wait for their threads when destroyed. */
+  std::unordered_map<LatLonKey, std::future<std::vector<float>>> _tri_jobs;
+  /** Projected triangle vertices of the frame being drawn, reused. */
+  std::vector<float> _frame_pts;
 #endif
 
   /**
