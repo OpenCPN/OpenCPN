@@ -2294,7 +2294,10 @@ bool Quilt::Compose(const ViewPort &vp_in) {
   bool b_skipCM93 = false;
   if (m_reference_type == CHART_TYPE_CM93COMP) {
     // find cm93 in the list
-    for (auto *piqp : m_PatchList) {
+    for (int i = m_PatchList.GetCount() - 1; i >= 0; i--) {
+      PatchList::compatibility_iterator pcinode = m_PatchList.Item(i);
+      QuiltPatch *piqp = pcinode->GetData();
+
       if (!piqp->b_Valid)  // skip invalid entries
         continue;
 
@@ -2317,7 +2320,10 @@ bool Quilt::Compose(const ViewPort &vp_in) {
 
   //  Proceeding from largest scale to smallest....
 
-  for (auto *piqp : m_PatchList) {
+  for (int i = m_PatchList.GetCount() - 1; i >= 0; i--) {
+    PatchList::compatibility_iterator pcinode = m_PatchList.Item(i);
+    QuiltPatch *piqp = pcinode->GetData();
+
     if (!piqp->b_Valid)  // skip invalid entries
       continue;
 
