@@ -36,7 +36,7 @@ double round_msvc(double x) { return (floor(x + 0.5)); }
 #include <windows.h>
 #include <float.h>  // for _clear87()
 
-struct timespec {
+struct ocpn_timespec {
   time_t tv_sec; /* seconds */
   long tv_nsec;  /* nanoseconds */
 };
@@ -87,7 +87,7 @@ int NextPow2(int size) {
   return n + 1;
 }
 #ifdef __WXMSW__
-extern "C" int clock_gettime_monotonic(struct timespec *tv) {
+extern "C" int clock_gettime_monotonic(struct ocpn_timespec *tv) {
   static LARGE_INTEGER ticksPerSec;
   LARGE_INTEGER ticks;
 
