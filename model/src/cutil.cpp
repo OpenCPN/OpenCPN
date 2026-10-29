@@ -36,11 +36,6 @@ double round_msvc(double x) { return (floor(x + 0.5)); }
 #include <windows.h>
 #include <float.h>  // for _clear87()
 
-struct ocpn_timespec {
-  time_t tv_sec; /* seconds */
-  long tv_nsec;  /* nanoseconds */
-};
-
 long __stdcall MyUnhandledExceptionFilter(
     struct _EXCEPTION_POINTERS *ExceptionInfo) {
   //    return EXCEPTION_EXECUTE_HANDLER ;        // terminates the app
@@ -87,7 +82,7 @@ int NextPow2(int size) {
   return n + 1;
 }
 #ifdef __WXMSW__
-extern "C" int clock_gettime_monotonic(struct ocpn_timespec *tv) {
+extern "C" int clock_gettime_monotonic(struct timespec *tv) {
   static LARGE_INTEGER ticksPerSec;
   LARGE_INTEGER ticks;
 
