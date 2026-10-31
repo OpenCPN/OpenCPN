@@ -20,7 +20,7 @@ static const char *const usercolors[] = {
     "Table:DAY",
 
     // Standard palette colors - general purpose UI elements
-    "GREEN1;120;255;120;", "GREEN2; 45;150; 45;", "GREEN3;200;220;200;",
+    "GREEN1;120;255;120;", "GREEN2; 45;150; 45;", "GREEN3;104;228; 86;",
     "GREEN4;  0;255;  0;", "GREEN5;170;254;  0;", "BLUE1; 170;170;255;",
     "BLUE2;  45; 45;170;", "BLUE3;   0;  0;255;", "GREY1; 200;200;200;",
     "GREY2; 230;230;230;", "RED1;  220;200;200;", "YELO1; 243;229; 47;",
@@ -60,8 +60,7 @@ static const char *const usercolors[] = {
     // Information status colors
     "UINFM; 197;  69; 195;",  // Magenta - special indicators, chart magenta
                               // features
-    "UINFG; 104; 228;  86;",  // Green -Chart outline, -AIS Class A/B Target
-                              // brush.
+    "UINFG; 104; 228;  86;",  // Green -Chart outline
     "UINFR; 241;  84; 105;",  // Red - alerts, errors, danger markers
     "UINFF; 125; 137; 140;",  // Default foreground - general UI elements
     "SHIPS;   7;   7;   7;",  // Other vessels/AIS target fills
@@ -115,7 +114,7 @@ static const char *const usercolors[] = {
     // Colors defined above are automatically dimmed for dusk visibility
     //======================================================================
     "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;",
-    "GREEN3; 80;100; 80;", "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;",
+    "GREEN3; 51;114; 15;", "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;",
     "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;", "GREY1; 100;100;100;",
     "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
     "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;",
@@ -161,7 +160,7 @@ static const char *const usercolors[] = {
     // Colors are further dimmed and shifted toward red spectrum
     //======================================================================
     "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;",
-    "GREEN3; 12; 23;  9;", "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;",
+    "GREEN3; 22; 56;  7;", "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;",
     "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;", "GREY1;  48; 48; 48;",
     "GREY2;  32; 32; 32;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
     "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;",
