@@ -26,12 +26,13 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "model/cutil.h"
 
 double round_msvc(double x) { return (floor(x + 0.5)); }
 
-#ifdef __MSVC__
+#ifdef _MSC_VER
 #include <winsock2.h>
 #include <windows.h>
 #include <float.h>  // for _clear87()
