@@ -27,8 +27,8 @@
 #include <cstdlib>
 #include <future>
 #include <limits>
-#include <list>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 
@@ -48,6 +48,7 @@
 #include "gl_chart_canvas.h"
 #include "ocpn_platform.h"
 #include "shapefile_basemap.h"
+#include "top_frame.h"
 
 #ifdef ocpnUSE_GL
 #include "shaders.h"
@@ -63,83 +64,59 @@ ShapeBaseChartSet gShapeBasemap;
 
 #ifdef ocpnUSE_GL
 
-typedef union {
-  GLdouble data[6];
-  struct sGLvertex {
-    GLdouble x;
-    GLdouble y;
-    GLdouble z;
-    GLdouble r;
-    GLdouble g;
-    GLdouble b;
-  } info;
-} GLvertexshp;
-
-static std::list<float_2Dpt> g_pvshp;
-static std::list<GLvertexshp *> g_vertexesshp;
-static int g_typeshp, g_posshp;
-static float_2Dpt g_p1shp, g_p2shp;
+/**
+ * Tessellator state for one tile build, passed to the GLU *_DATA callbacks.
+ * Output triangles go to `out` as (lat, lon) offsets from the tile corner, so
+ * floats keep sub-meter precision.
+ */
+struct ShpTessState {
+  std::vector<float> *out;
+  double lat0, lon0;
+  GLenum type;
+  int pos;
+  float p1[2], p2[2];
+  /// Vertices created by the combine callback, freed after the tile is built
+  std::vector<std::unique_ptr<GLdouble[]>> combined;
+};
 
 void __CALL_CONVENTION shpscombineCallback(GLdouble coords[3],
                                            GLdouble *vertex_data[4],
                                            GLfloat weight[4],
-                                           GLdouble **dataOut) {
-  GLvertexshp *vertex;
-
-  vertex = new GLvertexshp();
-  g_vertexesshp.push_back(vertex);
-
-  vertex->info.x = coords[0];
-  vertex->info.y = coords[1];
-
-  *dataOut = vertex->data;
+                                           GLdouble **dataOut, void *data) {
+  auto st = static_cast<ShpTessState *>(data);
+  st->combined.emplace_back(new GLdouble[3]{coords[0], coords[1], 0});
+  *dataOut = st->combined.back().get();
 }
 
-void __CALL_CONVENTION shpserrorCallback(GLenum errorCode) {
-  const GLubyte *estring;
-  estring = gluErrorString(errorCode);
-  // wxLogMessage( "OpenGL Tessellation Error: %s", estring );
+void __CALL_CONVENTION shpserrorCallback(GLenum errorCode) {}
+
+void __CALL_CONVENTION shpsbeginCallback(GLenum type, void *data) {
+  auto st = static_cast<ShpTessState *>(data);
+  st->type = type;
+  st->pos = 0;
 }
 
-void __CALL_CONVENTION shpsbeginCallback(GLenum type) {
-  switch (type) {
-    case GL_TRIANGLES:
-    case GL_TRIANGLE_STRIP:
-    case GL_TRIANGLE_FAN:
-      g_typeshp = type;
-      break;
-    default:
-      printf("tess unhandled begin type: %d\n", type);
-  }
-
-  g_posshp = 0;
-}
-
-void __CALL_CONVENTION shpsendCallback() {}
-
-void __CALL_CONVENTION shpsvertexCallback(GLvoid *arg) {
-  GLvertexshp *vertex;
-  vertex = (GLvertexshp *)arg;
-  float_2Dpt p;
-  p.y = vertex->info.x;
-  p.x = vertex->info.y;
+void __CALL_CONVENTION shpsvertexCallback(GLvoid *arg, void *data) {
+  auto st = static_cast<ShpTessState *>(data);
+  auto v = static_cast<GLdouble *>(arg);
+  float p[2] = {float(v[0] - st->lat0), float(v[1] - st->lon0)};
 
   // convert strips and fans into triangles
-  if (g_typeshp != GL_TRIANGLES) {
-    if (g_posshp > 2) {
-      g_pvshp.push_back(g_p1shp);
-      g_pvshp.push_back(g_p2shp);
+  if (st->type != GL_TRIANGLES) {
+    if (st->pos > 2) {
+      st->out->insert(st->out->end(), st->p1, st->p1 + 2);
+      st->out->insert(st->out->end(), st->p2, st->p2 + 2);
     }
 
-    if (g_typeshp == GL_TRIANGLE_STRIP)
-      g_p1shp = g_p2shp;
-    else if (g_posshp == 0)
-      g_p1shp = p;
-    g_p2shp = p;
+    if (st->type == GL_TRIANGLE_STRIP)
+      std::copy(st->p2, st->p2 + 2, st->p1);
+    else if (st->pos == 0)
+      std::copy(p, p + 2, st->p1);
+    std::copy(p, p + 2, st->p2);
   }
 
-  g_pvshp.push_back(p);
-  g_posshp++;
+  st->out->insert(st->out->end(), p, p + 2);
+  st->pos++;
 }
 #endif  // ocpnUSE_GL
 
@@ -308,13 +285,28 @@ bool ShapeBaseChart::LoadSHP() {
         return false;
       }
       auto f1 = feature.getAttributes();
-      // Create a LatLonKey using the 'y' (latitude) and 'x' (longitude)
-      // attributes These values represent the top-left corner of the tiles
-      _tiles[LatLonKey(std::any_cast<int>(feature.getAttributes()["y"]),
-                       std::any_cast<int>(feature.getAttributes()["x"]))]
-          .push_back(feat);
+      int y = std::any_cast<int>(f1["y"]);
+      if (feat == 0) {
+        // 'x' is the west edge of the tile, but 'y' is the north edge in some
+        // datasets (crude, low, high) and the south edge in others (full).
+        auto pts = static_cast<shp::Polygon *>(feature.getGeometry())
+                       ->getRings()[0]
+                       .getPoints();
+        auto [lo, hi] = std::minmax_element(
+            pts.begin(), pts.end(),
+            [](auto &a, auto &b) { return a.getY() < b.getY(); });
+        _key_is_south_edge = (lo->getY() + hi->getY()) / 2 > y;
+      }
+      _tiles[LatLonKey(y, std::any_cast<int>(f1["x"]))].push_back(feat);
       feat++;
     }
+  } else if (_is_usable) {
+    // Untiled file: draw it as one tile holding every feature.
+    // ponytail: float offsets from 0,0 give ~1 m precision, tile the file if
+    // that ever matters.
+    auto &all = _tiles[LatLonKey(0, 0)];
+    all.resize(temp_reader->getCount());
+    std::iota(all.begin(), all.end(), 0);
   }
   if (_loading) {  // Only set reader if loading wasn't cancelled
     _reader = temp_reader.release();
@@ -352,98 +344,108 @@ void ShapeBaseChart::DoDrawPolygonFilled(ocpnDC &pnt, ViewPort &vp,
 }
 
 #ifdef ocpnUSE_GL
-void ShapeBaseChart::AddPointToTessList(shp::Point &point, ViewPort &vp,
-                                        GLUtesselator *tobj, bool idl) {
-  wxPoint2DDouble q;
-  if (glChartCanvas::HasNormalizedViewPort(vp)) {
-    q = ShapeBaseChartSet::GetDoublePixFromLL(vp, point.getY(), point.getX());
-  } else {  // tesselation directly from lat/lon
-    q.m_x = point.getY(), q.m_y = point.getX();
-  }
-  GLvertexshp *vertex = new GLvertexshp();
-  g_vertexesshp.push_back(vertex);
-  if (vp.m_projection_type != PROJECTION_POLAR) {
-    // need to correctly pick +180 or -180 longitude for projections
-    // that have a discontiguous date line
+/**
+ * Tessellate all features of a tile into triangles stored as (lat, lon) offsets
+ * from the tile corner. Thread safe as long as each thread has its own reader.
+ */
+static std::vector<float> BuildTileTriangles(shp::ShapefileReader &reader,
+                                             const LatLonKey &key,
+                                             const std::vector<size_t> &fids) {
+  std::vector<float> tris;
+  ShpTessState st{&tris, double(key.lat), double(key.lon)};
 
-    if (idl && (point.getX() == 180)) {
-      if (vp.m_projection_type == PROJECTION_MERCATOR ||
-          vp.m_projection_type == PROJECTION_EQUIRECTANGULAR) {
-        // q.m_x -= 40058986 * 4096.0;  // 360 degrees in normalized
-        // viewport
-      } else {
-        q.m_x -= 360;  // lat/lon coordinates
-      }
+  GLUtesselator *tobj = gluNewTess();
+  gluTessCallback(tobj, GLU_TESS_VERTEX_DATA, (_GLUfuncptr)&shpsvertexCallback);
+  gluTessCallback(tobj, GLU_TESS_BEGIN_DATA, (_GLUfuncptr)&shpsbeginCallback);
+  gluTessCallback(tobj, GLU_TESS_COMBINE_DATA,
+                  (_GLUfuncptr)&shpscombineCallback);
+  gluTessCallback(tobj, GLU_TESS_ERROR, (_GLUfuncptr)&shpserrorCallback);
+  gluTessNormal(tobj, 0, 0, 1);
+  gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
+
+  std::vector<GLdouble> coords;
+  for (auto fid : fids) {
+    auto const &feature = reader.getFeature(fid);
+    auto polygon = static_cast<shp::Polygon *>(feature.getGeometry());
+    // Rings are contours of one polygon, so the inner rings cut holes.
+    std::vector<std::vector<shp::Point>> rings;
+    size_t npts{0};
+    for (auto &ring : polygon->getRings()) {
+      rings.push_back(ring.getPoints());
+      npts += rings.back().size();
     }
+    coords.resize(3 * npts);  // must not move until gluTessEndPolygon
+    GLdouble *v = coords.data();
+    gluTessBeginPolygon(tobj, &st);
+    for (auto &ring : rings) {
+      gluTessBeginContour(tobj);
+      for (auto &point : ring) {
+        v[0] = point.getY(), v[1] = point.getX(), v[2] = 0;
+        gluTessVertex(tobj, v, v);
+        v += 3;
+      }
+      gluTessEndContour(tobj);
+    }
+    gluTessEndPolygon(tobj);
+    st.combined.clear();
   }
-  vertex->info.x = q.m_x;
-  vertex->info.y = q.m_y;
+  gluDeleteTess(tobj);
 
-  gluTessVertex(tobj, (GLdouble *)vertex, (GLdouble *)vertex);
+  tris.shrink_to_fit();
+  return tris;
 }
 
-#endif
-
-void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
-                                           const shp::Feature &feature) {
-#ifdef ocpnUSE_GL
-
-  bool idl =
-      vp.GetBBox().GetMinLon() <= -180 || vp.GetBBox().GetMaxLon() >= 180;
-  auto polygon = static_cast<shp::Polygon *>(feature.getGeometry());
-  for (auto &ring : polygon->getRings()) {
-    size_t cnt{0};
-    GLUtesselator *tobj = gluNewTess();
-
-    gluTessCallback(tobj, GLU_TESS_VERTEX, (_GLUfuncptr)&shpsvertexCallback);
-    gluTessCallback(tobj, GLU_TESS_BEGIN, (_GLUfuncptr)&shpsbeginCallback);
-    gluTessCallback(tobj, GLU_TESS_END, (_GLUfuncptr)&shpsendCallback);
-    gluTessCallback(tobj, GLU_TESS_COMBINE, (_GLUfuncptr)&shpscombineCallback);
-    gluTessCallback(tobj, GLU_TESS_ERROR, (_GLUfuncptr)&shpserrorCallback);
-
-    gluTessNormal(tobj, 0, 0, 1);
-    gluTessProperty(tobj, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
-
-    gluTessBeginPolygon(tobj, NULL);
-    gluTessBeginContour(tobj);
-    for (auto &point : ring.getPoints()) {
-      AddPointToTessList(point, vp, tobj, idl);
-      cnt++;
+void ShapeBaseChart::HarvestTileJobs() {
+  for (auto job = _tri_jobs.begin(); job != _tri_jobs.end();) {
+    if (job->second.wait_for(std::chrono::milliseconds(0)) !=
+        std::future_status::ready) {
+      ++job;
+      continue;
     }
-    gluTessEndContour(tobj);
-    gluTessEndPolygon(tobj);
-    gluDeleteTess(tobj);
-
-    for (auto ver : g_vertexesshp) delete ver;
-    g_vertexesshp.clear();
+    // ponytail: whole cache dropped when full; per-tile LRU if panning around
+    // the limit ever shows up as re-tessellation stutter.
+    if (_tri_cache_floats > kTriCacheMaxFloats) {
+      _tri_cache.clear();
+      _tri_cache_floats = 0;
+    }
+    auto &tris = _tri_cache[job->first] = job->second.get();
+    _tri_cache_floats += tris.size();
+    job = _tri_jobs.erase(job);
   }
-  float_2Dpt *polyv = new float_2Dpt[g_pvshp.size()];
-  int cnt = 0;
-  for (auto pt : g_pvshp) {
-    polyv[cnt++] = pt;
+}
+
+const std::vector<float> *ShapeBaseChart::TileTriangles(
+    const LatLonKey &key, const std::vector<size_t> &fids) {
+  auto it = _tri_cache.find(key);
+  if (it != _tri_cache.end()) {
+    return &it->second;
   }
-  size_t polycnt = g_pvshp.size();
-  g_pvshp.clear();
-
-  GLuint vbo = 0;
-
-  //  Build the shader viewport transform matrix
-  mat4x4 m, mvp;
-  mat4x4_identity(m);
-  mat4x4_scale_aniso(mvp, m, 2.0 / (float)vp.pix_width,
-                     2.0 / (float)vp.pix_height, 1.0);
-  mat4x4_translate_in_place(mvp, -vp.pix_width / 2, vp.pix_height / 2, 0);
-
-  float *pvt = new float[2 * (polycnt)];
-  for (size_t i = 0; i < polycnt; i++) {
-    float_2Dpt *pc = polyv + i;
-    // wxPoint2DDouble q(pc->y, pc->x);// = vp.GetDoublePixFromLL(pc->y, pc->x);
-    wxPoint2DDouble q = vp.GetDoublePixFromLL(pc->y, pc->x);
-
-    pvt[i * 2] = q.m_x;
-    pvt[(i * 2) + 1] = q.m_y;
+  static const size_t max_jobs =
+      std::max(1u, std::thread::hardware_concurrency());
+  if (_tri_jobs.size() < max_jobs && _tri_jobs.find(key) == _tri_jobs.end()) {
+    // Each job opens its own reader, shapelib handles are not thread safe.
+    _tri_jobs.emplace(
+        key, std::async(std::launch::async, [file = _filename, key, fids]() {
+          shp::ShapefileReader reader(file);
+          auto tris = BuildTileTriangles(reader, key, fids);
+          if (wxTheApp) {
+            wxTheApp->CallAfter([]() {
+              if (auto frame = top_frame::Get()) {
+                frame->RefreshAllCanvas(false);
+                frame->InvalidateAllGL();
+              }
+            });
+          }
+          return tris;
+        }));
   }
+  return nullptr;  // not built yet, the tile is drawn after the job finishes
+}
 
+void ShapeBaseChart::DrawTrianglesGL(ocpnDC &pnt) {
+  if (_frame_pts.empty()) {
+    return;
+  }
   GLShaderProgram *shader = pcolor_tri_shader_program[pnt.m_canvasIndex];
   shader->Bind();
 
@@ -454,22 +456,13 @@ void ShapeBaseChart::DoDrawPolygonFilledGL(ocpnDC &pnt, ViewPort &vp,
   colorv[3] = 1.0;
   shader->SetUniform4fv("color", colorv);
 
-  shader->SetAttributePointerf("position", pvt);
-
-  glDrawArrays(GL_TRIANGLES, 0, polycnt);
-
-  delete[] pvt;
-  delete[] polyv;
-
-  glDeleteBuffers(1, &vbo);
+  shader->SetAttributePointerf("position", _frame_pts.data());
+  glDrawArrays(GL_TRIANGLES, 0, _frame_pts.size() / 2);
   shader->UnBind();
-#endif  // ocpnUSE_GL
 }
+#endif
 
-void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
-  if (!_is_usable) {
-    return;
-  }
+bool ShapeBaseChart::EnsureLoaded() {
   if (!_reader && !_loading) {
     _loading = true;
     _loaded = std::async(std::launch::async, [&]() {
@@ -483,81 +476,116 @@ void ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt, ViewPort &vp) {
         std::future_status::ready) {
       _is_usable = _loaded.get();
     } else {
-      return;  // not yet loaded
+      return false;  // not yet loaded
     }
   }
+  return _is_usable && _reader;
+}
 
+LatLonKey ShapeBaseChart::TileKey(const LatLonKey &cell) const {
+  return LatLonKey(_key_is_south_edge ? cell.lat - _dmod : cell.lat, cell.lon);
+}
+
+#ifdef ocpnUSE_GL
+bool ShapeBaseChart::AppendTileGL(ViewPort &vp, const LatLonKey &key,
+                                  const std::vector<size_t> &fids) {
+  auto tris_p = TileTriangles(key, fids);
+  if (!tris_p) {
+    return false;
+  }
+  auto &tris = *tris_p;
+  size_t n = _frame_pts.size();
+  _frame_pts.resize(n + tris.size());
+  for (size_t i = 0; i < tris.size(); i += 2) {
+    wxPoint2DDouble q =
+        vp.GetDoublePixFromLL(key.lat + tris[i], key.lon + tris[i + 1]);
+    _frame_pts[n + i] = q.m_x;
+    _frame_pts[n + i + 1] = q.m_y;
+  }
+  return true;
+}
+
+std::vector<LatLonKey> ShapeBaseChart::DrawCellsGL(
+    ocpnDC &pnt, ViewPort &vp, const std::vector<LatLonKey> &cells) {
+  if (!_is_usable || !_is_tiled || !EnsureLoaded()) {
+    return cells;
+  }
+  HarvestTileJobs();
+  _frame_pts.clear();
+  std::vector<LatLonKey> pending;
+  for (auto &cell : cells) {
+    auto tile = _tiles.find(TileKey(cell));
+    if (tile != _tiles.end() && !AppendTileGL(vp, tile->first, tile->second)) {
+      pending.push_back(cell);
+    }
+  }
+  DrawTrianglesGL(pnt);
+  return pending;
+}
+#endif
+
+std::vector<LatLonKey> ShapeBaseChart::DrawPolygonFilled(ocpnDC &pnt,
+                                                         ViewPort &vp) {
+  if (!_is_usable || !EnsureLoaded()) {
+    return {};
+  }
+  if (!_is_tiled) {
+    auto &all = _tiles[LatLonKey(0, 0)];
+    if (pnt.GetDC()) {
+      for (auto fid : all) {
+        DoDrawPolygonFilled(pnt, vp, _reader->getFeature(fid));
+      }
+    }
+#ifdef ocpnUSE_GL
+    else {
+      HarvestTileJobs();
+      _frame_pts.clear();
+      AppendTileGL(vp, LatLonKey(0, 0), all);
+      DrawTrianglesGL(pnt);
+    }
+#endif
+    return {};
+  }
+
+  // Cells in view, keyed by their north and west edges
+  std::vector<LatLonKey> cells;
   int pmod = _dmod;
   LLBBox bbox = vp.GetBBox();
-
-  // Calculate the starting latitude for the tiles grid
-  // Using floor() aligns with the top-left corner tile model
-  int lat_start = floor(bbox.GetMinLat());
-  if (lat_start < 0)
-    lat_start = lat_start - (pmod + (lat_start % pmod));
-  else
-    lat_start = lat_start - (lat_start % pmod);
-
-  // Calculate the starting longitude for the tiles grid
-  // Using floor() aligns with the top-left corner tile model
-  int lon_start = floor(bbox.GetMinLon());
-  if (lon_start < 0)
-    lon_start = lon_start - (pmod + (lon_start % pmod));
-  else
-    lon_start = lon_start - (lon_start % pmod);
-
-  if (_is_tiled) {
-    for (int i = lat_start; i < ceil(bbox.GetMaxLat()) + pmod; i += pmod) {
-      for (int j = lon_start; j < ceil(bbox.GetMaxLon()) + pmod; j += pmod) {
-        int lon{j};
-        if (j < -180) {
-          lon = j + 360;
-        } else if (j >= 180) {
-          lon = j - 360;
-        }
-        for (auto fid : _tiles[LatLonKey(i, lon)]) {
-          auto const &feature = _reader->getFeature(fid);
-          if (pnt.GetDC()) {
-            DoDrawPolygonFilled(pnt, vp,
-                                feature);  // Parallelize using std::async?
-          } else {
-            DoDrawPolygonFilledGL(pnt, vp,
-                                  feature);  // Parallelize using std::async?
-          }
-        }
-      }
-    }
-  } else {
-    for (auto const &feature : *_reader) {
-      if (pnt.GetDC()) {
-        DoDrawPolygonFilled(pnt, vp,
-                            feature);  // Parallelize using std::async?
-      } else {
-        DoDrawPolygonFilledGL(pnt, vp,
-                              feature);  // Parallelize using std::async?
-      }
+  int lat_first = floor(bbox.GetMinLat() / pmod) * pmod + pmod;
+  int lat_last = ceil(bbox.GetMaxLat() / pmod) * pmod;
+  int lon_first = floor(bbox.GetMinLon() / pmod) * pmod;
+  for (int i = lat_first; i <= lat_last; i += pmod) {
+    for (int j = lon_first; j < bbox.GetMaxLon(); j += pmod) {
+      int lon{j};
+      while (lon < -180) lon += 360;
+      while (lon >= 180) lon -= 360;
+      cells.emplace_back(i, lon);
     }
   }
+
+  if (pnt.GetDC()) {
+    for (auto &cell : cells) {
+      auto tile = _tiles.find(TileKey(cell));
+      if (tile != _tiles.end()) {
+        for (auto fid : tile->second) {
+          DoDrawPolygonFilled(pnt, vp, _reader->getFeature(fid));
+        }
+      }
+    }
+    return {};
+  }
+#ifdef ocpnUSE_GL
+  return DrawCellsGL(pnt, vp, cells);
+#else
+  return {};
+#endif
 }
 
 bool ShapeBaseChart::CrossesLand(double &lat1, double &lon1, double &lat2,
                                  double &lon2) {
-  if (!_reader && !_loading) {
-    _loading = true;
-    _loaded = std::async(std::launch::async, [&]() {
-      bool ret = LoadSHP();
-      _loading = false;
-      return ret;
-    });
-  }
-  if (_loading) {
-    if (_loaded.wait_for(std::chrono::milliseconds(0)) ==
-        std::future_status::ready) {
-      _is_usable = _loaded.get();
-    } else {
-      // Chart not yet loaded. Assume no land crossing.
-      return false;
-    }
+  if (!EnsureLoaded()) {
+    // Chart not yet loaded. Assume no land crossing.
+    return false;
   }
 
   double norm_lon1 = lon1;
@@ -758,6 +786,20 @@ void ShapeBaseChartSet::RenderViewOnDC(ocpnDC &dc, ViewPort &vp) {
   if (IsUsable()) {
     ShapeBaseChart &chart = SelectBaseMap(vp.chart_scale);
     chart.SetColor(land_color);
-    chart.RenderViewOnDC(dc, vp);
+    auto pending = chart.RenderViewOnDC(dc, vp);
+#ifdef ocpnUSE_GL
+    // Fill the tiles still being built from lower qualities on the same tile
+    // grid, best first, so the view has no holes while they are tessellated.
+    bool below = false;
+    for (auto it = _basemap_map.rbegin();
+         it != _basemap_map.rend() && !pending.empty(); ++it) {
+      auto &lower = it->second;
+      if (below && lower._dmod == chart._dmod && lower.IsUsable()) {
+        lower.SetColor(land_color);
+        pending = lower.DrawCellsGL(dc, vp, pending);
+      }
+      below |= &lower == &chart;
+    }
+#endif
   }
 }
