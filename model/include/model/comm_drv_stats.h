@@ -76,6 +76,8 @@ public:
   StatsTimer(const DriverStatsProvider& src, std::chrono::milliseconds interval)
       : PeriodicTimer(interval), m_src(src) {}
 
+  ~StatsTimer() override { Stop(); }
+
 protected:
   const DriverStatsProvider& m_src;
 

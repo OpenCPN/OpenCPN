@@ -204,6 +204,7 @@ CommDriverSignalKNet::CommDriverSignalKNet(const ConnectionParams* params,
   m_driver_stats.available = false;
 
   Open();
+  m_stats_timer.Start();
 }
 
 CommDriverSignalKNet::~CommDriverSignalKNet() { Close(); }
@@ -283,10 +284,10 @@ void CommDriverSignalKNet::OpenWebSocket() {
 }
 
 void CommDriverSignalKNet::CloseWebSocket() {
+  m_stats_timer.Stop();
   if (m_std_thread.joinable()) {
     if (m_io_thread->IsRunning()) {
       wxLogMessage("Stopping Secondary SignalK Thread");
-      m_stats_timer.Stop();
       m_io_thread->RequestStop();
       std::chrono::milliseconds stop_delay;
       bool stop_ok = m_io_thread->WaitUntilStopped(10s, stop_delay);

@@ -170,6 +170,7 @@ CommDriverN2KSerial::CommDriverN2KSerial(const ConnectionParams* params,
 
   //  Initialize the device clearing all rx/tx filterx
   SendMgmtMsg(NGT_STARTUP_SEQ, sizeof(NGT_STARTUP_SEQ), 0x11, 0, NULL);
+  m_stats_timer.Start();
 }
 
 CommDriverN2KSerial::~CommDriverN2KSerial() { Close(); }
