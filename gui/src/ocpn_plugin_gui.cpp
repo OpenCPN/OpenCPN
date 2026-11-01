@@ -740,11 +740,6 @@ bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2,
   //   return gShapeBasemap.CrossesLand(lat1, lon1, lat2, lon2);
   // } else {
   //  Fall back to the GSHHS data.
-  static bool loaded = false;
-  if (!loaded) {
-    gshhsCrossesLandInit();
-    loaded = true;
-  }
   return gshhsCrossesLand(lat1, lon1, lat2, lon2);
   //}
 }
