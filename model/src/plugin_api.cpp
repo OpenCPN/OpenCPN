@@ -244,8 +244,12 @@ CommDriverResult WriteCommDriverN2K(
   auto msg =
       std::make_shared<const Nmea2000Msg>(_PGN, *payload, dest_addr, priority);
   bool result = found->SendMessage(msg, dest_addr);
-
-  return RESULT_COMM_NO_ERROR;
+  if (result) {
+    return RESULT_COMM_NO_ERROR;  //  result = 1 : No error,  but return 0 for
+                                  //  no error
+  } else {
+    return RESULT_COMM_TX_ERROR;
+  };
 }
 
 CommDriverResult RegisterTXPGNs(DriverHandle handle,
