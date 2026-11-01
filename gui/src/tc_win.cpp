@@ -403,7 +403,18 @@ void TCWin::InitializeStationText() {
   } else {
     m_ptextctrl->AppendText("\n");
   }
-
+  // Datum reference
+  if (pIDX->IDX_datum[0] != '\0') {
+    m_ptextctrl->AppendText("Datum: ");
+    m_ptextctrl->AppendText(pIDX->IDX_datum);
+    if (pIDX->pref_sta_data->DATUM > 0.0) {
+      m_ptextctrl->AppendText(
+          wxString::Format(wxT(",  %.2f"), pIDX->pref_sta_data->DATUM));
+      m_ptextctrl->AppendText(pIDX->pref_sta_data->units_abbrv);
+      m_ptextctrl->AppendText(" below Mean Sea Level.");
+    }
+    m_ptextctrl->AppendText("\n");
+  }
   //      Show the data source
   wxString dsource(pIDX->source_ident, wxConvUTF8);
   dsource.Prepend(" ");
