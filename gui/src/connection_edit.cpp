@@ -91,6 +91,8 @@ static const std::string kGpsdDevice = _("Gpsd server");
 static const std::string kSignalkDevice = _("SignalK server");
 static const std::string kTcpClient = _("TCP client");
 static const std::string kUdpSend = _("Device(s) receiving UDP");
+static const std::string kUdpSendandReceive =
+    _("Device(s) receiving and sending UDP");
 static const std::string kGpsdClient = _("Gpsd client");
 static const std::string kSignalkClient = _("SignalK client");
 static const std::string kTcpServer = _("TCP Server");
@@ -99,7 +101,8 @@ static const std::string kMulticastServer = _("UDP Multicast Receive and Send");
 static const std::string kMulticastClient = _("UDP Multicast Send");
 
 static const std::vector<std::string> kBasicNetViews = {
-    kTcpDevice, kUdpReceive, kUdpSend, kGpsdDevice, kSignalkDevice};
+    kTcpDevice,         kUdpReceive, kUdpSend,
+    kUdpSendandReceive, kGpsdDevice, kSignalkDevice};
 
 static const std::vector<std::string> kAdvancedNetViews = {
     // First items matches kBasicNetViews
@@ -165,6 +168,9 @@ static std::string NetViewByConnection(const ConnectionParams* cp) {
     case NetworkProtocol::SIGNALK:
       return kSignalkDevice;
     case NetworkProtocol::UDP:
+      if (cp->direction == PortDirection::kInOut) {
+        return kUdpSendandReceive;
+      }
       return is_server ? kUdpReceive : kUdpSend;
     case NetworkProtocol::TCP:
       return is_server ? kTcpServer : kTcpDevice;
@@ -520,13 +526,17 @@ void ConnectionEditDialog::ConfigureControlsForView(const std::string& view) {
       net_port_w_help->SetHelp(_("Port number (1025 - 65535, often 10110)"));
     m_input_chkbox->SetValue(true);
     m_output_chkbox->SetValue(false);
-  } else if (view == kUdpSend || view == kUdpOutput) {
+  } else if (view == kUdpSend || view == kUdpOutput ||
+             view == kUdpSendandReceive) {
     if (m_net_address_tctrl->GetValue() == "0.0.0.0")
       net_addr_w_help->RestoreHelp();
     if (net_addr_w_help->IsPristine())
       net_addr_w_help->SetHelp(kAddressUdpHelp);
     m_input_chkbox->SetValue(false);
     m_output_chkbox->SetValue(true);
+    if (view == kUdpSendandReceive) {
+      m_input_chkbox->SetValue(true);
+    }
   } else if (view == kGpsdClient || view == kGpsdDevice) {
     m_net_data_protocol_choice->Clear();
     m_net_data_protocol_choice->Append("gpsd");
@@ -2138,7 +2148,7 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
           static_cast<DataProtocol>(m_net_data_protocol_choice->GetSelection());
     } else if (net_type == kUdpSend || net_type == kUdpInput ||
                net_type == kUdpReceive || net_type == kMulticastClient ||
-               net_type == kMulticastServer) {
+               net_type == kMulticastServer || net_type == kUdpSendandReceive) {
       pConnectionParams->net_protocol = UDP;
       pConnectionParams->data_protocol =
           static_cast<DataProtocol>(m_net_data_protocol_choice->GetSelection());
@@ -2242,7 +2252,6 @@ ConnectionParams* ConnectionEditDialog::UpdateConnectionParamsFromControls(
     pConnectionParams->user_comment = m_net_comment_tctrl->GetValue();
   }
   pConnectionParams->auth_token = m_auth_token_tctrl->GetValue();
-
   return pConnectionParams;
 }
 
