@@ -886,8 +886,8 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(
 
       // Frames without valid time stamp and Transmit (T) frames are considered
       // not valid. Tx frames are frames that were transmitted by devices on the
-      // net, we do not want to receiwant to receive our own frames again. This means that
-      // devices on the network can not communicate with each other
+      // net, we do not want to receiwant to receive our own frames again. This
+      // means that devices on the network can not communicate with each other
       bool valid_frame = true;
 
       // Discard first token
