@@ -244,8 +244,27 @@ CommDriverResult WriteCommDriverN2K(
   auto msg =
       std::make_shared<const Nmea2000Msg>(_PGN, *payload, dest_addr, priority);
   bool result = found->SendMessage(msg, dest_addr);
+  if (result) {
+    return RESULT_COMM_NO_ERROR;  //  result = 1 : No error,  but return 0 for
+                                  //  no error
+  } else {
+    return RESULT_COMM_TX_ERROR;
+  };
 
-  return RESULT_COMM_NO_ERROR;
+  // typedef enum CommDriverResult {
+  //   /** Operation completed successfully */
+  //   RESULT_COMM_NO_ERROR = 0,
+  //   /** Invalid or unknown driver handle specified */
+  //   RESULT_COMM_INVALID_HANDLE,
+  //   /** Invalid parameters provided to operation */
+  //   RESULT_COMM_INVALID_PARMS,
+  //   /** Error occurred during transmission */
+  //   RESULT_COMM_TX_ERROR,
+  //   /** Failed to register with gateway device */
+  //   RESULT_COMM_REGISTER_GATEWAY_ERROR,
+  //   /** Failed to register PGN parameters */
+  //   RESULT_COMM_REGISTER_PGN_ERROR
+  // } _CommDriverResult;
 }
 
 CommDriverResult RegisterTXPGNs(DriverHandle handle,
