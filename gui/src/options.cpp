@@ -4010,7 +4010,7 @@ void ChartGroupsUI::CompletePanel() {
 void options::CreatePanel_Display(size_t parent, int border_size,
                                   int group_item_spacing) {
   // Skip the "General" tab for Android, nothing selectable there.
-#ifdef __AMDROID__
+#ifdef __ANDROID__
   return;
 #endif
 
