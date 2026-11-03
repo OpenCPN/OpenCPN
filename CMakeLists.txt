@@ -2868,6 +2868,10 @@ endif ()
 add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
+set(OCPN_TEST_ERROR_BEHAVIOR "ANY" CACHE STRING
+    "Error behavior for tests (ANY, LAST or NONE (last added in cmake version 4.0))"
+)
+
 if ("${ENABLE_SANITIZER}" STREQUAL "none")
   if (MSVC)
     set(test_root  ${CMAKE_BINARY_DIR}/test/${CMAKE_BUILD_TYPE})
@@ -2875,9 +2879,14 @@ if ("${ENABLE_SANITIZER}" STREQUAL "none")
     set(test_root  ${CMAKE_BINARY_DIR}/test/)
   endif ()
   set(_run_tests "
-  execute_process(COMMAND ${test_root}/tests)
-  execute_process(COMMAND ${test_root}/buffer_tests)
-  ")
+  execute_process(
+	  COMMAND ${test_root}/tests
+	  COMMAND_ERROR_IS_FATAL ${OCPN_TEST_ERROR_BEHAVIOR}
+  )
+  execute_process(
+	  COMMAND ${test_root}/buffer_tests
+	  COMMAND_ERROR_IS_FATAL ${OCPN_TEST_ERROR_BEHAVIOR}
+  )")
 else ()
   set(_run_tests "message(STATUS \"tests disabled on sanitized builds\")")
 endif ()
