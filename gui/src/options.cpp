@@ -1607,6 +1607,8 @@ void options::Init() {
   pPreserveScale = NULL;
   pSmoothPanZoom = NULL;
   pEnableZoomToCursor = NULL;
+  m_Text_def_boat_speed = NULL;
+
   pSDisplayGrid = NULL;
   pCDOOutlines = NULL;
   pSDepthUnits = NULL;
@@ -2077,7 +2079,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   // Ship's data
   wxStaticBox* shipdata =
-      new wxStaticBox(itemPanelShip, wxID_ANY, _("Ship's identifier"));
+      new wxStaticBox(itemPanelShip, wxID_ANY, _("Ship's information"));
   wxStaticBoxSizer* datasizer = new wxStaticBoxSizer(shipdata, wxVERTICAL);
   ownShip->Add(datasizer, 0, wxGROW | wxALL, border_size);
 
@@ -2102,6 +2104,22 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   m_pTxt_OwnMMSI = new wxTextCtrl(itemPanelShip, wxID_ANY, "",
                                   wxDefaultPosition, wxDefaultSize, 0, mmsiVal);
   ownmmsisizer->Add(m_pTxt_OwnMMSI, 0, wxALIGN_RIGHT);
+
+  // Ownship default boatspeed
+  wxFlexGridSizer* ownshipsizer =
+      new wxFlexGridSizer(0, 2, group_item_spacing, group_item_spacing);
+  ownshipsizer->AddGrowableCol(1);
+  datasizer->Add(ownshipsizer, 0, wxALL | wxEXPAND, border_size);
+
+  m_Text_def_boat_speed = new wxStaticText(
+      itemPanelShip, wxID_ANY,
+      _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+
+  ownshipsizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
+  pSDefaultBoatSpeed =
+      new wxTextCtrl(itemPanelShip, ID_DEFAULT_BOAT_SPEED, "",
+                     wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
+  ownshipsizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_RIGHT, group_item_spacing);
 
   //  Tracks
   wxStaticBox* trackText =
@@ -3991,6 +4009,11 @@ void ChartGroupsUI::CompletePanel() {
 
 void options::CreatePanel_Display(size_t parent, int border_size,
                                   int group_item_spacing) {
+  // Skip the "General" tab for Android, nothing selectable there.
+#ifdef __AMDROID__
+  return;
+#endif
+
   pDisplayPanel = AddPage(parent, _("General"));
 
   if (!m_bcompact) {
@@ -4106,47 +4129,6 @@ void options::CreatePanel_Display(size_t parent, int border_size,
                                     _("Show Depth Units"));
       boxDisp->Add(pSDepthUnits, verticleInputFlags);
     }
-
-    // CUSTOMIZATION - LIVE ETA OPTION
-    // -------------------------------
-    // Add a checkbox to activate live ETA option in status bar, and
-    // Add a text field to set default boat speed (for calculation when
-    // no GPS or when the boat is at the harbor).
-
-    // Spacer
-    generalSizer->Add(0, border_size * 4);
-    generalSizer->Add(0, border_size * 4);
-
-    // New menu status bar
-    generalSizer->Add(
-        new wxStaticText(pDisplayPanel, wxID_ANY, _("Status Bar Option")),
-        groupLabelFlags);
-    wxBoxSizer* boxDispStatusBar = new wxBoxSizer(wxVERTICAL);
-    generalSizer->Add(boxDispStatusBar, groupInputFlags);
-
-    // Add option for live ETA
-    pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA,
-                               _("Live ETA at Cursor"));
-    boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
-
-    // Add text input for default boat speed
-    // (for calculation, in case GPS speed is null)
-    wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
-    boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-
-    m_Text_def_boat_speed = new wxStaticText(
-        pDisplayPanel, wxID_ANY,
-        _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
-
-    defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
-    pSDefaultBoatSpeed =
-        new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, "",
-                       wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
-    defaultBoatSpeedSizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_CENTER_VERTICAL,
-                               group_item_spacing);
-
-    // --------------------------------------
-    // END OF CUSTOMIZATION - LIVE ETA OPTION
 
 #ifndef __ANDROID__
     // MultiChart selection panel
@@ -5708,6 +5690,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   pHiconColors = new wxCheckBox(itemPanelFont, ID_HICONCOLORS,
                                 _("Use High Contrast Chart Colors"));
   miscOptions->Add(pHiconColors, 0, wxALL, border_size);
+
+  // Add option for live ETA
+  pSLiveETA = new wxCheckBox(itemPanelFont, ID_CHECK_LIVEETA,
+                             _("Show Live ETA at Cursor on Status Bar"));
+  miscOptions->Add(pSLiveETA, 0, wxALL, border_size);
 
   pInlandEcdis =
       new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX, _("Use Inland ECDIS"));
@@ -7336,7 +7323,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   // g_fog_overzoom = !pOverzoomEmphasis->GetValue();
   // g_oz_vector_scale = !pOZScaleVector->GetValue();
 
-  g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
+  if (pSmoothPanZoom) g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 #ifdef __ANDROID__
   g_bsmoothpanzoom = false;
 #endif
@@ -7419,8 +7406,9 @@ void options::ApplyChanges(wxCommandEvent& event) {
   if (pSDefaultBoatSpeed)
     pSDefaultBoatSpeed->GetValue().ToDouble(&g_defaultBoatSpeedUserUnit);
   g_defaultBoatSpeed = fromUsrSpeed(g_defaultBoatSpeedUserUnit);
-  m_Text_def_boat_speed->SetLabel(_("Default Boat Speed ") + "(" +
-                                  getUsrSpeedUnit() + ")");
+  if (m_Text_def_boat_speed)
+    m_Text_def_boat_speed->SetLabel(_("Default Boat Speed ") + "(" +
+                                    getUsrSpeedUnit() + ")");
 
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
