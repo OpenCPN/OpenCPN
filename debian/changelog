@@ -1,3 +1,12 @@
+opencpn (1:5.14.2+dfsg-2) UNRELEASED; urgency=medium
+  * Update d/copyright
+  * Drop unused d/source/include-binaries
+
+  [Helmut Grohne]
+  * Fix FTCBFS: Honour DEB_BUILD_OPTIONS=nocheck. Closes: #1152203
+
+ -- Alec Leamas <leamas.alec@gmail.com>  Wed, 04 Nov 2026 20:58:18 +0100
+
 opencpn (1:5.14.2+dfsg-1) unstable; urgency=medium
 
   * New upstream release

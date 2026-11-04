@@ -20,7 +20,9 @@ override_dh_auto_configure:
             -DOCPN_USE_NEWSERIAL=ON \
             -DOCPN_PLUGIN_CONTENTS_WARN=ON \
             -DOCPN_FORCE_GTK3=ON \
-            -DOCPN_DISTRO_BUILD=ON
+            -DOCPN_DISTRO_BUILD=ON \
+	    -DOCPN_BUILD_TEST=$(if $(filter nocheck,$(DEB_BUILD_OPTIONS) $(DEB_BUILD_PROFILES)),OFF,ON)
+
 
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
