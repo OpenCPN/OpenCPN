@@ -147,6 +147,7 @@ CommDriverN0183Net::CommDriverN0183Net(const ConnectionParams* params,
        DS_SERVERSOCKET_ID);
 
   Open();
+  m_stats_timer.Start();
 }
 
 CommDriverN0183Net::~CommDriverN0183Net() { Close(); }

@@ -190,13 +190,13 @@ CommDriverN2KNet::CommDriverN2KNet(const ConnectionParams* params,
                        [&](ObservedEvt&) { HandleResume(); });
 
   Open();
+  m_stats_timer.Start();
 }
 
 CommDriverN2KNet::~CommDriverN2KNet() {
+  Close();
   delete m_mrq_container;
   delete[] rx_buffer;
-
-  Close();
 }
 
 typedef struct {

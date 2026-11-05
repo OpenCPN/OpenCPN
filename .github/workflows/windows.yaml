@@ -60,6 +60,12 @@ jobs:
           cd build
           cmake --build . --config $CONFIGURATION --target install
 
+      - name: "Lifecycle regression tests"
+        run: >-
+          ctest --test-dir build/test -C "$CONFIGURATION"
+          -R '^(PeriodicTimer|WinUsbWatch)\.'
+          --output-on-failure --no-tests=error --timeout 15
+
       - name: "Run tests"
         shell: bash
         run: |

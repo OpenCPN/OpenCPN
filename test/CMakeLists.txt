@@ -156,6 +156,8 @@ if (MSVC)
   gtest_add_tests(TARGET win_usb_watch_tests)
 endif ()
 
+add_subdirectory(periodic_timer)
+
 if (LINUX AND NOT DEFINED ENV{FLATPAK_ID} AND NOT OCPN_DISTRO_BUILD)
   # We don't have a session bus available when testing flatpak
   # so these can just be run in native builds.

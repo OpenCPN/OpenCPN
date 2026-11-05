@@ -24,22 +24,21 @@
 #ifndef _PERIODIC_TIMER_H
 #define _PERIODIC_TIMER_H
 
-#include <atomic>
 #include <chrono>
 #include <condition_variable>
-#include <memory>
 #include <mutex>
-#include <string>
 #include <thread>
 
 /**
- * Continuously run Notify with given interval. Runs from being constructed
- * until Stop() or going out of scope.
+ * Continuously run Notify with given interval after Start(), until Stop().
  *
- * To use, derive a subclass and override the Notify() method.
+ * To use, derive a subclass and override Notify(). Call Start() only after the
+ * subclass and everything Notify() uses have been initialized. Call Stop()
+ * before destroying those resources, including from the subclass destructor.
  *
  * Similar to wxTimer when used in continuous mode. However, it does not
- * depend on wxEventHandler and also has better destructor semantics.
+ * depend on wxEventHandler. Start() and Stop() must not be called from
+ * Notify(), or while holding a lock needed by Notify().
  */
 class PeriodicTimer {
 public:
@@ -47,6 +46,11 @@ public:
 
   virtual ~PeriodicTimer();
 
+  /** Start the worker, or do nothing if already running. Can restart after
+   * Stop. */
+  void Start();
+
+  /** Stop and join the worker, waiting for any running Notify(). Idempotent. */
   void Stop();
 
 protected:
@@ -54,9 +58,12 @@ protected:
 
 private:
   const std::chrono::milliseconds m_interval;
+  // Serialize Start/Stop and access to m_thread, including concurrent Stop
+  // calls.
+  std::mutex m_thread_mutex;
   std::mutex m_mutex;
   std::condition_variable m_cond_var;
-  std::atomic<int> m_run_sts;  // 1 == running, 0 == request stop, -1 == stopped
+  bool m_stop_requested = true;  // Guarded by m_mutex.
   std::thread m_thread;
 
   void Worker();

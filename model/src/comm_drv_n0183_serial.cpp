@@ -62,6 +62,7 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
   this->attributes["ioDirection"] = PortDirectionToString(params->direction);
 
   Open();
+  m_stats_timer.Start();
 }
 
 CommDriverN0183Serial::~CommDriverN0183Serial() { Close(); }
