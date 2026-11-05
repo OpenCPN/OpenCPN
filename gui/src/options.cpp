@@ -4294,9 +4294,11 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(boxDispStatusBar, groupInputFlags);
 
     // Add option for live ETA
+#ifndef __ANDROID__
     pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA,
                                _("Live ETA at Cursor"));
     boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
+#endif
 
     // Add text input for default boat speed
     // (for calculation, in case GPS speed is null)
@@ -5692,10 +5694,11 @@ void options::CreatePanel_UI(size_t parent, int border_size,
   miscOptions->Add(pHiconColors, 0, wxALL, border_size);
 
   // Add option for live ETA
+#ifndef __ANDROID__
   pSLiveETA = new wxCheckBox(itemPanelFont, ID_CHECK_LIVEETA,
                              _("Show Live ETA at Cursor on Status Bar"));
   miscOptions->Add(pSLiveETA, 0, wxALL, border_size);
-
+#endif
   pInlandEcdis =
       new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX, _("Use Inland ECDIS"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
