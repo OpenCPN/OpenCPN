@@ -425,10 +425,12 @@ class FilterConfigPanel : public wxPanel {
   /** Accept/ignore buttons and  filtered sentences container. */
   class Statbox : public wxStaticBoxSizer, public Reloadable {
   public:
-    Statbox(wxWindow* parent, ConnectionParams& params)
-        : wxStaticBoxSizer(wxVERTICAL, parent, _("Input filtering")),
+    Statbox(wxWindow* parent, ListType& type, wxArrayString& list,
+            const std::string& label)
+        : wxStaticBoxSizer(wxVERTICAL, parent, label),
           m_parent(parent),
-          m_params(params) {
+          m_type(type),
+          m_list(list) {
       auto radio_btn_box = new wxBoxSizer(wxHORIZONTAL);
       m_accept_btn =
           new wxRadioButton(parent, wxID_ANY, _("Accept only sentences"));
@@ -455,7 +457,7 @@ class FilterConfigPanel : public wxPanel {
       vbox->Add(radio_btn_box, wxSizerFlags());
       vbox->Add(setup_box, flags1.DoubleBorder(wxLEFT | wxRIGHT | wxDOWN));
       Add(vbox);
-      Layout();
+      wxSizer::Layout();
 
       Statbox::Reload();
       m_ignore_btn->Bind(wxEVT_RADIOBUTTON,
@@ -465,11 +467,9 @@ class FilterConfigPanel : public wxPanel {
     }
 
     void Reload() override {
-      bool accept = m_params.input_sentence_list_type == ListType::WHITELIST;
-      m_accept_btn->SetValue(accept);
-      bool ignore = m_params.input_sentence_list_type == ListType::BLACKLIST;
-      m_ignore_btn->SetValue(ignore);
-      auto text = StringArrayToString(m_params.input_sentence_list);
+      m_accept_btn->SetValue(m_type == ListType::WHITELIST);
+      m_ignore_btn->SetValue(m_type == ListType::BLACKLIST);
+      auto text = StringArrayToString(m_list);
       text = text.empty() ? _("No sentences selected") : text;
       m_sentences_text->SetLabel(text);
       m_parent->GetGrandParent()->Layout();
@@ -477,32 +477,30 @@ class FilterConfigPanel : public wxPanel {
 
   private:
     wxWindow* m_parent;
-    ConnectionParams& m_params;
+    ListType& m_type;
+    wxArrayString& m_list;
     wxRadioButton* m_accept_btn;
     wxRadioButton* m_ignore_btn;
     wxStaticText* m_sentences_text;
     wxButton* m_edit_btn;
 
     void OnDirectionChange(wxCommandEvent& e) {
-      if (m_accept_btn->GetValue())
-        m_params.input_sentence_list_type = ListType::WHITELIST;
-      if (m_ignore_btn->GetValue())
-        m_params.input_sentence_list_type = ListType::BLACKLIST;
+      if (m_accept_btn->GetValue()) m_type = ListType::WHITELIST;
+      if (m_ignore_btn->GetValue()) m_type = ListType::BLACKLIST;
       e.Skip();
     }
 
     void OnEdit(wxCommandEvent& e) {
       static const std::string kNothingHere = _("No sentences selected");
-      const ListType type = m_params.input_sentence_list_type;
       if (m_sentences_text->GetLabel() == kNothingHere)
         m_sentences_text->SetLabel("");
       const wxArrayString list =
           wxStringTokenize(m_sentences_text->GetLabel(), ",");
-      SentenceListDlg dlg(m_parent, FILTER_INPUT, type, list);
+      SentenceListDlg dlg(m_parent, FILTER_INPUT, m_type, list);
       if (dlg.ShowModal() != wxID_OK) return;
 
       std::string text = dlg.GetSentences().ToStdString();
-      m_params.input_sentence_list = wxStringTokenize(text, ",");
+      m_list = wxStringTokenize(text, ",");
       if (text.empty()) text = kNothingHere;
       m_sentences_text->SetLabel(text);
       m_parent->Layout();
@@ -514,7 +512,12 @@ public:
       : wxPanel(parent, wxID_ANY), m_params(params) {
     auto* vbox = new wxBoxSizer(wxVERTICAL);
     auto flags = wxSizerFlags().Border();
-    vbox->Add(new Statbox(this, m_params), flags);
+    vbox->Add(new Statbox(this, m_params.input_sentence_list_type,
+                          m_params.input_sentence_list, _("Input filtering")),
+              flags);
+    vbox->Add(new Statbox(this, m_params.output_sentence_list_type,
+                          m_params.output_sentence_list, _("Output filtering")),
+              flags);
     SetSizer(vbox);
     wxWindowBase::Layout();
   }
