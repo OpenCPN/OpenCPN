@@ -308,7 +308,7 @@ void CommDriverN2KNet::OpenNetworkUDP(unsigned int addr) {
   if (m_params.direction != PortDirection::kOutput &&
       m_params.direction != PortDirection::kUpload) {
     //  We need a local (bindable) address to create the Datagram receive socket
-    // Set up the recieve socket
+    // Set up the receive socket
     wxIPV4address conn_addr;
     conn_addr.Service(GetNetPort());
     conn_addr.AnyAddress();
@@ -884,12 +884,24 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(
       m_sentence.clear();
       wxStringTokenizer tkz(ss, " ");
 
+      // Frames without valid time stamp and Transmit (T) frames are considered
+      // not valid. Tx frames are frames that were transmitted by devices on the
+      // net, we do not want to receive our own frames again. This
+      // means that devices on the network can not communicate with each other
+      bool valid_frame = true;
+
       // Discard first token
       wxString token = tkz.GetNextToken();  // time stamp
+      if (token[2] != ':' || token[5] != ':' || token[8] != '.') {
+        valid_frame = false;
+      }
 
       token = tkz.GetNextToken();  // R/T
       // Record the R/T flag, for use in device detect logic
       m_TX_flag = token[0];
+      if (token[0] != 'R') {
+        valid_frame = false;
+      }
 
       // can_id;
       token = tkz.GetNextToken();
@@ -909,7 +921,9 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(
         }
       }
       memcpy(&frame.data, bytes, 8);
-      HandleCanFrameInput(frame);
+      if (valid_frame) {
+        HandleCanFrameInput(frame);
+      }
     }
   }
   return true;
@@ -1266,6 +1280,12 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
       // Only invoke DetectFormat() on every tenth message:
       m_detect_count = (m_detect_count + 1) % 10;
       if (m_detect_count <= 0) m_n2k_format = DetectFormat(data);
+      if (m_n2k_format != m_n2k_format) {
+        wxLogMessage(wxT("Current network message format = %i"), m_n2k_format);
+        wxLogMessage(
+            wxT("Can only transmit N2KFormat_Actisense_RAW_ASCII (same as YD "
+                "raw format"));
+      }
 
       switch (m_n2k_format) {
         case N2KFormat_Actisense_RAW_ASCII:
@@ -1532,6 +1552,7 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
     case N2KFormat_YD_RAW:
       break;
     case N2KFormat_Actisense_RAW_ASCII: {
+      wxLogMessage(wxT("$$$ sending pgn=%i"), msg->PGN.pgn);
       //  00:34:02.718 R 15FD0800 FF 00 01 CA 6F FF FF FF
       if (!IsFastMessagePGN(msg->PGN.pgn) && msg->payload.size() <= 8) {
         // Single packet message
@@ -1541,9 +1562,8 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
         // Craft the canID
         // No need to specify the source address
         // The TX frame will adopt the gateway's claimed N2K address.
-        unsigned long can_id =
+        uint32_t can_id =
             BuildCanID(msg->priority, 0, dest_addr->address, msg->PGN.pgn);
-
         std::stringstream ss;
         ss << std::setfill('0') << std::setw(8) << std::hex << can_id;
         for (unsigned char s : ss.str()) header_vec.push_back(s);
@@ -1571,29 +1591,19 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
         std::vector<unsigned char> out_vec;
 
         // No Need to create a timestamp or frame R/T indicator
-#if 0
-        // time header
-        wxDateTime now = wxDateTime::Now();
-        wxString stime = now.Format("%H:%M:%S");
-        stime += ".000 ";
-        std::string sstime = stime.ToStdString();
-        for (unsigned char s : sstime) header_vec.push_back(s);
-
-        // Tx indicator
-        header_vec.push_back('T');
-        header_vec.push_back(' ');
-#endif
 
         // Craft the canID
         // No need to specify the source address
         // The TX frame will adopt the gateway's claimed N2K address.
-        unsigned long can_id =
-            BuildCanID(msg->priority, 0, dest_addr->address, msg->PGN.pgn);
+        uint8_t source = 15;
+        uint32_t can_id =
+            BuildCanID(msg->priority, source, dest_addr->address, msg->PGN.pgn);
         std::stringstream ss;
-        ss << std::setfill('0') << std::setw(8) << std::hex << can_id;
+        // YD only likes uppercase!
+        ss << std::setfill('0') << std::setw(8) << std::hex << std::uppercase
+           << can_id;
         for (unsigned char s : ss.str()) header_vec.push_back(s);
         header_vec.push_back(' ');
-
         // format the required number of short packets, in a loop
         int payload_size = msg->payload.size();
         unsigned char temp[8];  // {0,0,0,0,0,0,0,0};
@@ -1833,8 +1843,6 @@ bool CommDriverN2KNet::PrepareForTX() {
   // then we are clearly connected to an actisense device.
   // Nothing else need be done.
 
-  if (m_n2k_format == N2KFormat_Actisense_N2K_ASCII) return true;
-
   // Step 1.2
   // If the detected data format is N2KFormat_MiniPlex,
   // then we are clearly connected to a MiniPlex.
@@ -1881,17 +1889,22 @@ bool CommDriverN2KNet::SendN2KNetwork(
     const std::shared_ptr<const Nmea2000Msg>& msg,
     const std::shared_ptr<const NavAddr2000>& addr) {
   PrepareForTX();
-
   std::vector<std::vector<unsigned char>> out_data = GetTxVector(msg, addr);
-  SendSentenceNetwork(out_data);
-  m_driver_stats.tx_count += msg->payload.size();
+  bool sent = SendSentenceNetwork(out_data);
+  if (sent) {  // No error
+    m_driver_stats.tx_count += msg->payload.size();
 
-  // Create internal message and notify upper layers
-  std::vector<unsigned char> msg_payload = PrepareLogPayload(msg, addr);
-  m_listener.Notify(
-      std::make_shared<const Nmea2000Msg>(msg->PGN.pgn, msg_payload, addr));
+    // Create internal message and notify upper layers (only after successful
+    // send)
+    std::vector<unsigned char> msg_payload = PrepareLogPayload(msg, addr);
+    m_listener.Notify(
+        std::make_shared<const Nmea2000Msg>(msg->PGN.pgn, msg_payload, addr));
+  } else {
+    // mark unavailable to assist diagnostics/UI
+    m_driver_stats.available = false;
+  }
 
-  return true;
+  return sent;  // 1 means sending successfull
 };
 
 bool CommDriverN2KNet::SendSentenceNetwork(
@@ -1932,16 +1945,27 @@ bool CommDriverN2KNet::SendSentenceNetwork(
         }
       }
       break;
-    case UDP:
-#if 0
-      udp_socket = dynamic_cast<wxDatagramSocket*>(GetTSock());
+    case UDP: {
+      wxDatagramSocket* udp_socket =
+          dynamic_cast<wxDatagramSocket*>(GetTSock());
       if (udp_socket && udp_socket->IsOk()) {
-        udp_socket->SendTo(GetAddr(), payload.mb_str(), payload.size());
-        if (udp_socket->Error()) ret = false;
-      } else
+        wxIPV4address dest = GetAddr();
+        // Send each payload vector as a separate datagram
+        for (const std::vector<unsigned char>& v : payload) {
+          if (v.empty()) continue;
+          udp_socket->SendTo(dest, reinterpret_cast<const char*>(v.data()),
+                             v.size());
+          if (udp_socket->Error()) {
+            ret = false;
+            break;
+          }
+          // small throttle to avoid bursting the network/device
+          wxMilliSleep(1);
+        }
+      } else {
         ret = false;
-#endif
-      break;
+      }
+    } break;
 
     case GPSD:
     default:

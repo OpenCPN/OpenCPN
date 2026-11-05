@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <wx/wxprec.h>
 
 #include "model/comm_can_util.h"
 
@@ -69,14 +70,16 @@ bool IsFastMessagePGN(unsigned pgn) {
   return found != haystack.end();
 }
 
-unsigned long BuildCanID(int priority, int source, int destination, int pgn) {
+uint32_t BuildCanID(uint8_t priority, uint8_t source, uint8_t destination,
+                    uint32_t pgn) {
   // build CanID
   unsigned long cid = 0;
   unsigned char pf = (unsigned char)(pgn >> 8);
-  if (pf < 240) {
+  pf &= 0xff;
+  if (pf < 240) {  // PDU1 format
     cid = ((unsigned long)(priority & 0x7)) << 26 | pgn << 8 |
           ((unsigned long)destination) << 8 | (unsigned long)source;
-  } else {
+  } else {  // PDU2 format
     cid = ((unsigned long)(priority & 0x7)) << 26 | pgn << 8 |
           (unsigned long)source;
   }
