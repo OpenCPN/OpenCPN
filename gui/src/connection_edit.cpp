@@ -1654,6 +1654,56 @@ private:
 
 }  // Anonymous namespace
 
+class ConfigPanel : public wxPanel {
+public:
+  explicit ConfigPanel(wxWindow* parent, ConnectionParams& params)
+      : wxPanel(parent), m_params(params) {
+    auto flags = wxSizerFlags().Border();
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    m_serial_config_panel = new SerialConfigPanel(this, m_params);
+    vbox->Add(m_serial_config_panel, flags.Expand());
+    m_net_config_panel = new NetConfigPanel(this, m_params);
+    vbox->Add(m_net_config_panel, flags.Expand());
+    m_can_config_panel = new CanConfigPanel(this, m_params);
+    vbox->Add(m_can_config_panel);
+    m_canable_config_panel = new CanableConfigPanel(this, m_params);
+    vbox->Add(m_canable_config_panel, flags);
+    m_internal_gps_config_panel = new InternalGpsConfigPanel(this, m_params);
+    vbox->Add(m_internal_gps_config_panel, flags);
+    m_internal_bt_config_panel = new InternalBtConfigPanel(this, m_params);
+    vbox->Add(m_internal_bt_config_panel, flags);
+
+    SetSizer(vbox);
+    SetActivePanel(ConnectionType::NETWORK);
+    wxWindow::Show();
+  }
+
+  virtual ~ConfigPanel() = default;
+
+  void SetActivePanel(ConnectionType type) {
+    m_net_config_panel->Show(type == ConnectionType::NETWORK);
+    m_can_config_panel->Show(type == ConnectionType::SOCKETCAN);
+    m_serial_config_panel->Show(type == ConnectionType::SERIAL);
+    m_canable_config_panel->Show(type == ConnectionType::CANABLE);
+    m_internal_gps_config_panel->Show(type == ConnectionType::INTERNAL_GPS);
+    m_internal_bt_config_panel->Show(type == ConnectionType::INTERNAL_BT);
+  }
+
+  bool CheckStatus() {
+    if (!m_net_config_panel->IsShown()) return true;
+    return m_net_config_panel->CheckStatus();
+  }
+
+private:
+  ConnectionParams& m_params;
+  NetConfigPanel* m_net_config_panel;
+  CanConfigPanel* m_can_config_panel;
+  CanableConfigPanel* m_canable_config_panel;
+  InternalGpsConfigPanel* m_internal_gps_config_panel;
+  InternalBtConfigPanel* m_internal_bt_config_panel;
+  SerialConfigPanel* m_serial_config_panel;
+};
+
 class ConnectionEditDlg : public AbstractConnectionEditDlg {
   class ButtonSizer : public wxStdDialogButtonSizer {
   public:
@@ -1693,18 +1743,8 @@ public:
     m_type_buttons = new TypeButtons(this, on_type_btn_click, m_params);
     statbox->Add(m_type_buttons, wxSizerFlags().Border());
     statbox->Add(new wxStaticLine(this), wxSizerFlags().Expand());
-    m_serial_config_panel = new SerialConfigPanel(this, m_params);
-    statbox->Add(m_serial_config_panel, flags.Expand());
-    m_net_config_panel = new NetConfigPanel(this, m_params);
-    statbox->Add(m_net_config_panel, flags.Expand());
-    m_can_config_panel = new CanConfigPanel(this, m_params);
-    statbox->Add(m_can_config_panel);
-    m_canable_config_panel = new CanableConfigPanel(this, m_params);
-    statbox->Add(m_canable_config_panel, flags);
-    m_internal_gps_config_panel = new InternalGpsConfigPanel(this, m_params);
-    statbox->Add(m_internal_gps_config_panel, flags);
-    m_internal_bt_config_panel = new InternalBtConfigPanel(this, m_params);
-    statbox->Add(m_internal_bt_config_panel, flags);
+    m_config_panel = new ConfigPanel(this, m_params);
+    statbox->Add(m_config_panel, flags);
     vbox->Add(statbox, flags.Expand());
 
     auto on_ok_ = [&](wxCommandEvent& ev) { OnOkCancel(ev, true); };
@@ -1735,12 +1775,7 @@ private:
   ConnectionParams m_params;
 
   TypeButtons* m_type_buttons;
-  NetConfigPanel* m_net_config_panel;
-  wxWindow* m_can_config_panel;
-  wxWindow* m_serial_config_panel;
-  wxWindow* m_canable_config_panel;
-  wxWindow* m_internal_gps_config_panel;
-  wxWindow* m_internal_bt_config_panel;
+  ConfigPanel* m_config_panel;
   bool m_is_new;
 
   static void DoReload(wxWindow* root) {
@@ -1753,20 +1788,14 @@ private:
   void Reload() { DoReload(this); }
 
   void OnTypeBtnClick(ConnectionType ct) {
-    m_net_config_panel->Show(ct == ConnectionType::NETWORK);
-    m_can_config_panel->Show(ct == ConnectionType::SOCKETCAN);
-    m_serial_config_panel->Show(ct == ConnectionType::SERIAL);
-    m_canable_config_panel->Show(ct == ConnectionType::CANABLE);
-    m_internal_gps_config_panel->Show(ct == ConnectionType::INTERNAL_GPS);
-    m_internal_bt_config_panel->Show(ct == ConnectionType::INTERNAL_BT);
-    m_params.type = ct;
+    m_config_panel->SetActivePanel(ct);
     GetParent()->Layout();
   }
 
   void OnOkCancel(wxCommandEvent&, bool ok) {
     if (!ok) {
       m_on_cancel();
-    } else if (m_net_config_panel->CheckStatus()) {
+    } else if (m_config_panel->CheckStatus()) {
       m_on_ok(std::make_unique<ConnectionParams>(m_params), m_is_new);
     }
   }
