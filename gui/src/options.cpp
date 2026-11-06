@@ -1645,6 +1645,7 @@ void options::Init() {
   m_pageConnections = -1;
 
   pEnableTenHertz = nullptr;
+  m_pSlider_MBTiles_Opacity = nullptr;
 
   auto loader = PluginLoader::GetInstance();
   b_haveWMM = loader && loader->IsPlugInAvailable("WMM");
@@ -3072,6 +3073,22 @@ void options::CreatePanel_Advanced(size_t parent, int border_size,
 
     itemBoxSizerUI->Add(m_pSlider_CM93_Zoom, 0, wxALL, border_size);
 
+    itemBoxSizerUI->Add(
+        new wxStaticText(m_ChartDisplayPage, wxID_ANY,
+                         _("MBTiles overlay opacity")),
+        inputFlags);
+    m_pSlider_MBTiles_Opacity =
+        new wxSlider(m_ChartDisplayPage, ID_MBTILES_OPACITY, 100, 0, 100,
+                     wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
+
+#ifdef __ANDROID__
+    prepareSlider(m_pSlider_MBTiles_Opacity);
+#endif
+
+    itemBoxSizerUI->Add(m_pSlider_MBTiles_Opacity, 0, wxALL, border_size);
+    m_pSlider_MBTiles_Opacity->Bind(
+        wxEVT_SLIDER, &options::OnMBTilesOpacitySlider, this);
+
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -3260,6 +3277,22 @@ With a higher value, the same zoom level shows a more detailed chart."));
 #endif
 
     itemBoxSizerUI->Add(m_pSlider_CM93_Zoom, 0, wxALL, border_size);
+
+    itemBoxSizerUI->Add(
+        new wxStaticText(m_ChartDisplayPage, wxID_ANY,
+                         _("MBTiles overlay opacity")),
+        labelFlags);
+    m_pSlider_MBTiles_Opacity =
+        new wxSlider(m_ChartDisplayPage, ID_MBTILES_OPACITY, 100, 0, 100,
+                     wxDefaultPosition, m_sliderSize, SLIDER_STYLE);
+
+#ifdef __ANDROID__
+    prepareSlider(m_pSlider_MBTiles_Opacity);
+#endif
+
+    itemBoxSizerUI->Add(m_pSlider_MBTiles_Opacity, 0, wxALL, border_size);
+    m_pSlider_MBTiles_Opacity->Bind(
+        wxEVT_SLIDER, &options::OnMBTilesOpacitySlider, this);
 
     // spacer
     itemBoxSizerUI->Add(0, border_size * 3);
@@ -6566,6 +6599,10 @@ void options::SetInitialSettings() {
 
   m_pSlider_Zoom_Raster->SetValue(g_chart_zoom_modifier_raster);
   m_pSlider_Zoom_Vector->SetValue(g_chart_zoom_modifier_vector);
+  if (m_pSlider_MBTiles_Opacity) {
+    m_pSlider_MBTiles_Opacity->SetValue(
+        (int)wxRound(wxMax(0.f, wxMin(1.f, g_mbtiles_opacity)) * 100.f));
+  }
 
   m_pSlider_GUI_Factor->SetValue(g_GUIScaleFactor);
   m_pSlider_Chart_Factor->SetValue(g_ChartScaleFactor);
@@ -6858,6 +6895,12 @@ void options::OnSizeManualButton(wxCommandEvent& event) {
   pScreenMM->SetValue(screenmm);
   pScreenMM->Enable();
   g_config_display_size_manual = TRUE;
+}
+
+void options::OnMBTilesOpacitySlider(wxCommandEvent& event) {
+  if (!m_pSlider_MBTiles_Opacity) return;
+  g_mbtiles_opacity = m_pSlider_MBTiles_Opacity->GetValue() / 100.f;
+  top_frame::Get()->RefreshAllCanvas();
 }
 
 void options::OnUnitsChoice(wxCommandEvent& event) { UpdateOptionsUnits(); }
@@ -7556,6 +7599,9 @@ void options::ApplyChanges(wxCommandEvent& event) {
   g_chart_zoom_modifier_raster = m_pSlider_Zoom_Raster->GetValue();
   g_chart_zoom_modifier_vector = m_pSlider_Zoom_Vector->GetValue();
   g_cm93_zoom_factor = m_pSlider_CM93_Zoom->GetValue();
+  if (m_pSlider_MBTiles_Opacity) {
+    g_mbtiles_opacity = m_pSlider_MBTiles_Opacity->GetValue() / 100.f;
+  }
   g_GUIScaleFactor = m_pSlider_GUI_Factor->GetValue();
 
   bool bchange_scale = false;

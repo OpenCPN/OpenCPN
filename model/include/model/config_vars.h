@@ -181,6 +181,7 @@ extern int g_ENCSoundingScaleFactor;
 extern int g_ENCTextScaleFactor;
 extern int g_GUIScaleFactor;
 extern double g_tile_basemap_zoom_factor;
+extern float g_mbtiles_opacity;  // 0.0 .. 1.0, whole-tileset MBTiles overlay alpha
 
 extern int g_iDistanceFormat;  // see extended docs below
 extern int g_iENCToolbarPosX;
