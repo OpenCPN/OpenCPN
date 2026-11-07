@@ -685,8 +685,11 @@ public:
     auto adv_box = new wxBoxSizer(wxHORIZONTAL);
     if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")), flags);
-    adv_box->Add(new ExpandablePanel(this, advanced_panel,
-                                     [&] { GetParent()->Layout(); }),
+    auto on_expand_click = [&] {
+      Layout();
+      FitInside();
+    };
+    adv_box->Add(new ExpandablePanel(this, advanced_panel, on_expand_click),
                  flags);
     vbox->Add(adv_box, flags);
     vbox->Add(advanced_panel, flags);
@@ -1530,9 +1533,9 @@ public:
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
     hbox->Add(new ExpandablePanel(this, advanced_panel,
                                   [&] { GetParent()->Layout(); }));
-    if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
-    vbox->Add(hbox, flags);
-    vbox->Add(advanced_panel, flags);
+    flags = flags.ReserveSpaceEvenIfHidden();
+    vbox->Add(hbox, flags.Expand());
+    vbox->Add(advanced_panel, flags.Expand());
 
     SetSizer(vbox);
     wxWindow::Layout();
@@ -1652,20 +1655,20 @@ private:
   wxChoice* m_choice;
 };  // CanConfigPanel
 
-}  // Anonymous namespace
-
-class ConfigPanel : public wxPanel {
+class ConfigPanel : public wxScrolledWindow {
 public:
-  explicit ConfigPanel(wxWindow* parent, ConnectionParams& params)
-      : wxPanel(parent), m_params(params) {
-    auto flags = wxSizerFlags().Border();
+  ConfigPanel(wxWindow* parent, ConnectionParams& params)
+      : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                         wxVSCROLL | wxHSCROLL, "foobar"),
+        m_params(params) {
+    auto flags = wxSizerFlags(0).Expand();
     auto vbox = new wxBoxSizer(wxVERTICAL);
     m_serial_config_panel = new SerialConfigPanel(this, m_params);
-    vbox->Add(m_serial_config_panel, flags.Expand());
+    vbox->Add(m_serial_config_panel, flags);
     m_net_config_panel = new NetConfigPanel(this, m_params);
-    vbox->Add(m_net_config_panel, flags.Expand());
+    vbox->Add(m_net_config_panel, flags);
     m_can_config_panel = new CanConfigPanel(this, m_params);
-    vbox->Add(m_can_config_panel);
+    vbox->Add(m_can_config_panel, flags);
     m_canable_config_panel = new CanableConfigPanel(this, m_params);
     vbox->Add(m_canable_config_panel, flags);
     m_internal_gps_config_panel = new InternalGpsConfigPanel(this, m_params);
@@ -1673,9 +1676,23 @@ public:
     m_internal_bt_config_panel = new InternalBtConfigPanel(this, m_params);
     vbox->Add(m_internal_bt_config_panel, flags);
 
+    vbox->Show(m_serial_config_panel, false);
+    vbox->Show(m_net_config_panel, false);
+    vbox->Show(m_can_config_panel, false);
+    vbox->Show(m_canable_config_panel, false);
+    vbox->Show(m_internal_gps_config_panel, false);
+    vbox->Show(m_internal_bt_config_panel, false);
+
     SetSizer(vbox);
-    SetActivePanel(ConnectionType::NETWORK);
-    wxWindow::Show();
+    SetScrollRate(10, 10);
+    SetActivePanel(ConnectionType::SERIAL);
+    Layout();
+    FitInside();
+    SetVirtualSize(500, 1200);
+
+    // SetVirtualSize({-1, 723});
+
+    // Bind(wxEVT_SIZE, [&] (wxSizeEvent& e) { OnResize(e); });
   }
 
   virtual ~ConfigPanel() = default;
@@ -1687,6 +1704,8 @@ public:
     m_canable_config_panel->Show(type == ConnectionType::CANABLE);
     m_internal_gps_config_panel->Show(type == ConnectionType::INTERNAL_GPS);
     m_internal_bt_config_panel->Show(type == ConnectionType::INTERNAL_BT);
+    Layout();
+    FitInside();
   }
 
   bool CheckStatus() {
@@ -1703,6 +1722,8 @@ private:
   InternalBtConfigPanel* m_internal_bt_config_panel;
   SerialConfigPanel* m_serial_config_panel;
 };
+
+}  // Anonymous namespace
 
 class ConnectionEditDlg : public AbstractConnectionEditDlg {
   class ButtonSizer : public wxStdDialogButtonSizer {
@@ -1744,8 +1765,8 @@ public:
     statbox->Add(m_type_buttons, wxSizerFlags().Border());
     statbox->Add(new wxStaticLine(this), wxSizerFlags().Expand());
     m_config_panel = new ConfigPanel(this, m_params);
-    statbox->Add(m_config_panel, flags);
-    vbox->Add(statbox, flags.Expand());
+    statbox->Add(m_config_panel, wxSizerFlags(1).Expand());
+    vbox->Add(statbox, wxSizerFlags(1).Expand());
 
     auto on_ok_ = [&](wxCommandEvent& ev) { OnOkCancel(ev, true); };
     auto on_cancel_ = [&](wxCommandEvent& ev) { OnOkCancel(ev, false); };
@@ -1755,8 +1776,7 @@ public:
     OnTypeBtnClick(ConnectionType::NETWORK);
 
     SetSizer(vbox);
-    wxWindow::Fit();
-    wxWindow::Show();
+    wxWindow::Layout();
   }
 
   void SetParams(std::unique_ptr<ConnectionParams> p) override {
@@ -1789,7 +1809,7 @@ private:
 
   void OnTypeBtnClick(ConnectionType ct) {
     m_config_panel->SetActivePanel(ct);
-    GetParent()->Layout();
+    Layout();
   }
 
   void OnOkCancel(wxCommandEvent&, bool ok) {

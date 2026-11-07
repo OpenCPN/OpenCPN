@@ -35,8 +35,6 @@
 #include <wx/panel.h>
 #include <wx/sizer.h>
 #include <wx/spinctrl.h>
-#include <wx/statbox.h>
-#include <wx/statline.h>
 #include <wx/textctrl.h>
 #include <wx/window.h>
 
@@ -62,7 +60,6 @@
 #include "priority_gui.h"
 #include "std_filesystem.h"
 #include "libgui/expand_panel.h"
-#include "model/svg_utils.h"
 
 static constexpr auto TopScrollWindowName = "TopScroll";
 
@@ -1006,15 +1003,15 @@ private:
   AdvancedPanel* m_advanced_panel;
 };
 
-/** Top scroll window, adds scrollbars to TopPanel. */
-class TopScroll : public wxScrolledWindow {
+/** Top window. */
+class EditPanel : public wxPanel {
 public:
-  TopScroll(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
+  EditPanel(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
             obs::EventVar& evt_add_connection)
-      : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                         wxVSCROLL | wxHSCROLL, TopScrollWindowName),
-        m_edited_connection(nullptr) {
-    ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
+      : wxPanel(parent, wxID_ANY),
+        m_edited_connection(nullptr),
+        m_edit_panel(nullptr) {
+    // ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     SetSizer(vbox);
 
@@ -1037,22 +1034,12 @@ public:
 
     m_edit_panel =
         AbstractConnectionEditDlg::Create(this, on_cancel, on_edit_click);
-    wxWindow* options = FindWindowByName("Options");
-    assert(options && "Null Options window!");
-    int fraction = 9;
-#ifdef ANDROID
-    fraction = 10;
-#endif
-    m_edit_panel->SetSize(
-        wxSize(options->GetSize().x, options->GetSize().y * fraction / 10));
-    vbox->Add(m_edit_panel, wxSizerFlags(0).Expand());
+    vbox->Add(m_edit_panel, wxSizerFlags(1).Expand());
+    wxWindowBase::Layout();
     m_edit_panel->Hide();
 
-    SetScrollRate(0, 10);
-    if (IsAndroid()) SetScrollRate(1, 1);
-
-    SetScrollRate(0, 10);
-    if (IsAndroid()) SetScrollRate(1, 1);
+    // SetScrollRate(0, 10);
+    // if (IsAndroid()) SetScrollRate(1, 1);
   }
 
   void SetColorScheme(ColorScheme cs) const {
@@ -1072,7 +1059,7 @@ public:
 
   void SwitchToEditor() {
     m_top_panel->Hide();  // TopPanel
-    Scroll(0, 0);
+                          //  Scroll(0, 0);
     DimeControl(m_edit_panel);
     m_edit_panel->Show();
     g_options->ShowOKButtons(false);
@@ -1084,7 +1071,7 @@ public:
     m_top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
     g_options->ShowOKButtons(true);
     Layout();
-    Scroll(0, 0);
+    // Scroll(0, 0);
     m_top_panel->Show();
   }
 
@@ -1133,9 +1120,9 @@ public:
   }
 
 private:
-  TopPanel* m_top_panel;
-  AbstractConnectionEditDlg* m_edit_panel;
   const ConnectionParams* m_edited_connection;
+  AbstractConnectionEditDlg* m_edit_panel;
+  TopPanel* m_top_panel;
 };
 
 /** Main window: Panel with a single TopScroll child. */
@@ -1143,18 +1130,12 @@ ConnectionsDlg::ConnectionsDlg(
     wxWindow* parent, const std::vector<ConnectionParams*>& connections)
     : wxPanel(parent, wxID_ANY), m_connections(connections) {
   const auto vbox = new wxBoxSizer(wxVERTICAL);
-  vbox->Add(new TopScroll(this, connections, m_evt_add_connection),
+  vbox->Add(new EditPanel(this, connections, m_evt_add_connection),
             wxSizerFlags(1).Expand());
   SetSizer(vbox);
   wxWindow::Fit();
   wxWindow::Show();
-}
-
-void ConnectionsDlg::OnResize(const wxSize& size) {
-  auto w = FindWindowByName(TopScrollWindowName);
-  if (!w) return;
-  w->SetMinSize(size);
-  Fit();
+  SetBackgroundColour(*wxGREEN);
 }
 
 void ConnectionsDlg::DoApply(wxWindow* root) {
@@ -1176,6 +1157,6 @@ void ConnectionsDlg::ApplySettings() { DoApply(this); }
 void ConnectionsDlg::CancelSettings() { DoCancel(this); }
 
 void ConnectionsDlg::SetColorScheme(ColorScheme cs) {
-  auto w = dynamic_cast<TopScroll*>(FindWindowByName(TopScrollWindowName));
+  auto w = dynamic_cast<EditPanel*>(FindWindowByName(TopScrollWindowName));
   if (w) w->SetColorScheme(cs);
 }

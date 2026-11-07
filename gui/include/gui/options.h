@@ -650,7 +650,8 @@ private:
   void CreatePanel_AIS(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Ownship(size_t parent, int border_size,
                            int group_item_spacing);
-  void CreatePanel_NMEA(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_NMEA(size_t position, int border_size,
+                        int group_item_spacing);
   void CreatePanel_ChartsLoad(size_t parent, int border_size,
                               int group_item_spacing);
   void CreatePanel_VectorCharts(size_t parent, int border_size,
