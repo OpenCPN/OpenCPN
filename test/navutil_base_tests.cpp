@@ -152,3 +152,32 @@ TEST(NavUtils, ParseGPXDateTime) {
     }
   }
 }
+
+TEST(NavUtils, ParseGPXDateTimeOffsetLimits) {
+  const struct {
+    const wxChar* input;
+    const char* utc;
+  } cases[] = {
+      {L"2026-07-01T12:00:00+13:45", "2026-06-30T22:15:00"},
+      {L"2026-07-01T12:00:00+14:00", "2026-06-30T22:00:00"},
+      {L"2026-07-01T12:00:00-14:00", "2026-07-02T02:00:00"},
+      {L"2026-07-01T12:00:00+14:01", nullptr},
+      {L"2026-07-01T12:00:00-14:01", nullptr},
+      {L"2026-07-01T12:00:00+15:00", nullptr},
+      {L"2026-07-01T12:00:00+13:60", nullptr},
+  };
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(wxString(test_case.input).ToStdString());
+    wxDateTime date_time;
+    const auto* end = ParseGPXDateTime(date_time, test_case.input);
+    if (test_case.utc) {
+      ASSERT_NE(end, nullptr);
+      EXPECT_EQ(*end, 0);
+      date_time.MakeFromTimezone(wxDateTime::UTC);
+      EXPECT_EQ(date_time.Format("%Y-%m-%dT%H:%M:%S", wxDateTime::UTC),
+                wxString::FromUTF8(test_case.utc));
+    } else {
+      EXPECT_EQ(end, nullptr);
+    }
+  }
+}
