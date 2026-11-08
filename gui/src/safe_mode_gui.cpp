@@ -112,7 +112,7 @@ class SafeModeDialog : public wxDialog {
 public:
   SafeModeDialog(wxWindow* parent, unsigned timeout)
       : wxDialog(parent, wxID_ANY, _("Safe Restart")),
-        m_timer(new ModalDialogTimer(this, 15, wxID_CANCEL)) {
+        m_timer(this, timeout, wxID_CANCEL) {
     auto vbox = new wxBoxSizer(wxVERTICAL);
     vbox->Add(new HtmlWindow(this), wxSizerFlags(1).Expand());
     vbox->Add(new ButtonSizer(this), wxSizerFlags().Expand().Border());
@@ -123,10 +123,10 @@ public:
     Bind(wxEVT_CHAR_HOOK, [&](wxKeyEvent& ev) { OnKeyPressed(ev); });
   }
 
-  void StopTimer() const { m_timer->Stop(); }
+  void StopTimer() { m_timer.Stop(); }
 
 private:
-  wxTimer* m_timer;
+  ModalDialogTimer m_timer;
 
   void OnKeyPressed(wxKeyEvent& ev) {
     if (ev.GetKeyCode() == WXK_RETURN) EndModal(wxID_CANCEL);
