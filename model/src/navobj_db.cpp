@@ -22,7 +22,6 @@
  */
 
 #include <cmath>
-#include <iomanip>
 #include <memory>
 #include <string>
 #include <vector>
@@ -1679,7 +1678,7 @@ bool NavObj_dB::LoadAllRoutes() {
         "p.viz_name, "
         "p.shared, "
         "p.isolated, "
-        "p.created_at "
+        "CAST(strftime('%s', p.created_at) AS INTEGER) "
         "FROM routepoints_link tp "
         "JOIN routepoints p ON p.guid = tp.point_guid "
         "WHERE tp.route_guid = ? "
@@ -1754,8 +1753,7 @@ bool NavObj_dB::LoadAllRoutes() {
       int viz_name = sqlite3_column_int(stmt_rp, col++);
       int shared = sqlite3_column_int(stmt_rp, col++);
       int isolated = sqlite3_column_int(stmt_rp, col++);
-      std::string point_created_at =
-          reinterpret_cast<const char*>(sqlite3_column_text(stmt_rp, col++));
+      const int created_at_col = col++;
 
       RoutePoint* point;
       // RoutePoint exists already, in another route or isolated??
@@ -1817,14 +1815,10 @@ bool NavObj_dB::LoadAllRoutes() {
         point->SetShared(shared == 1);
         point->m_bIsolatedMark = (isolated == 1);
 
-        if (point_created_at.size()) {
-          // Convert from sqLite default date/time format to wxDateTime
-          // sqLite format uses UTC, so conversion to epoch_time is clear.
-          std::tm tm = {};
-          std::istringstream ss(point_created_at);
-          ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
-          time_t epoch_time = mktime(&tm);
-          point->m_CreateTimeX = epoch_time;
+        if (sqlite3_column_type(stmt_rp, created_at_col) != SQLITE_NULL) {
+          const auto seconds = sqlite3_column_int64(stmt_rp, created_at_col);
+          point->m_CreateTimeX =
+              wxDateTime(static_cast<time_t>(0)) + wxTimeSpan::Seconds(seconds);
         }
 
         //    Add the point HTML links
@@ -1962,7 +1956,7 @@ bool NavObj_dB::LoadAllPoints() {
       "p.viz_name, "
       "p.shared, "
       "p.isolated, "
-      "p.created_at "
+      "CAST(strftime('%s', p.created_at) AS INTEGER) "
       "FROM routepoints p ";
 
   RoutePoint* point = nullptr;
@@ -2010,8 +2004,7 @@ bool NavObj_dB::LoadAllPoints() {
     int viz_name = sqlite3_column_int(stmt_point, col++);
     int shared = sqlite3_column_int(stmt_point, col++);
     int isolated = sqlite3_column_int(stmt_point, col++);
-    std::string point_created_at =
-        reinterpret_cast<const char*>(sqlite3_column_text(stmt_point, col++));
+    const int created_at_col = col++;
 
     if (isolated) {
       point =
@@ -2038,14 +2031,10 @@ bool NavObj_dB::LoadAllPoints() {
       point->SetShared(shared == 1);
       point->m_bIsolatedMark = (isolated == 1);
 
-      if (point_created_at.size()) {
-        // Convert from sqLite default date/time format to wxDateTime
-        // sqLite format uses UTC, so conversion to epoch_time is clear.
-        std::tm tm = {};
-        std::istringstream ss(point_created_at);
-        ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
-        time_t epoch_time = mktime(&tm);
-        point->m_CreateTimeX = epoch_time;
+      if (sqlite3_column_type(stmt_point, created_at_col) != SQLITE_NULL) {
+        const auto seconds = sqlite3_column_int64(stmt_point, created_at_col);
+        point->m_CreateTimeX =
+            wxDateTime(static_cast<time_t>(0)) + wxTimeSpan::Seconds(seconds);
       }
 
       // Add it here
