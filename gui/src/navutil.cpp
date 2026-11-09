@@ -305,6 +305,7 @@ int MyConfig::LoadMyConfig() {
   g_nAWDefault = 50;
   g_nAWMax = 1852;
   g_ObjQFileExt = "txt,rtf,png,html,gif,tif,jpg";
+  g_OwnShipmmsi = 0;
 
   // Load the raw value, with no defaults, and no processing
   int ret_Val = LoadMyConfigRaw();
@@ -656,7 +657,7 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
   Read("OwnshipHDTPredictorEndmarker", &g_ownship_HDTpredictor_endmarker);
   Read("OwnshipHDTPredictorWidth", &g_ownship_HDTpredictor_width);
   Read("OwnshipHDTPredictorMiles", &g_ownship_HDTpredictor_miles);
-  int mmsi;
+  int mmsi = 0;
   Read("OwnShipMMSINumber", &mmsi);
   g_OwnShipmmsi = mmsi >= 0 ? static_cast<unsigned>(mmsi) : 0;
   Read("OwnShipIconType", &g_OwnShipIconType);
