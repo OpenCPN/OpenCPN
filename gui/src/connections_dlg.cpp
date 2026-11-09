@@ -692,15 +692,13 @@ private:
 /** Indeed: the General  panel. */
 class GeneralPanel : public wxPanel {
 public:
-  explicit GeneralPanel(wxWindow* parent, wxSize max_size)
-      : wxPanel(parent, wxID_ANY) {
+  explicit GeneralPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, _("General"));
     SetSizer(sizer);
     auto flags = wxSizerFlags().Border();
     m_upload_options = new UploadOptionsChoice(this);
     sizer->Add(m_upload_options, flags);
     sizer->Add(new PrioritiesBtn(this), flags);
-    wxWindow::SetMaxSize(max_size);
   }
   void SetColorScheme(ColorScheme) {
     DimeControl(m_upload_options);
@@ -770,8 +768,7 @@ private:
 /** Indeed: The "Advanced" panel. */
 class AdvancedPanel : public wxPanel {
 public:
-  explicit AdvancedPanel(wxWindow* parent, wxSize max_size)
-      : wxPanel(parent, wxID_ANY) {
+  explicit AdvancedPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {
     auto sizer = new wxStaticBoxSizer(wxVERTICAL, this, "");
     sizer->Add(new BearingsCheckbox(this), wxSizerFlags().Expand());
     sizer->Add(new ExtraRmbRmcLine(this), wxSizerFlags().Expand());
@@ -779,7 +776,6 @@ public:
     sizer->Add(new TalkerIdRow(this), wxSizerFlags().Expand());
     sizer->Add(new NetmaskRow(this), wxSizerFlags().Expand());
     SetSizer(sizer);
-    wxWindow::SetMaxSize(max_size);
   }
 
 private:
@@ -948,7 +944,6 @@ public:
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto conn_grid = new Connections(this, m_connections, m_evt_add_connection,
                                      on_edit_conn);
-    wxSize panel_max_size(conn_grid->GetEstimatedSize());
     vbox->AddSpacer(wxWindow::GetCharHeight());
     auto conn_flags = wxSizerFlags().Border();
     if (IsAndroid()) conn_flags = wxSizerFlags().Border().Expand();
@@ -958,10 +953,11 @@ public:
     vbox->Add(0, wxWindow::GetCharHeight());  // Expanding spacer
     auto panel_flags =
         wxSizerFlags().Border(wxLEFT | wxDOWN | wxRIGHT).Expand();
-    m_general_panel = new GeneralPanel(this, panel_max_size);
+    m_general_panel = new GeneralPanel(this);
+    m_general_panel->SetMinSize(m_general_panel->GetBestSize());
     vbox->Add(m_general_panel, panel_flags);
 
-    auto advanced_panel = new AdvancedPanel(this, panel_max_size);
+    auto advanced_panel = new AdvancedPanel(this);
     m_advanced_panel = advanced_panel;
     auto adv_box = new wxBoxSizer(wxHORIZONTAL);
     adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
@@ -1004,14 +1000,14 @@ private:
 };
 
 /** Top window. */
-class EditPanel : public wxPanel {
+class EditPanel : public wxScrolled<wxPanel> {
 public:
   EditPanel(wxWindow* parent, const std::vector<ConnectionParams*>& connections,
             obs::EventVar& evt_add_connection)
-      : wxPanel(parent, wxID_ANY),
+      : wxScrolled<wxPanel>(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
+                            wxVSCROLL | wxHSCROLL),
         m_edited_connection(nullptr),
         m_edit_panel(nullptr) {
-    // ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_ALWAYS);
     auto vbox = new wxBoxSizer(wxVERTICAL);
     SetSizer(vbox);
 
@@ -1038,8 +1034,10 @@ public:
     wxWindowBase::Layout();
     m_edit_panel->Hide();
 
-    // SetScrollRate(0, 10);
-    // if (IsAndroid()) SetScrollRate(1, 1);
+    if (IsAndroid())
+      SetScrollRate(1, 1);
+    else
+      SetScrollRate(10, 10);
   }
 
   void SetColorScheme(ColorScheme cs) const {
@@ -1059,7 +1057,7 @@ public:
 
   void SwitchToEditor() {
     m_top_panel->Hide();  // TopPanel
-                          //  Scroll(0, 0);
+    m_edit_panel->Scroll(0, 0);
     DimeControl(m_edit_panel);
     m_edit_panel->Show();
     g_options->ShowOKButtons(false);
@@ -1071,7 +1069,7 @@ public:
     m_top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
     g_options->ShowOKButtons(true);
     Layout();
-    // Scroll(0, 0);
+    m_edit_panel->Scroll(0, 0);
     m_top_panel->Show();
   }
 
@@ -1133,9 +1131,8 @@ ConnectionsDlg::ConnectionsDlg(
   vbox->Add(new EditPanel(this, connections, m_evt_add_connection),
             wxSizerFlags(1).Expand());
   SetSizer(vbox);
-  wxWindow::Fit();
+  wxWindow::Layout();
   wxWindow::Show();
-  SetBackgroundColour(*wxGREEN);
 }
 
 void ConnectionsDlg::DoApply(wxWindow* root) {

@@ -25,6 +25,7 @@
 #define COnn_EDIT_H
 
 #include <memory>
+#include <functional>
 
 #include <wx/panel.h>
 #include <wx/window.h>
@@ -47,6 +48,8 @@ public:
 
   /** Return edited parameters */
   virtual ConnectionParams GetEditedParams() = 0;
+
+  virtual void Scroll(int hscroll = 0, int vscroll = 0) {}
 
   static AbstractConnectionEditDlg* Create(wxWindow* parent,
                                            std::function<void()> on_cancel,

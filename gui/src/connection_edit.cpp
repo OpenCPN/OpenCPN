@@ -326,7 +326,13 @@ public:
         m_internal_bt_btn(nullptr),
         m_on_click(std::move(on_click)),
         m_params(params) {
+
+#ifdef _MSC_VER
+    // Wrapsizer seems broken on win64/wxw 3.3.4
+    auto wbox = new wxBoxSizer(wxHORIZONTAL);
+#else
     auto wbox = new wxWrapSizer(wxHORIZONTAL);
+#endif
     auto on_clicked = [&](wxCommandEvent& e) { OnClick(e); };
     m_serial_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
     wbox->Add(m_serial_btn, wxSizerFlags().Border());
@@ -1083,6 +1089,7 @@ class NetConfigPanel : public wxPanel {
         : wxCheckBox(parent, wxID_ANY, "") {}
   };
 
+  /** Type of connection: TCP client, TCP server, UDP client, ... */
   class ConnectionTypeChoice : public wxChoice {
   public:
     ConnectionTypeChoice(wxWindow* parent, std::function<void()> on_choice)
@@ -1100,6 +1107,7 @@ class NetConfigPanel : public wxPanel {
     std::function<void()> m_on_choice;
   };
 
+  /** NMEA1083/NMEA2000 user choice widget. */
   class ProtocolChoice : public wxChoice, public Reloadable {
   public:
     ProtocolChoice(wxWindow* parent, ConnectionParams& params)
@@ -1209,6 +1217,7 @@ class NetConfigPanel : public wxPanel {
     ConnectionParams& m_params;
   };
 
+  /** Overall grid layout for various attribute widgets */
   class NetGrid : public wxFlexGridSizer {
   public:
     NetGrid(wxWindow* parent, ConnectionParams& params,
@@ -1531,9 +1540,11 @@ public:
     auto advanced_panel = new FilterConfigPanel(this, m_params);
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
-    hbox->Add(new ExpandablePanel(this, advanced_panel,
-                                  [&] { GetParent()->Layout(); }));
-    flags = flags.ReserveSpaceEvenIfHidden();
+    hbox->Add(new ExpandablePanel(this, advanced_panel, [&] {
+      GetParent()->Layout();
+      FitInside();
+    }));
+    if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     vbox->Add(hbox, flags.Expand());
     vbox->Add(advanced_panel, flags.Expand());
 
@@ -1659,7 +1670,7 @@ class ConfigPanel : public wxScrolledWindow {
 public:
   ConfigPanel(wxWindow* parent, ConnectionParams& params)
       : wxScrolledWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,
-                         wxVSCROLL | wxHSCROLL, "foobar"),
+                         wxVSCROLL | wxHSCROLL),
         m_params(params) {
     auto flags = wxSizerFlags(0).Expand();
     auto vbox = new wxBoxSizer(wxVERTICAL);
@@ -1686,13 +1697,8 @@ public:
     SetSizer(vbox);
     SetScrollRate(10, 10);
     SetActivePanel(ConnectionType::SERIAL);
-    Layout();
-    FitInside();
-    SetVirtualSize(500, 1200);
-
-    // SetVirtualSize({-1, 723});
-
-    // Bind(wxEVT_SIZE, [&] (wxSizeEvent& e) { OnResize(e); });
+    wxScrolled<wxPanel>::Layout();
+    wxWindowBase::FitInside();
   }
 
   virtual ~ConfigPanel() = default;
@@ -1777,6 +1783,10 @@ public:
 
     SetSizer(vbox);
     wxWindow::Layout();
+  }
+
+  void Scroll(int hscroll, int vscroll) override {
+    m_config_panel->Scroll(hscroll, vscroll);
   }
 
   void SetParams(std::unique_ptr<ConnectionParams> p) override {
