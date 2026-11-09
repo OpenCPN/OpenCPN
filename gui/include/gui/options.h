@@ -690,7 +690,7 @@ private:
   wxImageList *m_topImgList;
 
   wxCheckBox *m_persist_active_route_chkbox;
-  wxScrolledWindow *m_pNMEAForm;
+  wxPanel *m_pNMEAForm;
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
   ObservableListener compat_os_listener;
@@ -719,7 +719,7 @@ private:
   wxSize m_sliderSize;
   bool m_bneedNew;
   obs::Listener m_OnChartDb_finalize_listener;
-  std::shared_ptr<ConnectionsDlg> comm_dialog;
+  ConnectionsDlg *comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };
