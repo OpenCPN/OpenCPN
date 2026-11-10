@@ -237,6 +237,51 @@ public:
   virtual void Reload() = 0;
 };
 
+/** NMEA1083/NMEA2000 user choice widget. */
+class ProtocolChoice : public wxChoice, public Reloadable {
+public:
+  ProtocolChoice(wxWindow* parent, ConnectionParams& params)
+      : wxChoice(parent, wxID_ANY), m_params(params) {
+    ProtocolChoice::Reload();
+    Bind(wxEVT_CHOICE, [&](wxCommandEvent& e) { OnChoice(e); });
+  }
+
+  void Reload() override {
+    Clear();
+    Append("NMEA 0183");
+    Append("NMEA 2000");
+    switch (m_params.data_protocol) {
+      case PROTO_NMEA0183:
+        SetSelection(0);
+        break;
+      case PROTO_NMEA2000:
+        SetSelection(1);
+        break;
+      default:
+        assert(false && "Illegal SignalK protocol");
+        break;
+    }
+    Enable();
+  }
+
+private:
+  ConnectionParams& m_params;
+
+  void OnChoice(wxCommandEvent& e) {
+    switch (GetSelection()) {
+      case 0:
+        m_params.data_protocol = PROTO_NMEA0183;
+        break;
+      case 1:
+        m_params.data_protocol = PROTO_NMEA2000;
+        break;
+      default:
+        assert(false && "Illegal protocol combobox value");
+    };
+    e.Skip();
+  }
+};  // ProtocolChoice
+
 /** Garnin mode checkbox. */
 class GarminCheckBox : public wxCheckBox, public Reloadable {
 public:
@@ -366,7 +411,6 @@ public:
 
     SetSizer(wbox);
     wbox->Layout();
-    wxWindow::Show();
   }
 
   void Reload() override { SetSelectedType(m_params.type); }
@@ -423,7 +467,7 @@ private:
   void OnClick(wxCommandEvent& e) {
     auto type = GetSelectedType();
     m_params.type = type;
-    m_on_click((type));
+    m_on_click(type);
     e.Skip();
   }
 };
@@ -814,7 +858,7 @@ private:
   }
 };  // InternalGpsConfigPanel
 
-/** Configure windows-only canable connection. */
+/** Configure windows-only SLcan connection. */
 class CanableConfigPanel : public wxPanel, public Reloadable {
 
   class PortCtrl : public wxTextCtrl, public Reloadable {
@@ -965,40 +1009,6 @@ class SerialConfigPanel : public wxPanel {
     }
   };  // BaudChoice
 
-  /** Select serial NMEA0183/NMEA2000 protocol combobox. */
-  class ProtocolChoice : public wxChoice, public Reloadable {
-  public:
-    ProtocolChoice(wxWindow* parent, DataProtocol& protocol)
-        : wxChoice(parent, wxID_ANY), m_protocol(protocol) {
-      ProtocolChoice::Reload();
-      Bind(wxEVT_CHOICE, [&](wxCommandEvent& e) { OnChange(e); });
-    };
-
-    void Reload() override { LoadProtocols(); }
-
-  private:
-    DataProtocol& m_protocol;
-
-    void OnChange(wxCommandEvent& e) {
-      std::string protocol = GetStringSelection().ToStdString();
-      if (protocol == "0")
-        m_protocol = PROTO_NMEA0183;
-      else if (protocol == "1")
-        m_protocol = PROTO_NMEA2000;
-      else
-        wxLogWarning("Illegal serial protocol %s", protocol.c_str());
-      e.Skip();
-    }
-
-    void LoadProtocols() {
-      Clear();
-      Append("NMEA 0183");
-      Append("NMEA 2000");
-      SetSelection(0);
-      if (m_protocol == PROTO_NMEA2000) SetSelection(1);
-    }
-  };  //  ProtocolChoice
-
   class SerialParamsGrid : public wxFlexGridSizer {
   public:
     SerialParamsGrid(wxWindow* parent, ConnectionParams& params)
@@ -1014,7 +1024,7 @@ class SerialConfigPanel : public wxPanel {
       Add(new wxStaticText(parent, wxID_ANY, _("Baudrate")), text_flags);
       Add(new BaudChoice(parent, m_params.baudrate), flags);
       Add(new wxStaticText(parent, wxID_ANY, _("Protocol")), text_flags);
-      Add(new ProtocolChoice(parent, m_params.data_protocol), flags);
+      Add(new ProtocolChoice(parent, m_params), flags);
       Add(new wxStaticText(parent, wxID_ANY, _("User Comment")), text_flags);
       Add(new CommentText(parent, m_params.user_comment),
           wxSizerFlags(1).Border().Expand());
@@ -1111,51 +1121,6 @@ class NetConfigPanel : public wxPanel {
   private:
     std::function<void()> m_on_choice;
   };
-
-  /** NMEA1083/NMEA2000 user choice widget. */
-  class ProtocolChoice : public wxChoice, public Reloadable {
-  public:
-    ProtocolChoice(wxWindow* parent, ConnectionParams& params)
-        : wxChoice(parent, wxID_ANY), m_params(params) {
-      ProtocolChoice::Reload();
-      Bind(wxEVT_CHOICE, [&](wxCommandEvent& e) { OnChoice(e); });
-    }
-
-    void Reload() override {
-      Clear();
-      Append("NMEA 0183");
-      Append("NMEA 2000");
-      switch (m_params.data_protocol) {
-        case PROTO_NMEA0183:
-          SetSelection(0);
-          break;
-        case PROTO_NMEA2000:
-          SetSelection(1);
-          break;
-        default:
-          assert(false && "Illegal SignalK protocol");
-          break;
-      }
-      Enable();
-    }
-
-  private:
-    ConnectionParams& m_params;
-
-    void OnChoice(wxCommandEvent& e) {
-      switch (GetSelection()) {
-        case 0:
-          m_params.data_protocol = PROTO_NMEA0183;
-          break;
-        case 1:
-          m_params.data_protocol = PROTO_NMEA2000;
-          break;
-        default:
-          assert(false && "Illegal protocol combobox value");
-      };
-      e.Skip();
-    }
-  };  // ProtocolChoice
 
   /** Network address text entry. */
   class AddressTextCtrl : public TextCtrlWithHelp, public Reloadable {
