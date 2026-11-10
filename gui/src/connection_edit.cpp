@@ -316,9 +316,8 @@ private:
  */
 class TypeButtons : public wxPanel, public Reloadable {
 public:
-  explicit TypeButtons(wxWindow* parent,
-                       std::function<void(ConnectionType)> on_click,
-                       ConnectionParams& params)
+  TypeButtons(wxWindow* parent, std::function<void(ConnectionType)> on_click,
+              ConnectionParams& params)
       : wxPanel(parent, wxID_ANY),
         m_serial_btn(new wxRadioButton(this, wxID_ANY, _("Serial"))),
         m_net_btn(new wxRadioButton(this, wxID_ANY, _("Network"))),
@@ -422,7 +421,9 @@ private:
   }
 
   void OnClick(wxCommandEvent& e) {
-    m_on_click(GetSelectedType());
+    auto type = GetSelectedType();
+    m_params.type = type;
+    m_on_click((type));
     e.Skip();
   }
 };
