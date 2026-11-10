@@ -43,7 +43,6 @@
 #include <wx/platinfo.h>
 #include <wx/radiobut.h>
 #include <wx/sizer.h>
-#include <wx/regex.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/string.h>
@@ -391,11 +390,11 @@ public:
       m_can_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
       wbox->Add(m_can_btn, wxSizerFlags().Border());
     }
-    if (IsWindows()) {
-      m_canable_btn = new wxRadioButton(this, wxID_ANY, _("Canable (SLCAN)"));
-      m_canable_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
-      wbox->Add(m_canable_btn, wxSizerFlags().Border());
-    }
+    // if (IsWindows()) {
+    m_canable_btn = new wxRadioButton(this, wxID_ANY, _("Canable (SLCAN)"));
+    m_canable_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
+    wbox->Add(m_canable_btn, wxSizerFlags().Border());
+    // }
     if (OCPNPlatform::hasInternalGPS()) {
       m_internal_gps_btn = new wxRadioButton(this, wxID_ANY, _("Internal GPS"));
       m_internal_gps_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
@@ -427,13 +426,13 @@ public:
         m_can_btn->SetValue(true);
         break;
       case ConnectionType::CANABLE:
-        m_canable_btn->SetValue(true);
+        if (m_canable_btn) m_canable_btn->SetValue(true);
         break;
       case ConnectionType::INTERNAL_GPS:
-        m_internal_gps_btn->SetValue(true);
+        if (m_internal_gps_btn) m_internal_gps_btn->SetValue(true);
         break;
       case ConnectionType::INTERNAL_BT:
-        m_internal_bt_btn->SetValue(true);
+        if (m_internal_bt_btn) m_internal_bt_btn->SetValue(true);
         break;
       default:
         assert(false && "Illegal connection type");
@@ -486,7 +485,8 @@ class FilterConfigPanel : public wxPanel {
           m_list(list) {
       auto radio_btn_box = new wxBoxSizer(wxHORIZONTAL);
       m_accept_btn =
-          new wxRadioButton(parent, wxID_ANY, _("Accept only sentences"));
+          new wxRadioButton(parent, wxID_ANY, _("Accept only sentences"),
+                            wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
       m_ignore_btn = new wxRadioButton(parent, wxID_ANY, _("Ignore sentences"));
       radio_btn_box->Add(m_accept_btn, wxSizerFlags().Border());
       radio_btn_box->Add(m_ignore_btn, wxSizerFlags().Border());
@@ -753,7 +753,9 @@ public:
 
   ~InternalBtConfigPanel() override { m_scan_timer.Stop(); }
 
-  void Reload() override {}
+  void Reload() override {
+    if (m_params.type == ConnectionType::INTERNAL_BT) SetFixedParams();
+  }
 
 private:
   ScanTimer m_scan_timer;
@@ -764,6 +766,15 @@ private:
   int m_bt_no_change_counter;
   wxArrayString m_bt_scan_results;
   int m_bt_last_result_count;
+
+  /** Hardcoded values not directly used by this panel. */
+  void SetFixedParams() {
+    m_params.direction = PortDirection::kInOut;
+    m_params.network_address = "";
+    m_params.network_port = 0;
+    m_params.net_protocol = PROTO_UNDEFINED;
+    m_params.baudrate = 0;
+  }
 
   void OnClick(wxCommandEvent& event) {
     if (m_bt_scanning)
@@ -828,7 +839,7 @@ private:
 };
 
 /** Configure internal GPS usage, usually on Android */
-class InternalGpsConfigPanel : public wxPanel {
+class InternalGpsConfigPanel : public wxPanel, public Reloadable {
 public:
   InternalGpsConfigPanel(wxWindow* parent, ConnectionParams& params)
       : wxPanel(parent, wxID_ANY), m_params(params) {
@@ -845,11 +856,14 @@ public:
     SetParams();
   }
 
+  void Reload() override {
+    if (m_params.type == ConnectionType ::INTERNAL_GPS) SetParams();
+  }
+
 private:
   ConnectionParams& m_params;
 
   void SetParams() {
-    m_params.type = ConnectionType::INTERNAL_GPS;
     m_params.network_address = "";
     m_params.network_port = 0;
     m_params.net_protocol = PROTO_UNDEFINED;
@@ -861,21 +875,34 @@ private:
 /** Configure windows-only SLcan connection. */
 class CanableConfigPanel : public wxPanel, public Reloadable {
 
+  /** Hardcoded values not directly modified by this panel. */
+  static void SetFixedParams(ConnectionParams& params) {
+    params.data_protocol = PROTO_NMEA2000;
+    params.direction = PortDirection::kInOut;
+    params.network_address = "";
+    params.network_port = 0;
+    params.net_protocol = PROTO_UNDEFINED;
+    params.baudrate = 0;
+  }
+
   class PortCtrl : public wxTextCtrl, public Reloadable {
   public:
-    PortCtrl(wxWindow* parent, wxString& port)
-        : wxTextCtrl(parent, wxID_ANY), m_port(port) {
-      wxTextCtrl::SetValue(m_port);
+    PortCtrl(wxWindow* parent, ConnectionParams& params)
+        : wxTextCtrl(parent, wxID_ANY), m_params(params) {
+      wxTextCtrl::SetValue(m_params.serial_port);
       Bind(wxEVT_TEXT, [&](wxCommandEvent& e) {
-        m_port = GetValue();
+        m_params.serial_port = GetValue();
         e.Skip();
       });
     }
 
-    void Reload() override { SetValue(m_port); }
+    void Reload() override {
+      if (m_params.type == ConnectionType::CANABLE)
+        SetValue(m_params.serial_port);
+    }
 
   private:
-    wxString& m_port;
+    ConnectionParams& m_params;
   };
 
 public:
@@ -889,7 +916,7 @@ public:
     auto ctrl_flags = wxSizerFlags(1).Expand();
     grid_sizer->Add(new wxStaticText(this, wxID_ANY, _("Data source")),
                     label_flags);
-    auto port_text_ctrl = new PortCtrl(this, m_params.serial_port);
+    auto port_text_ctrl = new PortCtrl(this, m_params);
     port_text_ctrl->SetMinSize(wxSize(50 * wxWindow::GetCharWidth(), -1));
     grid_sizer->Add(port_text_ctrl, ctrl_flags);
     grid_sizer->Add(new wxStaticText(this, wxID_ANY, "User comment"),
@@ -901,27 +928,19 @@ public:
     SetSizer(vbox);
 
     wxWindowBase::Layout();
-    SetParams();
   }
 
-  void Reload() override { SetParams(); }
+  void Reload() override {
+    if (m_params.type == ConnectionType::CANABLE) SetFixedParams(m_params);
+  }
 
 private:
   ConnectionParams& m_params;
 
-  void SetParams() {
-    m_params.type = ConnectionType::CANABLE;
-    m_params.data_protocol = PROTO_NMEA2000;
-    m_params.direction = PortDirection::kInOut;
-    m_params.network_address = "";
-    m_params.network_port = 0;
-    m_params.net_protocol = PROTO_UNDEFINED;
-    m_params.baudrate = 0;
-  }
 };  // CanableConfigPanel
 
 /** Configure serial connection port, baudrate, etc. */
-class SerialConfigPanel : public wxPanel {
+class SerialConfigPanel : public wxPanel, public Reloadable {
   /** Select serial port combobox. */
   class PortCombo : public wxComboBox, public Reloadable {
   public:
@@ -1090,6 +1109,17 @@ public:
     wxWindow::Show();
   }
 
+  void Reload() override {
+    if (m_params.type != ConnectionType::SERIAL) return;
+    if (m_params.net_protocol != NetworkProtocol::PROTO_UNDEFINED) return;
+
+    m_params.net_protocol = NetworkProtocol::TCP;
+    m_params.data_protocol = PROTO_NMEA0183;
+    m_params.direction = PortDirection::kInput;
+    m_params.network_address = "";
+    m_params.network_port = 0;
+  }
+
 private:
   ConnectionParams& m_params;
   wxWindow* m_advanced_panel;
@@ -1188,7 +1218,7 @@ class NetConfigPanel : public wxPanel {
   };
 
   /** Overall grid layout for various attribute widgets */
-  class NetGrid : public wxFlexGridSizer {
+  class NetGrid : public wxFlexGridSizer, public Reloadable {
   public:
     NetGrid(wxWindow* parent, ConnectionParams& params,
             InputOutputPanel* in_out_panel)
@@ -1259,7 +1289,7 @@ class NetConfigPanel : public wxPanel {
     void Reload() {
       std::string view;
       bool is_expert;
-      if (IsDefaultParams(&m_params)) {
+      if (IsDefaultParams(&m_params) || m_params.type != SERIAL) {
         view = kTcpDevice;
         is_expert = false;
       } else {
@@ -1339,6 +1369,7 @@ class NetConfigPanel : public wxPanel {
     }
 
     void OnConnectionTypeChange() {
+      if (m_params.type != ConnectionType::NETWORK) return;
       int selection = m_connection_type_choice->GetSelection();
       if (selection == wxNOT_FOUND) return;
       std::string view =
@@ -1389,6 +1420,10 @@ class NetConfigPanel : public wxPanel {
     }
 
     void ConfigureControlsForView(const std::string& view) {
+      if (m_params.type != ConnectionType::NETWORK) {
+        m_connection_type_choice->SetSelection(0);
+        return;
+      }
       int selection = m_connection_type_choice->GetSelection();
       assert(selection != wxNOT_FOUND);
       auto found =
@@ -1791,7 +1826,9 @@ private:
   void Reload() { DoReload(this); }
 
   void OnTypeBtnClick(ConnectionType ct) {
+    m_params.type = ct;
     m_config_panel->SetActivePanel(ct);
+    Reload();
     Layout();
   }
 

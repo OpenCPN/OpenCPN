@@ -38,6 +38,8 @@
 #include <wx/textctrl.h>
 #include <wx/window.h>
 
+#include "libgui/expand_panel.h"
+
 #include "model/base_platform.h"
 #include "model/comm_drv_factory.h"
 #include "model/comm_util.h"
@@ -55,11 +57,9 @@
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
-#include "ocpn_platform.h"
 #include "options.h"
 #include "priority_gui.h"
 #include "std_filesystem.h"
-#include "libgui/expand_panel.h"
 
 static constexpr auto TopScrollWindowName = "TopScroll";
 
@@ -190,8 +190,7 @@ private:
   ColorScheme m_cs;
 };
 
-/** std::sort support: Compare twSetInitialSettingso ConnectionParams w r t
- * given column */
+/** std::sort support: Compare two ConnectionParams w r t given column */
 class ConnCompare {
 public:
   explicit ConnCompare(int col) : m_col(col) {}
@@ -441,7 +440,7 @@ public:
   /**
    * Find index in m_connections for given pointer.
    * @return positive index if found, else -1;
-   * */
+   */
   int FindConnectionIndex(const ConnectionParams* cp) const {
     using namespace std;
     auto key = cp->GetKey();
