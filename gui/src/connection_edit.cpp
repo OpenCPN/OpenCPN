@@ -227,7 +227,7 @@ std::vector<std::string> can_if_candidates;
  *   - When created, widget state is updated from parameters.
  *   - WHen user modifies widget state parameter(s) is updated.
  *   - When external code changes the parameter(s) it invokes Reload()
- *     which updates the widget state.
+ *     which synchronizes widget state with parameters.
  */
 class Reloadable {
 public:
@@ -815,7 +815,7 @@ private:
 };  // InternalGpsConfigPanel
 
 /** Configure windows-only canable connection. */
-class CanableConfigPanel : public wxPanel {
+class CanableConfigPanel : public wxPanel, public Reloadable {
 
   class PortCtrl : public wxTextCtrl, public Reloadable {
   public:
@@ -859,6 +859,8 @@ public:
     wxWindowBase::Layout();
     SetParams();
   }
+
+  void Reload() override { SetParams(); }
 
 private:
   ConnectionParams& m_params;
