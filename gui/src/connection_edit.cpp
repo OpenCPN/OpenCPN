@@ -114,6 +114,7 @@ static const std::string kGpsdClient = _("Gpsd client");
 static const std::string kSignalkClient = _("SignalK client");
 static const std::string kTcpServer = _("TCP Server");
 static const std::string kUdpInput = _("UDP Receive");
+static const std::string kUdpInputOutput = _("UDP Receive and Send");
 static const std::string kMulticastServer = _("UDP Multicast Receive and Send");
 static const std::string kMulticastClient = _("UDP Multicast Send");
 static const std::string kDefaultGpsdPort = "2947";
@@ -126,8 +127,9 @@ static const std::vector<std::string> kBasicNetViews = {
 
 static const std::vector<std::string> kAdvancedNetViews = {
     // First items matches kBasicNetViews
-    kTcpClient,     kUdpInput,  kUdpOutput,       kGpsdClient,
-    kSignalkClient, kTcpServer, kMulticastClient, kMulticastServer};
+    kTcpClient,      kUdpInput,        kUdpOutput,
+    kGpsdClient,     kSignalkClient,   kTcpServer,
+    kUdpInputOutput, kMulticastClient, kMulticastServer};
 
 #ifdef __ANDROID__
 static bool IsAndroid() { return true; }
@@ -1379,7 +1381,7 @@ class NetConfigPanel : public wxPanel {
         m_params.net_protocol = NetworkProtocol::TCP;
       else if (view == kUdpReceive || view == kUdpInput || view == kUdpSend ||
                view == kUdpOutput || view == kMulticastClient ||
-               view == kMulticastServer)
+               view == kMulticastServer || view == kUdpInputOutput)
         m_params.net_protocol = NetworkProtocol::UDP;
       else
         assert(false && "Cannot handle view");
@@ -1406,7 +1408,9 @@ class NetConfigPanel : public wxPanel {
         case NetworkProtocol::SIGNALK:
           return kSignalkDevice;
         case NetworkProtocol::UDP:
-          return is_server ? kUdpReceive : kUdpSend;
+          if (!is_server) return kUdpSend;
+          if (cp->direction == PortDirection::kInOut) return kUdpInputOutput;
+          return kUdpReceive;
         case NetworkProtocol::TCP:
           return is_server ? kTcpServer : kTcpDevice;
         default:
@@ -1443,12 +1447,13 @@ class NetConfigPanel : public wxPanel {
         if (m_port_textctrl->IsPristine()) m_port_textctrl->SetHelp(kPortHelp);
         m_in_out_panel->EnableInput();
         m_in_out_panel->EnableOutput();
-      } else if (view == kUdpReceive || view == kUdpInput) {
+      } else if (view == kUdpReceive || view == kUdpInput ||
+                 view == kUdpInputOutput) {
         m_address_label->Hide();
         m_address_textctrl->SetServerMode();
         m_address_textctrl->Hide();
         if (m_port_textctrl->IsPristine()) m_port_textctrl->SetHelp(kPortHelp);
-        m_in_out_panel->SetOutput(false);
+        m_in_out_panel->SetOutput(view == kUdpInputOutput);
         m_in_out_panel->SetInput(true);
       } else if (view == kUdpSend || view == kUdpOutput) {
         m_address_textctrl->SetClientMode(kAddressUdpHelp);
