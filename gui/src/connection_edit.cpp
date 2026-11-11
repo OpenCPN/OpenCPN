@@ -68,7 +68,6 @@
 #include "qdebug.h"
 #endif
 
-// #include "connection_edit.h"
 #include "connection_edit.h"
 
 #include "libgui/text_ctrl_w_help.h"
@@ -175,7 +174,7 @@ static bool CheckPort(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
                                _("OpenCPN error"), wxOK | wxICON_ERROR);
     dlg.ShowModal();
     return false;
-  };
+  }
   int port = 0;
   try {
     port = std::stoi(ctrl.GetValue().ToStdString());
@@ -203,7 +202,7 @@ static bool CheckAddress(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
                                _("OpenCPN error"), wxOK | wxICON_ERROR);
     dlg.ShowModal();
     return false;
-  };
+  }
   // Checking the address requires using gethostbyname() or so since it
   // could be a hostname. Not worthwhile in this context.
   return true;
@@ -239,8 +238,12 @@ public:
 /** NMEA1083/NMEA2000 user choice widget. */
 class ProtocolChoice : public wxChoice, public Reloadable {
 public:
-  ProtocolChoice(wxWindow* parent, ConnectionParams& params)
-      : wxChoice(parent, wxID_ANY), m_params(params) {
+  ProtocolChoice(
+      wxWindow* parent, ConnectionParams& params,
+      std::function<void()> on_change = [] {})
+      : wxChoice(parent, wxID_ANY),
+        m_params(params),
+        m_on_change(std::move(on_change)) {
     ProtocolChoice::Reload();
     Bind(wxEVT_CHOICE, [&](wxCommandEvent& e) { OnChoice(e); });
   }
@@ -265,6 +268,7 @@ public:
 
 private:
   ConnectionParams& m_params;
+  std::function<void()> m_on_change;
 
   void OnChoice(wxCommandEvent& e) {
     switch (GetSelection()) {
@@ -276,7 +280,8 @@ private:
         break;
       default:
         assert(false && "Illegal protocol combobox value");
-    };
+    }
+    m_on_change();
     e.Skip();
   }
 };  // ProtocolChoice
@@ -390,11 +395,11 @@ public:
       m_can_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
       wbox->Add(m_can_btn, wxSizerFlags().Border());
     }
-    // if (IsWindows()) {
-    m_canable_btn = new wxRadioButton(this, wxID_ANY, _("Canable (SLCAN)"));
-    m_canable_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
-    wbox->Add(m_canable_btn, wxSizerFlags().Border());
-    // }
+    if (IsWindows()) {
+      m_canable_btn = new wxRadioButton(this, wxID_ANY, _("Canable (SLCAN)"));
+      m_canable_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
+      wbox->Add(m_canable_btn, wxSizerFlags().Border());
+    }
     if (OCPNPlatform::hasInternalGPS()) {
       m_internal_gps_btn = new wxRadioButton(this, wxID_ANY, _("Internal GPS"));
       m_internal_gps_btn->Bind(wxEVT_RADIOBUTTON, on_clicked);
@@ -1221,11 +1226,14 @@ class NetConfigPanel : public wxPanel {
   class NetGrid : public wxFlexGridSizer, public Reloadable {
   public:
     NetGrid(wxWindow* parent, ConnectionParams& params,
-            InputOutputPanel* in_out_panel)
+            InputOutputPanel* in_out_panel,
+            std::function<void(DataProtocol)> on_protocol_change)
         : wxFlexGridSizer(2),
           m_parent(parent),
           m_params(params),
-          m_in_out_panel(in_out_panel) {
+          m_in_out_panel(in_out_panel),
+          m_on_protocol_change(std::move(on_protocol_change)) {
+
       // Longest help text in address and port:
       static const wxSize kHelpSize = parent->GetTextExtent(kAddressMcastHelp);
       AddGrowableCol(1);
@@ -1252,7 +1260,9 @@ class NetConfigPanel : public wxPanel {
       Add(m_connection_type_choice, flags);
 
       m_protocol_label = new wxStaticText(parent, wxID_ANY, _("Data Protocol"));
-      m_protocol_choice = new ProtocolChoice(parent, m_params);
+      m_protocol_choice = new ProtocolChoice(parent, m_params, [&] {
+        m_on_protocol_change(m_params.data_protocol);
+      });
       Add(m_protocol_label, label_flags);
       Add(m_protocol_choice, flags);
 
@@ -1286,7 +1296,7 @@ class NetConfigPanel : public wxPanel {
     }
 
     /** Update GUI elements from m_params values. */
-    void Reload() {
+    void Reload() override {
       std::string view;
       bool is_expert;
       if (IsDefaultParams(&m_params) || m_params.type != SERIAL) {
@@ -1310,6 +1320,7 @@ class NetConfigPanel : public wxPanel {
     wxWindow* m_parent;
     ConnectionParams& m_params;
     InputOutputPanel* m_in_out_panel;
+    std::function<void(DataProtocol)> m_on_protocol_change;
     wxStaticText* m_expert_mode_label;
     ExpertModeCheckBox* m_expert_mode_checkbox;
     wxStaticText* m_connection_type_label;
@@ -1452,9 +1463,9 @@ class NetConfigPanel : public wxPanel {
         m_in_out_panel->EnableOutput();
       } else if (view == kUdpReceive || view == kUdpInput ||
                  view == kUdpInputOutput) {
-        m_address_label->Hide();
-        m_address_textctrl->SetServerMode();
-        m_address_textctrl->Hide();
+        m_address_label->Show(view == kUdpInputOutput);
+        if (view != kUdpInputOutput) m_address_textctrl->SetServerMode();
+        m_address_textctrl->Show(view == kUdpInputOutput);
         if (m_port_textctrl->IsPristine()) m_port_textctrl->SetHelp(kPortHelp);
         m_in_out_panel->SetOutput(view == kUdpInputOutput);
         m_in_out_panel->SetInput(true);
@@ -1521,8 +1532,11 @@ class NetConfigPanel : public wxPanel {
   class NetGridPanel : public wxPanel, public Reloadable {
   public:
     NetGridPanel(wxWindow* parent, ConnectionParams& params,
-                 InputOutputPanel* in_out_panel)
-        : wxPanel(parent), m_net_grid(new NetGrid(this, params, in_out_panel)) {
+                 InputOutputPanel* in_out_panel,
+                 std::function<void(DataProtocol)> on_protocol_change)
+        : wxPanel(parent),
+          m_net_grid(new NetGrid(this, params, in_out_panel,
+                                 std::move(on_protocol_change))) {
       SetSizer(m_net_grid);
       wxWindowBase::Layout();
     }
@@ -1541,20 +1555,25 @@ public:
     auto flags = wxSizerFlags().Border();
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto input_output_panel = new InputOutputPanel(this, m_params);
-    m_grid_panel = new NetGridPanel(this, m_params, input_output_panel);
+    m_filter_panel = new FilterConfigPanel(this, m_params);
+    m_advanced_panel = new ExpandablePanel(this, m_filter_panel, [&] {
+      GetParent()->Layout();
+      FitInside();
+    });
+    auto on_proto_change = [&](DataProtocol p) {
+      m_advanced_panel->EnableChild(p == DataProtocol::PROTO_NMEA0183);
+    };
+    m_grid_panel =
+        new NetGridPanel(this, m_params, input_output_panel, on_proto_change);
     vbox->Add(m_grid_panel, flags.Expand());
     vbox->Add(input_output_panel, flags);
 
-    auto advanced_panel = new FilterConfigPanel(this, m_params);
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
-    hbox->Add(new ExpandablePanel(this, advanced_panel, [&] {
-      GetParent()->Layout();
-      FitInside();
-    }));
+    hbox->Add(m_advanced_panel);
     if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     vbox->Add(hbox, flags.Expand());
-    vbox->Add(advanced_panel, flags.Expand());
+    vbox->Add(m_filter_panel, flags.Expand());
 
     SetSizer(vbox);
     wxWindow::Layout();
@@ -1574,6 +1593,8 @@ public:
 private:
   ConnectionParams& m_params;
   NetGridPanel* m_grid_panel;
+  FilterConfigPanel* m_filter_panel;
+  ExpandablePanel* m_advanced_panel;
 };  // NetConfigPanel
 
 /** Configure Linux socketcan connection */
@@ -1709,7 +1730,7 @@ public:
     wxWindowBase::FitInside();
   }
 
-  virtual ~ConfigPanel() = default;
+  ~ConfigPanel() override = default;
 
   void SetActivePanel(ConnectionType type) {
     m_net_config_panel->Show(type == ConnectionType::NETWORK);
