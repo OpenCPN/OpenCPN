@@ -311,7 +311,7 @@ public:
       ev.Skip();
     });
     GetGridWindow()->Bind(wxEVT_MOUSEWHEEL,
-                          [&](const wxMouseEvent& ev) { OnWheel(ev); });
+                          [&](wxMouseEvent& ev) { OnWheel(ev); });
     // wxGridEvent.GetCol() and GetRow() are not const until wxWidgets 3.2
     Bind(wxEVT_GRID_LABEL_LEFT_CLICK,
          [&](wxGridEvent& ev) { HandleSort(ev.GetCol()); });
@@ -358,10 +358,14 @@ public:
   }
 
   /** Mouse wheel: scroll the TopScroll window */
-  static void OnWheel(const wxMouseEvent& ev) {
+  void OnWheel(wxMouseEvent& ev) {
+    if (!IsShown()) {
+      ev.Skip();
+      return;
+    }
     auto w =
         dynamic_cast<wxScrolledWindow*>(FindWindowByName(TopScrollWindowName));
-    assert(w && "No TopScroll window found");
+    if (!w) return;
     int xpos;
     int ypos;
     w->GetViewStart(&xpos, &ypos);
@@ -550,7 +554,8 @@ private:
   }
 
   /** Handle mouse movements i.e., the tooltips. */
-  void OnMouseMove(const wxMouseEvent& ev) {
+  void OnMouseMove(wxMouseEvent& ev) {
+    if (!IsShown()) return;
     const wxPoint pt = ev.GetPosition();
     int row = YToRow(pt.y);
     int col = XToCol(pt.x);
@@ -558,6 +563,7 @@ private:
     if (row * 7 + col == m_last_tooltip_cell) return;
     m_last_tooltip_cell = row * 7 + col;
     GetGridWindow()->SetToolTip(m_tooltips[row][col]);
+    ev.Skip();
   }
 
   /** Handle connections driver statistics status changes event. */
@@ -1061,6 +1067,7 @@ public:
   }
 
   void SwitchToEditor() {
+    ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     m_top_panel->Hide();  // TopPanel
     m_edit_panel->Scroll(0, 0);
     DimeControl(m_edit_panel);
@@ -1071,6 +1078,7 @@ public:
 
   void SwitchToGrid() {
     m_edit_panel->Hide();
+    ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
     m_top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
     g_options->ShowOKButtons(true);
     Layout();

@@ -56,7 +56,7 @@ public:
                                            ConnEditCallback on_ok);
 
 protected:
-  AbstractConnectionEditDlg(wxWindow* parent) : wxPanel(parent) {}
+  explicit AbstractConnectionEditDlg(wxWindow* parent) : wxPanel(parent) {}
 };
 
 #endif  // COnn_EDIT_H

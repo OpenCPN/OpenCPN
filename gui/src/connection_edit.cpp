@@ -226,6 +226,10 @@ std::vector<std::string> can_if_candidates;
  *   - WHen user modifies widget state parameter(s) is updated.
  *   - When external code changes the parameter(s) it invokes Reload()
  *     which synchronizes widget state with parameters.
+ *
+ * @Note: This interface is used by Reload()  which traverses the window
+ * tree. Thus a Reloadable normally should be a wxWindow subclass and not
+ * for example a sizer.
  */
 class Reloadable {
 public:
@@ -327,7 +331,7 @@ public:
       : TextCtrlWithHelp(parent, kPortHelp), m_params(params) {
     PortTextCtrl::Reload();
     Bind(wxEVT_TEXT, [&](wxCommandEvent& e) { OnChange(e); });
-  }
+  };
 
   void Reload() override {
     auto string = std::to_string(m_params.network_port);
@@ -631,7 +635,7 @@ class InputOutputPanel : public wxPanel {
         m_on_change();
         ev.Skip();
       });
-    }
+    };
 
     void Reload() override {
       SetValue(m_params.direction != PortDirection::kInput);
@@ -750,7 +754,7 @@ public:
 
     auto advanced_panel = new AdvancedPanel(this, m_params);
     auto adv_box = new wxBoxSizer(wxHORIZONTAL);
-    if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
+    // if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")), flags);
     auto on_expand_click = [&] {
       Layout();
@@ -1109,7 +1113,7 @@ public:
     auto advanced_ctrl = new ExpandablePanel(this, m_advanced_panel,
                                              [&] { GetParent()->Layout(); });
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
-    if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
+    // if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")), flags);
     hbox->Add(advanced_ctrl, flags);
 
@@ -1582,7 +1586,7 @@ public:
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
     hbox->Add(m_advanced_panel);
-    if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
+    // if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     vbox->Add(hbox, flags.Expand());
     vbox->Add(m_filter_panel, flags.Expand());
 
@@ -1841,7 +1845,6 @@ public:
 private:
   ConnEditCallback m_on_ok;
   std::function<void()> m_on_cancel;
-  // std::shared_ptr<ConnectionParams> m_start_params;
   ConnectionParams m_params;
 
   TypeButtons* m_type_buttons;
