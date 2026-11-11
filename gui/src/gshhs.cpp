@@ -752,11 +752,21 @@ static inline bool my_intersects(const wxLineF &line1, const wxLineF &line2) {
 
 #define INTER_LIMIT 1e-7
   double denominator = ay * bx - ax * by;
-  if (denominator < 1e-10) {
+  // The sign of the denominator depends on the order of the end points, so
+  // only its magnitude says whether the lines are (nearly) parallel.
+  if (fabs(denominator) < 1e-10) {
     if (fabs((y1 * ax - ay * x1) * bx - (y3 * bx - by * x3) * ax) > INTER_LIMIT)
       return false; /* different intercepts, no intersection */
     if (fabs((x1 * ay - ax * y1) * by - (x3 * by - bx * y3) * ay) > INTER_LIMIT)
       return false; /* different intercepts, no intersection */
+
+    /* Same line: the segments only touch if their extents overlap. */
+    if (wxMax(x1, x2) < wxMin(x3, x4) - INTER_LIMIT ||
+        wxMax(x3, x4) < wxMin(x1, x2) - INTER_LIMIT)
+      return false;
+    if (wxMax(y1, y2) < wxMin(y3, y4) - INTER_LIMIT ||
+        wxMax(y3, y4) < wxMin(y1, y2) - INTER_LIMIT)
+      return false;
 
     return true;
   }
