@@ -82,7 +82,7 @@ ExpandableIcon::ExpandableIcon(wxWindow* parent,
     m_collapse_bitmap(LoadSvgBitmap(gui_icons::kCollapseSvg, parent)),
     m_expand_bitmap(LoadSvgBitmap(gui_icons::kExpandSvg, parent)),
     m_static_bitmap(new wxStaticBitmap(this, wxID_ANY, m_expand_bitmap)),
-    m_on_toggle(on_toggle) {
+    m_on_toggle(std::move(on_toggle)) {
 
   auto vbox = new wxBoxSizer(wxVERTICAL);
   vbox->Add(m_static_bitmap);
