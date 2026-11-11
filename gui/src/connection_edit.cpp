@@ -1306,9 +1306,11 @@ class NetConfigPanel : public wxPanel {
 
     /** Update GUI elements from m_params values. */
     void Reload() override {
+      if (m_params.type != ConnectionType::NETWORK) return;
+
       std::string view;
       bool is_expert;
-      if (IsDefaultParams(&m_params) || m_params.type != SERIAL) {
+      if (IsDefaultParams(&m_params)) {
         view = kTcpDevice;
         is_expert = false;
       } else {
@@ -1427,8 +1429,8 @@ class NetConfigPanel : public wxPanel {
         case NetworkProtocol::SIGNALK:
           return kSignalkDevice;
         case NetworkProtocol::UDP:
-          if (!is_server) return kUdpSend;
           if (cp->direction == PortDirection::kInOut) return kUdpInputOutput;
+          if (!is_server) return kUdpSend;
           return kUdpReceive;
         case NetworkProtocol::TCP:
           return is_server ? kTcpServer : kTcpDevice;
