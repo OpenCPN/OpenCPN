@@ -66,11 +66,14 @@ public:
   /** Return the managed window which is shown or hidden. */
   wxWindow* GetChild() const { return m_child; }
 
+  /** Enable/disable showing the child. */
+  void EnableChild(bool enable);
+
 protected:
   void OnClick(bool collapse) const;
 
 private:
-  bool m_show;
+  bool m_is_enabled;
   wxWindow* m_child;
   ExpandableIcon* m_expand_icon;
   std::function<void()> m_on_resize;

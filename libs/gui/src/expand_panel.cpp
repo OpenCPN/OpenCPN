@@ -26,7 +26,7 @@
 ExpandablePanel::ExpandablePanel(wxWindow* parent, wxWindow* child,
                                  std::function<void()> on_resize)
     : wxPanel(parent),
-      m_show(false),
+      m_is_enabled(true),
       m_child(child),
       m_expand_icon(new ExpandableIcon(
           this, [&](bool collapsed) { OnClick(collapsed); })),
@@ -40,12 +40,18 @@ ExpandablePanel::ExpandablePanel(wxWindow* parent)
 void ExpandablePanel::Create(wxWindow* child,
                              std::function<void()> on_resize) {
    m_child = child;
-   m_show = false;
    m_on_resize = std::move(on_resize);
    if (m_child) m_child->Hide();
 }
 
 void ExpandablePanel::OnClick(bool collapsed) const {
+  if (!m_is_enabled) return;
   m_child->Show(!collapsed);
   m_on_resize();
+}
+
+void ExpandablePanel::EnableChild(bool enable) {
+  m_child->Show(enable);
+  m_expand_icon->Enable(enable);
+  m_is_enabled = enable;
 }
