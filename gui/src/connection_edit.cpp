@@ -477,10 +477,10 @@ private:
 };
 
 /** Configure input filters: accept or ignore list of sentences. */
-class FilterConfigPanel : public wxPanel {
+class FilterConfigPanel : public wxPanel, public Reloadable {
 
   /** Accept/ignore buttons and  filtered sentences container. */
-  class Statbox : public wxStaticBoxSizer, public Reloadable {
+  class Statbox : public wxStaticBoxSizer {
   public:
     Statbox(wxWindow* parent, ListType& type, wxArrayString& list,
             const std::string& label)
@@ -524,7 +524,7 @@ class FilterConfigPanel : public wxPanel {
                          [&](wxCommandEvent& e) { OnDirectionChange(e); });
     }
 
-    void Reload() override {
+    void Reload() {
       m_accept_btn->SetValue(m_type == ListType::WHITELIST);
       m_ignore_btn->SetValue(m_type == ListType::BLACKLIST);
       auto text = StringArrayToString(m_list);
@@ -570,17 +570,26 @@ public:
       : wxPanel(parent, wxID_ANY), m_params(params) {
     auto* vbox = new wxBoxSizer(wxVERTICAL);
     auto flags = wxSizerFlags().Border();
-    vbox->Add(new Statbox(this, m_params.input_sentence_list_type,
-                          m_params.input_sentence_list, _("Input filtering")),
-              flags);
-    vbox->Add(new Statbox(this, m_params.output_sentence_list_type,
-                          m_params.output_sentence_list, _("Output filtering")),
-              flags);
+    m_input_filter =
+        new Statbox(this, m_params.input_sentence_list_type,
+                    m_params.input_sentence_list, _("Input filtering"));
+    vbox->Add(m_input_filter, flags);
+    m_output_filter =
+        new Statbox(this, m_params.output_sentence_list_type,
+                    m_params.output_sentence_list, _("Output filtering"));
+    vbox->Add(m_output_filter, flags);
     SetSizer(vbox);
     wxWindowBase::Layout();
   }
 
+  void Reload() override {
+    m_output_filter->Reload();
+    m_input_filter->Reload();
+  }
+
 private:
+  Statbox* m_input_filter;
+  Statbox* m_output_filter;
   ConnectionParams& m_params;
 };  // FilterConfigPanel
 

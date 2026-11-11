@@ -163,10 +163,13 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
   }
   return nullptr;
 }
+
 static ConnectionParams* FindConnectionByIface(
     const std::unique_ptr<ConnectionParams>& cp) {
   return FindConnectionByIface(cp.get());
 }
+
+namespace {
 
 /**
  * Custom renderer class for rendering ENABLE in a grid cell.
@@ -699,6 +702,7 @@ public:
     sizer->Add(m_upload_options, flags);
     sizer->Add(new PrioritiesBtn(this), flags);
   }
+
   void SetColorScheme(ColorScheme) {
     DimeControl(m_upload_options);
     Refresh();
@@ -997,6 +1001,8 @@ private:
   GeneralPanel* m_general_panel;
   AdvancedPanel* m_advanced_panel;
 };
+
+}  // anonymous namespace
 
 /** Top window. */
 class EditPanel : public wxScrolled<wxPanel> {
