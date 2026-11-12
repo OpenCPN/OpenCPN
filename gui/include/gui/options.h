@@ -234,6 +234,7 @@ enum {
   ID_CONFIGEDIT_CANCEL,
   ID_ZOOMBUTTONS,
   ID_RASTERZOOM,
+  ID_MBTILES_OPACITY,
   ID_ANCHORALERTAUDIO,
   ID_AISALERTAUDIO,
   ID_AISALERTDIALOG,
@@ -338,6 +339,7 @@ public:
   void OnSyncCogPredClick(wxCommandEvent &event);
   void OnSizeAutoButton(wxCommandEvent &event);
   void OnSizeManualButton(wxCommandEvent &event);
+  void OnMBTilesOpacitySlider(wxCommandEvent &event);
 
 #if defined(__WXGTK__) || defined(__WXQT__)
   void OnChooseFontColor(wxCommandEvent &event);
@@ -453,6 +455,7 @@ public:
   wxSlider *m_pMouse_Zoom_Slider;
   wxSlider *m_pSlider_Zoom_Vector;
   wxSlider *m_pSlider_CM93_Zoom;
+  wxSlider *m_pSlider_MBTiles_Opacity;
   // LIVE ETA OPTION
   wxCheckBox *pSLiveETA;
   wxTextCtrl *pSDefaultBoatSpeed;
