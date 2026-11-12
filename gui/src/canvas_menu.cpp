@@ -63,6 +63,7 @@
 #include "go_to_position_dlg.h"
 #include "kml.h"
 #include "mark_info.h"
+#include "ocpn_frame.h"
 #include "ocpn_platform.h"
 #include "peer_client_dlg.h"
 #include "pluginmanager.h"
@@ -294,7 +295,19 @@ void CanvasMenuHandler::CanvasPopupMenu(int x, int y, int seltype) {
   wxMenu *subMenuRedo = new wxMenu("Redo...Ctrl-Y");
 #endif
   wxMenu *subMenuDebug = new wxMenu("");
-  MenuAppend1(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW, _("Show Data Monitor"));
+
+  // For small devices (e.g. Android phone)...
+  //  Only add Data Monitor  menu item if the device (gFrame) is
+  //  large enough to contain it reasonably
+#ifdef __ANDROID__
+  wxFont *dFont = GetOCPNScaledFont_PlugIn(_("Dialog"));
+  int fwidth;
+  int fheight;
+  gFrame->GetTextExtent("W", &fwidth, &fheight, NULL, NULL, dFont);
+  auto frame_size = gFrame->GetSize();
+  if ((frame_size.x > fwidth * 60) && (frame_size.y > fheight * 18))
+#endif
+    MenuAppend1(subMenuDebug, ID_DGB_MENU_NMEA_WINDOW, _("Show Data Monitor"));
 
   wxMenu *menuFocus = contextMenu;  // This is the one that will be shown
 
