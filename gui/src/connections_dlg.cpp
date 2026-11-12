@@ -986,6 +986,7 @@ public:
       conn_grid->ReloadGrid(TheConnectionParams());
       conn_grid->Show(conn_grid->GetNumberRows() > 0);
       Layout();
+      FitInside();
     };
     m_add_connection_lstnr.Init(m_evt_add_connection,
                                 on_evt_update_connections);

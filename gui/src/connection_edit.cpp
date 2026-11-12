@@ -1373,7 +1373,8 @@ class NetConfigPanel : public wxPanel {
       auto view_str =
           m_connection_type_choice->GetStringSelection().ToStdString();
       if (!view_str.empty()) ConfigureControlsForView(view_str);
-      m_parent->Layout();
+      m_parent->GetParent()->Layout();
+      m_parent->FitInside();
     }
 
     void OnAddressChange(wxFocusEvent& ev) const {
