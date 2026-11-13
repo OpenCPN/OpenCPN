@@ -1110,8 +1110,10 @@ public:
     m_grid = new GridPanel(this, params);
 
     m_advanced_panel = new AdvancedPanel(this, params);
-    auto advanced_ctrl = new ExpandablePanel(this, m_advanced_panel,
-                                             [&] { GetParent()->Layout(); });
+    auto advanced_ctrl = new ExpandablePanel(this, m_advanced_panel, [&] {
+      GetParent()->Layout();
+      FitInside();
+    });
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     // if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")), flags);
@@ -1401,10 +1403,12 @@ class NetConfigPanel : public wxPanel {
       if (selection == wxNOT_FOUND) return;
       std::string view =
           m_connection_type_choice->GetStringSelection().ToStdString();
-      if (view == kTcpDevice || view == kTcpClient || view == kTcpServer ||
-          view == kGpsdClient || view == kGpsdDevice ||
-          view == kSignalkClient || view == kSignalkDevice)
+      if (view == kTcpDevice || view == kTcpClient || view == kTcpServer)
         m_params.net_protocol = NetworkProtocol::TCP;
+      else if (view == kSignalkClient || view == kSignalkDevice)
+        m_params.net_protocol = NetworkProtocol::SIGNALK;
+      else if (view == kGpsdClient || view == kGpsdDevice)
+        m_params.net_protocol = NetworkProtocol::GPSD;
       else if (view == kUdpReceive || view == kUdpInput || view == kUdpSend ||
                view == kUdpOutput || view == kMulticastClient ||
                view == kMulticastServer || view == kUdpInputOutput)
