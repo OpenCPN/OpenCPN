@@ -1079,12 +1079,13 @@ public:
 
   void SwitchToGrid() {
     m_edit_panel->Hide();
-    ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
     m_top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
     g_options->ShowOKButtons(true);
-    Layout();
-    m_edit_panel->Scroll(0, 0);
     m_top_panel->Show();
+    Layout();
+    FitInside();
+    Scroll(0, 0);
+    ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
   }
 
   void HandleEditFinish(std::unique_ptr<ConnectionParams> new_params,
