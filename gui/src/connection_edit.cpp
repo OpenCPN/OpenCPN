@@ -966,7 +966,9 @@ class SerialConfigPanel : public wxPanel, public Reloadable {
         : wxComboBox(parent, wxID_ANY), m_port(port) {
       PortCombo::LoadSerialPorts();
       Bind(wxEVT_COMBOBOX, [&](wxCommandEvent& e) {
-        m_port = GetValue();
+        std::string value = GetValue().ToStdString();
+        size_t pos = value.find(' ');  // Strip away informational info
+        m_port = pos == std::string::npos ? value : value.substr(0, pos);
         e.Skip();
       });
     }
