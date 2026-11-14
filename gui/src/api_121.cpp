@@ -421,15 +421,15 @@ static void SetMinZoomScale(double min_scale) {
 
 static std::shared_ptr<HostApi121::PiPointContext> GetContextAtPoint(
     int x, int y, int canvas_index) {
-  ChartCanvas* cc = g_canvasArray.Item(canvas_index);
-  if (cc) {
-    return cc->GetCanvasContextAtPoint(x, y);
-  } else {
-    auto rstruct = std::make_shared<HostApi121::PiPointContext>();
-    rstruct->object_type = HostApi121::PiContextObjectType::kObjectUnknown;
-    rstruct->object_ident = "";
-    return rstruct;
+  if (static_cast<size_t>(canvas_index) < g_canvasArray.GetCount()) {
+    ChartCanvas* cc = g_canvasArray.Item(canvas_index);
+    if (cc) return cc->GetCanvasContextAtPoint(x, y);
   }
+
+  auto rstruct = std::make_shared<HostApi121::PiPointContext>();
+  rstruct->object_type = HostApi121::PiContextObjectType::kObjectUnknown;
+  rstruct->object_ident = "";
+  return rstruct;
 }
 
 static wxBitmap GetObjectIcon_PlugIn(const wxString& name) {
