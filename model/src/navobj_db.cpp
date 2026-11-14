@@ -1345,7 +1345,7 @@ bool NavObj_dB::UpdateDBRouteAttributes(Route* route) {
     sqlite3_bind_int(stmt, 5, route->IsVisible());
     sqlite3_bind_int(stmt, 6, route->GetSharedWPViz());
     if (route->m_PlannedDeparture.IsValid())
-      sqlite3_bind_int(stmt, 7, route->m_PlannedDeparture.GetTicks());
+      sqlite3_bind_int64(stmt, 7, route->m_PlannedDeparture.GetTicks());
     sqlite3_bind_double(stmt, 8, route->m_PlannedSpeed);
     sqlite3_bind_text(stmt, 9, route->m_TimeDisplayFormat.ToStdString().c_str(),
                       -1, SQLITE_TRANSIENT);
@@ -1634,7 +1634,10 @@ bool NavObj_dB::LoadAllRoutes() {
         reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 4));
     int visibility = sqlite3_column_int(stmt_routes, 5);
     int sharewp_viz = sqlite3_column_int(stmt_routes, 6);
-    time_t planned_departure_ticks = sqlite3_column_int(stmt_routes, 7);
+    const bool has_planned_departure =
+        sqlite3_column_type(stmt_routes, 7) != SQLITE_NULL;
+    const auto planned_departure_ticks =
+        static_cast<time_t>(sqlite3_column_int64(stmt_routes, 7));
     double plan_speed = sqlite3_column_double(stmt_routes, 8);
     std::string time_format =
         reinterpret_cast<const char*>(sqlite3_column_text(stmt_routes, 9));
@@ -1708,7 +1711,8 @@ bool NavObj_dB::LoadAllRoutes() {
         route->m_RouteEndString = end_string.c_str();
         route->SetVisible(visibility == 1);
         route->SetSharedWPViz(sharewp_viz == 1);
-        route->m_PlannedDeparture.Set((time_t)planned_departure_ticks);
+        if (has_planned_departure)
+          route->m_PlannedDeparture.Set(planned_departure_ticks);
         route->m_PlannedSpeed = plan_speed;
         route->m_TimeDisplayFormat = time_format.c_str();
 
