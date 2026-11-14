@@ -12,43 +12,26 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 /**
  * \file
- * Implement expandable.h
+ * Implement expand_panel.h
  */
 
-#include <cassert>
-#include <cstring>
 
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/sizer.h>
-
-#if wxCHECK_VERSION(3, 2, 0) || defined(ocpnUSE_wxBitmapBundle)
-#include <wx/bmpbndl.h>
-#include <iostream>
-#else
-#include <wx/sstream.h>
-#include <wxSVG/svg.h>
-#endif
-
-#include "svg_icons.h"
 #include "expand_panel.h"
 
 ExpandablePanel::ExpandablePanel(wxWindow* parent, wxWindow* child,
                                  std::function<void()> on_resize)
     : wxPanel(parent),
-      m_show(false),
+      m_is_enabled(true),
       m_child(child),
       m_expand_icon(new ExpandableIcon(
           this, [&](bool collapsed) { OnClick(collapsed); })),
-      m_on_resize(on_resize) {
-  if (m_child) OnClick(false);
+      m_on_resize(std::move(on_resize)) {
+  if (m_child) OnClick(true);
 }
 
 ExpandablePanel::ExpandablePanel(wxWindow* parent)
@@ -57,12 +40,18 @@ ExpandablePanel::ExpandablePanel(wxWindow* parent)
 void ExpandablePanel::Create(wxWindow* child,
                              std::function<void()> on_resize) {
    m_child = child;
-   m_show = false;
-   m_on_resize = on_resize;
+   m_on_resize = std::move(on_resize);
    if (m_child) m_child->Hide();
 }
 
-void ExpandablePanel::OnClick(bool collapsed) {
+void ExpandablePanel::OnClick(bool collapsed) const {
+  if (!m_is_enabled) return;
   m_child->Show(!collapsed);
   m_on_resize();
+}
+
+void ExpandablePanel::EnableChild(bool enable) {
+  m_child->Show(enable);
+  m_expand_icon->Enable(enable);
+  m_is_enabled = enable;
 }

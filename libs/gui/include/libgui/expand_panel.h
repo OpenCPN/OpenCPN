@@ -12,9 +12,7 @@
  *   GNU General Public License for more details.                          *
  *                                                                         *
  *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ *   along with this program; if not, see <https://www.gnu.org/licenses/>. *
  **************************************************************************/
 
 #ifndef SHOW_HIDE_WIDGET__H_
@@ -28,7 +26,14 @@
 
 /**
  * An ExpandIcon together with a child window. The child window is
- * hidden or shown depending ong the ExpandIcon state.
+ * hidden or shown depending on the ExpandIcon state.
+ *
+ * Example:
+ *     auto* a_panel = new wxPanel(this, ...);
+ *     auto advanced_ctrl =
+ *         new ExpandablePanel(this, a_panel, [&] { GetParent()->Layout(); });
+ *     some_sizer->Add(advanced_ctrl, wxSizerFlags());
+ *     some_sizer->Add(m_advanced_panel, wxSizerFlags());
  *
  *  \ingroup UI-tools
  */
@@ -36,7 +41,7 @@ class ExpandablePanel : public wxPanel {
 public:
   /**
    * Single step constructor.
-   * @param parent  Containing window
+   * @param parent Containing window
    * @param child Managed window, hidden/showń depending on ExpandIcon state
    * @param on_resize Callback invoked when child becomes hidden or shown.
    */
@@ -61,13 +66,17 @@ public:
   /** Return the managed window which is shown or hidden. */
   wxWindow* GetChild() const { return m_child; }
 
+  /** Enable/disable showing the child. */
+  void EnableChild(bool enable);
+
 protected:
-  void OnClick(bool collapse);
+  void OnClick(bool collapse) const;
 
 private:
-  bool m_show;
+  bool m_is_enabled;
   wxWindow* m_child;
   ExpandableIcon* m_expand_icon;
   std::function<void()> m_on_resize;
 };
+
 #endif  //  SHOW_HIDE_WIDGET__H_

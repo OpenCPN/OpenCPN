@@ -1884,19 +1884,22 @@ bool options::DeletePluginPage(wxScrolledWindow* page) {
   return FALSE;
 }
 
-void options::CreatePanel_NMEA(size_t parent, int border_size,
+void options::CreatePanel_NMEA(size_t position, int border_size,
                                int group_item_spacing) {
-  m_pNMEAForm = AddPage(parent, _("NMEA"));
+  assert(position < m_pListbook->GetPageCount() &&
+         "Illegal NMEA window position");
+  auto panel = new wxPanel(m_pListbook, wxID_ANY);
+  wxString title = m_pListbook->GetPageText(position);
+  m_pListbook->InsertPage(position, panel, title, false, position);
+  m_pListbook->SetSelection(0);  // avoid gtk assertions
+  m_pListbook->DeletePage(position + 1);
+  m_pNMEAForm = panel;
 
-  comm_dialog =
-      std::make_shared<ConnectionsDlg>(m_pNMEAForm, TheConnectionParams());
-  // Hijack the options | Resize event for use by comm_dialog only.
-  // Needs new solution if other pages also have a need to act on it.
-  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) {
-    auto w = m_pListbook->GetCurrentPage();
-    comm_dialog->OnResize(w ? w->GetClientSize() : wxSize());
-    ev.Skip();
-  });
+  comm_dialog = new ConnectionsDlg(m_pNMEAForm, TheConnectionParams());
+  auto vbox = new wxBoxSizer(wxVERTICAL);
+  vbox->Add(comm_dialog, wxSizerFlags(1).Expand());
+  m_pNMEAForm->SetSizer(vbox);
+  m_pNMEAForm->Layout();
 #ifdef __ANDROID__
   comm_dialog->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
@@ -8632,8 +8635,8 @@ void options::DoOnPageChange(size_t page) {
 
   else if (m_pageConnections == i) {
     // Only required on some Windows hosts, but should not hurt. See #4570
-    wxWindow* w = m_pListbook->GetCurrentPage();
-    comm_dialog->OnResize(w ? w->GetClientSize() : wxSize());
+    // wxWindow* w = m_pListbook->GetCurrentPage();
+    // comm_dialog->OnResize(w ? w->GetClientSize() : wxSize()); FIXME (leamas)
   }
 
   else if (m_pageUI == i) {  // 5 is the index of "User Interface" page
