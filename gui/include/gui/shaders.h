@@ -137,14 +137,16 @@ public:
   }
 
   void SetAttributePointerf(const char *name, float *value) {
+    // Disable VBO's (vertex buffer objects) for attributes. This must happen
+    // before glVertexAttribPointer: with a VBO still bound, the client pointer
+    // is taken as an offset into that VBO.
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     GLint aloc = glGetAttribLocation(programId_, name);
     glVertexAttribPointer(aloc, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                           value);
     glEnableVertexAttribArray(aloc);
-
-    // Disable VBO's (vertex buffer objects) for attributes.
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
   GLuint programId() const { return programId_; }
