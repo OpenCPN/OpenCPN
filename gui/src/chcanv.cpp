@@ -8602,7 +8602,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 };
                 auto plugin =
                     dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);
-                if (plugin) plugin->OnTideCurrentClick(info);
+                if (!plugin) continue;
+                plugin->OnTideCurrentClick(info);
                 return true;
               }
             }
@@ -8638,7 +8639,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
                 };
                 auto plugin =
                     dynamic_cast<opencpn_plugin_121 *>(pic->m_pplugin);
-                if (plugin) plugin->OnTideCurrentClick(info);
+                if (!plugin) continue;
+                plugin->OnTideCurrentClick(info);
                 return true;
               }
             }
