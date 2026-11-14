@@ -81,6 +81,7 @@ bool CreateTables(sqlite3* db) {
             longitude REAL NOT NULL,
             timestamp TEXT NOT NULL,
             point_order INTEGER,
+            segment INTEGER NOT NULL DEFAULT 1,
             FOREIGN KEY (track_guid) REFERENCES tracks(guid) ON DELETE CASCADE
         );
 
@@ -174,7 +175,25 @@ bool CreateTables(sqlite3* db) {
 
   if (!executeSQL(db, create_tables_sql)) return false;
 
-  return true;
+  // Existing databases stored every track as a single segment.
+  sqlite3_stmt* stmt;
+  if (sqlite3_prepare_v2(db, "PRAGMA table_info(trk_points)", -1, &stmt,
+                         nullptr) != SQLITE_OK)
+    return false;
+
+  int result;
+  bool has_segment = false;
+  while ((result = sqlite3_step(stmt)) == SQLITE_ROW) {
+    const auto* name =
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+    if (std::string(name) == "segment") has_segment = true;
+  }
+  sqlite3_finalize(stmt);
+  if (result != SQLITE_DONE) return false;
+
+  return has_segment ||
+         executeSQL(db, "ALTER TABLE trk_points ADD COLUMN "
+                        "segment INTEGER NOT NULL DEFAULT 1");
 }
 
 bool TrackExists(sqlite3* db, const std::string& track_guid) {
@@ -237,10 +256,11 @@ bool DeleteAllCommentsForTrack(sqlite3* db, const std::string& track_guid) {
 }
 
 bool InsertTrackPoint(sqlite3* db, const std::string& track_guid, double lat,
-                      double lon, const std::string& timestamp, int i_point) {
+                      double lon, const std::string& timestamp, int i_point,
+                      int segment) {
   const char* sql = R"(
-        INSERT INTO trk_points (track_guid, latitude, longitude, timestamp, point_order)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO trk_points (track_guid, latitude, longitude, timestamp, point_order, segment)
+        VALUES (?, ?, ?, ?, ?, ?)
     )";
   sqlite3_stmt* stmt;
 
@@ -250,6 +270,7 @@ bool InsertTrackPoint(sqlite3* db, const std::string& track_guid, double lat,
     sqlite3_bind_double(stmt, 3, lon);
     sqlite3_bind_text(stmt, 4, timestamp.c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 5, i_point);
+    sqlite3_bind_int(stmt, 6, segment);
     if (sqlite3_step(stmt) != SQLITE_DONE) {
       ReportError("InsertTrackPoint:step");
       sqlite3_finalize(stmt);
@@ -826,7 +847,8 @@ bool NavObj_dB::InsertTrack(Track* track) {
     auto point = track->GetPoint(i);
     //  Add the bare trkpoint
     InsertTrackPoint(m_db, track->m_GUID.ToStdString(), point->m_lat,
-                     point->m_lon, point->GetTimeString(), i);
+                     point->m_lon, point->GetTimeString(), i,
+                     point->m_GPXTrkSegNo);
   }
 
   //  Add HTML links to track
@@ -888,7 +910,8 @@ bool NavObj_dB::UpdateTrack(Track* track) {
     //  Add the bare point
     if (point) {
       InsertTrackPoint(m_db, track->m_GUID.ToStdString(), point->m_lat,
-                       point->m_lon, point->GetTimeString(), i);
+                       point->m_lon, point->GetTimeString(), i,
+                       point->m_GPXTrkSegNo);
     }
   }
 
@@ -997,7 +1020,7 @@ bool NavObj_dB::AddTrackPoint(Track* track, TrackPoint* point) {
   // Add the linked point to the dB
   if (!InsertTrackPoint(m_db, track->m_GUID.ToStdString(), point->m_lat,
                         point->m_lon, point->GetTimeString(),
-                        this_point_index - 1))
+                        this_point_index - 1, point->m_GPXTrkSegNo))
     return false;
 
   return true;
@@ -1041,7 +1064,7 @@ bool NavObj_dB::LoadAllTracks() {
 
     //  Add the trk_points
     const char* sql = R"(
-        SELECT  latitude, longitude, timestamp, point_order
+        SELECT  latitude, longitude, timestamp, segment
         FROM trk_points
         WHERE track_guid = ?
         ORDER BY point_order ASC
@@ -1075,7 +1098,7 @@ bool NavObj_dB::LoadAllTracks() {
       double longitude = sqlite3_column_double(stmtp, 1);
       std::string timestamp =
           reinterpret_cast<const char*>(sqlite3_column_text(stmtp, 2));
-      int point_order = sqlite3_column_int(stmtp, 3);
+      GPXTrkSeg = sqlite3_column_int(stmtp, 3);
 
       auto point = new TrackPoint(latitude, longitude, timestamp);
 
