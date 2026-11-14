@@ -7105,7 +7105,9 @@ int s52plib::RenderMPS(ObjRazRules *rzRules, Rules *rules) {
 
 int s52plib::RenderCARC(ObjRazRules *rzRules, Rules *rules) {
 #ifdef ocpnUSE_GL
-  if (m_useGLSL)
+  // m_useGLSL stays true once the GL options were set, also when drawing to a
+  // wxDC; RenderCARC_GLSL has no DC branch.
+  if (m_useGLSL && !m_pdc)
     return RenderCARC_GLSL(rzRules, rules);
   else
 #endif
