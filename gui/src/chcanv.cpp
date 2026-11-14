@@ -7755,7 +7755,7 @@ ChartCanvas::GetCanvasContextAtPoint(int x, int y) {
     wxString val;
     val.Printf("%d", FoundAIS_MMSI);
     rstruct->object_ident = val.ToStdString();
-  } else if (seltype & SELTYPE_MARKPOINT) {
+  } else if (seltype & (SELTYPE_MARKPOINT | SELTYPE_ROUTEPOINT)) {
     if (FoundRoutePoint) {
       rstruct->object_type = HostApi121::PiContextObjectType::kObjectRoutepoint;
       rstruct->object_ident = FoundRoutePoint->m_GUID.ToStdString();
