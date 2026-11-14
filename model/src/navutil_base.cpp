@@ -636,8 +636,7 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime) {
       // Parse hrs west of UTC
       if (isdigit(*end) && isdigit(*(end + 1)) && *(end + 2) == ':') {
         // Extract and validate hrs west of UTC
-        wxString(end).ToLong(&hrs_west);
-        if (hrs_west > 12) return NULL;
+        hrs_west = 10 * (*end - '0') + (*(end + 1) - '0');
         end += 3;
 
         // Parse mins west of UTC
@@ -648,7 +647,10 @@ const wxChar *ParseGPXDateTime(wxDateTime &dt, const wxChar *datetime) {
           mins[1] = *(end + 1);
           mins[2] = 0;
           wxString(mins).ToLong(&mins_west);
-          if (mins_west > 59) return NULL;
+          // XML Schema dateTime allows offsets from -14:00 to +14:00.
+          if (hrs_west > 14 || mins_west > 59 ||
+              (hrs_west == 14 && mins_west != 0))
+            return NULL;
 
           // Apply correction
           dt -= sign * wxTimeSpan(hrs_west, mins_west, 0, 0);
