@@ -326,19 +326,17 @@ void Track::Clone(Track *psourcetrack, int start_nPoint, int end_nPoint,
   m_TrackStartString = psourcetrack->m_TrackStartString;
   m_TrackEndString = psourcetrack->m_TrackEndString;
 
-  bool b_splitting = GetnPoints() == 0;
-
-  int startTrkSegNo;
-  if (b_splitting) {
-    startTrkSegNo = psourcetrack->GetPoint(start_nPoint)->m_GPXTrkSegNo;
-  } else {
-    startTrkSegNo = GetLastPoint()->m_GPXTrkSegNo;
-  }
-  int i;
-  for (i = start_nPoint; i <= end_nPoint; i++) {
+  int target_segment = GetnPoints() == 0 ? 1 : GetLastPoint()->m_GPXTrkSegNo;
+  TrackPoint *previous_source_point = nullptr;
+  for (int i = start_nPoint; i <= end_nPoint; i++) {
     TrackPoint *psourcepoint = psourcetrack->GetPoint(i);
     if (psourcepoint) {
+      if (previous_source_point &&
+          psourcepoint->m_GPXTrkSegNo != previous_source_point->m_GPXTrkSegNo)
+        ++target_segment;
       TrackPoint *ptargetpoint = new TrackPoint(psourcepoint);
+      ptargetpoint->m_GPXTrkSegNo = target_segment;
+      previous_source_point = psourcepoint;
 
       AddPoint(ptargetpoint);
     }
