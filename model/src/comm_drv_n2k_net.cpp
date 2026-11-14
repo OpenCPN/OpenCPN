@@ -1818,6 +1818,9 @@ std::vector<std::vector<unsigned char>> CommDriverN2KNet::GetTxVector(
   return tx_vector;
 }
 
+/** Minimum time between two PGN 126996 broadcast requests in PrepareForTX(). */
+static constexpr auto kProdInfoRequestInterval = std::chrono::seconds(60);
+
 bool CommDriverN2KNet::PrepareForTX() {
   // We need to determine several items before TX operations can commence.
   // 1.  Is the gateway configured at my ip present, and if so, which of
@@ -1857,6 +1860,16 @@ bool CommDriverN2KNet::PrepareForTX() {
   if (m_TX_available)
     return true;
   else {
+    // Every device on the bus answers this broadcast. If the gateway is never
+    // recognised (e.g. a Yacht Devices gateway whose model ID is not "YDEN"),
+    // m_TX_available stays false, so do not repeat the request on every
+    // transmit: at most once per kProdInfoRequestInterval.
+    const auto now = std::chrono::steady_clock::now();
+    if (m_prodinfo_request_time != std::chrono::steady_clock::time_point() &&
+        now - m_prodinfo_request_time < kProdInfoRequestInterval)
+      return false;
+    m_prodinfo_request_time = now;
+
     // Send a broadcast request for PGN 126996, Product Information
     std::vector<unsigned char> payload;
     payload.push_back(0x14);

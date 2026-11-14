@@ -25,6 +25,8 @@
 #ifndef _COMMDRIVERN2KNET_H
 #define _COMMDRIVERN2KNET_H
 
+#include <chrono>
+
 #ifndef __WXMSW__
 #include <sys/socket.h>  // needed for (some) Mac builds
 #include <netinet/in.h>
@@ -213,6 +215,8 @@ private:
   char m_TX_flag;
   bool m_TX_available;
   wxTimer m_prodinfo_timer;
+  /** Last time PrepareForTX() sent the PGN 126996 broadcast request. */
+  std::chrono::steady_clock::time_point m_prodinfo_request_time;
   int m_detect_count;  //  should we invoke DetectFormat?
 
   obs::Listener resume_listener;
