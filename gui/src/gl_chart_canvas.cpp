@@ -519,6 +519,7 @@ void glChartCanvas::OnSize(wxSizeEvent &event) {
 
   wxLogDebug("BuildFBO 3");
   BuildFBO();
+  event.Skip();
 }
 
 void glChartCanvas::MouseEvent(wxMouseEvent &event) {
