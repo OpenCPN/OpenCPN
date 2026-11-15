@@ -49,7 +49,7 @@ public:
   /** Return edited parameters */
   virtual ConnectionParams GetEditedParams() = 0;
 
-  virtual void Scroll(int hscroll = 0, int vscroll = 0) {}
+  virtual void Scroll(int hscroll, int vscroll) {}
 
   static AbstractConnectionEditDlg* Create(wxWindow* parent,
                                            std::function<void()> on_cancel,

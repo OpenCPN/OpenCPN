@@ -831,6 +831,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/connection_edit.h
     ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
+    ${GUI_HDR_DIR}/conn_edit_commons.h
     ${GUI_HDR_DIR}/data_monitor.h
     ${GUI_HDR_DIR}/detail_slider.h
     ${GUI_HDR_DIR}/displays.h
@@ -956,6 +957,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/config_mgr.cpp
     ${GUI_SRC_DIR}/connection_edit.cpp
+    ${GUI_SRC_DIR}/conn_edit_commons.cpp
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/data_monitor.cpp
