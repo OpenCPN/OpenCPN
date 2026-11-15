@@ -19,8 +19,11 @@
 /**
  * \file
  *
- * Implement connection_edit.h -- Dialog and support for editing a connection
+ * Implement conn_edit_commons.h -- Internal support for connection_edit.cpp
  */
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "conn_edit_commons.h"
 
@@ -54,7 +57,6 @@ static const std::string kAddressUdpHelp =
     _("IP address or hostname, often 255.255.255.255");
 static const std::string kAddressMcastHelp =
     _("Group address, usually 224.0.2.0 - 224.0.255.255");
-
 static const std::string kMcastPortHelp =
     _("Port number, usually 49152 - 65535");
 static const std::string kTcpDevice = _("Device using TCP");
@@ -82,6 +84,7 @@ const std::vector<std::string> kAdvancedNetViews = {
     kTcpClient,      kUdpInput,        kUdpOutput,
     kGpsdClient,     kSignalkClient,   kTcpServer,
     kUdpInputOutput, kMulticastClient, kMulticastServer};
+
 static bool CheckPort(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
   if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
     auto dlg = wxMessageDialog(parent, _("Required field port is missing"),
@@ -127,15 +130,15 @@ bool IsAddressMultiCast(const wxString& ip) {
   if (bytes.size() != 4) {
     return false;
   }
-  unsigned long ipNum = (wxAtoi(bytes[0]) << 24) + (wxAtoi(bytes[1]) << 16) +
-                        (wxAtoi(bytes[2]) << 8) + wxAtoi(bytes[3]);
-  unsigned long multicastStart = (224 << 24);
-  unsigned long multicastEnd = (239 << 24) + (255 << 16) + (255 << 8) + 255;
-  return ipNum >= multicastStart && ipNum <= multicastEnd;
+  unsigned long ip_num = (wxAtoi(bytes[0]) << 24) + (wxAtoi(bytes[1]) << 16) +
+                         (wxAtoi(bytes[2]) << 8) + wxAtoi(bytes[3]);
+  unsigned long multicast_start = (224 << 24);
+  unsigned long multicast_end = (239 << 24) + (255 << 16) + (255 << 8) + 255;
+  return ip_num >= multicast_start && ip_num <= multicast_end;
 }
 
 static wxString StringArrayToString(const wxArrayString& arr) {
-  wxString ret = wxEmptyString;
+  wxString ret;
   for (size_t i = 0; i < arr.Count(); i++) {
     if (i > 0) ret.Append(",");
     ret.Append(arr[i]);
@@ -146,17 +149,6 @@ static wxString StringArrayToString(const wxArrayString& arr) {
 class ProtocolChoiceImpl : public ProtocolChoice {
   friend ProtocolChoice* ProtocolChoice::Create(wxWindow*, ConnectionParams&,
                                                 std::function<void()>);
-
-protected:
-  ProtocolChoiceImpl(
-      wxWindow* parent, ConnectionParams& params,
-      std::function<void()> on_change = [] {})
-      : ProtocolChoice(parent),
-        m_params(params),
-        m_on_change(std::move(on_change)) {
-    ProtocolChoiceImpl::Reload();
-    Bind(wxEVT_CHOICE, [&](wxCommandEvent& e) { OnChoice(e); });
-  }
 
 public:
   void Reload() override {
@@ -175,6 +167,17 @@ public:
         break;
     }
     Enable();
+  }
+
+protected:
+  ProtocolChoiceImpl(
+      wxWindow* parent, ConnectionParams& params,
+      std::function<void()> on_change = [] {})
+      : ProtocolChoice(parent),
+        m_params(params),
+        m_on_change(std::move(on_change)) {
+    ProtocolChoiceImpl::Reload();
+    Bind(wxEVT_CHOICE, [&](wxCommandEvent& e) { OnChoice(e); });
   }
 
 private:
@@ -206,13 +209,6 @@ ProtocolChoice* ProtocolChoice::Create(wxWindow* parent,
 class PortTextCtrlImpl : public PortTextCtrl {
   friend PortTextCtrl* PortTextCtrl::Create(wxWindow*, ConnectionParams&);
 
-protected:
-  PortTextCtrlImpl(wxWindow* parent, ConnectionParams& params)
-      : PortTextCtrl(parent), m_params(params) {
-    PortTextCtrlImpl::Reload();
-    Bind(wxEVT_TEXT, [&](wxCommandEvent& e) { OnChange(e); });
-  }
-
 public:
   void Reload() override {
     auto string = std::to_string(m_params.network_port);
@@ -223,6 +219,13 @@ public:
   void ChangeValue(const wxString& value) override {
     TextCtrlWithHelp::ChangeValue(value);
     OnChange();
+  }
+
+protected:
+  PortTextCtrlImpl(wxWindow* parent, ConnectionParams& params)
+      : PortTextCtrl(parent), m_params(params) {
+    PortTextCtrlImpl::Reload();
+    Bind(wxEVT_TEXT, [&](wxCommandEvent& e) { OnChange(e); });
   }
 
 private:
@@ -252,7 +255,7 @@ class InputOutputPanelImpl : public InputOutputPanel {
   friend InputOutputPanel* InputOutputPanel::Create(wxWindow*,
                                                     ConnectionParams&);
 
-  class InputCheckBox : public wxCheckBox, public Reloadable {
+  class InputCheckBox : public wxCheckBox, public Reloadable<wxCheckBox> {
   public:
     InputCheckBox(wxWindow* parent, ConnectionParams& params,
                   std::function<void()> on_change)
@@ -275,7 +278,7 @@ class InputOutputPanelImpl : public InputOutputPanel {
     std::function<void()> m_on_change;
   };
 
-  class OutputCheckBox : public wxCheckBox, public Reloadable {
+  class OutputCheckBox : public wxCheckBox, public Reloadable<wxCheckBox> {
   public:
     OutputCheckBox(wxWindow* parent, ConnectionParams& params,
                    std::function<void()> on_change)
@@ -299,19 +302,6 @@ class InputOutputPanelImpl : public InputOutputPanel {
     std::function<void()> m_on_change;
   };
 
-protected:
-  InputOutputPanelImpl(wxWindow* parent, ConnectionParams& params)
-      : InputOutputPanel(parent), m_params(params) {
-    auto vbox = new wxBoxSizer(wxVERTICAL);
-    auto flags = wxSizerFlags().Border();
-    m_input_box = new InputCheckBox(this, m_params, [&] { OnChange(); });
-    m_output_box = new OutputCheckBox(this, m_params, [&] { OnChange(); });
-    vbox->Add(m_input_box, flags);
-    vbox->Add(m_output_box, flags);
-    SetSizer(vbox);
-    wxWindow::Layout();
-  }
-
 public:
   void EnableOutput(bool enabled) override {
     m_output_box->Enable(enabled);
@@ -331,6 +321,19 @@ public:
   void SetInput(bool value) override {
     m_input_box->SetValue(value);
     OnChange();
+  }
+
+protected:
+  InputOutputPanelImpl(wxWindow* parent, ConnectionParams& params)
+      : InputOutputPanel(parent), m_params(params) {
+    auto vbox = new wxBoxSizer(wxVERTICAL);
+    auto flags = wxSizerFlags().Border();
+    m_input_box = new InputCheckBox(this, m_params, [&] { OnChange(); });
+    m_output_box = new OutputCheckBox(this, m_params, [&] { OnChange(); });
+    vbox->Add(m_input_box, flags);
+    vbox->Add(m_output_box, flags);
+    SetSizer(vbox);
+    wxWindow::Layout();
   }
 
 private:
@@ -443,6 +446,12 @@ class FilterConfigPanelImpl : public FilterConfigPanel {
     }
   };  // Statbox
 
+public:
+  void Reload() override {
+    m_output_filter->Reload();
+    m_input_filter->Reload();
+  }
+
 protected:
   FilterConfigPanelImpl(wxWindow* parent, ConnectionParams& params)
       : FilterConfigPanel(parent), m_params(params) {
@@ -460,12 +469,6 @@ protected:
     wxWindowBase::Layout();
   }
 
-public:
-  void Reload() override {
-    m_output_filter->Reload();
-    m_input_filter->Reload();
-  }
-
 private:
   Statbox* m_input_filter;
   Statbox* m_output_filter;
@@ -478,8 +481,7 @@ FilterConfigPanel* FilterConfigPanel::Create(wxWindow* parent,
 }
 
 class NetConfigPanelImpl : public NetConfigPanel {
-  friend NetConfigPanel* NetConfigPanel::Create(wxWindow* parent,
-                                                ConnectionParams& params);
+  friend NetConfigPanel* NetConfigPanel::Create(wxWindow*, ConnectionParams&);
 
   class ExpertModeCheckBox : public wxCheckBox {
   public:
@@ -506,7 +508,8 @@ class NetConfigPanelImpl : public NetConfigPanel {
   };
 
   /** Network address text entry. */
-  class AddressTextCtrl : public TextCtrlWithHelp, public Reloadable {
+  class AddressTextCtrl : public TextCtrlWithHelp,
+                          public Reloadable<TextCtrlWithHelp> {
   public:
     AddressTextCtrl(wxWindow* parent, ConnectionParams& params)
         : TextCtrlWithHelp(parent,
@@ -553,7 +556,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
   };
 
   /** User comments text entry. */
-  class CommentTextCtrl : public wxTextCtrl, public Reloadable {
+  class CommentTextCtrl : public wxTextCtrl, public Reloadable<wxTextCtrl> {
   public:
     CommentTextCtrl(wxWindow* parent, ConnectionParams& params)
         : wxTextCtrl(parent, wxID_ANY), m_params(params) {
@@ -570,8 +573,8 @@ class NetConfigPanelImpl : public NetConfigPanel {
     ConnectionParams& m_params;
   };
 
-  /** Overall grid layout for various attribute widgets */
-  class NetGrid : public wxFlexGridSizer, public Reloadable {
+  /** Overall grid layout for network address, port, etc. */
+  class NetGrid : public wxFlexGridSizer {
   public:
     NetGrid(wxWindow* parent, ConnectionParams& params,
             InputOutputPanel* in_out_panel,
@@ -644,7 +647,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
     }
 
     /** Update GUI elements from m_params values. */
-    void Reload() override {
+    void Reload() {
       if (m_params.type != ConnectionType::NETWORK) return;
 
       std::string view;
@@ -758,7 +761,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
     /**
      * Return net view name for given ConnectionParams. For ambiguous cases
      * like kTcpDevice (basic view)/kTcpClient (advanced view) return
-     * the basic view.
+     * the basic view item.
      */
     static std::string NetViewByConnection(const ConnectionParams* cp) {
       auto address = cp->network_address.ToStdString();
@@ -882,7 +885,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
     }
   };  // NetGrid
 
-  class NetGridPanel : public wxPanel, public Reloadable {
+  class NetGridPanel : public wxPanel, public Reloadable<wxPanel> {
   public:
     NetGridPanel(wxWindow* parent, ConnectionParams& params,
                  InputOutputPanel* in_out_panel,
@@ -902,7 +905,18 @@ class NetConfigPanelImpl : public NetConfigPanel {
     NetGrid* m_net_grid;
   };
 
-private:
+public:
+  /**
+   * Check that user data is sane, possibly run dialogs for missing or
+   * bad input.
+   * @return true if user data is ok to be submitted.
+   */
+  [[nodiscard]] bool CheckStatus() const override {
+    if (m_params.type != ConnectionType::NETWORK) return true;
+    return m_grid_panel->CheckStatus();
+  }
+
+protected:
   NetConfigPanelImpl(wxWindow* parent, ConnectionParams& params)
       : NetConfigPanel(parent), m_params(params), m_grid_panel(nullptr) {
     auto flags = wxSizerFlags().Border();
@@ -924,24 +938,12 @@ private:
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
     hbox->Add(m_advanced_panel);
-    // if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     vbox->Add(hbox, flags.Expand());
     vbox->Add(m_filter_panel, flags.Expand());
 
     SetSizer(vbox);
     wxWindow::Layout();
     wxWindow::Show();
-  }
-
-public:
-  /**
-   * Check that user data is sane, possibly run dialogs for missing or
-   * bad input.
-   * @return true if user data is ok to be submitted.
-   */
-  [[nodiscard]] bool CheckStatus() const override {
-    if (m_params.type != ConnectionType::NETWORK) return true;
-    return m_grid_panel->CheckStatus();
   }
 
 private:

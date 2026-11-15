@@ -19,11 +19,15 @@
 /**
  * \file
  *
- * connection_edit.h internal support.
+ * connection_edit.cpp internal support.
  */
 
 #ifndef CoNN_eDiT_h
 #define CoNN_eDiT_h
+
+#include <functional>
+#include <string>
+#include <type_traits>
 
 #include <wx/choice.h>
 #include <wx/panel.h>
@@ -43,7 +47,7 @@
 namespace conn_edit {
 
 static const std::string kPortHelp =
-    _("Port number (1025 - 65535, often 10110)");  // FIXME: duplicate
+    _("Port number (1025 - 65535, often 10110)");
 
 /**
  * Interface implemented by widgets reflecting a ConnectionParams
@@ -56,10 +60,15 @@ static const std::string kPortHelp =
  *     which synchronizes widget state with parameters.
  *
  * @Note: This interface is used by Reload()  which traverses the window
- * tree. Thus a Reloadable normally should be a wxWindow subclass and not
- * for example a sizer.
+ * tree. Thus a Reloadable  should be a wxWindow subclass and not
+ * for example a sizer; this is checked at compile time.
  */
+
+template <typename T>
 class Reloadable {
+  static_assert(std::is_base_of_v<wxWindow, T>,
+                "Reloadable must inherit from wxWindow");
+
 public:
   virtual ~Reloadable() = default;
 
@@ -68,34 +77,31 @@ public:
 };
 
 /** NMEA2000/NMEA0183 user choice. */
-class ProtocolChoice : public wxChoice, public Reloadable {
+class ProtocolChoice : public wxChoice, public Reloadable<wxChoice> {
 public:
   static ProtocolChoice* Create(
       wxWindow* parent, ConnectionParams& params,
       std::function<void()> on_change = [] {});
-
-  void Reload() override = 0;
 
 protected:
   explicit ProtocolChoice(wxWindow* parent) : wxChoice(parent, wxID_ANY) {}
 };
 
 /** Entry handling "Data port" setting. */
-class PortTextCtrl : public TextCtrlWithHelp, public Reloadable {
+class PortTextCtrl : public TextCtrlWithHelp,
+                     public Reloadable<TextCtrlWithHelp> {
 public:
   static PortTextCtrl* Create(wxWindow* parent, ConnectionParams& params);
-
-  void Reload() override = 0;
 
 protected:
   explicit PortTextCtrl(wxWindow* parent)
       : TextCtrlWithHelp(parent, kPortHelp) {}
 };
 
-class FilterConfigPanel : public wxPanel, public Reloadable {
+/** Configure n0183 input and output filters. */
+class FilterConfigPanel : public wxPanel, public Reloadable<wxPanel> {
 public:
   static FilterConfigPanel* Create(wxWindow* parent, ConnectionParams& params);
-  void Reload() override = 0;
 
 protected:
   explicit FilterConfigPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {}
@@ -106,9 +112,9 @@ class InputOutputPanel : public wxPanel {
 public:
   static InputOutputPanel* Create(wxWindow* parent, ConnectionParams& params);
 
-  virtual void EnableOutput(bool enabled) = 0;
+  virtual void EnableOutput(bool enable) = 0;
 
-  virtual void EnableInput(bool enabled) = 0;
+  virtual void EnableInput(bool enable) = 0;
 
   virtual void SetOutput(bool value) = 0;
 
@@ -118,11 +124,11 @@ protected:
   explicit InputOutputPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {}
 };
 
-/** Network configuration: TCP/UDP, client/server, etc. */
+/** Main network configuration: TCP/UDP, client/server, etc. */
 class NetConfigPanel : public wxPanel {
-
 public:
   static NetConfigPanel* Create(wxWindow* parent, ConnectionParams& params);
+
   ~NetConfigPanel() override = default;
 
   [[nodiscard]] virtual bool CheckStatus() const = 0;

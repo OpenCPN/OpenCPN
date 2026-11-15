@@ -22,9 +22,12 @@
  * Implement connection_edit.h -- Dialog and support for editing a connection
  */
 
+#include <functional>
 #include <memory>
 #include <set>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #ifndef WX_PRECOMP
@@ -50,8 +53,6 @@
 #include <wx/weakref.h>
 #include <wx/window.h>
 #include <wx/wrapsizer.h>
-
-// wxAtoi
 
 #if defined(__linux__) && !defined(__ANDROID__)
 #include <linux/can.h>
@@ -126,7 +127,7 @@ std::vector<std::string> can_if_candidates;
 #endif
 
 /** Garnin mode checkbox. */
-class GarminCheckBoxImpl : public wxCheckBox, public Reloadable {
+class GarminCheckBoxImpl : public wxCheckBox, public Reloadable<wxCheckBox> {
 public:
   GarminCheckBoxImpl(wxWindow* parent, ConnectionParams& params)
       : wxCheckBox(parent, wxID_ANY, _("Use Garmin (GRMN) mode for input")),
@@ -145,7 +146,7 @@ private:
 };
 
 /** User comment text entry. */
-class CommentText : public wxTextCtrl, public Reloadable {
+class CommentText : public wxTextCtrl, public Reloadable<wxTextCtrl> {
 public:
   CommentText(wxWindow* parent, wxString& comment)
       : wxTextCtrl(parent, wxID_ANY), m_comment(comment) {
@@ -163,7 +164,7 @@ private:
  * The radio buttons selecting serial, network, socketcan, etc.
  * connection type.
  */
-class TypeButtons : public wxPanel, public Reloadable {
+class TypeButtons : public wxPanel, public Reloadable<wxPanel> {
 public:
   TypeButtons(wxWindow* parent, std::function<void(ConnectionType)> on_click,
               ConnectionParams& params)
@@ -277,7 +278,7 @@ private:
 };
 
 /** Configure internal bluetooth serial connection. */
-class InternalBtConfigPanel : public wxPanel, public Reloadable {
+class InternalBtConfigPanel : public wxPanel, public Reloadable<wxPanel> {
   class ScanTimer : public wxTimer {
   public:
     ScanTimer() : m_owner(nullptr) {}
@@ -437,7 +438,7 @@ private:
 };
 
 /** Configure internal GPS usage, usually on Android */
-class InternalGpsConfigPanel : public wxPanel, public Reloadable {
+class InternalGpsConfigPanel : public wxPanel, public Reloadable<wxPanel> {
 public:
   InternalGpsConfigPanel(wxWindow* parent, ConnectionParams& params)
       : wxPanel(parent, wxID_ANY), m_params(params) {
@@ -471,7 +472,7 @@ private:
 };  // InternalGpsConfigPanel
 
 /** Configure windows-only SLcan connection. */
-class CanableConfigPanel : public wxPanel, public Reloadable {
+class CanableConfigPanel : public wxPanel, public Reloadable<wxPanel> {
 
   /** Hardcoded values not directly modified by this panel. */
   static void SetFixedParams(ConnectionParams& params) {
@@ -538,9 +539,9 @@ private:
 };  // CanableConfigPanel
 
 /** Configure serial connection port, baudrate, etc. */
-class SerialConfigPanel : public wxPanel, public Reloadable {
+class SerialConfigPanel : public wxPanel, public Reloadable<wxPanel> {
   /** Select serial port combobox. */
-  class PortCombo : public wxComboBox, public Reloadable {
+  class PortCombo : public wxComboBox, public Reloadable<wxComboBox> {
   public:
     PortCombo(wxWindow* parent, wxString& port)
         : wxComboBox(parent, wxID_ANY), m_port(port) {
@@ -739,7 +740,7 @@ private:
 
 /** Configure Linux socketcan connection */
 class CanConfigPanel : public wxPanel {
-  class CanChoice : public wxChoice, public Reloadable {
+  class CanChoice : public wxChoice, public Reloadable<wxChoice> {
   public:
     CanChoice(wxWindow* parent, ConnectionParams& params)
         : wxChoice(parent, wxID_ANY), m_params(params) {
@@ -981,7 +982,7 @@ private:
 
   static void DoReload(wxWindow* root) {
     for (wxWindow* child : root->GetChildren()) {
-      if (auto widget = dynamic_cast<conn_edit::Reloadable*>(child))
+      if (auto widget = dynamic_cast<conn_edit::Reloadable<wxWindow>*>(child))
         widget->Reload();
       DoReload(child);
     }
