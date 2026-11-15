@@ -345,7 +345,7 @@ public:
         auto msg = FLATPAK_INSTALL_MSG;
         OCPNMessageBox(this, msg, _("OpenCPN"), flags);
       }
-      dynamic_cast<wxDialog*>(GetParent())->EndModal(0);
+      dynamic_cast<wxDialog*>(GetParent())->EndModal(-1);
     });
     sizer->Add(quit, flags);
     SetSizer(sizer);
