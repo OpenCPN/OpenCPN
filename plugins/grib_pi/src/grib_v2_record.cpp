@@ -1593,6 +1593,13 @@ void GribV2Record::translateDataType() {
         level_value = 0;
         break;
     }
+    // Entire atmosphere (GRIB2 surface type 10) is semantically LV_ATMOS_ALL
+    // for every provider; the overlays only read LV_ATMOS_ALL. This promotion
+    // used to live only in the NOAA block (id_center == 7), so composite
+    // reflectivity / cloud from DWD, Meteo-France, etc. stayed LV_ATMOS_ENT and
+    // never rendered. LV_ATMOS_ENT is read nowhere else, so this is purely
+    // additive.
+    if (level_type == LV_ATMOS_ENT) level_type = LV_ATMOS_ALL;
   }
   // this->print();
 }
