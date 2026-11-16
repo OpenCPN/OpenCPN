@@ -1186,17 +1186,8 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     bool collision_found = false;
     if (ticket->b_thread_safe) {
       wxFileName fn(ticket->m_ChartPath);
-      ChartCollisionsHashMap::iterator it;
-      for (it = m_full_collision_map.begin(); it != m_full_collision_map.end();
-           ++it) {
-        if (it->first.IsSameAs(fn.GetFullName())) {
-          // Two files found with identical file name
-          // For now, just drop this ticket
-          // TODO Make an (expensive) test on file modification times
-          collision_found = true;
-          break;
-        }
-      }
+      collision_found =
+          m_full_collision_map.find(fn.GetFullName()) != m_full_collision_map.end();
       if (!collision_found) {
         m_full_collision_map[fn.GetFullName()] = 1;
       }
@@ -2476,17 +2467,8 @@ int ChartDatabase::SearchDirAndAddCharts(wxString &dir_name_base,
 #endif
 
     //  Check for duplicates within this directory
-    bool collision_found = false;
-    ChartCollisionsHashMap::iterator it;
-    for (it = collision_map.begin(); it != collision_map.end(); ++it) {
-      if (it->first.IsSameAs(file_name)) {
-        // Two files found with identical file name
-        // For now, just drop this ticket
-        // TODO Make an (expensive) test on file modification times
-        collision_found = true;
-        break;
-      }
-    }
+    const bool collision_found =
+        collision_map.find(file_name) != collision_map.end();
 
     if (!collision_found) {
       // Create a ticket for this chart
