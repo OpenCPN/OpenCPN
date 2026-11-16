@@ -1819,6 +1819,8 @@ bool NavObj_dB::LoadAllRoutes() {
           const auto seconds = sqlite3_column_int64(stmt_rp, created_at_col);
           point->m_CreateTimeX =
               wxDateTime(static_cast<time_t>(0)) + wxTimeSpan::Seconds(seconds);
+        } else {
+          point->m_CreateTimeX = wxInvalidDateTime;
         }
 
         //    Add the point HTML links
@@ -2035,6 +2037,8 @@ bool NavObj_dB::LoadAllPoints() {
         const auto seconds = sqlite3_column_int64(stmt_point, created_at_col);
         point->m_CreateTimeX =
             wxDateTime(static_cast<time_t>(0)) + wxTimeSpan::Seconds(seconds);
+      } else {
+        point->m_CreateTimeX = wxInvalidDateTime;
       }
 
       // Add it here
