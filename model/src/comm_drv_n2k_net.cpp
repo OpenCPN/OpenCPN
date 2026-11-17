@@ -870,6 +870,13 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(
     const std::vector<unsigned char>& packet) {
   can_frame frame;
 
+  // A brief description of the Actisense ASCII RAW protocol, also called the
+  // "Can Frame ASCII" or "Yacht Devices RAW" is found in the manual for the
+  // Yacht Devices YDWG-02 as published on
+  // https://yachtd.com/downloads/ydwg02.pdf page 62.
+  // For Actisense there is a description at
+  // https://github.com/Actisense/SDK/blob/main/docs/DataFormats/Ascii/can-frame-ascii-A.md
+
   while (!m_circle.IsEmpty()) {
     char b = m_circle.Get();
     if ((b != 0x0a) && (b != 0x0d)) {
@@ -892,7 +899,9 @@ bool CommDriverN2KNet::ProcessActisense_ASCII_RAW(
 
       // Discard first token
       wxString token = tkz.GetNextToken();  // time stamp
-      if (token[2] != ':' || token[5] != ':' || token[8] != '.') {
+      // Don't check for the decimal '.' in the seconds. For Actisense
+      // milliseconds are optional.
+      if (token[2] != ':' || token[5] != ':') {
         valid_frame = false;
       }
 
