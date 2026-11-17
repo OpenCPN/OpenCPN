@@ -143,6 +143,20 @@ if (LINUX)
 endif ()
 
 include(GoogleTest)
+
+# Exercise the real route database with an isolated Linux profile.
+if (LINUX)
+  add_executable(route_departure_db_tests route_departure_db_tests.cpp
+                 ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+  target_link_libraries(route_departure_db_tests PRIVATE ocpn::model-src ocpn::gtest
+                        ocpn::gl-headers win32_libs)
+  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+    target_link_libraries(route_departure_db_tests PRIVATE -fsanitize=${ENABLE_SANITIZER})
+  endif ()
+  gtest_add_tests(TARGET route_departure_db_tests)
+endif ()
+
+
 gtest_add_tests(TARGET tests)
 gtest_add_tests(TARGET buffer_tests)
 
