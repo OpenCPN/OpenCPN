@@ -4046,13 +4046,27 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
   ptarget->Range_NM = -1.;  // Defaults
   ptarget->Brg = -1.;
 
+  // Ideally, project the target by the time difference between its report and
+  // the own-ship position. The own-ship position timestamp is not available
+  // here, so assume own-ship is current and project the target to now.
+  double targetLat = ptarget->Lat;
+  double targetLon = ptarget->Lon;
+  if (ptarget->PositionReportTicks > 0 && ptarget->SOG > 0.0 && ptarget->SOG < 102.2 && ptarget->COG >= 0.0 && ptarget->COG < 360.0) {
+    wxDateTime now = wxDateTime::Now();
+    now.MakeGMT();
+    const time_t report_age = now.GetTicks() - ptarget->PositionReportTicks;
+    if (report_age > 0) {
+      ll_gc_ll(ptarget->Lat, ptarget->Lon, ptarget->COG, ptarget->SOG * (report_age / 3600.0), &targetLat, &targetLon);
+    }
+  }
+
   //    Compute the current Range/Brg to the target
   //    This should always be possible even if GPS data is not valid
   //    because O must always have a position for own-ship. Plugins need
   //    AIS target range and bearing from own-ship position even if GPS is not
   //    valid.
   double brg, dist;
-  DistanceBearingMercator(ptarget->Lat, ptarget->Lon, gLat, gLon, &brg, &dist);
+  DistanceBearingMercator(targetLat, targetLon, gLat, gLon, &brg, &dist);
   ptarget->Range_NM = dist;
   ptarget->Brg = brg;
 
@@ -4130,8 +4144,8 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
     //    Working on a Reduced Lat/Lon orthogonal plotting sheet....
     //    Get easting/northing to target,  in meters
 
-    double east1 = (ptarget->Lon - gLon) * 60 * 1852;
-    double north1 = (ptarget->Lat - gLat) * 60 * 1852;
+    double east1 = (targetLon - gLon) * 60 * 1852;
+    double north1 = (targetLat - gLat) * 60 * 1852;
 
     double east = east1 * (cos(gLat * PI / 180.));
 
@@ -4165,14 +4179,11 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
 
     double OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA, TargetLonCPA;
 
-    ll_gc_ll(gLat, gLon, cpa_calc_ownship_cog, gSog * tcpa, &OwnshipLatCPA,
-             &OwnshipLonCPA);
-    ll_gc_ll(ptarget->Lat, ptarget->Lon, cpa_calc_target_cog,
-             ptarget->SOG * tcpa, &TargetLatCPA, &TargetLonCPA);
+    ll_gc_ll(gLat, gLon, cpa_calc_ownship_cog, gSog * tcpa, &OwnshipLatCPA, &OwnshipLonCPA);
+    ll_gc_ll(targetLat, targetLon, cpa_calc_target_cog, ptarget->SOG * tcpa, &TargetLatCPA, &TargetLonCPA);
 
     //   And compute the distance
-    ptarget->CPA = DistGreatCircle(OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA,
-                                   TargetLonCPA);
+    ptarget->CPA = DistGreatCircle(OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA, TargetLonCPA);
 
     ptarget->bCPA_Valid = true;
 
