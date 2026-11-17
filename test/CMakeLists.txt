@@ -143,6 +143,17 @@ if (LINUX)
 endif ()
 
 include(GoogleTest)
+# These loader tests use an isolated Linux profile and a real SQLite file.
+if (LINUX)
+  add_executable(waypoint_db_tests waypoint_db_tests.cpp
+                 ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+  target_link_libraries(waypoint_db_tests PRIVATE ocpn::model-src ocpn::gtest
+                        ocpn::gl-headers win32_libs)
+  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+    target_link_libraries(waypoint_db_tests PRIVATE -fsanitize=${ENABLE_SANITIZER})
+  endif ()
+  gtest_add_tests(TARGET waypoint_db_tests)
+endif ()
 gtest_add_tests(TARGET tests)
 gtest_add_tests(TARGET buffer_tests)
 
