@@ -69,6 +69,9 @@ public:
   /** Enable/disable showing the child. */
   void EnableChild(bool enable);
 
+  /**  Show collapsed icon and hide child */
+  void Collapse();
+
 protected:
   void OnClick(bool collapse) const;
 

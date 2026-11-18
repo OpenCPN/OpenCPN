@@ -96,3 +96,8 @@ void ExpandableIcon::Toggle() {
       m_is_collapsed ? m_expand_bitmap : m_collapse_bitmap);
   m_on_toggle(m_is_collapsed);
 }
+
+void ExpandableIcon::Collapse() {
+  m_is_collapsed = false;
+  Toggle();
+}

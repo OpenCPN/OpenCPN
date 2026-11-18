@@ -20,7 +20,6 @@
  * Implement expand_panel.h
  */
 
-
 #include "expand_panel.h"
 
 ExpandablePanel::ExpandablePanel(wxWindow* parent, wxWindow* child,
@@ -31,7 +30,7 @@ ExpandablePanel::ExpandablePanel(wxWindow* parent, wxWindow* child,
       m_expand_icon(new ExpandableIcon(
           this, [&](bool collapsed) { OnClick(collapsed); })),
       m_on_resize(std::move(on_resize)) {
-  if (m_child) OnClick(true);
+  if (m_child) m_child->Hide();
 }
 
 ExpandablePanel::ExpandablePanel(wxWindow* parent)
@@ -51,7 +50,11 @@ void ExpandablePanel::OnClick(bool collapsed) const {
 }
 
 void ExpandablePanel::EnableChild(bool enable) {
-  m_child->Show(enable);
   m_expand_icon->Enable(enable);
   m_is_enabled = enable;
+}
+
+void ExpandablePanel::Collapse() {
+  m_expand_icon->Collapse();
+  OnClick(true);
 }
