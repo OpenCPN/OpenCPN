@@ -116,7 +116,7 @@ std::vector<std::string> can_if_candidates;
 #endif
 
 /** Garnin mode checkbox. */
-class GarminCheckBoxImpl : public wxCheckBox, public Reloadable<wxCheckBox> {
+class GarminCheckBoxImpl : public wxCheckBox, public Reloadable {
 public:
   GarminCheckBoxImpl(wxWindow* parent, ConnectionParams& params)
       : wxCheckBox(parent, wxID_ANY, _("Use Garmin (GRMN) mode for input")),
@@ -135,7 +135,7 @@ private:
 };
 
 /** User comment text entry. */
-class CommentText : public wxTextCtrl, public Reloadable<wxTextCtrl> {
+class CommentText : public wxTextCtrl, public Reloadable {
 public:
   CommentText(wxWindow* parent, wxString& comment)
       : wxTextCtrl(parent, wxID_ANY), m_comment(comment) {
@@ -153,7 +153,7 @@ private:
  * The radio buttons selecting serial, network, socketcan, etc.
  * connection type.
  */
-class TypeButtons : public wxPanel, public Reloadable<wxPanel> {
+class TypeButtons : public wxPanel, public Reloadable {
 public:
   TypeButtons(wxWindow* parent, std::function<void(ConnectionType)> on_click,
               ConnectionParams& params)
@@ -267,7 +267,7 @@ private:
 };
 
 /** Configure internal bluetooth serial connection. */
-class InternalBtConfigPanel : public wxPanel, public Reloadable<wxPanel> {
+class InternalBtConfigPanel : public wxPanel, public Reloadable {
   class ScanTimer : public wxTimer {
   public:
     ScanTimer() : m_owner(nullptr) {}
@@ -427,7 +427,7 @@ private:
 };
 
 /** Configure internal GPS usage, usually on Android */
-class InternalGpsConfigPanel : public wxPanel, public Reloadable<wxPanel> {
+class InternalGpsConfigPanel : public wxPanel, public Reloadable {
 public:
   InternalGpsConfigPanel(wxWindow* parent, ConnectionParams& params)
       : wxPanel(parent, wxID_ANY), m_params(params) {
@@ -461,7 +461,7 @@ private:
 };  // InternalGpsConfigPanel
 
 /** Configure windows-only SLcan connection. */
-class CanableConfigPanel : public wxPanel, public Reloadable<wxPanel> {
+class CanableConfigPanel : public wxPanel, public Reloadable {
 
   /** Hardcoded values not directly modified by this panel. */
   static void SetFixedParams(ConnectionParams& params) {
@@ -508,7 +508,7 @@ private:
 };  // CanableConfigPanel
 
 /** Configure serial connection port, baudrate, etc. */
-class SerialConfigPanel : public wxPanel, public Reloadable<wxPanel> {
+class SerialConfigPanel : public wxPanel, public Reloadable {
 
   /** Select baudrate  combobox. */
   class BaudChoice : public wxComboBox, public Reloadable {
@@ -659,7 +659,7 @@ private:
 
 /** Configure Linux socketcan connection */
 class CanConfigPanel : public wxPanel {
-  class CanChoice : public wxChoice, public Reloadable<wxChoice> {
+  class CanChoice : public wxChoice, public Reloadable {
   public:
     CanChoice(wxWindow* parent, ConnectionParams& params)
         : wxChoice(parent, wxID_ANY), m_params(params) {
@@ -904,7 +904,7 @@ private:
 
   static void DoReload(wxWindow* root) {
     for (wxWindow* child : root->GetChildren()) {
-      if (auto widget = dynamic_cast<conn_edit::Reloadable<wxWindow>*>(child))
+      if (auto widget = dynamic_cast<conn_edit::Reloadable*>(child))
         widget->Reload();
       DoReload(child);
     }

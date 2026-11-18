@@ -292,7 +292,7 @@ class InputOutputPanelImpl : public InputOutputPanel {
   friend InputOutputPanel* InputOutputPanel::Create(wxWindow*,
                                                     ConnectionParams&);
 
-  class InputCheckBox : public wxCheckBox, public Reloadable<wxCheckBox> {
+  class InputCheckBox : public wxCheckBox, public Reloadable {
   public:
     InputCheckBox(wxWindow* parent, ConnectionParams& params,
                   std::function<void()> on_change)
@@ -315,7 +315,7 @@ class InputOutputPanelImpl : public InputOutputPanel {
     std::function<void()> m_on_change;
   };
 
-  class OutputCheckBox : public wxCheckBox, public Reloadable<wxCheckBox> {
+  class OutputCheckBox : public wxCheckBox, public Reloadable {
   public:
     OutputCheckBox(wxWindow* parent, ConnectionParams& params,
                    std::function<void()> on_change)
@@ -606,8 +606,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
   };
 
   /** Network address text entry. */
-  class AddressTextCtrl : public TextCtrlWithHelp,
-                          public Reloadable<TextCtrlWithHelp> {
+  class AddressTextCtrl : public TextCtrlWithHelp, public Reloadable {
   public:
     AddressTextCtrl(wxWindow* parent, ConnectionParams& params)
         : TextCtrlWithHelp(parent,
@@ -654,7 +653,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
   };
 
   /** User comments text entry. */
-  class CommentTextCtrl : public wxTextCtrl, public Reloadable<wxTextCtrl> {
+  class CommentTextCtrl : public wxTextCtrl, public Reloadable {
   public:
     CommentTextCtrl(wxWindow* parent, ConnectionParams& params)
         : wxTextCtrl(parent, wxID_ANY), m_params(params) {
@@ -734,7 +733,8 @@ class NetConfigPanelImpl : public NetConfigPanel {
       Add(m_comment_label, label_flags);
       Add(m_comment_textctrl, wxSizerFlags(1).Expand().Border());
       OnExpertModeChange();
-      ConfigureControlsForView(kTcpDevice);
+      std::string view = NetViewByConnection(&params);
+      ConfigureControlsForView(view);
       wxSizer::Layout();
     }
 
@@ -988,7 +988,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
     }
   };  // NetGrid
 
-  class NetGridPanel : public wxPanel, public Reloadable<wxPanel> {
+  class NetGridPanel : public wxPanel, public Reloadable {
   public:
     NetGridPanel(wxWindow* parent, ConnectionParams& params,
                  InputOutputPanel* in_out_panel,
@@ -1000,6 +1000,8 @@ class NetConfigPanelImpl : public NetConfigPanel {
       wxWindowBase::Layout();
     }
 
+    ~NetGridPanel() override = default;
+
     bool CheckStatus() { return m_net_grid->CheckStatus(); }
 
     void Reload() override { m_net_grid->Reload(); }
@@ -1008,7 +1010,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
     NetGrid* m_net_grid;
   };
 
-  class AuthTokenPanel : public wxPanel, public Reloadable<wxPanel> {
+  class AuthTokenPanel : public wxPanel, public Reloadable {
   public:
     AuthTokenPanel(wxWindow* parent, ConnectionParams& params)
         : wxPanel(parent), m_params(params) {
