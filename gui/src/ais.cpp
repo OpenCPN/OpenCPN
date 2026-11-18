@@ -1071,22 +1071,10 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   //    Check for alarms here, maintained by AIS class timer tick
   if (((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) ||
       (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
-    // Calculate the target position at the current time, matching the CPA
-    // calculation, which treats own-ship data as current.
-    double targetLat = td->Lat;
-    double targetLon = td->Lon;
-    if (td->PositionReportTicks > 0 && target_sog > 0.0 && target_sog < 102.2 && td->COG >= 0.0 && td->COG < 360.0) {
-      wxDateTime now = wxDateTime::Now();
-      now.MakeGMT();
-      const time_t report_age = now.GetTicks() - td->PositionReportTicks;
-      if (report_age > 0) {
-        ll_gc_ll(td->Lat, td->Lon, td->COG, target_sog * (report_age / 3600.0), &targetLat, &targetLon);
-      }
-    }
-
-    // Then project from now to the CPA time.
+    // Project further from the target's projected position to CPA time.
     double tcpa_lat, tcpa_lon;
-    ll_gc_ll(targetLat, targetLon, td->COG, target_sog * td->TCPA / 60.,
+    ll_gc_ll(td->Lat_projected, td->Lon_projected, td->COG,
+             target_sog * td->TCPA / 60.,
              &tcpa_lat, &tcpa_lon);
     wxPoint tCPAPoint;
     wxPoint TPoint = TargetPoint;
@@ -1511,15 +1499,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     if (g_bDrawAISRealtime &&
         (td->Class == AIS_CLASS_A || td->Class == AIS_CLASS_B) &&
         td->SOG > g_AIS_RealtPred_Kts && td->SOG < 102.2) {
-      wxDateTime now = wxDateTime::Now();
-      now.MakeGMT();
-      int target_age = now.GetTicks() - td->PositionReportTicks;
-
-      float lat, lon;
-      spherical_ll_gc_ll(td->Lat, td->Lon, td->COG,
-                         td->SOG * target_age / 3600.0, &lat, &lon);
-
-      GetCanvasPointPix(vp, cp, lat, lon, &Point);
+      GetCanvasPointPix(vp, cp, td->Lat_projected, td->Lon_projected, &Point);
 
       wxBrush realtime_brush = wxBrush(GetGlobalColor("GREY1"));
       dc.SetBrush(realtime_brush);
