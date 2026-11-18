@@ -21,16 +21,16 @@
  *
  * Implement conn_edit_commons.h -- Internal support for connection_edit.cpp
  */
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "conn_edit_commons.h"
 
-#include "libgui/expand_panel.h"
-
 #include <wx/button.h>
 #include <wx/checkbox.h>
+#include <wx/combobox.h>
 #include <wx/log.h>
 #include <wx/msgdlg.h>
 #include <wx/radiobut.h>
@@ -38,6 +38,12 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/tokenzr.h>
+
+#include "libgui/expand_panel.h"
+
+#include "model/ocpn_utils.h"
+#include "model/ser_ports.h"
+#include "model/sys_events.h"
 
 #include "filter_sentence_dlg.h"
 
@@ -85,7 +91,33 @@ const std::vector<std::string> kAdvancedNetViews = {
     kGpsdClient,     kSignalkClient,   kTcpServer,
     kUdpInputOutput, kMulticastClient, kMulticastServer};
 
-static bool CheckPort(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
+void LoadSerialPorts(wxComboBox* box) {
+  /** Sort all links to same device as equals. */
+  class PortSorter {
+  private:
+    [[nodiscard]] static std::string GetKey(const std::string& s) {
+      if (s.find("->") == std::string::npos) return s;
+      return ocpn::trim(ocpn::split(s, "->")[1]) + " link";
+    }
+
+  public:
+    bool operator()(const std::string& lhs, const std::string& rhs) const {
+      return GetKey(lhs) < GetKey(rhs);
+    }
+  } port_sorter;
+
+  std::set<std::string, PortSorter> sorted_ports(port_sorter);
+  std::unique_ptr<wxArrayString> ports(EnumerateSerialPorts());
+  for (size_t i = 0; i < ports->GetCount(); i++)
+    sorted_ports.insert((*ports)[i].ToStdString());
+
+  auto value = box->GetValue();
+  box->Clear();
+  for (auto& p : sorted_ports) box->Append(p);
+  if (!value.empty()) box->SetValue(value);
+}
+
+bool CheckPort(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
   if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
     auto dlg = wxMessageDialog(parent, _("Required field port is missing"),
                                _("OpenCPN error"), wxOK | wxICON_ERROR);
@@ -478,6 +510,67 @@ private:
 FilterConfigPanel* FilterConfigPanel::Create(wxWindow* parent,
                                              ConnectionParams& params) {
   return new FilterConfigPanelImpl(parent, params);
+}
+
+class PortComboImpl : public PortCombo {
+  friend PortCombo* PortCombo::Create(wxWindow*, wxString&);
+
+public:
+  void Reload() override { SetValue(m_port); }
+
+protected:
+  PortComboImpl(wxWindow* parent, wxString& port)
+      : PortCombo(parent), m_port(port) {
+    PortComboImpl::LoadSerialPorts();
+    Bind(wxEVT_COMBOBOX, [&](wxCommandEvent& e) {
+      std::string value = GetValue().ToStdString();
+      size_t pos = value.find(' ');  // Strip away informational info
+      m_port = pos == std::string::npos ? value : value.substr(0, pos);
+      e.Skip();
+    });
+    m_device_list_listener.Init(
+        SystemEvents::GetInstance().evt_dev_change,
+        [&](ObservedEvt&) { conn_edit::LoadSerialPorts(this); });
+  }
+
+private:
+  wxString& m_port;
+  obs::Listener m_device_list_listener;
+
+  virtual void LoadSerialPorts() {
+    /** Sort all links to same device as equals. */
+    class PortSorter {
+    private:
+      [[nodiscard]] static std::string GetKey(const std::string& s) {
+        if (s.find("->") == std::string::npos) return s;
+        return ocpn::trim(ocpn::split(s, "->")[1]) + " link";
+      }
+
+    public:
+      bool operator()(const std::string& lhs, const std::string& rhs) const {
+        return GetKey(lhs) < GetKey(rhs);
+      }
+    } port_sorter;
+
+    std::set<std::string, PortSorter> sorted_ports(port_sorter);
+    std::unique_ptr<wxArrayString> ports(EnumerateSerialPorts());
+    for (size_t i = 0; i < ports->GetCount(); i++)
+      sorted_ports.insert((*ports)[i].ToStdString());
+
+    auto value = GetValue();
+    Clear();
+    for (auto& p : sorted_ports) Append(p);
+    if (!value.empty())
+      SetValue(value);
+    else if (FindString(m_port) != wxNOT_FOUND)
+      Select(FindString(m_port));
+    else if (!sorted_ports.empty())
+      SetSelection(0);
+  }
+};  // PortComboImpl
+
+PortCombo* PortCombo::Create(wxWindow* parent, wxString& port) {
+  return new PortComboImpl(parent, port);
 }
 
 class NetConfigPanelImpl : public NetConfigPanel {

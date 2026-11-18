@@ -73,8 +73,6 @@
 #include "libgui/expand_panel.h"
 
 #include "model/conn_params.h"
-#include "model/ocpn_utils.h"
-#include "model/ser_ports.h"
 
 #include "conn_params_panel.h"
 #include "filter_sentence_dlg.h"
@@ -106,15 +104,6 @@ static bool IsApple() {
 
 static bool IsLinux() {
   return wxPlatformInfo::Get().GetOperatingSystemId() & wxOS_UNIX_LINUX;
-}
-
-static wxString StringArrayToString(const wxArrayString& arr) {
-  wxString ret = wxEmptyString;
-  for (size_t i = 0; i < arr.Count(); i++) {
-    if (i > 0) ret.Append(",");
-    ret.Append(arr[i]);
-  }
-  return ret;
 }
 
 /*--------------------------------------*/
@@ -484,26 +473,6 @@ class CanableConfigPanel : public wxPanel, public Reloadable<wxPanel> {
     params.baudrate = 0;
   }
 
-  class PortCtrl : public wxTextCtrl, public Reloadable {
-  public:
-    PortCtrl(wxWindow* parent, ConnectionParams& params)
-        : wxTextCtrl(parent, wxID_ANY), m_params(params) {
-      wxTextCtrl::SetValue(m_params.serial_port);
-      Bind(wxEVT_TEXT, [&](wxCommandEvent& e) {
-        m_params.serial_port = GetValue();
-        e.Skip();
-      });
-    }
-
-    void Reload() override {
-      if (m_params.type == ConnectionType::CANABLE)
-        SetValue(m_params.serial_port);
-    }
-
-  private:
-    ConnectionParams& m_params;
-  };
-
 public:
   CanableConfigPanel(wxWindow* parent, ConnectionParams& params)
       : wxPanel(parent, wxID_ANY), m_params(params) {
@@ -515,7 +484,7 @@ public:
     auto ctrl_flags = wxSizerFlags(1).Expand();
     grid_sizer->Add(new wxStaticText(this, wxID_ANY, _("Data source")),
                     label_flags);
-    auto port_text_ctrl = new PortCtrl(this, m_params);
+    auto port_text_ctrl = PortCombo::Create(this, m_params.serial_port);
     port_text_ctrl->SetMinSize(wxSize(50 * wxWindow::GetCharWidth(), -1));
     grid_sizer->Add(port_text_ctrl, ctrl_flags);
     grid_sizer->Add(new wxStaticText(this, wxID_ANY, "User comment"),
@@ -540,56 +509,6 @@ private:
 
 /** Configure serial connection port, baudrate, etc. */
 class SerialConfigPanel : public wxPanel, public Reloadable<wxPanel> {
-  /** Select serial port combobox. */
-  class PortCombo : public wxComboBox, public Reloadable<wxComboBox> {
-  public:
-    PortCombo(wxWindow* parent, wxString& port)
-        : wxComboBox(parent, wxID_ANY), m_port(port) {
-      PortCombo::LoadSerialPorts();
-      Bind(wxEVT_COMBOBOX, [&](wxCommandEvent& e) {
-        std::string value = GetValue().ToStdString();
-        size_t pos = value.find(' ');  // Strip away informational info
-        m_port = pos == std::string::npos ? value : value.substr(0, pos);
-        e.Skip();
-      });
-    }
-
-    void Reload() override { SetValue(m_port); }
-
-  private:
-    wxString& m_port;
-
-    virtual void LoadSerialPorts() {
-      /** Sort all links to same device as equals. */
-      class PortSorter {
-      private:
-        [[nodiscard]] static std::string GetKey(const std::string& s) {
-          if (s.find("->") == std::string::npos) return s;
-          return ocpn::trim(ocpn::split(s, "->")[1]) + " link";
-        }
-
-      public:
-        bool operator()(const std::string& lhs, const std::string& rhs) const {
-          return GetKey(lhs) < GetKey(rhs);
-        }
-      } port_sorter;
-
-      std::set<std::string, PortSorter> sorted_ports(port_sorter);
-      std::unique_ptr<wxArrayString> ports(EnumerateSerialPorts());
-      for (size_t i = 0; i < ports->GetCount(); i++)
-        sorted_ports.insert((*ports)[i].ToStdString());
-
-      auto value = GetValue();
-      Clear();
-      for (auto& p : sorted_ports) Append(p);
-      if (!value.empty())
-        SetValue(value);
-      else if (FindString(m_port) != wxNOT_FOUND)
-        Select(FindString(m_port));
-      else if (!sorted_ports.empty())
-        SetSelection(0);
-    }
-  };  // PortCombo
 
   /** Select baudrate  combobox. */
   class BaudChoice : public wxComboBox, public Reloadable {
@@ -640,7 +559,7 @@ class SerialConfigPanel : public wxPanel, public Reloadable<wxPanel> {
       text_flags = text_flags.CentreVertical();
 #endif
       Add(new wxStaticText(parent, wxID_ANY, _("Data port")), text_flags);
-      Add(new PortCombo(parent, m_params.serial_port), flags);
+      Add(PortCombo::Create(parent, m_params.serial_port), flags);
       Add(new wxStaticText(parent, wxID_ANY, _("Baudrate")), text_flags);
       Add(new BaudChoice(parent, m_params.baudrate), flags);
       Add(new wxStaticText(parent, wxID_ANY, _("Protocol")), text_flags);

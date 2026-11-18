@@ -30,6 +30,7 @@
 #include <type_traits>
 
 #include <wx/choice.h>
+#include <wx/combobox.h>
 #include <wx/panel.h>
 
 #include "libgui/text_ctrl_w_help.h"
@@ -122,6 +123,15 @@ public:
 
 protected:
   explicit InputOutputPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY) {}
+};
+
+/** Select serial port combobox. */
+class PortCombo : public wxComboBox, public Reloadable<wxComboBox> {
+public:
+  static PortCombo* Create(wxWindow* parent, wxString& port);
+
+protected:
+  explicit PortCombo(wxWindow* parent) : wxComboBox(parent, wxID_ANY) {}
 };
 
 /** Main network configuration: TCP/UDP, client/server, etc. */
