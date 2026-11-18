@@ -51,6 +51,9 @@ public:
 
   virtual void Scroll(int hscroll, int vscroll) {}
 
+  /** Synchronize widgets and parameters values. */
+  virtual void Reload() = 0;
+
   static AbstractConnectionEditDlg* Create(wxWindow* parent,
                                            std::function<void()> on_cancel,
                                            ConnEditCallback on_ok);

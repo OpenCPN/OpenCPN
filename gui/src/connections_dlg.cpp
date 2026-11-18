@@ -1072,6 +1072,7 @@ public:
     m_top_panel->Hide();  // TopPanel
     m_edit_panel->Scroll(0, 0);
     DimeControl(m_edit_panel);
+    m_edit_panel->Reload();
     m_edit_panel->Show();
     g_options->ShowOKButtons(false);
     Layout();

@@ -881,6 +881,9 @@ public:
     m_config_panel->Scroll(hscroll, vscroll);
   }
 
+  /** Synchronize widgets and parameters. */
+  void Reload() { DoReload(this); }
+
   void SetParams(std::unique_ptr<ConnectionParams> p) override {
     m_is_new = !static_cast<bool>(p);
     m_params = p ? *p : GetDefaultParams();
@@ -906,8 +909,6 @@ private:
       DoReload(child);
     }
   }
-
-  void Reload() { DoReload(this); }
 
   void OnTypeBtnClick(ConnectionType ct) {
     m_params.type = ct;
