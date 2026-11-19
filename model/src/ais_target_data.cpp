@@ -215,6 +215,8 @@ AisTargetData::AisTargetData(AisTargetCallbacks cb) : m_callbacks(cb) {
   ROTAIS = -128;
   Lat = 0.;
   Lon = 0.;
+  Lat_projected = Lat;
+  Lon_projected = Lon;
 
   wxDateTime now = wxDateTime::Now();
   now.MakeGMT();
@@ -342,6 +344,8 @@ void AisTargetData::CloneFrom(AisTargetData *q) {
   ROTAIS = q->ROTAIS;
   Lat = q->Lat;
   Lon = q->Lon;
+  Lat_projected = q->Lat_projected;
+  Lon_projected = q->Lon_projected;
 
   PositionReportTicks = q->PositionReportTicks;
   StaticReportTicks = q->StaticReportTicks;
