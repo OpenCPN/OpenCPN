@@ -702,8 +702,10 @@ class NetConfigPanelImpl : public NetConfigPanel {
 
       m_connection_type_label =
           new wxStaticText(parent, wxID_ANY, _("Connection type"));
-      m_connection_type_choice =
-          new ConnectionTypeChoice(parent, [&] { OnConnectionTypeChange(); });
+      m_connection_type_choice = new ConnectionTypeChoice(parent, [&] {
+        OnConnectionTypeChange();
+        m_on_protocol_change(m_params.data_protocol);
+      });
       Add(m_connection_type_label, label_flags);
       Add(m_connection_type_choice, flags);
 
@@ -990,6 +992,10 @@ class NetConfigPanelImpl : public NetConfigPanel {
 
   class NetGridPanel : public wxPanel, public Reloadable {
   public:
+    /**
+     * @note:on_protocol_change is invoked if connection type (a k a view)
+     * or data protocol (NMEA0183, NMEA2000, SignalK) is updated
+     */
     NetGridPanel(wxWindow* parent, ConnectionParams& params,
                  InputOutputPanel* in_out_panel,
                  std::function<void(DataProtocol)> on_protocol_change)
@@ -1100,11 +1106,7 @@ protected:
       GetParent()->Layout();
       FitInside();
     });
-    auto on_proto_change = [&](DataProtocol p) {
-      m_advanced_panel->SetProtocol(p);
-      m_expand_advanced_panel->EnableChild(p == DataProtocol::PROTO_NMEA0183 ||
-                                           p == DataProtocol::PROTO_SIGNALK);
-    };
+    auto on_proto_change = [&](DataProtocol p) { OnProtocolChange(p); };
     m_grid_panel =
         new NetGridPanel(this, m_params, input_output_panel, on_proto_change);
     vbox->Add(m_grid_panel, flags.Expand());
@@ -1126,7 +1128,14 @@ private:
   NetGridPanel* m_grid_panel;
   AdvancedPanel* m_advanced_panel;
   ExpandablePanel* m_expand_advanced_panel;
-};  // NetConfigPanelImpl
+
+  void OnProtocolChange(DataProtocol p) {
+    m_expand_advanced_panel->Collapse();
+    m_advanced_panel->SetProtocol(p);
+    m_expand_advanced_panel->EnableChild(p == DataProtocol::PROTO_NMEA0183 ||
+                                         p == DataProtocol::PROTO_SIGNALK);
+  }
+};
 
 NetConfigPanel* NetConfigPanel::Create(wxWindow* parent,
                                        ConnectionParams& params) {
