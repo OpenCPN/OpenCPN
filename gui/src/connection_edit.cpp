@@ -573,7 +573,7 @@ class SerialConfigPanel : public wxPanel, public Reloadable {
     ConnectionParams& m_params;
   };  // SerialParamsGrid
 
-  class GridPanel : public wxPanel {
+  class GridPanel : public wxPanel, public Reloadable {
   public:
     GridPanel(wxWindow* parent, ConnectionParams& params)
         : wxPanel(parent, wxID_ANY),
@@ -581,6 +581,15 @@ class SerialConfigPanel : public wxPanel, public Reloadable {
           m_grid(new SerialParamsGrid(this, m_params)) {
       SetSizer(m_grid);
       wxWindow::Layout();
+    }
+
+    void Reload() override {
+      // Serial connections are n0182 or n2000, nothing else.
+      if (m_params.type != ConnectionType::SERIAL) return;
+      if (m_params.data_protocol == DataProtocol::PROTO_NMEA0183 ||
+          m_params.data_protocol == DataProtocol::PROTO_NMEA2000)
+        return;
+      m_params.data_protocol = DataProtocol::PROTO_NMEA0183;
     }
 
   private:
