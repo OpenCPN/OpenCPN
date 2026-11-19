@@ -199,6 +199,11 @@ public:
         Append("SignalK");
         SetSelection(0);
         break;
+      case PROTO_GPSD:
+        Clear();
+        Append("Gpsd");
+        SetSelection(0);
+        break;
       default:
         assert(false && "Illegal data  protocol");
         break;
@@ -835,7 +840,8 @@ class NetConfigPanelImpl : public NetConfigPanel {
 
     void OnConnectionTypeChange() {
       if (m_params.type != ConnectionType::NETWORK) return;
-      if (m_params.data_protocol == DataProtocol::PROTO_SIGNALK)
+      auto p = m_params.data_protocol;
+      if (p == DataProtocol::PROTO_SIGNALK || p == DataProtocol::PROTO_GPSD)
         m_params.data_protocol = PROTO_NMEA0183;
       int selection = m_connection_type_choice->GetSelection();
       if (selection == wxNOT_FOUND) return;
@@ -848,6 +854,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
         m_params.data_protocol = DataProtocol::PROTO_SIGNALK;
       } else if (view == kGpsdClient || view == kGpsdDevice) {
         m_params.net_protocol = NetworkProtocol::GPSD;
+        m_params.data_protocol = DataProtocol::PROTO_GPSD;
       } else if (view == kUdpReceive || view == kUdpInput || view == kUdpSend ||
                  view == kUdpOutput || view == kMulticastClient ||
                  view == kMulticastServer || view == kUdpInputOutput) {
