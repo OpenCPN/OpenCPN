@@ -1289,12 +1289,6 @@ void CommDriverN2KNet::OnSocketEvent(wxSocketEvent& event) {
       // Only invoke DetectFormat() on every tenth message:
       m_detect_count = (m_detect_count + 1) % 10;
       if (m_detect_count <= 0) m_n2k_format = DetectFormat(data);
-      if (m_n2k_format != m_n2k_format) {
-        wxLogMessage(wxT("Current network message format = %i"), m_n2k_format);
-        wxLogMessage(
-            wxT("Can only transmit N2KFormat_Actisense_RAW_ASCII (same as YD "
-                "raw format"));
-      }
 
       switch (m_n2k_format) {
         case N2KFormat_Actisense_RAW_ASCII:
