@@ -49,7 +49,7 @@ public:
   /** Return edited parameters */
   virtual ConnectionParams GetEditedParams() = 0;
 
-  virtual void Scroll(int hscroll, int vscroll) {}
+  virtual void EnableScroll(bool enable) = 0;
 
   /** Synchronize widgets and parameters values. */
   virtual void Reload() = 0;

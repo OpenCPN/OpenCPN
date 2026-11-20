@@ -1070,7 +1070,7 @@ public:
   void SwitchToEditor() {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
     m_top_panel->Hide();  // TopPanel
-    m_edit_panel->Scroll(0, 0);
+    m_edit_panel->EnableScroll(true);
     DimeControl(m_edit_panel);
     m_edit_panel->Reload();
     m_edit_panel->Show();
@@ -1080,10 +1080,11 @@ public:
 
   void SwitchToGrid() {
     m_edit_panel->Hide();
+    m_edit_panel->EnableScroll(false);
     m_top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
-    g_options->ShowOKButtons(true);
     m_top_panel->Show();
-    Layout();
+    g_options->ShowOKButtons(true);
+    g_options->Layout();
     FitInside();
     Scroll(0, 0);
     ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
