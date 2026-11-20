@@ -9296,8 +9296,10 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
         // Check displacement from touchdown to distinguish taps from pans.
         // On touchscreens, even a "tap" can have several pixels of jitter,
         // so use a generous threshold (20px) to avoid false positives.
-        int dx = x - m_touchdownPos.x;
-        int dy = y - m_touchdownPos.y;
+        // m_touchdownPos is in physical pixels (MouseEventProcessCanvas
+        // multiplies by m_displayScale), x/y here are logical pixels.
+        int dx = x - wxRound(m_touchdownPos.x / m_displayScale);
+        int dy = y - wxRound(m_touchdownPos.y / m_displayScale);
         int dist2 = dx * dx + dy * dy;
         bool wasPan = (dist2 > 20 * 20);
 
@@ -9589,8 +9591,8 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
 
         // Skip if user panned (same logic as route handler above)
         {
-          int mdx = x - m_touchdownPos.x;
-          int mdy = y - m_touchdownPos.y;
+          int mdx = x - wxRound(m_touchdownPos.x / m_displayScale);
+          int mdy = y - wxRound(m_touchdownPos.y / m_displayScale);
           if (mdx * mdx + mdy * mdy > 20 * 20) return false;
         }
 
