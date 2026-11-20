@@ -1074,8 +1074,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
     // Project further from the target's projected position to CPA time.
     double tcpa_lat, tcpa_lon;
     ll_gc_ll(td->Lat_projected, td->Lon_projected, td->COG,
-             target_sog * td->TCPA / 60.,
-             &tcpa_lat, &tcpa_lon);
+             target_sog * td->TCPA / 60., &tcpa_lat, &tcpa_lon);
     wxPoint tCPAPoint;
     wxPoint TPoint = TargetPoint;
     GetCanvasPointPix(vp, cp, tcpa_lat, tcpa_lon, &tCPAPoint);

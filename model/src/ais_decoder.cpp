@@ -4058,8 +4058,8 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
     const time_t report_age = now.GetTicks() - ptarget->PositionReportTicks;
     if (report_age > 0) {
       ll_gc_ll(ptarget->Lat, ptarget->Lon, ptarget->COG,
-               ptarget->SOG * (report_age / 3600.0),
-               &ptarget->Lat_projected, &ptarget->Lon_projected);
+               ptarget->SOG * (report_age / 3600.0), &ptarget->Lat_projected,
+               &ptarget->Lon_projected);
     }
   }
 
@@ -4183,13 +4183,15 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
 
     double OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA, TargetLonCPA;
 
-    ll_gc_ll(gLat, gLon, cpa_calc_ownship_cog, gSog * tcpa, &OwnshipLatCPA, &OwnshipLonCPA);
+    ll_gc_ll(gLat, gLon, cpa_calc_ownship_cog, gSog * tcpa, &OwnshipLatCPA,
+             &OwnshipLonCPA);
     ll_gc_ll(ptarget->Lat_projected, ptarget->Lon_projected,
              cpa_calc_target_cog, ptarget->SOG * tcpa, &TargetLatCPA,
              &TargetLonCPA);
 
     //   And compute the distance
-    ptarget->CPA = DistGreatCircle(OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA, TargetLonCPA);
+    ptarget->CPA = DistGreatCircle(OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA,
+                                   TargetLonCPA);
 
     ptarget->bCPA_Valid = true;
 
