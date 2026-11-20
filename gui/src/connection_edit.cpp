@@ -886,12 +886,19 @@ public:
     wxWindow::Layout();
   }
 
-  void Scroll(int hscroll, int vscroll) override {
-    m_config_panel->Scroll(hscroll, vscroll);
+  void EnableScroll(bool enable) override {
+    if (enable) {
+      m_config_panel->Layout();
+      m_config_panel->FitInside();
+      m_config_panel->Scroll(0, 0);
+      m_config_panel->ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
+    } else {
+      m_config_panel->ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
+    }
   }
 
   /** Synchronize widgets and parameters. */
-  void Reload() { DoReload(this); }
+  void Reload() override { DoReload(this); }
 
   void SetParams(std::unique_ptr<ConnectionParams> p) override {
     m_is_new = !static_cast<bool>(p);
