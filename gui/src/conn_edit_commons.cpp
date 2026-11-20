@@ -194,8 +194,18 @@ public:
       case PROTO_NMEA2000:
         SetSelection(1);
         break;
+      case PROTO_SIGNALK:
+        Clear();
+        Append("SignalK");
+        SetSelection(0);
+        break;
+      case PROTO_GPSD:
+        Clear();
+        Append("Gpsd");
+        SetSelection(0);
+        break;
       default:
-        assert(false && "Illegal SignalK protocol");
+        assert(false && "Illegal data  protocol");
         break;
     }
     Enable();
@@ -287,7 +297,7 @@ class InputOutputPanelImpl : public InputOutputPanel {
   friend InputOutputPanel* InputOutputPanel::Create(wxWindow*,
                                                     ConnectionParams&);
 
-  class InputCheckBox : public wxCheckBox, public Reloadable<wxCheckBox> {
+  class InputCheckBox : public wxCheckBox, public Reloadable {
   public:
     InputCheckBox(wxWindow* parent, ConnectionParams& params,
                   std::function<void()> on_change)
@@ -310,7 +320,7 @@ class InputOutputPanelImpl : public InputOutputPanel {
     std::function<void()> m_on_change;
   };
 
-  class OutputCheckBox : public wxCheckBox, public Reloadable<wxCheckBox> {
+  class OutputCheckBox : public wxCheckBox, public Reloadable {
   public:
     OutputCheckBox(wxWindow* parent, ConnectionParams& params,
                    std::function<void()> on_change)
@@ -601,8 +611,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
   };
 
   /** Network address text entry. */
-  class AddressTextCtrl : public TextCtrlWithHelp,
-                          public Reloadable<TextCtrlWithHelp> {
+  class AddressTextCtrl : public TextCtrlWithHelp, public Reloadable {
   public:
     AddressTextCtrl(wxWindow* parent, ConnectionParams& params)
         : TextCtrlWithHelp(parent,
@@ -649,7 +658,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
   };
 
   /** User comments text entry. */
-  class CommentTextCtrl : public wxTextCtrl, public Reloadable<wxTextCtrl> {
+  class CommentTextCtrl : public wxTextCtrl, public Reloadable {
   public:
     CommentTextCtrl(wxWindow* parent, ConnectionParams& params)
         : wxTextCtrl(parent, wxID_ANY), m_params(params) {
@@ -698,8 +707,10 @@ class NetConfigPanelImpl : public NetConfigPanel {
 
       m_connection_type_label =
           new wxStaticText(parent, wxID_ANY, _("Connection type"));
-      m_connection_type_choice =
-          new ConnectionTypeChoice(parent, [&] { OnConnectionTypeChange(); });
+      m_connection_type_choice = new ConnectionTypeChoice(parent, [&] {
+        OnConnectionTypeChange();
+        m_on_protocol_change(m_params.data_protocol);
+      });
       Add(m_connection_type_label, label_flags);
       Add(m_connection_type_choice, flags);
 
@@ -729,7 +740,8 @@ class NetConfigPanelImpl : public NetConfigPanel {
       Add(m_comment_label, label_flags);
       Add(m_comment_textctrl, wxSizerFlags(1).Expand().Border());
       OnExpertModeChange();
-      ConfigureControlsForView(kTcpDevice);
+      std::string view = NetViewByConnection(&params);
+      ConfigureControlsForView(view);
       wxSizer::Layout();
     }
 
@@ -828,27 +840,34 @@ class NetConfigPanelImpl : public NetConfigPanel {
 
     void OnConnectionTypeChange() {
       if (m_params.type != ConnectionType::NETWORK) return;
+      auto p = m_params.data_protocol;
+      if (p == DataProtocol::PROTO_SIGNALK || p == DataProtocol::PROTO_GPSD)
+        m_params.data_protocol = PROTO_NMEA0183;
       int selection = m_connection_type_choice->GetSelection();
       if (selection == wxNOT_FOUND) return;
       std::string view =
           m_connection_type_choice->GetStringSelection().ToStdString();
-      if (view == kTcpDevice || view == kTcpClient || view == kTcpServer)
+      if (view == kTcpDevice || view == kTcpClient || view == kTcpServer) {
         m_params.net_protocol = NetworkProtocol::TCP;
-      else if (view == kSignalkClient || view == kSignalkDevice)
+      } else if (view == kSignalkClient || view == kSignalkDevice) {
         m_params.net_protocol = NetworkProtocol::SIGNALK;
-      else if (view == kGpsdClient || view == kGpsdDevice)
+        m_params.data_protocol = DataProtocol::PROTO_SIGNALK;
+      } else if (view == kGpsdClient || view == kGpsdDevice) {
         m_params.net_protocol = NetworkProtocol::GPSD;
-      else if (view == kUdpReceive || view == kUdpInput || view == kUdpSend ||
-               view == kUdpOutput || view == kMulticastClient ||
-               view == kMulticastServer || view == kUdpInputOutput)
+        m_params.data_protocol = DataProtocol::PROTO_GPSD;
+      } else if (view == kUdpReceive || view == kUdpInput || view == kUdpSend ||
+                 view == kUdpOutput || view == kMulticastClient ||
+                 view == kMulticastServer || view == kUdpInputOutput) {
         m_params.net_protocol = NetworkProtocol::UDP;
-      else
+      } else {
         assert(false && "Cannot handle view");
+      }
       if (view == kTcpServer || view == kUdpReceive || view == kUdpInput ||
           view == kMulticastServer)
         m_params.network_address = "0.0.0.0";
       ConfigureControlsForView(view);
       OnExpertModeChange();
+      m_on_protocol_change(m_params.data_protocol);
     }
 
     /**
@@ -978,8 +997,12 @@ class NetConfigPanelImpl : public NetConfigPanel {
     }
   };  // NetGrid
 
-  class NetGridPanel : public wxPanel, public Reloadable<wxPanel> {
+  class NetGridPanel : public wxPanel, public Reloadable {
   public:
+    /**
+     * @note:on_protocol_change is invoked if connection type (a k a view)
+     * or data protocol (NMEA0183, NMEA2000, SignalK) is updated
+     */
     NetGridPanel(wxWindow* parent, ConnectionParams& params,
                  InputOutputPanel* in_out_panel,
                  std::function<void(DataProtocol)> on_protocol_change)
@@ -990,12 +1013,78 @@ class NetConfigPanelImpl : public NetConfigPanel {
       wxWindowBase::Layout();
     }
 
+    ~NetGridPanel() override = default;
+
     bool CheckStatus() { return m_net_grid->CheckStatus(); }
 
     void Reload() override { m_net_grid->Reload(); }
 
   private:
     NetGrid* m_net_grid;
+  };
+
+  class AuthTokenPanel : public wxPanel, public Reloadable {
+  public:
+    AuthTokenPanel(wxWindow* parent, ConnectionParams& params)
+        : wxPanel(parent), m_params(params) {
+      auto hbox = new wxBoxSizer(wxHORIZONTAL);
+      auto flags = wxSizerFlags().Border();
+#if wxCHECK_VERSION(3, 2, 0)
+      flags = flags.CentreVertical();
+#endif
+      hbox->Add(new wxStaticText(this, wxID_ANY, _("Authentication token ")),
+                flags);
+      m_token = new wxTextCtrl(this, wxID_ANY);
+      hbox->Add(m_token, wxSizerFlags().Border());
+      SetSizer(hbox);
+      wxWindow::Layout();
+      Bind(wxEVT_TEXT, [&](wxCommandEvent& e) {
+        m_params.auth_token = m_token->GetValue();
+        e.Skip();
+      });
+    }
+
+    void Reload() override { m_token->SetValue(m_params.auth_token); }
+
+  private:
+    ConnectionParams& m_params;
+    wxTextCtrl* m_token;
+  };
+
+  class AdvancedPanel : public wxPanel {
+  public:
+    AdvancedPanel(wxWindow* parent, ConnectionParams& params)
+        : wxPanel(parent),
+          m_filter_panel(nullptr),
+          m_auth_token_panel(nullptr) {
+      m_filter_panel = FilterConfigPanel::Create(this, params);
+      m_auth_token_panel = new AuthTokenPanel(this, params);
+      auto vbox = new wxBoxSizer(wxVERTICAL);
+      vbox->Add(m_filter_panel);
+      vbox->Add(m_auth_token_panel);
+      SetSizer(vbox);
+      SetProtocol(params.data_protocol);
+    }
+
+    void SetProtocol(DataProtocol protocol) {
+      switch (protocol) {
+        case DataProtocol::PROTO_SIGNALK:
+          m_filter_panel->Hide();
+          m_auth_token_panel->Show();
+          break;
+        case DataProtocol::PROTO_NMEA0183:
+          m_filter_panel->Show();
+          m_auth_token_panel->Hide();
+          break;
+        default:
+          m_filter_panel->Hide();
+          m_auth_token_panel->Hide();
+      }
+    }
+
+  private:
+    FilterConfigPanel* m_filter_panel;
+    AuthTokenPanel* m_auth_token_panel;
   };
 
 public:
@@ -1011,18 +1100,20 @@ public:
 
 protected:
   NetConfigPanelImpl(wxWindow* parent, ConnectionParams& params)
-      : NetConfigPanel(parent), m_params(params), m_grid_panel(nullptr) {
+      : NetConfigPanel(parent),
+        m_params(params),
+        m_grid_panel(nullptr),
+        m_advanced_panel(nullptr) {
     auto flags = wxSizerFlags().Border();
     auto vbox = new wxBoxSizer(wxVERTICAL);
     auto input_output_panel = InputOutputPanel::Create(this, m_params);
-    m_filter_panel = FilterConfigPanel::Create(this, m_params);
-    m_advanced_panel = new ExpandablePanel(this, m_filter_panel, [&] {
+
+    m_advanced_panel = new AdvancedPanel(this, m_params);
+    m_expand_advanced_panel = new ExpandablePanel(this, m_advanced_panel, [&] {
       GetParent()->Layout();
       FitInside();
     });
-    auto on_proto_change = [&](DataProtocol p) {
-      m_advanced_panel->EnableChild(p == DataProtocol::PROTO_NMEA0183);
-    };
+    auto on_proto_change = [&](DataProtocol p) { OnProtocolChange(p); };
     m_grid_panel =
         new NetGridPanel(this, m_params, input_output_panel, on_proto_change);
     vbox->Add(m_grid_panel, flags.Expand());
@@ -1030,9 +1121,9 @@ protected:
 
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
-    hbox->Add(m_advanced_panel);
+    hbox->Add(m_expand_advanced_panel);
     vbox->Add(hbox, flags.Expand());
-    vbox->Add(m_filter_panel, flags.Expand());
+    vbox->Add(m_advanced_panel, flags.Expand());
 
     SetSizer(vbox);
     wxWindow::Layout();
@@ -1042,9 +1133,16 @@ protected:
 private:
   ConnectionParams& m_params;
   NetGridPanel* m_grid_panel;
-  FilterConfigPanel* m_filter_panel;
-  ExpandablePanel* m_advanced_panel;
-};  // NetConfigPanelImpl
+  AdvancedPanel* m_advanced_panel;
+  ExpandablePanel* m_expand_advanced_panel;
+
+  void OnProtocolChange(DataProtocol p) {
+    m_expand_advanced_panel->Collapse();
+    m_advanced_panel->SetProtocol(p);
+    m_expand_advanced_panel->EnableChild(p == DataProtocol::PROTO_NMEA0183 ||
+                                         p == DataProtocol::PROTO_SIGNALK);
+  }
+};
 
 NetConfigPanel* NetConfigPanel::Create(wxWindow* parent,
                                        ConnectionParams& params) {

@@ -47,6 +47,8 @@ public :
 
   bool IsCollapsed() const { return m_is_collapsed; }
 
+  void Collapse();
+
 protected:
   bool m_is_collapsed;
   wxBitmap m_collapse_bitmap;
