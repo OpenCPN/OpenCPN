@@ -24,7 +24,6 @@
 
 #include <functional>
 #include <memory>
-#include <set>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -324,11 +323,11 @@ public:
 
     auto advanced_panel = new AdvancedPanel(this, m_params);
     auto adv_box = new wxBoxSizer(wxHORIZONTAL);
-    // if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")), flags);
     auto on_expand_click = [&] {
-      Layout();
-      FitInside();
+      if (auto parent = GetParent()) parent->Layout();
+      if (auto* scrollwin = FindParentOfType<wxScrolledWindow>(this))
+        scrollwin->FitInside();
     };
     adv_box->Add(new ExpandablePanel(this, advanced_panel, on_expand_click),
                  flags);
@@ -622,11 +621,11 @@ public:
 
     m_advanced_panel = new AdvancedPanel(this, params);
     auto advanced_ctrl = new ExpandablePanel(this, m_advanced_panel, [&] {
-      GetParent()->Layout();
-      FitInside();
+      if (auto parent = GetParent()) parent->Layout();
+      if (auto* scrollwin = FindParentOfType<wxScrolledWindow>(this))
+        scrollwin->FitInside();
     });
     auto hbox = new wxBoxSizer(wxHORIZONTAL);
-    // if (IsWindows()) flags = flags.ReserveSpaceEvenIfHidden();
     hbox->Add(new wxStaticText(this, wxID_ANY, _("Advanced")), flags);
     hbox->Add(advanced_ctrl, flags);
 

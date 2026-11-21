@@ -47,6 +47,15 @@
 
 namespace conn_edit {
 
+/** Return first wxWindow parent of given type or nullptr. */
+template <typename T>
+T* FindParentOfType(wxWindow* w) {
+  for (; w; w = w->GetParent()) {
+    if (T* candidate = dynamic_cast<T*>(w)) return candidate;
+  }
+  return nullptr;
+}
+
 static const std::string kPortHelp =
     _("Port number (1025 - 65535, often 10110)");
 

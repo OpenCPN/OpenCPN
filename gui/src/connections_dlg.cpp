@@ -54,6 +54,7 @@
 #include "color_handler.h"
 #include "color_types.h"
 #include "connection_edit.h"
+#include "conn_edit_commons.h"
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
@@ -974,8 +975,8 @@ public:
       Layout();
       if (!GetParent()) return;
       GetParent()->Layout();
-      if (auto scrollwin = FindParentOfType<wxScrolled<wxPanel>>(this))
-        scrollwin->FitInside();
+      if (auto w = conn_edit::FindParentOfType<wxScrolled<wxPanel>>(this))
+        w->FitInside();
     };
     adv_box->Add(new ExpandablePanel(this, advanced_panel, on_advanced_click));
     vbox->Add(adv_box, wxSizerFlags().Border());
@@ -1010,15 +1011,6 @@ private:
   Connections* m_conn_grid;
   GeneralPanel* m_general_panel;
   AdvancedPanel* m_advanced_panel;
-
-  /** Return first wxWindow parent of given type or nullptr. */
-  template <typename T>
-  T* FindParentOfType(wxWindow* w) {
-    for (; w; w = w->GetParent()) {
-      if (T* candidate = dynamic_cast<T*>(w)) return candidate;
-    }
-    return nullptr;
-  }
 };
 
 }  // anonymous namespace
