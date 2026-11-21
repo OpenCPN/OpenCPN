@@ -51,6 +51,7 @@ set(MODEL_SRC_DIR ${CMAKE_SOURCE_DIR}/model/src)
 
 set(SRC
   datetime_tests.cpp
+  gnss_method_research_tests.cpp
   tests.cpp filter_tests.cpp
   navutil_base_tests.cpp
   route_point_tests.cpp

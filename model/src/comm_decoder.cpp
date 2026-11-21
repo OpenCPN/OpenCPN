@@ -339,6 +339,11 @@ bool CommDecoder::DecodePGN129029(std::vector<unsigned char> v,
                         HDOP, PDOP, GeoidalSeparation, nReferenceStations,
                         ReferenceStationType, ReferenceSationID,
                         AgeOfCorrection)) {
+    // A reported loss of GNSS fix invalidates even numeric coordinates.
+    if (GNSSmethod == N2kGNSSm_noGNSS || GNSSmethod == N2kGNSSm_Error ||
+        GNSSmethod == N2kGNSSm_Unavailable)
+      return false;
+
     temp_data.gLat = Latitude;
     temp_data.gLon = Longitude;
     temp_data.SID = SID;
