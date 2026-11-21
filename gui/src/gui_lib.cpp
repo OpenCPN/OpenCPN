@@ -326,7 +326,8 @@ void TimedPopupWin::OnPaint(wxPaintEvent& event) {
 
 class InfoButton::InfoFrame : public wxFrame {
 public:
-  explicit InfoFrame(wxWindow* parent, const char* header, const char* info)
+  explicit InfoFrame(wxWindow* parent, const std::string& header,
+                     const std::string& info)
       : wxFrame(parent, wxID_ANY, info) {
     auto flags = wxSizerFlags().Expand();
     auto vbox = new wxBoxSizer(wxVERTICAL);
@@ -345,8 +346,8 @@ public:
   }
 };
 
-InfoButton::InfoButton(wxWindow* parent, bool touch, const char* header,
-                       const char* info)
+InfoButton::InfoButton(wxWindow* parent, bool touch, const std::string& header,
+                       const std::string& info)
     : wxButton(parent, wxID_ANY, "", wxDefaultPosition, wxDefaultSize,
                wxBU_EXACTFIT | wxBORDER_NONE),
       m_icon(parent, "help-info.svg",
