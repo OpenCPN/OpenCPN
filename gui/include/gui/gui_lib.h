@@ -145,8 +145,8 @@ private:
  */
 class InfoButton : public wxButton {
 public:
-  InfoButton(wxWindow* parent, bool touch, const char* header,
-             const char* info);
+  InfoButton(wxWindow* parent, bool touch, const std::string& header,
+             const std::string& info);
 
 private:
   class InfoFrame;
