@@ -970,16 +970,19 @@ public:
     m_advanced_panel = advanced_panel;
     auto adv_box = new wxBoxSizer(wxHORIZONTAL);
     adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
-    adv_box->Add(new ExpandablePanel(this, advanced_panel,
-                                     [&] { GetParent()->Layout(); }));
+    auto on_advanced_click = [&] {
+      Layout();
+      if (!GetParent()) return;
+      GetParent()->Layout();
+      if (auto scrollwin = FindParentOfType<wxScrolled<wxPanel>>(this))
+        scrollwin->FitInside();
+    };
+    adv_box->Add(new ExpandablePanel(this, advanced_panel, on_advanced_click));
     vbox->Add(adv_box, wxSizerFlags().Border());
-    vbox->Add(advanced_panel,
-              wxSizerFlags().Border().ReserveSpaceEvenIfHidden());
+    vbox->Add(advanced_panel, wxSizerFlags().Border());
 
     SetSizer(vbox);
-    vbox->SetSizeHints(this);
-    vbox->Fit(this);
-    wxWindow::Fit();
+    wxWindowBase::Layout();
     wxWindow::Show();
 
     auto on_evt_update_connections = [&, conn_grid](ObservedEvt&) {
@@ -1007,6 +1010,15 @@ private:
   Connections* m_conn_grid;
   GeneralPanel* m_general_panel;
   AdvancedPanel* m_advanced_panel;
+
+  /** Return first wxWindow parent of given type or nullptr. */
+  template <typename T>
+  T* FindParentOfType(wxWindow* w) {
+    for (; w; w = w->GetParent()) {
+      if (T* candidate = dynamic_cast<T*>(w)) return candidate;
+    }
+    return nullptr;
+  }
 };
 
 }  // anonymous namespace
