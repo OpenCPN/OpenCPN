@@ -117,9 +117,15 @@ copy "%vcpkg%\include\lzma.h" "%dest%\include\"
 if not exist "%dest%\include\lzma" mkdir "%dest%\include\lzma"
 xcopy "%vcpkg%\include\lzma" "%dest%\include\lzma"  /I /s /y /q
 
-: zlib real names, per the Curl.cmake edit above
-copy "%vcpkg%\lib\z.lib" "%dest%\"
-copy "%vcpkg%\bin\z.dll" "%dest%\"
+:: zlib 1.4 uses libz.lib/libz.dll; older vcpkg builds use z.lib/z.dll.
+:: The import library may have a stable staging name; the DLL must keep
+:: the name embedded in its dependants' PE import tables.
+set "OCPN_ZLIB_STEM=z"
+if exist "%vcpkg%\lib\libz.lib" set "OCPN_ZLIB_STEM=libz"
+copy /Y "%vcpkg%\lib\%OCPN_ZLIB_STEM%.lib" "%dest%\z.lib"
+if errorlevel 1 exit /b 1
+copy /Y "%vcpkg%\bin\%OCPN_ZLIB_STEM%.dll" "%dest%\"
+if errorlevel 1 exit /b 1
 copy "%vcpkg%\include\zlib.h" "%dest%\include"
 copy "%vcpkg%\include\zconf.h" "%dest%\include"
 

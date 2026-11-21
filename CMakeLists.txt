@@ -2438,6 +2438,7 @@ if (WIN32 AND NOT UNIX)
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/z.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/libz.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/bz2.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/lz4.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zstd.dll"

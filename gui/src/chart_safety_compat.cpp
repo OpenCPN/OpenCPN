@@ -62,11 +62,6 @@ void LegacyDependenciesChanged(void* context) {
 }
 }  // namespace
 
-extern "C" DECL_EXP wxString PlugIn_SegmentSafetyPointDiagnostic(double lat,
-                                                                 double lon) {
-  return PointDiagnostic(lat, lon);
-}
-
 extern "C" DECL_EXP int PlugIn_GetPendingSegmentSafetyRequestCount() {
   return GetPendingRequestCount();
 }
