@@ -27,8 +27,6 @@
 #include <string>
 #include <vector>
 
-#include "gl_headers.h"  // Must be included before anything using GL stuff
-
 #include <wx/arrstr.h>
 #include <wx/bitmap.h>
 #include <wx/grid.h>
@@ -64,8 +62,8 @@
 
 static constexpr auto TopScrollWindowName = "TopScroll";
 
-static const char* kInfoHeader = _("OpenCPN help").c_str();
-static const char* kInfo = _(R"---(
+static const std::string kInfoHeader = _("OpenCPN help");
+static const std::string kInfo = _(R"---(
 Normally OpenCPN sends the RMB (distance and heading to waypoint
 etc) and RMC (position, heading etc.) sentences when there is an
 active waypoint. The talker ID is by default EC.
@@ -80,17 +78,13 @@ could possibly initiate the autopilot in dangerous ways.
 Devices needing this includes the NASA Clipper GPS Repeater. In this
 case the output must also be filtered so that ECRMB and ECRMC are
 the only transmitted messages.
-)---")
-                               .c_str();
+)---");
 
-static const char* kInterfaceExistsMessage =
-    _("Warning: A driver using this interface already exists.").c_str();
+static const std::string kInterfaceExistsMessage =
+    _("Warning: A driver using this interface already exists.");
 
 static wxString UtfArrowDown() {
   return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25bc"));
-}
-static wxString UtfArrowRight() {
-  return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u25ba"));
 }
 static wxString UtfCheckMark() {
   return wxString::FromUTF8(reinterpret_cast<const char*>(u8"\u2713"));
@@ -145,8 +139,6 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
         return cp;
         break;
       case INTERNAL_GPS:
-        return cp;
-        break;
       case INTERNAL_BT:
         return cp;
         break;
@@ -163,11 +155,6 @@ static ConnectionParams* FindConnectionByIface(const ConnectionParams* new_cp) {
     }
   }
   return nullptr;
-}
-
-static ConnectionParams* FindConnectionByIface(
-    const std::unique_ptr<ConnectionParams>& cp) {
-  return FindConnectionByIface(cp.get());
 }
 
 namespace {
@@ -340,7 +327,7 @@ public:
     SetLabelBackgroundColour(background);
     SetLabelTextColour(foreground);
     for (int row = 0; row <= GetNumberRows(); row++) {
-      for (unsigned col = 0; col < 7; col++) {
+      for (int col = 0; col < 7; col++) {
         SetCellBackgroundColour(row, col, background);
         SetCellTextColour(row, col, foreground);
       }
@@ -352,14 +339,8 @@ public:
     ev.Skip();
   }
 
-  wxSize GetEstimatedSize() const {
-    unsigned rs = 0;
-    for (auto s : m_header_column_widths) rs += s;
-    return {static_cast<int>(rs), -1};
-  }
-
   /** Mouse wheel: scroll the TopScroll window */
-  void OnWheel(wxMouseEvent& ev) {
+  void OnWheel(wxMouseEvent& ev) const {
     if (!IsShown()) {
       ev.Skip();
       return;
@@ -478,7 +459,7 @@ private:
    */
   void EnsureRows(size_t rows) {
     for (unsigned i = m_tooltips.size(); i <= rows; i++)
-      m_tooltips.emplace_back(std::vector<std::string>(7));
+      m_tooltips.emplace_back(7);
     for (unsigned i = GetNumberRows(); i <= rows; i++) AppendRows(1, false);
   }
 
@@ -828,18 +809,6 @@ private:
     }
   };
 
-  class ExtraRmbRmcCheckbox final : public wxCheckBox, public ApplyCancel {
-  public:
-    explicit ExtraRmbRmcCheckbox(wxWindow* parent)
-        : wxCheckBox(parent, wxID_ANY,
-                     _("Always send RMB and RMC NMEA0183 data")) {
-      wxCheckBox::SetValue(g_always_send_rmb_rmc);
-    }
-
-    void Apply() override { g_always_send_rmb_rmc = GetValue(); }
-    void Cancel() override { SetValue(g_always_send_rmb_rmc); }
-  };
-
   /** NMEA filter setup bound to g_bfilter_cogsog and g_COGFilterSec. */
   class NmeaFilterRow : public wxPanel, public ApplyCancel {
     wxCheckBox* checkbox;
@@ -1013,8 +982,6 @@ private:
   AdvancedPanel* m_advanced_panel;
 };
 
-}  // anonymous namespace
-
 /** Top window. */
 class EditPanel : public wxScrolled<wxPanel> {
 public:
@@ -1041,13 +1008,13 @@ public:
 
     auto on_edit_click = [&](std::unique_ptr<ConnectionParams> params,
                              bool new_mode) {
-      HandleEditFinish(std::move(params), new_mode);
+      HandleEditFinish(params, new_mode);
     };
 
     m_edit_panel =
         AbstractConnectionEditDlg::Create(this, on_cancel, on_edit_click);
     vbox->Add(m_edit_panel, wxSizerFlags(1).Expand());
-    wxWindowBase::Layout();
+    wxScrolled<wxPanel>::Layout();
     m_edit_panel->Hide();
 
     if (IsAndroid())
@@ -1094,7 +1061,7 @@ public:
     ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
   }
 
-  void HandleEditFinish(std::unique_ptr<ConnectionParams> new_params,
+  void HandleEditFinish(const std::unique_ptr<ConnectionParams>& new_params,
                         bool new_mode) {
     if (!new_mode) {
       // OK from EDIT mode
@@ -1143,6 +1110,8 @@ private:
   AbstractConnectionEditDlg* m_edit_panel;
   TopPanel* m_top_panel;
 };
+
+}  // anonymous namespace
 
 /** Main window: Panel with a single TopScroll child. */
 ConnectionsDlg::ConnectionsDlg(

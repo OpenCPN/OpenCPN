@@ -117,7 +117,7 @@ void LoadSerialPorts(wxComboBox* box) {
   if (!value.empty()) box->SetValue(value);
 }
 
-bool CheckPort(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
+static bool CheckPort(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
   if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
     auto dlg = wxMessageDialog(parent, _("Required field port is missing"),
                                _("OpenCPN error"), wxOK | wxICON_ERROR);
@@ -145,7 +145,7 @@ operating system and should normally not be used by OpenCPN)");
   return true;
 }
 
-bool CheckAddress(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
+static bool CheckAddress(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
   if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
     auto dlg = wxMessageDialog(parent, _("Required field address is missing"),
                                _("OpenCPN error"), wxOK | wxICON_ERROR);
@@ -157,7 +157,7 @@ bool CheckAddress(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
   return true;
 }
 
-bool IsAddressMultiCast(const wxString& ip) {
+static bool IsAddressMultiCast(const wxString& ip) {
   wxArrayString bytes = wxSplit(ip, '.');
   if (bytes.size() != 4) {
     return false;
@@ -1110,7 +1110,7 @@ protected:
 
     m_advanced_panel = new AdvancedPanel(this, m_params);
     m_expand_advanced_panel = new ExpandablePanel(this, m_advanced_panel, [&] {
-      if (auto parent = GetParent()) parent->Layout();
+      if (auto p = GetParent()) p->Layout();
       if (auto* scrollwin = FindParentOfType<wxScrolledWindow>(this))
         scrollwin->FitInside();
     });
