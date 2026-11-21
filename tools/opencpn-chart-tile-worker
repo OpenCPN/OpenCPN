@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Keep one chart classification host in a private profile/display."""
+from configparser import RawConfigParser
+import os
+from pathlib import Path
+import select
+import shutil
+import signal
+import subprocess
+import sys
+import time
+HOST, PROFILE, BASEMAP, GROUP, DIRECTORY = sys.argv[1:]
+PROFILE, DIRECTORY = Path(PROFILE), Path(DIRECTORY)
+XVFB = shutil.which('Xvfb') or str(Path(__file__).with_name('opencpn-verifier-xvfb'))
+def private_settings(profile):
+    original = RawConfigParser(strict=False)
+    original.optionxform = str
+    original.read(PROFILE / 'opencpn.conf', encoding='utf-8-sig')
+    output = RawConfigParser()
+    output.optionxform = str
+    output['Settings'] = {'NavMessageShown': '1', 'OpenGL': '0', 'Locale': 'en_US'}
+    output['Settings/GlobalState'] = {'AllowArbitrarySystemPlugins': '1'}
+    output['Directories'] = {'BasemapDir': BASEMAP, 'SENCPrefix': str(profile / 'SENC')}
+    output['Canvas'] = {'CanvasConfig': '0'}
+    output['Canvas/CanvasConfig1'] = {'ActiveChartGroup': GROUP}
+    for section in original.sections():
+        if section == 'ChartDirectories' or section.startswith(('Groups/', 'ChartDirectories/')) or section == 'Groups':
+            output[section] = dict(original[section])
+        if section.startswith('PlugIns/lib') and any(
+            name in section.lower() for name in ('o-charts', 'oesenc', 's63', 'weather_routing')
+        ):
+            output[section] = {'bEnabled': original[section].get('bEnabled', '0')}
+    for section, version in (('PlugIns/WeatherRouting', '140'),
+                             ('Plugins/WeatherRouting', '140'),
+                             ('PlugIns/xWeatherRouting2', '207')):
+        output[section] = {'ConfigVersion': original.get(section, 'ConfigVersion', fallback=version)}
+    if original.has_section('PlugIns/ocharts/EULA'):
+        output['PlugIns/ocharts/EULA'] = dict(original['PlugIns/ocharts/EULA'])
+    return output
+
+
+profile = DIRECTORY / 'profile'
+profile.mkdir()
+(profile / 'routing-data').mkdir()
+with (profile / 'opencpn.conf').open('w') as stream:
+    private_settings(profile).write(stream)
+shutil.copyfile(PROFILE / 'chartlist.dat', profile / 'chartlist.dat')
+if (PROFILE / 'cm93').is_dir():
+    shutil.copytree(PROFILE / 'cm93', profile / 'cm93')
+env = {k: v for k, v in os.environ.items() if not k.startswith(('WR_', 'XGRIB_'))}
+env.pop('WAYLAND_DISPLAY', None)
+env.update({
+    'OCPN_OPEN_WATER_VERIFIER_CHILD': '1',
+    'OCPN_CHART_TILE_WORKER_DIR': str(DIRECTORY),
+    'OCPN_CHART_TILE_HELPERS': '0',
+    'GDK_BACKEND': 'x11',
+    'WR_HEADLESS_ROUTE_TEST': 'chart-tile-worker',
+    'WR_HEADLESS_DATA_DIR': str(profile / 'routing-data'),
+    'WR_HEADLESS_NO_EXIT': '0',
+    'WR_HEADLESS_TIMEOUT_MS': '86400000',
+    'WR_STEP_WORKERS': '0',
+    'XDG_CONFIG_HOME': str(profile / 'xdg-config'),
+    'XDG_CACHE_HOME': str(profile / 'xdg-cache'),
+    'XDG_DATA_HOME': str(profile / 'xdg-data'),
+})
+rd, wd = os.pipe()
+parent = os.getppid()
+xserver = child = None
+stopping = False
+def stop(_signal, _frame):
+    global stopping
+    stopping = True
+signal.signal(signal.SIGTERM, stop)
+signal.signal(signal.SIGINT, stop)
+try:
+    with (DIRECTORY / 'xvfb.log').open('wb') as log:
+        xserver = subprocess.Popen([XVFB, '-displayfd', str(wd), '-screen', '0',
+            '1024x768x24', '-nolisten', 'tcp'], pass_fds=(wd,), stdout=log, stderr=subprocess.STDOUT)
+    os.close(wd)
+    with os.fdopen(rd) as source:
+        if not select.select([source], [], [], 10)[0]:
+            raise RuntimeError('The private chart display did not start')
+        display = source.readline().strip()
+    if not display.isdecimal():
+        raise RuntimeError('Invalid private display number')
+    env['DISPLAY'] = ':' + display
+    with (DIRECTORY / 'stdout.log').open('wb') as log:
+        child = subprocess.Popen([HOST, '--configdir=' + str(profile), '--no_opengl'],
+            cwd=profile, env=env, stdout=log, stderr=subprocess.STDOUT)
+        while not stopping and os.getppid() == parent and DIRECTORY.is_dir() and child.poll() is None:
+            time.sleep(.2)
+finally:
+    if DIRECTORY.is_dir():
+        (DIRECTORY / 'stop').touch()
+    for process in [child, xserver]:
+        if process and process.poll() is None:
+            process.terminate()
+            try: process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+
+    if os.environ.get('OCPN_CHART_TILE_HELPER_KEEP') != '1':
+        shutil.rmtree(DIRECTORY, ignore_errors=True)
+        try: DIRECTORY.parent.rmdir()
+        except OSError: pass

@@ -27,6 +27,7 @@
  */
 #include <cmath>
 #include <list>
+#include <mutex>
 #include <vector>
 
 #include <wx/wxprec.h>
@@ -752,11 +753,20 @@ static inline bool my_intersects(const wxLineF &line1, const wxLineF &line2) {
 
 #define INTER_LIMIT 1e-7
   double denominator = ay * bx - ax * by;
-  if (denominator < 1e-10) {
+  // Endpoint order changes the sign, not whether the lines are parallel.
+  if (fabs(denominator) < 1e-10) {
     if (fabs((y1 * ax - ay * x1) * bx - (y3 * bx - by * x3) * ax) > INTER_LIMIT)
       return false; /* different intercepts, no intersection */
     if (fabs((x1 * ay - ax * y1) * by - (x3 * by - bx * y3) * ay) > INTER_LIMIT)
       return false; /* different intercepts, no intersection */
+
+    // Collinear segments intersect only when their extents overlap.
+    if (wxMax(x1, x2) < wxMin(x3, x4) - INTER_LIMIT ||
+        wxMax(x3, x4) < wxMin(x1, x2) - INTER_LIMIT)
+      return false;
+    if (wxMax(y1, y2) < wxMin(y3, y4) - INTER_LIMIT ||
+        wxMax(y3, y4) < wxMin(y1, y2) - INTER_LIMIT)
+      return false;
 
     return true;
   }
@@ -1478,10 +1488,15 @@ int GshhsReader::selectBestQuality(ViewPort &vp) {
 // A GshhsReader instance which is used to detect if a trajectory
 // crosses land.
 static GshhsReader *gshhs_reader = NULL;
+// The crossing reader is shared by the public plugin service and is rebuilt
+// when the chart database changes.  Hold this lock for the complete query so a
+// reset can never delete the reader while route workers are using it.
+static std::recursive_mutex gshhs_crossing_reader_mutex;
 
 /* so plugins can determine if a line segment crosses land, must call from main
    thread once at startup to initialize array */
 void gshhsCrossesLandInit() {
+  std::lock_guard<std::recursive_mutex> lock(gshhs_crossing_reader_mutex);
   wxLogMessage("GSHHSChart::gshhsCrossesLandInit()");
   if (!gshhs_reader) {
     gshhs_reader = new GshhsReader();
@@ -1496,6 +1511,7 @@ void gshhsCrossesLandInit() {
 }
 
 void gshhsCrossesLandReset() {
+  std::lock_guard<std::recursive_mutex> lock(gshhs_crossing_reader_mutex);
   wxLogMessage("GSHHSChart::gshhsCrossesLandReset()");
   if (gshhs_reader) delete gshhs_reader;
   gshhs_reader = NULL;
@@ -1503,6 +1519,7 @@ void gshhsCrossesLandReset() {
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2) {
+  std::lock_guard<std::recursive_mutex> lock(gshhs_crossing_reader_mutex);
   if (!gshhs_reader) {
     gshhsCrossesLandInit();
   }

@@ -22,6 +22,7 @@
  */
 
 #include <algorithm>
+#include <limits>
 #include <unordered_map>
 #include <stdio.h>
 
@@ -45,6 +46,8 @@
 
 #include "chcanv.h"
 #include "cm93.h"
+#include "chart_safety_longitude.h"
+#include "chart_safety_geometry.h"
 #include "detail_slider.h"
 #include "gui_lib.h"
 #include "line_clip.h"
@@ -67,6 +70,13 @@
 #ifdef __VISUALC__
 #include <wx/msw/msvcrt.h>
 #endif
+
+namespace {
+thread_local unsigned cm93_safety_query_depth = 0;
+}
+
+Cm93SafetyQueryScope::Cm93SafetyQueryScope() { ++cm93_safety_query_depth; }
+Cm93SafetyQueryScope::~Cm93SafetyQueryScope() { --cm93_safety_query_depth; }
 
 extern s52plib *ps52plib;
 
@@ -1968,11 +1978,23 @@ bool cm93chart::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) {
 //-----------------------------------------------------------------------
 
 void cm93chart::SetVPParms(const ViewPort &vpt) {
+  LoadViewportCells(vpt, true);
+}
+
+void cm93chart::PrepareSafetyViewport(const ViewPort &vpt) {
+  LoadViewportCells(vpt, false);
+}
+
+void cm93chart::LoadViewportCells(const ViewPort &vpt, bool prepare_display) {
+  // Safety queries need the original objects and coverage, which are loaded
+  // below. The drawing buffers can wait until this chart is used for display.
+  if (prepare_display && m_display_geometry_pending) UpdateDisplayGeometry();
   if (m_vp_current == vpt) {
     return;
   }
   //    Save a copy for later reference
   m_vp_current = vpt;
+  RuleAppendContext append;
 
   //  Set up local SM rendering constants
   m_pixx_vp_center = vpt.pix_width / 2;
@@ -2019,15 +2041,17 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
 
     //    The cell is not in place, so go load it
     if (!bcell_is_in) {
+      bool added_geometry = false;
 #ifndef __OCPN__ANDROID__
-      AbstractPlatform::ShowBusySpinner();
+      if (!cm93_safety_query_depth) AbstractPlatform::ShowBusySpinner();
 #endif
       int cell_index = vpcells[i];
 
       if (loadcell_in_sequence(cell_index, '0'))  // Base cell
       {
+        added_geometry = true;
         ProcessVectorEdges();
-        CreateObjChain(cell_index, (int)'0', vpt.view_scale_ppm);
+        CreateObjChain(cell_index, (int)'0', vpt.view_scale_ppm, &append);
 
         ForceEdgePriorityEvaluate();  // need to re-evaluate priorities
 
@@ -2041,8 +2065,10 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       //    Load any subcells in sequence
       //    On successful load, add it to the member list and process the cell
       while (loadcell_in_sequence(cell_index, loadcell_key)) {
+        added_geometry = true;
         ProcessVectorEdges();
-        CreateObjChain(cell_index, (int)loadcell_key, vpt.view_scale_ppm);
+        CreateObjChain(cell_index, (int)loadcell_key, vpt.view_scale_ppm,
+                       &append);
 
         ForceEdgePriorityEvaluate();  // need to re-evaluate priorities
 
@@ -2055,39 +2081,44 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
         loadcell_key++;
       }
 
-      AssembleLineGeometry();
-
-      ClearDepthContourArray();
-      BuildDepthContourArray();
-
-      //  Set up the chart context
-      m_this_chart_context->m_pvc_hash = &Get_vc_hash();
-      m_this_chart_context->m_pve_hash = &Get_ve_hash();
-
-      m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
-      m_this_chart_context->pRigidATONArray = pRigidATONArray;
-      m_this_chart_context->chart = this;
-      m_this_chart_context->chart_type = GetChartType();
-
-      m_this_chart_context->safety_contour = m_next_safe_cnt;
-      m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
-      m_this_chart_context->pt2GetAssociatedObjects =
-          &s57chart::GetAssociatedObjects;
-
-      //  Loop and populate all the objects
-      for (int i = 0; i < PI_PRIO_NUM; ++i) {
-        for (int j = 0; j < PI_LUPNAME_NUM; j++) {
-          ObjRazRules *top = razRules[i][j];
-          while (top) {
-            if (top->obj) top->obj->m_chart_context = m_this_chart_context;
-            top = top->next;
-          }
-        }
+      // Keep absent-cell retries, but unchanged geometry needs no rebuild.
+      if (!added_geometry) {
+        if (!cm93_safety_query_depth) AbstractPlatform::HideBusySpinner();
+        continue;
       }
+      m_display_geometry_pending = true;
+      if (prepare_display) UpdateDisplayGeometry();
 
-      AbstractPlatform::HideBusySpinner();
+      if (!cm93_safety_query_depth) AbstractPlatform::HideBusySpinner();
     }
   }
+}
+
+void cm93chart::UpdateDisplayGeometry() {
+  AssembleLineGeometry();
+
+  ClearDepthContourArray();
+  BuildDepthContourArray();
+
+  m_this_chart_context->m_pvc_hash = &Get_vc_hash();
+  m_this_chart_context->m_pve_hash = &Get_ve_hash();
+
+  m_this_chart_context->pFloatingATONArray = pFloatingATONArray;
+  m_this_chart_context->pRigidATONArray = pRigidATONArray;
+  m_this_chart_context->chart = this;
+  m_this_chart_context->chart_type = GetChartType();
+
+  m_this_chart_context->safety_contour = m_next_safe_cnt;
+  m_this_chart_context->vertex_buffer = GetLineVertexBuffer();
+  m_this_chart_context->pt2GetAssociatedObjects =
+      &s57chart::GetAssociatedObjects;
+
+  for (int i = 0; i < PI_PRIO_NUM; ++i)
+    for (int j = 0; j < PI_LUPNAME_NUM; j++)
+      for (auto *rule = razRules[i][j]; rule; rule = rule->next)
+        if (rule->obj) rule->obj->m_chart_context = m_this_chart_context;
+
+  m_display_geometry_pending = false;
 }
 
 std::vector<int> cm93chart::GetVPCellArray(const ViewPort &vpt) {
@@ -2219,7 +2250,8 @@ void cm93chart::ProcessVectorEdges() {
 }
 
 int cm93chart::CreateObjChain(int cell_index, int subcell,
-                              double view_scale_ppm) {
+                              double view_scale_ppm,
+                              RuleAppendContext *append) {
   LUPrec *LUP;
   LUPname LUP_Name = PAPER_CHART;
 
@@ -2318,7 +2350,7 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
                   ps52plib->S52_LUPLookup(LUPO_Name, obj->FeatureName, obj);
               if (LUPO) {
                 ps52plib->_LUP2rules(LUPO, obj);
-                _insertRules(obj, LUPO, this);
+                _insertRules(obj, LUPO, this, append);
               }
             }
             break;
@@ -2345,7 +2377,7 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
                   ps52plib->S52_LUPLookup(LUPO_Name, obj->FeatureName, obj);
               if (LUPO) {
                 ps52plib->_LUP2rules(LUPO, obj);
-                _insertRules(obj, LUPO, this);
+                _insertRules(obj, LUPO, this, append);
               }
             }
             break;
@@ -2365,7 +2397,7 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
           ps52plib->_LUP2rules(LUP, obj);
 
           //              Add linked object/LUP to the working set
-          _insertRules(obj, LUP, this);
+          _insertRules(obj, LUP, this, append);
 
           //              Establish Object's Display Category
           obj->m_DisplayCat = LUP->DISC;
@@ -4187,6 +4219,59 @@ bool cm93chart::UpdateCovrSet(ViewPort *vpt) {
   return true;
 }
 
+int cm93chart::SafetyCoverageBoxRelation(double min_lat, double max_lat,
+                                         double min_lon, double max_lon) {
+  using namespace ocpn::chart_safety;
+  const CellBox box{min_lon, min_lat, max_lon, max_lat};
+  if (!box.Valid() || max_lon - min_lon >= 180 || min_lat <= -85 ||
+      max_lat >= 85)
+    return -1;
+  const double centre = (min_lon + max_lon) / 2;
+  bool covered = false, partial = false;
+  for (unsigned i = 0; i < m_pcovr_array_loaded.GetCount(); ++i) {
+    const auto *coverage = m_pcovr_array_loaded[i];
+    if (!coverage || coverage->m_nvertices < 3 || !coverage->pvertices ||
+        coverage->user_xoff != 0 || coverage->user_yoff != 0)
+      return -1;
+    std::vector<Point> ring;
+    ring.reserve(coverage->m_nvertices);
+    double west = std::numeric_limits<double>::infinity();
+    double east = -west;
+    double south = west, north = east;
+    for (int v = 0; v < coverage->m_nvertices; ++v) {
+      const auto p = coverage->pvertices[v];
+      if (!std::isfinite(p.x) || !std::isfinite(p.y)) return -1;
+      // Unwrap the ring continuously. Phasing every vertex to the query
+      // centre can split unrelated coverage on the opposite side of Earth.
+      const double previous = ring.empty() ? centre : ring.back().x;
+      const double step = std::remainder(p.x - previous, 360.0);
+      if (!ring.empty() && std::abs(step) >= 180) return -1;
+      const double lon = previous + step;
+      ring.push_back({lon, p.y});
+      west = std::min(west, lon);
+      east = std::max(east, lon);
+      south = std::min(south, static_cast<double>(p.y));
+      north = std::max(north, static_cast<double>(p.y));
+    }
+    if (east - west >= 180) return -1;
+    const double shift =
+        360.0 * std::round((centre - (west + east) / 2) / 360.0);
+    if (south > max_lat || north < min_lat || west + shift > max_lon ||
+        east + shift < min_lon)
+      continue;
+    for (auto &point : ring) point.x += shift;
+    std::vector<std::vector<Point>> rings;
+    rings.push_back(std::move(ring));
+    if (BoundaryMayIntersectCell(rings, box))
+      partial = true;
+    else if (PointInsideRings(rings, {centre, (min_lat + max_lat) / 2}))
+      covered = true;
+  }
+  // Refuse partial coverage even if another overlapping polygon contains the
+  // box: this keeps the first prototype conservative at coverage boundaries.
+  return partial ? 1 : covered ? 2 : 0;
+}
+
 bool cm93chart::IsPointInLoadedM_COVR(double xc, double yc) {
   //  Provisionally revert to older method pending investigation.
 #if 1
@@ -4944,6 +5029,107 @@ int cm93compchart::GetNativeScale() {
     return m_pcm93chart_current->GetNativeScale();
   else
     return (int)1e8;
+}
+
+size_t cm93compchart::CollectFeatureAreaRings(
+    const char *feature_name,
+    std::vector<std::vector<wxPoint2DDouble>> &rings) {
+  size_t before = rings.size();
+
+  if (m_pcm93chart_current)
+    m_pcm93chart_current->CollectFeatureAreaRings(feature_name, rings);
+
+  return rings.size() - before;
+}
+
+wxString cm93compchart::GetFeatureDebugSummary() {
+  if (m_pcm93chart_current)
+    return wxString::Format("current_cm93_scale=%d %s",
+                            m_pcm93chart_current->GetNativeScale(),
+                            m_pcm93chart_current->GetFeatureDebugSummary());
+
+  return "current_cm93_scale=none";
+}
+
+void cm93compchart::PrepareSafetyTile(const ViewPort &vpt) {
+  // CM93's normal composite selection is deliberately viewport-dependent.
+  // Repeating it for every point in a 41x41 safety tile is both unnecessary
+  // and extremely expensive.  Prepare all eight scales over the complete
+  // tile once; point classification below still selects the highest-detail
+  // scale whose real M_COVR contains that exact point.
+  for (int cmscale = 0; cmscale < 8; ++cmscale) {
+    if (!m_pcm93chart_array[cmscale]) {
+      m_pcm93chart_array[cmscale] = new cm93chart();
+
+      wxChar ext = (wxChar)('A' + cmscale - 1);
+      if (cmscale == 0) ext = 'Z';
+      wxString file_dummy = "CM93.";
+      file_dummy << ext;
+
+      m_pcm93chart_array[cmscale]->SetCM93Dict(m_pDictComposite);
+      m_pcm93chart_array[cmscale]->SetCM93Prefix(m_prefixComposite);
+      m_pcm93chart_array[cmscale]->SetCM93Manager(m_pcm93mgr);
+      m_pcm93chart_array[cmscale]->SetColorScheme(m_global_color_scheme);
+      m_pcm93chart_array[cmscale]->Init(file_dummy, FULL_INIT);
+    }
+    m_pcm93chart_array[cmscale]->PrepareSafetyViewport(vpt);
+  }
+}
+
+cm93chart *cm93compchart::GetHighestDetailSafetyChartAt(double lat,
+                                                        double lon) {
+  const double canonical_lon = ocpn::chart_safety::CanonicalLongitude(lon);
+  for (int cmscale = 7; cmscale >= 0; --cmscale) {
+    cm93chart *chart = m_pcm93chart_array[cmscale];
+    if (!chart || !chart->IsPointInLoadedM_COVR(canonical_lon, lat)) continue;
+    // LLRegion's cached union can report phantom coverage exactly on the
+    // date line. Only bypass that chart when its original M_COVR polygons
+    // prove the point is outside. Unresolved polygons retain the existing
+    // selection, never authorising a fallback to deeper, coarser water.
+    // Normal rendering and chart priority away from the seam are unchanged.
+    if (std::abs(std::abs(canonical_lon) - 180.0) < 1e-8 &&
+        chart->SafetyCoverageBoxRelation(lat, lat, canonical_lon,
+                                         canonical_lon) == 0)
+      continue;
+    return chart;
+  }
+  return NULL;
+}
+
+cm93chart *cm93compchart::GetUniformSafetyChartForBox(double min_lat,
+                                                      double max_lat,
+                                                      double min_lon,
+                                                      double max_lon) {
+  if (min_lon <= -180 || max_lon >= 180) return nullptr;
+  for (int scale = 7; scale >= 0; --scale) {
+    auto *chart = m_pcm93chart_array[scale];
+    if (!chart) continue;
+    const int relation =
+        chart->SafetyCoverageBoxRelation(min_lat, max_lat, min_lon, max_lon);
+    if (relation == 2) return chart;
+    if (relation != 0) return nullptr;
+  }
+  return nullptr;
+}
+
+bool cm93compchart::SafetyAreaHazardMayIntersect(double min_lat, double max_lat,
+                                                 double min_lon, double max_lon,
+                                                 int *hazard_objects) {
+  int total_hazard_objects = 0;
+  for (int cmscale = 0; cmscale < 8; ++cmscale) {
+    cm93chart *chart = m_pcm93chart_array[cmscale];
+    if (!chart) continue;
+    int scale_hazard_objects = 0;
+    if (chart->SafetyAreaHazardMayIntersect(min_lat, max_lat, min_lon, max_lon,
+                                            &scale_hazard_objects)) {
+      total_hazard_objects += scale_hazard_objects;
+      if (hazard_objects) *hazard_objects = total_hazard_objects;
+      return true;
+    }
+    total_hazard_objects += scale_hazard_objects;
+  }
+  if (hazard_objects) *hazard_objects = total_hazard_objects;
+  return false;
 }
 
 double cm93compchart::GetNormalScaleMin(double canvas_scale_factor,
