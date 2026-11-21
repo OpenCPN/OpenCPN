@@ -428,8 +428,7 @@ bool ChartPointIsLand(s57chart* chart, double lat, double lon, ViewPort& vp) {
   if (!rule_list) return false;
 
   bool is_land = false;
-  for (auto node = rule_list->GetFirst(); node;
-       node = node->GetNext()) {
+  for (auto node = rule_list->GetFirst(); node; node = node->GetNext()) {
     ObjRazRules* rule = node->GetData();
     if (rule && rule->obj &&
         IsSegmentSafetyLandObject(rule->obj->FeatureName)) {
