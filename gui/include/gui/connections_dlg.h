@@ -58,13 +58,6 @@ public:
    */
   void CancelSettings();
 
-  /**
-   * Resize the connections tab
-   * @param size New size available for the dialog i.e., GetClientSize()
-   *   of containing window.
-   */
-  void OnResize(const wxSize& size);
-
   static void SetColorScheme(ColorScheme cs);
 
 private:
