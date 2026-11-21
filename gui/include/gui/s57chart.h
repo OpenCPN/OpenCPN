@@ -151,7 +151,17 @@ public:
   void SetColorScheme(ColorScheme cs, bool bApplyImmediate = true);
   virtual void UpdateLUPs(s57chart *pOwner);
 
+  // Stack-scoped cursors for a synchronous append-only batch. Never retain
+  // them across rule deletion/reordering or chart destruction.
+  struct RuleAppendContext {
+    const s57chart *owner{};
+    ObjRazRules *heads[PRIO_NUM][LUPNAME_NUM]{};
+    ObjRazRules *tails[PRIO_NUM][LUPNAME_NUM]{};
+    bool known[PRIO_NUM][LUPNAME_NUM]{};
+  };
   int _insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner);
+  int _insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner,
+                   RuleAppendContext *append);
 
   virtual ListOfObjRazRules *GetObjRuleListAtLatLon(
       float lat, float lon, float select_radius, ViewPort *VPoint,

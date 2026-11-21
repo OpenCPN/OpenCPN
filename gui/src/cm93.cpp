@@ -1982,6 +1982,7 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
   }
   //    Save a copy for later reference
   m_vp_current = vpt;
+  RuleAppendContext append;
 
   //  Set up local SM rendering constants
   m_pixx_vp_center = vpt.pix_width / 2;
@@ -2038,7 +2039,7 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       {
         added_geometry = true;
         ProcessVectorEdges();
-        CreateObjChain(cell_index, (int)'0', vpt.view_scale_ppm);
+        CreateObjChain(cell_index, (int)'0', vpt.view_scale_ppm, &append);
 
         ForceEdgePriorityEvaluate();  // need to re-evaluate priorities
 
@@ -2054,7 +2055,8 @@ void cm93chart::SetVPParms(const ViewPort &vpt) {
       while (loadcell_in_sequence(cell_index, loadcell_key)) {
         added_geometry = true;
         ProcessVectorEdges();
-        CreateObjChain(cell_index, (int)loadcell_key, vpt.view_scale_ppm);
+        CreateObjChain(cell_index, (int)loadcell_key, vpt.view_scale_ppm,
+                       &append);
 
         ForceEdgePriorityEvaluate();  // need to re-evaluate priorities
 
@@ -2236,7 +2238,8 @@ void cm93chart::ProcessVectorEdges() {
 }
 
 int cm93chart::CreateObjChain(int cell_index, int subcell,
-                              double view_scale_ppm) {
+                              double view_scale_ppm,
+                              RuleAppendContext *append) {
   LUPrec *LUP;
   LUPname LUP_Name = PAPER_CHART;
 
@@ -2335,7 +2338,7 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
                   ps52plib->S52_LUPLookup(LUPO_Name, obj->FeatureName, obj);
               if (LUPO) {
                 ps52plib->_LUP2rules(LUPO, obj);
-                _insertRules(obj, LUPO, this);
+                _insertRules(obj, LUPO, this, append);
               }
             }
             break;
@@ -2362,7 +2365,7 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
                   ps52plib->S52_LUPLookup(LUPO_Name, obj->FeatureName, obj);
               if (LUPO) {
                 ps52plib->_LUP2rules(LUPO, obj);
-                _insertRules(obj, LUPO, this);
+                _insertRules(obj, LUPO, this, append);
               }
             }
             break;
@@ -2382,7 +2385,7 @@ int cm93chart::CreateObjChain(int cell_index, int subcell,
           ps52plib->_LUP2rules(LUP, obj);
 
           //              Add linked object/LUP to the working set
-          _insertRules(obj, LUP, this);
+          _insertRules(obj, LUP, this, append);
 
           //              Establish Object's Display Category
           obj->m_DisplayCat = LUP->DISC;

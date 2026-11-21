@@ -124,7 +124,7 @@ struct CachedPointSafetyClassification {
 inline constexpr double kGridTileDegrees = 0.05;
 inline constexpr double kGridResolutionDegrees = 0.00125;
 inline constexpr int kCoarseRouteMaskFactor = 4;
-inline constexpr int kPersistentCacheVersion = 3;
+inline constexpr int kPersistentCacheVersion = 4;
 inline constexpr int kPersistentBaseTileVersion = 4;
 inline constexpr int kRouteMaskAlgorithmVersion = 5;
 inline constexpr size_t kMaxGridTiles = 4096;

@@ -369,7 +369,8 @@ private:
 
   void translate_colmar(const wxString &sclass, S57attVal *pattValTmp);
 
-  int CreateObjChain(int cell_index, int subcell, double view_scale_ppm);
+  int CreateObjChain(int cell_index, int subcell, double view_scale_ppm,
+                     RuleAppendContext *append);
 
   void Unload_CM93_Cell(void);
 

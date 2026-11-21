@@ -17,6 +17,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build-dir", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--certificate-cache", action="store_true",
+                        help="Build the private persistent-certificate tests")
     options = parser.parse_args()
     source = Path(__file__).resolve().parents[1]
     build = options.build_dir.resolve()
@@ -36,7 +38,8 @@ def main():
         *shlex.split(flags["CXX_INCLUDES"]),
         *shlex.split(flags["CXX_FLAGS"]),
         "-c",
-        str(source / "test/chart_safety_native_tests.cpp"),
+        str(source / ("test/chart_safety_certificate_tests.cpp" if options.certificate_cache
+                      else "test/chart_safety_native_tests.cpp")),
         "-o",
         str(obj),
     ]
@@ -47,9 +50,11 @@ def main():
         arg for arg in link_command if not arg.startswith("-Wl,--dependency-file=")
     ]
     link_command[
-        link_command.index("CMakeFiles/opencpn.dir/gui/src/chart_safety_raster.cpp.o")
+        link_command.index("CMakeFiles/opencpn.dir/gui/src/" +
+                           ("chart_safety_core.cpp.o" if options.certificate_cache
+                            else "chart_safety_raster.cpp.o"))
     ] = str(obj)
-    link_command[link_command.index("-o") + 1] = str(out / "native-fixtures")
+    link_command[link_command.index("-o") + 1] = str(out / ("certificate-fixtures" if options.certificate_cache else "native-fixtures"))
     link_command += ["-Wl,--wrap=main", "-lgtest"]
     log_path = out / "native-tests-build.log"
     with log_path.open("w") as log:

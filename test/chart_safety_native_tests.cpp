@@ -562,3 +562,73 @@ TEST_F(DateLineSafety, CorridorFootprintUsesOnlyAdjacentCanonicalTiles) {
   }
 }
 }  // namespace
+
+namespace {
+class AppendOrderChart : public FixtureChart {
+public:
+  ~AppendOrderChart() {
+    for (int p = 0; p < PRIO_NUM; ++p)
+      for (int l = 0; l < LUPNAME_NUM; ++l) {
+        auto *rule = razRules[p][l];
+        while (rule) {
+          auto *next = rule->next;
+          free(rule);
+          rule = next;
+        }
+        razRules[p][l] = nullptr;
+      }
+  }
+  void Insert(int sequence, LUPrec *lookup,
+              RuleAppendContext *append = nullptr) {
+    auto obj = std::make_unique<S57Obj>("DEPARE");
+    obj->Index = sequence;
+    EXPECT_EQ(_insertRules(obj.get(), lookup, this, append), 1);
+    objects.push_back(std::move(obj));
+  }
+  std::vector<int> Order(int priority, int style) {
+    std::vector<int> result;
+    for (auto *rule = razRules[priority][style]; rule; rule = rule->next)
+      result.push_back(rule->obj->Index);
+    return result;
+  }
+};
+}  // namespace
+TEST(ChartRuleAppend, BatchPreservesEveryPriorityAndStyleInNaturalOrder) {
+  std::vector<std::unique_ptr<LUPrec>> lookups;
+  const LUPname styles[] = {SIMPLIFIED, PAPER_CHART, LINES, PLAIN_BOUNDARIES,
+                            SYMBOLIZED_BOUNDARIES};
+  for (int p = 0; p < PRIO_NUM; ++p)
+    for (int l = 0; l < LUPNAME_NUM; ++l) {
+      auto lookup = std::make_unique<LUPrec>();
+      lookup->DPRI = static_cast<DisPrio>('0' + p);
+      lookup->TNAM = styles[l];
+      lookups.push_back(std::move(lookup));
+    }
+  AppendOrderChart ordinary, batched;
+  for (int batch = 0; batch < 3; ++batch) {
+    s57chart::RuleAppendContext context;
+    for (int n = 0; n < 700; ++n) {
+      const int sequence = batch * 700 + n;
+      auto *lookup = lookups[sequence % lookups.size()].get();
+      ordinary.Insert(sequence, lookup);
+      // Intervening ordinary appends are legal during a batch too.
+      batched.Insert(sequence, lookup, n % 7 == 3 ? nullptr : &context);
+    }
+  }
+  for (int p = 0; p < PRIO_NUM; ++p)
+    for (int l = 0; l < LUPNAME_NUM; ++l)
+      EXPECT_EQ(ordinary.Order(p, l), batched.Order(p, l));
+}
+TEST(ChartRuleAppend, ANewChartCannotReuseAnotherChartsTailPointers) {
+  LUPrec lookup;
+  lookup.DPRI = PRIO_HAZARDS;
+  lookup.TNAM = PLAIN_BOUNDARIES;
+  AppendOrderChart first, second;
+  s57chart::RuleAppendContext context;
+  first.Insert(1, &lookup, &context);
+  second.Insert(2, &lookup, &context);
+  first.Insert(3, &lookup, &context);
+  second.Insert(4, &lookup, &context);
+  EXPECT_EQ(first.Order(8, 3), (std::vector<int>{1, 3}));
+  EXPECT_EQ(second.Order(8, 3), (std::vector<int>{2, 4}));
+}

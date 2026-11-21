@@ -4326,6 +4326,11 @@ int s57chart::BuildRAZFromSENCFile(const wxString &FullPath) {
 }
 
 int s57chart::_insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner) {
+  return _insertRules(obj, LUP, pOwner, nullptr);
+}
+
+int s57chart::_insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner,
+                           RuleAppendContext *append) {
   ObjRazRules *rzRules = NULL;
   int disPrioIdx = 0;
   int LUPtypeIdx = 0;
@@ -4407,22 +4412,30 @@ int s57chart::_insertRules(S57Obj *obj, LUPrec *LUP, s57chart *pOwner) {
   // Find the end of the list, and append the object
   // This is required to honor the "natural order" priority rules for objects of
   // same Display Priority
-  ObjRazRules *rNext = NULL;
-  ObjRazRules *rPrevious = NULL;
-  if (razRules[disPrioIdx][LUPtypeIdx]) {
-    rPrevious = razRules[disPrioIdx][LUPtypeIdx];
-    rNext = rPrevious->next;
+  ObjRazRules *head = razRules[disPrioIdx][LUPtypeIdx];
+  ObjRazRules *previous = head;
+  if (append) {
+    if (append->owner != this) {
+      *append = RuleAppendContext{};
+      append->owner = this;
+    }
+    if (append->known[disPrioIdx][LUPtypeIdx] &&
+        append->heads[disPrioIdx][LUPtypeIdx] == head)
+      previous = append->tails[disPrioIdx][LUPtypeIdx];
   }
-  while (rNext) {
-    rPrevious = rNext;
-    rNext = rPrevious->next;
-  }
-
-  rzRules->next = NULL;
-  if (rPrevious)
-    rPrevious->next = rzRules;
+  // Walk once for each existing chain in a batch. Also admit intervening
+  // ordinary appends without changing the established natural object order.
+  while (previous && previous->next) previous = previous->next;
+  rzRules->next = nullptr;
+  if (previous)
+    previous->next = rzRules;
   else
     razRules[disPrioIdx][LUPtypeIdx] = rzRules;
+  if (append) {
+    append->known[disPrioIdx][LUPtypeIdx] = true;
+    append->heads[disPrioIdx][LUPtypeIdx] = razRules[disPrioIdx][LUPtypeIdx];
+    append->tails[disPrioIdx][LUPtypeIdx] = rzRules;
+  }
 
 #endif
 
