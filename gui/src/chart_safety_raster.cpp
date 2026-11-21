@@ -403,7 +403,7 @@ SegmentSafetyPointClass ChartPluginPointSafetyClassAtRaw(
   wxString depth_attribute;
 
   if (objects) {
-    for (ListOfPI_S57Obj::Node* node = objects->GetFirst(); node;
+    for (auto node = objects->GetFirst(); node;
          node = node->GetNext()) {
       PI_S57Obj* object = node->GetData();
       if (!object) continue;
@@ -633,7 +633,7 @@ SegmentSafetyPointClass ChartPointSafetyClassAtRaw(
     double min_depth_m = 0.0;
     wxString depth_object;
     wxString depth_attribute;
-    for (ListOfObjRazRules::Node* node = rule_list->GetFirst(); node;
+    for (auto node = rule_list->GetFirst(); node;
          node = node->GetNext()) {
       ObjRazRules* rule = node->GetData();
       if (!rule || !rule->obj) continue;
@@ -3003,7 +3003,7 @@ wxString SegmentSafetyPointDiagnostic(double lat, double lon) {
         chart_checked = false;
         break;
       }
-      for (ListOfPI_S57Obj::Node* node = object_list->GetFirst(); node;
+      for (auto node = object_list->GetFirst(); node;
            node = node->GetNext()) {
         PI_S57Obj* object = node->GetData();
         if (!object) continue;
@@ -3058,7 +3058,7 @@ wxString SegmentSafetyPointDiagnostic(double lat, double lon) {
         s57->GetObjRuleListAtLatLon(lat, lon, 0.0, &vp, MASK_AREA);
     if (!rule_list) break;
 
-    for (ListOfObjRazRules::Node* node = rule_list->GetFirst(); node;
+    for (auto node = rule_list->GetFirst(); node;
          node = node->GetNext()) {
       ObjRazRules* rule = node->GetData();
       if (!rule || !rule->obj) continue;

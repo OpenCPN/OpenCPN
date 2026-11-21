@@ -428,7 +428,7 @@ bool ChartPointIsLand(s57chart* chart, double lat, double lon, ViewPort& vp) {
   if (!rule_list) return false;
 
   bool is_land = false;
-  for (ListOfObjRazRules::Node* node = rule_list->GetFirst(); node;
+  for (auto node = rule_list->GetFirst(); node;
        node = node->GetNext()) {
     ObjRazRules* rule = node->GetData();
     if (rule && rule->obj &&
