@@ -3,16 +3,8 @@
 name: Windows
 
 'on':
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - 'buildandroid/**'
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - 'buildandroid/**'
+  # Win32 is not supported anymore, kept buildable on demand only
+  workflow_dispatch:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)

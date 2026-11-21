@@ -1470,10 +1470,13 @@ options::options(wxWindow* parent, OptionsCallbacks callbacks, wxWindowID id,
   };
   m_persist_active_route_chkbox->Bind(wxEVT_CHECKBOX, action);
   m_persist_active_route_chkbox->SetValue(g_persist_active_route);
+  OnColorChange();
 
   m_OnChartDb_finalize_listener.Init(
       GuiEvents::GetInstance().on_finalize_chartdbs,
       [&](ObservedEvt& ev) { OptionsFinalizeChartDBUpdate(); });
+  Bind(wxEVT_SYS_COLOUR_CHANGED,
+       [&](wxSysColourChangedEvent& ev) { OnColorChange(ev); });
 }
 
 options::~options() {
@@ -1497,6 +1500,22 @@ options::~options() {
 #ifndef __ANDROID__
   delete m_PluginCatalogMgrPanel;
 #endif
+}
+
+#ifdef OCPN_OPTIONS_USE_LISTBOOK
+void options::OnColorChange() {
+  auto foreground = wxSystemSettings::GetColour(wxSYS_COLOUR_MENUTEXT);
+  auto background = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
+  m_pListbook->GetListView()->SetBackgroundColour(background);
+  m_pListbook->GetListView()->SetForegroundColour(foreground);
+}
+#else
+void options::OnColorChange() {}
+#endif
+
+void options::OnColorChange(wxSysColourChangedEvent& ev) {
+  OnColorChange();
+  ev.Skip();
 }
 
 // with AIS it's called very often
@@ -1588,6 +1607,8 @@ void options::Init() {
   pPreserveScale = NULL;
   pSmoothPanZoom = NULL;
   pEnableZoomToCursor = NULL;
+  m_Text_def_boat_speed = NULL;
+
   pSDisplayGrid = NULL;
   pCDOOutlines = NULL;
   pSDepthUnits = NULL;
@@ -1863,19 +1884,22 @@ bool options::DeletePluginPage(wxScrolledWindow* page) {
   return FALSE;
 }
 
-void options::CreatePanel_NMEA(size_t parent, int border_size,
+void options::CreatePanel_NMEA(size_t position, int border_size,
                                int group_item_spacing) {
-  m_pNMEAForm = AddPage(parent, _("NMEA"));
+  assert(position < m_pListbook->GetPageCount() &&
+         "Illegal NMEA window position");
+  auto panel = new wxPanel(m_pListbook, wxID_ANY);
+  wxString title = m_pListbook->GetPageText(position);
+  m_pListbook->InsertPage(position, panel, title, false, position);
+  m_pListbook->SetSelection(0);  // avoid gtk assertions
+  m_pListbook->DeletePage(position + 1);
+  m_pNMEAForm = panel;
 
-  comm_dialog =
-      std::make_shared<ConnectionsDlg>(m_pNMEAForm, TheConnectionParams());
-  // Hijack the options | Resize event for use by comm_dialog only.
-  // Needs new solution if other pages also have a need to act on it.
-  Bind(wxEVT_SIZE, [&](wxSizeEvent& ev) {
-    auto w = m_pListbook->GetCurrentPage();
-    comm_dialog->OnResize(w ? w->GetClientSize() : wxSize());
-    ev.Skip();
-  });
+  comm_dialog = new ConnectionsDlg(m_pNMEAForm, TheConnectionParams());
+  auto vbox = new wxBoxSizer(wxVERTICAL);
+  vbox->Add(comm_dialog, wxSizerFlags(1).Expand());
+  m_pNMEAForm->SetSizer(vbox);
+  m_pNMEAForm->Layout();
 #ifdef __ANDROID__
   comm_dialog->GetHandle()->setStyleSheet(getAdjustedDialogStyleSheet());
 #endif
@@ -2058,7 +2082,7 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
 
   // Ship's data
   wxStaticBox* shipdata =
-      new wxStaticBox(itemPanelShip, wxID_ANY, _("Ship's identifier"));
+      new wxStaticBox(itemPanelShip, wxID_ANY, _("Ship's information"));
   wxStaticBoxSizer* datasizer = new wxStaticBoxSizer(shipdata, wxVERTICAL);
   ownShip->Add(datasizer, 0, wxGROW | wxALL, border_size);
 
@@ -2083,6 +2107,22 @@ void options::CreatePanel_Ownship(size_t parent, int border_size,
   m_pTxt_OwnMMSI = new wxTextCtrl(itemPanelShip, wxID_ANY, "",
                                   wxDefaultPosition, wxDefaultSize, 0, mmsiVal);
   ownmmsisizer->Add(m_pTxt_OwnMMSI, 0, wxALIGN_RIGHT);
+
+  // Ownship default boatspeed
+  wxFlexGridSizer* ownshipsizer =
+      new wxFlexGridSizer(0, 2, group_item_spacing, group_item_spacing);
+  ownshipsizer->AddGrowableCol(1);
+  datasizer->Add(ownshipsizer, 0, wxALL | wxEXPAND, border_size);
+
+  m_Text_def_boat_speed = new wxStaticText(
+      itemPanelShip, wxID_ANY,
+      _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
+
+  ownshipsizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
+  pSDefaultBoatSpeed =
+      new wxTextCtrl(itemPanelShip, ID_DEFAULT_BOAT_SPEED, "",
+                     wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
+  ownshipsizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_RIGHT, group_item_spacing);
 
   //  Tracks
   wxStaticBox* trackText =
@@ -2728,7 +2768,7 @@ void options::ClearConfigList() {
   if (m_scrollWinConfigList) {
     wxWindowList kids = m_scrollWinConfigList->GetChildren();
     for (unsigned int i = 0; i < kids.GetCount(); i++) {
-      wxWindowListNode* node = kids.Item(i);
+      wxWindowList::compatibility_iterator node = kids.Item(i);
       wxWindow* win = node->GetData();
       auto pcp = dynamic_cast<wxPanel*>(win);
       if (pcp) {
@@ -2758,7 +2798,7 @@ void options::BuildConfigList() {
       //  Set mouse handler for children of the panel, too.
       wxWindowList kids = pp->GetChildren();
       for (unsigned int i = 0; i < kids.GetCount(); i++) {
-        wxWindowListNode* node = kids.Item(i);
+        wxWindowList::compatibility_iterator node = kids.Item(i);
         wxWindow* win = node->GetData();
         win->Connect(wxEVT_LEFT_DOWN,
                      wxMouseEventHandler(options::OnConfigMouseSelected), NULL,
@@ -2844,7 +2884,7 @@ void options::OnApplyConfig(wxCommandEvent& event) {
   if (m_scrollWinConfigList) {
     wxWindowList kids = m_scrollWinConfigList->GetChildren();
     for (unsigned int i = 0; i < kids.GetCount(); i++) {
-      wxWindowListNode* node = kids.Item(i);
+      wxWindowList::compatibility_iterator node = kids.Item(i);
       wxWindow* win = node->GetData();
       auto pcp = dynamic_cast<wxPanel*>(win);
       if (pcp) {
@@ -2886,7 +2926,7 @@ void options::OnConfigMouseSelected(wxMouseEvent& event) {
     if (m_scrollWinConfigList) {
       wxWindowList kids = m_scrollWinConfigList->GetChildren();
       for (unsigned int i = 0; i < kids.GetCount(); i++) {
-        wxWindowListNode* node = kids.Item(i);
+        wxWindowList::compatibility_iterator node = kids.Item(i);
         wxWindow* win = node->GetData();
         auto panel = dynamic_cast<wxPanel*>(win);
         if (panel) {
@@ -3972,6 +4012,11 @@ void ChartGroupsUI::CompletePanel() {
 
 void options::CreatePanel_Display(size_t parent, int border_size,
                                   int group_item_spacing) {
+  // Skip the "General" tab for Android, nothing selectable there.
+#ifdef __ANDROID__
+  return;
+#endif
+
   pDisplayPanel = AddPage(parent, _("General"));
 
   if (!m_bcompact) {
@@ -4087,47 +4132,6 @@ void options::CreatePanel_Display(size_t parent, int border_size,
                                     _("Show Depth Units"));
       boxDisp->Add(pSDepthUnits, verticleInputFlags);
     }
-
-    // CUSTOMIZATION - LIVE ETA OPTION
-    // -------------------------------
-    // Add a checkbox to activate live ETA option in status bar, and
-    // Add a text field to set default boat speed (for calculation when
-    // no GPS or when the boat is at the harbor).
-
-    // Spacer
-    generalSizer->Add(0, border_size * 4);
-    generalSizer->Add(0, border_size * 4);
-
-    // New menu status bar
-    generalSizer->Add(
-        new wxStaticText(pDisplayPanel, wxID_ANY, _("Status Bar Option")),
-        groupLabelFlags);
-    wxBoxSizer* boxDispStatusBar = new wxBoxSizer(wxVERTICAL);
-    generalSizer->Add(boxDispStatusBar, groupInputFlags);
-
-    // Add option for live ETA
-    pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA,
-                               _("Live ETA at Cursor"));
-    boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
-
-    // Add text input for default boat speed
-    // (for calculation, in case GPS speed is null)
-    wxBoxSizer* defaultBoatSpeedSizer = new wxBoxSizer(wxHORIZONTAL);
-    boxDispStatusBar->Add(defaultBoatSpeedSizer, wxALL, group_item_spacing);
-
-    m_Text_def_boat_speed = new wxStaticText(
-        pDisplayPanel, wxID_ANY,
-        _("Default Boat Speed ") + "(" + getUsrSpeedUnit() + ")    ");
-
-    defaultBoatSpeedSizer->Add(m_Text_def_boat_speed, groupLabelFlagsHoriz);
-    pSDefaultBoatSpeed =
-        new wxTextCtrl(pDisplayPanel, ID_DEFAULT_BOAT_SPEED, "",
-                       wxDefaultPosition, wxSize(50, -1), wxTE_RIGHT);
-    defaultBoatSpeedSizer->Add(pSDefaultBoatSpeed, 0, wxALIGN_CENTER_VERTICAL,
-                               group_item_spacing);
-
-    // --------------------------------------
-    // END OF CUSTOMIZATION - LIVE ETA OPTION
 
 #ifndef __ANDROID__
     // MultiChart selection panel
@@ -4293,9 +4297,11 @@ void options::CreatePanel_Display(size_t parent, int border_size,
     generalSizer->Add(boxDispStatusBar, groupInputFlags);
 
     // Add option for live ETA
+#ifndef __ANDROID__
     pSLiveETA = new wxCheckBox(pDisplayPanel, ID_CHECK_LIVEETA,
                                _("Live ETA at Cursor"));
     boxDispStatusBar->Add(pSLiveETA, verticleInputFlags);
+#endif
 
     // Add text input for default boat speed
     // (for calculation, in case GPS speed is null)
@@ -5690,6 +5696,12 @@ void options::CreatePanel_UI(size_t parent, int border_size,
                                 _("Use High Contrast Chart Colors"));
   miscOptions->Add(pHiconColors, 0, wxALL, border_size);
 
+  // Add option for live ETA
+#ifndef __ANDROID__
+  pSLiveETA = new wxCheckBox(itemPanelFont, ID_CHECK_LIVEETA,
+                             _("Show Live ETA at Cursor on Status Bar"));
+  miscOptions->Add(pSLiveETA, 0, wxALL, border_size);
+#endif
   pInlandEcdis =
       new wxCheckBox(itemPanelFont, ID_INLANDECDISBOX, _("Use Inland ECDIS"));
   miscOptions->Add(pInlandEcdis, 0, wxALL, border_size);
@@ -6126,6 +6138,7 @@ void options::CreateControls() {
   //      PlugIns can add panels, too
   if (g_pi_manager) g_pi_manager->NotifySetupOptions();
 
+  OnColorChange();
   SetColorScheme(static_cast<ColorScheme>(0));
 
   // Set the maximum size of the entire settings dialog
@@ -7316,7 +7329,7 @@ void options::ApplyChanges(wxCommandEvent& event) {
   // g_fog_overzoom = !pOverzoomEmphasis->GetValue();
   // g_oz_vector_scale = !pOZScaleVector->GetValue();
 
-  g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
+  if (pSmoothPanZoom) g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 #ifdef __ANDROID__
   g_bsmoothpanzoom = false;
 #endif
@@ -7399,8 +7412,9 @@ void options::ApplyChanges(wxCommandEvent& event) {
   if (pSDefaultBoatSpeed)
     pSDefaultBoatSpeed->GetValue().ToDouble(&g_defaultBoatSpeedUserUnit);
   g_defaultBoatSpeed = fromUsrSpeed(g_defaultBoatSpeedUserUnit);
-  m_Text_def_boat_speed->SetLabel(_("Default Boat Speed ") + "(" +
-                                  getUsrSpeedUnit() + ")");
+  if (m_Text_def_boat_speed)
+    m_Text_def_boat_speed->SetLabel(_("Default Boat Speed ") + "(" +
+                                    getUsrSpeedUnit() + ")");
 
   g_bAdvanceRouteWaypointOnArrivalOnly =
       pAdvanceRouteWaypointOnArrivalOnly->GetValue();
@@ -8617,17 +8631,9 @@ void options::DoOnPageChange(size_t page) {
   if (1 == i) {  // 2 is the index of "Charts" page
     k_charts = VISIT_CHARTS;
     UpdateChartDirList();
-  }
-
-  else if (m_pageConnections == i) {
-    // Only required on some Windows hosts, but should not hurt. See #4570
-    wxWindow* w = m_pListbook->GetCurrentPage();
-    comm_dialog->OnResize(w ? w->GetClientSize() : wxSize());
-  }
-
-  else if (m_pageUI == i) {  // 5 is the index of "User Interface" page
+  } else if (m_pageUI == i) {  // 5 is the index of "User Interface" page
     if (!m_itemLangListBox) return;
-#if wxUSE_XLOCALE || !wxCHECK_VERSION(3, 0, 0)
+#if wxUSE_XLOCALE
 
     if (!m_bVisitLang) {
       ::wxBeginBusyCursor();

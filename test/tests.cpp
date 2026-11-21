@@ -22,6 +22,7 @@
 #include "ocpn-nlohmann/json.hpp"
 #include "observable/configvar.h"
 
+#include "model/ais_bitstring.h"
 #include "model/ais_decoder.h"
 #include "model/ais_defs.h"
 #include "model/ais_state_vars.h"
@@ -1247,6 +1248,101 @@ TEST(AIS, Decoding) { AisDecodeApp app; }
 TEST(AIS, AISVDO) { AisVdoApp app; }
 
 TEST(AIS, AISVDM) { AisVdmApp app; }
+
+class AisBitstringApp : public BasicTest {
+public:
+  AisBitstringApp() : BasicTest() { Work(); }
+  void Work() override {
+    // Bits beyond the payload are defined (zero), not whatever the stack held.
+    AisBitstring one("1");
+    EXPECT_EQ(one.GetBitCount(), 6);
+    EXPECT_EQ(one.GetInt(1, 6), 1);
+    EXPECT_EQ(one.GetInt(9, 30), 0);
+    char name[21];
+    EXPECT_EQ(one.GetStr(7, 120, name, 20), 20);
+    EXPECT_EQ(std::string(name), std::string(20, '@'));
+
+    // Payloads longer than AIS_MAX_MESSAGE_LEN are truncated, never copied
+    // past the array.
+    std::string big(AIS_MAX_MESSAGE_LEN * 2, 'w');
+    AisBitstring wide(big.c_str());
+    EXPECT_EQ(wide.GetBitCount(), AIS_MAX_MESSAGE_LEN * 6);
+    EXPECT_EQ(wide.GetInt(AIS_MAX_MESSAGE_LEN * 6 - 5, 6), 63);
+    EXPECT_EQ(wide.GetInt(AIS_MAX_MESSAGE_LEN * 6 + 1, 6), 0);
+  }
+};
+
+class AisVdoMultipartApp : public BasicTest {
+public:
+  AisVdoMultipartApp() : BasicTest() { Work(); }
+  void Work() override {
+    // 12 fragments x 106 payload chars: the accumulated payload (1272) exceeds
+    // AIS_MAX_MESSAGE_LEN (820) while every sentence stays under 128 chars.
+    wxString accumulator;
+    GenericPosDatEx gpd;
+    AisError status = AIS_GENERIC_ERROR;
+    for (int i = 1; i <= 12; i++) {
+      std::string body = "!AIVDO,12," + std::to_string(i) + ",1,A," +
+                         std::string(106, 'w') + ",0";
+      unsigned char cs = 0;
+      for (size_t k = 1; k < body.size(); k++) cs ^= (unsigned char)body[k];
+      char hex[4];
+      snprintf(hex, sizeof hex, "*%02X", cs);
+      body += hex;
+      status = g_pAIS->DecodeSingleVDO(wxString(body), &gpd, &accumulator);
+    }
+    EXPECT_EQ(status, AIS_NMEAVDX_TOO_LONG);
+    EXPECT_TRUE(accumulator.IsEmpty());
+  }
+};
+
+TEST(AIS, BitstringBounds) { AisBitstringApp app; }
+TEST(AIS, MultipartVDOTooLong) { AisVdoMultipartApp app; }
+
+class AisDseApp : public BasicTest {
+public:
+  AisDseApp() : BasicTest() { Work(); }
+
+  static wxString WithChecksum(const std::string& body) {
+    unsigned char cs = 0;
+    for (size_t k = 1; k < body.size(); k++) cs ^= (unsigned char)body[k];
+    char hex[4];
+    snprintf(hex, sizeof hex, "*%02X", cs);
+    return wxString(body + hex);
+  }
+
+  void Work() override {
+    const int MMSI = 338040079;
+    const std::string dsc =
+        "$CDDSC,12,3380400790,12,06,00,1423108312,2019,,,S,E";
+
+    // Station information whose two-digit codes are outside the ITU-R M.825
+    // table (0..41) must be skipped, not used as an index ...
+    g_pAIS->DecodeN0183(WithChecksum(dsc));
+    // ... as are a non-digit pair ("1Z") and an odd trailing character.
+    g_pAIS->DecodeN0183(
+        WithChecksum("$CDDSE,1,1,A,338040079,04,11451289131Z1"));
+    auto found = g_pAIS->GetTargetList().find(MMSI);
+    ASSERT_NE(found, g_pAIS->GetTargetList().end());
+    EXPECT_EQ(std::string(found->second->ShipName), "ABC");
+
+    // A name longer than SHIP_NAME_LEN is truncated and stays terminated;
+    // the neighbouring ShipNameExtension is not written.
+    std::string long_name = "$CDDSE,1,1,A,338040079,04,";
+    for (int i = 0; i < 49; i++) long_name += "12";
+    g_pAIS->DecodeN0183(WithChecksum(dsc));
+    g_pAIS->DecodeN0183(WithChecksum(long_name));
+    found = g_pAIS->GetTargetList().find(MMSI);
+    ASSERT_NE(found, g_pAIS->GetTargetList().end());
+    EXPECT_EQ(strnlen(found->second->ShipName, SHIP_NAME_LEN),
+              (size_t)SHIP_NAME_LEN - 1);
+    EXPECT_EQ(std::string(found->second->ShipName),
+              std::string(SHIP_NAME_LEN - 1, 'B'));
+    EXPECT_EQ(found->second->ShipNameExtension[0], '\0');
+  }
+};
+
+TEST(AIS, DseExpansion) { AisDseApp app; }
 
 TEST(Navmsg, ActiveMessages) { NavMsgApp app; }
 

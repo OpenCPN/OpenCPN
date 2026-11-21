@@ -28,6 +28,11 @@
 #ifndef _COLORTYPES_H_
 #define _COLORTYPES_H_
 
+#include <wx/colour.h>
+#include <wx/dynarray.h>
+#include <wx/hashmap.h>
+#include <wx/string.h>
+
 typedef struct _S52color {
   char colName[20];
   unsigned char R;

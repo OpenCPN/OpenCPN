@@ -21,6 +21,12 @@
  *
  *  \ingroup UI-tools
  */
+
+#ifndef TeXTcTrl_wiTH_HelP_
+#define TeXTcTrl_wiTH_HelP_
+
+#include <wx/textctrl.h>
+
 class TextCtrlWithHelp : public wxTextCtrl {
 public:
   TextCtrlWithHelp(wxWindow* parent, const std::string& help_text);
@@ -32,7 +38,7 @@ public:
   void ChangeValue(const wxString& value) override;
 
   /** Restore help text to initial value, enter pristine state */
-  void RestoreHelp() ;
+  void RestoreHelp();
 
   /** Set help text, enter pristine state */
   void SetHelp(const std::string& help_text);
@@ -46,5 +52,5 @@ private:
   std::string m_help;
 
   void OnKeypress(wxCommandEvent& ev);
-
 };
+#endif  // TeXTcTrl_wiTH_HelP_

@@ -521,9 +521,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
 
     if (m_scrolledWindowLinks) {
       wxWindowList kids = m_scrolledWindowLinks->GetChildren();
-      for (unsigned int i = 0; i < kids.GetCount(); i++) {
-        wxWindowListNode* node = kids.Item(i);
-        wxWindow* win = node->GetData();
+      for (auto const& win : m_scrolledWindowLinks->GetChildren()) {
         auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
         if (link_win) {
           link_win->Disconnect(
@@ -1239,11 +1237,7 @@ void RoutePropDlgImpl::ItemDeleteOnMenuSelection(wxCommandEvent& event) {
   wxString findurl = m_pEditedLink->GetURL();
   wxString findlabel = m_pEditedLink->GetLabel();
 
-  wxWindowList kids = m_scrolledWindowLinks->GetChildren();
-  for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
-    wxWindow* win = node->GetData();
-
+  for (const auto& win : m_scrolledWindowLinks->GetChildren()) {
     auto link_win = dynamic_cast<wxHyperlinkCtrl*>(win);
     if (link_win) {
       link_win->Disconnect(

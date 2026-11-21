@@ -561,8 +561,15 @@ bool JobTicket::DoJob(const wxRect &rect) {
       int csize = TextureTileSize(level, true);
 
       char *src = (char *)comp_bits_array[level];
+#if LZ4_VERSION_MAJOR > 1 || (LZ4_VERSION_MAJOR == 1 && LZ4_VERSION_MINOR >= 7)
+      // LZ4_compressHC2() was deprecated in LZ4 1.7.0 and removed in 1.11.
+      int compressed_size = LZ4_compress_HC(src, (char *)compressed_data, csize,
+                                            max_compressed_size, 4);
+#else
+      // Old LZ4, e.g. the bundled libs/lz4, lacks LZ4_compress_HC().
       int compressed_size =
           LZ4_compressHC2(src, (char *)compressed_data, csize, 4);
+#endif
       // shrink buffer to actual size.
       // This will greatly reduce ram usage, ratio usually 10:1
       // there might be a more efficient way than realloc...

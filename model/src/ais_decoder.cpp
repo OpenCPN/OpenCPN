@@ -24,6 +24,7 @@
 // For compilers that support precompilation, includes "wx.h".
 
 #include <algorithm>
+#include <string_view>
 #include <cstdio>
 #include <fstream>
 
@@ -129,8 +130,9 @@ static bool isBuoyMmsi(unsigned msi) {
   // Consider any not valid MMSI number for a class B target (message 18 or 19)
   // to be a "net buoy"
   int mid = msi / 1000000;
-  if ((mid > 200 && mid < 880) || mid >= 970) {
-    // MID is stated to be >200 <800. Handheld AIS starts with 8+mid thus 880
+  // MID is stated to be >200 <799. Handheld AIS starts with 8+mid thus 880
+  // "Pirate ATON buoy" seems to occur out there with MID = 799.
+  if ((mid > 200 && mid < 799) || (mid >= 800 && mid < 880) || mid >= 970) {
     return false;
   } else {
     return true;
@@ -224,17 +226,34 @@ static void BuildERIShipTypeHash() {
   make_hash_ERI(1910, _("Hydrofoil"));
 }
 
-// DSE Expansion characters, decode table from ITU-R M.825
+// DSE Expansion characters, decode table from ITU-R M.825 (codes 00..41).
+// Anything else (a code outside the table, a non-digit pair, an odd trailing
+// character) is not a character: it is dropped and the field is logged, since
+// a certified DSC transceiver does not produce it.
 static wxString DecodeDSEExpansionCharacters(const wxString &dseData) {
+  static constexpr std::string_view lookupTable =
+      "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ.,-/ ";
   wxString result;
-  char lookupTable[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ' ',
-                        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-                        'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-                        'W', 'X', 'Y', 'Z', '.', ',', '-', '/', ' '};
+  bool invalid = false;
 
   for (size_t i = 0; i < dseData.length(); i += 2) {
-    result.append(1,
-                  lookupTable[strtol(dseData.Mid(i, 2).data(), nullptr, 10)]);
+    wxString pair = dseData.Mid(i, 2);
+    if (pair.length() != 2 || !wxIsdigit(pair[0]) || !wxIsdigit(pair[1])) {
+      invalid = true;
+      continue;
+    }
+    size_t code = (pair[0] - '0') * 10 + (pair[1] - '0');
+    if (code >= lookupTable.size()) {
+      invalid = true;
+      continue;
+    }
+    result.append(1, lookupTable[code]);
+  }
+  if (invalid) {
+    wxLogMessage(
+        "DSE station information with invalid expansion data ignored "
+        "in part: \"%s\"",
+        dseData);
   }
   return result;
 }
@@ -2619,6 +2638,12 @@ AisError AisDecoder::DecodeSingleVDO(const wxString &str, GenericPosDatEx *pos,
     return AIS_INCOMPLETE_MULTIPART;  // and non-zero return
   }
 
+  //  The accumulated payload must fit AisBitstring; same guard as DecodeN0183.
+  if (string_to_parse.Len() >= AIS_MAX_MESSAGE_LEN) {
+    accumulator->Clear();
+    return AIS_NMEAVDX_TOO_LONG;
+  }
+
   //  Create the bit accessible string
   AisBitstring strbit(string_to_parse.mb_str());
 
@@ -3062,7 +3087,7 @@ AisError AisDecoder::DecodeN0183(const wxString &str) {
     int origin_mmsi = 0;
     int messID = strbit.GetInt(1, 6);
     // No need for a message without a valid mess-ID
-    if (messID < 1 || messID > 63) return AIS_GENERIC_ERROR;
+    if (messID < 0 || messID > 63) return AIS_GENERIC_ERROR;
 
     int dac = strbit.GetInt(41, 10);
     int fi = strbit.GetInt(51, 6);
@@ -3674,8 +3699,8 @@ std::shared_ptr<AisTargetData> AisDecoder::ProcessDSx(const wxString &str,
             ((m_ptentative_dsctarget->Lon) >= 0 ? dse_lon : -dse_lon);
         if (!dse_shipName.empty()) {
           memset(m_ptentative_dsctarget->ShipName, '\0', SHIP_NAME_LEN);
-          snprintf(m_ptentative_dsctarget->ShipName, dse_shipName.length(),
-                   "%s", dse_shipName.ToAscii().data());
+          snprintf(m_ptentative_dsctarget->ShipName, SHIP_NAME_LEN, "%s",
+                   dse_shipName.ToAscii().data());
         }
         m_ptentative_dsctarget->COG = dse_cog;
         m_ptentative_dsctarget->SOG = dse_sog;
@@ -4021,13 +4046,31 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
   ptarget->Range_NM = -1.;  // Defaults
   ptarget->Brg = -1.;
 
+  // Ideally, project the target by the time difference between its report and
+  // the own-ship position. The own-ship position timestamp is not available
+  // here, so assume own-ship is current and project the target to now.
+  ptarget->Lat_projected = ptarget->Lat;
+  ptarget->Lon_projected = ptarget->Lon;
+  if (ptarget->PositionReportTicks > 0 && ptarget->SOG > 0.0 &&
+      ptarget->SOG < 102.2 && ptarget->COG >= 0.0 && ptarget->COG < 360.0) {
+    wxDateTime now = wxDateTime::Now();
+    now.MakeGMT();
+    const time_t report_age = now.GetTicks() - ptarget->PositionReportTicks;
+    if (report_age > 0) {
+      ll_gc_ll(ptarget->Lat, ptarget->Lon, ptarget->COG,
+               ptarget->SOG * (report_age / 3600.0), &ptarget->Lat_projected,
+               &ptarget->Lon_projected);
+    }
+  }
+
   //    Compute the current Range/Brg to the target
   //    This should always be possible even if GPS data is not valid
   //    because O must always have a position for own-ship. Plugins need
   //    AIS target range and bearing from own-ship position even if GPS is not
   //    valid.
   double brg, dist;
-  DistanceBearingMercator(ptarget->Lat, ptarget->Lon, gLat, gLon, &brg, &dist);
+  DistanceBearingMercator(ptarget->Lat_projected, ptarget->Lon_projected, gLat,
+                          gLon, &brg, &dist);
   ptarget->Range_NM = dist;
   ptarget->Brg = brg;
 
@@ -4105,8 +4148,8 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
     //    Working on a Reduced Lat/Lon orthogonal plotting sheet....
     //    Get easting/northing to target,  in meters
 
-    double east1 = (ptarget->Lon - gLon) * 60 * 1852;
-    double north1 = (ptarget->Lat - gLat) * 60 * 1852;
+    double east1 = (ptarget->Lon_projected - gLon) * 60 * 1852;
+    double north1 = (ptarget->Lat_projected - gLat) * 60 * 1852;
 
     double east = east1 * (cos(gLat * PI / 180.));
 
@@ -4142,8 +4185,9 @@ void AisDecoder::UpdateOneCPA(AisTargetData *ptarget) {
 
     ll_gc_ll(gLat, gLon, cpa_calc_ownship_cog, gSog * tcpa, &OwnshipLatCPA,
              &OwnshipLonCPA);
-    ll_gc_ll(ptarget->Lat, ptarget->Lon, cpa_calc_target_cog,
-             ptarget->SOG * tcpa, &TargetLatCPA, &TargetLonCPA);
+    ll_gc_ll(ptarget->Lat_projected, ptarget->Lon_projected,
+             cpa_calc_target_cog, ptarget->SOG * tcpa, &TargetLatCPA,
+             &TargetLonCPA);
 
     //   And compute the distance
     ptarget->CPA = DistGreatCircle(OwnshipLatCPA, OwnshipLonCPA, TargetLatCPA,

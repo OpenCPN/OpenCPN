@@ -94,8 +94,6 @@ ConnectionParams::ConnectionParams()
       last_network_port(0),
       input_sentence_list_type(WHITELIST),
       output_sentence_list_type(WHITELIST),
-      input_sentence_list(WHITELIST),
-      output_sentence_list(WHITELIST),
       options_panel(nullptr) {}
 
 ConnectionParams::~ConnectionParams() = default;
@@ -202,6 +200,8 @@ wxString ConnectionParams::GetPortDirectionValueStr() const {
 wxString ConnectionParams::GetDSPort() const {
   if (type == SERIAL)
     return wxString::Format("Serial:%s", serial_port.c_str());
+  else if (type == CANABLE)
+    return wxString::Format("CANable:%s", serial_port.c_str());
   else if (type == NETWORK) {
     wxString proto = NetworkProtocolToString(net_protocol);
     return wxString::Format("%s:%s:%d", proto.c_str(), network_address.c_str(),
@@ -214,6 +214,7 @@ wxString ConnectionParams::GetDSPort() const {
 
 bool ConnectionParams::IsPortValid() const {
   if (type == SERIAL && serial_port.empty()) return false;
+  if (type == CANABLE && serial_port.empty()) return false;
   if (type == NETWORK && (network_address.empty() || !network_port))
     return false;
   if (type == INTERNAL_BT && serial_port.empty()) return false;
@@ -221,7 +222,7 @@ bool ConnectionParams::IsPortValid() const {
 }
 
 std::string ConnectionParams::GetStrippedDSPort() const {
-  if (type == SERIAL) {
+  if (type == SERIAL || type == CANABLE) {
     wxString t = wxString::Format("Serial:%s", serial_port.c_str());
     wxString comx = t.AfterFirst(':').BeforeFirst(' ');
     return comx.ToStdString();
@@ -302,6 +303,7 @@ bool ConnectionParams::SentencePassesFilter(const wxString& sentence,
 }
 
 NavAddr::Bus ConnectionParams::GetCommProtocol() const {
+  if (type == CANABLE) return NavAddr::Bus::N2000;
   if (type == NETWORK) {
     if (net_protocol == SIGNALK)
       return NavAddr::Bus::Signalk;

@@ -43,7 +43,7 @@
 /** Load utf-8 encoded HTML page, works around wxHtmlWindow LoadFile() bugs */
 static void LoadAuthors(wxHtmlWindow& hyperlink) {
   fs::path datadir(g_BasePlatform->GetSharedDataDir().ToStdString());
-  std::ifstream stream(datadir / "Authors.html");
+  std::ifstream stream(datadir / "authors.html");
   std::stringstream ss;
   ss << stream.rdbuf();
   hyperlink.SetPage(wxString::FromUTF8(ss.str().c_str()));

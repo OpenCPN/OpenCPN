@@ -831,6 +831,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/connection_edit.h
     ${GUI_HDR_DIR}/connections_dlg.h
     ${GUI_HDR_DIR}/conn_params_panel.h
+    ${GUI_HDR_DIR}/conn_edit_commons.h
     ${GUI_HDR_DIR}/data_monitor.h
     ${GUI_HDR_DIR}/detail_slider.h
     ${GUI_HDR_DIR}/displays.h
@@ -838,6 +839,7 @@ set(GUI_HDRS
     ${GUI_HDR_DIR}/dychart.h
     ${GUI_HDR_DIR}/emboss_data.h
     ${GUI_HDR_DIR}/flex_hash.h
+    ${GUI_HDR_DIR}/filter_sentence_dlg.h
     ${GUI_HDR_DIR}/font_desc.h
     ${GUI_HDR_DIR}/font_mgr.h
     ${GUI_HDR_DIR}/go_to_position_dlg.h
@@ -956,6 +958,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/concanv.cpp
     ${GUI_SRC_DIR}/config_mgr.cpp
     ${GUI_SRC_DIR}/connection_edit.cpp
+    ${GUI_SRC_DIR}/conn_edit_commons.cpp
     ${GUI_SRC_DIR}/connections_dlg.cpp
     ${GUI_SRC_DIR}/conn_params_panel.cpp
     ${GUI_SRC_DIR}/data_monitor.cpp
@@ -963,6 +966,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/displays.cpp
     ${GUI_SRC_DIR}/download_mgr.cpp
     ${GUI_SRC_DIR}/filter_dlg.cpp
+    ${GUI_SRC_DIR}/filter_sentence_dlg.cpp
     ${GUI_SRC_DIR}/flex_hash.cpp
     ${GUI_SRC_DIR}/font_desc.cpp
     ${GUI_SRC_DIR}/font_mgr.cpp
@@ -2349,11 +2353,11 @@ endif ()
 #
 if (WIN32 AND NOT UNIX)
   if (OCPN_BUNDLE_WXDLLS)
-    file(GLOB wxdll_files "${wxWidgets_LIB_DIR}/wxmsw32*u_*.dll"
-         "${wxWidgets_LIB_DIR}/wxbase32*u_*.dll"
+    file(GLOB wxdll_files "${wxWidgets_LIB_DIR}/wxmsw3*u_*.dll"
+         "${wxWidgets_LIB_DIR}/wxbase3*u_*.dll"
     )
-    file(GLOB wxdll_debug_files "${wxWidgets_LIB_DIR}/wxmsw32*ud_*.dll"
-         "${wxWidgets_LIB_DIR}/wxbase32*ud_*.dll"
+    file(GLOB wxdll_debug_files "${wxWidgets_LIB_DIR}/wxmsw3*ud_*.dll"
+         "${wxWidgets_LIB_DIR}/wxbase3*ud_*.dll"
     )
     list(LENGTH wxdll_files wxdll_count)
     if (wxdll_count LESS 5)
@@ -2383,11 +2387,11 @@ if (WIN32 AND NOT UNIX)
         "${wxdllud_count} wxWidgets debug DLLs available to be bundled into the installer package..."
     )
     if (OCPN_BUNDLE_WXDLLS AND NOT OCPN_CI_BUILD)
-      file(GLOB wxpdb_files "${wxWidgets_LIB_DIR}/wxmsw32*u_*.pdb"
-           "${wxWidgets_LIB_DIR}/wxbase32*u_*.pdb"
+      file(GLOB wxpdb_files "${wxWidgets_LIB_DIR}/wxmsw3*u_*.pdb"
+           "${wxWidgets_LIB_DIR}/wxbase3*u_*.pdb"
       )
-      file(GLOB wxpdb_debug_files "${wxWidgets_LIB_DIR}/wxmsw32*ud_*.pdb"
-           "${wxWidgets_LIB_DIR}/wxbase32*ud_*.pdb"
+      file(GLOB wxpdb_debug_files "${wxWidgets_LIB_DIR}/wxmsw3*ud_*.pdb"
+           "${wxWidgets_LIB_DIR}/wxbase3*ud_*.pdb"
       )
       list(LENGTH wxpdb_files wxpdb_count)
       list(LENGTH wxpdb_debug_files wxpdbud_count)
@@ -2873,6 +2877,10 @@ endif ()
 add_subdirectory(model)
 target_link_libraries(${PACKAGE_NAME} PUBLIC ocpn::model-src ocpn::model)
 
+set(OCPN_TEST_ERROR_BEHAVIOR "ANY" CACHE STRING
+    "Error behavior for tests (ANY, LAST or NONE (last added in cmake version 4.0))"
+)
+
 if ("${ENABLE_SANITIZER}" STREQUAL "none")
   if (MSVC)
     set(test_root  ${CMAKE_BINARY_DIR}/test/${CMAKE_BUILD_TYPE})
@@ -2880,9 +2888,14 @@ if ("${ENABLE_SANITIZER}" STREQUAL "none")
     set(test_root  ${CMAKE_BINARY_DIR}/test/)
   endif ()
   set(_run_tests "
-  execute_process(COMMAND ${test_root}/tests)
-  execute_process(COMMAND ${test_root}/buffer_tests)
-  ")
+  execute_process(
+	  COMMAND ${test_root}/tests
+	  COMMAND_ERROR_IS_FATAL ${OCPN_TEST_ERROR_BEHAVIOR}
+  )
+  execute_process(
+	  COMMAND ${test_root}/buffer_tests
+	  COMMAND_ERROR_IS_FATAL ${OCPN_TEST_ERROR_BEHAVIOR}
+  )")
 else ()
   set(_run_tests "message(STATUS \"tests disabled on sanitized builds\")")
 endif ()

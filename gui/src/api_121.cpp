@@ -103,7 +103,8 @@ static void cloneHyperlinkListExV2(RoutePoint* dst,
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 
@@ -169,7 +170,8 @@ static bool AddPlugInRouteExV3(HostApi121::Route* proute, bool b_permanent) {
   int ip = 0;
   wxDateTime plannedDeparture;
 
-  wxPlugin_WaypointExV2ListNode* pwpnode = proute->pWaypointList->GetFirst();
+  Plugin_WaypointExV2List::compatibility_iterator pwpnode =
+      proute->pWaypointList->GetFirst();
   while (pwpnode) {
     pwaypointex = pwpnode->GetData();
 
@@ -290,7 +292,8 @@ static void cloneHyperlinkListEx(RoutePoint* dst,
   if (src->m_HyperlinkList == nullptr) return;
 
   if (src->m_HyperlinkList->GetCount() > 0) {
-    wxPlugin_HyperlinkListNode* linknode = src->m_HyperlinkList->GetFirst();
+    Plugin_HyperlinkList::compatibility_iterator linknode =
+        src->m_HyperlinkList->GetFirst();
     while (linknode) {
       Plugin_Hyperlink* link = linknode->GetData();
 

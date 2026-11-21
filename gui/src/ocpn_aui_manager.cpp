@@ -115,8 +115,15 @@ void OCPN_AUIManager::OnMotionx(wxMouseEvent& event) {
     // by the Update within DoEndResizeAction.
     if (m_currentDragItem != -1)
       m_actionPart = &(m_uiParts.Item(m_currentDragItem));
-    else
-      m_currentDragItem = m_uiParts.Index(*m_actionPart);
+    else {
+      // Find by address: wx 3.3 array Index() needs operator==
+      for (size_t i = 0; i < m_uiParts.GetCount(); i++) {
+        if (&m_uiParts.Item(i) == m_actionPart) {
+          m_currentDragItem = i;
+          break;
+        }
+      }
+    }
 
     if (m_actionPart) {
       wxPoint pos = m_actionPart->rect.GetPosition();
@@ -436,7 +443,14 @@ void OCPN_AUIManager::OnLeftUp(wxMouseEvent& event) {
     m_frame->ReleaseMouse();
 
     if (m_actionPart) {
+#if wxCHECK_VERSION(3, 3, 2)
+      UpdateButtonOnScreen(m_actionPart,
+                           m_actionPart == HitTest(event.GetX(), event.GetY())
+                               ? wxAUI_BUTTON_STATE_HOVER
+                               : wxAUI_BUTTON_STATE_NORMAL);
+#else
       UpdateButtonOnScreen(m_actionPart, event);
+#endif
 
       // make sure we're still over the item that was originally clicked
       if (m_actionPart == HitTest(event.GetX(), event.GetY())) {

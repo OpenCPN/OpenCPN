@@ -3,7 +3,13 @@
     "name": "ecmwf0p25",
     "title": "ECMWF IFS 0.25°",
     "resolution": 0.25,
-    "maxlength": 240
+    "maxlength": 360
+  },
+  {
+    "name": "ecmwf0p1",
+    "title": "ECMWF IFS 0.1°",
+    "resolution": 0.1,
+    "maxlength": 360
   },
   {
     "name": "ecmwfaifs0p25",

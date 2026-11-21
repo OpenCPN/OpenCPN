@@ -278,7 +278,7 @@ public:
   }
 
   void show_deferred_messages() {
-    for (auto m : m_deferred_messages) show_msg(m);
+    for (const auto& m : m_deferred_messages) show_msg(m);
     m_defer = false;
   }
 
@@ -291,7 +291,7 @@ private:
   }
 
   bool m_defer;  // defer dialogs until setup completed
-  std::vector<wxString> m_deferred_messages;
+  std::vector<std::string> m_deferred_messages;
 };
 
 class PanelHardBreakWrapper : public wxTextWrapper {
@@ -1705,11 +1705,19 @@ void PlugInManager::SendResizeEventToAllPlugIns(int x, int y) {
 }
 
 void PlugInManager::SetColorSchemeForAllPlugIns(ColorScheme cs) {
+  ColorScheme s = cs;
+  if (g_hicon_colors) {
+    // Plugins know nothing about HICON
+    if (cs == GLOBAL_COLOR_SCHEME_DAY_HICON)
+      s = GLOBAL_COLOR_SCHEME_DAY;
+    else if (cs == GLOBAL_COLOR_SCHEME_NIGHT_HICON)
+      s = GLOBAL_COLOR_SCHEME_DUSK;
+  }
   auto plugin_array = PluginLoader::GetInstance()->GetPlugInArray();
   for (unsigned int i = 0; i < plugin_array->GetCount(); i++) {
     PlugInContainer* pic = plugin_array->Item(i);
     if (pic->m_enabled && pic->m_init_state)
-      pic->m_pplugin->SetColorScheme((PI_ColorScheme)cs);
+      pic->m_pplugin->SetColorScheme((PI_ColorScheme)s);
   }
 }
 
@@ -2568,7 +2576,7 @@ void PluginListPanel::ReloadPluginPanels() {
 
   wxWindowList kids = GetChildren();
   for (unsigned int i = 0; i < kids.GetCount(); i++) {
-    wxWindowListNode* node = kids.Item(i);
+    wxWindowList::compatibility_iterator node = kids.Item(i);
     wxWindow* win = node->GetData();
     PluginPanel* pp = dynamic_cast<PluginPanel*>(win);
     if (pp) win->Destroy();

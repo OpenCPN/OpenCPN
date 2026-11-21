@@ -28,7 +28,7 @@ if not defined VCINSTALLDIR (
 )
 
 set "PATH=%PATH%;C:\Program Files (x86)\NSIS;C:\Program Files (x86)\NSIS\Bin;C:\Program Files\NSIS;C:\Program Files\NSIS\Bin"
-call %SCRIPTDIR%..\buildwin\win_deps_x64.bat wx32
+call %SCRIPTDIR%..\buildwin\win_deps_x64.bat wx33
 if errorlevel 1 exit /b 1
 set "GIT_EXE="
 for /f "delims=" %%G in ('where git.exe') do if not defined GIT_EXE set "GIT_EXE=%%G"
@@ -54,7 +54,7 @@ dir "%wxWidgets_LIB_DIR%\wx"
 echo === wx libs ===
 dir "%wxWidgets_LIB_DIR%\*.lib"
 
-where wxmsw32u_qa_vc14x.dll >nul 2>&1
+where wxmsw33u_qa_vc14x.dll >nul 2>&1
 if errorlevel 1 (
   set "PATH=%PATH%;%wxWidgets_LIB_DIR%"
   echo Appending %wxWidgets_LIB_DIR% to PATH

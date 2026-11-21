@@ -60,8 +60,8 @@ static const char *const usercolors[] = {
     // Information status colors
     "UINFM; 197;  69; 195;",  // Magenta - special indicators, chart magenta
                               // features
-    "UINFG; 104; 228;  86;",  // Green - status indicators, tide/current
-                              // graphics
+    "UINFG; 104; 228;  86;",  // Green -Chart outline, -AIS Class A/B Target
+                              // brush.
     "UINFR; 241;  84; 105;",  // Red - alerts, errors, danger markers
     "UINFF; 125; 137; 140;",  // Default foreground - general UI elements
     "SHIPS;   7;   7;   7;",  // Other vessels/AIS target fills
@@ -120,9 +120,9 @@ static const char *const usercolors[] = {
     "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
     "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;",
     "YELO1; 120;115; 24;", "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;",
-    "GREEN5; 85;128; 0;", "COMPT; 124;126;121",
+    "GREEN5; 80;110;  0;", "COMPT; 124;126;121",
 
-    "CHGRF;  41; 46; 46;", "UINFM;  58; 20; 57;", "UINFG;  35; 76; 29;",
+    "CHGRF;  41; 46; 46;", "UINFM;  58; 20; 57;", "UINFG;  51;114; 15;",
     "UINFF;  41; 46; 46;", "UINFR;  80; 28; 35;", "SHIPS;  71; 78; 79;",
     "CHYLW;  81; 73; 24;", "CHWHT;  71; 78; 79;",
 
@@ -166,7 +166,7 @@ static const char *const usercolors[] = {
     "GREY2;  32; 32; 32;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
     "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;",
     "YELO1;  60; 65; 12;", "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;",
-    "GREEN5; 44; 64; 0;", "COMPT;  48; 49; 51",
+    "GREEN5; 40; 55;  0;", "COMPT;  48; 49; 51",
     "DILG0;  80; 80; 80;",     // Dialog Background
     "DILG1;  80; 80; 80;",     // Dialog Background
     "DILG2;   0;  0;  0;",     // Control Background
@@ -177,7 +177,7 @@ static const char *const usercolors[] = {
                             // to URED
     "UARTE;  64; 64; 64;",  // Active route color (grey for dusk/night modes)
 
-    "CHGRF;  16; 18; 18;", "UINFM;  52; 18; 52;", "UINFG;  22; 24;  7;",
+    "CHGRF;  16; 18; 18;", "UINFM;  52; 18; 52;", "UINFG;  22; 56;  7;",
     "UINFF;  31; 34; 35;", "UINFR;  59; 17; 10;", "SHIPS;  37; 41; 41;",
     "CHYLW;  31; 33; 10;", "CHWHT;  37; 41; 41;",
 
@@ -326,12 +326,6 @@ void DeInitialize() {
 
 wxColorHashMap *GetMapByScheme(const std::string &scheme_name) {
   std::string name = scheme_name;
-  if (g_hicon_colors) {
-    if (scheme_name == "DAY_HICON")
-      name = "DAY";
-    else
-      name = "NIGHT";
-  }
 
   unsigned Usercolortable_index = 0;
   for (unsigned int i = 0; i < UserColorTableArray->GetCount(); i++) {
@@ -345,11 +339,14 @@ wxColorHashMap *GetMapByScheme(const std::string &scheme_name) {
 
 wxColor GetDimColor(wxColor c) {
   if ((global_color_scheme == GLOBAL_COLOR_SCHEME_DAY) ||
-      (global_color_scheme == GLOBAL_COLOR_SCHEME_RGB))
+      (global_color_scheme == GLOBAL_COLOR_SCHEME_RGB) ||
+      (global_color_scheme == GLOBAL_COLOR_SCHEME_DAY_HICON))
     return c;
 
   float factor = 1.0;
-  if (global_color_scheme == GLOBAL_COLOR_SCHEME_DUSK) factor = 0.5;
+  if ((global_color_scheme == GLOBAL_COLOR_SCHEME_DUSK) ||
+      (global_color_scheme == GLOBAL_COLOR_SCHEME_NIGHT_HICON))
+    factor = 0.5;
   if (global_color_scheme == GLOBAL_COLOR_SCHEME_NIGHT) factor = 0.25;
 
   wxImage::RGBValue rgb(c.Red(), c.Green(), c.Blue());

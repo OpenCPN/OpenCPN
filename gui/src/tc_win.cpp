@@ -282,20 +282,21 @@ void TCWin::CreateLayout() {
   // ROW 1: Top panel for station info and tide list (two cells)
   m_topPanel = new wxPanel(this, wxID_ANY);
   wxBoxSizer *topSizer = new wxBoxSizer(wxHORIZONTAL);
+  m_topPanel->SetSizer(topSizer);
 
   // Left cell: Station info text control with minimum size
   m_ptextctrl =
       new wxTextCtrl(m_topPanel, -1, "", wxDefaultPosition, wxDefaultSize,
                      wxTE_MULTILINE | wxTE_READONLY | wxTE_DONTWRAP);
-  m_ptextctrl->SetMinSize(wxSize(
-      25 * m_refTextHeight, 7 * m_refTextHeight));  // Minimum readable size
+  m_ptextctrl->SetMinSize(wxSize(0, 8 * m_refTextHeight));
+  topSizer->Add(m_ptextctrl, 60, wxALL, 5);  // 2/3 of width
 
   // Right cell: Tide list (LW/HW) with minimum size
   m_tList = new wxListCtrl(m_topPanel, -1, wxDefaultPosition, wxDefaultSize,
                            wxLC_REPORT | wxLC_NO_HEADER);
   m_tList->SetMinSize(
-      wxSize(18 * m_refTextHeight,
-             4 * m_refTextHeight));  // Minimum to show a few entries
+      wxSize(0, 8 * m_refTextHeight));   // Minimum to show a few entries
+  topSizer->Add(m_tList, 40, wxALL, 5);  // 1/3 of width
 
   // Add first column to tide list
   wxListItem col0;
@@ -304,13 +305,6 @@ void TCWin::CreateLayout() {
   col0.SetAlign(wxLIST_FORMAT_LEFT);
   col0.SetWidth(20 * m_refTextHeight);
   m_tList->InsertColumn(0, col0);
-
-  // Add controls to top sizer (first row: two cells)
-  topSizer->Add(m_ptextctrl, 2, wxEXPAND | wxALL,
-                5);                                // Left cell: 2/3 of width
-  topSizer->Add(m_tList, 1, wxEXPAND | wxALL, 5);  // Right cell: 1/3 of width
-
-  m_topPanel->SetSizer(topSizer);
 
   // ROW 2: Chart panel (expandable - gets remaining space)
   m_chartPanel = new TideChartPanel(this);

@@ -226,7 +226,7 @@ void About::Populate() {
   // The HTML Header
   //
   fs::path data_path(g_BasePlatform->GetSharedDataDir().ToStdString());
-  std::ifstream istream(data_path / "Authors.html");
+  std::ifstream istream(data_path / "authors.html");
   std::stringstream ss;
   ss << istream.rdbuf();
   pAuthorHTMLCtl->SetPage(ss.str());

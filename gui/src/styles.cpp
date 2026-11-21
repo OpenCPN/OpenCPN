@@ -375,7 +375,8 @@ wxBitmap Style::GetToolIcon(const wxString& toolname, int iconType,
       } else {
         if (toolname == "mob_btn") {
           double dimLevel = 1.0;
-          if (colorscheme == GLOBAL_COLOR_SCHEME_DUSK)
+          if (colorscheme == GLOBAL_COLOR_SCHEME_DUSK ||
+              colorscheme == GLOBAL_COLOR_SCHEME_NIGHT_HICON)
             dimLevel = 0.5;
           else if (colorscheme == GLOBAL_COLOR_SCHEME_NIGHT)
             dimLevel = 0.5;
@@ -569,7 +570,8 @@ wxBitmap Style::BuildPluginIcon(wxBitmap& bm, int iconType, double factor) {
 wxBitmap Style::SetBitmapBrightness(wxBitmap& bitmap, ColorScheme cs) {
   double dimLevel;
   switch (cs) {
-    case GLOBAL_COLOR_SCHEME_DUSK: {
+    case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON: {
       dimLevel = 0.8;
       break;
     }

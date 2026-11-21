@@ -62,7 +62,7 @@
 #include "ocpn_platform.h"
 #include "pluginmanager.h"  // FIXME: Refactor
 
-#ifndef __ANDROID__
+#if wxCHECK_VERSION(3, 2, 0)
 #define OCPN_OPTIONS_USE_LISTBOOK
 #endif
 
@@ -214,7 +214,6 @@ enum {
   ID_SIZEMANUALRADIOBUTTON,
   ID_OPWAYPOINTRANGERINGS,
   xID_OK,
-  ID_BT_SCANTIMER,
   ID_TRACKROTATETIME,
   ID_TRACKROTATEUTC,
   ID_TRACKROTATELMT,
@@ -651,7 +650,8 @@ private:
   void CreatePanel_AIS(size_t parent, int border_size, int group_item_spacing);
   void CreatePanel_Ownship(size_t parent, int border_size,
                            int group_item_spacing);
-  void CreatePanel_NMEA(size_t parent, int border_size, int group_item_spacing);
+  void CreatePanel_NMEA(size_t position, int border_size,
+                        int group_item_spacing);
   void CreatePanel_ChartsLoad(size_t parent, int border_size,
                               int group_item_spacing);
   void CreatePanel_VectorCharts(size_t parent, int border_size,
@@ -677,6 +677,8 @@ private:
   void OnAlertEnableButtonClick(wxCommandEvent &event);
   void OnAlertAudioEnableButtonClick(wxCommandEvent &event);
   void OnResetFont(wxCommandEvent &event);
+  void OnColorChange(wxSysColourChangedEvent &ev);
+  void OnColorChange();
 
   void UpdateTemplateTitleText();
   void CheckDeviceAccess(wxString &path);
@@ -689,7 +691,7 @@ private:
   wxImageList *m_topImgList;
 
   wxCheckBox *m_persist_active_route_chkbox;
-  wxScrolledWindow *m_pNMEAForm;
+  wxPanel *m_pNMEAForm;
   void resetMarStdList(bool bsetConfig, bool bsetStd);
 
   ObservableListener compat_os_listener;
@@ -718,7 +720,7 @@ private:
   wxSize m_sliderSize;
   bool m_bneedNew;
   obs::Listener m_OnChartDb_finalize_listener;
-  std::shared_ptr<ConnectionsDlg> comm_dialog;
+  ConnectionsDlg *comm_dialog;
 
   DECLARE_EVENT_TABLE()
 };

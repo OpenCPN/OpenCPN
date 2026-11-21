@@ -55,21 +55,21 @@ echo The batch file is located in: %~dp0
 
 echo The cache directory is: %CACHE_DIR%
 
-set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.9"
-set "WXWIN=%CACHE_DIR%\wxWidgets-3.2.9"
+set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.4"
+set "WXWIN=%CACHE_DIR%\wxWidgets-3.3.4"
 set "WX_DEPS_MISSING="
-for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw32u_core.lib lib\vc14x_x64_dll\wxmsw32u_core_vc14x_x64.dll) do (
+for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw33u_core.lib lib\vc14x_x64_dll\wxmsw33u_core_vc14x_x64.dll) do (
   if not exist "%WXWIN%\%%F" set "WX_DEPS_MISSING=1"
 )
 if defined WX_DEPS_MISSING (
-  for %%A in (wxMSW-3.2.9_vc14x_x64_Dev.7z wxWidgets-3.2.9-headers.7z wxMSW-3.2.9_vc14x_x64_ReleaseDLL.7z) do (
+  for %%A in (wxMSW-3.3.4_vc14x_x64_Dev.7z wxWidgets-3.3.4-headers.7z wxMSW-3.3.4_vc14x_x64_ReleaseDLL.7z) do (
     curl.exe -fL --retry 3 --retry-delay 2 "%GITHUB_DL%/%%A" -o "%CACHE_DIR%\%%A"
     if errorlevel 1 exit /b 1
     7z x -y "-o%WXWIN%" "%CACHE_DIR%\%%A"
     if errorlevel 1 exit /b 1
   )
 )
-for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw32u_core.lib lib\vc14x_x64_dll\wxmsw32u_core_vc14x_x64.dll) do (
+for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw33u_core.lib lib\vc14x_x64_dll\wxmsw33u_core_vc14x_x64.dll) do (
   if not exist "%WXWIN%\%%F" (
     echo Missing wxWidgets dependency: %WXWIN%\%%F
     exit /b 1

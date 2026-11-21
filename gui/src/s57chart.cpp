@@ -396,10 +396,12 @@ void s57chart::ChangeThumbColor(ColorScheme cs) {
   switch (cs) {
     default:
     case GLOBAL_COLOR_SCHEME_DAY:
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
       pThumbData->pDIBThumb = m_pDIBThumbDay;
       m_pDIBThumbOrphan = m_pDIBThumbDim;
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
     case GLOBAL_COLOR_SCHEME_NIGHT: {
       if (NULL == m_pDIBThumbDim) {
         wxImage img = m_pDIBThumbDay->ConvertToImage();
@@ -6185,8 +6187,8 @@ wxString s57chart::CreateObjDescriptions(ListOfObjRazRules *rule_list) {
   S57Light *curLight = nullptr;
   wxFileName file;
 
-  for (ListOfObjRazRules::Node *node = rule_list->GetLast(); node;
-       node = node->GetPrevious()) {
+  for (ListOfObjRazRules::compatibility_iterator node = rule_list->GetLast();
+       node; node = node->GetPrevious()) {
     ObjRazRules *current = node->GetData();
     positionString.Clear();
     objText.Clear();
@@ -7253,7 +7255,9 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
   bool bleading_attribute = false;
 
   int opacity = 100;
-  if (cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK) opacity = 50;
+  if (cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ||
+      cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT_HICON)
+    opacity = 50;
   if (cc->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
 
   int yOpacity = (float)opacity *
@@ -7268,8 +7272,8 @@ bool s57_ProcessExtendedLightSectors(ChartCanvas *cc,
     int n_attr = 0;
     wxArrayOfS57attVal *attValArray = NULL;
 
-    ListOfObjRazRules::Node *snode = NULL;
-    ListOfPI_S57Obj::Node *pnode = NULL;
+    ListOfObjRazRules::compatibility_iterator snode;
+    ListOfPI_S57Obj::compatibility_iterator pnode;
 
     if (Chs57 && rule_list)
       snode = rule_list->GetLast();

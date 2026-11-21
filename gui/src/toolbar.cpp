@@ -744,10 +744,12 @@ bool ocpnFloatingToolbarDialog::CheckAndAddPlugInTool(ocpnToolBarSimple *tb) {
 
       switch (m_cs) {
         case GLOBAL_COLOR_SCHEME_DAY:
+        case GLOBAL_COLOR_SCHEME_DAY_HICON:
           ptool_bmp = pttc->bitmap_day;
           ;
           break;
         case GLOBAL_COLOR_SCHEME_DUSK:
+        case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
           ptool_bmp = pttc->bitmap_dusk;
           break;
         case GLOBAL_COLOR_SCHEME_NIGHT:

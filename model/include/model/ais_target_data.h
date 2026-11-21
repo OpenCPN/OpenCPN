@@ -178,6 +178,8 @@ public:
   double HDG;
   double Lon;
   double Lat;
+  double Lat_projected;
+  double Lon_projected;
   int ROTAIS;
   int ROTIND;
   char CallSign[CALL_SIGN_LEN];  // includes terminator

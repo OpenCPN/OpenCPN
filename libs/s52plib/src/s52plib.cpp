@@ -1429,9 +1429,11 @@ void s52plib::SetPLIBColorScheme(ColorScheme cs, const ChartCtx &ctx) {
   wxString SchemeName;
   switch (cs) {
     case GLOBAL_COLOR_SCHEME_DAY:
+    case GLOBAL_COLOR_SCHEME_DAY_HICON:
       SchemeName = _T("DAY");
       break;
     case GLOBAL_COLOR_SCHEME_DUSK:
+    case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
       SchemeName = _T("DUSK");
       break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
@@ -2357,7 +2359,7 @@ bool s52plib::RenderText(wxDC *pdc, S52_TextC *ptext, double x, double y,
 bool s52plib::CheckTextRectList(const wxRect2D &test_rect, S52_TextC *ptext) {
   //    Iterate over the current object list, looking at rText
 
-  for (TextObjList::Node *node = m_textObjList.GetFirst(); node;
+  for (TextObjList::compatibility_iterator node = m_textObjList.GetFirst(); node;
        node = node->GetNext()) {
     wxRect2D *pcurrent_rect = &(node->GetData()->rText);
     if (node->GetData() == ptext) continue;
@@ -2583,7 +2585,7 @@ int s52plib::RenderT_All(ObjRazRules *rzRules, Rules *rules, bool bTX) {
     if (m_bDeClutterText) {
       if (bwas_drawn) {
         bool b_found = false;
-        for (TextObjList::Node *node = m_textObjList.GetFirst(); node;
+        for (TextObjList::compatibility_iterator  node = m_textObjList.GetFirst(); node;
              node = node->GetNext()) {
           S52_TextC *oc = node->GetData();
 

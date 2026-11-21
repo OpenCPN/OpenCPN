@@ -25,8 +25,10 @@
 #ifndef _COMMCANUTIL_H
 #define _COMMCANUTIL_H
 
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
 #if !defined(_WIN32) && !defined(__APPLE__)
 #include <linux/can.h>
@@ -55,7 +57,8 @@ struct can_frame {
 };
 #endif
 
-unsigned long BuildCanID(int priority, int source, int destination, int pgn);
+uint32_t BuildCanID(uint8_t priority, uint8_t source, uint8_t destination,
+                    uint32_t pgn);
 bool IsFastMessagePGN(unsigned pgn);
 
 /// CAN v2.0 29 bit header as used by NMEA 2000

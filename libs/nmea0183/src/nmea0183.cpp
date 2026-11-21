@@ -353,13 +353,12 @@ wxArrayString NMEA0183::GetRecognizedArray(void)
 {
     wxArrayString ret;
 
-    wxMRLNode *node = response_table.GetFirst();
 
-    while(node)
-    {
+    for (MRL::compatibility_iterator node = response_table.GetFirst();
+         node;
+         node = node->GetNext()) {
         RESPONSE *resp = node->GetData();
         ret.Add( resp->Mnemonic );
-        node = node->GetNext();
     }
 
     return ret;
