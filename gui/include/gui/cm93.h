@@ -313,22 +313,24 @@ public:
   ~cm93chart();
 
   cm93chart(int scale_index);
-  InitReturn Init(const wxString &name, ChartInitFlag flags);
+  InitReturn Init(const wxString &name, ChartInitFlag flags) override;
 
   void ResetSubcellKey() { m_loadcell_key = '0'; }
 
-  double GetNormalScaleMin(double canvas_scale_factor, bool b_allow_overzoom);
-  double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
+  double GetNormalScaleMin(double canvas_scale_factor,
+                           bool b_allow_overzoom) override;
+  double GetNormalScaleMax(double canvas_scale_factor,
+                           int canvas_width) override;
 
-  bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
+  bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) override;
   void SetVPParms(const ViewPort &vpt) override;
   void PrepareSafetyViewport(const ViewPort &vpt);
   void GetPointPix(ObjRazRules *rzRules, float northing, float easting,
-                   wxPoint *r);
+                   wxPoint *r) override;
   void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r,
-                   int nPoints);
+                   int nPoints) override;
   void GetPixPoint(int pixx, int pixy, double *plat, double *plon,
-                   ViewPort *vpt);
+                   ViewPort *vpt) override;
 
   void SetCM93Dict(cm93_dictionary *pDict) { m_pDict = pDict; }
   void SetCM93Prefix(const wxString &prefix) { m_prefix = prefix; }
@@ -339,7 +341,7 @@ public:
                                 double max_lon);
   bool IsPointInLoadedM_COVR(double xc, double yc);
   covr_set *GetCoverSet() { return m_pcovr_set; }
-  LLRegion GetValidRegion();
+  LLRegion GetValidRegion() override;
 
   const wxString &GetLastFileName(void) const { return m_LastFileName; }
 

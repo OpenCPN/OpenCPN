@@ -58,7 +58,7 @@ echo The cache directory is: %CACHE_DIR%
 set "GITHUB_DL=https://github.com/wxWidgets/wxWidgets/releases/download/v3.3.4"
 set "WXWIN=%CACHE_DIR%\wxWidgets-3.3.4"
 set "WX_DEPS_MISSING="
-for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw33u_core.lib lib\vc14x_x64_dll\wxmsw33u_core_vc14x_x64.dll) do (
+for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw33u_core.lib lib\vc14x_x64_dll\wxmsw334u_core_vc14x_x64.dll) do (
   if not exist "%WXWIN%\%%F" set "WX_DEPS_MISSING=1"
 )
 if defined WX_DEPS_MISSING (
@@ -69,7 +69,7 @@ if defined WX_DEPS_MISSING (
     if errorlevel 1 exit /b 1
   )
 )
-for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw33u_core.lib lib\vc14x_x64_dll\wxmsw33u_core_vc14x_x64.dll) do (
+for %%F in (include\wx\wx.h lib\vc14x_x64_dll\mswu\wx\setup.h lib\vc14x_x64_dll\wxmsw33u_core.lib lib\vc14x_x64_dll\wxmsw334u_core_vc14x_x64.dll) do (
   if not exist "%WXWIN%\%%F" (
     echo Missing wxWidgets dependency: %WXWIN%\%%F
     exit /b 1
