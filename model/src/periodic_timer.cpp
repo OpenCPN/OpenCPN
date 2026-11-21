@@ -24,36 +24,37 @@
 #include "model/periodic_timer.h"
 
 PeriodicTimer::PeriodicTimer(std::chrono::milliseconds interval)
-    : m_interval(interval),
-      m_run_sts(1),
-      m_thread(std::thread([&] { Worker(); })) {}
+    : m_interval(interval) {}
 
-PeriodicTimer::~PeriodicTimer() {
-  if (m_run_sts == 1) {
-    Stop();
-  } else if (m_run_sts == 0) {
-    // ongoing stop() operation, wait until completed
-    std::unique_lock lock(m_mutex);
-    m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts < 0; });
+PeriodicTimer::~PeriodicTimer() { Stop(); }
+
+void PeriodicTimer::Start() {
+  std::lock_guard thread_lock(m_thread_mutex);
+  if (m_thread.joinable()) return;
+  {
+    std::lock_guard lock(m_mutex);
+    m_stop_requested = false;
   }
-  if (m_thread.joinable()) m_thread.join();
+  m_thread = std::thread([this] { Worker(); });
 }
 
 void PeriodicTimer::Stop() {
-  m_run_sts = 0;
+  std::lock_guard thread_lock(m_thread_mutex);
+  {
+    std::lock_guard lock(m_mutex);
+    m_stop_requested = true;
+  }
   m_cond_var.notify_all();
-  std::unique_lock lock(m_mutex);
-  m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts < 0; });
-  lock.unlock();
+  // Do not hold the worker's mutex while joining: it needs it to exit.
+  if (m_thread.joinable()) m_thread.join();
 }
 
 void PeriodicTimer::Worker() {
-  while (m_run_sts > 0) {
-    std::unique_lock lock(m_mutex);
-    m_cond_var.wait_for(lock, m_interval, [&] { return m_run_sts <= 0; });
+  std::unique_lock lock(m_mutex);
+  while (!m_cond_var.wait_for(lock, m_interval,
+                              [this] { return m_stop_requested; })) {
     lock.unlock();
-    if (m_run_sts > 0) Notify();
+    Notify();
+    lock.lock();
   }
-  m_run_sts = -1;
-  m_cond_var.notify_all();
 }

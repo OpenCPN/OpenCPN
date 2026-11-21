@@ -1,0 +1,37 @@
+name: Timer lifecycle
+
+on:
+  push:
+    branches: [master, fix/periodic-timer-lifetime]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Timer lifecycle (${{ matrix.os }}, ${{ matrix.sanitizer }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            sanitizer: none
+          - os: ubuntu-latest
+            sanitizer: address,undefined
+          - os: macos-latest
+            sanitizer: none
+          - os: windows-2022
+            sanitizer: none
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: >-
+          cmake -S test/periodic_timer -B timer-build
+          -DCMAKE_BUILD_TYPE=Debug -DENABLE_SANITIZER=${{ matrix.sanitizer }}
+      - name: Build
+        run: cmake --build timer-build --config Debug --parallel 2
+      - name: Test
+        run: >-
+          ctest --test-dir timer-build -C Debug
+          --output-on-failure --no-tests=error --timeout 15
