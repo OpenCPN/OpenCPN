@@ -35,6 +35,10 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <tuple>
+#include <array>
+#include <wx/process.h>
+#include <wx/stdpaths.h>
 #include "dychart.h"  // Must be ahead due to buggy GL includes handling
 
 #include <wx/wx.h>
@@ -137,6 +141,7 @@ bool ServicePendingRequests(int max_requests, int max_milliseconds,
   if (!wxThread::IsMain()) return false;
 
   wxStopWatch timer;
+  PollSegmentSafetyTileHelpers();
   int pending_before = GetPendingRequestCount();
   int serviced = 0;
   int built_count = 0;
@@ -163,11 +168,29 @@ bool ServicePendingRequests(int max_requests, int max_milliseconds,
     if (!have_request) break;
 
     bool built = false;
-    bool ok = request.group_index == SegmentSafetyCurrentGroupIndex() &&
-              EnsureSegmentSafetyRouteMaskTile(
-                  request.lat_tile, request.lon_tile, request.safety_margin_nm,
-                  request.check_depth, request.minimum_depth_m, NULL, &built,
-                  request.force_authoritative_fine);
+    const bool same_group =
+        request.group_index == SegmentSafetyCurrentGroupIndex();
+    const bool open_water =
+        same_group && !request.force_authoritative_fine &&
+        PrepareSegmentSafetyOpenWaterRegion(
+            request.lat_tile, request.lon_tile, request.safety_margin_nm,
+            request.check_depth, request.minimum_depth_m);
+    if (!open_water && same_group && DeferSegmentSafetyTileRequest(request)) {
+      wxMutexLocker lock(s_segment_safety_cache_mutex);
+      s_segment_safety_inflight_route_mask_requests.erase(request.key);
+      const auto inserted =
+          s_segment_safety_pending_route_mask_requests.emplace(request.key,
+                                                               request);
+      inserted.first->second.force_authoritative_fine |=
+          request.force_authoritative_fine;
+      break;
+    }
+    bool ok = open_water ||
+              (same_group &&
+               EnsureSegmentSafetyRouteMaskTile(
+                   request.lat_tile, request.lon_tile, request.safety_margin_nm,
+                   request.check_depth, request.minimum_depth_m, NULL, &built,
+                   request.force_authoritative_fine, true));
     // A worker stops at the first absent mask and can otherwise incur one GUI
     // timer wake-up per 0.05-degree tile. Populate a bounded lookahead set of
     // exact masks while the chart is already active on the main thread. This
@@ -178,7 +201,8 @@ bool ServicePendingRequests(int max_requests, int max_milliseconds,
     // force-fine validation demand-only to avoid speculative validation work.
     CachedSegmentSafetyRouteMaskTile centre_mask;
     const bool useful_to_prefetch_neighbours =
-        ok && LookupSegmentSafetyRouteMaskTile(request.key, &centre_mask) &&
+        ok && !open_water &&
+        LookupSegmentSafetyRouteMaskTile(request.key, &centre_mask) &&
         centre_mask.clear_count > 0;
     if (useful_to_prefetch_neighbours && !request.force_authoritative_fine) {
       std::vector<std::pair<long, long>> lookahead =
@@ -202,6 +226,10 @@ bool ServicePendingRequests(int max_requests, int max_milliseconds,
         if (!ocpn::chart_safety::MayPrefetchNeighbour(timer.Time(),
                                                       max_milliseconds)) {
           break;
+        }
+        {
+          wxMutexLocker lock(s_segment_safety_cache_mutex);
+          if (s_segment_safety_route_mask_cache.size() >= kMaxGridTiles) break;
         }
         const long neighbour_lat_tile = tile->first;
         const long neighbour_lon_tile =
@@ -252,9 +280,15 @@ bool ServicePendingRequests(int max_requests, int max_milliseconds,
       ++failed;
   }
 
+  if (serviced > 0) PrefetchPendingSegmentSafetyTiles();
+
   int pending_after = GetPendingRequestCount();
-  if (serviced > 0 && s_segment_safety_persistent_tiles_since_checkpoint >=
-                          kPersistentCheckpointTiles)
+  // A registered plugin cache checkpoints these tiles incrementally. Keep
+  // the host's compatibility snapshot for explicit saves, and avoid writing
+  // it in full on the GUI thread as each batch of requests is delivered.
+  if (serviced > 0 && !s_segment_safety_external_tile_cache.store &&
+      s_segment_safety_persistent_tiles_since_checkpoint >=
+          kPersistentCheckpointTiles)
     SegmentSafetyPersistentCacheSave();
   if (result && result_size >= static_cast<int>(
                                    sizeof(SegmentSafetyRequestServiceResult))) {
@@ -266,13 +300,23 @@ bool ServicePendingRequests(int max_requests, int max_milliseconds,
     result->elapsed_ms = timer.Time();
   }
   if (serviced > 0 || pending_before > 0) {
+    size_t masks;
+    uint64_t evictions, protected_evictions;
+    {
+      wxMutexLocker lock(s_segment_safety_cache_mutex);
+      masks = s_segment_safety_route_mask_cache.size();
+      evictions = s_segment_safety_route_mask_evictions;
+      protected_evictions = s_segment_safety_delivering_mask_evictions;
+    }
     wxLogMessage(
         "WR_GRID_REQUEST_SERVICE pending_before=%d serviced=%d built=%d "
         "prefetched=%d coarse_certified=%d failed=%d pending_after=%d "
-        "elapsed_ms=%ld "
-        "main_thread=1",
+        "elapsed_ms=%ld main_thread=1 mask_cache_size=%zu "
+        "mask_evictions=%llu protected_evictions=%llu",
         pending_before, serviced, built_count, prefetched_count,
-        coarse_certified_count, failed, pending_after, timer.Time());
+        coarse_certified_count, failed, pending_after, timer.Time(), masks,
+        static_cast<unsigned long long>(evictions),
+        static_cast<unsigned long long>(protected_evictions));
   }
   return failed == 0;
 }
@@ -304,12 +348,24 @@ bool PrepareRawTiles(const long* lat_tiles, const long* lon_tiles,
     tiles.insert(std::make_pair(
         lat_tiles[index], CanonicalLongitudeIndex(lon_tiles[index], 3600)));
 
+  PollSegmentSafetyTileHelpers();
+  for (const auto& tile : tiles) {
+    if (!TileHelperPending(tile.first, tile.second)) continue;
+    SetSegmentSafetyStatus(result, kNoData);
+    SetSegmentSafetyMessage(
+        result, "chart classification is being prepared in a helper");
+    return false;
+  }
+
   {
     wxMutexLocker lock(s_segment_safety_cache_mutex);
     for (std::set<std::pair<long, long>>::const_iterator it = tiles.begin();
-         it != tiles.end(); ++it)
-      s_segment_safety_pinned_grid_keys.insert(
-          SegmentSafetyGridTileKeyForIndices(it->first, it->second));
+         it != tiles.end(); ++it) {
+      const auto key =
+          SegmentSafetyGridTileKeyForIndices(it->first, it->second);
+      if (s_segment_safety_pinned_grid_keys.insert(key).second)
+        s_segment_safety_grid_eviction.Pinned(key);
+    }
   }
 
   SegmentSafetyCoreStats stats;
@@ -597,6 +653,21 @@ bool CheckSegment(double lat1, double lon1, double lat2, double lon2,
 
   bool chart_data_available = false;
   SegmentSafetyCoreStats stats;
+  const auto open_water_mode = SegmentSafetyOpenWaterMode();
+  SegmentSafetyOpenWaterRegion open_water;
+  const bool open_water_proven =
+      check_land && !force_authoritative_fine &&
+      open_water_mode != OpenWaterGeometryMode::Off &&
+      SegmentSafetyOpenWaterForChord(lat1, lon1, lat2, lon2, safety_margin_nm,
+                                     check_depth, minimum_depth_m, &open_water);
+  if (open_water_proven && open_water_mode == OpenWaterGeometryMode::Use) {
+    SetSegmentSafetyStatus(result, kSafe);
+    SetSegmentSafetySource(result, open_water.source);
+    SetSegmentSafetyDiagnosticReason(result, kDiagnosticChartGeometryClear);
+    SetSegmentSafetyMessage(
+        result, "segment clear in chart-geometry open-water regions");
+    return true;
+  }
   SegmentSafetySnapshotDecision snapshot_decision = kSnapshotUnknown;
   bool snapshot_fast_path = false;
   bool snapshot_shadow_compare = false;
@@ -621,6 +692,18 @@ bool CheckSegment(double lat1, double lon1, double lat2, double lon2,
   }
   auto log_query = [&](const char* phase) {
     if (!result) return;
+    if (open_water_proven && open_water_mode == OpenWaterGeometryMode::Shadow &&
+        result->status != kPendingData) {
+      static std::atomic<unsigned> comparisons{0};
+      const auto count = ++comparisons;
+      if (result->status != kSafe)
+        wxLogMessage(
+            "WR_OPEN_WATER_SHADOW_MISMATCH status=%d "
+            "segment=(%.8f,%.8f)->(%.8f,%.8f) margin=%.3f phase=%s",
+            result->status, lat1, lon1, lat2, lon2, safety_margin_nm, phase);
+      if (count == 1 || count % 1000 == 0)
+        wxLogMessage("WR_OPEN_WATER_SHADOW_COMPARED count=%u", count);
+    }
     if (snapshot_shadow_compare && snapshot_decision == kSnapshotSafe &&
         (result->status == kCrossesLand ||
          result->status == kWithinLandMargin || result->status == kDryingArea ||
@@ -1635,6 +1718,7 @@ bool PrepareCorridor(const double* latitudes, const double* longitudes,
 }
 
 void ReleasePins() {
+  StopSegmentSafetyTileHelpers();
   size_t base_before = 0;
   size_t masks_before = 0;
   size_t base_after = 0;
@@ -1648,7 +1732,10 @@ void ReleasePins() {
     pinned_base = s_segment_safety_pinned_grid_keys.size();
     pinned_masks = s_segment_safety_pinned_route_mask_keys.size();
     s_segment_safety_pinned_grid_keys.clear();
+    s_segment_safety_grid_eviction.Reset();
     s_segment_safety_pinned_route_mask_keys.clear();
+    for (auto& entry : s_segment_safety_route_mask_cache)
+      entry.second.protected_until = {};
 
     while (s_segment_safety_grid_cache.size() > kMaxGridTiles) {
       s_segment_safety_grid_cache.erase(s_segment_safety_grid_cache.begin());
@@ -1656,7 +1743,10 @@ void ReleasePins() {
     }
     while (s_segment_safety_route_mask_cache.size() > kMaxGridTiles) {
       s_segment_safety_route_mask_cache.erase(
-          s_segment_safety_route_mask_cache.begin());
+          ocpn::chart_safety::RouteMaskEvictionVictim(
+              s_segment_safety_route_mask_cache,
+              s_segment_safety_pinned_route_mask_keys,
+              ocpn::chart_safety::RouteMaskClock::now()));
     }
     base_after = s_segment_safety_grid_cache.size();
     masks_after = s_segment_safety_route_mask_cache.size();
@@ -1710,7 +1800,8 @@ bool RegisterTileCache(const SegmentSafetyTileCacheCallbacks* callbacks) {
 
 bool GetChartIdentity(std::string* identity) {
   if (!identity || !wxThread::IsMain()) return false;
-  wxString value = SegmentSafetyChartIdentity();
+  SegmentSafetyRefreshPersistentChartIdentity();
+  const wxString& value = s_segment_safety_chart_identity;
   wxCharBuffer utf8 = value.ToUTF8();
   *identity = utf8.data() ? utf8.data() : "";
   return !value.IsEmpty();
@@ -1933,5 +2024,141 @@ bool ClearPersistentCache() {
       removed ? 1 : 0, path, base_path);
   return removed;
 }
+
+bool PrepareOpenWater(long lat_tile, long lon_tile,
+                      const SegmentSafetyOptions* options) {
+  if (!wxThread::IsMain() || !ChartData ||
+      SegmentSafetyOpenWaterMode() == OpenWaterGeometryMode::Off ||
+      !SegmentSafetyOptionCheckLand(options) ||
+      SegmentSafetyOptionForceAuthoritativeFineValidation(options) ||
+      lat_tile < -1800 || lat_tile >= 1800)
+    return false;
+  {
+    wxMutexLocker lock(s_segment_safety_cache_mutex);
+    s_segment_safety_open_water_requested = true;
+  }
+  return PrepareSegmentSafetyOpenWaterRegion(
+      lat_tile, lon_tile, SegmentSafetyOptionMargin(options),
+      SegmentSafetyOptionCheckDepth(options),
+      SegmentSafetyOptionMinimumDepthM(options));
+}
+
+bool ImportOpenWaterLayer(const char* path_utf8,
+                          OpenWaterLayerProgressFn progress, void* context,
+                          char* message_utf8, int message_size) {
+  const auto report = [&](const wxString& message, bool success = false) {
+    if (message_utf8 && message_size > 0) {
+      const auto utf8 = message.ToUTF8();
+      snprintf(message_utf8, message_size, "%s",
+               utf8.data() ? utf8.data() : "");
+    }
+    return success;
+  };
+  if (!wxThread::IsMain() || s_segment_safety_open_water_importing)
+    return report(_("A chart layer cannot be installed right now."));
+  if (!ChartData || !ChartData->GetChartTableEntries())
+    return report(_("Load charts for the starting layer first."));
+
+  wxJSONValue input;
+  if (!path_utf8 || !ReadOpenWaterLayer(wxString::FromUTF8(path_utf8), &input))
+    return report(_("Invalid or unsupported open-water starting layer."));
+  SegmentSafetyRefreshPersistentChartIdentity();
+  const wxString chart_identity = SegmentSafetyChartIdentity();
+  const wxString catalogue = OpenWaterLayerCatalogueIdentity();
+  if (chart_identity.empty() || catalogue.empty())
+    return report(
+        _("Cannot identify all loaded chart files for verification."));
+  const int group = SegmentSafetyCurrentGroupIndex();
+  const wxJSONValue proposals = input["regions"];
+  std::set<OpenWaterRegionKey> keys;
+  for (int i = 0; i < proposals.Size(); ++i) {
+    OpenWaterRegionKey key;
+    if (!ReadOpenWaterRegionKey(proposals.ItemAt(i), 3, group, &key) ||
+        !keys.insert(key).second)
+      return report(
+          _("The starting layer contains an invalid or duplicate region."));
+  }
+
+  struct ImportGuard {
+    ImportGuard() { s_segment_safety_open_water_importing = true; }
+    ~ImportGuard() { s_segment_safety_open_water_importing = false; }
+  } guard;
+  OpenWaterRegions verified;
+  wxJSONValue rows(wxJSONTYPE_ARRAY);
+  int done = 0, proven = 0;
+  const int total = static_cast<int>(keys.size());
+  OpenWaterRegions worker_results;
+#if defined(__linux__) && !defined(__ANDROID__)
+  bool cancelled = false;
+  VerifyOpenWaterLayerInHelper(wxString::FromUTF8(path_utf8), keys,
+                               chart_identity, catalogue, group, progress,
+                               context, &worker_results, &cancelled);
+  if (cancelled)
+    return report(_("Open-water starting layer import cancelled."));
+#endif
+  for (const auto& key : keys) {
+    if (worker_results.empty() && progress && !progress(context, done, total))
+      return report(_("Open-water starting layer import cancelled."));
+    if (SegmentSafetyCurrentGroupIndex() != group)
+      return report(_("The active chart group changed during verification."));
+    const auto [key_group, size, lat, lon] = key;
+    const auto proof = worker_results.empty()
+                           ? BuildSegmentSafetyOpenWaterRegion(lat, lon, size)
+                           : worker_results.at(key);
+    verified.emplace(key, proof);
+    wxJSONValue row(wxJSONTYPE_ARRAY);
+    row.Append(size);
+    row.Append(static_cast<int>(lat));
+    row.Append(static_cast<int>(lon));
+    row.Append(static_cast<int>(proof.source));
+    row.Append(proof.minimum_depth_m);
+    rows.Append(row);
+    proven += proof.source != kSourceNone ? 1 : 0;
+    ++done;
+  }
+  if (SegmentSafetyChartIdentity() != chart_identity ||
+      OpenWaterLayerCatalogueIdentity() != catalogue)
+    return report(
+        _("The charts changed during verification. Try importing again."));
+  if (!proven)
+    return report(
+        _("The loaded charts could not prove any regions in this layer."));
+
+  wxJSONValue document;
+  document["version"] = kOpenWaterLayerVersion;
+  document["chart_identity"] = chart_identity;
+  document["catalogue_identity"] = catalogue;
+  document["regions"] = rows;
+  wxTempFileOutputStream out(InstalledOpenWaterLayerPath());
+  if (!out.IsOk()) return report(_("Cannot save the verified starting layer."));
+  wxJSONWriter writer(wxJSONWRITER_NONE);
+  writer.Write(document, out);
+  if (!out.IsOk() || !out.Commit())
+    return report(_("Cannot save the verified starting layer."));
+  {
+    wxMutexLocker lock(s_segment_safety_cache_mutex);
+    s_segment_safety_open_water_regions.swap(verified);
+    s_segment_safety_installed_open_water_regions = keys.size();
+  }
+  wxLogMessage("WR_OPEN_WATER_LAYER install=complete proven=%d detailed=%d",
+               proven, total - proven);
+  return report(wxString::Format(_("Verified %d open-water regions. %d regions "
+                                   "will use detailed checks."),
+                                 proven, total - proven),
+                true);
+}
+
+bool RemoveOpenWaterLayer() {
+  if (!wxThread::IsMain() || s_segment_safety_open_water_importing)
+    return false;
+  const wxString path = InstalledOpenWaterLayerPath();
+  if (wxFileExists(path) && !wxRemoveFile(path)) return false;
+  wxMutexLocker lock(s_segment_safety_cache_mutex);
+  s_segment_safety_open_water_regions.clear();
+  s_segment_safety_installed_open_water_regions = 0;
+  return true;
+}
+
+bool ProtectsRequestedMasks() { return true; }
 
 }  // namespace ocpn::chart_safety

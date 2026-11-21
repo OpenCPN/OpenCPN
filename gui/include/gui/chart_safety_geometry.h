@@ -180,7 +180,23 @@ inline bool TriangleContainsCell(Point a, Point b, Point c, CellBox box) {
 inline void BuildTriangleBoundary(PreparedGeometry* g) {
   g->boundary_valid = false;
   g->boundary.clear();
-  std::map<std::array<double, 4>, std::pair<int, int>> edges;
+  // Sort contiguous records instead of allocating a tree node for every
+  // distinct edge. The ordinal preserves the map's first-inserted key,
+  // including signed-zero coordinates, and its exact output ordering.
+  struct Edge {
+    std::array<double, 4> key;
+    size_t ordinal_and_direction;
+  };
+  std::vector<Edge> edges;
+  size_t nondegenerate = 0;
+  for (const auto& t : g->triangles) {
+    if (!Finite(t[0]) || !Finite(t[1]) || !Finite(t[2])) return;
+    if (Cross(t[0], t[1], t[2]) != 0) {
+      if (nondegenerate == edges.max_size() / 3) return;
+      ++nondegenerate;
+    }
+  }
+  edges.reserve(nondegenerate * 3);
   for (auto t : g->triangles) {
     if (!Finite(t[0]) || !Finite(t[1]) || !Finite(t[2])) return;
     const auto area = Cross(t[0], t[1], t[2]);
@@ -191,22 +207,34 @@ inline void BuildTriangleBoundary(PreparedGeometry* g) {
       const bool reverse = std::pair<double, double>{b.x, b.y} <
                            std::pair<double, double>{a.x, a.y};
       if (reverse) std::swap(a, b);
-      auto& count = edges[{a.x, a.y, b.x, b.y}];
-      if (reverse)
-        ++count.second;
-      else
-        ++count.first;
+      edges.push_back(
+          {{a.x, a.y, b.x, b.y}, edges.size() * 2 + (reverse ? 1u : 0u)});
     }
   }
-  for (const auto& item : edges) {
-    const auto key = item.first;
-    const auto counts = item.second;
-    if (counts.first == 1 && counts.second == 1) continue;
-    if (counts.first + counts.second != 1) {
+  std::sort(edges.begin(), edges.end(), [](const Edge& a, const Edge& b) {
+    if (a.key < b.key) return true;
+    if (b.key < a.key) return false;
+    return a.ordinal_and_direction < b.ordinal_and_direction;
+  });
+  for (size_t first = 0; first < edges.size();) {
+    size_t last = first + 1;
+    while (last < edges.size() && !(edges[first].key < edges[last].key) &&
+           !(edges[last].key < edges[first].key))
+      ++last;
+    const auto count = last - first;
+    if (count == 2 && ((edges[first].ordinal_and_direction ^
+                        edges[first + 1].ordinal_and_direction) &
+                       1u)) {
+      first = last;
+      continue;
+    }
+    if (count != 1) {
       g->boundary.clear();
       return;
     }
+    const auto& key = edges[first].key;
     g->boundary.push_back({{key[0], key[1]}, {key[2], key[3]}});
+    first = last;
   }
   g->boundary_valid = !g->boundary.empty();
 }

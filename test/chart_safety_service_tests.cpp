@@ -1,5 +1,9 @@
 #include <gtest/gtest.h>
 
+#include <array>
+#include <random>
+#include "gui/chart_safety_cache_eviction.h"
+
 #include "gui/chart_safety_service.h"
 
 namespace {
@@ -12,6 +16,72 @@ using ocpn::chart_safety::GlobalGridCoordinate;
 using ocpn::chart_safety::MayPrefetchNeighbour;
 using ocpn::chart_safety::PlanAdaptiveLookaheadTiles;
 using ocpn::chart_safety::PlanTileBatchBlocks;
+using ocpn::chart_safety::RouteMaskEvictionVictim;
+using ocpn::chart_safety::RouteMaskRegionIsClear;
+using ocpn::chart_safety::RouteMaskRegionStart;
+
+using ocpn::chart_safety::kRouteMaskDeliveryWindow;
+using ocpn::chart_safety::RouteMaskClock;
+
+struct TestRouteMask {
+  unsigned last_use;
+  RouteMaskClock::time_point protected_until;
+};
+
+TEST(ChartSafetyService, EvictionProtectsRecentDeliveryAndPinnedMasks) {
+  const auto now = RouteMaskClock::time_point{} + std::chrono::seconds(30);
+  std::map<std::string, TestRouteMask> masks = {
+      {"0:1067:-317", {4, now + kRouteMaskDeliveryWindow}},
+      {"0:1600:-300", {1, {}}},
+      {"0:1601:-300", {3, {}}},
+      {"0:1602:-300", {2, {}}}};
+  const std::set<std::string> pinned = {"0:1600:-300"};
+  EXPECT_EQ(RouteMaskEvictionVictim(masks, pinned, now)->first, "0:1602:-300");
+  masks.erase("0:1602:-300");
+  masks.erase("0:1601:-300");
+  EXPECT_EQ(RouteMaskEvictionVictim(masks, pinned, now)->first, "0:1067:-317");
+}
+
+TEST(ChartSafetyService, PartialRetriesKeepTheirMasksUnderSaturatedCache) {
+  const auto start = RouteMaskClock::time_point{} + std::chrono::seconds(30);
+  const auto retry = start + 2 * kRouteMaskDeliveryWindow;
+  std::map<long, TestRouteMask> masks;
+  constexpr long capacity = 4096;
+  for (long old = 0; old < capacity; ++old)
+    masks.emplace(old, TestRouteMask{static_cast<unsigned>(old),
+                                     start + kRouteMaskDeliveryWindow});
+
+  const std::set<long> pinned{0};
+  // This models a retry that accumulates several recent masks while older
+  // workers took a coarse shortcut and never consumed their own deliveries.
+  const std::array<long, 6> demand{{capacity, capacity + 1, capacity + 2,
+                                    capacity + 3, capacity + 4, capacity + 5}};
+  unsigned clock = capacity;
+  for (const auto key : demand) {
+    const auto victim = RouteMaskEvictionVictim(masks, pinned, retry);
+    ASSERT_NE(victim, masks.end());
+    EXPECT_LT(victim->first, capacity);
+    masks.erase(victim);
+    masks.emplace(key,
+                  TestRouteMask{++clock, retry + kRouteMaskDeliveryWindow});
+    for (auto& existing : masks)
+      if (existing.first >= capacity) existing.second.last_use = ++clock;
+  }
+  for (const auto key : demand) EXPECT_EQ(masks.count(key), 1u);
+  EXPECT_EQ(masks.count(0), 1u);
+  EXPECT_EQ(masks.size(), static_cast<std::size_t>(capacity));
+}
+
+TEST(ChartSafetyService, RegionalProofRequiresEveryChild) {
+  const auto is_incomplete = [](long lat, long lon) {
+    return lat != 266 || lon != -80;
+  };
+  EXPECT_EQ(RouteMaskRegionStart(-76, 5), -80);
+  EXPECT_EQ(RouteMaskRegionStart(269, 5), 265);
+  EXPECT_FALSE(RouteMaskRegionIsClear(265, -80, 5, is_incomplete));
+  EXPECT_TRUE(
+      RouteMaskRegionIsClear(265, -80, 5, [](long, long) { return true; }));
+}
 
 TEST(ChartSafetyService, PermitsPrefetchBeforePositiveBudgetExpires) {
   EXPECT_TRUE(MayPrefetchNeighbour(49, 50));
@@ -173,4 +243,82 @@ TEST(ChartSafetyLongitude, ExactSeamAndDegenerateSegmentsRemainLocal) {
     ocpn::chart_safety::UnwrapSafetySegment(start, end);
     EXPECT_DOUBLE_EQ(start, end);
   }
+}
+
+TEST(ChartSafetyService, PinnedEvictionIndexMatchesOriginalThroughKeyChanges) {
+  std::map<std::string, std::vector<int>> actual, expected;
+  std::set<std::string> pins;
+  ocpn::chart_safety::PinnedCacheEvictionIndex<std::string> index;
+  std::mt19937 random(9001);
+  size_t compared_evictions = 0;
+  for (int step = 0; step < 12000; ++step) {
+    const auto key = std::to_string(random() % 91);
+    switch (random() % 64) {
+      case 0:
+        pins.insert(key);
+        index.Pinned(key);
+        break;
+      case 1:
+        pins.clear();
+        index.Reset();
+        break;
+      case 2:
+        actual.erase(key);
+        expected.erase(key);
+        index.Erased(key);
+        break;
+      case 3:
+        actual.clear();
+        expected.clear();
+        index.Reset();
+        break;
+      default:
+        if (!expected.count(key))
+          while (expected.size() >= 17) {
+            auto victim = expected.begin();
+            while (victim != expected.end() && pins.count(victim->first))
+              ++victim;
+            if (victim == expected.end()) break;
+            auto chosen = index.First(actual, pins);
+            ASSERT_NE(chosen, actual.end());
+            ASSERT_EQ(chosen->first, victim->first);
+            ++compared_evictions;
+            index.Erased(chosen->first);
+            actual.erase(chosen);
+            expected.erase(victim);
+          }
+        if (!expected.count(key) && expected.size() >= 17)
+          ASSERT_EQ(index.First(actual, pins), actual.end());
+        actual[key] = expected[key] = {step, step ^ 127};
+        index.Stored(key, pins);
+    }
+    ASSERT_EQ(actual, expected) << step;
+  }
+  EXPECT_GT(compared_evictions, 1000u);
+}
+TEST(ChartSafetyService, PinnedEvictionIndexPreservesAllPinnedOverflow) {
+  std::map<std::string, int> cache;
+  std::set<std::string> pins;
+  ocpn::chart_safety::PinnedCacheEvictionIndex<std::string> index;
+  for (int i = 0; i < 9000; ++i) {
+    auto key = std::to_string(i);
+    cache[key] = i;
+    pins.insert(key);
+  }
+  EXPECT_EQ(index.First(cache, pins), cache.end());
+  for (int i = 0; i < 100; ++i) {
+    auto victim = index.First(cache, pins);
+    if (i) {
+      ASSERT_NE(victim, cache.end());
+      EXPECT_EQ(victim->first, "outside-" + std::to_string(i - 1));
+      index.Erased(victim->first);
+      cache.erase(victim);
+    }
+    EXPECT_EQ(index.First(cache, pins), cache.end());
+    auto key = "outside-" + std::to_string(i);
+    cache[key] = i;
+    index.Stored(key, pins);
+  }
+  EXPECT_EQ(cache.size(), 9001u);
+  for (const auto& key : pins) EXPECT_TRUE(cache.count(key));
 }

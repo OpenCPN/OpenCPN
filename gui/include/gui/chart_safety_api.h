@@ -13,6 +13,7 @@ namespace ocpn::chart_safety {
 
 std::unique_ptr<HostApi> MakeHostApi(Api122Impl *support);
 
+using OpenWaterLayerProgressFn = HostApi123::OpenWaterLayerProgressFn;
 using SegmentSafetyStatus = HostApi123::SegmentSafetyStatus;
 using SegmentSafetySource = HostApi123::SegmentSafetySource;
 using SegmentSafetyDiagnosticReason = HostApi123::SegmentSafetyDiagnosticReason;
@@ -124,6 +125,24 @@ bool SetPersistentCacheEnabled(bool enabled);
 bool GetPersistentCacheEnabled();
 bool SavePersistentCache();
 bool ClearPersistentCache();
+
+bool PrepareOpenWater(long lat_tile, long lon_tile,
+                      const SegmentSafetyOptions *options);
+bool ImportOpenWaterLayer(const char *path_utf8,
+                          OpenWaterLayerProgressFn progress, void *context,
+                          char *message_utf8, int message_size);
+bool RemoveOpenWaterLayer();
+bool ProtectsRequestedMasks();
+
+bool PrepareGrid(double min_lat, double min_lon, double max_lat, double max_lon,
+                 SegmentSafetyResult *result);
+bool PrepareRouteMask(double min_lat, double min_lon, double max_lat,
+                      double max_lon, const SegmentSafetyOptions *options,
+                      SegmentSafetyResult *result);
+bool PrepareRouteMaskForSegment(double lat1, double lon1, double lat2,
+                                double lon2, double corridor_margin_nm,
+                                const SegmentSafetyOptions *options,
+                                SegmentSafetyResult *result);
 
 }  // namespace ocpn::chart_safety
 

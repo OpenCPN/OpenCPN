@@ -27,6 +27,7 @@
 #include "ocpn_plugin.h"
 
 #include "chart_safety_api.h"
+#include "chart_safety_internal.h"
 #include "navigation_safety.h"
 #include "pluginmanager.h"
 
@@ -84,6 +85,22 @@ public:
   bool GetSegmentSafetyPersistentCacheEnabled() override;
   bool SaveSegmentSafetyPersistentCache() override;
   bool ClearSegmentSafetyPersistentCache() override;
+  bool PrepareSegmentSafetyOpenWater(
+      long lat_tile, long lon_tile,
+      const SegmentSafetyOptions* options) override;
+  bool ImportSegmentSafetyOpenWaterLayer(const char* path_utf8,
+                                         OpenWaterLayerProgressFn progress,
+                                         void* context, char* message_utf8,
+                                         int message_size) override;
+  bool RemoveSegmentSafetyOpenWaterLayer() override;
+  bool SegmentSafetyProtectsRequestedMasks() override;
+  int QueueSegmentSafetyRawTileHelpers(const long* lat_tiles,
+                                       const long* lon_tiles, int tile_count,
+                                       bool require_depth) override;
+  bool SegmentSafetyRawTileHelperPending(long lat_tile, long lon_tile) override;
+  void SetSegmentSafetyHelperProcessLimit(int limit) override;
+  void EnableSegmentSafetyTileHelpers(bool enabled) override;
+  bool RunSegmentSafetyTileWorker(const char* directory) override;
 };
 
 }  // namespace
@@ -200,4 +217,50 @@ bool HostApi123Impl::CheckNavigationRoute(
     NavigationRouteSafetyResult* result) {
   return ocpn::chart_safety::CheckNavigationRoute(
       profile, positions, ocpn::chart_safety::CheckSegment, result);
+}
+
+bool HostApi123Impl::PrepareSegmentSafetyOpenWater(
+    long lat_tile, long lon_tile, const SegmentSafetyOptions* options) {
+  return ocpn::chart_safety::PrepareOpenWater(lat_tile, lon_tile, options);
+}
+
+bool HostApi123Impl::ImportSegmentSafetyOpenWaterLayer(
+    const char* path_utf8, OpenWaterLayerProgressFn progress, void* context,
+    char* message_utf8, int message_size) {
+  return ocpn::chart_safety::ImportOpenWaterLayer(path_utf8, progress, context,
+                                                  message_utf8, message_size);
+}
+
+bool HostApi123Impl::RemoveSegmentSafetyOpenWaterLayer() {
+  return ocpn::chart_safety::RemoveOpenWaterLayer();
+}
+
+bool HostApi123Impl::SegmentSafetyProtectsRequestedMasks() {
+  return ocpn::chart_safety::ProtectsRequestedMasks();
+}
+
+int HostApi123Impl::QueueSegmentSafetyRawTileHelpers(const long* lat_tiles,
+                                                     const long* lon_tiles,
+                                                     int tile_count,
+                                                     bool require_depth) {
+  return ocpn::chart_safety::detail::QueueTileHelpersCompat(
+      lat_tiles, lon_tiles, tile_count, require_depth);
+}
+
+bool HostApi123Impl::SegmentSafetyRawTileHelperPending(long lat_tile,
+                                                       long lon_tile) {
+  return ocpn::chart_safety::detail::TileHelperPendingCompat(lat_tile,
+                                                             lon_tile);
+}
+
+void HostApi123Impl::SetSegmentSafetyHelperProcessLimit(int limit) {
+  ocpn::chart_safety::detail::SetHelperProcessLimitCompat(limit);
+}
+
+void HostApi123Impl::EnableSegmentSafetyTileHelpers(bool enabled) {
+  ocpn::chart_safety::detail::EnableTileHelpersCompat(enabled);
+}
+
+bool HostApi123Impl::RunSegmentSafetyTileWorker(const char* directory) {
+  return ocpn::chart_safety::detail::RunTileWorkerCompat(directory);
 }

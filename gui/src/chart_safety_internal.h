@@ -14,6 +14,10 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <tuple>
+#include "chart_safety_cache_eviction.h"
+#include "chart_safety_service.h"
+#include <wx/jsonval.h>
 
 #include <wx/gdicmn.h>
 #include <wx/string.h>
@@ -30,6 +34,16 @@ class ViewPort;
 class s57chart;
 
 namespace ocpn::chart_safety::detail {
+
+enum class OpenWaterGeometryMode { Use, Shadow, Off };
+inline constexpr int kOpenWaterRegionTiles = 20;
+inline constexpr int kOpenWaterSubregionTiles = 4;
+inline constexpr double kOpenWaterMaximumMarginNm = 2.0;
+inline constexpr double kOpenWaterMinimumChartDepthM = 30.0;
+inline constexpr size_t kMaximumOnDemandOpenWaterRegions = 12000;
+inline constexpr int kOpenWaterLayerVersion = 1;
+inline constexpr int kMaximumOpenWaterLayerRegions = 65536;
+inline constexpr size_t kMaximumOpenWaterLayerBytes = 4 * 1024 * 1024;
 
 enum SegmentSafetyPointClass {
   kPointNoData = 0,
@@ -198,6 +212,13 @@ struct CachedSegmentSafetyRouteMaskTile {
   bool persistent_certified_safe{false};
   bool uses_plugin_vector{false};
   bool persistent_cache_allowed{false};
+  uint64_t last_use{0};
+  ocpn::chart_safety::RouteMaskClock::time_point protected_until{};
+
+  bool IsUniformClear() const {
+    return built && rows > 0 && cols > 0 && clear_count == rows * cols &&
+           block_summary_flags == kRouteClear;
+  }
 };
 
 struct SegmentSafetyRouteMaskRequest {
@@ -339,6 +360,29 @@ struct SegmentSafetyPluginBatchGroup {
         min_depth_m(cells, 0.0f) {}
 };
 
+struct SegmentSafetyOpenWaterRegion {
+  SegmentSafetySource source{kSourceNone};
+  double minimum_depth_m{0.0};
+};
+using OpenWaterRegionKey = std::tuple<int, int, long, long>;
+using OpenWaterRegions =
+    std::map<OpenWaterRegionKey, SegmentSafetyOpenWaterRegion>;
+struct Cm93SafetyTileRule;
+inline constexpr int kRegionCoarseCells = 5;
+enum class RouteMaskAccess { Lookup, Deliver };
+
+extern ocpn::chart_safety::PinnedCacheEvictionIndex<std::string>
+    s_segment_safety_grid_eviction;
+extern uint64_t s_segment_safety_route_mask_clock;
+extern uint64_t s_segment_safety_route_mask_evictions;
+extern uint64_t s_segment_safety_delivering_mask_evictions;
+extern std::map<std::string, SegmentSafetySource>
+    s_segment_safety_route_mask_regions;
+extern OpenWaterRegions s_segment_safety_open_water_regions;
+extern size_t s_segment_safety_installed_open_water_regions;
+extern bool s_segment_safety_open_water_requested;
+extern bool s_segment_safety_open_water_importing;
+
 extern std::map<std::string, CachedChartLandGeometry>
     s_segment_safety_land_cache;
 extern std::shared_ptr<const SegmentSafetyHazardSnapshot>
@@ -462,14 +506,16 @@ size_t SegmentSafetyGridCacheSize();
 bool EnsureSegmentSafetyGridTile(long lat_tile, long lon_tile,
                                  SegmentSafetyCoreStats *stats, bool *built,
                                  bool require_depth = false);
-bool LookupSegmentSafetyRouteMaskTile(const std::string &key,
-                                      CachedSegmentSafetyRouteMaskTile *tile);
-bool EnsureSegmentSafetyRouteMaskTile(long lat_tile, long lon_tile,
-                                      double safety_margin_nm, bool check_depth,
-                                      double minimum_depth_m,
-                                      SegmentSafetyCoreStats *stats,
-                                      bool *built,
-                                      bool force_authoritative_fine = false);
+
+bool LookupSegmentSafetyRouteMaskTile(
+    const std::string &key, CachedSegmentSafetyRouteMaskTile *tile,
+    bool require_authoritative_fine = false,
+    RouteMaskAccess access = RouteMaskAccess::Lookup);
+
+bool EnsureSegmentSafetyRouteMaskTile(
+    long lat_tile, long lon_tile, double safety_margin_nm, bool check_depth,
+    double minimum_depth_m, SegmentSafetyCoreStats *stats, bool *built = NULL,
+    bool force_authoritative_fine = false, bool deliver_to_worker = false);
 bool SegmentSafetyCachedTileProviderIsCurrent(
     const CachedPointSafetyGridTile &tile);
 wxString SegmentSafetyTileDependencyIdentity(long lat_tile, long lon_tile);
@@ -560,7 +606,8 @@ std::string SegmentSafetyCoarseRouteMaskKey(long lat_cell, long lon_cell,
                                             bool check_depth,
                                             double minimum_depth_m);
 void StoreSegmentSafetyRouteMaskTile(
-    const std::string &key, const CachedSegmentSafetyRouteMaskTile &tile);
+    const std::string &key, const CachedSegmentSafetyRouteMaskTile &tile,
+    bool deliver_to_worker = false);
 void StoreSegmentSafetyCoarseRouteMaskCell(
     const std::string &key, const CachedSegmentSafetyCoarseRouteMaskCell &cell);
 bool LookupSegmentSafetyCoarseRouteMaskCell(
@@ -580,7 +627,7 @@ bool BuildSegmentSafetyCoarseRouteMaskCellFromBase(
     long lat_cell, long lon_cell, double safety_margin_nm, bool check_depth,
     double minimum_depth_m, bool allow_chart_builds,
     CachedSegmentSafetyCoarseRouteMaskCell *cell, SegmentSafetyCoreStats *stats,
-    long *base_tiles_built);
+    long *base_tiles_built, bool resident_only = false);
 bool SegmentSafetyCoarseProofDoesNotExpandBaseBuildSet(
     long lat_cell, long lon_cell,
     const std::set<std::pair<long, long>> &occupied_tiles,
@@ -611,6 +658,74 @@ bool ChartSegmentPointClassificationCheck(
     bool check_depth, double minimum_depth_m, bool force_authoritative_fine,
     SegmentSafetyResult *result, bool *chart_data_available,
     SegmentSafetyCoreStats *stats, bool *open_water_shortcut = nullptr);
+
+// Region preparation and bounded helper coordination.
+wxString SegmentSafetyChartCatalogIdentity(bool include_database_path = true);
+std::vector<Cm93SafetyTileRule> CollectSafetyBoxRules(s57chart *chart,
+                                                      double min_lat,
+                                                      double min_lon,
+                                                      double degrees,
+                                                      double query_padding);
+OpenWaterGeometryMode SegmentSafetyOpenWaterMode();
+bool OpenWaterOptionsSupported(double margin, bool check_depth, double depth);
+OpenWaterRegionKey SegmentSafetyOpenWaterKey(int size, long lat_tile,
+                                             long lon_tile);
+bool OpenWaterProofApplies(const SegmentSafetyOpenWaterRegion &proof,
+                           bool check_depth, double threshold);
+const SegmentSafetyOpenWaterRegion *FindSegmentSafetyOpenWaterRegion(
+    long lat_tile, long lon_tile, bool check_depth, double depth);
+double OpenWaterDepthLowerBound(const std::vector<Cm93SafetyTileRule> &rules);
+SegmentSafetyOpenWaterRegion BuildSegmentSafetyOpenWaterRegion(long lat_tile,
+                                                               long lon_tile,
+                                                               int tile_count);
+wxString OpenWaterLayerCatalogueIdentity();
+wxString InstalledOpenWaterLayerPath();
+bool ReadOpenWaterLayer(const wxString &path, wxJSONValue *document);
+bool ReadOpenWaterRegionKey(const wxJSONValue &row, int fields, int group,
+                            OpenWaterRegionKey *key);
+bool ReadVerifiedOpenWaterRegions(const wxString &path,
+                                  const wxString &identity,
+                                  const wxString &catalogue,
+                                  OpenWaterRegions *verified);
+void LoadInstalledSegmentSafetyOpenWaterLayer(const wxString &identity);
+bool VerifyOpenWaterLayerInHelper(const wxString &source,
+                                  const std::set<OpenWaterRegionKey> &keys,
+                                  const wxString &identity,
+                                  const wxString &catalogue, int group,
+                                  OpenWaterLayerProgressFn progress,
+                                  void *context, OpenWaterRegions *verified,
+                                  bool *cancelled);
+bool PrepareSegmentSafetyOpenWaterRegion(long lat_tile, long lon_tile,
+                                         double margin, bool check_depth,
+                                         double depth);
+bool SegmentSafetyOpenWaterForChord(double lat1, double lon1, double lat2,
+                                    double lon2, double margin,
+                                    bool check_depth, double depth,
+                                    SegmentSafetyOpenWaterRegion *result);
+void RecordTileHelperBuildCost(long lat, long lon, bool depth,
+                               int milliseconds);
+std::uint64_t AvailableTileHelperMemoryKiB();
+void StopSegmentSafetyTileHelpers();
+void PollSegmentSafetyTileHelpers();
+bool TileHelperPending(long, long);
+int QueueTileHelpersCompat(const long *lat, const long *lon, int count,
+                           int depth);
+bool TileHelperPendingCompat(long lat, long lon);
+void SetHelperProcessLimitCompat(int limit);
+void EnableTileHelpersCompat(int enabled);
+bool RunTileWorkerCompat(const char *directory);
+
+std::vector<SegmentSafetyChartCandidate> SegmentSafetyTileChartCandidates(
+    double min_lat, double min_lon, double max_lat, double max_lon);
+
+bool DeferSegmentSafetyTileRequest(
+    const SegmentSafetyRouteMaskRequest &request);
+void PrefetchPendingSegmentSafetyTiles();
+bool SegmentSafetyChartFullyCoversBBox(const SegmentSafetySnapshotChart &chart,
+                                       const SegmentSafetyBBox &query);
+SegmentSafetyPointClass ChartPointSafetyClassAt(
+    double lat, double lon, SegmentSafetySource *source,
+    SegmentSafetyCoreStats *stats, SegmentSafetyResult *result = nullptr);
 
 }  // namespace ocpn::chart_safety::detail
 

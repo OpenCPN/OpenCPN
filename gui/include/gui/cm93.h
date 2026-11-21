@@ -321,7 +321,8 @@ public:
   double GetNormalScaleMax(double canvas_scale_factor, int canvas_width);
 
   bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
-  void SetVPParms(const ViewPort &vpt);
+  void SetVPParms(const ViewPort &vpt) override;
+  void PrepareSafetyViewport(const ViewPort &vpt);
   void GetPointPix(ObjRazRules *rzRules, float northing, float easting,
                    wxPoint *r);
   void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r,
@@ -381,6 +382,8 @@ private:
   int loadcell_in_sequence(int, char);
   int loadsubcell(int, wxChar);
   void ProcessVectorEdges(void);
+  void LoadViewportCells(const ViewPort &vpt, bool prepare_display);
+  void UpdateDisplayGeometry();
 
   wxPoint2DDouble FindM_COVROffset(double lat, double lon);
   M_COVR_Desc *FindM_COVR_InWorkingSet(double lat, double lon);
@@ -401,6 +404,7 @@ private:
   int *m_pcontour_array;
   int m_ncontour_alloc;
   ViewPort m_vp_current;
+  bool m_display_geometry_pending = false;
   wxChar m_loadcell_key;
   double m_dval;
 

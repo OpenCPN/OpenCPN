@@ -240,3 +240,103 @@ TEST(ChartSafetyGeometry, IndexedSoundingDepthUsesOnlyMatchingPoints) {
   EXPECT_FALSE(SoundingMinDepth(g, .025, -179.9999, .001, &minimum, &unknown));
   EXPECT_TRUE(unknown);
 }
+
+namespace {
+// Retained original implementation: independent output oracle for the
+// allocation/ordering optimisation, including malformed tessellations.
+void MapReferenceTriangleBoundary(PreparedGeometry* g) {
+  g->boundary_valid = false;
+  g->boundary.clear();
+  std::map<std::array<double, 4>, std::pair<int, int>> edges;
+  for (auto t : g->triangles) {
+    if (!Finite(t[0]) || !Finite(t[1]) || !Finite(t[2])) return;
+    const auto area = Cross(t[0], t[1], t[2]);
+    if (area == 0) continue;  // zero-area evidence cannot establish coverage
+    if (area < 0) std::swap(t[1], t[2]);
+    for (int i = 0; i < 3; ++i) {
+      auto a = t[i], b = t[(i + 1) % 3];
+      const bool reverse = std::pair<double, double>{b.x, b.y} <
+                           std::pair<double, double>{a.x, a.y};
+      if (reverse) std::swap(a, b);
+      auto& count = edges[{a.x, a.y, b.x, b.y}];
+      if (reverse)
+        ++count.second;
+      else
+        ++count.first;
+    }
+  }
+  for (const auto& item : edges) {
+    const auto key = item.first;
+    const auto counts = item.second;
+    if (counts.first == 1 && counts.second == 1) continue;
+    if (counts.first + counts.second != 1) {
+      g->boundary.clear();
+      return;
+    }
+    g->boundary.push_back({{key[0], key[1]}, {key[2], key[3]}});
+  }
+  g->boundary_valid = !g->boundary.empty();
+}
+
+std::uint64_t CoordinateBits(double value) {
+  std::uint64_t bits;
+  std::memcpy(&bits, &value, sizeof(bits));
+  return bits;
+}
+}  // namespace
+
+TEST(ChartSafetyGeometry, SortedBoundaryMatchesOriginalMapBitForBit) {
+  std::mt19937 random(170041);
+  for (unsigned trial = 0; trial < 160; ++trial) {
+    SCOPED_TRACE(trial);
+    PreparedGeometry actual;
+    actual.valid = true;
+    const int side = 2 + trial % 11;
+    for (int y = 0; y < side; ++y)
+      for (int x = 0; x < side; ++x) {
+        if (trial % 3 == 0 && x == side / 2 && y == side / 2) continue;
+        actual.triangles.push_back({Point{double(x), double(y)},
+                                    Point{double(x + 1), double(y)},
+                                    Point{double(x + 1), double(y + 1)}});
+        actual.triangles.push_back({Point{double(x), double(y)},
+                                    Point{double(x + 1), double(y + 1)},
+                                    Point{double(x), double(y + 1)}});
+      }
+    if (trial % 5 == 0) actual.triangles.push_back(actual.triangles.front());
+    if (trial % 7 == 0)
+      actual.triangles.push_back({Point{0, 0}, Point{0, 0}, Point{0, 0}});
+    if (trial % 11 == 0)
+      actual.triangles.push_back(
+          {Point{0, 0}, Point{1, 1},
+           Point{std::numeric_limits<double>::infinity(), 0}});
+    for (auto& triangle : actual.triangles) {
+      if (random() & 1) std::swap(triangle[1], triangle[2]);
+      for (auto& point : triangle) {
+        if (point.x == 0 && (random() & 1)) point.x = -0.0;
+        if (point.y == 0 && (random() & 1)) point.y = -0.0;
+      }
+    }
+    std::shuffle(actual.triangles.begin(), actual.triangles.end(), random);
+    auto expected = actual;
+    MapReferenceTriangleBoundary(&expected);
+    BuildTriangleBoundary(&actual);
+    ASSERT_EQ(actual.boundary_valid, expected.boundary_valid);
+    ASSERT_EQ(actual.boundary.size(), expected.boundary.size());
+    for (size_t i = 0; i < actual.boundary.size(); ++i) {
+      EXPECT_EQ(CoordinateBits(actual.boundary[i].first.x),
+                CoordinateBits(expected.boundary[i].first.x));
+      EXPECT_EQ(CoordinateBits(actual.boundary[i].first.y),
+                CoordinateBits(expected.boundary[i].first.y));
+      EXPECT_EQ(CoordinateBits(actual.boundary[i].second.x),
+                CoordinateBits(expected.boundary[i].second.x));
+      EXPECT_EQ(CoordinateBits(actual.boundary[i].second.y),
+                CoordinateBits(expected.boundary[i].second.y));
+    }
+    for (int y = -1; y <= side; ++y)
+      for (int x = -1; x <= side; ++x) {
+        CellBox box{x + .1, y + .1, x + .9, y + .9};
+        EXPECT_EQ(TessellationContainsCell(actual, box),
+                  TessellationContainsCell(expected, box));
+      }
+  }
+}

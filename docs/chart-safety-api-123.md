@@ -1,4 +1,4 @@
-# Chart-aware routing support for xWeatherRouting 1.30.0
+# Chart-aware routing support for xWeatherRouting 1.41.0
 
 ## Scope of the combined proposal
 
@@ -42,17 +42,32 @@ cannot borrow a safe depth from surrounding water. Soundings provide local depth
 evidence and cannot certify coverage. The semantic cache identity changes when
 these classifier semantics change.
 
-A complete-polygon, uniform-depth tile proof is available only when explicitly
-enabled with `OCPN_CHART_SAFETY_GEOMETRY_PROOF=1`. Coverage holes, conflicting
-areas, land, drying features, isolated dangers or unresolved geometry prevent
-that shortcut. It is off by default pending broader qualification. Mutable
-chart extraction remains on the GUI thread; the acceleration does not permit
-worker access to chart objects.
+The open-water starting layer uses complete coverage, hazard geometry and a
+conservative depth lower bound. Import verifies regions against the installed
+chart catalogue; unknown, changed or unproved regions retain detailed checks.
+An imported layer never supplies a depth or safety guarantee by itself. The
+host can also derive bounded open-water regions on demand. Final validation
+continues to use authoritative fine checks.
 
-This combines the modular API work from #5460 with subsequent safety and
-acceleration changes. It supersedes the experimental global-function proposal
-in #5400. The implementation is split into core, raster, facade and navigation
-modules, rather than extending `ocpn_plugin_gui.cpp`.
+Additional chart helpers are opt-in and bounded by CPU, available memory and a
+zero-through-six process limit. On desktop Linux, isolated helpers can prepare
+expensive detailed tiles or verify a starting-layer import. The parent validates
+every returned payload and its chart identity. Unsupported platforms/providers,
+missing helper prerequisites and failed/stale replies retain normal in-process
+checks. Chart objects are never shared between processes or routing workers.
+
+Derived certificate format 4 rejects older, malformed or mismatched catalogue
+proofs. Integral and fractional JSON coordinates are read numerically and checked
+against canonical tile coordinates and the policy key. Valid cached tiles remain
+persistent; loaded chart changes invalidate their identity. CM93 cell loading
+uses a batch append cursor to retain the same rule priority, style and natural
+order without repeatedly walking the accumulated object list.
+
+The implementation is split into core, raster, facade, compatibility and
+navigation modules, retaining the HostApi123 provider registry. The optional
+compatibility adapter lets the existing 1.41.0 plugin resolve its chart functions
+dynamically. Legacy integer cache callbacks are explicitly converted to the typed
+boolean callbacks; function pointers are never reinterpreted.
 
 Profiles are caller-owned values. The host does not silently choose defaults,
 apply a day/night context or persist a vessel profile. No existing route is
@@ -65,15 +80,18 @@ returns a private implementation of the developing HostApi123 interface. Plugin
 API_VERSION_MINOR remains the published value 22; this change does not declare
 API 1.23 released.
 
-Compile consumers/providers against the matching development header. Use a
-checked `dynamic_cast<HostApi123*>` with appropriate ownership: retain both the owning unique_ptr and the cast pointer for the same lifetime. A failed
-cast means the optional chart service is unavailable. Stock 5.14.2 supports the
-published base interface and loads the coordinated plugins; it does not provide
-these new operations.
+New consumers/providers compile against the matching development header and
+retain the owning `unique_ptr` for the lifetime of a checked `HostApi123*`.
+HostApi123 is an unstable developing interface, so a matching coordinated host
+is required for its methods. It does not change the released API version.
 
-HostApi123 inherits HostApi122, whose virtual functions are defined in the host.
-Consequently these development plugins require a host with published API 1.22;
-a lower plugin API declaration does not remove that load-time dependency.
+xWeatherRouting 1.41.0 keeps its published API 1.21 dependency and dynamically
+resolves the optional compatibility entrypoints. The same plugin binary loads
+on unmodified stock OpenCPN: ordinary GRIB, climatology and GSHHG routing do not
+require this proposal. A request for unavailable chart safety is reported as
+unavailable rather than silently certified or relaxed. New typed HostApi123
+consumers additionally require the matching developing host and published API
+1.22 support inherited by HostApi123.
 
 This development baseline also needs the already released API 1.22 callback
 routing fixes from upstream commit `5b805e33d4601b478d1172724384c1956869f62e`
@@ -149,32 +167,17 @@ The coordinated Weather Routing consumer has its own independent engine/cache
 suite. Real-host startup/load and native chart queries are tested in isolated
 profiles, separately from the stock compatibility control.
 
-The coordinated consumer now includes the qualified xWeatherRouting 1.30.0
-release, with unchanged routing-engine source and the optional HostApi123
-adaptation retained:
-https://github.com/pob220/xweather_routing_pi/tree/chart-safety/xweather-1.30-api123
+The current consumer is xWeatherRouting 1.41.0, with 2.8.0 providing the
+improved-UX development variant. Both retain optional dynamically resolved
+chart operations and their existing stock-host loading requirements. The older
+HostApi123 consumer/provider branches are review fixtures for the typed API;
+they are not qualification of the current plugin version.
 
-Its development SDK is pinned to the matching `opencpn-libs` API123 snapshot.
-Published plugin packages retain their existing API 1.21 loading floor; the
-HostApi123 review consumer requires published API 1.22. This core proposal does
-not publish a new plugin package or catalogue version.
-
-Core build qualification retains the upstream warning and sanitizer settings.
-The cache-result and raster/mask copies use the shared bounded,
-null-terminating string helper. Its source precision also bounds reads from
-fixed-size provider buffers without a null terminator. A native regression
-fixture exercises that boundary under AddressSanitizer. CM93 composite-chart
-overrides are explicit, and the Windows x64 build finds Poedit's Gettext tools
-under either Program Files directory after the dependency setup returns.
-Windows x64 downloads use the host-provided `curl.exe` and verify the cached
-wxWidgets headers, import library and runtime DLL. Download, extraction,
-Gettext and CMake failures stop the build immediately.
-
-Platform builds and API review remain gates before this development interface
-can be treated as ready for release. Linux startup or a unit suite alone cannot
-establish Windows/macOS/Android behavior. The provider retains the previously
-validated o-charts extraction implementation; this port checks its build and
-load integration rather than repeating the licensed-chart qualification.
+The core application retains its upstream warning settings. The focused
+native fixtures use AddressSanitizer; the standalone shoreline predicate test
+also uses UndefinedBehaviorSanitizer. GTK leak detection is disabled in the
+local address-checking harness. Platform builds and real-host consumer checks
+remain separate gates.
 
 ### Optional real-host probe
 
@@ -193,52 +196,36 @@ not distributed with this patch; other fixtures require corresponding expected
 results. Clear only the disposable profile's chart-safety caches before a cold
 worker test. A warm cache can legitimately bypass PendingData.
 
-Historical September 28 checks of the preceding API port passed 23 focused
-core tests and 203 consumer tests, plus stock 5.14.2 compatibility and CM93 probe
-cases. Those results are background, not qualification of this combined branch.
-Four loopback tests failed in both that candidate and the stock control.
+### Private production fixtures
 
-The new native fixture harness can be built after the Linux Makefiles host build:
+After a completed Linux Makefiles host build, link the production chart and
+cache implementations into private test executables without adding test
+exports to the API:
 
 ```sh
 python3 test/build_chart_safety_native_tests.py --build-dir build --output-dir native-tests
-# Run under a private virtual display, using a disposable runtime environment.
+python3 test/build_chart_safety_native_tests.py --build-dir build --output-dir cache-tests --certificate-cache
+# Use a private virtual display and disposable runtime directories.
 DISPLAY=:188 native-tests/native-fixtures
+DISPLAY=:188 cache-tests/certificate-fixtures
+python3 test/gshhs_intersection_regression.py --sanitize
 ```
 
-It exercises production CM93/S-57 classification and typed provider visits
-without adding exported test hooks. The pure geometry tests include generated
-comparisons against the direct geometry predicates. Licensed S-63 geographical
-qualification and enhanced Android host runtime qualification remain separate
-release gates. The existing provider branch must be used with the matching
-HostApi123 header; this core PR does not change or publish the o-charts plugin.
+The chart harness covers native CM93/S-57 hazards, depths, coverage, dateline
+traversal, open-water proofs and exact batch append order. The cache harness
+covers numeric save/load/save, invalid/stale certificate rejection, eviction
+under pinned pressure, helper replies/admission/fallback and legacy-to-typed
+callback conversion. The normal test target also compiles frozen consumer
+layout assertions for all fields crossing the optional ABI boundary.
 
-## Date-line regression qualification (24 October 2026)
+The standalone shoreline test extracts the production intersection predicate
+and checks 2,000,012 cases against independent integer geometry. It covers
+endpoint reversal, collinear disjoint segments and near-parallel lines.
 
-A short segment from 179.99°E to 179.99°W now follows a continuous local
-longitude interval. Fine tiles, derived masks, worker requests and clearance
-halos use the same cyclic tile identities. CM93's safety-only scale selector
-checks original M_COVR polygons at the seam: it bypasses a previously selected
-chart only when those polygons prove the point is outside. Unresolved coverage
-does not authorise falling through to deeper coarse water. General rendering
-and ordinary chart priority are unchanged.
-
-The semantic cache identity advances to `geometry-prototype-4-dateline`,
-invalidating earlier raw tiles and safety certificates. Published API1.22 and
-the HostApi123 declarations are unchanged. This does not change a routing
-engine, consumer version or preview package.
-
-Local Linux Release/AddressSanitizer checks pass 46 focused tests and 20 native
-fixtures (GTK leak detection disabled). Native fixtures cover both crossing
-directions, bounded traversal, cyclic corridor footprints, clear-water halos,
-land/drying/shallow hazards across the seam and unknown/no-chart rejection at
-traversed cells. The test harness reports wx assertions as test failures rather
-than opening modal dialogs; it caught and corrected a pre-existing elapsed-time
-log format mismatch.
-
-The real-host probe retains all seven previous route results and adds positive
-1.5 m depth/0.1 NM margin crossings in both directions plus rejection at an
-impossible depth threshold. These tests use local CM93 charts; raw chart data
-is not included. Cross-platform CI results for the earlier PR head do not
-qualify this new revision. Licensed S-63 and Android runtime checks remain
-separate gates. The developer preview bundle is not refreshed by this change.
+The real-host probe checks plugin/API lifecycle and geographical results using
+local CM93 charts. A matching Weather Routing binary must additionally be
+exercised on both an enhanced host and an unmodified stock host, including
+explicit chart-unavailable results, cancellation, ordinary weather routing and
+clean shutdown. Enhanced-host behavior, stock compatibility, licensed-provider
+qualification and platform builds are recorded separately. Raw chart data and
+personal profiles are not distributed with these tests.

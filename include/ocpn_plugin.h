@@ -7448,6 +7448,10 @@ public:
 /** Unstable development API */
 class HostApi123 : public HostApi122 {
 public:
+  /** Return false to cancel an open-water layer import. */
+  using OpenWaterLayerProgressFn = bool (*)(void *context, int completed,
+                                            int total);
+
   HostApi123(Api122Impl *support) : HostApi122(support) {}
 
   /** Outcome of an authoritative chart-safety segment query. */
@@ -7892,5 +7896,33 @@ public:
   virtual bool SaveSegmentSafetyPersistentCache() = 0;
   /** Clear host-owned persistent safety tiles. */
   virtual bool ClearSegmentSafetyPersistentCache() = 0;
+
+  /** Prepare a chart-proven open-water region, retaining fine checks when
+   * no proof is available. Options and chart identity bound every proof. */
+  virtual bool PrepareSegmentSafetyOpenWater(
+      long lat_tile, long lon_tile, const SegmentSafetyOptions *options) = 0;
+
+  /** Import and verify a catalogue-bound global starting layer. A false
+   * progress callback cancels the import without installing partial data. */
+  virtual bool ImportSegmentSafetyOpenWaterLayer(
+      const char *path_utf8, OpenWaterLayerProgressFn progress, void *context,
+      char *message_utf8, int message_size) = 0;
+  virtual bool RemoveSegmentSafetyOpenWaterLayer() = 0;
+  virtual bool SegmentSafetyProtectsRequestedMasks() = 0;
+
+  /** Optional, resource-bounded helper processes. Disabled by default.
+   * GUI-thread only; providers without qualified helper support retain
+   * authoritative in-process checks. Limits are clamped to zero through six.
+   * RunSegmentSafetyTileWorker only accepts a matching private child context.
+   */
+  virtual int QueueSegmentSafetyRawTileHelpers(const long *lat_tiles,
+                                               const long *lon_tiles,
+                                               int tile_count,
+                                               bool require_depth) = 0;
+  virtual bool SegmentSafetyRawTileHelperPending(long lat_tile,
+                                                 long lon_tile) = 0;
+  virtual void SetSegmentSafetyHelperProcessLimit(int limit) = 0;
+  virtual void EnableSegmentSafetyTileHelpers(bool enabled) = 0;
+  virtual bool RunSegmentSafetyTileWorker(const char *directory) = 0;
 };
 #endif  //_PLUGIN_H_

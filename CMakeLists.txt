@@ -994,6 +994,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ocp_cursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
     ${GUI_SRC_DIR}/chart_safety_core.cpp
+    ${GUI_SRC_DIR}/chart_safety_compat.cpp
     ${GUI_SRC_DIR}/chart_safety_facade.cpp
     ${GUI_SRC_DIR}/navigation_safety.cpp
     ${GUI_SRC_DIR}/chart_safety_raster.cpp
@@ -2067,6 +2068,12 @@ if (NOT APPLE)
   endif ()
   if (LINUX)
     install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT QT_ANDROID)
+      install(PROGRAMS tools/opencpn-open-water-verifier
+                       tools/opencpn-chart-tile-worker
+              DESTINATION ${CMAKE_INSTALL_BINDIR})
+    endif()
+
   endif ()
 
   install(

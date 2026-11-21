@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""Run private OpenCPN chart verification jobs for a desktop layer import."""
+
+from collections import defaultdict
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from configparser import RawConfigParser
+import json
+import os
+from pathlib import Path
+import select
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+
+HOST, PROFILE, BASEMAP, GROUP, SOURCE, RESULT = map(str, sys.argv[1:7])
+PROCESS_LIMIT = max(1, min(6, int(sys.argv[7]))) if len(sys.argv)>7 else 6
+PROFILE, SOURCE, RESULT = map(Path, (PROFILE, SOURCE, RESULT))
+PROGRESS = RESULT.with_suffix('.progress')
+XVFB = shutil.which('Xvfb') or str(
+    Path(__file__).with_name('opencpn-verifier-xvfb'))
+
+def private_settings(profile):
+    original = RawConfigParser(strict=False)
+    original.optionxform = str
+    original.read(PROFILE / 'opencpn.conf', encoding='utf-8-sig')
+    output = RawConfigParser()
+    output.optionxform = str
+    output['Settings'] = {'NavMessageShown': '1', 'OpenGL': '0', 'Locale': 'en_US'}
+    output['Settings/GlobalState'] = {'AllowArbitrarySystemPlugins': '1'}
+    output['Directories'] = {'BasemapDir': BASEMAP, 'SENCPrefix': str(profile / 'SENC')}
+    output['Canvas'] = {'CanvasConfig': '0'}
+    output['Canvas/CanvasConfig1'] = {'ActiveChartGroup': GROUP}
+    for section in original.sections():
+        if section == 'ChartDirectories' or section.startswith(('Groups/', 'ChartDirectories/')) or section == 'Groups':
+            output[section] = dict(original[section])
+        if section.startswith('PlugIns/lib') and any(
+            name in section.lower() for name in ('o-charts', 'oesenc', 's63', 'weather_routing')
+        ):
+            output[section] = {'bEnabled': original[section].get('bEnabled', '0')}
+    for section, version in (('PlugIns/WeatherRouting', '140'),
+                             ('Plugins/WeatherRouting', '140'),
+                             ('PlugIns/xWeatherRouting2', '207')):
+        output[section] = {'ConfigVersion': original.get(section, 'ConfigVersion', fallback=version)}
+    if original.has_section('PlugIns/ocharts/EULA'):
+        output['PlugIns/ocharts/EULA'] = dict(original['PlugIns/ocharts/EULA'])
+    return output
+
+def run_job(job):
+    profile, regions = job
+    (profile / 'routing-data').mkdir()
+    with (profile / 'opencpn.conf').open('w') as config:
+        private_settings(profile).write(config)
+    shutil.copyfile(PROFILE / 'chartlist.dat', profile / 'chartlist.dat')
+    if (PROFILE / 'cm93').is_dir():
+        shutil.copytree(PROFILE / 'cm93', profile / 'cm93')
+    path = profile / 'request.json'
+    path.write_text(json.dumps({'version': 1, 'regions': regions}))
+    env = {k: v for k, v in os.environ.items() if not k.startswith(('WR_', 'XGRIB_'))}
+    env.pop('WAYLAND_DISPLAY', None)
+    env.update({
+        'OCPN_OPEN_WATER_VERIFIER_CHILD': '1',
+        'GDK_BACKEND': 'x11',
+        'WR_HEADLESS_ROUTE_TEST': 'open-water-import',
+        'WR_HEADLESS_OPEN_WATER_LAYER': str(path),
+        'WR_HEADLESS_DATA_DIR': str(profile / 'routing-data'),
+        'WR_HEADLESS_NO_EXIT': '0',
+        'WR_HEADLESS_TIMEOUT_MS': '900000',
+        'XDG_CONFIG_HOME': str(profile / 'xdg-config'),
+        'XDG_CACHE_HOME': str(profile / 'xdg-cache'),
+        'XDG_DATA_HOME': str(profile / 'xdg-data'),
+    })
+    rd, wd = os.pipe()
+    with (profile / 'xvfb.log').open('wb') as log:
+        xserver = subprocess.Popen([XVFB, '-displayfd', str(wd), '-screen', '0',
+                                     '1024x768x24', '-nolisten', 'tcp'],
+                                    pass_fds=(wd,), stdout=log, stderr=subprocess.STDOUT)
+    os.close(wd)
+    try:
+        with os.fdopen(rd) as source:
+            if not select.select([source], [], [], 10)[0]:
+                raise RuntimeError('The private display did not start')
+            display = source.readline().strip()
+        if not display.isdecimal():
+            raise RuntimeError('The private display did not provide a number')
+        env['DISPLAY'] = ':' + display
+        with (profile / 'stdout.log').open('wb') as log:
+            child = subprocess.run([HOST, '--configdir=' + str(profile), '--no_opengl'],
+                                   cwd=profile, env=env, stdout=log,
+                                   stderr=subprocess.STDOUT, timeout=900)
+    finally:
+        xserver.terminate()
+        xserver.wait(timeout=5)
+    if child.returncode == 2 and 'The loaded charts could not prove any regions in this layer.' in (profile / 'opencpn.log').read_text():
+        return None, [row + [0, 0] for row in regions]
+    if child.returncode:
+        log_path = profile / 'opencpn.log'
+        diagnostic = log_path.read_text(errors='replace').splitlines()[-2:] if log_path.exists() else []
+        raise RuntimeError(f'OpenCPN verification exited with {child.returncode}: {diagnostic}')
+    saved = json.loads((profile / 'weather_routing' / 'chart_open_water_layer.json').read_bytes())
+    if sorted(row[:3] for row in saved['regions']) != sorted(regions):
+        raise RuntimeError('The verifier returned a different region set')
+    return (saved['chart_identity'], saved['catalogue_identity']), saved['regions']
+
+def atomic_text(path, value):
+    temporary = path.with_name(path.name + '.new')
+    temporary.write_text(value)
+    temporary.replace(path)
+
+started = time.monotonic()
+parent = os.getppid()
+regions = json.loads(SOURCE.read_bytes())['regions']
+batches = defaultdict(list)
+for row in regions:
+    _, lat, lon = row
+    batches[(lat >= 0, (lon + 3600) // 1200)].append(row)
+with tempfile.TemporaryDirectory(prefix='ocpn-open-water-worker-') as scratch:
+    jobs = []
+    for ix, rows in enumerate(batches.values()):
+        directory = Path(scratch) / str(ix)
+        directory.mkdir()
+        jobs.append((directory, rows))
+    workers = min(len(jobs), PROCESS_LIMIT, max(1, len(os.sched_getaffinity(0)) // 2))
+    results, identities = [], set()
+    offsets = {profile: (0, 0) for profile, _ in jobs}
+    completed_regions = 0
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        pending = {pool.submit(run_job, job): job[0] for job in jobs}
+        while pending:
+            if os.getppid() != parent and os.getpgrp() == os.getpid():
+                os.killpg(os.getpgrp(), signal.SIGTERM)
+            finished, _ = wait(pending, timeout=.5, return_when=FIRST_COMPLETED)
+            for task in finished:
+                identity, rows = task.result()
+                if identity:
+                    identities.add(identity)
+                results.extend(rows)
+                completed_regions += len(rows)
+                offsets.pop(pending.pop(task))
+            for profile, (offset, count) in offsets.items():
+                log_path = profile / 'opencpn.log'
+                if log_path.exists():
+                    with log_path.open('rb') as log:
+                        log.seek(offset)
+                        count += sum(b' WR_OPEN_WATER_REGION ' in line for line in log)
+                        offsets[profile] = (log.tell(), count)
+            done = completed_regions + sum(count for _, count in offsets.values())
+            atomic_text(PROGRESS, str(done))
+    if len(identities) != 1 or sorted(row[:3] for row in results) != sorted(regions):
+        raise RuntimeError('Open-water verification settings or region set did not match')
+    chart, catalogue = identities.pop()
+    atomic_text(RESULT, json.dumps({'version': 1, 'chart_identity': chart,
+                                    'catalogue_identity': catalogue,
+                                    'regions': sorted(results)},
+                                   separators=(',', ':')) + '\n')
+    print(f'Open-water helper verified {len(results)} regions in {time.monotonic()-started:.1f} seconds',
+          flush=True)

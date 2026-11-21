@@ -11,6 +11,7 @@
 #define GUI_CHART_SAFETY_SERVICE_H
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <map>
 #include <set>
@@ -28,6 +29,45 @@ namespace ocpn::chart_safety {
  */
 inline bool MayPrefetchNeighbour(long elapsed_ms, int max_milliseconds) {
   return max_milliseconds <= 0 || elapsed_ms < max_milliseconds;
+}
+
+using RouteMaskClock = std::chrono::steady_clock;
+constexpr auto kRouteMaskDeliveryWindow = std::chrono::seconds(5);
+
+/** Keep recent demand available across partial and concurrent traversals.
+ * Protection expires even when a worker finishes through a coarse proof
+ * without reading the mask. Choose the LRU protected entry only if every
+ * unpinned entry is protected, so the ordinary cache stays bounded.
+ */
+template <class MaskMap, class Pins>
+auto RouteMaskEvictionVictim(MaskMap& masks, const Pins& pinned,
+                             RouteMaskClock::time_point now) {
+  auto ordinary = masks.end();
+  auto protected_entry = masks.end();
+  for (auto it = masks.begin(); it != masks.end(); ++it) {
+    if (pinned.count(it->first)) continue;
+    auto& victim =
+        it->second.protected_until > now ? protected_entry : ordinary;
+    if (victim == masks.end() || it->second.last_use < victim->second.last_use)
+      victim = it;
+  }
+  return ordinary == masks.end() ? protected_entry : ordinary;
+}
+
+/** Align a signed cell index to a region of child cells. */
+inline long RouteMaskRegionStart(long cell, long children) {
+  const long offset = cell % children;
+  return cell - offset - (offset < 0 ? children : 0);
+}
+
+/** A regional proof requires a positive proof for every child. */
+template <class IsClear>
+bool RouteMaskRegionIsClear(long first_lat, long first_lon, long children,
+                            IsClear is_clear) {
+  for (long lat = first_lat; lat < first_lat + children; ++lat)
+    for (long lon = first_lon; lon < first_lon + children; ++lon)
+      if (!is_clear(lat, lon)) return false;
+  return true;
 }
 
 /**
