@@ -54,6 +54,7 @@
 #include "color_handler.h"
 #include "color_types.h"
 #include "connection_edit.h"
+#include "conn_edit_commons.h"
 #include "conn_params_panel.h"
 #include "gui_lib.h"
 #include "navutil.h"
@@ -970,16 +971,19 @@ public:
     m_advanced_panel = advanced_panel;
     auto adv_box = new wxBoxSizer(wxHORIZONTAL);
     adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")));
-    adv_box->Add(new ExpandablePanel(this, advanced_panel,
-                                     [&] { GetParent()->Layout(); }));
+    auto on_advanced_click = [&] {
+      Layout();
+      if (!GetParent()) return;
+      GetParent()->Layout();
+      if (auto w = conn_edit::FindParentOfType<wxScrolled<wxPanel>>(this))
+        w->FitInside();
+    };
+    adv_box->Add(new ExpandablePanel(this, advanced_panel, on_advanced_click));
     vbox->Add(adv_box, wxSizerFlags().Border());
-    vbox->Add(advanced_panel,
-              wxSizerFlags().Border().ReserveSpaceEvenIfHidden());
+    vbox->Add(advanced_panel, wxSizerFlags().Border());
 
     SetSizer(vbox);
-    vbox->SetSizeHints(this);
-    vbox->Fit(this);
-    wxWindow::Fit();
+    wxWindowBase::Layout();
     wxWindow::Show();
 
     auto on_evt_update_connections = [&, conn_grid](ObservedEvt&) {

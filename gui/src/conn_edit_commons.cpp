@@ -1110,8 +1110,9 @@ protected:
 
     m_advanced_panel = new AdvancedPanel(this, m_params);
     m_expand_advanced_panel = new ExpandablePanel(this, m_advanced_panel, [&] {
-      GetParent()->Layout();
-      FitInside();
+      if (auto parent = GetParent()) parent->Layout();
+      if (auto* scrollwin = FindParentOfType<wxScrolledWindow>(this))
+        scrollwin->FitInside();
     });
     auto on_proto_change = [&](DataProtocol p) { OnProtocolChange(p); };
     m_grid_panel =
