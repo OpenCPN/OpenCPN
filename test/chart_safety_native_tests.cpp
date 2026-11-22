@@ -720,21 +720,46 @@ TEST(ChartSafetyNative, DetailedRegionFileRequiresMatchingChartDependencies) {
   EXPECT_EQ(keys, expected);
 }
 
+TEST(ChartSafetyNative, DetailedRegionReuseRequiresPersistentCaching) {
+  constexpr auto setting = "OCPN_CHART_SAFETY_REUSE_DETAILED_REGIONS";
+  wxString former_setting;
+  const bool had_setting = wxGetEnv(setting, &former_setting);
+  const bool was_enabled = s_segment_safety_persistent_cache_enabled;
+
+  EXPECT_TRUE(wxSetEnv(setting, "1"));
+  s_segment_safety_persistent_cache_enabled = false;
+  EXPECT_FALSE(DetailedRegionReuseEnabled());
+  s_segment_safety_persistent_cache_enabled = true;
+  EXPECT_TRUE(DetailedRegionReuseEnabled());
+  EXPECT_TRUE(wxSetEnv(setting, "0"));
+  EXPECT_FALSE(DetailedRegionReuseEnabled());
+
+  s_segment_safety_persistent_cache_enabled = was_enabled;
+  if (had_setting)
+    wxSetEnv(setting, former_setting);
+  else
+    wxUnsetEnv(setting);
+}
+
 TEST(ChartSafetyNative, RememberedFailureStillRequiresFineChecks) {
   struct RestoreRegions {
     OpenWaterRegions regions;
     DetailedRegions detailed;
     bool requested;
+    bool persistent;
     ~RestoreRegions() {
       s_segment_safety_open_water_regions.swap(regions);
       s_detailed_regions = std::move(detailed);
       s_segment_safety_open_water_requested = requested;
+      s_segment_safety_persistent_cache_enabled = persistent;
     }
   } restore{std::move(s_segment_safety_open_water_regions),
-            std::move(s_detailed_regions), s_segment_safety_open_water_requested};
+            std::move(s_detailed_regions), s_segment_safety_open_water_requested,
+            s_segment_safety_persistent_cache_enabled};
   s_segment_safety_open_water_regions.clear();
   s_detailed_regions = {};
   s_segment_safety_open_water_requested = true;
+  s_segment_safety_persistent_cache_enabled = true;
 
   s_detailed_regions.keys.insert(
       SegmentSafetyOpenWaterKey(kOpenWaterRegionTiles, 24, 24));

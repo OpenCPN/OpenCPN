@@ -3977,7 +3977,7 @@ bool ReadVerifiedOpenWaterRegions(const wxString& path,
 
 namespace {
 
-// The prototype remembers attempts that reached CM93 geometry preparation
+// Remember attempts that reached CM93 geometry preparation
 // but could not prove a region. A hit still requires the ordinary fine checks.
 struct DetailedRegions {
   wxString chart_identity;
@@ -3995,7 +3995,8 @@ DetailedRegions s_detailed_regions;
 
 bool DetailedRegionReuseEnabled() {
   wxString setting;
-  return wxGetEnv("OCPN_CHART_SAFETY_REUSE_DETAILED_REGIONS", &setting) &&
+  return s_segment_safety_persistent_cache_enabled &&
+         wxGetEnv("OCPN_CHART_SAFETY_REUSE_DETAILED_REGIONS", &setting) &&
          setting == "1";
 }
 
@@ -4045,10 +4046,39 @@ bool WriteDetailedRegionKeys(const wxString& path, const wxString& identity,
   return out.IsOk() && out.Commit();
 }
 
+void LoadOpenWaterDetailedRegions(const wxString& identity,
+                                  const wxString& catalogue,
+                                  wxStopWatch& timer) {
+  if (catalogue.empty()) return;
+  auto& detailed = s_detailed_regions;
+  detailed.chart_identity = identity;
+  detailed.catalogue = catalogue;
+  detailed.group = SegmentSafetyCurrentGroupIndex();
+  const auto path = OpenWaterDetailedRegionsPath();
+  if (!wxFileExists(path)) return;
+  const bool loaded =
+      ReadDetailedRegionKeys(path, identity, catalogue, &detailed.keys);
+  wxLogMessage(
+      "WR_OPEN_WATER_DETAILED_CACHE load=%d entries=%zu elapsed_ms=%ld",
+      loaded ? 1 : 0, detailed.keys.size(), timer.Time());
+}
+
 }  // namespace
 
+void EnsureOpenWaterDetailedRegionsLoaded() {
+  if (!wxThread::IsMain() || !DetailedRegionReuseEnabled() ||
+      !s_detailed_regions.chart_identity.empty() ||
+      SegmentSafetyOpenWaterMode() == OpenWaterGeometryMode::Off)
+    return;
+  const auto identity = SegmentSafetyChartIdentity();
+  if (identity.empty()) return;
+  wxStopWatch timer;
+  LoadOpenWaterDetailedRegions(identity, OpenWaterLayerCatalogueIdentity(),
+                               timer);
+}
+
 bool SaveOpenWaterDetailedRegions() {
-  if (!wxThread::IsMain()) return true;
+  if (!wxThread::IsMain() || !DetailedRegionReuseEnabled()) return true;
   auto& detailed = s_detailed_regions;
   if (detailed.catalogue.empty()) return true;
   wxLogMessage(
@@ -4089,20 +4119,7 @@ void LoadInstalledSegmentSafetyOpenWaterLayer(const wxString& identity) {
   if (!has_layer && !reuse_detailed) return;
   wxStopWatch timer;
   const auto catalogue = OpenWaterLayerCatalogueIdentity();
-  if (reuse_detailed && !catalogue.empty()) {
-    auto& detailed = s_detailed_regions;
-    detailed.chart_identity = identity;
-    detailed.catalogue = catalogue;
-    detailed.group = SegmentSafetyCurrentGroupIndex();
-    const auto detailed_path = OpenWaterDetailedRegionsPath();
-    if (wxFileExists(detailed_path)) {
-      const bool loaded = ReadDetailedRegionKeys(detailed_path, identity,
-                                                 catalogue, &detailed.keys);
-      wxLogMessage(
-          "WR_OPEN_WATER_DETAILED_CACHE load=%d entries=%zu elapsed_ms=%ld",
-          loaded ? 1 : 0, detailed.keys.size(), timer.Time());
-    }
-  }
+  if (reuse_detailed) LoadOpenWaterDetailedRegions(identity, catalogue, timer);
   if (!has_layer) return;
   OpenWaterRegions verified;
   if (!ReadVerifiedOpenWaterRegions(path, identity, catalogue, &verified)) {
@@ -4131,9 +4148,10 @@ bool PrepareSegmentSafetyOpenWaterRegion(long lat_tile, long lon_tile,
     return false;
   const auto mode = SegmentSafetyOpenWaterMode();
   if (mode == OpenWaterGeometryMode::Off) return false;
+  const bool reuse_detailed = s_segment_safety_persistent_cache_enabled;
+  auto& detailed = s_detailed_regions;
   for (int size : {kOpenWaterRegionTiles, kOpenWaterSubregionTiles}) {
     const auto key = SegmentSafetyOpenWaterKey(size, lat_tile, lon_tile);
-    auto& detailed = s_detailed_regions;
     {
       wxMutexLocker lock(s_segment_safety_cache_mutex);
       const auto it = s_segment_safety_open_water_regions.find(key);
@@ -4147,7 +4165,7 @@ bool PrepareSegmentSafetyOpenWaterRegion(long lat_tile, long lon_tile,
           s_segment_safety_installed_open_water_regions +
               kMaximumOnDemandOpenWaterRegions)
         continue;
-      if (detailed.keys.count(key)) {
+      if (reuse_detailed && detailed.keys.count(key)) {
         // Admit the remembered failure when its region is first requested,
         // so a warm restart does not move the normal on-demand region limit.
         s_segment_safety_open_water_regions.emplace(
@@ -4160,7 +4178,7 @@ bool PrepareSegmentSafetyOpenWaterRegion(long lat_tile, long lon_tile,
     bool prepared_cm93 = false;
     const auto proof = BuildSegmentSafetyOpenWaterRegion(
         std::get<2>(key), std::get<3>(key), size, &prepared_cm93);
-    if (prepared_cm93 && !detailed.catalogue.empty() &&
+    if (reuse_detailed && prepared_cm93 && !detailed.catalogue.empty() &&
         detailed.group == std::get<0>(key)) {
       ++detailed.builds;
       detailed.build_ms += timer.Time();

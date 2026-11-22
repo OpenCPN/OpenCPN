@@ -688,6 +688,7 @@ bool ReadVerifiedOpenWaterRegions(const wxString &path,
                                   const wxString &catalogue,
                                   OpenWaterRegions *verified);
 void LoadInstalledSegmentSafetyOpenWaterLayer(const wxString &identity);
+void EnsureOpenWaterDetailedRegionsLoaded();
 bool SaveOpenWaterDetailedRegions();
 bool ClearOpenWaterDetailedRegions();
 bool VerifyOpenWaterLayerInHelper(const wxString &source,

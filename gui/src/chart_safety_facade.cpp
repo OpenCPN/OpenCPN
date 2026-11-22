@@ -1967,6 +1967,7 @@ bool SetPersistentCacheEnabled(bool enabled) {
   if (will_enable) {
     SegmentSafetyRefreshPersistentChartIdentity();
     SegmentSafetyPersistentCacheEnsureLoaded();
+    EnsureOpenWaterDetailedRegionsLoaded();
   }
   wxLogMessage(
       "WR_CERT_SAFE_CACHE enabled=%d entries_loaded=%ld entries_used=%ld "
