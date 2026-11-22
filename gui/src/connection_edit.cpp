@@ -560,9 +560,17 @@ class SerialConfigPanel : public wxPanel, public Reloadable {
       Add(new wxStaticText(parent, wxID_ANY, _("Data port")), text_flags);
       Add(PortCombo::Create(parent, m_params.serial_port), flags);
       Add(new wxStaticText(parent, wxID_ANY, _("Baudrate")), text_flags);
-      Add(new BaudChoice(parent, m_params.baudrate), flags);
+      auto baud_choice = new BaudChoice(parent, m_params.baudrate);
+      Add(baud_choice, flags);
       Add(new wxStaticText(parent, wxID_ANY, _("Protocol")), text_flags);
-      Add(ProtocolChoice::Create(parent, m_params), flags);
+      auto on_proto_change = [&, baud_choice]() {
+        if (m_params.data_protocol == PROTO_NMEA2000 &&
+            m_params.baudrate == 4800) {
+          m_params.baudrate = 115200;
+          baud_choice->Reload();
+        }
+      };
+      Add(ProtocolChoice::Create(parent, m_params, on_proto_change), flags);
       Add(new wxStaticText(parent, wxID_ANY, _("User Comment")), text_flags);
       Add(new CommentText(parent, m_params.user_comment),
           wxSizerFlags(1).Border().Expand());
