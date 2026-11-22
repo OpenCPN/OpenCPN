@@ -219,15 +219,11 @@ TEST_F(DateTimeFormatTest, ShowTimezoneDefault) {
 #ifdef HAS_EN_US
 // Test with Local Time in EST timezone
 TEST_F(DateTimeFormatTest, LocalTimezoneEST) {
-  wxDateTime testDate(22, wxDateTime::Feb, 2023, 12, 45, 57);
-  testDate.MakeFromTimezone(wxDateTime::UTC);
+  // 2023-02-22 12:45:57 UTC, independent of the process time zone.
+  const wxDateTime testDate(static_cast<time_t>(1677069957));
 
-  // Set timezone to EST for this test (UTC-5)
-#ifdef _MSC_VER
+  // Use a fixed UTC-5 offset so the test works without an EST zone file.
   SetTimezone("EST+5");
-#else
-  SetTimezone("EST");
-#endif
 
   // Set the UI local locale to US English to ensure consistent formatting
   // regardless of the system locale where the test is run.
