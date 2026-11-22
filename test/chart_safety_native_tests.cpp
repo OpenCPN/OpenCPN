@@ -687,6 +687,71 @@ TEST(ChartSafetyNative, InstalledOpenWaterProofIsAvailableWithoutPrewarm) {
   s_segment_safety_open_water_requested = previous_requested;
 }
 
+TEST(ChartSafetyNative, DetailedRegionFileRequiresMatchingChartDependencies) {
+  const auto path = wxFileName::CreateTempFileName("ocpn-detailed-regions-");
+  ASSERT_FALSE(path.empty());
+  struct RemoveTempFile {
+    wxString path;
+    ~RemoveTempFile() { wxRemoveFile(path); }
+  } cleanup{path};
+
+  const std::set<OpenWaterRegionKey> expected{
+      SegmentSafetyOpenWaterKey(kOpenWaterRegionTiles, 20, -20),
+      SegmentSafetyOpenWaterKey(kOpenWaterSubregionTiles, 20, -20)};
+  ASSERT_TRUE(WriteDetailedRegionKeys(path, "chart", "files", expected));
+  std::set<OpenWaterRegionKey> keys;
+  EXPECT_FALSE(ReadDetailedRegionKeys(path, "other-chart", "files", &keys));
+  EXPECT_FALSE(ReadDetailedRegionKeys(path, "chart", "new-files", &keys));
+  EXPECT_TRUE(keys.empty());
+  EXPECT_TRUE(ReadDetailedRegionKeys(path, "chart", "files", &keys));
+  EXPECT_EQ(keys, expected);
+
+  wxJSONValue document;
+  ASSERT_TRUE(ReadOpenWaterLayer(path, &document));
+  document["regions"][0][3] = static_cast<int>(kSourceCm93);
+  document["regions"][0][4] = 100;
+  {
+    wxFileOutputStream file(path);
+    wxJSONWriter writer(wxJSONWRITER_NONE);
+    writer.Write(document, file);
+    ASSERT_TRUE(file.IsOk());
+  }
+  EXPECT_FALSE(ReadDetailedRegionKeys(path, "chart", "files", &keys));
+  EXPECT_EQ(keys, expected);
+}
+
+TEST(ChartSafetyNative, RememberedFailureStillRequiresFineChecks) {
+  struct RestoreRegions {
+    OpenWaterRegions regions;
+    DetailedRegions detailed;
+    bool requested;
+    ~RestoreRegions() {
+      s_segment_safety_open_water_regions.swap(regions);
+      s_detailed_regions = std::move(detailed);
+      s_segment_safety_open_water_requested = requested;
+    }
+  } restore{std::move(s_segment_safety_open_water_regions),
+            std::move(s_detailed_regions), s_segment_safety_open_water_requested};
+  s_segment_safety_open_water_regions.clear();
+  s_detailed_regions = {};
+  s_segment_safety_open_water_requested = true;
+
+  s_detailed_regions.keys.insert(
+      SegmentSafetyOpenWaterKey(kOpenWaterRegionTiles, 24, 24));
+  const auto subregion =
+      SegmentSafetyOpenWaterKey(kOpenWaterSubregionTiles, 24, 24);
+  s_detailed_regions.keys.insert(subregion);
+  EXPECT_FALSE(PrepareSegmentSafetyOpenWaterRegion(24, 24, .4, false, 0.0));
+  EXPECT_EQ(s_detailed_regions.hits, 2u);
+  SegmentSafetyOpenWaterRegion proof;
+  EXPECT_FALSE(SegmentSafetyOpenWaterForChord(1.22, 1.22, 1.29, 1.29, .4,
+                                              false, 0.0, &proof));
+  s_segment_safety_open_water_regions[subregion] = {kSourceCm93, 100.0};
+  EXPECT_TRUE(PrepareSegmentSafetyOpenWaterRegion(24, 24, .4, true, 3.0));
+  EXPECT_TRUE(SegmentSafetyOpenWaterForChord(1.22, 1.22, 1.29, 1.29, .4,
+                                             true, 3.0, &proof));
+}
+
 TEST(ChartSafetyNative, OpenWaterCrossingsNeedEvidenceForEveryTouchedRegion) {
   s_segment_safety_open_water_regions.clear();
   s_segment_safety_open_water_requested = true;

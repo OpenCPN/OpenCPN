@@ -675,9 +675,9 @@ bool OpenWaterProofApplies(const SegmentSafetyOpenWaterRegion &proof,
 const SegmentSafetyOpenWaterRegion *FindSegmentSafetyOpenWaterRegion(
     long lat_tile, long lon_tile, bool check_depth, double depth);
 double OpenWaterDepthLowerBound(const std::vector<Cm93SafetyTileRule> &rules);
-SegmentSafetyOpenWaterRegion BuildSegmentSafetyOpenWaterRegion(long lat_tile,
-                                                               long lon_tile,
-                                                               int tile_count);
+SegmentSafetyOpenWaterRegion BuildSegmentSafetyOpenWaterRegion(
+    long lat_tile, long lon_tile, int tile_count,
+    bool *prepared_cm93 = nullptr);
 wxString OpenWaterLayerCatalogueIdentity();
 wxString InstalledOpenWaterLayerPath();
 bool ReadOpenWaterLayer(const wxString &path, wxJSONValue *document);
@@ -688,6 +688,8 @@ bool ReadVerifiedOpenWaterRegions(const wxString &path,
                                   const wxString &catalogue,
                                   OpenWaterRegions *verified);
 void LoadInstalledSegmentSafetyOpenWaterLayer(const wxString &identity);
+bool SaveOpenWaterDetailedRegions();
+bool ClearOpenWaterDetailedRegions();
 bool VerifyOpenWaterLayerInHelper(const wxString &source,
                                   const std::set<OpenWaterRegionKey> &keys,
                                   const wxString &identity,

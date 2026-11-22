@@ -1989,12 +1989,15 @@ bool GetPersistentCacheEnabled() {
   return s_segment_safety_persistent_cache_enabled;
 }
 
-bool SavePersistentCache() { return SegmentSafetyPersistentCacheSave(); }
+bool SavePersistentCache() {
+  const bool chart_cache_ok = SegmentSafetyPersistentCacheSave();
+  return SaveOpenWaterDetailedRegions() && chart_cache_ok;
+}
 
 bool ClearPersistentCache() {
   wxString path = SegmentSafetyPersistentCachePath();
   wxString base_path = SegmentSafetyPersistentBaseTileCachePath();
-  bool removed = true;
+  bool removed = ClearOpenWaterDetailedRegions();
   {
     wxMutexLocker lock(s_segment_safety_cache_mutex);
     s_segment_safety_persistent_certified_safe_cache.clear();
@@ -2016,7 +2019,7 @@ bool ClearPersistentCache() {
     s_segment_safety_persistent_base_tiles_ignored = 0;
     s_segment_safety_persistent_tiles_since_checkpoint = 0;
   }
-  if (wxFileExists(path)) removed = wxRemoveFile(path);
+  if (wxFileExists(path)) removed = wxRemoveFile(path) && removed;
   if (wxFileExists(base_path)) removed = wxRemoveFile(base_path) && removed;
   wxLogMessage(
       "WR_CERT_SAFE_CACHE clear success=%d cache_file_path=\"%s\" "

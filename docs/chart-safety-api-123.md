@@ -49,6 +49,12 @@ An imported layer never supplies a depth or safety guarantee by itself. The
 host can also derive bounded open-water regions on demand. Final validation
 continues to use authoritative fine checks.
 
+Set `OCPN_CHART_SAFETY_REUSE_DETAILED_REGIONS=1` to enable restart reuse of
+failed CM93 open-water proof attempts. The host accepts the cache when the
+chart catalogue and source file fingerprint match. Cache hits still go
+through the existing detailed checks. The host saves new entries with its
+persistent caches.
+
 Additional chart helpers are opt-in and bounded by CPU, available memory and a
 zero-through-six process limit. On desktop Linux, isolated helpers can prepare
 expensive detailed tiles or verify a starting-layer import. The parent validates
