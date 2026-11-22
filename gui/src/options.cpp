@@ -1456,6 +1456,8 @@ options::options(wxWindow* parent, OptionsCallbacks callbacks, wxWindowID id,
   SetFont(*dialogFont);
 
   CreateControls();
+  wxSize char_size{wxWindow::GetCharWidth(), wxWindow::GetCharHeight()};
+  SetMinSize(char_size * 30);
   RecalculateSize(size.x, size.y);
 
   wxDEFINE_EVENT(EVT_COMPAT_OS_CHANGE, wxCommandEvent);
