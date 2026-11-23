@@ -1040,6 +1040,7 @@ public:
 
   void SwitchToEditor() {
     ShowScrollbars(wxSHOW_SB_NEVER, wxSHOW_SB_NEVER);
+    Scroll(0, 0);
     m_top_panel->Hide();  // TopPanel
     m_edit_panel->EnableScroll(true);
     DimeControl(m_edit_panel);
@@ -1055,10 +1056,11 @@ public:
     m_top_panel->GetConnectionsGrid()->ReloadGrid(TheConnectionParams());
     m_top_panel->Show();
     g_options->ShowOKButtons(true);
-    g_options->Layout();
+    Layout();
     FitInside();
     Scroll(0, 0);
     ShowScrollbars(wxSHOW_SB_DEFAULT, wxSHOW_SB_DEFAULT);
+    if (auto parent = GetParent()) parent->Layout();
   }
 
   void HandleEditFinish(const std::unique_ptr<ConnectionParams>& new_params,
