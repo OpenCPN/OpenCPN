@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "model/config_vars.h"
 #include "model/navutil_base.h"
 
 TEST(NavUtils, fromDMM) {
@@ -75,17 +76,35 @@ TEST(NavUtils, toSDMM) {
       {{2, 0.0, false}, "000\xB0 00.0' E"},
       {{2, 37.9034, false}, "037\xB0 54.2' E"},
       {{2, -122.31035, false}, "122\xB0 18.6' W"},
+      // Minutes that round up to 60 carry into the degrees
+      {{1, 10.99999, false}, "11\xB0 00.0' N"},
+      {{2, -10.99999, false}, "011\xB0 00.0' W"},
+      {{1, 37.9999999, true}, "38\xB0 00.0000' N"},
+      {{0, -0.5, false}, "-0\xB0 30.0'"},
   };
 
   for (const auto& test_case : test_cases) {
     wxString result = toSDMM(test_case.input.NEflag, test_case.input.degrees,
-                             test_case.input.hi_precision)
-                          .ToStdString();
-    EXPECT_EQ(result, test_case.expected)
+                             test_case.input.hi_precision);
+    // The expected strings hold the degree sign as the Latin-1 byte 0xB0.
+    // Compare as wxString, ToStdString() turns both sides into "" in the C
+    // locale.
+    EXPECT_EQ(result, wxString(test_case.expected.c_str(), wxConvISO8859_1))
         << "Input: " << "NEflag = " << test_case.input.NEflag
         << ", degrees = " << test_case.input.degrees
         << ", hi_precision = " << test_case.input.hi_precision;
   }
+}
+
+TEST(NavUtils, toSDMMDegreesMinutesSeconds) {
+  const auto latin1 = [](const char* s) { return wxString(s, wxConvISO8859_1); };
+  const int saved_format = g_iSDMMFormat;
+  g_iSDMMFormat = 2;
+  EXPECT_EQ(toSDMM(1, 10.2, false), latin1("10\xB0 12' 00.0\" N"));
+  EXPECT_EQ(toSDMM(2, -10.2, true), latin1("010\xB0 12' 00.000\" W"));
+  EXPECT_EQ(toSDMM(0, 10.4500194, true), latin1("10\xB0 27'0.070\""));
+  EXPECT_EQ(toSDMM(0, -0.5, false), latin1("-0\xB0 30'0.0\""));
+  g_iSDMMFormat = saved_format;
 }
 
 TEST(NavUtils, ParseGPXDateTime) {

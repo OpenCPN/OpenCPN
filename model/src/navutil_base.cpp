@@ -74,19 +74,28 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
     }
   }
 
+  // Without N/S or E/W the sign goes in front, also when the degrees are 0
+  const char* sign = (neg && !(NEflag == 1 || NEflag == 2)) ? "-" : "";
+
   switch (g_iSDMMFormat) {
-    case 0:
+    case 0: {
       mpy = 600.0;
       if (hi_precision) mpy = mpy * 1000;
 
-      m = (long)wxRound((a - (double)abs(d)) * mpy);
+      // Round the whole angle to the shown fraction of a minute before
+      // splitting it, so that 59.99' becomes the next degree and not 60.0'
+      const long units = wxRound(a * mpy);
+      d = (int)(units / (long)mpy);
+      m = units % (long)mpy;
+      if (units == 0) sign = "";
 
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
         if (hi_precision)
-          s.Printf("%d%c %02ld.%04ld'", d, 0x00B0, m / 10000, m % 10000);
+          s.Printf("%s%d%c %02ld.%04ld'", sign, d, 0x00B0, m / 10000,
+                   m % 10000);
         else
-          s.Printf("%d%c %02ld.%01ld'", d, 0x00B0, m / 10, m % 10);
+          s.Printf("%s%d%c %02ld.%01ld'", sign, d, 0x00B0, m / 10, m % 10);
       } else {
         if (hi_precision)
           if (NEflag == 1)
@@ -101,6 +110,7 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
           s.Printf("%03d%c %02ld.%01ld' %c", d, 0x00B0, m / 10, (m % 10), c);
       }
       break;
+    }
     case 1:
       if (hi_precision)
         s.Printf("%03.6f",
@@ -110,18 +120,26 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
       else
         s.Printf("%03.4f", ang);  // cca 11m
       break;
-    case 2:
-      m = (long)((a - (double)abs(d)) * 60);
+    case 2: {
       mpy = 10.0;
       if (hi_precision) mpy = mpy * 100;
-      long sec = (long)((a - (double)abs(d) - (((double)m) / 60)) * 3600 * mpy);
+      // Round the whole angle to the shown fraction of a second before
+      // splitting it, so that 10.2 gives 12' 00.0" and not 11' 59.9"
+      const long units = wxRound(a * 3600 * mpy);
+      const long per_minute = 60 * (long)mpy;
+      d = (int)(units / (60 * per_minute));
+      m = (units / per_minute) % 60;
+      long sec = units % per_minute;
+      if (units == 0) sign = "";
 
       if (!NEflag || NEflag < 1 || NEflag > 2)  // Does it EVER happen?
       {
         if (hi_precision)
-          s.Printf("%d%c %ld'%ld.%ld\"", d, 0x00B0, m, sec / 1000, sec % 1000);
+          s.Printf("%s%d%c %ld'%ld.%03ld\"", sign, d, 0x00B0, m, sec / 1000,
+                   sec % 1000);
         else
-          s.Printf("%d%c %ld'%ld.%ld\"", d, 0x00B0, m, sec / 10, sec % 10);
+          s.Printf("%s%d%c %ld'%ld.%ld\"", sign, d, 0x00B0, m, sec / 10,
+                   sec % 10);
       } else {
         if (hi_precision)
           if (NEflag == 1)
@@ -138,6 +156,7 @@ wxString toSDMM(int NEflag, double a, bool hi_precision) {
                    sec % 10, c);
       }
       break;
+    }
   }
   return s;
 }
