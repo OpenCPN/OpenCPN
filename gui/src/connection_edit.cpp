@@ -74,7 +74,6 @@
 #include "model/conn_params.h"
 
 #include "conn_params_panel.h"
-#include "filter_sentence_dlg.h"
 #include "ocpn_platform.h"
 #include "options.h"
 #include "udev_rule_mgr.h"
@@ -106,16 +105,17 @@ static bool IsLinux() {
 }
 
 /*--------------------------------------*/
-namespace conn_edit {
 
 // CanConfigPanel global scope support
 #if defined(__linux__) && !defined(__ANDROID__)
-intf_t* intf;
-std::vector<std::string> can_if_candidates;
+static intf_t* intf;
+static std::vector<std::string> can_if_candidates;
 #endif
 
+namespace conn_edit {
+
 /** Garnin mode checkbox. */
-class GarminCheckBoxImpl : public wxCheckBox, public Reloadable {
+class GarminCheckBoxImpl : public wxCheckBox, public conn_edit::Reloadable {
 public:
   GarminCheckBoxImpl(wxWindow* parent, ConnectionParams& params)
       : wxCheckBox(parent, wxID_ANY, _("Use Garmin (GRMN) mode for input")),
@@ -325,7 +325,7 @@ public:
     auto adv_box = new wxBoxSizer(wxHORIZONTAL);
     adv_box->Add(new wxStaticText(this, wxID_ANY, _("Advanced")), flags);
     auto on_expand_click = [&] {
-      if (auto parent = GetParent()) parent->Layout();
+      if (auto p = GetParent()) p->Layout();
       if (auto* scrollwin = FindParentOfType<wxScrolledWindow>(this))
         scrollwin->FitInside();
     };
@@ -629,7 +629,7 @@ public:
 
     m_advanced_panel = new AdvancedPanel(this, params);
     auto advanced_ctrl = new ExpandablePanel(this, m_advanced_panel, [&] {
-      if (auto parent = GetParent()) parent->Layout();
+      if (auto p = GetParent()) p->Layout();
       if (auto* scrollwin = FindParentOfType<wxScrolledWindow>(this))
         scrollwin->FitInside();
     });
@@ -819,7 +819,7 @@ public:
     FitInside();
   }
 
-  bool CheckStatus() {
+  bool CheckStatus() const {
     if (m_serial_config_panel->IsShown())
       return m_serial_config_panel->CheckStatus();
     if (m_net_config_panel->IsShown()) return m_net_config_panel->CheckStatus();

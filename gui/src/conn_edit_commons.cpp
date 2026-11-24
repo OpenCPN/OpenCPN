@@ -55,7 +55,7 @@
 #define _(s) wxGetTranslation((s)).ToStdString()
 #endif
 
-namespace conn_edit {
+using conn_edit::Reloadable;
 
 static const std::string kAddressDefaultHelp =
     _("Enter IP address or hostname");
@@ -90,32 +90,6 @@ const std::vector<std::string> kAdvancedNetViews = {
     kTcpClient,      kUdpInput,        kUdpOutput,
     kGpsdClient,     kSignalkClient,   kTcpServer,
     kUdpInputOutput, kMulticastClient, kMulticastServer};
-
-void LoadSerialPorts(wxComboBox* box) {
-  /** Sort all links to same device as equals. */
-  class PortSorter {
-  private:
-    [[nodiscard]] static std::string GetKey(const std::string& s) {
-      if (s.find("->") == std::string::npos) return s;
-      return ocpn::trim(ocpn::split(s, "->")[1]) + " link";
-    }
-
-  public:
-    bool operator()(const std::string& lhs, const std::string& rhs) const {
-      return GetKey(lhs) < GetKey(rhs);
-    }
-  } port_sorter;
-
-  std::set<std::string, PortSorter> sorted_ports(port_sorter);
-  std::unique_ptr<wxArrayString> ports(EnumerateSerialPorts());
-  for (size_t i = 0; i < ports->GetCount(); i++)
-    sorted_ports.insert((*ports)[i].ToStdString());
-
-  auto value = box->GetValue();
-  box->Clear();
-  for (auto& p : sorted_ports) box->Append(p);
-  if (!value.empty()) box->SetValue(value);
-}
 
 static bool CheckPort(wxWindow* parent, const TextCtrlWithHelp& ctrl) {
   if (ctrl.IsPristine() || ctrl.GetValue().empty()) {
@@ -178,7 +152,8 @@ static wxString StringArrayToString(const wxArrayString& arr) {
   return ret;
 }
 
-class ProtocolChoiceImpl : public ProtocolChoice {
+namespace {
+class ProtocolChoiceImpl : public conn_edit::ProtocolChoice {
   friend ProtocolChoice* ProtocolChoice::Create(wxWindow*, ConnectionParams&,
                                                 std::function<void()>);
 
@@ -242,13 +217,7 @@ private:
   }
 };  // ProtocolChoiceImpl
 
-ProtocolChoice* ProtocolChoice::Create(wxWindow* parent,
-                                       ConnectionParams& params,
-                                       std::function<void()> on_change) {
-  return new ProtocolChoiceImpl(parent, params, std::move(on_change));
-}
-
-class PortTextCtrlImpl : public PortTextCtrl {
+class PortTextCtrlImpl : public conn_edit::PortTextCtrl {
   friend PortTextCtrl* PortTextCtrl::Create(wxWindow*, ConnectionParams&);
 
 public:
@@ -289,11 +258,7 @@ private:
   }
 };  // PortTextCtrlImpl
 
-PortTextCtrl* PortTextCtrl::Create(wxWindow* parent, ConnectionParams& params) {
-  return new PortTextCtrlImpl(parent, params);
-}
-
-class InputOutputPanelImpl : public InputOutputPanel {
+class InputOutputPanelImpl : public conn_edit::InputOutputPanel {
   friend InputOutputPanel* InputOutputPanel::Create(wxWindow*,
                                                     ConnectionParams&);
 
@@ -395,21 +360,16 @@ private:
   }
 };  //  InputOutputPanelImpl
 
-InputOutputPanel* InputOutputPanel::Create(wxWindow* parent,
-                                           ConnectionParams& params) {
-  return new InputOutputPanelImpl(parent, params);
-}
-
-/** Configure input filters: accept or ignore list of sentences. */
-class FilterConfigPanelImpl : public FilterConfigPanel {
+/** Configure input and output filters: accept or ignore list of sentences. */
+class FilterConfigPanelImpl : public conn_edit::FilterConfigPanel {
   friend FilterConfigPanel* FilterConfigPanel::Create(wxWindow*,
                                                       ConnectionParams&);
 
   /** Accept/ignore buttons and  filtered sentences container. */
-  class Statbox : public wxStaticBoxSizer {
+  class Filterbox : public wxStaticBoxSizer {
   public:
-    Statbox(wxWindow* parent, ListType& type, wxArrayString& list,
-            const std::string& label)
+    Filterbox(wxWindow* parent, ListType& type, wxArrayString& list,
+              const std::string& label)
         : wxStaticBoxSizer(wxVERTICAL, parent, label),
           m_parent(parent),
           m_type(type),
@@ -440,7 +400,7 @@ class FilterConfigPanelImpl : public FilterConfigPanel {
       Add(vbox);
       wxSizer::Layout();
 
-      Statbox::Reload();
+      Filterbox::Reload();
       m_ignore_btn->Bind(wxEVT_RADIOBUTTON,
                          [&](wxCommandEvent& e) { OnDirectionChange(e); });
       m_accept_btn->Bind(wxEVT_RADIOBUTTON,
@@ -500,29 +460,24 @@ protected:
     auto* vbox = new wxBoxSizer(wxVERTICAL);
     auto flags = wxSizerFlags().Border();
     m_input_filter =
-        new Statbox(this, m_params.input_sentence_list_type,
-                    m_params.input_sentence_list, _("Input filtering"));
+        new Filterbox(this, m_params.input_sentence_list_type,
+                      m_params.input_sentence_list, _("Input filtering"));
     vbox->Add(m_input_filter, flags);
     m_output_filter =
-        new Statbox(this, m_params.output_sentence_list_type,
-                    m_params.output_sentence_list, _("Output filtering"));
+        new Filterbox(this, m_params.output_sentence_list_type,
+                      m_params.output_sentence_list, _("Output filtering"));
     vbox->Add(m_output_filter, flags);
     SetSizer(vbox);
     wxWindowBase::Layout();
   }
 
 private:
-  Statbox* m_input_filter;
-  Statbox* m_output_filter;
+  Filterbox* m_input_filter;
+  Filterbox* m_output_filter;
   ConnectionParams& m_params;
 };  // FilterConfigPanelImpl
 
-FilterConfigPanel* FilterConfigPanel::Create(wxWindow* parent,
-                                             ConnectionParams& params) {
-  return new FilterConfigPanelImpl(parent, params);
-}
-
-class PortComboImpl : public PortCombo {
+class PortComboImpl : public conn_edit::PortCombo {
   friend PortCombo* PortCombo::Create(wxWindow*, wxString&);
 
 public:
@@ -538,9 +493,8 @@ protected:
       m_port = pos == std::string::npos ? value : value.substr(0, pos);
       e.Skip();
     });
-    m_device_list_listener.Init(
-        SystemEvents::GetInstance().evt_dev_change,
-        [&](ObservedEvt&) { conn_edit::LoadSerialPorts(this); });
+    m_device_list_listener.Init(SystemEvents::GetInstance().evt_dev_change,
+                                [&](ObservedEvt&) { LoadSerialPorts(); });
   }
 
 private:
@@ -579,11 +533,7 @@ private:
   }
 };  // PortComboImpl
 
-PortCombo* PortCombo::Create(wxWindow* parent, wxString& port) {
-  return new PortComboImpl(parent, port);
-}
-
-class NetConfigPanelImpl : public NetConfigPanel {
+class NetConfigPanelImpl : public conn_edit::NetConfigPanel {
   friend NetConfigPanel* NetConfigPanel::Create(wxWindow*, ConnectionParams&);
 
   class ExpertModeCheckBox : public wxCheckBox {
@@ -679,7 +629,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
   class NetGrid : public wxFlexGridSizer {
   public:
     NetGrid(wxWindow* parent, ConnectionParams& params,
-            InputOutputPanel* in_out_panel,
+            conn_edit::InputOutputPanel* in_out_panel,
             std::function<void(DataProtocol)> on_protocol_change)
         : wxFlexGridSizer(2),
           m_parent(parent),
@@ -715,9 +665,9 @@ class NetConfigPanelImpl : public NetConfigPanel {
       Add(m_connection_type_choice, flags);
 
       m_protocol_label = new wxStaticText(parent, wxID_ANY, _("Data Protocol"));
-      m_protocol_choice = ProtocolChoice::Create(parent, m_params, [&] {
-        m_on_protocol_change(m_params.data_protocol);
-      });
+      m_protocol_choice = conn_edit::ProtocolChoice::Create(
+          parent, m_params,
+          [&] { m_on_protocol_change(m_params.data_protocol); });
       Add(m_protocol_label, label_flags);
       Add(m_protocol_choice, flags);
 
@@ -777,18 +727,18 @@ class NetConfigPanelImpl : public NetConfigPanel {
   private:
     wxWindow* m_parent;
     ConnectionParams& m_params;
-    InputOutputPanel* m_in_out_panel;
+    conn_edit::InputOutputPanel* m_in_out_panel;
     std::function<void(DataProtocol)> m_on_protocol_change;
     wxStaticText* m_expert_mode_label;
     ExpertModeCheckBox* m_expert_mode_checkbox;
     wxStaticText* m_connection_type_label;
     wxChoice* m_connection_type_choice;
     wxStaticText* m_protocol_label;
-    ProtocolChoice* m_protocol_choice;
+    conn_edit::ProtocolChoice* m_protocol_choice;
     wxStaticText* m_address_label;
     AddressTextCtrl* m_address_textctrl;
     wxStaticText* m_port_label;
-    PortTextCtrl* m_port_textctrl;
+    conn_edit::PortTextCtrl* m_port_textctrl;
     wxStaticText* m_comment_label;
     wxTextCtrl* m_comment_textctrl;
 
@@ -926,11 +876,13 @@ class NetConfigPanelImpl : public NetConfigPanel {
       if (view == kTcpDevice || view == kTcpClient) {
         m_address_label->Show();
         m_address_textctrl->SetClientMode();
-        if (m_port_textctrl->IsPristine()) m_port_textctrl->SetHelp(kPortHelp);
+        if (m_port_textctrl->IsPristine())
+          m_port_textctrl->SetHelp(conn_edit::kPortHelp);
         m_in_out_panel->EnableInput(true);
         m_in_out_panel->EnableOutput(true);
       } else if (view == kUdpReceive || view == kUdpInput ||
                  view == kUdpInputOutput) {
+        using conn_edit::kPortHelp;
         m_address_label->Show(view == kUdpInputOutput);
         if (view != kUdpInputOutput) m_address_textctrl->SetServerMode();
         m_address_textctrl->Show(view == kUdpInputOutput);
@@ -1004,7 +956,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
      * or data protocol (NMEA0183, NMEA2000, SignalK) is updated
      */
     NetGridPanel(wxWindow* parent, ConnectionParams& params,
-                 InputOutputPanel* in_out_panel,
+                 conn_edit::InputOutputPanel* in_out_panel,
                  std::function<void(DataProtocol)> on_protocol_change)
         : wxPanel(parent),
           m_net_grid(new NetGrid(this, params, in_out_panel,
@@ -1057,7 +1009,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
         : wxPanel(parent),
           m_filter_panel(nullptr),
           m_auth_token_panel(nullptr) {
-      m_filter_panel = FilterConfigPanel::Create(this, params);
+      m_filter_panel = conn_edit::FilterConfigPanel::Create(this, params);
       m_auth_token_panel = new AuthTokenPanel(this, params);
       auto vbox = new wxBoxSizer(wxVERTICAL);
       vbox->Add(m_filter_panel);
@@ -1083,7 +1035,7 @@ class NetConfigPanelImpl : public NetConfigPanel {
     }
 
   private:
-    FilterConfigPanel* m_filter_panel;
+    conn_edit::FilterConfigPanel* m_filter_panel;
     AuthTokenPanel* m_auth_token_panel;
   };
 
@@ -1106,12 +1058,13 @@ protected:
         m_advanced_panel(nullptr) {
     auto flags = wxSizerFlags().Border();
     auto vbox = new wxBoxSizer(wxVERTICAL);
-    auto input_output_panel = InputOutputPanel::Create(this, m_params);
+    auto input_output_panel =
+        conn_edit::InputOutputPanel::Create(this, m_params);
 
     m_advanced_panel = new AdvancedPanel(this, m_params);
     m_expand_advanced_panel = new ExpandablePanel(this, m_advanced_panel, [&] {
       if (auto p = GetParent()) p->Layout();
-      if (auto* scrollwin = FindParentOfType<wxScrolledWindow>(this))
+      if (auto* scrollwin = conn_edit::FindParentOfType<wxScrolledWindow>(this))
         scrollwin->FitInside();
     });
     auto on_proto_change = [&](DataProtocol p) { OnProtocolChange(p); };
@@ -1145,9 +1098,37 @@ private:
   }
 };
 
+}  // anonymous namespace
+
+namespace conn_edit {
+
+ProtocolChoice* ProtocolChoice::Create(wxWindow* parent,
+                                       ConnectionParams& params,
+                                       std::function<void()> on_change) {
+  return new ProtocolChoiceImpl(parent, params, std::move(on_change));
+}
+
 NetConfigPanel* NetConfigPanel::Create(wxWindow* parent,
                                        ConnectionParams& params) {
-  return new NetConfigPanelImpl(parent, params);
+  return new ::NetConfigPanelImpl(parent, params);
+}
+
+PortTextCtrl* PortTextCtrl::Create(wxWindow* parent, ConnectionParams& params) {
+  return new PortTextCtrlImpl(parent, params);
+}
+
+InputOutputPanel* InputOutputPanel::Create(wxWindow* parent,
+                                           ConnectionParams& params) {
+  return new InputOutputPanelImpl(parent, params);
+}
+
+FilterConfigPanel* FilterConfigPanel::Create(wxWindow* parent,
+                                             ConnectionParams& params) {
+  return new FilterConfigPanelImpl(parent, params);
+}
+
+PortCombo* PortCombo::Create(wxWindow* parent, wxString& port) {
+  return new PortComboImpl(parent, port);
 }
 
 }  // namespace conn_edit
