@@ -940,6 +940,7 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/ais_target_query_dlg.cpp
     ${GUI_SRC_DIR}/api_121.cpp
     ${GUI_SRC_DIR}/api_122.cpp
+    ${GUI_SRC_DIR}/api_123.cpp
     ${GUI_SRC_DIR}/canvas_config.cpp
     ${GUI_SRC_DIR}/canvas_menu.cpp
     ${GUI_SRC_DIR}/canvas_options.cpp
@@ -992,6 +993,11 @@ set(GUI_SRC
     ${GUI_SRC_DIR}/notification_manager_gui.cpp
     ${GUI_SRC_DIR}/ocp_cursor.cpp
     ${GUI_SRC_DIR}/ocpn_app.cpp
+    ${GUI_SRC_DIR}/chart_safety_core.cpp
+    ${GUI_SRC_DIR}/chart_safety_compat.cpp
+    ${GUI_SRC_DIR}/chart_safety_facade.cpp
+    ${GUI_SRC_DIR}/navigation_safety.cpp
+    ${GUI_SRC_DIR}/chart_safety_raster.cpp
     ${GUI_SRC_DIR}/ocpn_plugin_gui.cpp
     ${GUI_SRC_DIR}/ocpn_aui_manager.cpp
     ${GUI_SRC_DIR}/ocpndc.cpp
@@ -2062,6 +2068,12 @@ if (NOT APPLE)
   endif ()
   if (LINUX)
     install(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT QT_ANDROID)
+      install(PROGRAMS tools/opencpn-open-water-verifier
+                       tools/opencpn-chart-tile-worker
+              DESTINATION ${CMAKE_INSTALL_BINDIR})
+    endif()
+
   endif ()
 
   install(
@@ -2426,6 +2438,7 @@ if (WIN32 AND NOT UNIX)
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/archive.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/liblzma.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/z.dll"
+            "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/libz.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/bz2.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/lz4.dll"
             "${CMAKE_CURRENT_SOURCE_DIR}/cache/buildwin/zstd.dll"

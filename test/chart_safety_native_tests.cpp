@@ -1,0 +1,806 @@
+/* GPL-2.0-or-later. Private GUI/core integration harness.
+ * Compiled in place of ocpn_plugin_gui.cpp by the prototype qualification
+ * script, so tests exercise its private production classifier without adding
+ * test exports or changing the plugin ABI. Linked against the complete host. */
+#include <gtest/gtest.h>
+#include <array>
+#include "../gui/src/chart_safety_raster.cpp"
+using namespace ocpn::chart_safety;
+using namespace ocpn::chart_safety::detail;
+#include "mygeom.h"
+#include <wx/init.h>
+
+namespace {
+class FixtureChart : public cm93chart {
+public:
+  FixtureChart() {
+    m_RAZBuilt = true;
+    s_segment_safety_point_cache.clear();
+  }
+  ~FixtureChart() {
+    for (int i = 0; i < PRIO_NUM; ++i)
+      for (int j = 0; j < LUPNAME_NUM; ++j) razRules[i][j] = nullptr;
+  }
+  S57Obj *Add(const char *name, int primitive, int style = 4) {
+    auto obj = std::make_unique<S57Obj>(name);
+    obj->Primitive_type = static_cast<GeoPrim_t>(primitive);
+    obj->Scamin = 1;
+    obj->m_DisplayCat = OTHER;  // deliberately hidden at normal scale
+    auto rule = std::unique_ptr<ObjRazRules>(new ObjRazRules{});
+    rule->obj = obj.get();
+    rule->next = razRules[0][style];
+    razRules[0][style] = rule.get();
+    auto *result = obj.get();
+    objects.push_back(std::move(obj));
+    rules.push_back(std::move(rule));
+    return result;
+  }
+  void Point(S57Obj *obj, double lat = .0254, double lon = .0254) {
+    obj->npt = 1;
+    obj->x_rate = obj->y_rate = 1;
+    obj->x_origin = obj->y_origin = 0;
+    toSM(lat, lon, ref_lat, ref_lon, &obj->x, &obj->y);
+    obj->BBObj.Set(lat, lon, lat, lon);
+  }
+  void Line(S57Obj *obj) {
+    obj->npt = 2;
+    obj->geoPt = static_cast<pt *>(calloc(2, sizeof(pt)));
+    obj->x_rate = obj->y_rate = 1;
+    obj->x_origin = obj->y_origin = 0;
+    double x, y;
+    toSM(.0254, .024, ref_lat, ref_lon, &x, &y);
+    obj->geoPt[0].x = x;
+    obj->geoPt[0].y = y;
+    toSM(.0254, .027, ref_lat, ref_lon, &x, &y);
+    obj->geoPt[1].x = x;
+    obj->geoPt[1].y = y;
+    obj->BBObj.Set(.0254, .024, .0254, .027);
+  }
+  void Triangle(S57Obj *obj, bool ocean = false) {
+    const double lats[3] = {ocean ? -1.0 : .0252, ocean ? -1.0 : .0252,
+                            ocean ? 2.0 : .0255};
+    const double lons[3] = {ocean ? -1.0 : .0252, ocean ? 2.0 : .0255,
+                            ocean ? -1.0 : .0252};
+    obj->pPolyTessGeo = new PolyTessGeo;
+    auto *group = new PolyTriGroup;
+    group->m_bSMSENC = true;
+    group->data_type = DATA_TYPE_DOUBLE;
+    auto *triangle = new TriPrim;
+    triangle->p_next = nullptr;
+    triangle->type = PTG_TRIANGLES;
+    triangle->nVert = 3;
+    triangle->p_vertex = static_cast<double *>(calloc(6, sizeof(double)));
+    for (int i = 0; i < 3; ++i)
+      toSM(lats[i], lons[i], ref_lat, ref_lon, &triangle->p_vertex[2 * i],
+           &triangle->p_vertex[2 * i + 1]);
+    group->tri_prim_head = triangle;
+    obj->pPolyTessGeo->Set_PolyTriGroup_head(group);
+    obj->pPolyTessGeo->Set_OK(true);
+    obj->BBObj.Set(
+        *std::min_element(lats, lats + 3), *std::min_element(lons, lons + 3),
+        *std::max_element(lats, lats + 3), *std::max_element(lons, lons + 3));
+  }
+  void Coverage(double minlat, double minlon, double maxlat, double maxlon) {
+    auto c = std::make_unique<M_COVR_Desc>();
+    c->m_nvertices = 4;
+    c->pvertices = new float_2Dpt[4];
+    c->pvertices[0].x = minlon;
+    c->pvertices[0].y = minlat;
+    c->pvertices[1].x = maxlon;
+    c->pvertices[1].y = minlat;
+    c->pvertices[2].x = maxlon;
+    c->pvertices[2].y = maxlat;
+    c->pvertices[3].x = minlon;
+    c->pvertices[3].y = maxlat;
+    m_pcovr_array_loaded.Add(c.get());
+    coverage.push_back(std::move(c));
+  }
+  std::vector<std::unique_ptr<M_COVR_Desc>> coverage;
+  void Ocean() {
+    auto *obj = Add("DEPARE", GEO_AREA);
+    Triangle(obj, true);
+    obj->AddDoubleAttribute("DRVAL1", 1000);
+  }
+  std::vector<std::unique_ptr<S57Obj>> objects;
+  std::vector<std::unique_ptr<ObjRazRules>> rules;
+};
+SegmentSafetyResult Classify(FixtureChart &chart) {
+  auto rules = CollectCm93SafetyTileRules(&chart, 0, 0);
+  ViewPort vp;
+  SegmentSafetyResult result{};
+  result.struct_size = sizeof(result);
+  InitSegmentSafetyResult(&result);
+  SegmentSafetySource source;
+  auto cls = ChartPointSafetyClassAtPreparedCm93(
+      &chart, 123, .025, .025, &vp, &source, nullptr, &result, rules);
+  result.status = cls;
+  return result;
+}
+TEST(ChartSafetyNative, NonTerminatedProviderStringsHaveBoundedCopies) {
+  // ASan checks the source boundary as well as the destination: a provider
+  // may fill every byte it supplies without adding a string terminator.
+  std::array<char, 255> source;
+  source.fill('x');
+  struct {
+    char value[256];
+    char guard;
+  } destination{};
+  destination.guard = '!';
+  CopySegmentSafetyString(destination.value, sizeof(destination.value),
+                          source.data());
+  EXPECT_EQ(std::string(destination.value), std::string(255, 'x'));
+  EXPECT_EQ(destination.value[255], '\0');
+  EXPECT_EQ(destination.guard, '!');
+
+  char empty[1] = {'x'};
+  CopySegmentSafetyString(empty, sizeof(empty), source.data());
+  EXPECT_EQ(empty[0], '\0');
+  CopySegmentSafetyString(destination.value, sizeof(destination.value),
+                          nullptr);
+  EXPECT_EQ(destination.value[0], '\0');
+  EXPECT_EQ(destination.guard, '!');
+}
+TEST(ChartSafetyNative, CoverageProofUsesCompleteOriginalPolygons) {
+  FixtureChart chart;
+  chart.Coverage(-1, 359, 2, 362);
+  EXPECT_EQ(chart.SafetyCoverageBoxRelation(.024, .026, .024, .026), 2);
+  EXPECT_EQ(chart.SafetyCoverageBoxRelation(-1.1, -.9, .024, .026), 1);
+  EXPECT_EQ(chart.SafetyCoverageBoxRelation(10, 11, .024, .026), 0);
+  chart.coverage[0]->user_xoff = 1;
+  EXPECT_EQ(chart.SafetyCoverageBoxRelation(.024, .026, .024, .026), -1);
+}
+TEST(ChartSafetyNative,
+     ExtractedHazardGeometrySurvivesChartMutationAndDestruction) {
+  std::shared_ptr<const ocpn::chart_safety::PreparedGeometry> geometry;
+  {
+    FixtureChart chart;
+    auto *danger = chart.Add("WRECKS", GEO_AREA);
+    chart.Triangle(danger);
+    geometry = chart.PrepareSafetyObjectGeometry(danger);
+    danger->pPolyTessGeo->Get_PolyTriGroup_head()->tri_prim_head->p_vertex[0] =
+        1e10;
+  }
+  EXPECT_EQ(s57chart::PreparedSafetyBoxRelation(*geometry, .024, .026, .024,
+                                                .026, false),
+            1);
+}
+TEST(ChartSafetyNative, DeepUniformAreaHasGeometricProof) {
+  FixtureChart chart;
+  chart.Ocean();
+  double minimum = 0;
+  EXPECT_TRUE(Cm93UniformDepthProof(CollectCm93SafetyTileRules(&chart, 0, 0),
+                                    &minimum));
+  EXPECT_DOUBLE_EQ(minimum, 1000);
+}
+TEST(ChartSafetyNative, GeographicPrefilterCannotHideIsolatedDangers) {
+  for (auto name : {"UWTROC", "WRECKS", "OBSTRN"})
+    for (auto primitive : {GEO_POINT, GEO_LINE, GEO_AREA}) {
+      FixtureChart chart;
+      auto *danger = chart.Add(name, primitive);
+      if (primitive == GEO_POINT)
+        chart.Point(danger);
+      else if (primitive == GEO_LINE)
+        chart.Line(danger);
+      else
+        chart.Triangle(danger);
+      EXPECT_TRUE(s57chart::SafetyObjectMayIntersectBox(danger, .024, .026,
+                                                        .024, .026));
+      EXPECT_EQ(s57chart::SafetyObjectMayIntersectBox(danger, 10, 11, 10, 11),
+                primitive == GEO_POINT);
+      // Point bounds are not authoritative. An inconsistent point box must
+      // not suppress the actual nearby coordinate.
+      danger->BBObj.Set(10, 10, 11, 11);
+      if (primitive == GEO_POINT) {
+        EXPECT_TRUE(s57chart::SafetyObjectMayIntersectBox(danger, .024, .026,
+                                                          .024, .026));
+      }
+    }
+  S57Obj unresolved("OBSTRN");
+  unresolved.Primitive_type = GEO_AREA;
+  EXPECT_TRUE(s57chart::SafetyObjectMayIntersectBox(&unresolved, .024, .026,
+                                                    .024, .026));
+  unresolved.BBObj.Set(.02, 359.98, .03, 360.03);
+  EXPECT_TRUE(s57chart::SafetyObjectMayIntersectBox(&unresolved, .024, .026,
+                                                    -.01, .01));
+}
+TEST(ChartSafetyNative, EveryIsolatedDangerPrimitiveOverridesDeepWater) {
+  for (auto name : {"UWTROC", "WRECKS", "OBSTRN"})
+    for (auto primitive : {GEO_POINT, GEO_LINE, GEO_AREA}) {
+      SCOPED_TRACE(std::string(name) +
+                   " primitive=" + std::to_string(primitive));
+      FixtureChart chart;
+      chart.Ocean();
+      auto *danger = chart.Add(name, primitive,
+                               primitive == GEO_POINT  ? 1
+                               : primitive == GEO_LINE ? 2
+                                                       : 4);
+      if (primitive == GEO_POINT)
+        chart.Point(danger);
+      else if (primitive == GEO_LINE)
+        chart.Line(danger);
+      else
+        chart.Triangle(danger);
+      danger->AddDoubleAttribute("VALSOU", 1.0);
+      auto result = Classify(chart);
+      EXPECT_EQ(result.status, kPointWater);
+      EXPECT_EQ(result.has_depth, 1);
+      EXPECT_DOUBLE_EQ(result.min_depth_m, 1);
+      EXPECT_NE(std::string(result.depth_source_attribute).find("VALSOU"),
+                std::string::npos);
+      double minimum = 0;
+      EXPECT_FALSE(Cm93UniformDepthProof(
+          CollectCm93SafetyTileRules(&chart, 0, 0), &minimum));
+      auto *raw = chart.GetSafetyRulesAtLatLon(.025, .025, .001);
+      ASSERT_NE(raw, nullptr);
+      EXPECT_GE(raw->GetCount(), 2u);
+      delete raw;
+    }
+}
+TEST(ChartSafetyNative, UnknownDangerDepthCannotBorrowDeepSurroundings) {
+  for (auto name : {"UWTROC", "WRECKS", "OBSTRN"})
+    for (auto primitive : {GEO_POINT, GEO_LINE, GEO_AREA}) {
+      SCOPED_TRACE(std::string(name) +
+                   " primitive=" + std::to_string(primitive));
+      FixtureChart chart;
+      chart.Ocean();
+      auto *danger = chart.Add(name, primitive,
+                               primitive == GEO_POINT  ? 1
+                               : primitive == GEO_LINE ? 2
+                                                       : 4);
+      if (primitive == GEO_POINT)
+        chart.Point(danger);
+      else if (primitive == GEO_LINE)
+        chart.Line(danger);
+      else
+        chart.Triangle(danger);
+      auto result = Classify(chart);
+      EXPECT_EQ(result.has_depth, 0);
+      EXPECT_EQ(result.status, kPointNoData);
+      EXPECT_NE(std::string(result.depth_source_attribute).find("unresolved"),
+                std::string::npos);
+    }
+}
+TEST(ChartSafetyNative, DeepKnownRockStillForbidsWholeTileShortcut) {
+  FixtureChart chart;
+  chart.Ocean();
+  auto *rock = chart.Add("UWTROC", GEO_POINT, 0);
+  chart.Point(rock);
+  rock->AddDoubleAttribute("VALSOU", 50);
+  double minimum = 0;
+  EXPECT_FALSE(Cm93UniformDepthProof(CollectCm93SafetyTileRules(&chart, 0, 0),
+                                     &minimum));
+  EXPECT_DOUBLE_EQ(Classify(chart).min_depth_m, 50);
+}
+TEST(ChartSafetyNative, TinyLandAndDryingAreasBetweenSamplesAreRetained) {
+  for (bool land : {true, false}) {
+    FixtureChart chart;
+    chart.Ocean();
+    auto *hazard = chart.Add(land ? "LNDARE" : "OBSTRN", GEO_AREA);
+    chart.Triangle(hazard);
+    if (!land) hazard->AddIntegerAttribute("WATLEV", 4);
+    EXPECT_EQ(Classify(chart).status, land ? kPointLand : kPointDrying);
+  }
+}
+TEST(ChartSafetyNative, TinyShallowDepthAreaBetweenSamplesIsRetained) {
+  FixtureChart chart;
+  chart.Ocean();
+  auto *reef = chart.Add("DEPARE", GEO_AREA);
+  chart.Triangle(reef);
+  reef->AddDoubleAttribute("DRVAL1", .5);
+  EXPECT_DOUBLE_EQ(Classify(chart).min_depth_m, .5);
+  double minimum = 0;
+  EXPECT_FALSE(Cm93UniformDepthProof(CollectCm93SafetyTileRules(&chart, 0, 0),
+                                     &minimum));
+}
+TEST(ChartSafetyNative, AllAreaTriangleEncodingsRetainIsolatedDangers) {
+  for (auto name : {"UWTROC", "WRECKS", "OBSTRN"})
+    for (auto type : {PTG_TRIANGLES, PTG_TRIANGLE_FAN, PTG_TRIANGLE_STRIP})
+      for (bool use_float : {false, true}) {
+        FixtureChart chart;
+        chart.Ocean();
+        auto *danger = chart.Add(name, GEO_AREA);
+        chart.Triangle(danger);
+        danger->AddDoubleAttribute("VALSOU", .25);
+        auto *group = danger->pPolyTessGeo->Get_PolyTriGroup_head();
+        auto *triangle = group->tri_prim_head;
+        triangle->type = type;
+        if (use_float) {
+          auto *vertices = static_cast<float *>(calloc(6, sizeof(float)));
+          for (int i = 0; i < 6; ++i) vertices[i] = triangle->p_vertex[i];
+          free(triangle->p_vertex);
+          triangle->p_vertex = reinterpret_cast<double *>(vertices);
+          group->data_type = DATA_TYPE_FLOAT;
+        }
+        EXPECT_DOUBLE_EQ(Classify(chart).min_depth_m, .25);
+      }
+}
+TEST(ChartSafetyNative, MissingDangerGeometryCannotBecomeClearWater) {
+  FixtureChart chart;
+  chart.Ocean();
+  auto *danger = chart.Add("OBSTRN", GEO_AREA);
+  danger->BBObj.Set(.025, .025, .026, .026);
+  EXPECT_EQ(Classify(chart).status, kPointNoData);
+}
+TEST(ChartSafetyNative, DateLinePointAndAreaUseQueryLongitudeBranch) {
+  FixtureChart chart;
+  auto *point = chart.Add("UWTROC", GEO_POINT, 1);
+  chart.Point(point, .025, 179.9999);
+  EXPECT_GT(
+      chart.SafetyObjectBoxRelation(point, .024, .026, -180.001, -179.999), 0);
+  auto *area = chart.Add("WRECKS", GEO_AREA);
+  chart.Triangle(area, true);
+  // Shift a native chart to its equivalent 0..360 branch.
+  area->x_origin = 360 * DEGREE * WGS84_semimajor_axis_meters * mercator_k0;
+  area->x_rate = area->y_rate = 1;
+  area->y_origin = 0;
+  auto *group = area->pPolyTessGeo->Get_PolyTriGroup_head();
+  group->m_bSMSENC = false;
+  area->BBObj.Set(-1, 359, 2, 362);
+  EXPECT_EQ(chart.SafetyObjectBoxRelation(area, .024, .026, .024, .026), 2);
+}
+TEST(ChartSafetyNative, ShallowSoundingOverridesAreaButCannotCertifyCoverage) {
+  FixtureChart chart;
+  chart.Ocean();
+  auto *obj = chart.Add("SOUNDG", GEO_POINT, 1);
+  obj->npt = 1;
+  obj->geoPtMulti = static_cast<double *>(calloc(2, sizeof(double)));
+  obj->geoPtz = static_cast<double *>(calloc(3, sizeof(double)));
+  obj->geoPtMulti[0] = .0254;
+  obj->geoPtMulti[1] = .0254;
+  obj->geoPtz[2] = .75;
+  auto result = Classify(chart);
+  EXPECT_EQ(result.has_depth, 1);
+  EXPECT_DOUBLE_EQ(result.min_depth_m, .75);
+  double minimum = 0;
+  EXPECT_FALSE(Cm93UniformDepthProof(CollectCm93SafetyTileRules(&chart, 0, 0),
+                                     &minimum));
+}
+TEST(ChartSafetyNative, NonFiniteDangerDepthRemainsUnknown) {
+  FixtureChart chart;
+  chart.Ocean();
+  auto *rock = chart.Add("UWTROC", GEO_POINT, 1);
+  chart.Point(rock);
+  rock->AddDoubleAttribute("VALSOU", std::numeric_limits<double>::quiet_NaN());
+  EXPECT_EQ(Classify(chart).has_depth, 0);
+}
+}  // namespace
+extern "C" int __wrap_main(int argc, char **argv) {
+  wxApp::SetInstance(new wxApp());
+  if (!wxEntryStart(argc, argv)) return 2;
+  // Fixtures have no application event loop: send chart-build diagnostics to
+  // stderr instead of allowing wxLogGui to open a modal log window.
+  wxLog::SetActiveTarget(new wxLogStderr());
+  wxSetAssertHandler([](const wxString &file, int line, const wxString &,
+                        const wxString &condition, const wxString &message) {
+    ADD_FAILURE_AT(file.utf8_str().data(), line)
+        << condition.ToStdString() << ": " << message.ToStdString();
+  });
+  ::testing::InitGoogleTest(&argc, argv);
+  const int result = RUN_ALL_TESTS();
+  wxEntryCleanup();
+  return result;
+}
+
+TEST(ChartSafetyNative, DeepSoundingsCannotWeakenUniformAreaMinimum) {
+  FixtureChart chart;
+  chart.Ocean();
+  auto *obj = chart.Add("SOUNDG", GEO_POINT, 1);
+  obj->npt = 1;
+  obj->geoPtMulti = static_cast<double *>(calloc(2, sizeof(double)));
+  obj->geoPtz = static_cast<double *>(calloc(3, sizeof(double)));
+  obj->geoPtMulti[0] = .0254;
+  obj->geoPtMulti[1] = .0254;
+  obj->geoPtz[2] = 1500;
+  double minimum = 0;
+  EXPECT_TRUE(Cm93UniformDepthProof(CollectCm93SafetyTileRules(&chart, 0, 0),
+                                    &minimum));
+  EXPECT_DOUBLE_EQ(minimum, 1000);
+  obj->geoPtz[2] = std::numeric_limits<double>::quiet_NaN();
+  EXPECT_FALSE(Cm93UniformDepthProof(CollectCm93SafetyTileRules(&chart, 0, 0),
+                                     &minimum));
+}
+
+TEST(ChartSafetyNative, TypedProviderVisitorPreservesUnknownDangerDepth) {
+  for (bool known : {false, true}) {
+    SegmentSafetyPluginBatchGroup group(1);
+    group.active[0] = 1;
+    const uint64_t hits = 1;
+    ChartSafetyFeature area{};
+    area.struct_size = sizeof(area);
+    area.flags = HostApi123::kChartSafetyFeatureHasDepth;
+    area.minimum_depth_m = 1000;
+    SegmentSafetyPluginBatchVisit(&group, &area, &hits, 1);
+    ChartSafetyFeature danger{};
+    danger.struct_size = sizeof(danger);
+    danger.flags = known ? HostApi123::kChartSafetyFeatureHasDepth
+                         : HostApi123::kChartSafetyFeatureUnknownDangerDepth;
+    danger.minimum_depth_m = 1;
+    SegmentSafetyPluginBatchVisit(&group, &danger, &hits, 1);
+    EXPECT_EQ(group.unknown_danger_depth[0], known ? 0 : 1);
+    EXPECT_FLOAT_EQ(group.min_depth_m[0], known ? 1 : 1000);
+  }
+}
+namespace ocpn::chart_safety {
+void AddSegmentSafetyRouteMaskCorridorTiles(double, double, double, double,
+                                            double,
+                                            std::set<std::pair<long, long>> *);
+}
+namespace {
+// Immutable chart fixtures exercise the production traversal and clearance
+// dilation, without relying on a proprietary chart set in automated tests.
+class DateLineSafety : public ::testing::Test {
+protected:
+  void SetUp() override {
+    s_segment_safety_grid_cache.clear();
+    s_segment_safety_route_mask_cache.clear();
+    s_segment_safety_coarse_route_mask_cache.clear();
+  }
+  void WaterTiles() {
+    for (long lat = -377; lat <= -374; ++lat)
+      for (long lon : {3598L, 3599L, -3600L, -3599L}) {
+        CachedPointSafetyGridTile tile;
+        tile.built = true;
+        tile.depth_complete = true;
+        tile.group_index = SegmentSafetyCurrentGroupIndex();
+        tile.lat_tile = lat;
+        tile.lon_tile = lon;
+        tile.min_lat = lat * .05;
+        tile.min_lon = lon * .05;
+        tile.resolution = .00125;
+        tile.rows = tile.cols = 41;
+        tile.source = kSourceCm93;
+        tile.classes.assign(1681, kPointWater);
+        tile.hazard_flags.assign(1681, 0);
+        tile.has_depth.assign(1681, 1);
+        tile.min_depth_m.assign(1681, 200);
+        tile.has_drying.assign(1681, 0);
+        StoreSegmentSafetyGridTile(SegmentSafetyGridTileKeyForIndices(lat, lon),
+                                   tile);
+      }
+  }
+};
+TEST_F(DateLineSafety, ClearanceHaloCrossesTheSeamAndRetainsEveryHazard) {
+  for (bool west : {false, true})
+    for (double margin : {.1, .4})
+      for (int hazard = -1; hazard < 5; ++hazard) {
+        SetUp();
+        WaterTiles();
+        const long target_lon = west ? 3599 : -3600;
+        const long neighbour_lon = west ? -3600 : 3599;
+        auto key = SegmentSafetyGridTileKeyForIndices(-376, neighbour_lon);
+        auto tile = s_segment_safety_grid_cache.at(key);
+        const int index = 20 * 41 + (west ? 0 : 39);
+        if (hazard == 0) {
+          tile.classes[index] = kPointLand;
+          tile.hazard_flags[index] = kHazardLand;
+        }
+        if (hazard == 1) {
+          tile.classes[index] = kPointDrying;
+          tile.hazard_flags[index] = kHazardDrying;
+        }
+        if (hazard == 2) tile.min_depth_m[index] = 1;
+        StoreSegmentSafetyGridTile(key, tile);
+        // Unknown/no-chart evidence blocks the traversed cell. Existing
+        // clearance policy dilates known land/drying/shallow hazards only.
+        if (hazard >= 3) {
+          key = SegmentSafetyGridTileKeyForIndices(-376, target_lon);
+          tile = s_segment_safety_grid_cache.at(key);
+          const int centre = 20 * 41 + (west ? 39 : 0);
+          if (hazard == 3) tile.has_depth[centre] = 0;
+          if (hazard == 4) {
+            tile.classes[centre] = kPointNoData;
+            tile.hazard_flags[centre] = kHazardNoChart;
+          }
+          StoreSegmentSafetyGridTile(key, tile);
+        }
+        SegmentSafetyCoreStats stats;
+        bool built = false;
+        ASSERT_TRUE(EnsureSegmentSafetyRouteMaskTile(
+            -376, target_lon, margin, true, 1.5, &stats, &built, true));
+        CachedSegmentSafetyRouteMaskTile mask;
+        ASSERT_TRUE(LookupSegmentSafetyRouteMaskTile(
+            SegmentSafetyRouteMaskKey(-376, target_lon, margin, true, 1.5),
+            &mask));
+        ASSERT_TRUE(mask.built);
+        const int target = 20 * 41 + (west ? 39 : 0);
+        EXPECT_EQ(mask.block_flags[target] == kRouteClear, hazard < 0)
+            << "west=" << west << " margin=" << margin << " hazard=" << hazard;
+        EXPECT_EQ(stats.unexpected_tile_builds, 0);
+      }
+}
+TEST_F(DateLineSafety,
+       FineMaskCrossingsAreBoundedAndKeepHazardsInBothDirections) {
+  for (bool reverse : {false, true})
+    for (bool blocked : {false, true}) {
+      SetUp();
+      for (long lon : {3599L, -3600L}) {
+        CachedSegmentSafetyRouteMaskTile mask;
+        mask.built = true;
+        mask.authoritative_fine = true;
+        mask.lat_tile = -376;
+        mask.lon_tile = lon;
+        mask.min_lat = -18.8;
+        mask.min_lon = lon * .05;
+        mask.resolution = .00125;
+        mask.rows = mask.cols = 41;
+        mask.source = kSourceCm93;
+        mask.block_flags.assign(1681, kRouteClear);
+        if (blocked && lon == -3600)
+          mask.block_flags[24 * 41] = kRouteBlockLand;
+        s_segment_safety_route_mask_cache[SegmentSafetyRouteMaskKey(
+            -376, lon, 0, true, 1.5)] = mask;
+      }
+      SegmentSafetyResult result{};
+      result.struct_size = sizeof(result);
+      InitSegmentSafetyResult(&result);
+      double start = reverse ? -179.99 : 179.99;
+      double end = reverse ? 179.99 : -179.99;
+      UnwrapSafetySegment(start, end);
+      SegmentSafetyCoreStats stats;
+      bool available = false, shortcut = false, answered = false;
+      const bool hit = SegmentSafetyRouteMaskTraversalCheck(
+          -18.77, start, -18.77, end, 0, true, 1.5, true, &result, &available,
+          &stats, &shortcut, &answered);
+      EXPECT_TRUE(answered);
+      EXPECT_TRUE(available);
+      EXPECT_EQ(hit, blocked);
+      if (blocked) {
+        EXPECT_EQ(result.status, kCrossesLand);
+      }
+      EXPECT_LT(stats.segment_sample_count, 30);
+    }
+}
+TEST_F(DateLineSafety, CorridorFootprintUsesOnlyAdjacentCanonicalTiles) {
+  for (bool reverse : {false, true}) {
+    std::set<std::pair<long, long>> tiles;
+    AddSegmentSafetyRouteMaskCorridorTiles(-18.77, reverse ? -179.99 : 179.99,
+                                           -18.77, reverse ? 179.99 : -179.99,
+                                           0, &tiles);
+    EXPECT_EQ(tiles.size(), 2u);
+    EXPECT_EQ(tiles.count({-376, 3599}), 1u);
+    EXPECT_EQ(tiles.count({-376, -3600}), 1u);
+  }
+}
+}  // namespace
+
+namespace {
+class AppendOrderChart : public FixtureChart {
+public:
+  ~AppendOrderChart() {
+    for (int p = 0; p < PRIO_NUM; ++p)
+      for (int l = 0; l < LUPNAME_NUM; ++l) {
+        auto *rule = razRules[p][l];
+        while (rule) {
+          auto *next = rule->next;
+          free(rule);
+          rule = next;
+        }
+        razRules[p][l] = nullptr;
+      }
+  }
+  void Insert(int sequence, LUPrec *lookup,
+              RuleAppendContext *append = nullptr) {
+    auto obj = std::make_unique<S57Obj>("DEPARE");
+    obj->Index = sequence;
+    EXPECT_EQ(_insertRules(obj.get(), lookup, this, append), 1);
+    objects.push_back(std::move(obj));
+  }
+  std::vector<int> Order(int priority, int style) {
+    std::vector<int> result;
+    for (auto *rule = razRules[priority][style]; rule; rule = rule->next)
+      result.push_back(rule->obj->Index);
+    return result;
+  }
+};
+}  // namespace
+TEST(ChartRuleAppend, BatchPreservesEveryPriorityAndStyleInNaturalOrder) {
+  std::vector<std::unique_ptr<LUPrec>> lookups;
+  const LUPname styles[] = {SIMPLIFIED, PAPER_CHART, LINES, PLAIN_BOUNDARIES,
+                            SYMBOLIZED_BOUNDARIES};
+  for (int p = 0; p < PRIO_NUM; ++p)
+    for (int l = 0; l < LUPNAME_NUM; ++l) {
+      auto lookup = std::make_unique<LUPrec>();
+      lookup->DPRI = static_cast<DisPrio>('0' + p);
+      lookup->TNAM = styles[l];
+      lookups.push_back(std::move(lookup));
+    }
+  AppendOrderChart ordinary, batched;
+  for (int batch = 0; batch < 3; ++batch) {
+    s57chart::RuleAppendContext context;
+    for (int n = 0; n < 700; ++n) {
+      const int sequence = batch * 700 + n;
+      auto *lookup = lookups[sequence % lookups.size()].get();
+      ordinary.Insert(sequence, lookup);
+      // Intervening ordinary appends are legal during a batch too.
+      batched.Insert(sequence, lookup, n % 7 == 3 ? nullptr : &context);
+    }
+  }
+  for (int p = 0; p < PRIO_NUM; ++p)
+    for (int l = 0; l < LUPNAME_NUM; ++l)
+      EXPECT_EQ(ordinary.Order(p, l), batched.Order(p, l));
+}
+TEST(ChartRuleAppend, ANewChartCannotReuseAnotherChartsTailPointers) {
+  LUPrec lookup;
+  lookup.DPRI = PRIO_HAZARDS;
+  lookup.TNAM = PLAIN_BOUNDARIES;
+  AppendOrderChart first, second;
+  s57chart::RuleAppendContext context;
+  first.Insert(1, &lookup, &context);
+  second.Insert(2, &lookup, &context);
+  first.Insert(3, &lookup, &context);
+  second.Insert(4, &lookup, &context);
+  EXPECT_EQ(first.Order(8, 3), (std::vector<int>{1, 3}));
+  EXPECT_EQ(second.Order(8, 3), (std::vector<int>{2, 4}));
+}
+TEST(ChartSafetyNative,
+     DistantCoverageAcrossAntimeridianDoesNotHideLocalProof) {
+  FixtureChart chart;
+  chart.Coverage(-1, -1, 1, 1);
+  chart.Coverage(-1, 179, 1, 181);
+  EXPECT_EQ(chart.SafetyCoverageBoxRelation(.024, .026, .024, .026), 2);
+  EXPECT_EQ(chart.SafetyCoverageBoxRelation(.024, .026, 179.4, 179.5), 2);
+  EXPECT_EQ(chart.SafetyCoverageBoxRelation(.024, .026, -179.5, -179.4), 2);
+  EXPECT_EQ(chart.SafetyCoverageBoxRelation(.024, .026, 178.9, 179.1), 1);
+}
+TEST(ChartSafetyNative, OpenWaterRegionRequiresCompleteDepthArea) {
+  FixtureChart chart;
+  chart.Ocean();
+  EXPECT_DOUBLE_EQ(
+      OpenWaterDepthLowerBound(CollectSafetyBoxRules(&chart, 0, 0, .2, .02)),
+      1000.0);
+  // Same depths on part of a region cannot prove the remaining area.
+  EXPECT_DOUBLE_EQ(
+      OpenWaterDepthLowerBound(CollectSafetyBoxRules(&chart, 0, 0, 1, .02)),
+      0.0);
+}
+
+TEST(ChartSafetyNative, OpenWaterRegionRejectsAnIsolatedDangerInItsHalo) {
+  FixtureChart chart;
+  chart.Ocean();
+  auto *rock = chart.Add("UWTROC", GEO_POINT, 1);
+  chart.Point(rock, .21, .1);
+  rock->AddDoubleAttribute("VALSOU", 6.0);
+  EXPECT_DOUBLE_EQ(
+      OpenWaterDepthLowerBound(CollectSafetyBoxRules(&chart, 0, 0, .2, .02)),
+      0.0);
+}
+
+TEST(ChartSafetyNative, InstalledOpenWaterProofIsAvailableWithoutPrewarm) {
+  OpenWaterRegions previous;
+  previous.swap(s_segment_safety_open_water_regions);
+  const bool previous_requested = s_segment_safety_open_water_requested;
+  s_segment_safety_open_water_requested = false;
+  s_segment_safety_open_water_regions.emplace(
+      SegmentSafetyOpenWaterKey(kOpenWaterSubregionTiles, 4, 4),
+      SegmentSafetyOpenWaterRegion{kSourceCm93, 100.0});
+
+  SegmentSafetyOpenWaterRegion proof;
+  EXPECT_TRUE(SegmentSafetyOpenWaterForChord(.23, .23, .35, .35, .4, true, 5.0,
+                                             &proof));
+  EXPECT_EQ(proof.source, kSourceCm93);
+  EXPECT_TRUE(PrepareSegmentSafetyOpenWaterRegion(5, 5, .4, true, 5.0));
+  EXPECT_FALSE(PrepareSegmentSafetyOpenWaterRegion(5, 5, .4, true, 100.0));
+  EXPECT_FALSE(PrepareSegmentSafetyOpenWaterRegion(5, 9, .4, true, 5.0));
+  EXPECT_EQ(s_segment_safety_open_water_regions.size(), 1u);
+
+  s_segment_safety_open_water_regions.swap(previous);
+  s_segment_safety_open_water_requested = previous_requested;
+}
+
+TEST(ChartSafetyNative, DetailedRegionFileRequiresMatchingChartDependencies) {
+  const auto path = wxFileName::CreateTempFileName("ocpn-detailed-regions-");
+  ASSERT_FALSE(path.empty());
+  struct RemoveTempFile {
+    wxString path;
+    ~RemoveTempFile() { wxRemoveFile(path); }
+  } cleanup{path};
+
+  const std::set<OpenWaterRegionKey> expected{
+      SegmentSafetyOpenWaterKey(kOpenWaterRegionTiles, 20, -20),
+      SegmentSafetyOpenWaterKey(kOpenWaterSubregionTiles, 20, -20)};
+  ASSERT_TRUE(WriteDetailedRegionKeys(path, "chart", "files", expected));
+  std::set<OpenWaterRegionKey> keys;
+  EXPECT_FALSE(ReadDetailedRegionKeys(path, "other-chart", "files", &keys));
+  EXPECT_FALSE(ReadDetailedRegionKeys(path, "chart", "new-files", &keys));
+  EXPECT_TRUE(keys.empty());
+  EXPECT_TRUE(ReadDetailedRegionKeys(path, "chart", "files", &keys));
+  EXPECT_EQ(keys, expected);
+
+  wxJSONValue document;
+  ASSERT_TRUE(ReadOpenWaterLayer(path, &document));
+  document["regions"][0][3] = static_cast<int>(kSourceCm93);
+  document["regions"][0][4] = 100;
+  {
+    wxFileOutputStream file(path);
+    wxJSONWriter writer(wxJSONWRITER_NONE);
+    writer.Write(document, file);
+    ASSERT_TRUE(file.IsOk());
+  }
+  EXPECT_FALSE(ReadDetailedRegionKeys(path, "chart", "files", &keys));
+  EXPECT_EQ(keys, expected);
+}
+
+TEST(ChartSafetyNative, DetailedRegionReuseRequiresPersistentCaching) {
+  constexpr auto setting = "OCPN_CHART_SAFETY_REUSE_DETAILED_REGIONS";
+  wxString former_setting;
+  const bool had_setting = wxGetEnv(setting, &former_setting);
+  const bool was_enabled = s_segment_safety_persistent_cache_enabled;
+
+  EXPECT_TRUE(wxSetEnv(setting, "1"));
+  s_segment_safety_persistent_cache_enabled = false;
+  EXPECT_FALSE(DetailedRegionReuseEnabled());
+  s_segment_safety_persistent_cache_enabled = true;
+  EXPECT_TRUE(DetailedRegionReuseEnabled());
+  EXPECT_TRUE(wxSetEnv(setting, "0"));
+  EXPECT_FALSE(DetailedRegionReuseEnabled());
+
+  s_segment_safety_persistent_cache_enabled = was_enabled;
+  if (had_setting)
+    wxSetEnv(setting, former_setting);
+  else
+    wxUnsetEnv(setting);
+}
+
+TEST(ChartSafetyNative, RememberedFailureStillRequiresFineChecks) {
+  struct RestoreRegions {
+    OpenWaterRegions regions;
+    DetailedRegions detailed;
+    bool requested;
+    bool persistent;
+    ~RestoreRegions() {
+      s_segment_safety_open_water_regions.swap(regions);
+      s_detailed_regions = std::move(detailed);
+      s_segment_safety_open_water_requested = requested;
+      s_segment_safety_persistent_cache_enabled = persistent;
+    }
+  } restore{std::move(s_segment_safety_open_water_regions),
+            std::move(s_detailed_regions), s_segment_safety_open_water_requested,
+            s_segment_safety_persistent_cache_enabled};
+  s_segment_safety_open_water_regions.clear();
+  s_detailed_regions = {};
+  s_segment_safety_open_water_requested = true;
+  s_segment_safety_persistent_cache_enabled = true;
+
+  s_detailed_regions.keys.insert(
+      SegmentSafetyOpenWaterKey(kOpenWaterRegionTiles, 24, 24));
+  const auto subregion =
+      SegmentSafetyOpenWaterKey(kOpenWaterSubregionTiles, 24, 24);
+  s_detailed_regions.keys.insert(subregion);
+  EXPECT_FALSE(PrepareSegmentSafetyOpenWaterRegion(24, 24, .4, false, 0.0));
+  EXPECT_EQ(s_detailed_regions.hits, 2u);
+  SegmentSafetyOpenWaterRegion proof;
+  EXPECT_FALSE(SegmentSafetyOpenWaterForChord(1.22, 1.22, 1.29, 1.29, .4,
+                                              false, 0.0, &proof));
+  s_segment_safety_open_water_regions[subregion] = {kSourceCm93, 100.0};
+  EXPECT_TRUE(PrepareSegmentSafetyOpenWaterRegion(24, 24, .4, true, 3.0));
+  EXPECT_TRUE(SegmentSafetyOpenWaterForChord(1.22, 1.22, 1.29, 1.29, .4,
+                                             true, 3.0, &proof));
+}
+
+TEST(ChartSafetyNative, OpenWaterCrossingsNeedEvidenceForEveryTouchedRegion) {
+  s_segment_safety_open_water_regions.clear();
+  s_segment_safety_open_water_requested = true;
+  const auto add = [](long lon, double depth) {
+    s_segment_safety_open_water_regions.emplace(
+        SegmentSafetyOpenWaterKey(kOpenWaterRegionTiles, 0, lon),
+        SegmentSafetyOpenWaterRegion{kSourceCm93, depth});
+  };
+  add(0, 100.0);
+  SegmentSafetyOpenWaterRegion proof;
+  EXPECT_TRUE(SegmentSafetyOpenWaterForChord(.25, .25, .75, .75, .4, true, 5.0,
+                                             &proof));
+  EXPECT_FALSE(
+      SegmentSafetyOpenWaterForChord(.5, .5, .5, 1.5, .4, true, 5.0, &proof));
+  add(20, 60.0);
+  EXPECT_TRUE(
+      SegmentSafetyOpenWaterForChord(.5, .5, .5, 1.5, .4, true, 5.0, &proof));
+  EXPECT_DOUBLE_EQ(proof.minimum_depth_m, 60.0);
+  EXPECT_FALSE(
+      SegmentSafetyOpenWaterForChord(.5, .5, .5, 1.5, .4, true, 70.0, &proof));
+  EXPECT_FALSE(
+      SegmentSafetyOpenWaterForChord(.5, .5, .5, 1.5, 2.5, false, 0.0, &proof));
+  EXPECT_FALSE(SegmentSafetyOpenWaterForChord(.5, 179.99, .5, 180.01, .4, false,
+                                              0.0, &proof));
+  s_segment_safety_open_water_regions.clear();
+  s_segment_safety_open_water_requested = false;
+}

@@ -242,6 +242,7 @@ public:
     auto metadata_path = PluginHandler::ImportedMetadataPath(metadata.name);
     std::ofstream file(metadata_path);
     file << metadata.to_string();
+    file.close();
     if (!file.good()) {
       std::cerr << "Error saving metadata file: " << metadata_path
                 << " for imported plugin: " << metadata.name;
