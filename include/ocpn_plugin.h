@@ -7449,5 +7449,448 @@ public:
 class HostApi123 : public HostApi122 {
 public:
   HostApi123(Api122Impl *support) : HostApi122(support) {}
+
+  /** Outcome of an authoritative chart-safety segment query. */
+  enum SegmentSafetyStatus {
+    kSegmentSafetySafe = 0,
+    kSegmentSafetyCrossesLand,
+    kSegmentSafetyWithinLandMargin,
+    kSegmentSafetyUnsafeArea,
+    kSegmentSafetyNoData,
+    kSegmentSafetyError,
+    kSegmentSafetyDryingArea,
+    kSegmentSafetyTooShallow,
+    kSegmentSafetyUnknownDepth,
+    kSegmentSafetyPendingData
+  };
+
+  /** Chart source which determined a segment-safety result. */
+  enum SegmentSafetySource {
+    kSegmentSafetySourceNone = 0,
+    kSegmentSafetySourceVectorChart,
+    kSegmentSafetySourceCm93,
+    kSegmentSafetySourceGshhsFallback,
+    kSegmentSafetySourcePluginVector
+  };
+
+  /** Diagnostic classification for an unavailable or completed query. */
+  enum SegmentSafetyDiagnosticReason {
+    kSegmentSafetyDiagnosticNone = 0,
+    kSegmentSafetyDiagnosticNoChartDatabase,
+    kSegmentSafetyDiagnosticNoCandidateChart,
+    kSegmentSafetyDiagnosticRasterOnly,
+    kSegmentSafetyDiagnosticUnsupportedChartType,
+    kSegmentSafetyDiagnosticChartLoadFailed,
+    kSegmentSafetyDiagnosticNoLandAreaGeometry,
+    kSegmentSafetyDiagnosticChartGeometryClear,
+    kSegmentSafetyDiagnosticChartGeometryHit,
+    kSegmentSafetyDiagnosticGshhsFallback,
+    kSegmentSafetyDiagnosticPendingData
+  };
+
+  /** Geometry which caused an unsafe segment result. */
+  enum SegmentSafetyHitCause {
+    kSegmentSafetyHitNone = 0,
+    kSegmentSafetyHitEndpointInLandArea,
+    kSegmentSafetyHitSegmentIntersectsLandAreaEdge,
+    kSegmentSafetyHitMarginToLandAreaEdge
+  };
+
+  /** Options for segment checks and safety-grid preparation. */
+  struct SegmentSafetyOptions {
+    /** Set to sizeof(SegmentSafetyOptions). */
+    int struct_size;
+    /** Required separation from charted land, in nautical miles. */
+    double safety_margin_nm;
+    /** Non-zero checks land and drying geometry. */
+    int check_land;
+    /** Non-zero permits GSHHS only when authoritative charts are unavailable.
+     */
+    int allow_gshhs_fallback;
+    /** Non-zero checks charted depth. */
+    int check_depth;
+    /** Minimum acceptable charted depth in metres. */
+    double minimum_depth_m;
+    /** Non-zero bypasses coarse shortcuts for the final validation. */
+    int force_authoritative_fine_validation;
+  };
+
+  /**
+   * Result and diagnostics from a safety operation.
+   *
+   * Callers initialise struct_size to sizeof(SegmentSafetyResult).  The host
+   * writes no more than struct_size bytes, allowing this draft structure to be
+   * extended during API 1.23 development.
+   */
+  struct SegmentSafetyResult {
+    int struct_size;
+    int status;
+    int source;
+    int used_fallback;
+    char message[256];
+    int diagnostic_reason;
+    int chart_stack_entries;
+    int candidate_chart_count;
+    int raster_chart_count;
+    int unsupported_chart_count;
+    int s57_chart_count;
+    int land_ring_count;
+    int bbox_ring_tests;
+    int edge_tests;
+    int cache_build_ms;
+    int chart_select_ms;
+    int geometry_check_ms;
+    int chart_db_index;
+    int hit_cause;
+    double hit_ring_min_lat;
+    double hit_ring_max_lat;
+    double hit_ring_min_lon;
+    double hit_ring_max_lon;
+    int hit_ring_point_count;
+    int hit_edge_index;
+    char chart_path[256];
+    double hit_sample_lat;
+    double hit_sample_lon;
+    int hit_sample_index;
+    int hit_sample_count;
+    int chart_scale;
+    char hit_object[128];
+    int point_cache_hits;
+    int point_cache_misses;
+    int grid_cache_hits;
+    int grid_cache_misses;
+    int grid_build_ms;
+    int grid_cells_total;
+    int grid_cells_land;
+    int grid_cells_water;
+    int grid_cells_drying;
+    int grid_cells_unknown;
+    int grid_lookups;
+    int grid_lookup_ms;
+    int segment_sample_count;
+    int water_tile_shortcuts;
+    int unexpected_tile_builds;
+    int unexpected_lat_tile;
+    int unexpected_lon_tile;
+    double unexpected_tile_min_lat;
+    double unexpected_tile_min_lon;
+    int segment_cache_hits;
+    int segment_cache_misses;
+    int segment_cache_stores;
+    int grid_cache_size;
+    int grid_cache_evictions;
+    int has_depth;
+    double min_depth_m;
+    double required_depth_m;
+    double hit_depth_m;
+    int has_drying;
+    char depth_source_object[128];
+    char depth_source_attribute[32];
+    int prewarm_requested_tiles;
+    int prewarm_base_tiles_built;
+    int prewarm_base_tiles_reused;
+    int prewarm_masks_built;
+    int prewarm_masks_reused;
+    int prewarm_fine_tiles_avoided;
+  };
+
+  /** Summary returned after servicing deferred main-thread requests. */
+  struct SegmentSafetyRequestServiceResult {
+    int struct_size;
+    int pending_before;
+    int requests_serviced;
+    int masks_built;
+    int requests_failed;
+    int pending_after;
+    int elapsed_ms;
+  };
+
+  /**
+   * Exact chart-derived base tile exchanged with a consumer-owned cache.
+   *
+   * Array storage is owned by the caller and contains rows * cols entries.
+   * A lookup callback fills the supplied arrays; a store callback must copy
+   * array data before returning.  It must not retain any supplied pointer.
+   */
+  struct SegmentSafetyTile {
+    int struct_size;
+    int group_index;
+    long lat_tile;
+    long lon_tile;
+    double resolution;
+    int rows;
+    int cols;
+    int chart_db_index;
+    int chart_scale;
+    int source;
+    unsigned int hazard_summary_flags;
+    int depth_complete;
+    char chart_path[256];
+    char dependency_identity[80];
+    unsigned short *hazard_flags;
+    unsigned char *has_depth;
+    float *min_depth_m;
+    int cell_capacity;
+  };
+
+  /** Return true after filling a complete and current cached tile. */
+  using SegmentSafetyTileCacheLookup = bool (*)(void *context, long lat_tile,
+                                                long lon_tile,
+                                                bool require_depth,
+                                                SegmentSafetyTile *tile);
+  /** Copy a newly derived tile into consumer-owned persistent storage. */
+  using SegmentSafetyTileCacheStore = void (*)(void *context,
+                                               const SegmentSafetyTile *tile);
+  /** Record the full identity of the installed chart set and active group. */
+  using SegmentSafetyTileCacheIdentity = void (*)(void *context,
+                                                  const char *identity);
+  /** Invalidate completion metadata when chart dependencies change. */
+  using SegmentSafetyTileCacheDependenciesChanged = void (*)(void *context);
+
+  /** Consumer-owned cache callbacks. All callbacks run on the GUI thread. */
+  struct SegmentSafetyTileCacheCallbacks {
+    int struct_size;
+    void *context;
+    SegmentSafetyTileCacheLookup lookup;
+    SegmentSafetyTileCacheStore store;
+    SegmentSafetyTileCacheIdentity identity_changed;
+    SegmentSafetyTileCacheDependenciesChanged dependencies_changed;
+  };
+
+  /** Lightweight chart-table metadata used to plan an optional atlas. */
+  struct SegmentSafetyChartInfo {
+    int struct_size;
+    int abi_version;
+    int db_index;
+    int chart_type;
+    int chart_family;
+    int chart_scale;
+    int source;
+    int available;
+    int in_active_group;
+    long long edition_time;
+    long long file_time;
+    double min_lat;
+    double min_lon;
+    double max_lat;
+    double max_lon;
+    char chart_path[512];
+  };
+
+  /** Semantic properties of one chart feature intersecting a query grid. */
+  struct ChartSafetyFeature {
+    /** Set to sizeof(ChartSafetyFeature). */
+    uint32_t struct_size;
+    /** S-57 object class, for example "LNDARE" or "DEPARE". */
+    char feature_name[8];
+    /** Provider-native primitive type, retained for diagnostics. */
+    int primitive_type;
+    /** Bitwise combination of ChartSafetyFeatureFlags. */
+    uint32_t flags;
+    /** Valid when kChartSafetyFeatureHasDepth is set. */
+    double minimum_depth_m;
+  };
+
+  enum ChartSafetyFeatureFlags : uint32_t {
+    kChartSafetyFeatureLand = 0x00000001u,
+    kChartSafetyFeatureDrying = 0x00000002u,
+    kChartSafetyFeatureHasDepth = 0x00000004u,
+    kChartSafetyFeatureUnknownDangerDepth = 0x00000008u
+  };
+
+  /**
+   * Receives one semantic chart feature and the raster cells it intersects.
+   * The feature and hit-cell array are valid only for the duration of the call.
+   */
+  using ChartSafetyObjectVisitor = void (*)(void *context,
+                                            const ChartSafetyFeature *feature,
+                                            const uint64_t *hit_cells,
+                                            uint32_t hit_word_count);
+
+  /**
+   * Batched semantic query passed to a licensed vector-chart provider.
+   *
+   * active_cells is an optional rows * cols mask. A provider calls
+   * visit_object synchronously for semantic objects relevant to active cells.
+   * All pointers are borrowed and valid only during the query callback.
+   */
+  struct ChartSafetyProviderRequest {
+    uint32_t struct_size;
+    uint32_t abi_version;
+    double min_lat;
+    double min_lon;
+    double lat_step;
+    double lon_step;
+    uint32_t rows;
+    uint32_t cols;
+    float select_radius_degrees;
+    const uint8_t *active_cells;
+    const PlugIn_ViewPort *plugin_viewport;
+    void *visitor_context;
+    ChartSafetyObjectVisitor visit_object;
+  };
+
+  /** Statistics and capability flags returned by a provider query. */
+  struct ChartSafetyProviderResult {
+    uint32_t struct_size;
+    uint32_t abi_version;
+    uint32_t processed_cells;
+    uint32_t candidate_objects;
+    uint32_t hit_objects;
+    uint32_t result_flags;
+  };
+
+  static constexpr uint32_t kChartSafetyProviderAbiVersion = 1;
+  static constexpr uint32_t kChartSafetyDerivedCacheAllowed = 0x00000001u;
+
+  enum ChartSafetyProviderStatus {
+    kChartSafetyProviderError = -1,
+    kChartSafetyProviderUnsupported = 0,
+    kChartSafetyProviderComplete = 1
+  };
+
+  /**
+   * Perform one synchronous, batched semantic chart query on the GUI thread.
+   * plugin_chart is owned by OpenCPN and must not be retained.
+   */
+  using ChartSafetyProviderQuery = ChartSafetyProviderStatus (*)(
+      void *context, PlugInChartBase *plugin_chart,
+      const ChartSafetyProviderRequest *request,
+      ChartSafetyProviderResult *result);
+
+  /** Callbacks registered by a plugin which owns vector chart classes. */
+  struct ChartSafetyProviderCallbacks {
+    int struct_size;
+    void *context;
+    ChartSafetyProviderQuery query;
+  };
+
+  /**
+   * Register or remove chart-safety callbacks owned by a chart plugin.
+   *
+   * Call this on the GUI thread. plugin_name must exactly match the calling
+   * plugin's GetCommonName(). Pass nullptr to unregister. Registration is also
+   * removed automatically when that plugin is deactivated.
+   */
+  virtual bool RegisterChartSafetyProvider(
+      const std::string &plugin_name,
+      const ChartSafetyProviderCallbacks *callbacks) = 0;
+
+  /**
+   * Register or remove a consumer-owned cache for immutable safety tiles.
+   *
+   * Call this on the GUI thread. plugin_name must exactly match
+   * GetCommonName(). Only one cache owner is supported. Pass nullptr to
+   * unregister; the host also unregisters it automatically when the owner is
+   * deactivated.
+   */
+  virtual bool RegisterSegmentSafetyTileCache(
+      const std::string &plugin_name,
+      const SegmentSafetyTileCacheCallbacks *callbacks) = 0;
+
+  /** Return an identity which changes with the chart set or active group. */
+  virtual bool GetSegmentSafetyChartIdentity(std::string *identity) = 0;
+  /** Return the number of chart-table records available through this API. */
+  virtual int GetSegmentSafetyChartInfoCount() = 0;
+  /** Read chart-table record ordinal into a size-initialised structure. */
+  virtual bool GetSegmentSafetyChartInfo(
+      int ordinal, SegmentSafetyChartInfo *chart_info) = 0;
+  /**
+   * Enumerate fixed-size tiles intersecting selected charts' true coverage.
+   * complete is false when tile_capacity truncated the result.
+   */
+  virtual bool GetSegmentSafetyChartCoverageTiles(
+      const int *chart_db_indices, int chart_count, double tile_degrees,
+      long *lat_tiles, long *lon_tiles, int tile_capacity, int *tile_count,
+      bool *complete) = 0;
+
+  /** Check one geographic segment against selected chart semantics. */
+  virtual bool CheckSegmentSafety(double lat1, double lon1, double lat2,
+                                  double lon2,
+                                  const SegmentSafetyOptions *options,
+                                  SegmentSafetyResult *result) = 0;
+
+  /** Caller-owned chart navigation profile; distances are explicit units.
+   * Depth is chart datum depth. Tide, squat, waves and moving hazards are not
+   * included. Callers may include additional allowances in the clearance.
+   * No profile is selected or persisted by the host implicitly.
+   */
+  struct NavigationSafetyProfile {
+    bool check_land{true};
+    bool check_depth{false};
+    bool allow_gshhs_fallback{false};
+    double land_margin_nm{0.0};
+    double vessel_draft_m{0.0};
+    double under_keel_clearance_m{0.0};
+    double minimum_charted_depth_m{0.0};
+  };
+
+  struct NavigationSafetyPosition {
+    double latitude;
+    double longitude;
+  };
+
+  /** Each entry describes the leg from positions[i] to positions[i+1].
+   * Complete means every leg has a definitive result. Safe requires every
+   * leg to be safe. Unknown depth, unavailable data, errors and pending work
+   * always make both flags false; unsafe chart geometry makes safe false.
+   */
+  struct NavigationRouteSafetyResult {
+    bool valid_input{false};
+    bool complete{false};
+    bool safe{false};
+    std::vector<SegmentSafetyResult> segments;
+  };
+
+  /** Validate all legs using a profile and authoritative fine checks.
+   * Required charted depth is max(minimum_charted_depth_m, draft+clearance).
+   * Returns false for invalid input. True does not imply a safe route: read
+   * result.complete and result.safe. Deferred queries must be serviced on the
+   * GUI thread and the route checked again. No route is inserted or changed.
+   */
+  virtual bool CheckNavigationRoute(
+      const NavigationSafetyProfile& profile,
+      const std::vector<NavigationSafetyPosition>& positions,
+      NavigationRouteSafetyResult* result) = 0;
+
+  /** Build or reuse the listed base tiles on the GUI thread. */
+  virtual bool PrepareSegmentSafetyTiles(const long *lat_tiles,
+                                         const long *lon_tiles, int tile_count,
+                                         bool require_depth,
+                                         SegmentSafetyResult *result) = 0;
+
+  /** Prepare a rectangular safety snapshot for diagnostics or comparison. */
+  virtual bool PrepareSegmentSafetySnapshot(double min_lat, double min_lon,
+                                            double max_lat, double max_lon,
+                                            bool enable_fast_path,
+                                            bool shadow_compare,
+                                            const SegmentSafetyOptions *options,
+                                            SegmentSafetyResult *result) = 0;
+
+  /** Prepare a buffered set of route-shaped polylines for later checks. */
+  virtual bool PrepareSegmentSafetyCorridor(
+      const double *latitudes, const double *longitudes,
+      const int *point_counts, int polyline_count, double corridor_margin_nm,
+      int fine_tile_halo, const SegmentSafetyOptions *options,
+      SegmentSafetyResult *result) = 0;
+
+  /** Return the number of worker requests waiting for GUI-thread service. */
+  virtual int GetPendingSegmentSafetyRequestCount() = 0;
+  /** Service bounded deferred requests. This must be called on the GUI thread.
+   */
+  virtual bool ServicePendingSegmentSafetyRequests(
+      int max_requests, int max_milliseconds,
+      SegmentSafetyRequestServiceResult *result) = 0;
+  /** Release tiles pinned by the current preparation/check lifecycle. */
+  virtual void ReleaseSegmentSafetyPins() = 0;
+
+  /** Enable or disable the host's compatibility persistent tile cache. */
+  virtual bool SetSegmentSafetyPersistentCacheEnabled(bool enabled) = 0;
+  /** Return whether the host compatibility cache is enabled. */
+  virtual bool GetSegmentSafetyPersistentCacheEnabled() = 0;
+  /** Save dirty host-owned persistent tiles immediately. */
+  virtual bool SaveSegmentSafetyPersistentCache() = 0;
+  /** Clear host-owned persistent safety tiles. */
+  virtual bool ClearSegmentSafetyPersistentCache() = 0;
 };
 #endif  //_PLUGIN_H_
