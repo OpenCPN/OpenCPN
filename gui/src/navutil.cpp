@@ -598,6 +598,12 @@ int MyConfig::LoadMyConfigRaw(bool bAsTemplate) {
       MouseZoom::config_to_ui(g_mouse_zoom_sensitivity);
   Read("CM93DetailFactor", &g_cm93_zoom_factor);
   Read("TileBasemapZoomFactor", &g_tile_basemap_zoom_factor);
+  {
+    int mbtiles_opacity_pct = 100;
+    Read("MBTilesOpacity", &mbtiles_opacity_pct, 100);
+    mbtiles_opacity_pct = wxMax(0, wxMin(100, mbtiles_opacity_pct));
+    g_mbtiles_opacity = mbtiles_opacity_pct / 100.f;
+  }
 
   Read("CM93DetailZoomPosX", &g_detailslider_dialog_x);
   Read("CM93DetailZoomPosY", &g_detailslider_dialog_y);
@@ -1949,6 +1955,8 @@ void MyConfig::UpdateSettings() {
   Write("CM93DetailZoomPosX", g_detailslider_dialog_x);
   Write("CM93DetailZoomPosY", g_detailslider_dialog_y);
   Write("ShowCM93DetailSlider", g_bShowDetailSlider);
+  Write("MBTilesOpacity",
+        (int)wxRound(wxMax(0.f, wxMin(1.f, g_mbtiles_opacity)) * 100.f));
 
   Write("SkewToNorthUp", g_bskew_comp);
   if (!g_bdisable_opengl) {  // Only modify the saved value if OpenGL is not

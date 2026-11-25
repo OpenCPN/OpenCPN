@@ -97,9 +97,11 @@ static const GLchar* tile_fragment_shader_source =
     "uniform sampler2D uTex;\n"
     "varying vec2 varCoord;\n"
     "uniform float brightness;\n"
+    "uniform float opacity;\n"
     "void main() {\n"
     "   vec4 textureColor = texture2D(uTex, varCoord);\n"
-    "   gl_FragColor = vec4(textureColor.rgb * brightness, textureColor.w);\n"
+    "   gl_FragColor = vec4(textureColor.rgb * brightness,\n"
+    "                      textureColor.w * opacity);\n"
     "}\n";
 
 #ifdef ocpnUSE_GL
@@ -737,7 +739,10 @@ bool ChartMbTiles::RenderTile(SharedTilePtr tile, int zoom_level,
   } else {
     // Tile is available, render it on screen
 #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
-    glColor4f(1, 1, 1, 1);
+    // Whole-tileset opacity for overlays; keep basemap MBTiles opaque.
+    float layer_alpha =
+        (m_tile_type == MbTilesType::OVERLAY) ? g_mbtiles_opacity : 1.0f;
+    glColor4f(1, 1, 1, layer_alpha);
 #endif
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
@@ -803,6 +808,11 @@ bool ChartMbTiles::RenderTile(SharedTilePtr tile, int zoom_level,
   }
   // Give the brightness level to the shader program
   shader->SetUniform1f("brightness", dimLevel);
+
+  // Whole-tileset opacity for overlays; keep basemap MBTiles opaque.
+  float layer_opacity =
+      (m_tile_type == MbTilesType::OVERLAY) ? g_mbtiles_opacity : 1.0f;
+  shader->SetUniform1f("opacity", layer_opacity);
 
   // Perform the actual drawing.
 
