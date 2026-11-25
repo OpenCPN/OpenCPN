@@ -568,8 +568,7 @@ void RoutePropDlgImpl::SetRouteAndUpdate(Route* pR, bool only_points) {
     m_tcDescription->SetValue(m_pRoute->m_RouteDescription);
 
     m_tcName->SetFocus();
-    if (m_pRoute->m_PlannedDeparture.IsValid() &&
-        m_pRoute->m_PlannedDeparture.GetValue() > 0) {
+    if (m_pRoute->m_PlannedDeparture.IsValid()) {
       wxDateTime t =
           toUsrDateTime(m_pRoute->m_PlannedDeparture, m_tz_selection,
                         (*m_pRoute->pRoutePointList->begin())->m_lon);
