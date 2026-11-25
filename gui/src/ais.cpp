@@ -1037,8 +1037,8 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
   dc.SetPen(wxPen(UBLCK));
 
   // Default color is green
-  wxColour UINFG = GetGlobalColor("UINFG");
-  wxBrush target_brush = wxBrush(UINFG);
+  wxColour GREEN3 = GetGlobalColor("GREEN3");
+  wxBrush target_brush = wxBrush(GREEN3);
 
   // Euro Inland targets render slightly differently, unless in InlandENC mode
   if (td->b_isEuroInland && !g_bInlandEcdis)
@@ -1055,7 +1055,7 @@ static void AISDrawTarget(AisTargetData *td, ocpnDC &dc, ViewPort &vp,
       ((td->ShipType == 12) || (td->ShipType == 16)))  // distress(relayed)
     target_brush = wxBrush(URED);
 
-  if (td->b_SarAircraftPosnReport) target_brush = wxBrush(UINFG);
+  if (td->b_SarAircraftPosnReport) target_brush = wxBrush(GREEN3);
 
   if ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid))
     target_brush = wxBrush(URED);

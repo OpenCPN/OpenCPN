@@ -3282,6 +3282,7 @@ void glChartCanvas::RenderQuiltViewGL(ViewPort &vp,
           hitrans = .4;
           break;
         case GLOBAL_COLOR_SCHEME_DUSK:
+        case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
           hitrans = .2;
           break;
         case GLOBAL_COLOR_SCHEME_NIGHT:
@@ -4695,6 +4696,7 @@ void glChartCanvas::RenderMBTilesOverlay(ViewPort &VPoint) {
           hitrans = .4;
           break;
         case GLOBAL_COLOR_SCHEME_DUSK:
+        case GLOBAL_COLOR_SCHEME_NIGHT_HICON:
           hitrans = .2;
           break;
         case GLOBAL_COLOR_SCHEME_NIGHT:
