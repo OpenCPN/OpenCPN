@@ -43,8 +43,9 @@
  */
 class AndroidSerialIo : public SerialIo {
 public:
-  AndroidSerialIo(SendMsgFunc send_func, const std::string& port, unsigned baud)
-      : SerialIo(send_func, port, baud) {
+  AndroidSerialIo(ReceiveMsgFunc recv_func, const std::string& port,
+                  unsigned baud)
+      : SerialIo(recv_func, port, baud) {
     m_driver_stats.driver_bus = NavAddr::Bus::N0183;
     m_driver_stats.driver_iface = "android";
   }
@@ -65,7 +66,7 @@ public:
   void Start() override {
     if (m_portname.empty()) return;
     wxString port(m_portname);  // Horrors due to missing const in library
-    androidStartUSBSerial(port, std::to_string(m_baud), m_send_msg_func);
+    androidStartUSBSerial(port, std::to_string(m_baud), m_recv_msg_func);
     m_driver_stats.available = true;
   }
 
@@ -81,7 +82,7 @@ private:
   DriverStats m_driver_stats;
 };
 
-std::unique_ptr<SerialIo> SerialIo::Create(SendMsgFunc send_msg_func,
+std::unique_ptr<SerialIo> SerialIo::Create(ReceiveMsgFunc send_msg_func,
                                            const std::string& port,
                                            unsigned baud) {
   return std::make_unique<AndroidSerialIo>(send_msg_func, port, baud);

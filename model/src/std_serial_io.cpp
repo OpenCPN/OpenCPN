@@ -34,7 +34,6 @@
 #endif
 
 #include <mutex>  // std::mutex
-#include <queue>  // std::queue
 #include <thread>
 #include <vector>
 
@@ -51,8 +50,8 @@
 /** SerialIo implementation based on serial/serial.h.*/
 class StdSerialIo : public SerialIo {
 public:
-  StdSerialIo(SendMsgFunc send_func, const std::string& port, unsigned baud)
-      : SerialIo(send_func, port, baud) {}
+  StdSerialIo(ReceiveMsgFunc recv_func, const std::string& port, unsigned baud)
+      : SerialIo(recv_func, port, baud) {}
 
   bool SetOutMsg(const wxString& msg) override;
   void Start() override;
@@ -70,10 +69,10 @@ private:
   void RequestStop() override { ThreadCtrl::RequestStop(); }
 };
 
-std::unique_ptr<SerialIo> SerialIo::Create(SendMsgFunc send_msg_func,
+std::unique_ptr<SerialIo> SerialIo::Create(ReceiveMsgFunc recv_msg_func,
                                            const std::string& port,
                                            unsigned baud) {
-  return std::make_unique<StdSerialIo>(send_msg_func, port, baud);
+  return std::make_unique<StdSerialIo>(recv_msg_func, port, baud);
 }
 
 void* StdSerialIo::Entry() {
@@ -127,7 +126,7 @@ void* StdSerialIo::Entry() {
         std::lock_guard lock(m_stats_mutex);
         m_stats.rx_count += line.size();
       }
-      m_send_msg_func(line);
+      m_recv_msg_func(line);
     }
 
     //  Handle pending output messages

@@ -109,9 +109,9 @@ extern bool androidSendBTMessage(wxString &payload);
 
 extern wxArrayString *androidGetSerialPortsArray(void);
 
-using SendMsgFunc = std::function<void(const std::vector<unsigned char> &)>;
+using ReceiveMsgFunc = std::function<void(const std::vector<unsigned char> &)>;
 extern bool androidStartUSBSerial(wxString &portname, wxString baudRate,
-                                  SendMsgFunc send_msg_func);
+                                  ReceiveMsgFunc send_msg_func);
 extern bool androidStopUSBSerial(wxString &portname);
 extern bool androidWriteSerial(wxString &portname, wxString &message);
 

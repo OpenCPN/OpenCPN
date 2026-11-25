@@ -48,13 +48,13 @@ static std::string NormalizePort(const std::string& port) {
 }
 
 /** Forwards data from driver to local receivers (main code, plugins, etc). */
-using SendMsgFunc = std::function<void(const std::vector<unsigned char>&)>;
+using ReceiveMsgFunc = std::function<void(const std::vector<unsigned char>&)>;
 
 /** Nmea0183 serial communications wrapper, possibly running a thread */
 class SerialIo : public ThreadCtrl {
 public:
   /** Factory */
-  static std::unique_ptr<SerialIo> Create(SendMsgFunc send_msg_func,
+  static std::unique_ptr<SerialIo> Create(ReceiveMsgFunc recv_msg_func,
                                           const std::string& port,
                                           unsigned baud);
 
@@ -74,15 +74,15 @@ public:
 protected:
   const wxString m_portname;
   const unsigned m_baud;
-  const SendMsgFunc m_send_msg_func;
+  const ReceiveMsgFunc m_recv_msg_func;
   DriverStats m_stats;
   mutable std::mutex m_stats_mutex;
   TimedLogFilter m_open_log_filter;
 
-  SerialIo(SendMsgFunc send_msg_func, const std::string& port, unsigned baud)
+  SerialIo(ReceiveMsgFunc send_msg_func, const std::string& port, unsigned baud)
       : m_portname(NormalizePort(port)),
         m_baud(baud),
-        m_send_msg_func(send_msg_func),
+        m_recv_msg_func(send_msg_func),
         m_open_log_filter(5min) {}
 };
 

@@ -57,6 +57,7 @@
 #include "model/garmin_protocol_mgr.h"
 #include "model/idents.h"
 #include "model/logger.h"
+#include "model/ocpn_utils.h"
 #include "model/sys_events.h"
 
 using namespace std::literals::chrono_literals;

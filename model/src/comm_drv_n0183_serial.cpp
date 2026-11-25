@@ -51,7 +51,7 @@ CommDriverN0183Serial::CommDriverN0183Serial(const ConnectionParams* params,
       m_portstring(params->GetDSPort()),
       m_baudrate(params->baudrate),
       m_serial_io(SerialIo::Create(
-          [&](const std::vector<unsigned char>& v) { SendMessage(v); },
+          [&](const std::vector<unsigned char>& v) { ReceiveMessage(v); },
           m_portstring, m_baudrate)),
       m_params(*params),
       m_listener(listener),
@@ -73,7 +73,9 @@ bool CommDriverN0183Serial::Open() {
 
   wxString port_uc = m_params.GetDSPort().Upper();
 
-  auto send_func = [&](const std::vector<unsigned char>& v) { SendMessage(v); };
+  auto send_func = [&](const std::vector<unsigned char>& v) {
+    ReceiveMessage(v);
+  };
   if ((wxNOT_FOUND != port_uc.Find("USB")) &&
       (wxNOT_FOUND != port_uc.Find("GARMIN"))) {
     m_garmin_handler = new GarminProtocolHandler(comx, send_func, true);
@@ -150,7 +152,8 @@ bool CommDriverN0183Serial::SendMessage(std::shared_ptr<const NavMsg> msg,
   }
 }
 
-void CommDriverN0183Serial::SendMessage(const std::vector<unsigned char>& msg) {
+void CommDriverN0183Serial::ReceiveMessage(
+    const std::vector<unsigned char>& msg) {
   // Is this an output-only port?
   // Commonly used for "Send to GPS" function
   if (m_params.direction == PortDirection::kOutput) return;

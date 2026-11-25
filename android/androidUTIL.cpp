@@ -131,7 +131,7 @@ extern MyFrame *gFrame;
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 // extern const wxEventType wxEVT_DOWNLOAD_EVENT;
 
-static SendMsgFunc s_send_msg_func;
+static ReceiveMsgFunc s_send_msg_func;
 wxEvtHandler *s_pAndroidGPSIntMessageConsumer;
 wxEvtHandler *s_pAndroidBTNMEAMessageConsumer;
 
@@ -3092,7 +3092,7 @@ wxArrayString *androidGetSerialPortsArray(void) {
 }
 
 bool androidStartUSBSerial(wxString &portname, wxString baudRate,
-                           SendMsgFunc send_msg_func) {
+                           ReceiveMsgFunc send_msg_func) {
   wxString result =
       callActivityMethod_s2s("startSerialPort", portname, baudRate);
 

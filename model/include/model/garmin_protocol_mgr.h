@@ -168,7 +168,7 @@ typedef struct {
 
 enum { rs_fromintr, rs_frombulk };
 
-using SendMsgFunc = std::function<void(const std::vector<unsigned char> &)>;
+using ReceiveMsgFunc = std::function<void(const std::vector<unsigned char> &)>;
 
 #define TIMER_GARMIN1 7005
 
@@ -177,21 +177,22 @@ class GARMIN_USB_Thread;
 
 class GarminProtocolHandler : public wxEvtHandler {
 public:
-  GarminProtocolHandler(wxString port, SendMsgFunc send_msg_func, bool sel_usb);
+  GarminProtocolHandler(wxString port, ReceiveMsgFunc recv_msg_func,
+                        bool sel_usb);
   ~GarminProtocolHandler();
 
-  void Close(void);
+  void Close();
 
   void StopIOThread(bool b_pause);
-  void RestartIOThread(void);
+  void RestartIOThread();
 
-  void StopSerialThread(void);
+  void StopSerialThread();
 
   void OnTimerGarmin1(wxTimerEvent &event);
 
   bool FindGarminDeviceInterface();
 
-  SendMsgFunc m_send_msg_func;
+  ReceiveMsgFunc m_recv_msg_func;
   void *m_pparent;
 
   int m_max_tx_size;
@@ -214,7 +215,7 @@ public:
   HANDLE garmin_usb_start();
   bool ResetGarminUSBDriver();
   static bool IsGarminPlugged();
-  bool gusb_syncup(void);
+  bool gusb_syncup();
 
   int gusb_win_get(garmin_usb_packet *ibuf, size_t sz);
   int gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz);
@@ -241,14 +242,14 @@ public:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_Serial_Thread : public wxThread {
 public:
-  GARMIN_Serial_Thread(GarminProtocolHandler *parent, SendMsgFunc send_msg_func,
-                       wxString port);
-  ~GARMIN_Serial_Thread(void);
+  GARMIN_Serial_Thread(GarminProtocolHandler *parent,
+                       ReceiveMsgFunc recv_msg_func, wxString port);
+  ~GARMIN_Serial_Thread();
   void *Entry();
   void string(wxCharBuffer mb_str);
 
 private:
-  SendMsgFunc m_send_msg_func;
+  ReceiveMsgFunc m_recv_msg_func;
   GarminProtocolHandler *m_parent;
 
   wxString m_port;
@@ -266,9 +267,9 @@ private:
 //-------------------------------------------------------------------------------------------------------------
 class GARMIN_USB_Thread : public wxThread {
 public:
-  GARMIN_USB_Thread(GarminProtocolHandler *parent, SendMsgFunc send_msg_func,
+  GARMIN_USB_Thread(GarminProtocolHandler *parent, ReceiveMsgFunc recv_msg_func,
                     unsigned int device_handle, size_t max_tx_size);
-  ~GARMIN_USB_Thread(void);
+  ~GARMIN_USB_Thread();
   void *Entry();
 
 private:
@@ -276,7 +277,7 @@ private:
   int gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz);
   int gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz);
 
-  SendMsgFunc m_send_msg_func;
+  ReceiveMsgFunc m_recv_msg_func;
   GarminProtocolHandler *m_parent;
 
   int m_receive_state;

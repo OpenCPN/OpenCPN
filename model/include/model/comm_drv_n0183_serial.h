@@ -73,10 +73,11 @@ private:
   StatsTimer m_stats_timer;
 
   /**
-   * Send a message to all listeners after applying filtering. Ends up in a
-   * Notify() and can thus be used as a callback in IO threads.
+   * Send a message received from the wire to all listeners after applying
+   * filtering. Ends up in a * Notify() and can thus be used as a callback in
+   * IO threads.
    */
-  void SendMessage(const std::vector<unsigned char>& msg);
+  void ReceiveMessage(const std::vector<unsigned char>& msg);
 };
 
 #endif  //  COMMDRIVERN0183SERIAL_H

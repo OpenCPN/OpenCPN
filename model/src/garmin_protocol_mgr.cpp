@@ -119,10 +119,10 @@ EVT_TIMER(TIMER_GARMIN1, GarminProtocolHandler::OnTimerGarmin1)
 END_EVENT_TABLE()
 
 GarminProtocolHandler::GarminProtocolHandler(wxString port,
-                                             SendMsgFunc send_msg_func,
+                                             ReceiveMsgFunc recv_msg_func,
                                              bool bsel_usb) {
   // m_pparent = parent;
-  m_send_msg_func = send_msg_func;
+  m_recv_msg_func = recv_msg_func;
   m_garmin_serial_thread = NULL;
   m_garmin_usb_thread = NULL;
   m_bOK = false;
@@ -160,7 +160,7 @@ GarminProtocolHandler::GarminProtocolHandler(wxString port,
 
     // Start handler thread
     m_garmin_serial_thread =
-        new GARMIN_Serial_Thread(this, m_send_msg_func, m_port);
+        new GARMIN_Serial_Thread(this, m_recv_msg_func, m_port);
 
     m_Thread_run_flag = 1;
     m_garmin_serial_thread->Run();
@@ -252,7 +252,7 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent &event) {
 
         //    Start the pump
         m_garmin_usb_thread = new GARMIN_USB_Thread(
-            this, m_send_msg_func, (wxIntPtr)m_usb_handle, m_max_tx_size);
+            this, m_recv_msg_func, (wxIntPtr)m_usb_handle, m_max_tx_size);
         m_Thread_run_flag = 1;
         m_garmin_usb_thread->Run();
       }
@@ -687,10 +687,10 @@ D800_Pvt_Data_Type_Aligned mypvt;
 //
 //-------------------------------------------------------------------------------------------------------------
 GARMIN_Serial_Thread::GARMIN_Serial_Thread(GarminProtocolHandler *parent,
-                                           SendMsgFunc send_msg_func,
+                                           ReceiveMsgFunc recv_msg_func,
                                            wxString port) {
   m_parent = parent;  // This thread's immediate "parent"
-  m_send_msg_func = send_msg_func;
+  m_recv_msg_func = recv_msg_func;
   m_port = port;
 
   Create();
@@ -778,7 +778,7 @@ void *GARMIN_Serial_Thread::Entry() {
 
           // Send message...
           auto msg = snt.Sentence.ToStdString();
-          m_send_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
+          m_recv_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
 
           last_rx_time = wxDateTime::Now();
         }
@@ -822,11 +822,11 @@ thread_exit:
 //-------------------------------------------------------------------------------------------------------------
 #if 1
 GARMIN_USB_Thread::GARMIN_USB_Thread(GarminProtocolHandler *parent,
-                                     SendMsgFunc send_msg_func,
+                                     ReceiveMsgFunc recv_msg_func,
                                      unsigned int device_handle,
                                      size_t max_tx_size) {
   m_parent = parent;  // This thread's immediate "parent"
-  m_send_msg_func = send_msg_func;
+  m_recv_msg_func = recv_msg_func;
   m_max_tx_size = max_tx_size;
 
 #ifdef __WXMSW__
@@ -879,7 +879,7 @@ void *GARMIN_USB_Thread::Entry() {
       wxString msg = snt.Sentence;
 
       // and send message.
-      m_send_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
+      m_recv_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
     }
 
     if (iresp.gusb_pkt.pkt_id[0] == GUSB_RESPONSE_PVT)  // PVT Data Record
@@ -918,7 +918,7 @@ void *GARMIN_USB_Thread::Entry() {
 
         oNMEA0183.Rmc.Write(snt);
         wxString msg = snt.Sentence;
-        m_send_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
+        m_recv_msg_func(std::vector<unsigned char>(msg.begin(), msg.end()));
       }
     }
   }

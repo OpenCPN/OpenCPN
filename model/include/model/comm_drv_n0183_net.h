@@ -60,7 +60,6 @@
 #include "model/comm_drv_n0183.h"
 #include "model/comm_drv_stats.h"
 #include "model/conn_params.h"
-#include "model/ocpn_utils.h"
 
 class MrqContainer;  // forward in .cpp file
 
