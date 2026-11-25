@@ -1930,13 +1930,16 @@ int ChartDatabase::FinddbIndex(wxString PathToFind) {
 //-------------------------------------------------------------------
 
 int ChartDatabase::DisableChart(wxString &PathToDisable) {
-  int index = FinddbIndex(PathToDisable);
-  if (index != -1) {
-    auto &entry = GetChartTableEntry(index);
-    entry.Disable();
-    return 1;
+  int disabled = 0;
+  // Overlapping or repeated chart directories can create multiple entries for
+  // the same file. The path index identifies only one of these entries.
+  for (auto &entry : active_chartTable) {
+    if (entry->GetFullSystemPath() == PathToDisable) {
+      if (entry->GetLatMax() <= 90.0) entry->Disable();
+      disabled = 1;
+    }
   }
-  return 0;
+  return disabled;
 }
 
 // ----------------------------------------------------------------------------
