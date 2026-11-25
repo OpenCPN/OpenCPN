@@ -143,6 +143,17 @@ if (LINUX)
 endif ()
 
 include(GoogleTest)
+# Linux integration test: the temporary profile also isolates platform logging.
+if (LINUX)
+  add_executable(navobj_db_tests navobj_db_tests.cpp
+                 ${CMAKE_SOURCE_DIR}/cli/api_shim.cpp)
+  target_link_libraries(navobj_db_tests PRIVATE ocpn::model-src ocpn::gtest
+                        ocpn::gl-headers win32_libs)
+  if (NOT "${ENABLE_SANITIZER}" STREQUAL "none")
+    target_link_libraries(navobj_db_tests PRIVATE -fsanitize=${ENABLE_SANITIZER})
+  endif ()
+  gtest_add_tests(TARGET navobj_db_tests)
+endif ()
 gtest_add_tests(TARGET tests)
 gtest_add_tests(TARGET buffer_tests)
 
