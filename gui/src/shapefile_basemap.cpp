@@ -208,7 +208,23 @@ ShapeBaseChart &ShapeBaseChartSet::SelectBaseMap(const size_t &scale) {
              scale <= _basemap_map.at(Quality::low).MinScale()) {
     return _basemap_map.at(Quality::low);
   }
+  // No layer is detailed enough for this scale: use the coarsest layer that
+  // can still be drawn, so one unusable layer does not hide the others.
+  for (auto &q : {Quality::crude, Quality::low, Quality::medium, Quality::high,
+                  Quality::full}) {
+    auto it = _basemap_map.find(q);
+    if (it != _basemap_map.end() && it->second.IsUsable()) return it->second;
+  }
   return LowestQualityBaseMap();
+}
+
+ShapeBaseChart *ShapeBaseChartSet::HighestUsableBaseMap() {
+  for (auto &q : {Quality::full, Quality::high, Quality::medium, Quality::low,
+                  Quality::crude}) {
+    auto it = _basemap_map.find(q);
+    if (it != _basemap_map.end() && it->second.IsUsable()) return &it->second;
+  }
+  return nullptr;
 }
 
 void ShapeBaseChartSet::Reset() {

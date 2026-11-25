@@ -338,12 +338,11 @@ public:
   ShapeBaseChart &SelectBaseMap(const size_t &scale);
   /**
    * Checks if the chart set contains at least one usable chart.
-   * @return true if the chart set contains at least one chart and the lowest
-   * quality chart is usable as determined by ShapeBaseChart::IsUsable().
+   * @return true if at least one chart in the set is usable as determined by
+   * ShapeBaseChart::IsUsable(). An unusable chart at one quality level does
+   * not stop the others from being used.
    */
-  bool IsUsable() {
-    return _basemap_map.size() > 0 && LowestQualityBaseMap().IsUsable();
-  }
+  bool IsUsable() { return HighestUsableBaseMap() != nullptr; }
 
   /**
    * Determines if a line segment between two geographical points crosses any
@@ -354,11 +353,13 @@ public:
    * @param lat2 Latitude of the second point of the line segment.
    * @param lon2 Longitude of the second point of the line segment.
    * @return true if the line segment crosses land according to the highest
-   * quality chart, false if no crossing is detected or if no charts are usable.
+   * quality usable chart, false if no crossing is detected or if no charts are
+   * usable.
    */
   bool CrossesLand(double lat1, double lon1, double lat2, double lon2) {
-    if (IsUsable()) {
-      return HighestQualityBaseMap().CrossesLand(lat1, lon1, lat2, lon2);
+    ShapeBaseChart *chart = HighestUsableBaseMap();
+    if (chart) {
+      return chart->CrossesLand(lat1, lon1, lat2, lon2);
     }
     return false;
   }
@@ -393,6 +394,12 @@ private:
    * quality chart exists, returns the next available quality level.
    */
   ShapeBaseChart &HighestQualityBaseMap();
+  /**
+   * Retrieves the highest quality chart in the set that is usable as
+   * determined by ShapeBaseChart::IsUsable().
+   * @return Pointer to that chart, or nullptr if no chart is usable.
+   */
+  ShapeBaseChart *HighestUsableBaseMap();
 
   bool _loaded;
   /**
