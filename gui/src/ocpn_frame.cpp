@@ -4477,12 +4477,9 @@ void MyFrame::InvalidateAllQuilts() {
 bool MyFrame::UpdateChartDatabaseInplace(ArrayOfCDI &DirArray, bool b_force,
                                          bool b_prog,
                                          const wxString &ChartListFileName) {
-  bool b_run = FrameTimer1.IsRunning();
-  FrameTimer1.Stop();  // stop other asynchronous activity
-  FrameTenHzTimer.Stop();
-
-  bool b_runCOGTimer = FrameCOGTimer.IsRunning();
-  FrameCOGTimer.Stop();
+  // The update runs asynchronously and FinalizeChartDBUpdate() does not
+  // restart the frame timers, so they are left running here, as for an
+  // update started from the Options dialog.
 
   // ..For each canvas...
   for (unsigned int i = 0; i < g_canvasArray.GetCount(); i++) {
