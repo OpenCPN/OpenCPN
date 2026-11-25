@@ -135,6 +135,7 @@ public:
         m_last_TX_sequence(0) {
     SetN2K_Name();
     Open();
+    m_stats_timer.Start();
   }
 
   ~CommDriverN2KSocketCanImpl() { Close(); }

@@ -457,6 +457,7 @@ CommDriverN2KCanable::CommDriverN2KCanable(const ConnectionParams* params,
 
   // Open the Port
   Open();
+  m_statsTimer.Start();
 }
 
 CommDriverN2KCanable::~CommDriverN2KCanable() {
@@ -506,6 +507,7 @@ void CommDriverN2KCanable::Open() {
 
 // Stop the worker thread
 void CommDriverN2KCanable::Close() {
+  m_statsTimer.Stop();
   m_isPortOpen = false;
   if (m_serialThread) {
     m_serialThread->RequestStop();
