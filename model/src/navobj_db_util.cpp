@@ -84,6 +84,29 @@ inline bool columnInPrimaryKey(sqlite3* db, const std::string& table,
   return found;
 }
 
+inline bool columnExists(sqlite3* db, const std::string& table,
+                         const std::string& column) {
+  std::string sql = "PRAGMA table_info(" + table + ");";
+  sqlite3_stmt* stmt;
+
+  if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+    return false;
+
+  bool found = false;
+
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    std::string name =
+        reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+    if (name == column) {
+      found = true;
+      break;
+    }
+  }
+
+  sqlite3_finalize(stmt);
+  return found;
+}
+
 bool needsMigration_0_1(sqlite3* db) {
   int version = getUserVersion(db);
   if (version < 1) {
@@ -152,6 +175,43 @@ std::string SchemaUpdate_0_1(sqlite3* db, wxFrame* frame) {
       return (std::string("Unexpected error on migration 0->1: ") + e.what());
     } catch (...) {
       // Truly unknown (rare, but good safety net)
+      return ("Unknown non-standard exception during migration");
+    }
+  }
+
+  return "";
+}
+
+bool needsMigration_1_2(sqlite3* db) {
+  int version = getUserVersion(db);
+  if (version < 2) {
+    return !columnExists(db, "routepoints", "linked_layer_guid");
+  }
+  return false;
+}
+
+std::string SchemaUpdate_1_2(sqlite3* db, wxFrame* frame) {
+  if (needsMigration_1_2(db)) {
+    DbMigrator migrator(db);
+    migrator.addMigration(2, [](sqlite3* db) {
+      char* errMsg = nullptr;
+      const char* sql =
+          "ALTER TABLE routepoints ADD COLUMN linked_layer_guid TEXT;";
+
+      if (sqlite3_exec(db, sql, nullptr, nullptr, &errMsg) != SQLITE_OK) {
+        std::string err = errMsg ? errMsg : "";
+        sqlite3_free(errMsg);
+        throw std::runtime_error(err);
+      }
+    });
+
+    try {
+      migrator.migrate();
+    } catch (const std::runtime_error& e) {
+      return (std::string("Migration 1->2 failed: ") + e.what());
+    } catch (const std::exception& e) {
+      return (std::string("Unexpected error on migration 1->2: ") + e.what());
+    } catch (...) {
       return ("Unknown non-standard exception during migration");
     }
   }
