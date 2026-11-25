@@ -995,6 +995,8 @@ static void PlugInFromRoutePoint(PlugIn_Waypoint* dst,
 }
 
 bool GetSingleWaypoint(wxString GUID, PlugIn_Waypoint* pwaypoint) {
+  if (!pWayPointMan || !pwaypoint) return false;
+
   //  Find the RoutePoint
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(GUID);
 
@@ -1978,6 +1980,8 @@ static void PlugInExV2FromRoutePoint(PlugIn_Waypoint_ExV2* dst,
 }
 
 bool GetSingleWaypointExV2(wxString GUID, PlugIn_Waypoint_ExV2* pwaypoint) {
+  if (!pWayPointMan || !pwaypoint) return false;
+
   //  Find the RoutePoint
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(GUID);
 
@@ -2382,6 +2386,8 @@ RoutePoint* CreateNewPoint(const PlugIn_Waypoint_Ex* src, bool b_permanent) {
   return pWP;
 }
 bool GetSingleWaypointEx(wxString GUID, PlugIn_Waypoint_Ex* pwaypoint) {
+  if (!pWayPointMan || !pwaypoint) return false;
+
   //  Find the RoutePoint
   RoutePoint* prp = pWayPointMan->FindRoutePointByGUID(GUID);
 
