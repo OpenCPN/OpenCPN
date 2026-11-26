@@ -109,12 +109,14 @@ public:
   bool b_skipTooDeep;     ///< Flag to skip processing if depth exceeds limit
 
   // Cached values for performance
-  time_t recent_high_calc_time;  ///< Timestamp of the most recent high calculation
-  time_t recent_low_calc_time;   ///< Timestamp of the most recent low calculation
-  float recent_high_level;  ///< Most recently calculated high tide level
-  time_t recent_high_time;  ///< Time of the most recent high tide
-  float recent_low_level;   ///< Most recently calculated low tide level
-  time_t recent_low_time;   ///< Time of the most recent low tide
+  time_t
+      recent_high_calc_time;  ///< Timestamp of the most recent high calculation
+  time_t
+      recent_low_calc_time;  ///< Timestamp of the most recent low calculation
+  float recent_high_level;   ///< Most recently calculated high tide level
+  time_t recent_high_time;   ///< Time of the most recent high tide
+  float recent_low_level;    ///< Most recently calculated low tide level
+  time_t recent_low_time;    ///< Time of the most recent low tide
 };
 
 WX_DECLARE_OBJARRAY(IDX_entry, ArrayOfIDXEntry);

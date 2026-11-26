@@ -929,8 +929,8 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2,
   }
 
   // Is the cache data reasonably fresh?
-  const time_t calc_time = w_t ? pIDX->recent_high_calc_time
-                               : pIDX->recent_low_calc_time;
+  const time_t calc_time =
+      w_t ? pIDX->recent_high_calc_time : pIDX->recent_low_calc_time;
   if (abs(t - calc_time) < 60) {
     if (w_t) {
       tcvalue = pIDX->recent_high_level;
