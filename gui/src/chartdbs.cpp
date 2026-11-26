@@ -1186,8 +1186,8 @@ void ChartDatabase::OnEvtThread(OCPN_ChartTableEntryThreadEvent &event) {
     bool collision_found = false;
     if (ticket->b_thread_safe) {
       wxFileName fn(ticket->m_ChartPath);
-      collision_found =
-          m_full_collision_map.find(fn.GetFullName()) != m_full_collision_map.end();
+      collision_found = m_full_collision_map.find(fn.GetFullName()) !=
+                        m_full_collision_map.end();
       if (!collision_found) {
         m_full_collision_map[fn.GetFullName()] = 1;
       }
