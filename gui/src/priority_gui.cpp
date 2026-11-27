@@ -43,8 +43,28 @@
 
 #include "priority_gui.h"
 
+#include "libgui/help_tools.h"
+
 #include "model/comm_bridge.h"
 #include "ocpn_plugin.h"
+
+// Make _() return std::string instead of wxString;
+#undef _
+#if wxCHECK_VERSION(3, 2, 0)
+#define _(s) wxGetTranslation(wxASCII_STR(s)).ToStdString()
+#else
+#define _(s) wxGetTranslation((s)).ToStdString()
+#endif
+
+static const char* const kPriorityHelp = R"(
+Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+x urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendu
+egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere.
+Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora
+ torquent per conubia nostra inceptos himenaeos.
+)";
 
 class PriorityEntry : public wxTreeItemData {
 public:
@@ -104,6 +124,10 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   btnEntrySizer->Add(btnRefresh, 0, wxALL, 5);
   btnEntrySizer->Add(btnClear, 0, wxALL, 5);
+
+  m_help_btn =
+      new libgui::ModalHelpBtn(this, _("Priority help"), kPriorityHelp);
+  btnEntrySizer->Add(m_help_btn, 0, wxALL, 5);
 
   wxStdDialogButtonSizer* btnSizer = new wxStdDialogButtonSizer();
   wxButton* btnOK = new wxButton(this, wxID_OK);

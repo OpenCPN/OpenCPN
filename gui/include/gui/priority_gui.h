@@ -61,6 +61,7 @@ private:
 
   wxButton *btnMoveUp, *btnMoveDown;
   wxButton *btnRefresh, *btnClear;
+  wxButton *m_help_btn;
   wxTreeCtrl *m_prioTree;
   std::vector<std::string> m_map;
 
