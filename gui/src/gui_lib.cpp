@@ -352,7 +352,7 @@ InfoButton::InfoButton(wxWindow* parent, bool touch, const std::string& header,
                wxBU_EXACTFIT | wxBORDER_NONE),
       m_icon(parent, "help-info.svg",
              GuiEvents::GetInstance().color_scheme_change, touch),
-      m_info_frame(new InfoFrame(parent, header, info)) {
+      m_info_frame(new InfoButton::InfoFrame(parent, header, info)) {
   SetBitmap(m_icon.GetBitmap());
   Bind(wxEVT_COMMAND_BUTTON_CLICKED, [&](wxCommandEvent&) {
     m_info_frame->Fit();

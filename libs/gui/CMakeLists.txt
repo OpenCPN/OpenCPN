@@ -33,6 +33,7 @@ set(SRC
     include/libgui/expand_icon.h
     include/libgui/expand_panel.h
     include/libgui/form_grid.h
+    include/libgui/help_tools.h
     include/libgui/svg_button.h
     include/libgui/svg_icons.h
     include/libgui/text_ctrl_w_help.h
@@ -43,6 +44,7 @@ set(SRC
     src/expand_panel.cpp
     src/field_text.cpp
     src/form_grid.cpp
+    src/help_tools.cpp
     src/svg_button.cpp
     src/svg_icons.cpp
     src/text_ctrl_w_help.cpp
