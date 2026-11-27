@@ -109,8 +109,8 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   wxBoxSizer* btnEntrySizer = new wxBoxSizer(wxVERTICAL);
   secondSizer->Add(btnEntrySizer, 0, wxALL | wxEXPAND, 5);
-  btnMoveUp = new wxButton(this, wxID_ANY, _("Move Up"));
-  btnMoveDown = new wxButton(this, wxID_ANY, _("Move Down"));
+  btnMoveUp = new wxButton(this, wxID_UP, _("Move Up"));
+  btnMoveDown = new wxButton(this, wxID_DOWN, _("Move Down"));
   btnMoveUp->Disable();
   btnMoveDown->Disable();
 
@@ -119,8 +119,8 @@ PriorityDlg::PriorityDlg(wxWindow* parent)
 
   btnEntrySizer->AddSpacer(15);
 
-  btnRefresh = new wxButton(this, wxID_ANY, _("Refresh"));
-  btnClear = new wxButton(this, wxID_ANY, _("Clear All"));
+  btnRefresh = new wxButton(this, wxID_REFRESH, _("Refresh"));
+  btnClear = new wxButton(this, wxID_CLEAR, _("Clear All"));
 
   btnEntrySizer->Add(btnRefresh, 0, wxALL, 5);
   btnEntrySizer->Add(btnClear, 0, wxALL, 5);
