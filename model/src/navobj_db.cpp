@@ -850,7 +850,6 @@ bool NavObj_dB::InsertTrack(Track* track) {
 };
 
 bool NavObj_dB::UpdateTrack(Track* track) {
-  bool rv = false;
   char* errMsg = 0;
 
   if (!TrackExists(m_db, track->m_GUID.ToStdString())) return false;
@@ -892,11 +891,21 @@ bool NavObj_dB::UpdateTrack(Track* track) {
     }
   }
 
-  sqlite3_exec(m_db, "COMMIT", 0, 0, nullptr);
-
-  rv = true;
-  if (errMsg) rv = false;
-  return rv;
+  // Commit the update, reporting success only if the commit actually
+  // completed.  If the commit fails (e.g. SQLITE_BUSY) the transaction is
+  // still open on this connection: roll it back to resolve the connection so
+  // it remains usable for subsequent operations, then propagate the error.
+  const int commit_rc = sqlite3_exec(m_db, "COMMIT", 0, 0, &errMsg);
+  if (commit_rc != SQLITE_OK || errMsg) {
+    ReportError("UpdateTrack:COMMIT");
+    sqlite3_exec(m_db, "ROLLBACK", 0, 0, nullptr);
+    if (errMsg) {
+      sqlite3_free(errMsg);
+      errMsg = nullptr;
+    }
+    return false;
+  }
+  return true;
 };
 
 bool NavObj_dB::UpdateDBTrackAttributes(Track* track) {
