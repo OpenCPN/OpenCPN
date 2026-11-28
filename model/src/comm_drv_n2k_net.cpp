@@ -1867,6 +1867,14 @@ bool CommDriverN2KNet::PrepareForTX() {
   if (m_TX_available)
     return true;
   else {
+    // Every device on the bus answers this request, and it would otherwise be
+    // sent on every transmit while the gateway is not recognised.
+    auto now = std::chrono::steady_clock::now();
+    if (m_prodinfo_request_time != std::chrono::steady_clock::time_point() &&
+        now - m_prodinfo_request_time < 60s)
+      return false;
+    m_prodinfo_request_time = now;
+
     // Send a broadcast request for PGN 126996, Product Information
     std::vector<unsigned char> payload;
     payload.push_back(0x14);
