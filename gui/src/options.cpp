@@ -1718,10 +1718,10 @@ struct DistanceFormatMapping {
 };
 
 static const DistanceFormatMapping kDistanceFormats[] = {
-    {_("Nautical miles"), DISTANCE_NMI},
-    {_("Statute miles"), DISTANCE_MI},
-    {_("Kilometers"), DISTANCE_KM},
-    {_("Meters"), DISTANCE_M}};
+    {wxTRANSLATE("Nautical miles"), DISTANCE_NMI},
+    {wxTRANSLATE("Statute miles"), DISTANCE_MI},
+    {wxTRANSLATE("Kilometers"), DISTANCE_KM},
+    {wxTRANSLATE("Meters"), DISTANCE_M}};
 
 static const int kNumDistanceFormats =
     sizeof(kDistanceFormats) / sizeof(DistanceFormatMapping);
@@ -4385,7 +4385,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                     labelFlags);
     wxString pDistanceFormats[kNumDistanceFormats];
     for (int i = 0; i < kNumDistanceFormats; i++) {
-      pDistanceFormats[i] = kDistanceFormats[i].label;
+      pDistanceFormats[i] = wxGetTranslation(kDistanceFormats[i].label);
     }
     int m_DistanceFormatsNChoices = kNumDistanceFormats;
     pDistanceFormat =
@@ -4602,7 +4602,7 @@ void options::CreatePanel_Units(size_t parent, int border_size,
                     labelFlags);
     wxString pDistanceFormats[kNumDistanceFormats];
     for (int i = 0; i < kNumDistanceFormats; i++) {
-      pDistanceFormats[i] = kDistanceFormats[i].label;
+      pDistanceFormats[i] = wxGetTranslation(kDistanceFormats[i].label);
     }
     int m_DistanceFormatsNChoices = kNumDistanceFormats;
     pDistanceFormat = new wxChoice(panelUnits, ID_DISTANCEUNITSCHOICE,
